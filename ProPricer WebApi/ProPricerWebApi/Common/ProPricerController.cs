@@ -16,16 +16,15 @@ namespace APTSPropricerApi
 	/// <summary>
 	/// Abstract base class for Controllers connecting to Pro Pricer
 	/// </summary>
-	//[APTSPropricerApi.HandleError]
 	[ApiController, Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 	[Route("api/[controller]")]
-    public abstract class ProPricerController : ControllerBase
-    {
+	public abstract class ProPricerController : ControllerBase
+	{
 
-        /// <summary>
-        /// Gets or sets the logger.
-        /// </summary>
-        protected ILogger Logger { get; private set; } //= new Logger(typeof(ProPricerController));
+		/// <summary>
+		/// Gets or sets the logger.
+		/// </summary>
+		protected ILogger Logger { get; private set; } //= new Logger(typeof(ProPricerController));
 
 		/// <summary>
 		/// #ctor
@@ -35,5 +34,5 @@ namespace APTSPropricerApi
 		{
 			this.Logger = logger;
 		}
-    }
+	}
 }

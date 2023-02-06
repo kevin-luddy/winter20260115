@@ -9,24 +9,24 @@
 
 namespace APTSPropricerApi.Common
 {
-    /// <summary>
-    /// Totals for a Pro Pricer Proposal
-    /// </summary>
-    public class PricingTotals
-    {
-        /// <summary>
-        /// The Grand Total
-        /// </summary>
-        public decimal GrandTotal { get; set; }
+	/// <summary>
+	/// Totals for a Pro Pricer Proposal
+	/// </summary>
+	public class PricingTotals
+	{
+		/// <summary>
+		/// The Grand Total
+		/// </summary>
+		public decimal GrandTotal { get; set; }
 
-        /// <summary>
-        /// The Cost Total
-        /// </summary>
-        public decimal CostTotal { get; set; }
+		/// <summary>
+		/// The Cost Total
+		/// </summary>
+		public decimal CostTotal { get; set; }
 
-        /// <summary>
-        /// The Profit Total
-        /// </summary>
-        public decimal ProfitTotal { get; set; }
-    }
+		/// <summary>
+		/// The Profit Total
+		/// </summary>
+		public decimal ProfitTotal { get; set; }
+	}
 }

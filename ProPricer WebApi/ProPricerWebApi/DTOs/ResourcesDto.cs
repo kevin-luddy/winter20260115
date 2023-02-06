@@ -9,16 +9,39 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Data Transfer Object for Resources
-    /// </summary>
-    public class ResourcesDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Type { get; set; }
-        public string Rclass { get; set; }
-        public string AccountingCalendar { get; set; }
-    }
+	/// <summary>
+	/// Data Transfer Object for Resources
+	/// </summary>
+	public class ResourcesDto
+	{
+		/// <summary>
+		/// Gets or Sets the id
+		/// </summary>
+		public String Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the name
+		/// </summary>
+		public String Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Type
+		/// </summary>
+		public string Type { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Rclass
+		/// </summary>
+		public string Rclass { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Accounting Calendar
+		/// </summary>
+		public string AccountingCalendar { get; set; }
+	}
 }

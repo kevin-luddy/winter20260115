@@ -7,66 +7,69 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.ProPricer.Model;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    public class ResourcesController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System.Collections.Generic;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public ResourcesController(ILogger<ResourcesController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Controller for Resources
+	/// </summary>
+	public class ResourcesController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/resources
-        /// <summary>
-        /// Returns the list of resources in the instance of PROPRICER.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <returns>
-        /// Returns a collection of resource information from the instance of PROPRICER.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<ResourcesDto> Get(int instanceId)
-        {
-            List<ResourcesDto> res = new();
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                if (ppc.Workspace != null)
-                {
-                    ppc.Workspace.GlobalLibrary.Resources.Open();
-                    foreach (Resource resrc in ppc.Workspace.GlobalLibrary.Resources.Items())
-                    {
-                        ResourcesDto resdto = new()
-                        {
-                            Id = resrc.Id.ToString(),
-                            Name = resrc.Name,
-                            Description = resrc.Description,
-                            Type = resrc.Type.ToString(),
-                            Rclass = resrc.ResourceClass != null ? resrc.ResourceClass.Name : string.Empty,
-                            AccountingCalendar = resrc.Calendar != null ? resrc.Calendar.ToString() : string.Empty
-                        };
-                        res.Add(resdto);
-                    }
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public ResourcesController(ILogger<ResourcesController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-                    ppc.Workspace.GlobalLibrary.Resources.Close();
-                }
-            }
+		// GET api/resources
+		/// <summary>
+		/// Returns the list of resources in the instance of PROPRICER.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <returns>
+		/// Returns a collection of resource information from the instance of PROPRICER.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<ResourcesDto> Get(int instanceId)
+		{
+			List<ResourcesDto> res = new();
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				if (ppc.Workspace != null)
+				{
+					ppc.Workspace.GlobalLibrary.Resources.Open();
+					foreach (Resource resrc in ppc.Workspace.GlobalLibrary.Resources.Items())
+					{
+						ResourcesDto resdto = new()
+						{
+							Id = resrc.Id.ToString(),
+							Name = resrc.Name,
+							Description = resrc.Description,
+							Type = resrc.Type.ToString(),
+							Rclass = resrc.ResourceClass != null ? resrc.ResourceClass.Name : string.Empty,
+							AccountingCalendar = resrc.Calendar != null ? resrc.Calendar.ToString() : string.Empty
+						};
+						res.Add(resdto);
+					}
 
-            return res;
-        }
-    }
+					ppc.Workspace.GlobalLibrary.Resources.Close();
+				}
+			}
+
+			return res;
+		}
+	}
 }

@@ -9,16 +9,39 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Data Transfer Object for Traceabilty Report
-    /// </summary>
-    public class TraceReportDto
-    {
-        public string ResName { get; set; }
-        public string ResDescription { get; set; }
-        public string ResClass { get; set; }
-        public string PpCol { get; set; }
-        public double? DiscreteAmt { get; set; }
-        public double? FactoredAmt { get; set; }
-    }
+	/// <summary>
+	/// Data Transfer Object for Traceabilty Report
+	/// </summary>
+	public class TraceReportDto
+	{
+		/// <summary>
+		/// Gets or sets Res Name
+		/// </summary>
+		public string ResName { get; set; }
+
+		/// <summary>
+		/// Gets or sets Res Description
+		/// </summary>
+		public string ResDescription { get; set; }
+
+		/// <summary>
+		/// Gets or sets Res Class
+		/// </summary>
+		public string ResClass { get; set; }
+
+		/// <summary>
+		/// Gets or sets Pp Col
+		/// </summary>
+		public string PpCol { get; set; }
+
+		/// <summary>
+		/// Gets or sets Discrete Amt
+		/// </summary>
+		public double? DiscreteAmt { get; set; }
+
+		/// <summary>
+		/// Gets or sets Factored Amt
+		/// </summary>
+		public double? FactoredAmt { get; set; }
+	}
 }

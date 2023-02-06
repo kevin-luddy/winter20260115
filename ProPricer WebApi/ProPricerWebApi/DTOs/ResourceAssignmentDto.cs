@@ -7,24 +7,78 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-
 namespace APTSPropricerApi.DTOs
 {
-    public class ResourceAssignmentDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string InfoDescription { get; set; }
-        public IEnumerable<ResourceFieldsDto> ResourceFields { get; set; }
-        public string SourceType { get; set; }
-        public string Amount { get; set; }
-        public string StartDate { get; set; }
-        public string EndDate { get; set; }
-        public string SpreadCurve { get; set; }
-        public IEnumerable<SpreadDto> Spread { get; set; }
-        public string DirectCost { get; set; }
-        public string Price { get; set; }
-        public IEnumerable<BurdenCostDto> BurdenCost { get; set; }
-    }
+	using System.Collections.Generic;
+
+	/// <summary>
+	/// DTO for Resource Assignment
+	/// </summary>
+	public class ResourceAssignmentDto
+	{
+		/// <summary>
+		/// Gets or Sets the Id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Info Description
+		/// </summary>
+		public string InfoDescription { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Resource Fields
+		/// </summary>
+		public IEnumerable<ResourceFieldsDto> ResourceFields { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Source Type
+		/// </summary>
+		public string SourceType { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Amount
+		/// </summary>
+		public string Amount { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Start Date
+		/// </summary>
+		public string StartDate { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the End Date
+		/// </summary>
+		public string EndDate { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Spread Curve
+		/// </summary>
+		public string SpreadCurve { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Spread
+		/// </summary>
+		public IEnumerable<SpreadDto> Spread { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Direct Cost
+		/// </summary>
+		public string DirectCost { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Price
+		/// </summary>
+		public string Price { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Burden Cost
+		/// </summary>
+		public IEnumerable<BurdenCostDto> BurdenCost { get; set; }
+	}
 }

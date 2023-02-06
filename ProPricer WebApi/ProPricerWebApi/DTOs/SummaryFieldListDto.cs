@@ -9,9 +9,19 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class SummaryFieldListDto
-    {
-        public string Value { get; set; }
-        public string Description { get; set; }
-    }
+	/// <summary>
+	/// Summary Field List DTO
+	/// </summary>
+	public class SummaryFieldListDto
+	{
+		/// <summary>
+		/// Gets or Sets the Value
+		/// </summary>
+		public string Value { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+	}
 }

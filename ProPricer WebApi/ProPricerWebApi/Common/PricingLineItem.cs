@@ -9,24 +9,24 @@
 
 namespace APTSPropricerApi.Common
 {
-    /// <summary>
-    /// Line Item Data
-    /// </summary>
-    public class PricingLineItem
-    {
-        /// <summary>
-        /// Name of the Line Item
-        /// </summary>
-        public string Name { get; set; }
+	/// <summary>
+	/// Line Item Data
+	/// </summary>
+	public class PricingLineItem
+	{
+		/// <summary>
+		/// Name of the Line Item
+		/// </summary>
+		public string Name { get; set; }
 
-        /// <summary>
-        /// Description for Line Item
-        /// </summary>
-        public string Description { get; set; }
+		/// <summary>
+		/// Description for Line Item
+		/// </summary>
+		public string Description { get; set; }
 
-        /// <summary>
-        /// Total Sum for the Line Item
-        /// </summary>
-        public decimal Sum { get; set; }
-    }
+		/// <summary>
+		/// Total Sum for the Line Item
+		/// </summary>
+		public decimal Sum { get; set; }
+	}
 }

@@ -7,60 +7,60 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-using System.Linq;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.ProPricer.Model;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    /// <summary>
-    /// Spread curves specify how to divide the number of hours/units/cost spread for a resource within a task across time.
-    /// </summary>
-    public class CurvesController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System.Collections.Generic;
+	using System.Linq;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public CurvesController(ILogger<CurvesController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Spread curves specify how to divide the number of hours/units/cost spread for a resource within a task across time.
+	/// </summary>
+	public class CurvesController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/curves
-        /// <summary>
-        /// Return the list of available curves from the global library.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <returns>
-        /// A collection of curve information available from the global library.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<CurvesDto> Get(int instanceId)
-        {
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                ppc.Workspace.GlobalLibrary.Curves.Open();
-                IEnumerable<CurvesDto> curvesResult =
-                    from curve in ppc.Workspace.GlobalLibrary.Curves.Items().Cast<Curve>()
-                    select new CurvesDto
-                    {
-                        Id = curve.Id.ToString(),
-                        Name = curve.Name,
-                        Description = curve.Description,
-                        Type = curve.Type.ToString()
-                    };
-                ppc.Workspace.GlobalLibrary.Curves.Close();
-                return curvesResult;
-            }
-        }
-    }
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public CurvesController(ILogger<CurvesController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
+
+		// GET api/curves
+		/// <summary>
+		/// Return the list of available curves from the global library.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <returns>
+		/// A collection of curve information available from the global library.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<CurvesDto> Get(int instanceId)
+		{
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				ppc.Workspace.GlobalLibrary.Curves.Open();
+				IEnumerable<CurvesDto> curvesResult =
+					from curve in ppc.Workspace.GlobalLibrary.Curves.Items().Cast<Curve>()
+					select new CurvesDto
+					{
+						Id = curve.Id.ToString(),
+						Name = curve.Name,
+						Description = curve.Description,
+						Type = curve.Type.ToString()
+					};
+				ppc.Workspace.GlobalLibrary.Curves.Close();
+				return curvesResult;
+			}
+		}
+	}
 }

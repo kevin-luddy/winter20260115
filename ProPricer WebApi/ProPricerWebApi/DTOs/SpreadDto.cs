@@ -9,10 +9,24 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class SpreadDto
-    {
-        public int Year { get; set; }
-        public int Month { get; set; }
-        public string Value { get; set; }
-    }
+	/// <summary>
+	/// Instance of a Spread
+	/// </summary>
+	public class SpreadDto
+	{
+		/// <summary>
+		/// Gets or Sets the Year
+		/// </summary>
+		public int Year { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Month
+		/// </summary>
+		public int Month { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Value
+		/// </summary>
+		public string Value { get; set; }
+	}
 }

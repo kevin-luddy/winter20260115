@@ -9,16 +9,37 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class ResourceFieldDefinitionsDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string DataType { get; set; }
-        public byte MaxLength { get; set; }
+	/// <summary>
+	/// DTO for Resource Field Definitions
+	/// </summary>
+	public class ResourceFieldDefinitionsDto
+	{
+		/// <summary>
+		/// Gets or Sets the id
+		/// </summary>
+		public String Id { get; set; }
 
-        public string Decimals { get; set; }
-        //       public String defaultValue { get; set; }
-        //       public Boolean validate { get; set; }
-        //       public Boolean required { get; set; }
-    }
+		/// <summary>
+		/// Gets or Sets the name
+		/// </summary>
+		public String Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the dataType
+		/// </summary>
+		public String DataType { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the max Length
+		/// </summary>
+		public Byte MaxLength { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Decimals
+		/// </summary>
+		public string Decimals { get; set; }
+		////       public String defaultValue { get; set; }
+		////       public Boolean validate { get; set; }
+		////       public Boolean required { get; set; }
+	}
 }

@@ -1,0 +1,73 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+    <PackageReference Include="Moq" Version="4.18.4" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProPricerWebApi\ProPricerWebApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EBS.Core">
+      <HintPath>..\_ProPricer Libraries\EBS.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Core.Controls">
+      <HintPath>..\_ProPricer Libraries\EBS.Core.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Core.ServiceModel">
+      <HintPath>..\_ProPricer Libraries\EBS.Core.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.Client">
+      <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.Configuration">
+      <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.EditionManager">
+      <HintPath>..\_ProPricer Libraries\EBS.ProPricer.EditionManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.ImportExport">
+      <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.ImportExport.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.Registration">
+      <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.Registration.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Registration">
+      <HintPath>..\_ProPricer Libraries\EBS.Registration.dll</HintPath>
+    </Reference>
+    <Reference Include="PLUSManaged">
+      <HintPath>..\_ProPricer Libraries\PLUSManaged.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

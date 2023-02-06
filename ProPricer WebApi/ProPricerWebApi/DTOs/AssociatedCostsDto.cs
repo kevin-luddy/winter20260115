@@ -7,23 +7,73 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-
 namespace APTSPropricerApi.DTOs
 {
-    public class AssociatedCostsDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public ResourcesDto Resource { get; set; }
-        public IEnumerable<ResourceFieldsDto> ResourceFields { get; set; }
-        public double Amount { get; set; }
-        public double? TotalAmount { get; set; }
-        public bool LinkQty { get; set; }
-        public bool LinkSpread { get; set; }
-        public string StartDate { get; set; }
-        public string EndDate { get; set; }
-        public string SpreadCurve { get; set; }
-        public IEnumerable<SpreadDto> Spread { get; set; }
-    }
+	using System.Collections.Generic;
+
+	/// <summary>
+	/// DTO for associated Costs
+	/// </summary>
+	public class AssociatedCostsDto
+	{
+		/// <summary>
+		/// Gets or sets the 
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Resource
+		/// </summary>
+		public ResourcesDto Resource { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Resource Fields
+		/// </summary>
+		public IEnumerable<ResourceFieldsDto> ResourceFields { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Amount
+		/// </summary>
+		public double Amount { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Total Amount
+		/// </summary>
+		public double? TotalAmount { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Link Qty
+		/// </summary>
+		public bool LinkQty { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Link Spread
+		/// </summary>
+		public bool LinkSpread { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Start Date
+		/// </summary>
+		public string StartDate { get; set; }
+
+		/// <summary>
+		/// Gets or sets the End Date
+		/// </summary>
+		public string EndDate { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Spread Curve
+		/// </summary>
+		public string SpreadCurve { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of Spreads
+		/// </summary>
+		public IEnumerable<SpreadDto> Spread { get; set; }
+	}
 }

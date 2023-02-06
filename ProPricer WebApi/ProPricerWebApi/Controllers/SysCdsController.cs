@@ -7,77 +7,80 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-using System.Linq;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.ProPricer.Model;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    public class SysCdsController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System.Collections.Generic;
+	using System.Linq;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public SysCdsController(ILogger<SysCdsController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Controller for SysCds
+	/// </summary>
+	public class SysCdsController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/syscds
-        /// <summary>
-        /// Returns the list of SysCds in the instance of PROPRICER.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <returns>
-        /// Returns a collection of SysCds from the instance of PROPRICER.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<SysCdsDto> Get(int instanceId)
-        {
-            List<SysCdsDto> sysCds = new();
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                if (ppc.Workspace != null)
-                {
-                    ppc.Workspace.Open();
-                    ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Open();
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public SysCdsController(ILogger<SysCdsController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-                    foreach (TitleTable rsd in ppc.Workspace.GlobalLibrary.TitleTables.Items())
-                    {
-                        if (rsd.Name == "F35 System Code")
-                        {
-                            rsd.Open();
-                            foreach (Title sysCd in rsd.Elements.Items())
-                            {
-                                SysCdsDto sysCdDto = new()
-                                {
-                                    Name = sysCd.Name,
-                                    Description = sysCd.Description
-                                };
-                                sysCds.Add(sysCdDto);
-                            }
+		// GET api/syscds
+		/// <summary>
+		/// Returns the list of SysCds in the instance of PROPRICER.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <returns>
+		/// Returns a collection of SysCds from the instance of PROPRICER.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<SysCdsDto> Get(int instanceId)
+		{
+			List<SysCdsDto> sysCds = new();
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				if (ppc.Workspace != null)
+				{
+					ppc.Workspace.Open();
+					ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Open();
 
-                            rsd.Close();
-                        }
-                    }
+					foreach (TitleTable rsd in ppc.Workspace.GlobalLibrary.TitleTables.Items())
+					{
+						if (rsd.Name == "F35 System Code")
+						{
+							rsd.Open();
+							foreach (Title sysCd in rsd.Elements.Items())
+							{
+								SysCdsDto sysCdDto = new()
+								{
+									Name = sysCd.Name,
+									Description = sysCd.Description
+								};
+								sysCds.Add(sysCdDto);
+							}
 
-                    ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Close();
-                    ppc.Workspace.Close();
-                }
-            }
+							rsd.Close();
+						}
+					}
 
-            IEnumerable<SysCdsDto> ordered = sysCds.OrderBy(sysCdList => sysCdList.Name);
+					ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Close();
+					ppc.Workspace.Close();
+				}
+			}
 
-            return ordered;
-        }
-    }
+			IEnumerable<SysCdsDto> ordered = sysCds.OrderBy(sysCdList => sysCdList.Name);
+
+			return ordered;
+		}
+	}
 }

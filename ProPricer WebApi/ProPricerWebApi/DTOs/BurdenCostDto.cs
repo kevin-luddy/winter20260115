@@ -9,9 +9,19 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class BurdenCostDto
-    {
-        public string Name { get; set; }
-        public string Value { get; set; }
-    }
+	/// <summary>
+	/// The Burden Cost 
+	/// </summary>
+	public class BurdenCostDto
+	{
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Value
+		/// </summary>
+		public string Value { get; set; }
+	}
 }

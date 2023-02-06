@@ -9,9 +9,19 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class TitleTablesDto
-    {
-        public string Name { get; set; }
-        public string Description { get; set; }
-    }
+	/// <summary>
+	/// DTO for Title Tables
+	/// </summary>
+	public class TitleTablesDto
+	{
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+	}
 }

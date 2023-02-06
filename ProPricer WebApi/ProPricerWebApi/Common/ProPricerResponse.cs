@@ -9,26 +9,26 @@
 
 namespace APTSPropricerApi.Common
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    /// <summary>
-    /// A Pro Pricer Response
-    /// </summary>
-    public class ProPricerResponse<T>
-    {
-        /// <summary>
-        /// True if the request succeeded, false otherwise.
-        /// </summary>
-        public bool IsSuccessful { get; set; }
+	/// <summary>
+	/// A Pro Pricer Response
+	/// </summary>
+	public class ProPricerResponse<T>
+	{
+		/// <summary>
+		/// True if the request succeeded, false otherwise.
+		/// </summary>
+		public bool IsSuccessful { get; set; }
 
-        /// <summary>
-        /// Error or other informational messages
-        /// </summary>
-        public ICollection<string> Messages { get; set; } = new List<string>();
+		/// <summary>
+		/// Error or other informational messages
+		/// </summary>
+		public ICollection<string> Messages { get; set; } = new List<string>();
 
-        /// <summary>
-        /// Data meeting the request criteria
-        /// </summary>
-        public T Data { get; set; } 
-    }
+		/// <summary>
+		/// Data meeting the request criteria
+		/// </summary>
+		public T Data { get; set; }
+	}
 }

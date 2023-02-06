@@ -9,11 +9,29 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class RolesDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string ProposalAccess { get; set; }
-    }
+	/// <summary>
+	/// Pro Pricer Roles
+	/// </summary>
+	public class RolesDto
+	{
+		/// <summary>
+		/// Gets or Sets the Id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Proposal Access
+		/// </summary>
+		public string ProposalAccess { get; set; }
+	}
 }

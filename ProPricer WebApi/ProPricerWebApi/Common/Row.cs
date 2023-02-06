@@ -9,16 +9,16 @@
 
 namespace APTSPropricerApi.Common
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    /// <summary>
-    /// A row inside of a Table
-    /// </summary>
-    public class Row
-    {
-        /// <summary>
-        /// Gets or sets the Cells of a Row
-        /// </summary>
-        public ICollection<string> Cells { get; set; } = new List<string>();
-    }
+	/// <summary>
+	/// A row inside of a Table
+	/// </summary>
+	public class Row
+	{
+		/// <summary>
+		/// Gets or sets the Cells of a Row
+		/// </summary>
+		public ICollection<string> Cells { get; set; } = new List<string>();
+	}
 }

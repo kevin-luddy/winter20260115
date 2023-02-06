@@ -7,82 +7,82 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.ProPricer.Model;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class FactorRateTablesController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System.Collections.Generic;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public FactorRateTablesController(ILogger<FactorRateTablesController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// 
+	/// </summary>
+	public class FactorRateTablesController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/factorratetables
-        /// <summary>
-        /// Returns the list of factor rate tables from the PROPRICER global library.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <returns>
-        /// A collection of factor rate tables.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<FactorRateTableDto> Get(int instanceId)
-        {
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                //ppc.workspace.GlobalLibrary.FactorRateTables.Open();
-                //IEnumerable<FactorRateTableDto> factorsResult =
-                //    from prop in ppc.workspace.GlobalLibrary.FactorRateTables.Cast<FactorRateTable>()
-                //    select new FactorRateTableDto
-                //    {
-                //        id = prop.Id.ToString(),
-                //        name = prop.Name,
-                //        description = prop.Description,
-                //        parentFolder = prop.ParentFolder.Name,
-                //        isCurrent = prop.IsCurrent
-                //    };
-                //ppc.workspace.GlobalLibrary.FactorRateTables.Close();
-                //return factorsResult;
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public FactorRateTablesController(ILogger<FactorRateTablesController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-                List<FactorRateTableDto> factors = new();
-                ppc.Workspace.GlobalLibrary.FactorRateTables.Open();
-                foreach (FactorRateTable ppFactor in ppc.Workspace.GlobalLibrary.FactorRateTables.Items())
-                {
-                    FactorRateTableDto factorTbl = new()
-                    {
-                        Id = ppFactor.Id.ToString(),
-                        Name = ppFactor.Name,
-                        Description = ppFactor.Description
-                    };
-                    if (ppFactor.ParentFolder != null)
-                    {
-                        factorTbl.ParentFolder = ppFactor.ParentFolder.Name;
-                    }
+		// GET api/factorratetables
+		/// <summary>
+		/// Returns the list of factor rate tables from the PROPRICER global library.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <returns>
+		/// A collection of factor rate tables.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<FactorRateTableDto> Get(int instanceId)
+		{
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				//ppc.workspace.GlobalLibrary.FactorRateTables.Open();
+				//IEnumerable<FactorRateTableDto> factorsResult =
+				//    from prop in ppc.workspace.GlobalLibrary.FactorRateTables.Cast<FactorRateTable>()
+				//    select new FactorRateTableDto
+				//    {
+				//        id = prop.Id.ToString(),
+				//        name = prop.Name,
+				//        description = prop.Description,
+				//        parentFolder = prop.ParentFolder.Name,
+				//        isCurrent = prop.IsCurrent
+				//    };
+				//ppc.workspace.GlobalLibrary.FactorRateTables.Close();
+				//return factorsResult;
 
-                    factorTbl.IsCurrent = ppFactor.IsCurrent;
-                    factors.Add(factorTbl);
-                }
+				List<FactorRateTableDto> factors = new();
+				ppc.Workspace.GlobalLibrary.FactorRateTables.Open();
+				foreach (FactorRateTable ppFactor in ppc.Workspace.GlobalLibrary.FactorRateTables.Items())
+				{
+					FactorRateTableDto factorTbl = new()
+					{
+						Id = ppFactor.Id.ToString(),
+						Name = ppFactor.Name,
+						Description = ppFactor.Description
+					};
+					if (ppFactor.ParentFolder != null)
+					{
+						factorTbl.ParentFolder = ppFactor.ParentFolder.Name;
+					}
 
-                ppc.Workspace.GlobalLibrary.FactorRateTables.Close();
-                return factors;
-            }
-        }
-    }
+					factorTbl.IsCurrent = ppFactor.IsCurrent;
+					factors.Add(factorTbl);
+				}
+
+				ppc.Workspace.GlobalLibrary.FactorRateTables.Close();
+				return factors;
+			}
+		}
+	}
 }

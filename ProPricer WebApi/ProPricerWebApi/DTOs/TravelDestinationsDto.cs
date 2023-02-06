@@ -9,13 +9,24 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Data Transfer Object for Travel Destinations
-    /// </summary>
-    public class TravelDestinationsDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-    }
+	/// <summary>
+	/// Data Transfer Object for Travel Destinations
+	/// </summary>
+	public class TravelDestinationsDto
+	{
+		/// <summary>
+		/// Gets or Sets the id
+		/// </summary>
+		public String Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the name
+		/// </summary>
+		public String Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+	}
 }

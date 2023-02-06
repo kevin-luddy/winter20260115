@@ -9,8 +9,8 @@
 
 namespace APTSPropricerApi.Controllers
 {
-    using System.Linq;
-    using APTSPropricerApi.Connection;
+	using System.Linq;
+	using APTSPropricerApi.Connection;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
@@ -18,14 +18,13 @@ namespace APTSPropricerApi.Controllers
 	/// Health Check Controller for Pro Pricer API
 	/// </summary>
 	[AllowAnonymous]
-    // [APTSPropricerApi.HandleError]
 	[ApiController]
 	public class HealthCheckController : ControllerBase
 	{
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
 		/// <summary>
 		/// #ctor
@@ -42,24 +41,24 @@ namespace APTSPropricerApi.Controllers
 		[HttpGet]
 		[Route("api/HealthCheck/IsAlive")]
 		public bool IsAlive()
-        {
-            bool result = false;
+		{
+			bool result = false;
 
-            try
-            {
-                // Check Pro pricer connection pool to see if there are any and that all are active
-                if (poolManagerList.Instances != null && poolManagerList.Instances.Count > 0 &&
+			try
+			{
+				// Check Pro pricer connection pool to see if there are any and that all are active
+				if (poolManagerList.Instances != null && poolManagerList.Instances.Count > 0 &&
 					poolManagerList.Instances.All(m => m.CurrentObjectsInPool > 0))
-                {
-                    result = true;
-                }
-            }
-            catch
-            {
-                result = false;
-            }
+				{
+					result = true;
+				}
+			}
+			catch
+			{
+				result = false;
+			}
 
-            return result;
-        }
-    }
+			return result;
+		}
+	}
 }

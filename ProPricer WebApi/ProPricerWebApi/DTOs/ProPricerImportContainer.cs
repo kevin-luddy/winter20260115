@@ -9,29 +9,29 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Container class for a ProPricer Direct Import
-    /// </summary>
-    public class ProPricerImportContainer
-    {
-        /// <summary>
-        /// Gets or sets the task data.
-        /// </summary>
-        public string taskData { get; set; }
+	/// <summary>
+	/// Container class for a ProPricer Direct Import
+	/// </summary>
+	public class ProPricerImportContainer
+	{
+		/// <summary>
+		/// Gets or sets the task data.
+		/// </summary>
+		public string taskData { get; set; }
 
-        /// <summary>
-        /// Gets or sets the task export option.
-        /// </summary>
-        public ProPricerExportOption taskExportOption { get; set; }
+		/// <summary>
+		/// Gets or sets the task export option.
+		/// </summary>
+		public ProPricerExportOption taskExportOption { get; set; }
 
-        /// <summary>
-        /// Gets or sets the resource data.
-        /// </summary>
-        public string resourceData { get; set; }
+		/// <summary>
+		/// Gets or sets the resource data.
+		/// </summary>
+		public string resourceData { get; set; }
 
-        /// <summary>
-        /// Gets or sets the resource export option.
-        /// </summary>
-        public ProPricerExportOption resourceExportOption { get; set; }
-    }
+		/// <summary>
+		/// Gets or sets the resource export option.
+		/// </summary>
+		public ProPricerExportOption resourceExportOption { get; set; }
+	}
 }

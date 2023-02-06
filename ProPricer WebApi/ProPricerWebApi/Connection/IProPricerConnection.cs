@@ -7,13 +7,19 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System;
-using EBS.ProPricer.Model;
-
 namespace APTSPropricerApi.Connection
 {
-    public interface IProPricerConnection : IDisposable
-    {
-        Workspace Workspace { get; set; }
-    }
+	using System;
+	using EBS.ProPricer.Model;
+
+	/// <summary>
+	/// Interface for a Pro Pricer Connection
+	/// </summary>
+	public interface IProPricerConnection : IDisposable
+	{
+		/// <summary>
+		/// Gets or sets the Workspace
+		/// </summary>
+		Workspace Workspace { get; set; }
+	}
 }

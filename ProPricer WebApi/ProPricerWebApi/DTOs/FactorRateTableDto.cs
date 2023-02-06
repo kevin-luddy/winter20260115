@@ -9,12 +9,35 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class FactorRateTableDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string ParentFolder { get; set; }
-        public bool IsCurrent { get; set; }
-    }
+
+	/// <summary>
+	/// Houses the Factor Rate Table
+	/// </summary>
+	public class FactorRateTableDto
+	{
+		/// <summary>
+		/// Gets or Sets the Id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Parent Folder 
+		/// </summary>
+		public string ParentFolder { get; set; }
+
+		/// <summary>
+		/// Gets or Sets whether this is current
+		/// </summary>
+		public bool IsCurrent { get; set; }
+	}
 }

@@ -9,19 +9,19 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Container class for a ProPricer Direct Export
-    /// </summary>
-    public class ProPricerExportContainer
-    {
-        /// <summary>
-        /// Gets or sets the proposal id.
-        /// </summary>
-        public string proposalId { get; set; }
+	/// <summary>
+	/// Container class for a ProPricer Direct Export
+	/// </summary>
+	public class ProPricerExportContainer
+	{
+		/// <summary>
+		/// Gets or sets the proposal id.
+		/// </summary>
+		public string proposalId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the batch report id.
-        /// </summary>
-        public string batchReportId { get; set; }
-    }
+		/// <summary>
+		/// Gets or sets the batch report id.
+		/// </summary>
+		public string batchReportId { get; set; }
+	}
 }

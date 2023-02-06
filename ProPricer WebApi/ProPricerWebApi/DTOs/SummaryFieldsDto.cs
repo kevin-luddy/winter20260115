@@ -9,12 +9,19 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Incomplete Data Transfer Object for Tasks
-    /// </summary>
-    public class SummaryFieldsDto
-    {
-        public string Key { get; set; }
-        public string Value { get; set; }
-    }
+	/// <summary>
+	/// Incomplete Data Transfer Object for Tasks
+	/// </summary>
+	public class SummaryFieldsDto
+	{
+		/// <summary>
+		/// Gets or sets the Key
+		/// </summary>
+		public string Key { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Value
+		/// </summary>
+		public string Value { get; set; }
+	}
 }

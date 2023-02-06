@@ -7,22 +7,23 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
-
 namespace APTSPropricerApi.Controllers
 {
-	// [APTSPropricerApi.HandleError]
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using Microsoft.AspNetCore.Mvc;
+
+	/// <summary>
+	/// Pool Debug Controller
+	/// </summary>
 	[ApiController]
 	[Route("api/[controller]")]
 	public class PoolDebugController : ControllerBase
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
 		/// <summary>
 		/// #ctor
@@ -32,34 +33,34 @@ namespace APTSPropricerApi.Controllers
 			this.poolManagerList = poolManagerList;
 		}
 
-        // use PoolDebug.html
-        /// <summary>
-        /// Returns the list of pools and if they are in use.
-        /// </summary>
-        /// /// <returns>Returns a collection of pools.</returns>
-        [Route("{instanceId}")]
-        [HttpGet]
+		// use PoolDebug.html
+		/// <summary>
+		/// Returns the list of pools and if they are in use.
+		/// </summary>
+		/// /// <returns>Returns a collection of pools.</returns>
+		[Route("{instanceId}")]
+		[HttpGet]
 		public IEnumerable<PoolDebugDto> Get(int instanceId)
-        {
-            List<PoolDebugDto> poollist = new();
-            foreach (PoolManager poolManager in poolManagerList.Instances)
-            {
-                int maxpool = poolManager.CurrentObjectsInPool;
+		{
+			List<PoolDebugDto> poollist = new();
+			foreach (PoolManager poolManager in poolManagerList.Instances)
+			{
+				int maxpool = poolManager.CurrentObjectsInPool;
 
-                for (int i = 0; i < maxpool; i++)
-                {
-                    PoolDebugDto pool = new()
-                    {
-                        InstanceId = poolManager.InstanceId.ToString(),
-                        PoolMaxNum = maxpool.ToString(),
-                        PoolNum = (i + 1).ToString(),
-                        PoolInUse = poolManager.IsPoolInUse(i).ToString()
-                    };
-                    poollist.Add(pool);
-                }
-            }
+				for (int i = 0; i < maxpool; i++)
+				{
+					PoolDebugDto pool = new()
+					{
+						InstanceId = poolManager.InstanceId.ToString(),
+						PoolMaxNum = maxpool.ToString(),
+						PoolNum = (i + 1).ToString(),
+						PoolInUse = poolManager.IsPoolInUse(i).ToString()
+					};
+					poollist.Add(pool);
+				}
+			}
 
-            return poollist;
-        }
-    }
+			return poollist;
+		}
+	}
 }

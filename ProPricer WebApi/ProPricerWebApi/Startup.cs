@@ -9,7 +9,6 @@ namespace APTSPropricerApi
 	using ACV.Shared;
 	using ACV.Shared.Models;
 	using APTSPropricerApi.Connection;
-	using Microsoft.AspNetCore.Authentication.JwtBearer;
 	using Microsoft.AspNetCore.Builder;
 	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Http;
@@ -36,7 +35,7 @@ namespace APTSPropricerApi
 		public Startup(IWebHostEnvironment env)
 		{
 			this.configurationService = new();
-            ConfigurationServiceBase.BuildConfiguration<Startup>(env);
+			ConfigurationServiceBase.BuildConfiguration<Startup>(env);
 		}
 
 		/// <summary>
@@ -47,21 +46,21 @@ namespace APTSPropricerApi
 		public void ConfigureServices(IServiceCollection services)
 		{
 			configurationService.ConfigureBasics(services);
-			
+
 			services.AddHttpContextAccessor();
 			services.AddTransient<IPrincipal>(
 				provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
 			services.AddSingleton<PoolManagerList>();
-            
+
 			configurationService.AddMultiAuthentication(services);
 
-            services.AddControllers(options =>
-            {
-                options.Filters.Add<HttpResponseExceptionFilter>();
-            }).AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-            //services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(opt =>
+			services.AddControllers(options =>
+			{
+				options.Filters.Add<HttpResponseExceptionFilter>();
+			}).AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+			services.AddSwaggerGen(opt =>
 			{
 				opt.SwaggerDoc("v1", new OpenApiInfo { Title = "ProPricer API", Version = $"v{ConfigurationServiceBase.Configuration["APPLICATION_VERSION"]}" });
 
@@ -73,7 +72,7 @@ namespace APTSPropricerApi
 					In = ParameterLocation.Header,
 					Type = SecuritySchemeType.ApiKey,
 					Scheme = Constants.IES_TOKEN_SCHEME,
-                    BearerFormat = "JWT",
+					BearerFormat = "JWT",
 					Reference = new OpenApiReference
 					{
 						Id = Constants.IES_TOKEN_SCHEME,
@@ -140,18 +139,5 @@ namespace APTSPropricerApi
 				System.Diagnostics.Debug.WriteLine(ex.ToString());
 			}
 		}
-
-		///// <summary>
-		///// Gets a configured HttpClient from the IServiceProvider for DI
-		///// </summary>
-		///// <param name="sp">Service Provider</param>
-		///// <returns>Configured HttpClient</returns>
-		//private static HttpClient GetHttpClient(IServiceProvider sp)
-		//{
-		//	HttpClient client = sp.GetRequiredService<HttpClient>();
-		//	client.Timeout = ACV.Common.Constants.HTTP_CLIENT_TIMEOUT_TIMESPAN;
-
-		//	return client;
-		//}
 	}
 }

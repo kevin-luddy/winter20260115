@@ -7,501 +7,504 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.Core;
-using EBS.ProPricer.Data;
-using EBS.ProPricer.Model;
-using EBS.ProPricer.Model.General;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    public class SummaryFieldDefinitionsController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.Core;
+	using EBS.ProPricer.Data;
+	using EBS.ProPricer.Model;
+	using EBS.ProPricer.Model.General;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public SummaryFieldDefinitionsController(ILogger<SummaryFieldDefinitionsController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Controller for Summary Field Definitions
+	/// </summary>
+	public class SummaryFieldDefinitionsController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        //// GET api/SummaryFieldDefinitions
-        ///// <summary>
-        ///// Returns the list of SummaryFieldDefinitions in the instance of PROPRICER.
-        ///// </summary>
-        ///// <param name="instanceId">The instance identifier.</param>
-        ///// <returns>
-        ///// Returns a collection of summary field definitions from the instance of PROPRICER.
-        ///// </returns>
-        //public IEnumerable<SummaryFieldDefinitionsDto> Get(int instanceId)
-        //{
-        //    List<SummaryFieldDefinitionsDto> sfdl = new List<SummaryFieldDefinitionsDto>();
-        //    using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-        //    {
-        //        if (ppc.Workspace != null)
-        //        {                    
-        //            ppc.Workspace.summary.ProposalUserFieldDefinitions.ProposalDefaults.SummaryFieldDefinitions.Open();
-        //            foreach (SummaryFieldDefinition sfd in ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Items())
-        //            {
-        //                SummaryFieldDefinitionsDto sfddto = new SummaryFieldDefinitionsDto
-        //                {
-        //                    Id = sfd.Id.ToString(),
-        //                    Name = sfd.Name,
-        //                    DataType = sfd.DataType.ToString(),
-        //                    MaxLength = sfd.MaxLength,
-        //                    SortType = sfd.SortType.ToString(),
-        //                    Required = sfd.Required
-        //                };
-        //                if (sfddto.DataType == "List")
-        //                {
-        //                    List<SummaryFieldListDto> sflist = new List<SummaryFieldListDto>();
-        //                    foreach (SummaryFieldStandardValue sf in sfd.ValueList.Items())
-        //                    {
-        //                        SummaryFieldListDto sfdto = new SummaryFieldListDto
-        //                        {
-        //                            Value = sf.Value,
-        //                            Description = sf.Description
-        //                        };
-        //                        sflist.Add(sfdto);
-        //                    }
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public SummaryFieldDefinitionsController(ILogger<SummaryFieldDefinitionsController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-        //                    sfddto.ValueList = sflist;
-        //                }
+		////// GET api/SummaryFieldDefinitions
+		/////// <summary>
+		/////// Returns the list of SummaryFieldDefinitions in the instance of PROPRICER.
+		/////// </summary>
+		/////// <param name="instanceId">The instance identifier.</param>
+		/////// <returns>
+		/////// Returns a collection of summary field definitions from the instance of PROPRICER.
+		/////// </returns>
+		////public IEnumerable<SummaryFieldDefinitionsDto> Get(int instanceId)
+		////{
+		////    List<SummaryFieldDefinitionsDto> sfdl = new List<SummaryFieldDefinitionsDto>();
+		////    using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+		////    {
+		////        if (ppc.Workspace != null)
+		////        {                    
+		////            ppc.Workspace.summary.ProposalUserFieldDefinitions.ProposalDefaults.SummaryFieldDefinitions.Open();
+		////            foreach (SummaryFieldDefinition sfd in ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Items())
+		////            {
+		////                SummaryFieldDefinitionsDto sfddto = new SummaryFieldDefinitionsDto
+		////                {
+		////                    Id = sfd.Id.ToString(),
+		////                    Name = sfd.Name,
+		////                    DataType = sfd.DataType.ToString(),
+		////                    MaxLength = sfd.MaxLength,
+		////                    SortType = sfd.SortType.ToString(),
+		////                    Required = sfd.Required
+		////                };
+		////                if (sfddto.DataType == "List")
+		////                {
+		////                    List<SummaryFieldListDto> sflist = new List<SummaryFieldListDto>();
+		////                    foreach (SummaryFieldStandardValue sf in sfd.ValueList.Items())
+		////                    {
+		////                        SummaryFieldListDto sfdto = new SummaryFieldListDto
+		////                        {
+		////                            Value = sf.Value,
+		////                            Description = sf.Description
+		////                        };
+		////                        sflist.Add(sfdto);
+		////                    }
 
-        //                sfdl.Add(sfddto);
-        //            }
+		////                    sfddto.ValueList = sflist;
+		////                }
 
-        //            ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Close();
-        //        }
-        //    }
-        //    return sfdl;
-        //}
+		////                sfdl.Add(sfddto);
+		////            }
 
-        // GET api/SummaryFieldDefinitions/instanceId/id
-        /// <summary>
-        /// Returns the list of SummaryFieldDefinitions in the given proposal.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="id">The EntityId of the proposal to obtain the summary field definitions. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
-        /// <returns>
-        /// Returns a collection of summary field definitions from the proposal.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}/{id}")]
-        public IEnumerable<SummaryFieldDefinitionsDto> Get(int instanceId, string id)
-        {
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                Proposal pr;
+		////            ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Close();
+		////        }
+		////    }
+		////    return sfdl;
+		////}
 
-                // GUID or Name|Version?
-                if (id.Contains('|'))
-                {
-                    // Name
-                    string[] parts = id.Split('|');
-                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
-                }
-                else
-                {
-                    // GUID
-                    EntityId pEntityId = new(new Guid(id));
-                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
-                }
+		// GET api/SummaryFieldDefinitions/instanceId/id
+		/// <summary>
+		/// Returns the list of SummaryFieldDefinitions in the given proposal.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <param name="id">The EntityId of the proposal to obtain the summary field definitions. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
+		/// <returns>
+		/// Returns a collection of summary field definitions from the proposal.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}/{id}")]
+		public IEnumerable<SummaryFieldDefinitionsDto> Get(int instanceId, string id)
+		{
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				Proposal pr;
 
-                List<SummaryFieldDefinitionsDto> sfdl = new();
-                if (pr != null)
-                {
-                    pr.Open();
-                    pr.SummaryFieldDefinitions.Open();
-                    foreach (SummaryFieldDefinition sfd in pr.SummaryFieldDefinitions.Items())
-                    {
-                        SummaryFieldDefinitionsDto sfddto = new()
-                        {
-                            Id = sfd.Id.ToString(),
-                            Name = sfd.Name,
-                            DataType = sfd.DataType.ToString(),
-                            MaxLength = sfd.MaxLength,
-                            SortType = sfd.SortType.ToString()
-                        };
-                        try
-                        {
-                            sfddto.TitleTable = sfd.TitleTable != null ? sfd.TitleTable.Name : string.Empty;
-                            sfddto.Validate = sfd.Validate;
-                        }
-                        catch (Exception ex)
-                        {
-                            this.Logger.LogError(ex, "Error retrieving Field Definitions");
-                        }
+				// GUID or Name|Version?
+				if (id.Contains('|'))
+				{
+					// Name
+					string[] parts = id.Split('|');
+					pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
+				}
+				else
+				{
+					// GUID
+					EntityId pEntityId = new(new Guid(id));
+					pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
+				}
 
-                        sfddto.Required = sfd.Required;
+				List<SummaryFieldDefinitionsDto> sfdl = new();
+				if (pr != null)
+				{
+					pr.Open();
+					pr.SummaryFieldDefinitions.Open();
+					foreach (SummaryFieldDefinition sfd in pr.SummaryFieldDefinitions.Items())
+					{
+						SummaryFieldDefinitionsDto sfddto = new()
+						{
+							Id = sfd.Id.ToString(),
+							Name = sfd.Name,
+							DataType = sfd.DataType.ToString(),
+							MaxLength = sfd.MaxLength,
+							SortType = sfd.SortType.ToString()
+						};
+						try
+						{
+							sfddto.TitleTable = sfd.TitleTable != null ? sfd.TitleTable.Name : string.Empty;
+							sfddto.Validate = sfd.Validate;
+						}
+						catch (Exception ex)
+						{
+							this.Logger.LogError(ex, "Error retrieving Field Definitions");
+						}
 
-                        if (sfddto.DataType == "List")
-                        {
-                            List<SummaryFieldListDto> sflist = new();
-                            foreach (SummaryFieldStandardValue sf in sfd.ValueList.Items())
-                            {
-                                SummaryFieldListDto sfdto = new()
-                                {
-                                    Value = sf.Value,
-                                    Description = sf.Description
-                                };
-                                sflist.Add(sfdto);
-                            }
+						sfddto.Required = sfd.Required;
 
-                            sfddto.ValueList = sflist;
-                        }
+						if (sfddto.DataType == "List")
+						{
+							List<SummaryFieldListDto> sflist = new();
+							foreach (SummaryFieldStandardValue sf in sfd.ValueList.Items())
+							{
+								SummaryFieldListDto sfdto = new()
+								{
+									Value = sf.Value,
+									Description = sf.Description
+								};
+								sflist.Add(sfdto);
+							}
 
-                        sfdl.Add(sfddto);
-                    }
+							sfddto.ValueList = sflist;
+						}
 
-                    pr.SummaryFieldDefinitions.Close();
-                    pr.Close();
-                }
+						sfdl.Add(sfddto);
+					}
 
-                return sfdl;
-            }
-        }
+					pr.SummaryFieldDefinitions.Close();
+					pr.Close();
+				}
 
-        // POST api/SummaryFieldDefinitions/proposalAndSummaryFields
-        /// <summary>
-        /// Adds the list of SummaryFieldDefinitions for a proposal using ProposalDto.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
-        [HttpPost]
-        [Route("{instanceId}")]
-        public void Post(int instanceId, [FromBody] ProposalDto proposalAndSummaryFields)
-        {
-            if (proposalAndSummaryFields == null)
-            {
-                return;
-            }
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                //   Delete(proposalAndSummaryFields);
-                Proposal ppProposal = null;
-                try
-                {
-                    EntityId pEntityId = new(new Guid(proposalAndSummaryFields.Id));
-                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
+				return sfdl;
+			}
+		}
 
-                    //lock the proposal for modification.
-                    ppProposal.Open();
-                    ppProposal.BeginEdit();
+		// POST api/SummaryFieldDefinitions/proposalAndSummaryFields
+		/// <summary>
+		/// Adds the list of SummaryFieldDefinitions for a proposal using ProposalDto.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
+		[HttpPost]
+		[Route("{instanceId}")]
+		public void Post(int instanceId, [FromBody] ProposalDto proposalAndSummaryFields)
+		{
+			if (proposalAndSummaryFields == null)
+			{
+				return;
+			}
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				////   Delete(proposalAndSummaryFields);
+				Proposal ppProposal = null;
+				try
+				{
+					EntityId pEntityId = new(new Guid(proposalAndSummaryFields.Id));
+					ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
-                    this.AddSumFieldDefs(ppc, ppProposal, proposalAndSummaryFields);
+					//lock the proposal for modification.
+					ppProposal.Open();
+					ppProposal.BeginEdit();
 
-                    //End edits and release the record
-                    ppProposal.EndEdit();
+					this.AddSumFieldDefs(ppc, ppProposal, proposalAndSummaryFields);
 
-                    //Close the proposal
-                    ppProposal.Close();
-                }
-                //exception block to catch any broken rules relating to the API business logic
-                catch (BOBrokenRulesException ex)
-                {
-                    this.Logger.LogError(ex, "Error Posting broken rules");
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                    if (ppProposal != null && ppProposal.IsEditing())
-                    {
-                        ppProposal.EndEdit();
-                    }
+					//End edits and release the record
+					ppProposal.EndEdit();
 
-                    if (ppProposal != null && ppProposal.IsOpened())
-                    {
-                        ppProposal.Close();
-                    }
-                }
-                //exception block to catch any other issues with the data
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex, "Error posting Summary Fields");
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                    if (ppProposal != null && ppProposal.IsEditing())
-                    {
-                        ppProposal.EndEdit();
-                    }
+					//Close the proposal
+					ppProposal.Close();
+				}
+				//exception block to catch any broken rules relating to the API business logic
+				catch (BOBrokenRulesException ex)
+				{
+					this.Logger.LogError(ex, "Error Posting broken rules");
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+					if (ppProposal != null && ppProposal.IsEditing())
+					{
+						ppProposal.EndEdit();
+					}
 
-                    if (ppProposal != null && ppProposal.IsOpened())
-                    {
-                        ppProposal.Close();
-                    }
-                }
-            }
-        }
+					if (ppProposal != null && ppProposal.IsOpened())
+					{
+						ppProposal.Close();
+					}
+				}
+				//exception block to catch any other issues with the data
+				catch (Exception ex)
+				{
+					this.Logger.LogError(ex, "Error posting Summary Fields");
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+					if (ppProposal != null && ppProposal.IsEditing())
+					{
+						ppProposal.EndEdit();
+					}
 
-        // Put api/SummaryFieldDefinitions/proposalAndSummaryFields
-        /// <summary>
-        /// Updates the list of SummaryFieldDefinitions for a proposal using ProposalDto.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
-        [HttpPut]
-        [Route("{instanceId}")]
-        public void Put(int instanceId, [FromBody] ProposalDto proposalAndSummaryFields)
-        {
-            if (proposalAndSummaryFields == null)
-            {
-                return;
-            }
+					if (ppProposal != null && ppProposal.IsOpened())
+					{
+						ppProposal.Close();
+					}
+				}
+			}
+		}
 
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                Proposal ppProposal = null;
-                try
-                {
-                    EntityId pEntityId = new(new Guid(proposalAndSummaryFields.Id));
-                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
+		// Put api/SummaryFieldDefinitions/proposalAndSummaryFields
+		/// <summary>
+		/// Updates the list of SummaryFieldDefinitions for a proposal using ProposalDto.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
+		[HttpPut]
+		[Route("{instanceId}")]
+		public void Put(int instanceId, [FromBody] ProposalDto proposalAndSummaryFields)
+		{
+			if (proposalAndSummaryFields == null)
+			{
+				return;
+			}
 
-                    //lock the proposal for modification.
-                    ppProposal.Open();
-                    ppProposal.BeginEdit();
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				Proposal ppProposal = null;
+				try
+				{
+					EntityId pEntityId = new(new Guid(proposalAndSummaryFields.Id));
+					ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
-                    foreach (SummaryFieldDefinitionsDto sfddto in proposalAndSummaryFields.SumFieldDefs)
-                    {
-                        this.UpdateSumFieldDef(ppProposal, sfddto);
-                    }
+					//lock the proposal for modification.
+					ppProposal.Open();
+					ppProposal.BeginEdit();
 
-                    //End edits and release the record
-                    ppProposal.EndEdit();
+					foreach (SummaryFieldDefinitionsDto sfddto in proposalAndSummaryFields.SumFieldDefs)
+					{
+						this.UpdateSumFieldDef(ppProposal, sfddto);
+					}
 
-                    //Close the proposal
-                    ppProposal.Close();
-                }
-                //exception block to catch any broken rules relating to the API business logic
-                catch (BOBrokenRulesException ex)
-                {
-                    this.Logger.LogError(ex, "Error Putting Field Definitions with broken rules");
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                    if (ppProposal.IsEditing())
-                    {
-                        ppProposal.EndEdit();
-                    }
+					//End edits and release the record
+					ppProposal.EndEdit();
 
-                    if (ppProposal.IsOpened())
-                    {
-                        ppProposal.Close();
-                    }
-                }
-                //exception block to catch any other issues with the data
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex, "Error Putting Field Definitions");
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                    if (ppProposal.IsEditing())
-                    {
-                        ppProposal.EndEdit();
-                    }
+					//Close the proposal
+					ppProposal.Close();
+				}
+				//exception block to catch any broken rules relating to the API business logic
+				catch (BOBrokenRulesException ex)
+				{
+					this.Logger.LogError(ex, "Error Putting Field Definitions with broken rules");
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+					if (ppProposal.IsEditing())
+					{
+						ppProposal.EndEdit();
+					}
 
-                    if (ppProposal.IsOpened())
-                    {
-                        ppProposal.Close();
-                    }
-                }
-            }
-        }
+					if (ppProposal.IsOpened())
+					{
+						ppProposal.Close();
+					}
+				}
+				//exception block to catch any other issues with the data
+				catch (Exception ex)
+				{
+					this.Logger.LogError(ex, "Error Putting Field Definitions");
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+					if (ppProposal.IsEditing())
+					{
+						ppProposal.EndEdit();
+					}
 
-        // Delete api/SummaryFieldDefinitions/proposalAndSummaryFields
-        /// <summary>
-        /// Deletes the given list of SummaryFieldDefinitions for a proposal using ProposalDto.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
-        [HttpDelete]
-        [Route("{instanceId}")]
-        public void Delete(int instanceId, [FromBody] ProposalDto proposalAndSummaryFields)
-        {
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                Proposal ppProposal = null;
-                try
-                {
-                    EntityId pEntityId = new(new Guid(proposalAndSummaryFields.Id));
-                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
+					if (ppProposal.IsOpened())
+					{
+						ppProposal.Close();
+					}
+				}
+			}
+		}
 
-                    //lock the proposal for modification.
-                    ppProposal.Open();
-                    ppProposal.BeginEdit();
+		// Delete api/SummaryFieldDefinitions/proposalAndSummaryFields
+		/// <summary>
+		/// Deletes the given list of SummaryFieldDefinitions for a proposal using ProposalDto.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
+		[HttpDelete]
+		[Route("{instanceId}")]
+		public void Delete(int instanceId, [FromBody] ProposalDto proposalAndSummaryFields)
+		{
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				Proposal ppProposal = null;
+				try
+				{
+					EntityId pEntityId = new(new Guid(proposalAndSummaryFields.Id));
+					ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
-                    foreach (SummaryFieldDefinitionsDto sfddto in proposalAndSummaryFields.SumFieldDefs)
-                    {
-                        foreach (SummaryFieldDefinition sfd in ppProposal.SummaryFieldDefinitions.Items())
-                        {
-                            if (sfd.Id.ToString() == sfddto.Id)
-                            {
-                                //  EBS.Core.Optional <SummaryFieldDefinition> sfd2 = ppProposal.SummaryFieldDefinitions.Find(sfddto.id);
-                                //   sfd.BeginEdit();
-                                // ppProposal.SummaryFieldDefinitions.Delete(ppProposal.SummaryFieldDefinitions.IndexOf(sfddto.Id));
-                                sfd.Delete();
-                                //    sfd.EndEdit();
-                                break; //or loop will crash
-                            }
-                        }
-                    }
+					//lock the proposal for modification.
+					ppProposal.Open();
+					ppProposal.BeginEdit();
 
-                    //End edits and release the record
-                    ppProposal.EndEdit();
+					foreach (SummaryFieldDefinitionsDto sfddto in proposalAndSummaryFields.SumFieldDefs)
+					{
+						foreach (SummaryFieldDefinition sfd in ppProposal.SummaryFieldDefinitions.Items())
+						{
+							if (sfd.Id.ToString() == sfddto.Id)
+							{
+								////  EBS.Core.Optional <SummaryFieldDefinition> sfd2 = ppProposal.SummaryFieldDefinitions.Find(sfddto.id);
+								////   sfd.BeginEdit();
+								//// ppProposal.SummaryFieldDefinitions.Delete(ppProposal.SummaryFieldDefinitions.IndexOf(sfddto.Id));
+								sfd.Delete();
+								////    sfd.EndEdit();
+								break; //or loop will crash
+							}
+						}
+					}
 
-                    //Close the proposal
-                    ppProposal.Close();
-                }
-                //exception block to catch any issues with deleting
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex, "Error deleting Field Definitions");
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                    if (ppProposal.IsEditing())
-                    {
-                        ppProposal.EndEdit();
-                    }
+					//End edits and release the record
+					ppProposal.EndEdit();
 
-                    if (ppProposal.IsOpened())
-                    {
-                        ppProposal.Close();
-                    }
-                }
-            }
-        }
+					//Close the proposal
+					ppProposal.Close();
+				}
+				//exception block to catch any issues with deleting
+				catch (Exception ex)
+				{
+					this.Logger.LogError(ex, "Error deleting Field Definitions");
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+					if (ppProposal.IsEditing())
+					{
+						ppProposal.EndEdit();
+					}
 
-        // Delete api/SummaryFieldDefinitions/id
-        /// <summary>
-        /// Deletes all of the SummaryFieldDefinitions for a given proposal.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="id">The EntityId of the proposal to obtain the summary field definitions. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
-        [HttpDelete]
-        [Route("{instanceId}/{id}")]
-        public void Delete(int instanceId, string id)
-        {
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                Proposal pr;
+					if (ppProposal.IsOpened())
+					{
+						ppProposal.Close();
+					}
+				}
+			}
+		}
 
-                // GUID or Name|Version?
-                if (id.Contains('|'))
-                {
-                    // Name
-                    string[] parts = id.Split('|');
-                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
-                }
-                else
-                {
-                    // GUID
-                    EntityId pEntityId = new(new Guid(id));
-                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
-                }
+		// Delete api/SummaryFieldDefinitions/id
+		/// <summary>
+		/// Deletes all of the SummaryFieldDefinitions for a given proposal.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <param name="id">The EntityId of the proposal to obtain the summary field definitions. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
+		[HttpDelete]
+		[Route("{instanceId}/{id}")]
+		public void Delete(int instanceId, string id)
+		{
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				Proposal pr;
 
-                if (pr != null)
-                {
-                    try
-                    {
-                        pr.Open();
-                        pr.BeginEdit();
-                        pr.SummaryFieldDefinitions.DeleteAll();
-                        pr.EndEdit();
-                        pr.Close();
-                    }
-                    //exception block to catch any issues with deleting
-                    catch (Exception ex)
-                    {
-                        this.Logger.LogError(ex, "Error deleting Field Definitions");
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        if (pr.IsEditing())
-                        {
-                            pr.EndEdit();
-                        }
+				// GUID or Name|Version?
+				if (id.Contains('|'))
+				{
+					// Name
+					string[] parts = id.Split('|');
+					pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
+				}
+				else
+				{
+					// GUID
+					EntityId pEntityId = new(new Guid(id));
+					pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
+				}
 
-                        if (pr.IsOpened())
-                        {
-                            pr.Close();
-                        }
-                    }
-                }
-            }
-        }
+				if (pr != null)
+				{
+					try
+					{
+						pr.Open();
+						pr.BeginEdit();
+						pr.SummaryFieldDefinitions.DeleteAll();
+						pr.EndEdit();
+						pr.Close();
+					}
+					//exception block to catch any issues with deleting
+					catch (Exception ex)
+					{
+						this.Logger.LogError(ex, "Error deleting Field Definitions");
+						System.Diagnostics.Debug.WriteLine(ex.Message);
+						if (pr.IsEditing())
+						{
+							pr.EndEdit();
+						}
 
-        private void AddSumFieldDefs(IProPricerConnection ppc, Proposal proposal, ProposalDto proposalAndSummaryFields)
-        {
-            foreach (SummaryFieldDefinitionsDto sfddto in proposalAndSummaryFields.SumFieldDefs)
-            {
-                this.AddSumFieldDef(ppc, proposal, sfddto);
-            }
-        }
+						if (pr.IsOpened())
+						{
+							pr.Close();
+						}
+					}
+				}
+			}
+		}
 
-        private void AddSumFieldDef(IProPricerConnection ppc, Proposal proposal, SummaryFieldDefinitionsDto sfddto)
-        {
-            SummaryFieldDefinition sfd = proposal.SummaryFieldDefinitions.AddNew();
+		private void AddSumFieldDefs(IProPricerConnection ppc, Proposal proposal, ProposalDto proposalAndSummaryFields)
+		{
+			foreach (SummaryFieldDefinitionsDto sfddto in proposalAndSummaryFields.SumFieldDefs)
+			{
+				this.AddSumFieldDef(ppc, proposal, sfddto);
+			}
+		}
 
-            sfd.BeginEdit();
+		private void AddSumFieldDef(IProPricerConnection ppc, Proposal proposal, SummaryFieldDefinitionsDto sfddto)
+		{
+			SummaryFieldDefinition sfd = proposal.SummaryFieldDefinitions.AddNew();
 
-            try
-            {
-                sfd.Name = sfddto.Name;
+			sfd.BeginEdit();
 
-                sfd.MaxLength = sfddto.MaxLength;
+			try
+			{
+				sfd.Name = sfddto.Name;
 
-                Enum.TryParse(sfddto.SortType, out SummaryFieldSortType sst);
-                sfd.SortType = sst;
+				sfd.MaxLength = sfddto.MaxLength;
 
-                if (sfddto.TitleTable != null)
-                {
-                    Optional<TitleTable> tt = ppc.Workspace.GlobalLibrary.TitleTables.Find(sfddto.TitleTable);
-                    //   foreach (var trvdes in ppc.workspace.GlobalLibrary.TitleTables)
-                    //  {
-                    //       string what = trvdes.Name;
-                    //   }
-                    //   sfd.TitleTable.Open();
-                    //   sfd.TitleTable.BeginEdit();
-                    //   sfd.TitleTable.Name = sfddto.TitleTable;
-                    //   sfd.TitleTable.EndEdit(
-                    sfd.TitleTable = tt.Value; //.Name = sfddto.TitleTable;
-                }
+				Enum.TryParse(sfddto.SortType, out SummaryFieldSortType sst);
+				sfd.SortType = sst;
 
-                sfd.Validate = sfddto.Validate;
-                sfd.Required = sfddto.Required;
-                //   sfd.ValueList = sfddto.ValueList;
+				if (sfddto.TitleTable != null)
+				{
+					Optional<TitleTable> tt = ppc.Workspace.GlobalLibrary.TitleTables.Find(sfddto.TitleTable);
+					////   foreach (var trvdes in ppc.workspace.GlobalLibrary.TitleTables)
+					////  {
+					////       string what = trvdes.Name;
+					////   }
+					////   sfd.TitleTable.Open();
+					////   sfd.TitleTable.BeginEdit();
+					////   sfd.TitleTable.Name = sfddto.TitleTable;
+					////   sfd.TitleTable.EndEdit(
+					sfd.TitleTable = tt.Value; ////.Name = sfddto.TitleTable;
+				}
 
-                Enum.TryParse(sfddto.DataType, out SummaryFieldDataType sdt);
-                sfd.DataType = sdt;
-            }
+				sfd.Validate = sfddto.Validate;
+				sfd.Required = sfddto.Required;
+				////   sfd.ValueList = sfddto.ValueList;
 
-            catch (Exception ex)
-            {
-                this.Logger.LogError(ex, "Error adding summary field");
-                System.Diagnostics.Debug.WriteLine("Error adding summary field: " + ex.Message);
-            }
+				Enum.TryParse(sfddto.DataType, out SummaryFieldDataType sdt);
+				sfd.DataType = sdt;
+			}
 
-            sfd.EndEdit();
-        }
+			catch (Exception ex)
+			{
+				this.Logger.LogError(ex, "Error adding summary field");
+				System.Diagnostics.Debug.WriteLine("Error adding summary field: " + ex.Message);
+			}
 
-        private void UpdateSumFieldDef(Proposal proposal, SummaryFieldDefinitionsDto sfddto)
-        {
-            try
-            {
-                foreach (SummaryFieldDefinition sfd in proposal.SummaryFieldDefinitions.Items())
-                {
-                    if (sfd.Id.ToString() == sfddto.Id)
-                    {
-                        sfd.BeginEdit();
-                        sfd.Name = sfddto.Name;
-                        sfd.EndEdit();
-                        break; //or loop will crash
-                    }
-                }
-            }
+			sfd.EndEdit();
+		}
 
-            catch (Exception ex)
-            {
-                this.Logger.LogError(ex, "Error updating summary field.");
-                System.Diagnostics.Debug.WriteLine("Error updating summary field: " + ex.Message);
-            }
-        }
-    }
+		private void UpdateSumFieldDef(Proposal proposal, SummaryFieldDefinitionsDto sfddto)
+		{
+			try
+			{
+				foreach (SummaryFieldDefinition sfd in proposal.SummaryFieldDefinitions.Items())
+				{
+					if (sfd.Id.ToString() == sfddto.Id)
+					{
+						sfd.BeginEdit();
+						sfd.Name = sfddto.Name;
+						sfd.EndEdit();
+						break; //or loop will crash
+					}
+				}
+			}
+
+			catch (Exception ex)
+			{
+				this.Logger.LogError(ex, "Error updating summary field.");
+				System.Diagnostics.Debug.WriteLine("Error updating summary field: " + ex.Message);
+			}
+		}
+	}
 }

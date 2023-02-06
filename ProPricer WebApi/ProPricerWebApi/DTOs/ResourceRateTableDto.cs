@@ -9,12 +9,34 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class ResourceRateTableDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool IsCurrent { get; set; }
-        public string BurdenRateTable { get; set; }
-    }
+	/// <summary>
+	/// Resource Rate Table information
+	/// </summary>
+	public class ResourceRateTableDto
+	{
+		/// <summary>
+		/// Gets or Sets the Id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or Sets whether this is Current
+		/// </summary>
+		public bool IsCurrent { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Burden Rate Table
+		/// </summary>
+		public string BurdenRateTable { get; set; }
+	}
 }

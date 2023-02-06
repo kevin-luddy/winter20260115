@@ -9,14 +9,29 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Data Transfer Object for Spread Curves
-    /// </summary>
-    public class PoolDebugDto
-    {
-        public string InstanceId { get; set; }
-        public string PoolMaxNum { get; set; }
-        public string PoolNum { get; set; }
-        public string PoolInUse { get; set; }
-    }
+	/// <summary>
+	/// Data Transfer Object for Debugging of ProPricer Pool instances
+	/// </summary>
+	public class PoolDebugDto
+	{
+		/// <summary>
+		/// Gets or Sets the Instance Id
+		/// </summary>
+		public string InstanceId { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Pool's Max number
+		/// </summary>
+		public string PoolMaxNum { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the current Pool number
+		/// </summary>
+		public string PoolNum { get; set; }
+
+		/// <summary>
+		/// Gets or Sets whether this pool is in use
+		/// </summary>
+		public string PoolInUse { get; set; }
+	}
 }

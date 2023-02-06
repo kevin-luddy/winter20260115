@@ -7,53 +7,56 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    public class BurdenRateTablesController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public BurdenRateTablesController(ILogger<BurdenRateTablesController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Controller for burden rate tables
+	/// </summary>
+	public class BurdenRateTablesController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/burdenratetables
-        /// <summary>
-        /// Returns the list of Burden Rate Tables from the Global Library in PROPRICER.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <returns>
-        /// A collection of burden rate table entries.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<BurdenRateTableDto> Get(int instanceId)
-        {
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                ppc.Workspace.GlobalLibrary.BurdenRateTables.Open();
-                IEnumerable<BurdenRateTableDto> burdenRateTablesResult =
-                    from prop in ppc.Workspace.GlobalLibrary.BurdenRateTables.Items()
-                    select new BurdenRateTableDto
-                    {
-                        Id = prop.Id.ToString(),
-                        Name = prop.Name,
-                        Description = prop.Description
-                    };
-                ppc.Workspace.GlobalLibrary.BurdenRateTables.Close();
-                return burdenRateTablesResult;
-            }
-        }
-    }
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public BurdenRateTablesController(ILogger<BurdenRateTablesController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
+
+		// GET api/burdenratetables
+		/// <summary>
+		/// Returns the list of Burden Rate Tables from the Global Library in PROPRICER.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <returns>
+		/// A collection of burden rate table entries.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<BurdenRateTableDto> Get(int instanceId)
+		{
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				ppc.Workspace.GlobalLibrary.BurdenRateTables.Open();
+				IEnumerable<BurdenRateTableDto> burdenRateTablesResult =
+					from prop in ppc.Workspace.GlobalLibrary.BurdenRateTables.Items()
+					select new BurdenRateTableDto
+					{
+						Id = prop.Id.ToString(),
+						Name = prop.Name,
+						Description = prop.Description
+					};
+				ppc.Workspace.GlobalLibrary.BurdenRateTables.Close();
+				return burdenRateTablesResult;
+			}
+		}
+	}
 }

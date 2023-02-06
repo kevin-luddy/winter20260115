@@ -9,21 +9,21 @@
 
 namespace APTSPropricerApi.Common
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    /// <summary>
-    /// The Pricing data for a Pro Pricer Proposal
-    /// </summary>
-    public class PricingData
-    {
-        /// <summary>
-        /// Totals data
-        /// </summary>
-        public PricingTotals Totals { get; set; }
+	/// <summary>
+	/// The Pricing data for a Pro Pricer Proposal
+	/// </summary>
+	public class PricingData
+	{
+		/// <summary>
+		/// Totals data
+		/// </summary>
+		public PricingTotals Totals { get; set; }
 
-        /// <summary>
-        /// Line Item Data
-        /// </summary>
-        public ICollection<PricingLineItem> LineItems { get; set; }
-    }
+		/// <summary>
+		/// Line Item Data
+		/// </summary>
+		public ICollection<PricingLineItem> LineItems { get; set; }
+	}
 }

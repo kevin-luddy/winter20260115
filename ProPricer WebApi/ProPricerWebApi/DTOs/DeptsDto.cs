@@ -9,9 +9,19 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class DeptsDto
-    {
-        public string Value { get; set; }
-        public string Description { get; set; }
-    }
+	/// <summary>
+	/// Departments
+	/// </summary>
+	public class DeptsDto
+	{
+		/// <summary>
+		/// Gets or Sets the Value
+		/// </summary>
+		public string Value { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+	}
 }

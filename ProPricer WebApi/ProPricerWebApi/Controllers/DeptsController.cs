@@ -7,70 +7,73 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-using System.Linq;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.ProPricer.Model;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    public class DeptsController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System.Collections.Generic;
+	using System.Linq;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public DeptsController(ILogger<DeptsController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Controller for departments
+	/// </summary>
+	public class DeptsController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/Depts
-        /// <summary>
-        /// Returns the list of Depts in the instance of PROPRICER.
-        /// </summary>
-        /// <returns>Returns a collection of Depts from the instance of PROPRICER.</returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<DeptsDto> Get(int instanceId)
-        {
-            List<DeptsDto> depts = new();
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                if (ppc.Workspace != null)
-                {
-                    ppc.Workspace.Open();
-                    ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Open();
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public DeptsController(ILogger<DeptsController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-                    foreach (ResourceFieldDefinition rsd in ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items())
-                    {
-                        if (rsd.Name == "DEPT")
-                        {
-                            foreach (ResourceFieldStandardValue dept in rsd.ValueList.Items())
-                            {
-                                DeptsDto deptdto = new()
-                                {
-                                    Value = dept.Value.ToString(),
-                                    Description = dept.Description
-                                };
-                                depts.Add(deptdto);
-                            }
-                        }
-                    }
+		// GET api/Depts
+		/// <summary>
+		/// Returns the list of Depts in the instance of PROPRICER.
+		/// </summary>
+		/// <returns>Returns a collection of Depts from the instance of PROPRICER.</returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<DeptsDto> Get(int instanceId)
+		{
+			List<DeptsDto> depts = new();
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				if (ppc.Workspace != null)
+				{
+					ppc.Workspace.Open();
+					ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Open();
 
-                    ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Close();
-                    ppc.Workspace.Close();
-                }
-            }
-            IEnumerable<DeptsDto> ordered = depts.OrderBy(deptlist => deptlist.Value);
+					foreach (ResourceFieldDefinition rsd in ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items())
+					{
+						if (rsd.Name == "DEPT")
+						{
+							foreach (ResourceFieldStandardValue dept in rsd.ValueList.Items())
+							{
+								DeptsDto deptdto = new()
+								{
+									Value = dept.Value.ToString(),
+									Description = dept.Description
+								};
+								depts.Add(deptdto);
+							}
+						}
+					}
 
-            return ordered;
-        }
-    }
+					ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Close();
+					ppc.Workspace.Close();
+				}
+			}
+			IEnumerable<DeptsDto> ordered = depts.OrderBy(deptlist => deptlist.Value);
+
+			return ordered;
+		}
+	}
 }

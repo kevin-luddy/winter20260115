@@ -10,44 +10,44 @@
 namespace APTSPropricerApi.Controllers
 {
 
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using APTSPropricerApi.Common;
-    using APTSPropricerApi.Connection;
-    using APTSPropricerApi.DTOs;
-    using Aspose.Cells;
-    using EBS.Core;
-    using EBS.ProPricer.Model;
-    using EBS.ProPricer.Reports;
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
+	using APTSPropricerApi.Common;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using Aspose.Cells;
+	using EBS.Core;
+	using EBS.ProPricer.Model;
+	using EBS.ProPricer.Reports;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
-    /// <summary>
-    /// Batch Reports Controller
-    /// </summary>
-    //[Authorize(Policy = "OnlyIesToken")]
-    [Authorize(AuthenticationSchemes = Constants.IES_TOKEN_SCHEME)]    
-    [ApiController]
+	/// <summary>
+	/// Batch Reports Controller
+	/// </summary>
+	//[Authorize(Policy = "OnlyIesToken")]
+	[Authorize(AuthenticationSchemes = Constants.IES_TOKEN_SCHEME)]
+	[ApiController]
 	[Route("api/BatchReports")]
 	public class BatchReportsController : ControllerBase
 	{
-        /// <summary>
-        /// The Pool Manager List
-        /// </summary>
+		/// <summary>
+		/// The Pool Manager List
+		/// </summary>
 		private readonly PoolManagerList poolManagerList;
 
-        /// <summary>
-        /// The Logger
-        /// </summary>
+		/// <summary>
+		/// The Logger
+		/// </summary>
 		private readonly ILogger<BatchReportsController> Logger;
-		
+
 		/// <summary>
 		/// #ctor
 		/// </summary>
 		/// <param name="logger">The logger</param>
-        /// <param name="poolManagerList">Pool manager list</param>
+		/// <param name="poolManagerList">Pool manager list</param>
 		public BatchReportsController(ILogger<BatchReportsController> logger, PoolManagerList poolManagerList)
 		{
 			this.Logger = logger;
@@ -61,245 +61,245 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The connection instance identifier.</param>
 		/// <returns>Pro Pricer Response containing the List of Batch Reports</returns>
 		[HttpGet]
-        [Route("{instanceId}")]
+		[Route("{instanceId}")]
 		public ProPricerResponse<ICollection<BatchReportDto>> Get(int instanceId)
-        {
-            ProPricerResponse<ICollection<BatchReportDto>> response = new()
-            {
-                Data = new List<BatchReportDto>()
-            };
-            try
-            {
-                response = GetBatchReports(instanceId);
-            }
-            catch (Exception ex)
-            {
-                string message = $"Error retrieving Batch Reports from Pro Pricer for Connection Id: {instanceId}";
-                Logger.LogError(ex, message);
-                response.Messages.Add(message);
-            }
+		{
+			ProPricerResponse<ICollection<BatchReportDto>> response = new()
+			{
+				Data = new List<BatchReportDto>()
+			};
+			try
+			{
+				response = GetBatchReports(instanceId);
+			}
+			catch (Exception ex)
+			{
+				string message = $"Error retrieving Batch Reports from Pro Pricer for Connection Id: {instanceId}";
+				Logger.LogError(ex, message);
+				response.Messages.Add(message);
+			}
 
-            return response;
-        }
+			return response;
+		}
 
-        // POST api/batchreports/{instanceid}
-        /// <summary>
-        /// Creates a batch report export
-        /// </summary>
-        /// <param name="instanceId">The connection instance identifier.</param>
-        /// <param name="container">The param container for the Post event</param>
-        /// <returns>Pro Pricer Response containing the Tables of data</returns>
-        [HttpPost]
-        [Route("Export/{instanceId}")]
-        public ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, [FromBody] ProPricerExportContainer container)
-        {
-            ProPricerResponse<ICollection<Table>> response = new();
+		// POST api/batchreports/{instanceid}
+		/// <summary>
+		/// Creates a batch report export
+		/// </summary>
+		/// <param name="instanceId">The connection instance identifier.</param>
+		/// <param name="container">The param container for the Post event</param>
+		/// <returns>Pro Pricer Response containing the Tables of data</returns>
+		[HttpPost]
+		[Route("Export/{instanceId}")]
+		public ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, [FromBody] ProPricerExportContainer container)
+		{
+			ProPricerResponse<ICollection<Table>> response = new();
 
-            if (container == null)
-            {
-                response.Messages.Add("The [POST] container passed in cannot be null.");
-            }
-            else if (string.IsNullOrEmpty(container.proposalId))
-            {
-                response.Messages.Add("The Proposal Id cannot be null.");
-            }
-            else if (string.IsNullOrEmpty(container.batchReportId))
-            {
-                response.Messages.Add("The Batch Report Id cannot be null.");
-            }
-            else
-            {
+			if (container == null)
+			{
+				response.Messages.Add("The [POST] container passed in cannot be null.");
+			}
+			else if (string.IsNullOrEmpty(container.proposalId))
+			{
+				response.Messages.Add("The Proposal Id cannot be null.");
+			}
+			else if (string.IsNullOrEmpty(container.batchReportId))
+			{
+				response.Messages.Add("The Batch Report Id cannot be null.");
+			}
+			else
+			{
 
-                string tempFile = null;
-                try
-                {
-                    response = ExportBatchReport(instanceId, container, out tempFile);
-                }
-                catch (Exception ex)
-                {
-                    string message = $"Error exporting Batch Report from Pro Pricer for Connection Id: {instanceId}, Proposal Id: {container.proposalId}, and Batch Report Id: {container.batchReportId}";
-                    Logger.LogError(ex, message);
-                    response.Messages.Add(message);
-                }
-                finally
-                {
-                    // Delete the temp file if it exists, swallow the error
-                    try
-                    {
-                        if (System.IO.File.Exists(tempFile))
-                        {
+				string tempFile = null;
+				try
+				{
+					response = ExportBatchReport(instanceId, container, out tempFile);
+				}
+				catch (Exception ex)
+				{
+					string message = $"Error exporting Batch Report from Pro Pricer for Connection Id: {instanceId}, Proposal Id: {container.proposalId}, and Batch Report Id: {container.batchReportId}";
+					Logger.LogError(ex, message);
+					response.Messages.Add(message);
+				}
+				finally
+				{
+					// Delete the temp file if it exists, swallow the error
+					try
+					{
+						if (System.IO.File.Exists(tempFile))
+						{
 							System.IO.File.Delete(tempFile);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // error deleting file, will delete during next app startup
-                    }
-                }
-            }
+						}
+					}
+					catch (Exception)
+					{
+						// error deleting file, will delete during next app startup
+					}
+				}
+			}
 
-            return response;
-        }
+			return response;
+		}
 
-        /// <summary>
-        /// Gets the Batch Reports
-        /// </summary>
-        /// <param name="instanceId">The connection instance identifier.</param>
-        /// <returns>A pro pricer response object containing reports</returns>
-        internal ProPricerResponse<ICollection<BatchReportDto>> GetBatchReports(int instanceId)
-        {
-            ProPricerResponse<ICollection<BatchReportDto>> response = new()
-            {
-                Data = new List<BatchReportDto>()
-            };
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                ppc.Workspace.Reports.BatchReports.Open();
-                foreach (BatchReport rep in ppc.Workspace.Reports.BatchReports.Items())
-                {
-                    BatchReportDto dto = new(rep);
-                    response.Data.Add(dto);
-                }
+		/// <summary>
+		/// Gets the Batch Reports
+		/// </summary>
+		/// <param name="instanceId">The connection instance identifier.</param>
+		/// <returns>A pro pricer response object containing reports</returns>
+		internal ProPricerResponse<ICollection<BatchReportDto>> GetBatchReports(int instanceId)
+		{
+			ProPricerResponse<ICollection<BatchReportDto>> response = new()
+			{
+				Data = new List<BatchReportDto>()
+			};
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				ppc.Workspace.Reports.BatchReports.Open();
+				foreach (BatchReport rep in ppc.Workspace.Reports.BatchReports.Items())
+				{
+					BatchReportDto dto = new(rep);
+					response.Data.Add(dto);
+				}
 
-                response.IsSuccessful = true;
-                ppc.Workspace.Reports.BatchReports.Close();
-            }
+				response.IsSuccessful = true;
+				ppc.Workspace.Reports.BatchReports.Close();
+			}
 
-            return response;
-        }
+			return response;
+		}
 
-        /// <summary>
-        /// Exports a Batch Report
-        /// </summary>
-        /// <param name="instanceId">The connection instance identifier.</param>
-        /// <param name="container">The param container for the Post event</param>
-        /// <param name="tempFile">The location of the temporary file created by Pro Pricer export</param>
-        /// <returns>A ProPricerResponse object containing Tables from an exported Batch Report</returns>
-        internal ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, ProPricerExportContainer container, out string tempFile)
-        {
-            ProPricerResponse<ICollection<Table>> response = new()
-            {
-                Data = new List<Table>()
-            };
-            tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response);
-            ReadBatchFile(tempFile, response);
-            response.IsSuccessful = true;
-            return response;
-        }
+		/// <summary>
+		/// Exports a Batch Report
+		/// </summary>
+		/// <param name="instanceId">The connection instance identifier.</param>
+		/// <param name="container">The param container for the Post event</param>
+		/// <param name="tempFile">The location of the temporary file created by Pro Pricer export</param>
+		/// <returns>A ProPricerResponse object containing Tables from an exported Batch Report</returns>
+		internal ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, ProPricerExportContainer container, out string tempFile)
+		{
+			ProPricerResponse<ICollection<Table>> response = new()
+			{
+				Data = new List<Table>()
+			};
+			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response);
+			ReadBatchFile(tempFile, response);
+			response.IsSuccessful = true;
+			return response;
+		}
 
-        /// <summary>
-        /// Reads the Pro Pricer Batch File and Converts into Tables
-        /// </summary>
-        /// <param name="tempFile">The location of the temp file to read</param>
-        /// <param name="response">The response object used to add Table data and error messages</param>
-        private void ReadBatchFile(string tempFile, ProPricerResponse<ICollection<Table>> response)
-        {
-            TxtLoadOptions opts = new(LoadFormat.TabDelimited)
-            {
-                MemorySetting = MemorySetting.MemoryPreference,
-                LoadFilter = new LoadFilter(LoadDataFilterOptions.CellData),
-                CheckExcelRestriction = false,
-                ConvertNumericData = false,
-                ConvertDateTimeData = false
-            };
+		/// <summary>
+		/// Reads the Pro Pricer Batch File and Converts into Tables
+		/// </summary>
+		/// <param name="tempFile">The location of the temp file to read</param>
+		/// <param name="response">The response object used to add Table data and error messages</param>
+		private void ReadBatchFile(string tempFile, ProPricerResponse<ICollection<Table>> response)
+		{
+			TxtLoadOptions opts = new(LoadFormat.TabDelimited)
+			{
+				MemorySetting = MemorySetting.MemoryPreference,
+				LoadFilter = new LoadFilter(LoadDataFilterOptions.CellData),
+				CheckExcelRestriction = false,
+				ConvertNumericData = false,
+				ConvertDateTimeData = false
+			};
 
-            using (Workbook book = new(tempFile, opts))
-            {
-                foreach (Worksheet sheet in book.Worksheets)
-                {
-                    Table convertedSheet = new();
-                    response.Data.Add(convertedSheet);
-                    foreach (Aspose.Cells.Row row in sheet.Cells.Rows)
-                    {
-                        Common.Row convertedRow = new();
-                        convertedSheet.Rows.Add(convertedRow);
-                        // Get enumerator from an object of Row
-                        System.Collections.IEnumerator rowEnumerator = row.GetEnumerator();
-                        // Traverse cells in the given row
-                        while (rowEnumerator.MoveNext())
-                        {
-                            Cell cell = rowEnumerator.Current as Aspose.Cells.Cell;
-                            convertedRow.Cells.Add(cell.Value?.ToString() ?? string.Empty);
-                        }
-                    }
-                }
-            }
-        }
+			using (Workbook book = new(tempFile, opts))
+			{
+				foreach (Worksheet sheet in book.Worksheets)
+				{
+					Table convertedSheet = new();
+					response.Data.Add(convertedSheet);
+					foreach (Aspose.Cells.Row row in sheet.Cells.Rows)
+					{
+						Common.Row convertedRow = new();
+						convertedSheet.Rows.Add(convertedRow);
+						// Get enumerator from an object of Row
+						System.Collections.IEnumerator rowEnumerator = row.GetEnumerator();
+						// Traverse cells in the given row
+						while (rowEnumerator.MoveNext())
+						{
+							Cell cell = rowEnumerator.Current as Aspose.Cells.Cell;
+							convertedRow.Cells.Add(cell.Value?.ToString() ?? string.Empty);
+						}
+					}
+				}
+			}
+		}
 
-        /// <summary>
-        /// Generates a Batch Report File
-        /// </summary>
-        /// <param name="instanceId">The connection instance identifier.</param>
-        /// <param name="proposalId">The proposal Id to use for the Batch Report</param>
-        /// <param name="batchReportId">The batch report Id</param>
-        /// <param name="response">The response object used to add error messages into.</param>
-        /// <returns>The temporary File location that was generated.</returns>
-        private string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<ICollection<Table>> response)
-        {
-            string tempFile = null;
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                Proposal proposal = null;
-                BatchReport batchReport = null;
-                try
-                {
-                    Guid proposalGuid = new(proposalId);
-                    proposal = ppc.Workspace.Proposals.Find(proposalGuid).Value();
-                    
-                    if (proposal != null)
-                    {
-                        proposal.Open();
-                        ppc.Workspace.Reports.BatchReports.Open();
-                        batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id.ToString() == batchReportId);
-                        if (batchReport != null)
-                        {
-                            batchReport.Open();
+		/// <summary>
+		/// Generates a Batch Report File
+		/// </summary>
+		/// <param name="instanceId">The connection instance identifier.</param>
+		/// <param name="proposalId">The proposal Id to use for the Batch Report</param>
+		/// <param name="batchReportId">The batch report Id</param>
+		/// <param name="response">The response object used to add error messages into.</param>
+		/// <returns>The temporary File location that was generated.</returns>
+		private string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<ICollection<Table>> response)
+		{
+			string tempFile = null;
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				Proposal proposal = null;
+				BatchReport batchReport = null;
+				try
+				{
+					Guid proposalGuid = new(proposalId);
+					proposal = ppc.Workspace.Proposals.Find(proposalGuid).Value();
 
-                            tempFile = Path.GetRandomFileName();
+					if (proposal != null)
+					{
+						proposal.Open();
+						ppc.Workspace.Reports.BatchReports.Open();
+						batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id.ToString() == batchReportId);
+						if (batchReport != null)
+						{
+							batchReport.Open();
 
-                            BatchReportContextManager mgr = new(proposal);
-                            BatchReportRuntimeContext ctx = new(batchReport, mgr);
-                            ctx.Options.ExportType = EBS.ProPricer.Reports.Export.ExportType.Excel;
-                            ctx.Options.Folder = Constants.TEMP_DIRECTORY;
-                            ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
-                            ctx.Options.Destination = ReportDestination.File;
-                            ctx.Options.OutputMode = OutputMode.Combined;
-                            ctx.ProcessAll = true;
+							tempFile = Path.GetRandomFileName();
 
-                            BatchReportGenerator generator = new(ctx);
-                            ctx.Generator = generator;
+							BatchReportContextManager mgr = new(proposal);
+							BatchReportRuntimeContext ctx = new(batchReport, mgr);
+							ctx.Options.ExportType = EBS.ProPricer.Reports.Export.ExportType.Excel;
+							ctx.Options.Folder = Constants.TEMP_DIRECTORY;
+							ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
+							ctx.Options.Destination = ReportDestination.File;
+							ctx.Options.OutputMode = OutputMode.Combined;
+							ctx.ProcessAll = true;
 
-                            generator.Process();
+							BatchReportGenerator generator = new(ctx);
+							ctx.Generator = generator;
 
-                            tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + ".xlsx");
-                        }
-                        else
-                        {
-                            response.Messages.Add("Batch Report was not found or could not be opened in the workspace.");
-                        }
-                    }
-                    else
-                    {
-                        response.Messages.Add("Proposal was not found or could not be opened in the workspace.");
-                    }
-                }
-                finally
-                {
-                    if (proposal != null)
-                    {
-                        proposal.Close();
-                    }
+							generator.Process();
 
-                    if (batchReport != null)
-                    {
-                        batchReport.Close();
-                    }
+							tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + ".xlsx");
+						}
+						else
+						{
+							response.Messages.Add("Batch Report was not found or could not be opened in the workspace.");
+						}
+					}
+					else
+					{
+						response.Messages.Add("Proposal was not found or could not be opened in the workspace.");
+					}
+				}
+				finally
+				{
+					if (proposal != null)
+					{
+						proposal.Close();
+					}
 
-                    ppc.Workspace.Reports.BatchReports.Close();
-                }
-            }
+					if (batchReport != null)
+					{
+						batchReport.Close();
+					}
 
-            return tempFile;
-        }
-    }
+					ppc.Workspace.Reports.BatchReports.Close();
+				}
+			}
+
+			return tempFile;
+		}
+	}
 }

@@ -7,24 +7,78 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-
 namespace APTSPropricerApi.DTOs
 {
-    public class MaterialAssignmentDto
-    {
-        public string MaterialName { get; set; }
-        public string Description { get; set; }
-        public string Type { get; set; }
-        public string PartName { get; set; }
-        public string PartDescription { get; set; }
-        public string MakeBuy { get; set; }
-        public string UnitQty { get; set; }
-        public string ShipQty { get; set; }
-        public string TotalMfgStartQty { get; set; }
-        public string TotalCost { get; set; }
-        public string UnitCost { get; set; }
-        public ResourceAssignmentDto ResourceAssignment { get; set; }
-        public IEnumerable<AssociatedCostsDto> AssociatedCosts { get; set; }
-    }
+	using System.Collections.Generic;
+
+	/// <summary>
+	/// Houses Material Assignment information
+	/// </summary>
+	public class MaterialAssignmentDto
+	{
+		/// <summary>
+		/// Gets or Sets the Material Name
+		/// </summary>
+		public string MaterialName { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Type
+		/// </summary>
+		public string Type { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Part Name
+		/// </summary>
+		public string PartName { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Part Description
+		/// </summary>
+		public string PartDescription { get; set; }
+
+		/// <summary>
+		/// Gets or Sets whether we make or buy the material
+		/// </summary>
+		public string MakeBuy { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Unit Quantity
+		/// </summary>
+		public string UnitQty { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Ship Quantity
+		/// </summary>
+		public string ShipQty { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Total Manufacturing Start Quantity
+		/// </summary>
+		public string TotalMfgStartQty { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Total Cost
+		/// </summary>
+		public string TotalCost { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Unit Cost
+		/// </summary>
+		public string UnitCost { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Resource Assignment
+		/// </summary>
+		public ResourceAssignmentDto ResourceAssignment { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Associated Costs
+		/// </summary>
+		public IEnumerable<AssociatedCostsDto> AssociatedCosts { get; set; }
+	}
 }

@@ -7,58 +7,61 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-using System.Linq;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.ProPricer.Model;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    public class TravelRateTablesController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System.Collections.Generic;
+	using System.Linq;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public TravelRateTablesController(ILogger<TravelRateTablesController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Controller for Travel Rate Tables
+	/// </summary>
+	public class TravelRateTablesController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/travelratetables
-        /// <summary>
-        /// Returns the list of Travel Rate Tables from the Global Library in PROPRICER.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <returns>
-        /// A collection of travel rate table entries.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<TravelRateTableDto> Get(int instanceId)
-        {
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                ppc.Workspace.GlobalLibrary.TravelRateTables.Open();
-                IEnumerable<TravelRateTableDto> travelRateTablesResult =
-                    from prop in ppc.Workspace.GlobalLibrary.TravelRateTables.Items().Cast<TravelRateTable>()
-                    select new TravelRateTableDto
-                    {
-                        Id = prop.Id.ToString(),
-                        Name = prop.Name,
-                        Description = prop.Description,
-                        EnableWeeklyRentalCarRate = prop.EnableWeeklyRentalCarRate,
-                        IsCurrent = prop.IsCurrent
-                    };
-                ppc.Workspace.GlobalLibrary.TravelRateTables.Close();
-                return travelRateTablesResult;
-            }
-        }
-    }
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public TravelRateTablesController(ILogger<TravelRateTablesController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
+
+		// GET api/travelratetables
+		/// <summary>
+		/// Returns the list of Travel Rate Tables from the Global Library in PROPRICER.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <returns>
+		/// A collection of travel rate table entries.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<TravelRateTableDto> Get(int instanceId)
+		{
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				ppc.Workspace.GlobalLibrary.TravelRateTables.Open();
+				IEnumerable<TravelRateTableDto> travelRateTablesResult =
+					from prop in ppc.Workspace.GlobalLibrary.TravelRateTables.Items().Cast<TravelRateTable>()
+					select new TravelRateTableDto
+					{
+						Id = prop.Id.ToString(),
+						Name = prop.Name,
+						Description = prop.Description,
+						EnableWeeklyRentalCarRate = prop.EnableWeeklyRentalCarRate,
+						IsCurrent = prop.IsCurrent
+					};
+				ppc.Workspace.GlobalLibrary.TravelRateTables.Close();
+				return travelRateTablesResult;
+			}
+		}
+	}
 }

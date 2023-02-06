@@ -2525,7 +2525,14 @@
             Class used to send back data about Batch Reports
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:APTSPropricerApi.DTOs.BatchReportDto.Name" -->
+        <member name="P:APTSPropricerApi.DTOs.BatchReportDto.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+            <value>
+            The name.
+            </value>
+        </member>
         <member name="P:APTSPropricerApi.DTOs.BatchReportDto.Description">
             <summary>
             Gets or sets the Description.

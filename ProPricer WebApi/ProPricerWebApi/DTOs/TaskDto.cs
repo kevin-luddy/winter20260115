@@ -7,25 +7,68 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Incomplete Data Transfer Object for Tasks
-    /// </summary>
-    public class TaskDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string StartDate { get; set; }
-        public string EndDate { get; set; }
-        public string ActualFee { get; set; }
-        public int Quantity { get; set; }
-        public IEnumerable<ResourceAssignmentDto> ResourceAssignments { get; set; }
-        public IEnumerable<MaterialAssignmentDto> MaterialAssignments { get; set; }
-        public IEnumerable<SummaryFieldsDto> SummaryFields { get; set; }
-        public IEnumerable<TravelsDto> Travels { get; set; }
-    }
+	using System.Collections.Generic;
+
+	/// <summary>
+	/// Incomplete Data Transfer Object for Tasks
+	/// </summary>
+	public class TaskDto
+	{
+		/// <summary>
+		/// Gets or Sets the id
+		/// </summary>
+		public String Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the name
+		/// </summary>
+		public String Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Start Date
+		/// </summary>
+		public string StartDate { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the End Date
+		/// </summary>
+		public string EndDate { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Actual Fee
+		/// </summary>
+		public string ActualFee { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Quantity
+		/// </summary>
+		public int Quantity { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Resource Assignments
+		/// </summary>
+		public IEnumerable<ResourceAssignmentDto> ResourceAssignments { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Material Assignments
+		/// </summary>
+		public IEnumerable<MaterialAssignmentDto> MaterialAssignments { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Summary Fields
+		/// </summary>
+		public IEnumerable<SummaryFieldsDto> SummaryFields { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Travel information
+		/// </summary>
+		public IEnumerable<TravelsDto> Travels { get; set; }
+	}
 }

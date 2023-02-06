@@ -10,30 +10,30 @@
 namespace APTSPropricerApi.Connection
 {
 
-    /// <summary>
-    /// A Pro Pricer Instance Element in config
-    /// </summary>
-    public class ProPricerInstanceElement 
-    {
+	/// <summary>
+	/// A Pro Pricer Instance Element in config
+	/// </summary>
+	public class ProPricerInstanceElement
+	{
 		/// <summary>
-        /// Gets or sets the id.
-        /// </summary>
-        public int Id { get; set; }
+		/// Gets or sets the id.
+		/// </summary>
+		public int Id { get; set; }
 
-        /// <summary>
-        /// Gets or sets the company.
-        /// </summary>
-        public string Company { get; set; }
+		/// <summary>
+		/// Gets or sets the company.
+		/// </summary>
+		public string Company { get; set; }
 
-        /// <summary>
-        /// Gets or sets the instanceId.
-        /// </summary>
-        public int InstanceId { get; set; }
+		/// <summary>
+		/// Gets or sets the instanceId.
+		/// </summary>
+		public int InstanceId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        public string ConnectionName { get; set; }
+		/// <summary>
+		/// Gets or sets the name.
+		/// </summary>
+		public string ConnectionName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the friendly Name.
@@ -45,10 +45,10 @@ namespace APTSPropricerApi.Connection
 		/// </summary>
 		public string Server { get; set; }
 
-        /// <summary>
-        /// Gets or sets the port.
-        /// </summary>
-        public int Port { get; set; }
+		/// <summary>
+		/// Gets or sets the port.
+		/// </summary>
+		public int Port { get; set; }
 
 		/// <summary>
 		/// Gets or sets the number of allowed connections.

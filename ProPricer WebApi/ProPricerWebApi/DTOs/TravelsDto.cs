@@ -7,24 +7,78 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-
 namespace APTSPropricerApi.DTOs
 {
-    public class TravelsDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Destination { get; set; }
-        public string DestinationDescription { get; set; }
-        public string Comments { get; set; }
-        public int People { get; set; }
-        public string Days { get; set; }
-        public int Trips { get; set; }
-        public string TripCost { get; set; }
-        public string TotalCost { get; set; }
-        public ResourceAssignmentDto ResourceAssignment { get; set; }
-        public IEnumerable<TravelExpenseDto> Expenses { get; set; }
-    }
+	using System.Collections.Generic;
+
+	/// <summary>
+	/// DTO for Travel Trip information
+	/// </summary>
+	public class TravelsDto
+	{
+		/// <summary>
+		/// Gets or Sets the Id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Destination
+		/// </summary>
+		public string Destination { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Destination Description
+		/// </summary>
+		public string DestinationDescription { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Comments
+		/// </summary>
+		public string Comments { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the number of People
+		/// </summary>
+		public int People { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Days
+		/// </summary>
+		public string Days { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the number of Trips
+		/// </summary>
+		public int Trips { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Trip Cost
+		/// </summary>
+		public string TripCost { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Total Cost
+		/// </summary>
+		public string TotalCost { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the ResourceAssignment
+		/// </summary>
+		public ResourceAssignmentDto ResourceAssignment { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Expenses
+		/// </summary>
+		public IEnumerable<TravelExpenseDto> Expenses { get; set; }
+	}
 }

@@ -7,23 +7,58 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Data Transfer Object for Summary Field Definitions found on General Proposal Data screen
-    /// </summary>
-    public class SummaryFieldDefinitionsDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string DataType { get; set; }
-        public byte MaxLength { get; set; }
-        public string SortType { get; set; }
-        public string TitleTable { get; set; }
-        public bool Validate { get; set; }
-        public bool Required { get; set; }
-        public IEnumerable<SummaryFieldListDto> ValueList { get; set; }
-    }
+	using System.Collections.Generic;
+
+	/// <summary>
+	/// Data Transfer Object for Summary Field Definitions found on General Proposal Data screen
+	/// </summary>
+	public class SummaryFieldDefinitionsDto
+	{
+		/// <summary>
+		/// Gets or Sets the id
+		/// </summary>
+		public String Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the name
+		/// </summary>
+		public String Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the dataType
+		/// </summary>
+		public String DataType { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the max Length
+		/// </summary>
+		public Byte MaxLength { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Sort Type
+		/// </summary>
+		public string SortType { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Title Table
+		/// </summary>
+		public string TitleTable { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Validate
+		/// </summary>
+		public bool Validate { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Required
+		/// </summary>
+		public bool Required { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Value List
+		/// </summary>
+		public IEnumerable<SummaryFieldListDto> ValueList { get; set; }
+	}
 }

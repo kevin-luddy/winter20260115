@@ -7,87 +7,87 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.Core;
-using EBS.ProPricer.Data;
-using EBS.ProPricer.Model;
-using EBS.ProPricer.Model.General;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    /// <summary>
-    /// Utility to calculate a resource spread for a given curve
-    /// </summary>
-    public class SpreadController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System;
+	using System.Collections.Generic;
+	using System.Globalization;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.Core;
+	using EBS.ProPricer.Data;
+	using EBS.ProPricer.Model;
+	using EBS.ProPricer.Model.General;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public SpreadController(ILogger<SpreadController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Utility to calculate a resource spread for a given curve
+	/// </summary>
+	public class SpreadController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/spread
-        /// <summary>
-        /// Returns an array of spread values for the given input parms.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="amount">The total amount to be spread.</param>
-        /// <param name="curve">The entity id of a selected curve from the global library. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
-        /// <param name="startDate">yyyy-mm format.</param>
-        /// <param name="endDate">yyyy-mm format.</param>
-        /// <returns>
-        /// Returns a collection of the monthly spread amounts.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<SpreadDto> Get(int instanceId, double amount, string curve, string startDate, string endDate)
-        {
-            List<SpreadDto> spreadList = new();
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                try
-                {
-                    EntityId pEntityId = new(new Guid(curve));
-                    Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(pEntityId).Value();
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public SpreadController(ILogger<SpreadController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-                    TimeFrame start = new(DateTime.Parse(startDate + "-01"));
-                    TimeFrame end = new(DateTime.Parse(endDate + "-01"));
-                    TimePeriod period = new(TimeUnit.Month, start, end);
+		// GET api/spread
+		/// <summary>
+		/// Returns an array of spread values for the given input parms.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <param name="amount">The total amount to be spread.</param>
+		/// <param name="curve">The entity id of a selected curve from the global library. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
+		/// <param name="startDate">yyyy-mm format.</param>
+		/// <param name="endDate">yyyy-mm format.</param>
+		/// <returns>
+		/// Returns a collection of the monthly spread amounts.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<SpreadDto> Get(int instanceId, double amount, string curve, string startDate, string endDate)
+		{
+			List<SpreadDto> spreadList = new();
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				try
+				{
+					EntityId pEntityId = new(new Guid(curve));
+					Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(pEntityId).Value();
 
-                    IEnumerable<KeyValuePair<int, double>> rawSpreadList = SpreadUtils.GenerateSpread(amount, period, TimeUnit.Month, 2, SpreadMethod.WeightedAvg, c);
+					TimeFrame start = new(DateTime.Parse(startDate + "-01"));
+					TimeFrame end = new(DateTime.Parse(endDate + "-01"));
+					TimePeriod period = new(TimeUnit.Month, start, end);
 
-                    DateTime dtStart = DateTime.ParseExact(startDate, "yyyy-MM", CultureInfo.InvariantCulture);
+					IEnumerable<KeyValuePair<int, double>> rawSpreadList = SpreadUtils.GenerateSpread(amount, period, TimeUnit.Month, 2, SpreadMethod.WeightedAvg, c);
 
-                    // Translate the rawSpreadList to an array of SpreadDto objects
-                    foreach (KeyValuePair<int, double> item in rawSpreadList)
-                    {
-                        Console.WriteLine(item.ToString());
-                        SpreadDto s = new();
-                        DateTime thisDate = dtStart.AddMonths(item.Key);
-                        s.Year = thisDate.Year;
-                        s.Month = thisDate.Month;
-                        s.Value = item.Value.ToString();
-                        spreadList.Add(s);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex, "Error retrieving Spread");
-                }
-            }
-            return spreadList;
-        }
-    }
+					DateTime dtStart = DateTime.ParseExact(startDate, "yyyy-MM", CultureInfo.InvariantCulture);
+
+					// Translate the rawSpreadList to an array of SpreadDto objects
+					foreach (KeyValuePair<int, double> item in rawSpreadList)
+					{
+						Console.WriteLine(item.ToString());
+						SpreadDto s = new();
+						DateTime thisDate = dtStart.AddMonths(item.Key);
+						s.Year = thisDate.Year;
+						s.Month = thisDate.Month;
+						s.Value = item.Value.ToString();
+						spreadList.Add(s);
+					}
+				}
+				catch (Exception ex)
+				{
+					this.Logger.LogError(ex, "Error retrieving Spread");
+				}
+			}
+			return spreadList;
+		}
+	}
 }

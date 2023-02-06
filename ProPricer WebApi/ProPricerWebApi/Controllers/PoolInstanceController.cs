@@ -9,24 +9,21 @@
 
 namespace APTSPropricerApi.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-	using ACV.Shared;
+	using System.Collections.Generic;
 	using APTSPropricerApi.Common;
 	using APTSPropricerApi.Connection;
-    using APTSPropricerApi.DTOs;
+	using APTSPropricerApi.DTOs;
 	using Microsoft.AspNetCore.Mvc;
-	using Swashbuckle.AspNetCore.Annotations;
 
 	/// <summary>
 	/// The Pool Instance Controller
 	/// </summary>
 	public class PoolInstanceController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
 		/// <summary>
 		/// #ctor
@@ -36,15 +33,15 @@ namespace APTSPropricerApi.Controllers
 			this.poolManagerList = poolManagerList;
 		}
 
-        // GET api/poolinstance
-        /// <summary>
-        /// Gets the Pool Manager instances.
-        /// </summary>
-        /// <returns>Returns a collection of the pool manager instances.</returns>
-        [HttpGet]
+		// GET api/poolinstance
+		/// <summary>
+		/// Gets the Pool Manager instances.
+		/// </summary>
+		/// <returns>Returns a collection of the pool manager instances.</returns>
+		[HttpGet]
 		public IEnumerable<PoolInstanceDto> Get()
-        {
+		{
 			return Utility.GetAllPoolInstances(poolManagerList, Logger);
-        }
-    }
+		}
+	}
 }

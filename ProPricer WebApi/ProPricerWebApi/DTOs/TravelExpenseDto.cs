@@ -9,14 +9,29 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Data Transfer Object for Travel Expenses
-    /// </summary>
-    public class TravelExpenseDto
-    {
-        public string Name { get; set; }
-        public string Qty { get; set; }
-        public string Rate { get; set; }
-        public string Cost { get; set; }
-    }
+	/// <summary>
+	/// Data Transfer Object for Travel Expenses
+	/// </summary>
+	public class TravelExpenseDto
+	{
+		/// <summary>
+		/// Gets or sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Quantity
+		/// </summary>
+		public string Qty { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Rate
+		/// </summary>
+		public string Rate { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Cost
+		/// </summary>
+		public string Cost { get; set; }
+	}
 }

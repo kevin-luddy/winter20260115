@@ -9,9 +9,19 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class ReturnDto
-    {
-        public string Retcode { get; set; }
-        public string Retmsg { get; set; }
-    }
+	/// <summary>
+	/// Return DTO
+	/// </summary>
+	public class ReturnDto
+	{
+		/// <summary>
+		/// Gets or Sets the Return Code
+		/// </summary>
+		public string Retcode { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Return Message
+		/// </summary>
+		public string Retmsg { get; set; }
+	}
 }

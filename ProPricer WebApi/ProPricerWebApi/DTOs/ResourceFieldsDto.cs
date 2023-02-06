@@ -9,12 +9,19 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// Data Transfer Object for Resource Fields
-    /// </summary>
-    public class ResourceFieldsDto
-    {
-        public string Key { get; set; }
-        public string Value { get; set; }
-    }
+	/// <summary>
+	/// Data Transfer Object for Resource Fields
+	/// </summary>
+	public class ResourceFieldsDto
+	{
+		/// <summary>
+		/// Gets or Sets the Key
+		/// </summary>
+		public string Key { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Value
+		/// </summary>
+		public string Value { get; set; }
+	}
 }

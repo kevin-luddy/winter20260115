@@ -4,6 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("ProPricer.UnitTests")]
+
 namespace APTSPropricerApi
 {
 	using Microsoft.AspNetCore.Hosting;

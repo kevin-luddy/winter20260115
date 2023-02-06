@@ -9,15 +9,49 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class UserDto
-    {
-        public string Id { get; set; }
-        public string LoginType { get; set; }
-        public string LoginName { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Role { get; set; }
-        public int Logins { get; set; }
-        public string LastLogin { get; set; }
-    }
+	/// <summary>
+	/// DTO for User Information
+	/// </summary>
+	public class UserDto
+	{
+		/// <summary>
+		/// Gets or Sets the Id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Login Type
+		/// </summary>
+		public string LoginType { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Login Name
+		/// </summary>
+		public string LoginName { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Role
+		/// </summary>
+		public string Role { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the number of Logins
+		/// </summary>
+		public int Logins { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Last Login
+		/// </summary>
+		public string LastLogin { get; set; }
+	}
 }

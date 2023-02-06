@@ -9,10 +9,24 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class BurdenRateTableDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-    }
+	/// <summary>
+	/// Burden Rate Table
+	/// </summary>
+	public class BurdenRateTableDto
+	{
+		/// <summary>
+		/// Gets or Sets the Id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+	}
 }

@@ -9,12 +9,34 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class TravelRateTableDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool EnableWeeklyRentalCarRate { get; set; }
-        public bool IsCurrent { get; set; }
-    }
+	/// <summary>
+	/// Travel Rate information
+	/// </summary>
+	public class TravelRateTableDto
+	{
+		/// <summary>
+		/// Gets or Sets the Id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or Sets the Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or Sets whether to enable weekly rental car rate
+		/// </summary>
+		public bool EnableWeeklyRentalCarRate { get; set; }
+
+		/// <summary>
+		/// Gets or Sets whether this is Current
+		/// </summary>
+		public bool IsCurrent { get; set; }
+	}
 }

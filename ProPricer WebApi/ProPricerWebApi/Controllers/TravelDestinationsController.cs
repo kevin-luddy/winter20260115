@@ -7,63 +7,66 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System.Collections.Generic;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.ProPricer.Model;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    public class TravelDestinationsController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System.Collections.Generic;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public TravelDestinationsController(ILogger<TravelDestinationsController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Controller for Travel Destinations
+	/// </summary>
+	public class TravelDestinationsController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/traveldestinations
-        /// <summary>
-        /// Returns the list of Travel Destinations from the Global Library in PROPRICER.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <returns>
-        /// A collection of travel destinations.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<TravelDestinationsDto> Get(int instanceId)
-        {
-            List<TravelDestinationsDto> trv = new();
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                if (ppc.Workspace != null)
-                {
-                    ppc.Workspace.GlobalLibrary.Travels.Open();
-                    foreach (Travel trvdes in ppc.Workspace.GlobalLibrary.Travels.Items())
-                    {
-                        TravelDestinationsDto trvdto = new()
-                        {
-                            Id = trvdes.Id.ToString(),
-                            Name = trvdes.Name,
-                            Description = trvdes.Description
-                        };
-                        trv.Add(trvdto);
-                    }
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public TravelDestinationsController(ILogger<TravelDestinationsController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-                    ppc.Workspace.GlobalLibrary.Travels.Close();
-                }
-            }
+		// GET api/traveldestinations
+		/// <summary>
+		/// Returns the list of Travel Destinations from the Global Library in PROPRICER.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <returns>
+		/// A collection of travel destinations.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<TravelDestinationsDto> Get(int instanceId)
+		{
+			List<TravelDestinationsDto> trv = new();
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				if (ppc.Workspace != null)
+				{
+					ppc.Workspace.GlobalLibrary.Travels.Open();
+					foreach (Travel trvdes in ppc.Workspace.GlobalLibrary.Travels.Items())
+					{
+						TravelDestinationsDto trvdto = new()
+						{
+							Id = trvdes.Id.ToString(),
+							Name = trvdes.Name,
+							Description = trvdes.Description
+						};
+						trv.Add(trvdto);
+					}
 
-            return trv;
-        }
-    }
+					ppc.Workspace.GlobalLibrary.Travels.Close();
+				}
+			}
+
+			return trv;
+		}
+	}
 }

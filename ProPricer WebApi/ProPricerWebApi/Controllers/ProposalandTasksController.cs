@@ -9,47 +9,46 @@
 
 namespace APTSPropricerApi.Controllers
 {
-    using APTSPropricerApi.Common;
-    using APTSPropricerApi.Connection;
-    using APTSPropricerApi.DTOs;
-    using Microsoft.AspNetCore.Mvc;
+	using APTSPropricerApi.Common;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using Microsoft.AspNetCore.Mvc;
 
-    /// <summary>
-    /// Method to obtain a proposal and it's tasks and resources
-    /// </summary>
-    //[APTSPropricerApi.HandleError]
-    public class ProposalandTasksController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	/// <summary>
+	/// Method to obtain a proposal and it's tasks and resources
+	/// </summary>
+	public class ProposalandTasksController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public ProposalandTasksController(ILogger<ProposalandTasksController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public ProposalandTasksController(ILogger<ProposalandTasksController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-        // GET api/proposalandtasks/instanceId/id
-        /// <summary>
-        /// Returns the general proposal data and tasks for a given proposal
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
-        /// <returns>
-        /// Returns the general proposal data and tasks for a given proposal
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}/{id}")]
-        public ProposalDto Get(int instanceId, string id)
-        {
-            ProposalDto pDto = Utility.GetProposal(poolManagerList, Logger, instanceId, id);
-            pDto.Tasks = Utility.GetTasksForProposal(poolManagerList, Logger, instanceId, id);
-            
-            return pDto;
-        }
-    }
+		// GET api/proposalandtasks/instanceId/id
+		/// <summary>
+		/// Returns the general proposal data and tasks for a given proposal
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
+		/// <returns>
+		/// Returns the general proposal data and tasks for a given proposal
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}/{id}")]
+		public ProposalDto Get(int instanceId, string id)
+		{
+			ProposalDto pDto = Utility.GetProposal(poolManagerList, Logger, instanceId, id);
+			pDto.Tasks = Utility.GetTasksForProposal(poolManagerList, Logger, instanceId, id);
+
+			return pDto;
+		}
+	}
 }

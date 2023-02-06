@@ -9,24 +9,24 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    /// <summary>
-    /// An instance of a Pro Pricer Connection Pool
-    /// </summary>
-    public class PoolInstanceDto
-    {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        public int Id { get; set; }
+	/// <summary>
+	/// An instance of a Pro Pricer Connection Pool
+	/// </summary>
+	public class PoolInstanceDto
+	{
+		/// <summary>
+		/// Gets or sets the identifier.
+		/// </summary>
+		public int Id { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name of the friendly.
-        /// </summary>
-        public string FriendlyName { get; set; }
+		/// <summary>
+		/// Gets or sets the name of the friendly.
+		/// </summary>
+		public string FriendlyName { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is backup.
-        /// </summary>
-        public bool IsBackup { get; set; }
-    }
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is backup.
+		/// </summary>
+		public bool IsBackup { get; set; }
+	}
 }

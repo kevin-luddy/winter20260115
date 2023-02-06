@@ -9,9 +9,19 @@
 
 namespace APTSPropricerApi.DTOs
 {
-    public class SysCdsDto
-    {
-        public string Name { get; set; }
-        public string Description { get; set; }
-    }
+	/// <summary>
+	/// DTO For SysCds
+	/// </summary>
+	public class SysCdsDto
+	{
+		/// <summary>
+		/// Gets or sets the Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Description
+		/// </summary>
+		public string Description { get; set; }
+	}
 }

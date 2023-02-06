@@ -9,23 +9,19 @@
 
 namespace APTSPropricerApi
 {
-	using System;
-	using System.ComponentModel;
-	using System.ComponentModel.DataAnnotations;
-
 	/// <summary>
 	/// Sort Order
 	/// </summary>
 	public enum SortOrder
 	{
-        /// <summary>
-        /// The descending order
-        /// </summary>
-        Descending,
+		/// <summary>
+		/// The descending order
+		/// </summary>
+		Descending,
 
-        /// <summary>
-        /// The ascending order
-        /// </summary>
-        Ascending
-    }
+		/// <summary>
+		/// The ascending order
+		/// </summary>
+		Ascending
+	}
 }

@@ -9,46 +9,46 @@
 
 namespace APTSPropricerApi
 {
-    using APTSPropricerApi.DTOs;
-    using Microsoft.AspNetCore.Mvc;
-    using System.IO;
+	using APTSPropricerApi.DTOs;
+	using Microsoft.AspNetCore.Mvc;
+	using System.IO;
 
-    /// <summary>
-    /// ProPricer Direct Import controller (used by GenBOE)
-    /// </summary>
-    /// <seealso cref="APTSPropricerApi.ProPricerController" />
-    public class ProPricerDirectImportController : ProPricerController
-    {
-        /// <summary>
-        /// The exporter class (Ray's old code, slightly modified)
-        /// </summary>
-        private readonly ProPricerProposalExporter exporter;
+	/// <summary>
+	/// ProPricer Direct Import controller (used by GenBOE)
+	/// </summary>
+	/// <seealso cref="APTSPropricerApi.ProPricerController" />
+	public class ProPricerDirectImportController : ProPricerController
+	{
+		/// <summary>
+		/// The exporter class (Ray's old code, slightly modified)
+		/// </summary>
+		private readonly ProPricerProposalExporter exporter;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProPricerDirectImportController"/> class.
-        /// </summary>
-        public ProPricerDirectImportController(ProPricerProposalExporter proPricerProposalExporter, ILogger<ProPricerDirectImportController> logger) : base(logger)
-        {
-            this.exporter = proPricerProposalExporter;
-        }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProPricerDirectImportController"/> class.
+		/// </summary>
+		public ProPricerDirectImportController(ProPricerProposalExporter proPricerProposalExporter, ILogger<ProPricerDirectImportController> logger) : base(logger)
+		{
+			this.exporter = proPricerProposalExporter;
+		}
 
-        // POST api/proposals
-        /// <summary>
-        /// Posts the specified instance identifier.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="id">The proposal identifier.</param>
-        /// <param name="container">The container housing the import data.</param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("{instanceId}/{id}")]
-        public ProPricerExportResults Post(int instanceId, string id, [FromBody] ProPricerImportContainer container)
-        {
-            string tempPathFileName = Path.GetTempPath();
-            
-            ProPricerExportResults result = this.exporter.ExportToProPricerProposal(tempPathFileName, id, instanceId, container.taskData, container.resourceData, container.taskExportOption, container.resourceExportOption);
+		// POST api/proposals
+		/// <summary>
+		/// Posts the specified instance identifier.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <param name="id">The proposal identifier.</param>
+		/// <param name="container">The container housing the import data.</param>
+		/// <returns></returns>
+		[HttpPost]
+		[Route("{instanceId}/{id}")]
+		public ProPricerExportResults Post(int instanceId, string id, [FromBody] ProPricerImportContainer container)
+		{
+			string tempPathFileName = Path.GetTempPath();
 
-            return result;
-        }
-    }
+			ProPricerExportResults result = this.exporter.ExportToProPricerProposal(tempPathFileName, id, instanceId, container.taskData, container.resourceData, container.taskExportOption, container.resourceExportOption);
+
+			return result;
+		}
+	}
 }

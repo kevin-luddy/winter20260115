@@ -1,10 +1,10 @@
 ﻿namespace APTSPropricerApi.Common
 {
-    using Microsoft.AspNetCore.Authentication;
+	using Microsoft.AspNetCore.Authentication;
 
-    /// <summary>
-    /// Token Authentication Options
-    /// </summary>
-    public class TokenAuthenticationOptions : AuthenticationSchemeOptions
-    { }
+	/// <summary>
+	/// Token Authentication Options
+	/// </summary>
+	public class TokenAuthenticationOptions : AuthenticationSchemeOptions
+	{ }
 }

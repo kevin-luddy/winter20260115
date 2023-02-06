@@ -7,75 +7,75 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System;
-using System.Collections.Generic;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.ProPricer.Model;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    /// <summary>
-    /// The Resource Rate Tables Controller.
-    /// </summary>
-    public class ResourceRateTablesController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System;
+	using System.Collections.Generic;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public ResourceRateTablesController(ILogger<ResourceRateTablesController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// The Resource Rate Tables Controller.
+	/// </summary>
+	public class ResourceRateTablesController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/resourceratetables
-        /// <summary>
-        /// Returns the list of resource rate tables from the PROPRICER Global Library.
-        /// </summary>
-        /// <returns>A collection of resource rate tables.</returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<ResourceRateTableDto> Get(int instanceId)
-        {
-            using (IProPricerConnection ppc = (Connection.IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                ppc.Workspace.GlobalLibrary.ResourceRateTables.Open();
-                List<ResourceRateTableDto> resourceRateTablesResult = new();
-                if (ppc.Workspace != null)
-                {
-                    try
-                    {
-                        DirectRateTableCollection dircol = ppc.Workspace.GlobalLibrary.ResourceRateTables.DirectRateTables;
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public ResourceRateTablesController(ILogger<ResourceRateTablesController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-                        foreach (DirectRateTable rattbl in dircol.Items())
-                        {
-                            ResourceRateTableDto rttdto = new()
-                            {
-                                Id = rattbl.Id.ToString(),
-                                Name = rattbl.Name,
-                                Description = rattbl.Description,
-                                IsCurrent = rattbl.IsCurrent,
-                                BurdenRateTable = rattbl.BurdenRateTable.Name
-                            };
-                            resourceRateTablesResult.Add(rttdto);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Logger.LogError(ex, "Error retrieving Resource Rate Tables");
-                        System.Diagnostics.Debug.WriteLine("Error - " + ex.Message);
-                    }
-                }
+		// GET api/resourceratetables
+		/// <summary>
+		/// Returns the list of resource rate tables from the PROPRICER Global Library.
+		/// </summary>
+		/// <returns>A collection of resource rate tables.</returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<ResourceRateTableDto> Get(int instanceId)
+		{
+			using (IProPricerConnection ppc = (Connection.IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				ppc.Workspace.GlobalLibrary.ResourceRateTables.Open();
+				List<ResourceRateTableDto> resourceRateTablesResult = new();
+				if (ppc.Workspace != null)
+				{
+					try
+					{
+						DirectRateTableCollection dircol = ppc.Workspace.GlobalLibrary.ResourceRateTables.DirectRateTables;
 
-                ppc.Workspace.GlobalLibrary.ResourceRateTables.Close();
-                return resourceRateTablesResult;
-            }
-        }
-    }
+						foreach (DirectRateTable rattbl in dircol.Items())
+						{
+							ResourceRateTableDto rttdto = new()
+							{
+								Id = rattbl.Id.ToString(),
+								Name = rattbl.Name,
+								Description = rattbl.Description,
+								IsCurrent = rattbl.IsCurrent,
+								BurdenRateTable = rattbl.BurdenRateTable.Name
+							};
+							resourceRateTablesResult.Add(rttdto);
+						}
+					}
+					catch (Exception ex)
+					{
+						this.Logger.LogError(ex, "Error retrieving Resource Rate Tables");
+						System.Diagnostics.Debug.WriteLine("Error - " + ex.Message);
+					}
+				}
+
+				ppc.Workspace.GlobalLibrary.ResourceRateTables.Close();
+				return resourceRateTablesResult;
+			}
+		}
+	}
 }

@@ -7,104 +7,107 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System;
-using System.Collections.Generic;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.Core;
-using EBS.ProPricer.Model;
-using Microsoft.AspNetCore.Mvc;
-
 namespace APTSPropricerApi.Controllers
 {
-    public class TitleTablesController : ProPricerController
-    {
-        /// <summary>
-        /// Pool Manager
-        /// </summary>
-        private readonly PoolManagerList poolManagerList;
+	using System;
+	using System.Collections.Generic;
+	using APTSPropricerApi.Connection;
+	using APTSPropricerApi.DTOs;
+	using EBS.Core;
+	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Mvc;
 
-        /// <summary>
-        /// #ctor
-        /// </summary>
-        public TitleTablesController(ILogger<TitleTablesController> logger, PoolManagerList poolManagerList) : base(logger)
-        {
-            this.poolManagerList = poolManagerList;
-        }
+	/// <summary>
+	/// Controller for Title Tables
+	/// </summary>
+	public class TitleTablesController : ProPricerController
+	{
+		/// <summary>
+		/// Pool Manager
+		/// </summary>
+		private readonly PoolManagerList poolManagerList;
 
-        // GET api/titletablenames
-        /// <summary>
-        /// Returns the list of Title Table names from the Global Library in PROPRICER.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <returns>
-        /// A collection of title table names.
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public IEnumerable<string> Get(int instanceId)
-        {
-            List<string> titles = new();
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                if (ppc.Workspace != null)
-                {
-                    ppc.Workspace.GlobalLibrary.TitleTables.Open();
-                    foreach (TitleTable tbl in ppc.Workspace.GlobalLibrary.TitleTables.Items())
-                    {
-                        string title = tbl.Name;
-                        titles.Add(title);
-                    }
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public TitleTablesController(ILogger<TitleTablesController> logger, PoolManagerList poolManagerList) : base(logger)
+		{
+			this.poolManagerList = poolManagerList;
+		}
 
-                    ppc.Workspace.GlobalLibrary.TitleTables.Close();
-                }
-            }
+		// GET api/titletablenames
+		/// <summary>
+		/// Returns the list of Title Table names from the Global Library in PROPRICER.
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <returns>
+		/// A collection of title table names.
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}")]
+		public IEnumerable<string> Get(int instanceId)
+		{
+			List<string> titles = new();
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				if (ppc.Workspace != null)
+				{
+					ppc.Workspace.GlobalLibrary.TitleTables.Open();
+					foreach (TitleTable tbl in ppc.Workspace.GlobalLibrary.TitleTables.Items())
+					{
+						string title = tbl.Name;
+						titles.Add(title);
+					}
 
-            return titles;
-        }
+					ppc.Workspace.GlobalLibrary.TitleTables.Close();
+				}
+			}
 
-        // GET api/titletablenames/id
-        /// <summary>
-        /// Returns the title data for a given title table
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="id">The name of the title table</param>
-        /// <returns>
-        /// Returns the title rows for the given title table
-        /// </returns>
-        [HttpGet]
-        [Route("{instanceId}/{id}")]
-        public IEnumerable<TitleTablesDto> Get(int instanceId, string id)
-        {
-            TitleTable tt = null;
-            List<TitleTablesDto> titles = new();
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                // example id - F35 System Code
-                tt = ppc.Workspace.GlobalLibrary.TitleTables.Find(id).Value();
-                try
-                {
-                    tt.Open();
-                    foreach (Title t in tt.Elements.Items())
-                    {
-                        TitleTablesDto ttd = new()
-                        {
-                            Name = t.Name,
-                            Description = t.Description
-                        };
-                        titles.Add(ttd);
-                    }
+			return titles;
+		}
 
-                    tt.Close();
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex, "Error retrieving Title Tables");
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                }
-            }
+		// GET api/titletablenames/id
+		/// <summary>
+		/// Returns the title data for a given title table
+		/// </summary>
+		/// <param name="instanceId">The instance identifier.</param>
+		/// <param name="id">The name of the title table</param>
+		/// <returns>
+		/// Returns the title rows for the given title table
+		/// </returns>
+		[HttpGet]
+		[Route("{instanceId}/{id}")]
+		public IEnumerable<TitleTablesDto> Get(int instanceId, string id)
+		{
+			TitleTable tt = null;
+			List<TitleTablesDto> titles = new();
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				// example id - F35 System Code
+				tt = ppc.Workspace.GlobalLibrary.TitleTables.Find(id).Value();
+				try
+				{
+					tt.Open();
+					foreach (Title t in tt.Elements.Items())
+					{
+						TitleTablesDto ttd = new()
+						{
+							Name = t.Name,
+							Description = t.Description
+						};
+						titles.Add(ttd);
+					}
 
-            return titles;
-        }
-    }
+					tt.Close();
+				}
+				catch (Exception ex)
+				{
+					this.Logger.LogError(ex, "Error retrieving Title Tables");
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+				}
+			}
+
+			return titles;
+		}
+	}
 }
