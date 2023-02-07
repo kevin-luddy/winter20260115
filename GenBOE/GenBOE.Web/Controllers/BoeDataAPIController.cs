@@ -142,7 +142,7 @@ namespace GenBOE.Web.Controllers
 				{
 					if (workspace.containsOCI)
 					{
-                        // do permission check if OCI
+						// do permission check if OCI
 						// permission check throws exceptions so we need to catch them and handle
                         FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace.shortName);
 						try
