@@ -73,6 +73,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				// check if any DateOfReport is older than 60 days
 				let olderThan60 = false;
 				let newTableNeedsCalculated = false;
+				let tablesWithUserSource = [];
 				const sixtyDays = new Date();
 				sixtyDays.setMonth(sixtyDays.getMonth() - 2);
 
@@ -86,6 +87,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 								if (tableData.TotalRelevantHours === undefined) {
 									newTableNeedsCalculated = true;
+								}
+
+								if ($scope.model.IsRMS && tableData.RepositoryName === ManageTaskModel.RmsSapDisabledSource) {
+									tablesWithUserSource.push(tableData.TableName);
 								}
 							}
 						});
@@ -101,6 +106,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				} else if ($scope.actualsValidation.isDirty.size > 0) {
 					ManageTaskModel.DisableSave = true;
 					ManageTaskModel.DisableSaveText = 'All MOQ Tables that have had filters updated need to have Actuals recalculated before Saving';
+				} else if (tablesWithUserSource.length > 0) {
+					ManageTaskModel.DisableSave = true;
+					ManageTaskModel.DisableSaveText = 'Before saving, the following MOQ Tables must be recalculated after the SAP connection was enabled for the Workspace: ' + tablesWithUserSource.join(", ");
 				} else {
 					ManageTaskModel.DisableSave = false;
 				}
@@ -992,9 +1000,16 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								}
 
 								// this is RMS only
-								if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
-									// only set if currently unset and response is set
-									tableData.ContractNumber = res.ContractNumber;
+								if (!ManageTaskModel.IsSpace) {
+									if (!tableData.ContractNumber && res.ContractNumber) {
+										// only set if currently unset and response is set
+										tableData.ContractNumber = res.ContractNumber;
+									}
+
+									// Set Source to SAP if SAP connection is enabled
+									if ($scope.IsSapEnabledAndSetAsRepository()) {
+										tableData.RepositoryName = ManageTaskModel.RmsSapEnabledSource;
+									}
 								}
 
 								MOQEquationFieldWidget.setDirty();
@@ -1258,10 +1273,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.IsSapEnabledAndSetAsRepository = function (repositoryName) {
 		if ($scope.model.IsRMS) {
 			// RMS does not use Repository Name, so just return SAP Enabled
-			return $scope.model.SAPEnabled;
+			return $scope.model.SAPEnabled && $scope.model.SapConnectionEnabled;
 		} else {
 			// SSC requires Repository Name to be set to SAP / WEBI
-			return $scope.model.SAPEnabled && repositoryName == $scope.model.SapWebiRepository;
+			return $scope.model.SAPEnabled && $scope.model.SapConnectionEnabled && repositoryName == $scope.model.SapWebiRepository;
 		}
 	}
 

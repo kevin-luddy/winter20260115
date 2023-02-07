@@ -42,7 +42,9 @@
         ComparativeMoqType: <%:(int)MOQType.Comparative%>,
         SAPEnabled: '<%:Utilities.IsSAPEnabled%>'.isTrue(),
         SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
-        SapConnectionEnabled: '<%=Model.EnableSAPConnection%>'.isTrue()
+		SapConnectionEnabled: '<%=Model.EnableSAPConnection%>'.isTrue(),
+		RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
+		RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>'
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -175,12 +177,13 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <select data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
+                                <select data-ng-if="model.SapConnectionEnabled" data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
                                     <option value=""></option>
                                     <option value="<%: RepositoryName.SapWebi.GetDescription() %>"><%: RepositoryName.SapWebi.GetDescription() %></option>
                                     <option value="<%: RepositoryName.Other.GetDescription() %>"><%: RepositoryName.Other.GetDescription() %></option>
                                 </select>
-                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>'" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
+                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>' && model.SapConnectionEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
+                                <input data-ng-if="!model.SapConnectionEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.RepositoryName" />
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
