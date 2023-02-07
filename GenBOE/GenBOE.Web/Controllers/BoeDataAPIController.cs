@@ -335,7 +335,7 @@ namespace GenBOE.Web.Controllers
                 {
                     return new HttpResponseMessage(HttpStatusCode.Unauthorized);
                 }
-                
+
                 HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 
                 string fileName = string.Format("genBOE-Export-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty);
