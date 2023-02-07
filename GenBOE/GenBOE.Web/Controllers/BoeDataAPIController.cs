@@ -453,7 +453,7 @@ namespace GenBOE.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-                if (this.HasOciPermission(SecurityPage.Reports, workspace))
+                if (this.HasOciPermission(SecurityPage.ManageBOEForms, workspace))
                 {
                     ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
 
@@ -491,7 +491,7 @@ namespace GenBOE.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-                if (this.HasOciPermission(SecurityPage.Reports, workspace))
+                if (this.HasOciPermission(SecurityPage.ManageBOEForms, workspace))
                 {
                     ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
 
