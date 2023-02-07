@@ -232,7 +232,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				table.PoPMonthsString,
 				table.TotalWbsHours.ToString(),
                 table.AdditionalQueryFilters,
-                table.TotalRelevantHours.ToString()
+                table.TotalRelevantHours.ToString(),
+                table.RepositoryName
             };
 
             foreach (CustomFieldDTO customField in exportInputs.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))

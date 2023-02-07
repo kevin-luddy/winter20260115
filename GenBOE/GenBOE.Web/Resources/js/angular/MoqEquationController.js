@@ -1013,7 +1013,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 									// Set Source to SAP if SAP connection is enabled
 									if ($scope.IsSapEnabledAndSetAsRepository()) {
-										tableData.RepositoryName = ManageTaskModel.RmsSapEnabledSource;
+										tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
 									}
 								}
 
