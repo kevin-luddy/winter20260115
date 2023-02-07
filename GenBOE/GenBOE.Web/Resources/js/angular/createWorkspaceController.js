@@ -38,7 +38,8 @@
         selectedPtmTrackingNumber: '',              // SSC only
         isAdmin: CreateWorkspaceModelView.IsAdmin,  // SSC only
         ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
-        nextRevision: '' // SSC only, the next revision of the PTM tracking number
+        nextRevision: '', // SSC only, the next revision of the PTM tracking number
+        isSAPConfigurationEnabled: false    // This value will be grabbed from Web.config
     };
 
     // data houses the data being saved and sent to the back-end
@@ -702,6 +703,7 @@
                 $scope.data.SelectedContractTypes = response.data.ContractTypes;
                 $scope.data.ProposalSubmittalDate = response.data.AnticipatedDeliveryDate;
                 $scope.data.RevisedSubmittalDate = response.data.RevisedSubmittalDate;
+                $scope.model.isSAPConfigurationEnabled = response.data.IsSAPEnabledConfig;
 
                 if (!$scope.data.IsAttemptingToImport) {
                     $scope.data.UsingTemplateBoe = response.data.UsingTemplateBoe;
