@@ -3138,6 +3138,7 @@ namespace GenBOE.Web.Controllers
                 ws.PerfOrgSorting = workspaceDetails.PerfOrgSorting;
                 ws.RteSizeLimit = workspaceDetails.RteSizeLimit;
                 ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
+                ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
 
                 // Populate the company specific properties
                 _ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
@@ -4786,6 +4787,7 @@ namespace GenBOE.Web.Controllers
             string anticipatedDeliveryDate = string.Empty;
             string revisedSubmittalDate = string.Empty;
             bool usingTemplateBoe = false;
+            bool isSAPEnabledConfig = false;
 
             // see if this is a valid PTM Tracking Number
             int proposalId = this.proposalLoader.GetIdByTrackingNumber(trackingNumber);
@@ -4822,6 +4824,8 @@ namespace GenBOE.Web.Controllers
 
                 // Default Template BOE switch to Yes if CCoPD is set to true
                 usingTemplateBoe = proposal.IsCCPDRequired.HasValue ? proposal.IsCCPDRequired.Value : false;
+
+                isSAPEnabledConfig = Utilities.IsSAPEnabled;
             }
             else
             {
@@ -4830,7 +4834,7 @@ namespace GenBOE.Web.Controllers
 
             return Json(new { TrackingNumberRevision = nextRevision, LOBId = lobId, RFPNumber = rfpNumber, ContractTypes = selectedContractTypes,
                 Title = title, ProposalClassId = proposalClassId, AnticipatedDeliveryDate = anticipatedDeliveryDate, RevisedSubmittalDate = revisedSubmittalDate,
-                UsingTemplateBoe = usingTemplateBoe
+                UsingTemplateBoe = usingTemplateBoe, IsSAPEnabledConfig = isSAPEnabledConfig
             });
         }
 
@@ -5107,6 +5111,7 @@ namespace GenBOE.Web.Controllers
                     newWorkspaceDTO.IsUsingTM = newWorkspace.IsUsingTM;
                     newWorkspaceDTO.RteSizeLimit = newWorkspace.RteSizeLimit;
                     newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
+                    newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
                     
                     if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                     {
@@ -5582,7 +5587,8 @@ namespace GenBOE.Web.Controllers
                     AllowGridEdit = workspace.AllowGridEdit,
                     LineOfBusinessID = workspace.LineOfBusiness.Id,
                     RteSizeLimit = workspace.RteSizeLimit,
-                    UsingTemplateBoe = workspace.UsingTemplateBOE
+                    UsingTemplateBoe = workspace.UsingTemplateBOE,
+                    EnableSAPConnection = workspace.EnableSAPConnection
                 };
 
                 toReturn = Json(modelView);

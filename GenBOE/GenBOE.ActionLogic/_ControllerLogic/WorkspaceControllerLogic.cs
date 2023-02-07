@@ -2341,6 +2341,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						{
 							table.ContractNumber = model.ContractNumber;
 						}
+
+						table.RepositoryName = RepositoryName.SAP.GetDescription();
 					}
 
 					resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
@@ -2407,6 +2409,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					// Perform common state transition actions
 					this.boeStateMachine.PerformStateTransitionAction(readjustBoe, ws, oldBOEState, readjustBoe.State);
 				}
+
+				scope.Complete();
 			}
 
 			ws.RefreshBoes();

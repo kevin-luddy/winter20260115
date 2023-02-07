@@ -462,8 +462,9 @@ ul.dropdown-menu.uib-datepicker-popup { background-color: #424242; }
 
 .lmlogo {
     float: right;
-    padding-top: 5px;
+    padding-top: 16px;
     width: 200px;
+    filter: invert(1);
 }
 
 

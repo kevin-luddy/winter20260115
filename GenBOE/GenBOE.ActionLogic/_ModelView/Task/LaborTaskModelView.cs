@@ -130,5 +130,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Is WS using Template BOEs
         /// </summary>
         public bool UsingTemplateBOE { get; set; }
+
+        /// <summary>
+        /// Get or set whether using Enable SAP Connection is selected.
+        /// </summary>
+        public bool EnableSAPConnection { get; set; }
     }
 }

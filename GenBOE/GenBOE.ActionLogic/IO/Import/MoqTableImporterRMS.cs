@@ -16,12 +16,15 @@ namespace GenBOE.ActionLogic.IO.Import
     /// </summary>
     public class MoqTableImporterRMS : MoqTableImporter
     {
-        protected override List<string> REQUIRED_COLUMNS => new List<string> { TABLE_NAME, DATE_OF_REPORT, HISTORICAL_PROGRAM_NAME, CONTRACT_NUMBER, WBS_ELEMENT, START_DATE, END_DATE, TOTAL_WBS_HOURS, ADDITIONAL_QUERY_FILTERS, TOTAL_RELEVANT_HOURS_RMS  };
+        protected override List<string> REQUIRED_COLUMNS => new List<string> { TABLE_NAME, DATE_OF_REPORT, HISTORICAL_PROGRAM_NAME, CONTRACT_NUMBER, WBS_ELEMENT, START_DATE, END_DATE };
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public MoqTableImporterRMS()
+		protected override List<string> ALL_COLUMNS => new List<string> { TABLE_NAME, DATE_OF_REPORT, HISTORICAL_PROGRAM_NAME, CONTRACT_NUMBER, WBS_ELEMENT, START_DATE, END_DATE, TOTAL_WBS_HOURS, ADDITIONAL_QUERY_FILTERS, TOTAL_RELEVANT_HOURS_RMS };
+
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public MoqTableImporterRMS()
             : base()
         {
 
@@ -65,38 +68,53 @@ namespace GenBOE.ActionLogic.IO.Import
                 moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
             }
 
-            // Total WBS/WBS Element Hours
-            if ((!row.ContainsKey(TOTAL_WBS_HOURS) || string.IsNullOrEmpty(row[TOTAL_WBS_HOURS])) && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
-            {
-                moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
-            }
-
-            // Additional Query Filters
+			// Additional Query Filters
             if (row.ContainsKey(ADDITIONAL_QUERY_FILTERS) && !string.IsNullOrEmpty(row[ADDITIONAL_QUERY_FILTERS]))
             {
                 moqTable.AdditionalQueryFilters = row[ADDITIONAL_QUERY_FILTERS];
             }
-            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
-            {
-                moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
-            }
+			else if (!Utilities.IsSAPEnabled && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+			{
+				// Additional Query Filters is required if SAP is disabled 
+				moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+			}
 
-            // Total Relevant Hours
-            if (row.ContainsKey(TOTAL_RELEVANT_HOURS_RMS) && !string.IsNullOrEmpty(row[TOTAL_RELEVANT_HOURS_RMS]))
-            {
-                if (decimal.TryParse(row[TOTAL_RELEVANT_HOURS_RMS], out decimal totalRelevantHours))
-                {
-                    moqTable.TotalRelevantHours = totalRelevantHours;
-                }
-                else
-                {
-                    moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalRelevantHours);
-                }
-            }
-            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
-            {
-                moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
-            }
+			// Total WBS/WBS Element Hours
+			if (!Utilities.IsSAPEnabled)
+			{
+				if ((!row.ContainsKey(TOTAL_WBS_HOURS) || string.IsNullOrEmpty(row[TOTAL_WBS_HOURS])) && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+				{
+					moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+				}
+				else
+				{
+					if (decimal.TryParse(row[TOTAL_WBS_HOURS], out decimal totalWbsHours))
+					{
+						moqTable.TotalWbsHours = totalWbsHours;
+					}
+					else
+					{
+						moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalWbsHours);
+					}
+				}
+
+				// Total Relevant Hours
+				if (row.ContainsKey(TOTAL_RELEVANT_HOURS_RMS) && !string.IsNullOrEmpty(row[TOTAL_RELEVANT_HOURS_RMS]))
+				{
+					if (decimal.TryParse(row[TOTAL_RELEVANT_HOURS_RMS], out decimal totalRelevantHours))
+					{
+						moqTable.TotalRelevantHours = totalRelevantHours;
+					}
+					else
+					{
+						moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalRelevantHours);
+					}
+				}
+				else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+				{
+					moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+				}
+			}
         }
     }
 }

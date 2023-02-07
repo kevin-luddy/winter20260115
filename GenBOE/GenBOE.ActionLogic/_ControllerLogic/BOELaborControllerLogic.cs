@@ -3534,21 +3534,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="ws">Workspace</param>
         /// <param name="request">http request containing import file</param>
-        /// <param name="dataToSave">Data to save</param>
-        /// <param name="errorsOccurred">if errors occurred</param>
-        /// <param name="exception">Exception</param>
         /// <returns>Imported MOQ Table modelviews</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ICollection<ImportMoqTableResultsModelView> ImportMoqTables(FullWorkspace ws, HttpRequestBase request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception)
+        public async Task<ImportMoqTableResultDataModelView> ImportMoqTables(FullWorkspace ws, HttpRequestBase request)
         {
             _ = ws ?? throw new ArgumentNullException(nameof(ws));
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            ICollection<ImportMoqTableResultsModelView> toReturn = new Collection<ImportMoqTableResultsModelView>();
-            exception = null;
-            errorsOccurred = false;
+            ImportMoqTableResultDataModelView resultData = new ImportMoqTableResultDataModelView();
 
-            try
+			try
             {
                 if(request.Files.Count > 0 && request.Files[0].FileName.Length > 0)
                 {
@@ -3558,20 +3553,73 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     {
                         foreach (MoqTableImportType importType in result.ImportTypes)
                         {
-                            toReturn.Add(new ImportMoqTableResultsModelView(result, importType));
+							resultData.Result.Add(new ImportMoqTableResultsModelView(result, importType));
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                exception = ex;
-                errorsOccurred = true;
+				logger.Error(ex);
+				resultData.ErrorsOccurred = true;
             }
 
-            dataToSave = toReturn.Where(x => x.ImportType == (int)MoqTableImportType.CreateMoqTable).ToList();
+			ICollection<ImportMoqTableResultsModelView> dataToSave = resultData.DataToSave();
 
-            return toReturn;
+			if (Utilities.IsSAPEnabled && dataToSave.Any())
+            {
+				// COnvert into SAP API params
+				string sapRepo = RepositoryName.SapWebi.GetDescription();
+
+				ImportMoqTableResultsModelView[] dataToSaveArray = dataToSave.Where(x => SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ||
+					x.RepositoryName == sapRepo).ToArray();
+
+				int index = 0;
+				ICollection<MoqTableDataModelView> validRows = dataToSave.Select(d =>
+						new MoqTableDataModelView
+						{
+							WbsElement = d.WbsElement,
+							PoPStart = d.PoPStart,
+							PoPEnd = d.PoPEnd,
+							// pop start/end FW only set if SSC and if using FW
+							PoPStartFW = d.SAPApiPoPStartString,
+							PoPEndFW = d.SAPApiPoPEndString,
+							Filters = d.AdditionalQueryFilters,
+							TableId = index++
+						}).ToList();
+
+				// run SAP Validation/Calculation and update correct fields
+				if (validRows.Any())
+				{
+					
+					ICollection<IESResponse<CalculateActualsViewModel>> sapResults = await this.CalculateAllActualsSap(validRows);
+					foreach (IESResponse<CalculateActualsViewModel> sapResult in sapResults)
+					{
+						CalculateActualsViewModel calculateActualsViewModel = sapResult.Data.FirstOrDefault();
+						if (calculateActualsViewModel != null && calculateActualsViewModel.TableId >= 0 && calculateActualsViewModel.TableId < dataToSaveArray.Length)
+						{
+							// match by the tableId to the index in the array
+							ImportMoqTableResultsModelView modelView = dataToSaveArray[calculateActualsViewModel.TableId];
+
+							if (sapResult.IsSuccessful)
+							{
+								// update the totals and date
+								modelView.TotalRelevantHours = Convert.ToDecimal(calculateActualsViewModel.TotalHours);
+								modelView.TotalWbsHours = Convert.ToDecimal(calculateActualsViewModel.WbsHours ?? 0.0);
+								modelView.DateOfReport = DateTime.Now;
+							}
+							else
+							{
+								// Update the Import Result Type
+								modelView.ImportType = (int)MoqTableImportType.InvalidSapCalculation;
+								modelView.ErrorMessages = sapResult.Messages;
+							}
+						}
+					}
+				}
+			}
+
+			return resultData;
         }
 
         /// <summary>

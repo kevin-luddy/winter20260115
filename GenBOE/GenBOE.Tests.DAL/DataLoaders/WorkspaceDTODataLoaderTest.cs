@@ -395,10 +395,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(workspace.TemplateBoe, result.UsingTemplateBOE);
                 // 50
                 Assert.AreEqual(workspace.WorkspaceCreationDate, result.CreationDate);
+                Assert.AreEqual(workspace.EnableSAPConnection, result.EnableSAPConnection);
             }
             Type dtoType = typeof(WorkspaceDTO);
             int numProperties = dtoType.GetProperties().Count();
-            Assert.AreEqual(51, numProperties, "Untested properties exist in the Workspace DTO");
+            Assert.AreEqual(52, numProperties, "Untested properties exist in the Workspace DTO");
         }
 
         [TestMethod]
@@ -853,6 +854,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(dto1.UsingTemplateBOE, dto2.UsingTemplateBOE);
         }
 
+        /// <summary>
+        /// Tests the validation for RTE fields that are too long.
+        /// Setup a workspace that had the fields past the validation:
+        /// Uses this - https://uat-genboe.ssc.lmco.com/20-00005_05
+        /// </summary>
         [TestMethod]
         public void TestGetRteFieldsExceedingLimit()
         {
@@ -873,8 +879,42 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(1, result.Count(x => x.Field.Contains("Task MOQ Rationale")));
             Assert.AreEqual(1, result.Count(x => x.Field.Contains("BOE Sources Of Data")));
             Assert.AreEqual(1, result.Count(x => x.Field.Contains("BOE Description")));
-        }
-    }
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceOciSettingByShortname 
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceOciSettingByShortname()
+		{
+			string shortName;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				shortName = gbe.Workspaces.First(x => x.ContainsOCI == true).WorkspaceShortName;
+			}
+
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+			bool? result = sut.GetWorkspaceOciSettingByShortname(shortName);
+
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result.Value);
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceOciSettingByShortname when shortname is empty
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceOciSettingByShortname_EmptyName()
+		{
+			string shortName = String.Empty;
+
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+			bool? result = sut.GetWorkspaceOciSettingByShortname(shortName);
+
+			Assert.IsNull(result);
+		}
+	}
 
     /// <summary>
     /// Separated this into a new class, so that way we don't automatically create all the objects which are carried via MOQLoaderObject

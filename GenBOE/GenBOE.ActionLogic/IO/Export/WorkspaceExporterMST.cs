@@ -113,6 +113,8 @@ namespace GenBOE.ActionLogic.IO.Export
             toReturn.Add("OCI", workspace.ContainsOCI ? this.sYes : this.sNo);
             toReturn.Add("Proposal Status", this.CommonDataMapper.getProposalStatusTypesDictionary()[(int)workspace.ProposalStatus].ProposalStateType);
             toReturn.Add("Proposal Comments", workspace.StatusComment);
+            toReturn.Add("MOQ Template BOEs", workspace.UsingTemplateBOE ? this.sYes : this.sNo);
+            toReturn.Add("SAP Connection Enabled", workspace.EnableSAPConnection ?  this.sYes : this.sNo);
             // For some unknown reason these are needed so the file won't corrupt
             toReturn.Add(this.sEmpty, this.sEmpty);
             toReturn.Add(this.sEmpty, this.sEmpty);

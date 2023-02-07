@@ -11,7 +11,8 @@
 %>
 
 <script type="text/javascript">
-    var formConfigs = [];
+	var formConfigs = [];
+	var originalSapConnectionEnabled = false;
      
     formConfigs.push({
         ElementID: 'WorkspaceIdentificationForm',
@@ -115,6 +116,22 @@
             }
         );
     }
+
+	WorkspaceIdentificationWidget.OnSapConnectionChange = function (selection) {
+		// If changing from Yes to No (and the workspace is currently set to Yes), warn the user
+		if ($(selection).val() == 'False' && originalSapConnectionEnabled == 'True') {
+			GenSession.confirmDialog("Enable SAP Connection Change",
+				"Changing the SAP Connection Enabled from Yes to No will automatically set all MOQ Tables in this Workspace as Source = User upon the save of the table.  Meaning the MOQ table is User managed and is no longer integrated with SAP.   This will not change any existing BOE status. Do you wish to proceed?",
+				function () {
+					// do nothing on confirm, let the change happen
+				},
+				function () {
+					// reset value on cancel
+					$('#EnableSAPConnection').val('True');
+				}
+			);
+		}
+	};
     
    $(function () {
         WorkspaceIdentificationWidget.registerForEvent('CLEAN_WORKSPACE_SETTINGS_DIRTY', function () { WorkspaceIdentificationWidget.cleanDirty('WorkspaceIdentificationForm'); });
@@ -186,7 +203,27 @@
            dropdown.removeClass('disabled');
            dropdown.removeAttr('disabled');
        }
+
+	   originalSapConnectionEnabled = $('#EnableSAPConnection').val();
     });
+
+	// Dynamically set disabled/readonly dropdown for SAP connection
+	var usingTemplateBoeInit = '<%:Model.UsingTemplateBoe%>'.isTrue();
+	var enableSAPDropdown = $('#EnableSAPConnection');
+
+	if (!usingTemplateBoeInit) {
+		enableSAPDropdown.addClass('disabled').attr('disabled', true);
+	}
+
+	$('#UsingTemplateBoe').change(function () {
+		if ($('#UsingTemplateBoe').val() === 'False') {
+			enableSAPDropdown.addClass('disabled').attr('disabled', true);
+			enableSAPDropdown.val('False');
+		} else {
+			enableSAPDropdown.removeClass('disabled').removeAttr('disabled');
+			enableSAPDropdown.val('True');
+		}
+	});
 </script>
 
 <div id="WorkspaceIdentification" class="workspace-identification module ">
@@ -403,6 +440,21 @@
                 <%} %>
             </div>
         </div>
+        <%if (Utilities.IsSAPEnabled) {  %>
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="Does this Workspace use the SAP in its BOEs?">SAP Connection Enabled</span>
+                </div>
+                <div class="form-element">
+                    <%: Html.DropDownListFor(c => c.EnableSAPConnection, new List<SelectListItem>()
+                        {
+                            new SelectListItem() { Text = "Yes", Value = "True" },
+                            new SelectListItem() { Text = "No", Value = "False" }
+                        }, new { onchange="WorkspaceIdentificationWidget.OnSapConnectionChange(this)" }) %>
+                </div>
+                <%: Html.HiddenFor(c => c.EnableSAPConnection) %>
+            </div>
+        <% } %>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
         <% } %>
     </div>

@@ -21,7 +21,7 @@
     <SccProvider>SAK</SccProvider>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>disabled</IISExpressAnonymousAuthentication>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
@@ -200,7 +200,7 @@
     <Content Include="Content\images\IES_logo_nav.png" />
     <Content Include="Content\images\in_progress_white.gif" />
     <Content Include="Content\images\launchpad-bg.jpg" />
-    <Content Include="Content\images\LM_logo_notagline_black.png" />
+    <Content Include="Content\images\LM-logo-White.png" />
     <Content Include="Content\images\logo_ACV.jpg" />
     <Content Include="Content\images\logo_ACV_wide.jpg" />
     <Content Include="Content\images\logo_eEPP.jpg" />

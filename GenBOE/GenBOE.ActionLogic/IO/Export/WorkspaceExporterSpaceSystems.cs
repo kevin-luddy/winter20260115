@@ -97,6 +97,8 @@ namespace GenBOE.ActionLogic.IO.Export
             toReturn.Add("OCI", workspace.ContainsOCI ? this.sYes : this.sNo);
             toReturn.Add("Proposal Status", this.CommonDataMapper.getProposalStatusTypesDictionary()[(int)workspace.ProposalStatus].ProposalStateType);
             toReturn.Add("Proposal Comments", workspace.StatusComment);
+            toReturn.Add("MOQ Template BOEs", workspace.UsingTemplateBOE ? this.sYes : this.sNo);
+            toReturn.Add("SAP Connection Enabled", workspace.EnableSAPConnection ? this.sYes : this.sNo);
 
             if (!FullObjectHelper.ShowEquivalentPersonsOption)
             {

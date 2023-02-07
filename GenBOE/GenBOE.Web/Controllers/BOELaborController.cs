@@ -188,7 +188,8 @@ namespace GenBOE.Web.Controllers
                 ContainsDiscrete = containsDiscrete,
                 DescriptionTemplateAnswers = rteAnswers.Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription).ToList(),
                 TaskDescription = taskDescription,
-                UsingTemplateBOE = ws.UsingTemplateBOE
+                UsingTemplateBOE = ws.UsingTemplateBOE,
+                EnableSAPConnection = ws.EnableSAPConnection
             };
 
             this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
@@ -590,6 +591,7 @@ namespace GenBOE.Web.Controllers
             }
 
             modelView.UsingTemplateBOE = fullWorkspace.UsingTemplateBOE;
+            modelView.EnableSAPConnection = fullWorkspace.EnableSAPConnection;
             modelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(fullWorkspace.CreationDate >= moqTemplateUsageStartDate, null);
             if (fullWorkspace.UsingTemplateBOE)
             {
@@ -1355,7 +1357,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="taskElementID">Task ID</param>
         /// <returns>View with imported MOQ Table data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "moqTypeId")]
-        public ViewResult ImportMoqTables(string workspace, int taskElementID)
+        public async Task<ViewResult> ImportMoqTables(string workspace, int taskElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision); 
@@ -1365,18 +1367,13 @@ namespace GenBOE.Web.Controllers
 
             JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
-            ICollection<ImportMoqTableResultsModelView> importResults = this._BoeLaborControllerLogic.ImportMoqTables(ws, Request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception ex);
+			ImportMoqTableResultDataModelView importResults = await this._BoeLaborControllerLogic.ImportMoqTables(ws, Request);
 
-            this.ViewData["ERRORS_OCCURRED"] = errorsOccurred;
-            this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
+            this.ViewData["ERRORS_OCCURRED"] = importResults.ErrorsOccurred;
+            this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(importResults.DataToSave());
             this.ViewData["DOCUMENT_DOMAIN"] = this.Request["documentDomain"];
 
-            if (errorsOccurred)
-            {
-                this._log.Error(ex);
-            }
-
-            ViewResult toReturn = this.View(WebConstants.VIEW_MOQ_TABLE_IMPORT_VERIFICATION, importResults);
+            ViewResult toReturn = this.View(WebConstants.VIEW_MOQ_TABLE_IMPORT_VERIFICATION, importResults.Result);
 
             // Finalize Action
             FinalizeAction(_log, WebConstants.ACTION_IMPORT_MOQ_TABLES, sw);
@@ -2281,8 +2278,8 @@ namespace GenBOE.Web.Controllers
             theModelView.HelpText = _BoeLaborControllerLogic.GetMOQTypesHelpText();
             theModelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
             theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
-
-            
+            theModelView.EnableSAPConnection = ws.EnableSAPConnection;
+                        
             theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.CreationDate >= moqTemplateUsageStartDate, null);
 
             if (ws.UsingTemplateBOE)

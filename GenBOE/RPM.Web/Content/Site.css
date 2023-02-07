@@ -592,8 +592,9 @@ li.dropdown {position: static;}
 
 .lmlogo {
     float: right;
-    padding-top: 5px;
+    padding-top: 18px;
     width: 200px;
+    filter: invert(1);
 }
 
 

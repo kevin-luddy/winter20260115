@@ -2437,14 +2437,16 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 							TableName = "First table",
 							Id = 1,
 							DateOfReport = DateTime.Today.AddDays(-1),
-							TotalRelevantHours = 10
+							TotalRelevantHours = 10,
+                            RepositoryName = RepositoryName.SapWebi.GetDescription()
 						},
 						new MoqTableData()
 						{
 							TableName = "Second table",
 							Id = 2,
 							DateOfReport = DateTime.Today.AddDays(-1),
-							TotalRelevantHours = 15
+							TotalRelevantHours = 15,
+							RepositoryName = RepositoryName.SapWebi.GetDescription()
 						}
 					}
 				},
@@ -2461,7 +2463,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 							TableName = "Third table",
 							Id = 3,
 							DateOfReport = DateTime.Today.AddDays(-1),
-							TotalRelevantHours = 20
+							TotalRelevantHours = 20,
+							RepositoryName = RepositoryName.SapWebi.GetDescription()
 						}
 					}
 				},
@@ -2478,7 +2481,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 							TableName = "Fourth table",
 							Id = 4,
 							DateOfReport = DateTime.Today.AddDays(-1),
-							TotalRelevantHours = 25
+							TotalRelevantHours = 25,
+							RepositoryName = RepositoryName.SapWebi.GetDescription()
 						}
 					}
 				}
