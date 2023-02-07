@@ -696,6 +696,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.filterDialog.data.push(newRow);
 	};
 
+	$scope.DeleteValue = function (valArray, index) {
+		// remove one value from the value array
+		valArray.splice(index, 1);
+	};
+
 	$scope.DeleteFilter = function (index) {
 		var row = $scope.filterDialog.data[index];
 		if (row.StartParens) {

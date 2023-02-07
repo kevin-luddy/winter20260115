@@ -659,7 +659,8 @@
 										<div data-ng-repeat="val in queryFilter.Value track by $index">
 											<input data-ng-if="queryFilter.Type !== 'System.DateTime'" type="text" data-ng-model="queryFilter.Value[$index]" />
 											<input data-ng-if="queryFilter.Type === 'System.DateTime'" genDatepicker type="text" data-ng-model="queryFilter.Value[$index]" style="width:75px;" />
-											<button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
+                                            <div class="delete" style="display:inline-block" data-ng-if="queryFilter.Value && queryFilter.Value.length > 1" data-ng-click="DeleteValue(queryFilter.Value, $index)"></div> 
+                                            <button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
 										</div>
 									</div>
 								</td>
