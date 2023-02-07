@@ -23,7 +23,7 @@ namespace GenBOE.Web.Controllers
 	/// <summary>
 	/// Base BOE Api data controller
 	/// </summary>
-	public class BoeDataBaseAPIController : ApiController
+	public abstract class BoeDataBaseAPIController : ApiController
 	{
 		/// <summary>
 		/// Security Access
@@ -52,7 +52,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="factory">Full object factory</param>
 		/// <param name="userLoader">User loader</param>
 		/// <param name="permissionsLoader">Permission loader</param>
-		public BoeDataBaseAPIController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
+		protected BoeDataBaseAPIController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
 		{
 			this.Factory = factory;
 			this.UserLoader = userLoader;

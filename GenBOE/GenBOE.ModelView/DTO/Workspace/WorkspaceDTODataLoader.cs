@@ -515,17 +515,17 @@ namespace GenBOE.DataBridge.DTO
         /// Used by ACV
         /// </summary>
         [DbQuery]
-        public virtual ICollection<(int Id, string shortName, string longName)> GetWorkspaceDataForProposal(string ptmTrackingNumber)
+        public virtual ICollection<(int Id, string shortName, string longName, bool containsOCI)> GetWorkspaceDataForProposal(string ptmTrackingNumber)
         {
-            ICollection<(int Id, string shortName, string longName)> result;
+            ICollection<(int Id, string shortName, string longName, bool containsOCI)> result;
 
             using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
                     result = gbe.Workspaces.Where(x => x.TrackingNumber == ptmTrackingNumber && x.IsDeleted != true)
-                                    .Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName }).ToList()
-                                    .Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName)).ToList();
+                                    .Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName, containsOCI = x.ContainsOCI }).ToList()
+                                    .Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName, containsOCI: x.containsOCI)).ToList();
                 }
             }
 
