@@ -662,8 +662,6 @@
                                             <div class="delete" style="display:inline-block" data-ng-if="queryFilter.Value && queryFilter.Value.length > 1" data-ng-click="DeleteValue(queryFilter.Value, $index)"></div> 
                                             <button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
 										</div>
-                                       
-											
 									</div>
 								</td>
 								<td><span data-ng-if="queryFilter.EndParens">)</span></td>
