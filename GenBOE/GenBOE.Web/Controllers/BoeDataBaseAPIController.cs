@@ -10,6 +10,8 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using System.Net.Http;
+	using System.Net;
 	using System.Web;
 	using System.Web.Http;
 	using GenBOE.DataBridge.Common;
@@ -58,6 +60,29 @@ namespace GenBOE.Web.Controllers
 			this.UserLoader = userLoader;
 			this.PermissionsLoader = permissionsLoader;
 			this.SecurityAccess = securityAccess;
+		}
+
+        /// <summary>
+        /// Checks if user has permission to Security Page inside a Workspace.
+        /// First, checks whether workspace has OCI.  If true, then checks user's permission to workspace; otherwise, returns true.
+        /// </summary>
+        /// <param name="page">The security page to check for access</param>
+        /// <param name="workspace">The workspace to check for access</param>
+        /// <returns>True if user has permission to Security Page inside a Workspace.</returns>
+        protected bool HasOciPermission(SecurityPage page, FullWorkspace workspace)
+		{
+			bool permissionOk = true;
+			if (workspace.ContainsOCI)
+			{
+                SecurityAuthorization permission = this.CheckPermission(page, workspace);
+
+                if (permission < SecurityAuthorization.Read)
+                {
+                    permissionOk = false;
+                }
+            }
+
+			return permissionOk;
 		}
 
 		/// <summary>
