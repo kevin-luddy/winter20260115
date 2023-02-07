@@ -28,6 +28,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using IES.Common.Exceptions;
 	using IES.Common.PickList;
 
 	/// <summary>
@@ -133,10 +134,39 @@ namespace GenBOE.Web.Controllers
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
+                
+				ICollection<(int Id, string shortName, string longName, bool containsOCI)> data = this.loader.GetWorkspaceDataForProposal(ptmTrackingNumber);
+				List<AcvWorkspaceData> acvWorkspaces = data.Select(x => new AcvWorkspaceData() { Id = x.Id, ShortName = x.shortName, LongName = x.longName }).ToList();
 
-				ICollection<(int Id, string shortName, string longName)> data = this.loader.GetWorkspaceDataForProposal(ptmTrackingNumber);
-				result.Data = data.Select(x => new AcvWorkspaceData() { Id = x.Id, ShortName = x.shortName, LongName = x.longName }).ToCollection();
-				result.IsSuccessful = true;
+				foreach((int Id, string shortName, string longName, bool containsOCI) workspace in data)
+				{
+					if (workspace.containsOCI)
+					{
+                        // do permission check if OCI
+						// permission check throws exceptions so we need to catch them and handle
+                        FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace.shortName);
+						try
+						{
+							SecurityAuthorization permission = this.CheckPermission(SecurityPage.WorkspaceHome, ws);
+
+							if (permission < SecurityAuthorization.Read)
+							{
+								acvWorkspaces.RemoveAll(x => x.Id == workspace.Id);
+							}
+						}
+						catch(ValidationException)
+						{
+                            acvWorkspaces.RemoveAll(x => x.Id == workspace.Id);
+                        }
+						catch(UnauthorizedAccessException)
+						{
+                            acvWorkspaces.RemoveAll(x => x.Id == workspace.Id);
+                        }
+                    }
+				}
+
+				result.Data = acvWorkspaces;
+                result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
