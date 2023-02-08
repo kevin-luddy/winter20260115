@@ -41,7 +41,10 @@
         HistoricalMoqType: <%:(int)MOQType.Historical%>,
         ComparativeMoqType: <%:(int)MOQType.Comparative%>,
         SAPEnabled: '<%:Utilities.IsSAPEnabled%>'.isTrue(),
-        SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>'
+        SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
+		SapConnectionEnabled: '<%=Model.EnableSAPConnection%>'.isTrue(),
+		RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
+		RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>'
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -174,12 +177,13 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <select data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
+                                <select data-ng-if="model.SapConnectionEnabled" data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
                                     <option value=""></option>
                                     <option value="<%: RepositoryName.SapWebi.GetDescription() %>"><%: RepositoryName.SapWebi.GetDescription() %></option>
                                     <option value="<%: RepositoryName.Other.GetDescription() %>"><%: RepositoryName.Other.GetDescription() %></option>
                                 </select>
-                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>'" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
+                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>' && model.SapConnectionEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
+                                <input data-ng-if="!model.SapConnectionEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.RepositoryName" />
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
@@ -400,7 +404,7 @@
             <select data-ng-model="model.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes"></select>
             <button data-ng-if="!ActualReadOnly()" data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType" class="moqTypesButton ies-action" type="button">Add MOQ Type</button>
             <button data-ng-if="!ActualReadOnly()" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="displayReOrderMoqTypesDialog()" class="moqTypesButton ies-blue" type="button">Sort MOQ Types</button>
-			<button data-ng-if="!ActualReadOnly()" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="calculateAllMoqActuals()" class="moqTypesButton ies-action" type="button">Calculate All Actuals</button>
+			<button data-ng-if="!ActualReadOnly() && model.SAPEnabled" ng-disabled="calculateAllDisabled" data-ng-click="calculateAllMoqActuals()" class="moqTypesButton ies-action" type="button">Calculate All Actuals</button>
         </div>
     </div>
 
@@ -655,7 +659,8 @@
 										<div data-ng-repeat="val in queryFilter.Value track by $index">
 											<input data-ng-if="queryFilter.Type !== 'System.DateTime'" type="text" data-ng-model="queryFilter.Value[$index]" />
 											<input data-ng-if="queryFilter.Type === 'System.DateTime'" genDatepicker type="text" data-ng-model="queryFilter.Value[$index]" style="width:75px;" />
-											<button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
+                                            <div class="delete" style="display:inline-block" data-ng-if="queryFilter.Value && queryFilter.Value.length > 1" data-ng-click="DeleteValue(queryFilter.Value, $index)"></div> 
+                                            <button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
 										</div>
 									</div>
 								</td>

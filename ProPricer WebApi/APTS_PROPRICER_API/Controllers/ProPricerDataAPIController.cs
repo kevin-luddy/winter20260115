@@ -14,6 +14,7 @@ namespace APTSPropricerApi.Controllers
     using System.Linq;
     using System.Web.Http;
     using APTSPropricerApi.Common;
+    using APTSPropricerApi.Connection;
     using APTSPropricerApi.DTOs;
 
     /// <summary>
@@ -49,10 +50,13 @@ namespace APTSPropricerApi.Controllers
 
                 using (ProposalsController pc = new ProposalsController())
                 {
-                    response.Data = pc.Get(instanceId);
-                    response.IsSuccessful = true;
+                    using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
+                    {
+                        response.Data = pc.GetAllProposals(ppc);
+                        response.IsSuccessful = true;
+                    }
                 }
-            }
+			}
             catch (Exception ex)
             {
                 logger.Error(ex);

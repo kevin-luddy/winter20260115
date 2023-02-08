@@ -206,6 +206,7 @@ namespace GenBOE.Web.Controllers
             this.ViewData["DecimalPrecision"] = ws.DecimalPrecision;
 			this.ViewData["SapFields"] = await _ControllerLogic.GetAllFields();
 			this.ViewData["SapOperators"] = await _ControllerLogic.GetAllOperators();
+            this.ViewData["EnableSAPConnection"] = ws.EnableSAPConnection;
 
 			ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
 

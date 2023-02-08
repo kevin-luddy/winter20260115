@@ -25,16 +25,6 @@ namespace GenTRAC.DataBridge.DTO
         ContractsDto GetContractForProposal(int proposalId);
 
         /// <summary>
-        /// Gets all objects based on the IDs that were passed in
-        /// </summary>
-        /// <param name="ids">IDs</param>
-        /// <returns>
-        /// Corresponding Data
-        /// </returns>
-        /// <exception cref="System.NotImplementedException">This method should never be called.</exception>
-        ICollection<ContractsDto> GetByIds(ICollection<int> ids);
-
-        /// <summary>
         /// Gets a list of select items representing the EppDelegationAuthority enumeration values
         /// </summary>
         /// <param name="selectedValue">Enum option that should be selected by default</param>

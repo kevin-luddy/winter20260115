@@ -395,10 +395,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(workspace.TemplateBoe, result.UsingTemplateBOE);
                 // 50
                 Assert.AreEqual(workspace.WorkspaceCreationDate, result.CreationDate);
+                Assert.AreEqual(workspace.EnableSAPConnection, result.EnableSAPConnection);
             }
             Type dtoType = typeof(WorkspaceDTO);
             int numProperties = dtoType.GetProperties().Count();
-            Assert.AreEqual(51, numProperties, "Untested properties exist in the Workspace DTO");
+            Assert.AreEqual(52, numProperties, "Untested properties exist in the Workspace DTO");
         }
 
         [TestMethod]
@@ -853,6 +854,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(dto1.UsingTemplateBOE, dto2.UsingTemplateBOE);
         }
 
+        /// <summary>
+        /// Tests the validation for RTE fields that are too long.
+        /// Setup a workspace that had the fields past the validation:
+        /// Uses this - https://uat-genboe.ssc.lmco.com/20-00005_05
+        /// </summary>
         [TestMethod]
         public void TestGetRteFieldsExceedingLimit()
         {
