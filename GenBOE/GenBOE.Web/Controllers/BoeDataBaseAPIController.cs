@@ -71,6 +71,11 @@ namespace GenBOE.Web.Controllers
         /// <returns>True if user has permission to Security Page inside a Workspace.</returns>
         protected bool HasOciPermission(SecurityPage page, WorkspaceDTO workspace)
         {
+            if (workspace == null)
+            {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+
             bool permissionOk = true;
             if (workspace.ContainsOCI)
             {
