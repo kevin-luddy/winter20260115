@@ -1304,6 +1304,21 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	}
 
+	$scope.IsSapSetAndAnyTableSapRepository = function () { 
+		$scope.calculateAllDisabled = true;
+		if ($scope.model.SAPEnabled && $scope.model.SapConnectionEnabled) {
+			let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+
+			if ($scope.IsSapSetAsAnyRepository(moqTypes)) {
+				moqTypes.forEach(moq => {
+					if (moq.TableData.some((x) => $scope.IsSAPSetAsRepository(x.RepositoryName))) {
+						$scope.calculateAllDisabled = false;
+					}
+				});
+			}
+		}
+	}
+
 	$scope.SetTableDirty = function (tableData) {
 		if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
 			$scope.actualsValidation.isDirty.set(tableData.Id, true);
@@ -1322,6 +1337,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			$scope.actualsValidation.errors.set(tableData.Id, []); // clear SAP validation messages
 		}
 
+		$scope.IsSapSetAndAnyTableSapRepository();
 		$scope.refreshDisableSave();
 	}
 }]);
