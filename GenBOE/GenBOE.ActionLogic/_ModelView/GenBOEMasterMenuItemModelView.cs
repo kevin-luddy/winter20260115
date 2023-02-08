@@ -368,11 +368,6 @@ namespace GenBOE.ActionLogic.ModelView
         private const string RMS_HELP_GOLD_CARD_LINK = "SystemsResources/RMS_BOE_Gold%20Card.pptx";
 
         /// <summary>
-        /// RMS Help URL - BOE Review Aid
-        /// </summary>
-        private const string RMS_HELP_BOE_REVIEW_LINK = "SystemsResources/BOE_Review_Aide.docx";
-
-        /// <summary>
         /// RMS Help URL - BOE Writing Training
         /// </summary>
         private const string RMS_HELP_BOE_WRITING_LINK = "Training/Training-BOE.pptx";
