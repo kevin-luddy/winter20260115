@@ -737,7 +737,9 @@ namespace GenBOE.Web.Controllers
             model.IsAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
             model.PtmTrackingNumberNotRequired = string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("CanCreateWorkspaceWithoutPtmTrackingNumber")) ?
                 false :
-                _securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber"); 
+                _securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
+
+            model.IsSAPConnectionEnabled = Utilities.IsSAPEnabled;
 
             ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE, model);
 

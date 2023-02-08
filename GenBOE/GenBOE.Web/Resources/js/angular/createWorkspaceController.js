@@ -39,7 +39,7 @@
         isAdmin: CreateWorkspaceModelView.IsAdmin,  // SSC only
         ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
         nextRevision: '', // SSC only, the next revision of the PTM tracking number
-        isSAPConfigurationEnabled: false    // This value will be grabbed from Web.config
+        isSAPConfigurationEnabled: CreateWorkspaceModelView.IsSAPConnectionEnabled    // This value will be grabbed from Web.config
     };
 
     // data houses the data being saved and sent to the back-end
