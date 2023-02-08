@@ -39,7 +39,7 @@
         isAdmin: CreateWorkspaceModelView.IsAdmin,  // SSC only
         ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
         nextRevision: '', // SSC only, the next revision of the PTM tracking number
-        isSAPConfigurationEnabled: false    // This value will be grabbed from Web.config
+        isSAPConfigurationEnabled: CreateWorkspaceModelView.IsSAPConnectionEnabled    // This value will be grabbed from Web.config
     };
 
     // data houses the data being saved and sent to the back-end
@@ -556,6 +556,7 @@
         $scope.model.showButtonLoader = true;
         // create the workspace
         var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
+        console.log("createnewws")
         $http({
             method: 'POST',
             url: createUrl,
@@ -763,6 +764,8 @@
 
         var postURL = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetWorkspaceToCopyBOEListAction);
 
+        console.log("getworkspacetocopy")
+
         $http({
             method: 'POST',
             url: postURL,
@@ -787,6 +790,8 @@
     $scope.getWorkspaceToCopyDetails = function (copyDetails) {
         var deferred = $q.defer();
         var postURL = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetWorkspaceToCopyDetailsAction);
+
+        console.log("getworkspacetocopydetails")
 
         $http({
             method: 'POST',

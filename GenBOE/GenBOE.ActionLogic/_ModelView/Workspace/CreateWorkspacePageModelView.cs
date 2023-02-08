@@ -66,5 +66,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// Should only be possible in high side
         /// </summary>
         public bool PtmTrackingNumberNotRequired { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether or not the SAP Connection is configured, via the value in the config
+        /// </summary>
+        public bool IsSAPConnectionEnabled { get; set; }
     }
 }
