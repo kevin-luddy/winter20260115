@@ -4,6 +4,7 @@
 <%: Scripts.Render("~/bundles/identification") %>
 <% 
 	bool disabledBoeTemplateDropdown = Model.UsingTemplateBoe || Model.CreatedPriorToBoeTemplates;
+	bool disabledEnableSAPConnectionDropdown = false;
 	object dropdownParamsForBoeTemplates = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()" };
 	if (disabledBoeTemplateDropdown)
 	{
@@ -425,9 +426,11 @@
         if ($('#UsingTemplateBoe').val() === 'False') {
 			enableSAPDropdown.addClass('disabled').attr('disabled', true);
 			enableSAPDropdown.val('False');
+			disabledEnableSAPConnectionDropdown = true;
         } else {
 			enableSAPDropdown.removeClass('disabled').removeAttr('disabled');
 			enableSAPDropdown.val('True');
+			disabledEnableSAPConnectionDropdown = false;
         }
     });
 </script>
@@ -734,7 +737,10 @@
 							new SelectListItem() { Text = "No", Value = "False" }
 						}, new { onchange="WorkspaceIdentificationWidget.OnSapConnectionChange(this)" }) %>
 				</div>
-				<%: Html.HiddenFor(c => c.EnableSAPConnection) %>
+				<%if (disabledEnableSAPConnectionDropdown)
+					{%>
+						<%: Html.HiddenFor(c => c.EnableSAPConnection) %>
+					<%} %>
 			</div>
 		<% } %>
 		<button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
