@@ -421,11 +421,6 @@ namespace GenBOE.ActionLogic.ModelView
                             },
                             new GenBOEMasterMenuItemModelView {
                                 securityPage = SecurityPage.Home,
-                                linkText = "BOE Review Aide",
-                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_BOE_REVIEW_LINK)
-                            },
-                            new GenBOEMasterMenuItemModelView {
-                                securityPage = SecurityPage.Home,
                                 linkText = "RMS BOE Writing Training",
                                 linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_BOE_WRITING_LINK)
                             },
