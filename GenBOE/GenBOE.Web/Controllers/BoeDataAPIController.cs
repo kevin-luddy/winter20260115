@@ -193,9 +193,7 @@ namespace GenBOE.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-                SecurityAuthorization permission = this.CheckPermission(SecurityPage.BoeCustomFields, workspace);
-
-                if (permission >= SecurityAuthorization.Read)
+                if (this.HasOciPermission(SecurityPage.BoeCustomFields, workspace))
                 {
                     result.Data = workspace.CustomFields.Select(c => c.CustomFieldName).ToList();
                     result.IsSuccessful = true;
@@ -226,10 +224,7 @@ namespace GenBOE.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-
-                SecurityAuthorization permission = this.CheckPermission(SecurityPage.Reports, workspace);
-
-                if (permission < SecurityAuthorization.Read)
+                if (!this.HasOciPermission(SecurityPage.Reports, workspace))
                 {
                     return new HttpResponseMessage(HttpStatusCode.Unauthorized);
                 }
@@ -283,10 +278,7 @@ namespace GenBOE.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-
-                SecurityAuthorization permission = this.CheckPermission(SecurityPage.Reports, workspace);
-
-                if (permission < SecurityAuthorization.Read)
+                if (!this.HasOciPermission(SecurityPage.Reports, workspace))
                 {
                     return new HttpResponseMessage(HttpStatusCode.Unauthorized);
                 }
@@ -339,10 +331,7 @@ namespace GenBOE.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-
-                SecurityAuthorization permission = this.CheckPermission(SecurityPage.Reports, workspace);
-
-                if (permission < SecurityAuthorization.Read)
+                if (!this.HasOciPermission(SecurityPage.Reports, workspace))
                 {
                     return new HttpResponseMessage(HttpStatusCode.Unauthorized);
                 }
@@ -433,10 +422,7 @@ namespace GenBOE.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-
-                SecurityAuthorization permission = this.CheckPermission(SecurityPage.Reports, workspace);
-
-                if (permission >= SecurityAuthorization.Read)
+                if (this.HasOciPermission(SecurityPage.Reports, workspace))
                 {
                     boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
                     boeData.IsSuccessful = true;
@@ -467,9 +453,7 @@ namespace GenBOE.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-                SecurityAuthorization permission = this.CheckPermission(SecurityPage.ManageBOEForms, workspace);
-
-                if (permission >= SecurityAuthorization.Read)
+                if (this.HasOciPermission(SecurityPage.ManageBOEForms, workspace))
                 {
                     ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
 
@@ -507,9 +491,7 @@ namespace GenBOE.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-                SecurityAuthorization permission = this.CheckPermission(SecurityPage.ManageBOEForms, workspace);
-
-                if (permission >= SecurityAuthorization.Read)
+                if (this.HasOciPermission(SecurityPage.ManageBOEForms, workspace))
                 {
                     ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
 
