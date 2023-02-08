@@ -1304,18 +1304,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	}
 
-	$scope.IsSapSetAndAnyTableSapRepository = function () { 
+	$scope.IsSapSetAndAnyTableSapRepository = function () {
 		$scope.calculateAllDisabled = true;
-		if ($scope.model.SAPEnabled && $scope.model.SapConnectionEnabled) {
-			let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+		let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
 
-			if ($scope.IsSapSetAsAnyRepository(moqTypes)) {
-				moqTypes.forEach(moq => {
-					if (moq.TableData.some((x) => $scope.IsSAPSetAsRepository(x.RepositoryName))) {
-						$scope.calculateAllDisabled = false;
-					}
-				});
-			}
+		if ($scope.IsSapSetAsAnyRepository(moqTypes)) {
+			$scope.calculateAllDisabled = false;
 		}
 	}
 
