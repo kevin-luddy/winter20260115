@@ -69,7 +69,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="page">The security page to check for access</param>
         /// <param name="workspace">The workspace to check for access</param>
         /// <returns>True if user has permission to Security Page inside a Workspace.</returns>
-        protected bool HasOciPermission(SecurityPage page, FullWorkspace workspace)
+        protected bool HasOciPermission(SecurityPage page, WorkspaceDTO workspace)
         {
             bool permissionOk = true;
             if (workspace.ContainsOCI)
