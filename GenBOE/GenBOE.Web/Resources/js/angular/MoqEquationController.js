@@ -1268,7 +1268,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.RefreshPoPMonths = function (popStart, popEnd) {
 		// Get the difference between the two dates in months (30 days), rounded to 2 decimals
 		return +((popEnd - popStart) / (1000 * 60 * 60 * 24) / 30).toFixed(2);
-	}
+	};
 
 	$scope.IsSapEnabledAndSetAsRepository = function (repositoryName) {
 		if ($scope.model.IsRMS) {
@@ -1278,7 +1278,17 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			// SSC requires Repository Name to be set to SAP / WEBI
 			return $scope.model.SAPEnabled && $scope.model.SapConnectionEnabled && repositoryName == $scope.model.SapWebiRepository;
 		}
-	}
+	};
+
+	$scope.IsMoqCustomFieldRequired = function (repositoryName) {
+		if ($scope.model.IsRMS) {
+			// RMS always sets to true
+			return true;
+		} else {
+			// SSC requires if SAP is not enabled or if Repository Name is not set to SAP / WEBI 
+			return !$scope.model.SAPEnabled || repositoryName !== $scope.model.SapWebiRepository;
+		}
+	};
 
 	$scope.IsSAPSetAsRepository = function (repositoryName) {
 		if ($scope.model.IsRMS) {

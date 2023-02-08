@@ -247,9 +247,9 @@
                             <td><input data-ng-readonly="true" type="text" data-ng-model="tableData.PoPMonthsString" /></td>
                         </tr>
                         <tr data-ng-repeat="customField in MoqTableCustomFields" data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{customField.CustomFieldMetaData.FieldName}}{{(customField.CustomFieldMetaData.isRequired) ? ' *' : ''}}</td>
+                            <td class="form-label">{{customField.CustomFieldMetaData.FieldName}}{{(IsMoqCustomFieldRequired(tableData.RepositoryName) && customField.CustomFieldMetaData.isRequired) ? ' *' : ''}}</td>
                             <td class="custom-field">{{ selectedItem = findMoqTableCustomFieldValue(customField, tableData); "" }}
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" onchange="MOQEquationFieldWidget.setDirty(); validateMoqTableCustomField(this);" data-ng-required="customField.CustomFieldMetaData.isRequired" data-ng-class="{'ng-invalid': customField.CustomFieldMetaData.isRequired && selectedItem.openEndedValue.length==0}" data-ng-value="selectedItem.openEndedValue" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" customfieldvalueid="{{selectedItem.openEndedId}}" selectionid="{{selectedItem.selectedID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="true" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" onchange="MOQEquationFieldWidget.setDirty(); validateMoqTableCustomField(this);" data-ng-required="IsMoqCustomFieldRequired(tableData.RepositoryName) && customField.CustomFieldMetaData.isRequired" data-ng-class="{'ng-invalid': customField.CustomFieldMetaData.isRequired && selectedItem.openEndedValue.length==0}" data-ng-value="selectedItem.openEndedValue" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" customfieldvalueid="{{selectedItem.openEndedId}}" selectionid="{{selectedItem.selectedID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="true" />
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
