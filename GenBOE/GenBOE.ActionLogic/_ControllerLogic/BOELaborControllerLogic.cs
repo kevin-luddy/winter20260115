@@ -1685,7 +1685,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					BOECustomFieldModelView customField = requiredCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == cf.CustomFieldID);
 					if (customField != null &&
-						string.IsNullOrEmpty(cf.OpenEndedValue))
+						string.IsNullOrEmpty(cf.OpenEndedValue) &&
+                        moqTable.RepositoryName != sapWebiName)
 					{
 						inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
 					}
