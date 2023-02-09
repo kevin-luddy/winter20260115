@@ -1253,7 +1253,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.ValidatePopStart = function (date) {
 		// validate PoP Start is on a Monday (1)
-		if (!$scope.model.SAPEnabled) {
+		if (!$scope.model.SapConnectionEnabled) {
 			return false; // true means invalid
 		} else {
 			return typeof date !== "undefined" && date.getDay() != 1;
@@ -1263,7 +1263,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.ValidatePopEnd = function (date) {
 		// validate PoP End is on a Sunday (0)
 		// validate PoP Start is on a Monday (1)
-		if (!$scope.model.SAPEnabled) {
+		if (!$scope.model.SapConnectionEnabled) {
 			return false; // true means invalid
 		} else {
 			return typeof date !== "undefined" && date.getDay() != 0;
