@@ -285,15 +285,9 @@ namespace APTSPropricerApi.Controllers
 				}
 				finally
 				{
-					if (proposal != null)
-					{
-						proposal.Close();
-					}
+					proposal?.Close();
 
-					if (batchReport != null)
-					{
-						batchReport.Close();
-					}
+					batchReport?.Close();
 
 					ppc.Workspace.Reports.BatchReports.Close();
 				}

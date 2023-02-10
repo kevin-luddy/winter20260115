@@ -213,20 +213,20 @@ namespace APTSPropricerApi
 
 			switch (exportOption)
 			{
-				case (ProPricerExportOption.OverwriteDuplicates):
+				case ProPricerExportOption.OverwriteDuplicates:
 					{
 						// TODO: What is the difference between Overwrite, SafeOverwrite, and ReleaseOverwrite?
 						// Overwrites duplicate records.
 						convertedExportOption = DuplicateOption.Overwrite;
 						break;
 					}
-				case (ProPricerExportOption.DoNotOverwriteDuplicates):
+				case ProPricerExportOption.DoNotOverwriteDuplicates:
 					{
 						// TODO: Does DuplicateOption.Skip equate to Do not overwrite???
 						convertedExportOption = DuplicateOption.Skip;
 						break;
 					}
-				case (ProPricerExportOption.AddValueToDuplicate):
+				case ProPricerExportOption.AddValueToDuplicate:
 					{
 						// Accumulates resource hours if a resource already exists.
 						convertedExportOption = DuplicateOption.AddToExisting;
@@ -330,14 +330,8 @@ namespace APTSPropricerApi
 				}
 				finally
 				{
-					if (exceptionFileHandle != null)
-					{
-						exceptionFileHandle.Close();
-					}
-					if (logFileHandle != null)
-					{
-						logFileHandle.Close();
-					}
+					exceptionFileHandle?.Close();
+					logFileHandle?.Close();
 				}
 			}
 		}
@@ -368,13 +362,11 @@ namespace APTSPropricerApi
 		/// <returns>Name of .exc or log file.</returns>
 		private string GetExceptionOrLogFileName(string baseFileName, string fileExtension)
 		{
-			string exceptionFileName = string.Empty;
-
 			if (baseFileName == null)
 			{
 				throw new ArgumentNullException(nameof(baseFileName));
 			}
-			exceptionFileName = String.Format("{0}{1}{2}{3}", Path.GetDirectoryName(baseFileName), @"\", Path.GetFileNameWithoutExtension(baseFileName), "." + fileExtension);
+			string exceptionFileName = string.Format("{0}{1}{2}{3}", Path.GetDirectoryName(baseFileName), @"\", Path.GetFileNameWithoutExtension(baseFileName), "." + fileExtension);
 			return exceptionFileName;
 		}
 

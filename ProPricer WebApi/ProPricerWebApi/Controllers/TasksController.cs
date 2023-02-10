@@ -416,10 +416,7 @@ namespace APTSPropricerApi.Controllers
 					this.Logger.LogError(ex, "Error adding Summary Fields in Task");
 					System.Diagnostics.Debug.WriteLine("Error " + " - " + ex.Message);
 					rc = rc + "Error with " + whichvar + " - " + ex.Message;
-					if (oldsf is not null)
-					{
-						oldsf.CancelEdit();
-					}
+					oldsf?.CancelEdit();
 				}
 			}
 
