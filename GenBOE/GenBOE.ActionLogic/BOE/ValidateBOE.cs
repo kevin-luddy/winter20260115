@@ -706,8 +706,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 if (row.PoPEnd.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
 
                                 if (row.PoPEnd.Date < row.PoPStart.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
-
-                                if (Utilities.IsSAPEnabled && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                                
+                                if (ws.EnableSAPConnection && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                                 {
                                     if (row.PoPStart.Year > 1 && row.PoPStart.DayOfWeek != DayOfWeek.Monday)
                                     {
