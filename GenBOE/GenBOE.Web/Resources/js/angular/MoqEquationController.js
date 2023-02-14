@@ -1057,6 +1057,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								TableId: tableData.Id
 							};
 
+							// Set the repo name to the source once we've checked that it is an SAP Enabled Source
+							tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
+
 							$scope.setPoP(table, tableData);
 
 							if (Array.isArray(tableData.AdditionalQueryFilters)) {
