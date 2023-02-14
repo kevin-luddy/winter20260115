@@ -35,7 +35,7 @@ namespace GenBOE.ActionLogic.IO.Import
         /// </summary>
         /// <param name="moqTable">The imported MOQ Table</param>
         /// <param name="row">row from the import file</param>
-        protected override void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row)
+        protected override void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row, bool sapConnectionEnabled)
         {
             _ = moqTable ?? throw new ArgumentNullException(nameof(moqTable));
             _ = row ?? throw new ArgumentNullException(nameof(row));
@@ -79,9 +79,9 @@ namespace GenBOE.ActionLogic.IO.Import
 				moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
 			}
 
-			// Total WBS/WBS Element Hours
-			if (!Utilities.IsSAPEnabled)
+			if (!Utilities.IsSAPEnabled || (Utilities.IsSAPEnabled && !sapConnectionEnabled))
 			{
+			    // Total WBS/WBS Element Hours
 				if ((!row.ContainsKey(TOTAL_WBS_HOURS) || string.IsNullOrEmpty(row[TOTAL_WBS_HOURS])) && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
 				{
 					moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);

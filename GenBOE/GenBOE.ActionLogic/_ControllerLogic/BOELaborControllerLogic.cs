@@ -3567,9 +3567,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			ICollection<ImportMoqTableResultsModelView> dataToSave = resultData.DataToSave();
 
-			if (Utilities.IsSAPEnabled && dataToSave.Any())
+			if (Utilities.IsSAPEnabled && ws.EnableSAPConnection && dataToSave.Any())
             {
-				// COnvert into SAP API params
+				// Convert into SAP API params
 				string sapRepo = RepositoryName.SapWebi.GetDescription();
 
 				ImportMoqTableResultsModelView[] dataToSaveArray = dataToSave.Where(x => SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ||
@@ -3591,8 +3591,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				// run SAP Validation/Calculation and update correct fields
 				if (validRows.Any())
-				{
-					
+				{					
 					ICollection<IESResponse<CalculateActualsViewModel>> sapResults = await this.CalculateAllActualsSap(validRows);
 					foreach (IESResponse<CalculateActualsViewModel> sapResult in sapResults)
 					{
