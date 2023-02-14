@@ -122,7 +122,7 @@
 		// If changing from Yes to No (and the workspace is currently set to Yes), warn the user
 		if ($(selection).val() == 'False' && originalSapConnectionEnabled == 'True') {
 			GenSession.confirmDialog("Enable SAP Connection Change",
-				"Changing the SAP Connection Enabled from Yes to No will automatically set all MOQ Tables in this Workspace as Source = User upon the save of the table.  Meaning the MOQ table is User managed and is no longer integrated with SAP.   This will not change any existing BOE status. Do you wish to proceed?",
+				"Changing the SAP Connection Enabled from Yes to No will automatically set all MOQ Tables in this Workspace as Source = User upon the Save of a Task.  Meaning the MOQ table is User managed and is no longer integrated with SAP.  This update will not automatically change any existing BOE status. Do you wish to proceed?",
 				function () {
 					// do nothing on confirm, let the change happen
 				},
