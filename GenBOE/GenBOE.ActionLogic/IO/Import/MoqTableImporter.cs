@@ -360,7 +360,7 @@ namespace GenBOE.ActionLogic.IO.Import
             }
 
             // Total Relevant Hours 
-            if (!Utilities.IsSAPEnabled || (Utilities.IsSAPEnabled && !sapConnectionEnabled))
+            if (!Utilities.IsSAPEnabled || !sapConnectionEnabled)
 			{
 				if (row.ContainsKey(TOTAL_RELEVANT_HOURS_SSC) && !string.IsNullOrEmpty(row[TOTAL_RELEVANT_HOURS_SSC]))
 				{

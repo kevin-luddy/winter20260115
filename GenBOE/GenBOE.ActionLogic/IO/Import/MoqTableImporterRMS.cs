@@ -79,7 +79,7 @@ namespace GenBOE.ActionLogic.IO.Import
 				moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
 			}
 
-			if (!Utilities.IsSAPEnabled || (Utilities.IsSAPEnabled && !sapConnectionEnabled))
+			if (!Utilities.IsSAPEnabled || !sapConnectionEnabled)
 			{
 			    // Total WBS/WBS Element Hours
 				if ((!row.ContainsKey(TOTAL_WBS_HOURS) || string.IsNullOrEmpty(row[TOTAL_WBS_HOURS])) && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
