@@ -12,6 +12,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
     using System.Web;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
@@ -3263,7 +3264,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         /// Test ImportMoqTables
         /// </summary>
         [TestMethod]
-        public async void ImportMoqTables_Test()
+        public async Task ImportMoqTables_Test()
         {
             BOELaborControllerLogic sut = CreateSystem();
 
@@ -3302,7 +3303,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         /// Test ImportMoqTables returning caught exception
         /// </summary>
         [TestMethod]
-        public async void ImportMoqTables_Test_CaughtException()
+        public async Task ImportMoqTables_Test_CaughtException()
         {
             BOELaborControllerLogic sut = CreateSystem();
 
@@ -3321,7 +3322,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         /// Test ImportMoqTables throws exception when ws is null
         /// </summary>
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
-        public async void ImportMoqTables_Test_CaughtException_NullWs()
+        public async Task ImportMoqTables_Test_CaughtException_NullWs()
         {
             BOELaborControllerLogic sut = CreateSystem();
 
@@ -3334,7 +3335,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         /// Test ImportMoqTables throws exception when request is null
         /// </summary>
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
-        public async void ImportMoqTables_Test_CaughtException_NullRequest()
+        public async Task ImportMoqTables_Test_CaughtException_NullRequest()
         {
             BOELaborControllerLogic sut = CreateSystem();
 

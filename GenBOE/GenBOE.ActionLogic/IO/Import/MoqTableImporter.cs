@@ -94,7 +94,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
                         ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, IMPORT_TAB, requiredColumns.ToArray(), allColumns.ToArray(), null, null, null, true);
 
-                        results = this.CreateImportedMoqTables(allRows, customFields);
+                        results = this.CreateImportedMoqTables(allRows, customFields, ws.EnableSAPConnection);
                     }
 
                     return results;
@@ -111,8 +111,9 @@ namespace GenBOE.ActionLogic.IO.Import
         /// </summary>
         /// <param name="allRows">all rows from the import file</param>
         /// <param name="customFields">MOQ Table custom fields</param>
+        /// <param name="sapConnectionEnabled">Workspace SAP Connection Enabled setting</param>
         /// <returns>Imported MOQ Table data</returns>
-        private ICollection<ImportedMoqTable> CreateImportedMoqTables(ICollection<Dictionary<string, string>> allRows, ICollection<CustomFieldDTO> customFields)
+        private ICollection<ImportedMoqTable> CreateImportedMoqTables(ICollection<Dictionary<string, string>> allRows, ICollection<CustomFieldDTO> customFields, bool sapConnectionEnabled)
         {
             ICollection<ImportedMoqTable> toReturn = new Collection<ImportedMoqTable>();
 
@@ -122,27 +123,28 @@ namespace GenBOE.ActionLogic.IO.Import
 
                 foreach(Dictionary<string, string> row in allRows)
                 {
-                    toReturn.Add(this.ConstructAndValidateMoqTable(row, customFields, newMoqTableIndex));
+                    toReturn.Add(this.ConstructAndValidateMoqTable(row, customFields, newMoqTableIndex, sapConnectionEnabled));
                 }
             }
 
             return toReturn;
         }
 
-        /// <summary>
-        /// Construct the MOQ Table from the imported row and validate the data
-        /// </summary>
-        /// <param name="row">Row from the import file</param>
-        /// <param name="customFields">MOQ Table Custom Fields</param>
-        /// <param name="index">new ID index</param>
-        /// <returns>Imported MOQ Table for the row</returns>
-        private ImportedMoqTable ConstructAndValidateMoqTable(Dictionary<string, string> row, ICollection<CustomFieldDTO> customFields, int index)
+		/// <summary>
+		/// Construct the MOQ Table from the imported row and validate the data
+		/// </summary>
+		/// <param name="row">Row from the import file</param>
+		/// <param name="customFields">MOQ Table Custom Fields</param>
+		/// <param name="index">new ID index</param>
+		/// <param name="sapConnectionEnabled">Workspace SAP Connection Enabled setting</param>
+		/// <returns>Imported MOQ Table for the row</returns>
+		private ImportedMoqTable ConstructAndValidateMoqTable(Dictionary<string, string> row, ICollection<CustomFieldDTO> customFields, int index, bool sapConnectionEnabled)
         {
             _ = row ?? throw new ArgumentNullException(nameof(row));
 
             ImportedMoqTable toReturn = new ImportedMoqTable() { Id = index-- };
 
-            this.ImportCompanySpecificMoqTableData(toReturn, row);
+            this.ImportCompanySpecificMoqTableData(toReturn, row, sapConnectionEnabled);
 
             // Table Name
             if (row.ContainsKey(TABLE_NAME) && !string.IsNullOrEmpty(row[TABLE_NAME]))
@@ -289,12 +291,13 @@ namespace GenBOE.ActionLogic.IO.Import
             return toReturn;
         }
 
-        /// <summary>
-        /// Populate the company specific fields for the MOQ Table
-        /// </summary>
-        /// <param name="moqTable">The imported MOQ Table</param>
-        /// <param name="row">row from the import file</param>
-        protected virtual void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row)
+		/// <summary>
+		/// Populate the company specific fields for the MOQ Table
+		/// </summary>
+		/// <param name="moqTable">The imported MOQ Table</param>
+		/// <param name="row">row from the import file</param>
+		/// <param name="sapConnectionEnabled">Workspace SAP Connection Enabled setting</param>
+		protected virtual void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row, bool sapConnectionEnabled)
         {
             _ = moqTable ?? throw new ArgumentNullException(nameof(moqTable));
             _ = row ?? throw new ArgumentNullException(nameof(row));
@@ -356,8 +359,8 @@ namespace GenBOE.ActionLogic.IO.Import
                 moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
             }
 
-			// Total Relevant Hours 
-			if (!Utilities.IsSAPEnabled)
+            // Total Relevant Hours 
+            if (!Utilities.IsSAPEnabled || !sapConnectionEnabled)
 			{
 				if (row.ContainsKey(TOTAL_RELEVANT_HOURS_SSC) && !string.IsNullOrEmpty(row[TOTAL_RELEVANT_HOURS_SSC]))
 				{
