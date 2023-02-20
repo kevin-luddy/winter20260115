@@ -449,7 +449,7 @@
         $('button[name="new-revision-button"]:not(.disabled)').click(function () {
             GenSession.confirmDialog(
                  "Confirm new Revision",
-                 "<div style='text-align: left'>Proposal Revision shall only be created for one of the following reasons:<ol><li>A revised RFP is issued</li><li>Customer direction requires a resubmittal</li><li>Customer directs LM to submit an FPR</li><li>Anytime a new Cover Sheet is required (for CCOPD)</li></ol>Would you like to continue?</div>",
+                 "<div style='text-align: left'>Proposal Revision shall only be created for one of the following reasons:<ol><li>A revised RFP is issued</li><li>Customer direction requires a resubmittal</li><li>Customer directs LM to submit an FPR</li><li>Anytime a new Cover Sheet is required (for CCOPD)</li><li class='nostyle'>Note: Revisions are for resubmission of a proposal, and NOT for negotiation updates & pricing updates</li></ol>Would you like to continue?</div>",
                  ProposalDetailsWidget.AddNewRevision,
                  null);
         });

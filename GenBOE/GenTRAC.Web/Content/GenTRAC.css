@@ -1206,3 +1206,7 @@ p.revision {
 .selection-width-certification-not-required {
     width: 180px;
 }
+
+li.nostyle {
+    list-style-type: none;
+}
