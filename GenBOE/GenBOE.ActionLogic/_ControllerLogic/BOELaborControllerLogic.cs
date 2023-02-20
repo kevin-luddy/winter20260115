@@ -3554,7 +3554,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     {
                         foreach (MoqTableImportType importType in result.ImportTypes)
                         {
-							resultData.Result.Add(new ImportMoqTableResultsModelView(result, importType));
+							resultData.Result.Add(new ImportMoqTableResultsModelView(result, importType, ws.EnableSAPConnection));
                         }
                     }
                 }
