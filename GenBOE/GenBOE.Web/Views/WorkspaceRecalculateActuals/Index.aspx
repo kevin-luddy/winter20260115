@@ -36,6 +36,9 @@
             <div class="form-row css3pie-position-fix">
                 <ul class="validation-box" style="display: none;"></ul>
                 <gen-validation data-errors="errors"></gen-validation>
+				<div class="float-left">
+					<button data-ng-disabled="isLoading" data-ng-click="recalculate()" class="ies-action" type="button">Recalculate</button>
+				</div>
                 <div class="search-box float-right">
                     <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
                     <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredResults) }}" data-current-page="currentPage"></div>
@@ -59,9 +62,9 @@
                         </colgroup>
                         <thead>
                             <tr>
-								<th class="bootstrap"><a data-ng-click="changeSorting(columns.boe)" data-ng-class="{ 'bold': boldSort(columns.boe) }">Boe</a></th>
-								<th class="bootstrap"><a data-ng-click="changeSorting(columns.task)" data-ng-class="{ 'bold': boldSort(columns.task) }">Task</a></th>
-								<th class="bootstrap"><a data-ng-click="changeSorting(columns.table)" data-ng-class="{ 'bold': boldSort(columns.table) }">Table</a></th>
+								<th class="bootstrap"><a data-ng-click="changeSorting(columns.boe)" data-ng-class="{ 'bold': boldSort(columns.boe) }">Boe Title</a></th>
+								<th class="bootstrap"><a data-ng-click="changeSorting(columns.task)" data-ng-class="{ 'bold': boldSort(columns.task) }">Task Title</a></th>
+								<th class="bootstrap"><a data-ng-click="changeSorting(columns.table)" data-ng-class="{ 'bold': boldSort(columns.table) }">Table Name</a></th>
                                 <th class="bootstrap"><a data-ng-click="changeSorting(columns.boeState)" data-ng-class="{ 'bold': boldSort(columns.boePrevState) }">Boe Previous State</a></th>
 								 <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) 
 								   {  %>
@@ -74,7 +77,7 @@
                         </thead>
                         <tbody>
                             <tr data-ng-show="isLoading"><td colspan="{{colSpan}}"><div class="loader"></div></td></tr>
-                            <tr data-ng-show="!isLoading && (data.length === 0 || filteredResults.length === 0)"><td colspan="{{colSpan}}"><div class="empty-grid-text">There are no MOQ Tables with Actuals.</div></td></tr>
+                            <tr data-ng-show="hasLoaded && !isLoading && (data.length === 0 || filteredResults.length === 0)"><td colspan="{{colSpan}}"><div class="empty-grid-text">There are no updates to Actuals inside MOQ Tables.</div></td></tr>
                             <tr data-ng-repeat="actual in (filteredResults = (data | filter:filterActuals | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize">
                                 <td class="text" title="{{::actual.BoeTitle}}">{{::actual.BoeTitle}}</td>
                                 <td class="text"  title="{{::actual.Task}}">{{::actual.Task}}</td>

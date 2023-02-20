@@ -41,7 +41,10 @@
         HistoricalMoqType: <%:(int)MOQType.Historical%>,
         ComparativeMoqType: <%:(int)MOQType.Comparative%>,
         SAPEnabled: '<%:Utilities.IsSAPEnabled%>'.isTrue(),
-        SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>'
+        SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
+		SapConnectionEnabled: '<%=Model.EnableSAPConnection%>'.isTrue(),
+		RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
+		RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>'
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -174,12 +177,13 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <select data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
+                                <select data-ng-if="model.SapConnectionEnabled" data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
                                     <option value=""></option>
                                     <option value="<%: RepositoryName.SapWebi.GetDescription() %>"><%: RepositoryName.SapWebi.GetDescription() %></option>
                                     <option value="<%: RepositoryName.Other.GetDescription() %>"><%: RepositoryName.Other.GetDescription() %></option>
                                 </select>
-                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>'" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
+                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>' && model.SapConnectionEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
+                                <input data-ng-if="!model.SapConnectionEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.RepositoryName" />
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
@@ -206,7 +210,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementComparativeSuffix);"></div>
                             </td>
-                            <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" placeholder="If entering multiple WBS Elements, please separate them with a comma ','" required data-ng-model="tableData.WbsElement" /></td>
+                            <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" placeholder="If entering multiple WBS Elements, please separate them with a comma ','" required data-ng-model="tableData.WbsElement" data-ng-change="SetTableDirty(tableData)" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPStart}} * 
@@ -214,8 +218,8 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" data-ng-class="{'ng-invalid': ValidatePopStart(tableData.PoPStart) }" onchange="MOQEquationFieldWidget.setDirty()" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd)" />
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" data-ng-class="{'ng-invalid': ValidatePopStart(tableData.PoPStart) }" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);SetTableDirty(tableData);" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPStart" data-ng-change="SetTableDirty(tableData)" />
 
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
                                     FW <input data-ng-readonly="ActualReadOnly()" type="number" class="weekYear skip-read-only" min="1" max="53" step="1" required data-ng-model="tableData.PoPStartWeek" onchange="MOQEquationFieldWidget.setDirty()" />
@@ -229,8 +233,8 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" data-ng-class="{'ng-invalid': ValidatePopEnd(tableData.PoPEnd) }" onchange="MOQEquationFieldWidget.setDirty()" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd)" />
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" data-ng-class="{'ng-invalid': ValidatePopEnd(tableData.PoPEnd) }" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);SetTableDirty(tableData);" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPEnd" data-ng-change="SetTableDirty(tableData)" />
                                 
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
                                     FW <input data-ng-readonly="ActualReadOnly()" type="number" class="weekYear skip-read-only" min="1" max="53" step="1" required data-ng-model="tableData.PoPEndWeek" onchange="MOQEquationFieldWidget.setDirty()" />
@@ -239,13 +243,13 @@
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPMonths}}</td><%-- todo - needs to update on date change--%>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPMonths}}</td>
                             <td><input data-ng-readonly="true" type="text" data-ng-model="tableData.PoPMonthsString" /></td>
                         </tr>
                         <tr data-ng-repeat="customField in MoqTableCustomFields" data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{customField.CustomFieldMetaData.FieldName}}{{(customField.CustomFieldMetaData.isRequired) ? ' *' : ''}}</td>
+                            <td class="form-label">{{customField.CustomFieldMetaData.FieldName}}{{(IsMoqCustomFieldRequired(tableData.RepositoryName) && customField.CustomFieldMetaData.isRequired) ? ' *' : ''}}</td>
                             <td class="custom-field">{{ selectedItem = findMoqTableCustomFieldValue(customField, tableData); "" }}
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" onchange="MOQEquationFieldWidget.setDirty(); validateMoqTableCustomField(this);" data-ng-required="customField.CustomFieldMetaData.isRequired" data-ng-class="{'ng-invalid': customField.CustomFieldMetaData.isRequired && selectedItem.openEndedValue.length==0}" data-ng-value="selectedItem.openEndedValue" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" customfieldvalueid="{{selectedItem.openEndedId}}" selectionid="{{selectedItem.selectedID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="true" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" onchange="MOQEquationFieldWidget.setDirty(); validateMoqTableCustomField(this);" data-ng-required="IsMoqCustomFieldRequired(tableData.RepositoryName) && customField.CustomFieldMetaData.isRequired" data-ng-class="{'ng-invalid': customField.CustomFieldMetaData.isRequired && selectedItem.openEndedValue.length==0}" data-ng-value="selectedItem.openEndedValue" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" customfieldvalueid="{{selectedItem.openEndedId}}" selectionid="{{selectedItem.selectedID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="true" />
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
@@ -257,7 +261,7 @@
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.ContractNumber}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.ContractNumberSuffix);"></div></td>
-                            <td><input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.ContractNumber" /></td>
+                            <td><input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.ContractNumber" data-ng-change="SetTableDirty(tableData)" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalWbsHours}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalWBSHoursSuffix);"></div></td>
@@ -270,7 +274,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersComparativeSuffix);"></div>
                                 <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="ShowFilterDialog(tableData)">Update Filters</button>
                             </td>
-                            <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" data-ng-model="tableData.AdditionalQueryFilters" /></td>
+                            <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" data-ng-model="tableData.AdditionalQueryFilters" data-ng-change="SetTableDirty(tableData)" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} * 
@@ -400,7 +404,7 @@
             <select data-ng-model="model.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes"></select>
             <button data-ng-if="!ActualReadOnly()" data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType" class="moqTypesButton ies-action" type="button">Add MOQ Type</button>
             <button data-ng-if="!ActualReadOnly()" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="displayReOrderMoqTypesDialog()" class="moqTypesButton ies-blue" type="button">Sort MOQ Types</button>
-			<button data-ng-if="!ActualReadOnly()" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="calculateAllMoqActuals()" class="moqTypesButton ies-action" type="button">Calculate All Actuals</button>
+			<button data-ng-if="!ActualReadOnly() && model.SAPEnabled" ng-disabled="calculateAllDisabled" data-ng-click="calculateAllMoqActuals()" class="moqTypesButton ies-action" type="button">Calculate All Actuals</button>
         </div>
     </div>
 
@@ -559,7 +563,7 @@
                     <div class="title">Step 2: Enter/Update MOQ Tables in the file</div>
                     <div>Enter new MOQ Tables into the file or update existing MOQ Tables. </div>
                     <div>All columns besides custom fields are required. Custom field columns may be required or optional. </div>
-                    <div data-ng-if="model.IsRMS">Date of Report, PoP Start Date, and PoP End date must be in the format m/yyyy or mm/yyyy</div>
+                    <div data-ng-if="model.IsRMS">Date of Report, PoP Start Date, and PoP End date must be in the format mm/dd/yyyy or m/d/yyyy.</div>
                     <div data-ng-if="!model.IsRMS">
                         <div>Date of Report must be in the format m/yyyy or mm/yyyy</div>
                         <div>For Weekly Query Type, PoP Start Date and PoP End date must be in the format fw/yyyy</div>
@@ -654,8 +658,9 @@
 									<div data-ng-if="queryFilter.Type" >
 										<div data-ng-repeat="val in queryFilter.Value track by $index">
 											<input data-ng-if="queryFilter.Type !== 'System.DateTime'" type="text" data-ng-model="queryFilter.Value[$index]" />
-											<input data-ng-if="queryFilter.Type === 'System.DateTime'" jqdatepicker type="text" data-ng-model="queryFilter.Value[$index]" style="width:75px;" />
-											<button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
+											<input data-ng-if="queryFilter.Type === 'System.DateTime'" genDatepicker type="text" data-ng-model="queryFilter.Value[$index]" style="width:75px;" />
+                                            <div class="delete" style="display:inline-block" data-ng-if="queryFilter.Value && queryFilter.Value.length > 1" data-ng-click="DeleteValue(queryFilter.Value, $index)"></div> 
+                                            <button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
 										</div>
 									</div>
 								</td>

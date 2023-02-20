@@ -287,7 +287,8 @@ namespace GenBOE.DataBridge.DTO
                                     LastProPricerProposal = w.LastProPricerProposal,
                                     RteSizeLimit = w.RteSizeLimit,
                                     RevisedSubmittalDate = w.RevisedSubmittalDate,
-                                    UsingTemplateBOE = w.TemplateBoe,
+                                    UsingTemplateBOE = w.TemplateBoe, 
+                                    EnableSAPConnection = w.EnableSAPConnection,
                                     CreationDate = w.WorkspaceCreationDate
                                 }).ToCollection();
 
@@ -381,6 +382,7 @@ namespace GenBOE.DataBridge.DTO
                                         RteSizeLimit = w.RteSizeLimit,
                                         RevisedSubmittalDate = w.RevisedSubmittalDate,
                                         UsingTemplateBOE = w.TemplateBoe,
+                                        EnableSAPConnection = w.EnableSAPConnection,
                                         CreationDate = w.WorkspaceCreationDate
                                     }).FirstOrDefault();
 
@@ -513,17 +515,17 @@ namespace GenBOE.DataBridge.DTO
         /// Used by ACV
         /// </summary>
         [DbQuery]
-        public virtual ICollection<(int Id, string shortName, string longName)> GetWorkspaceDataForProposal(string ptmTrackingNumber)
+        public virtual ICollection<(int Id, string shortName, string longName, bool containsOCI)> GetWorkspaceDataForProposal(string ptmTrackingNumber)
         {
-            ICollection<(int Id, string shortName, string longName)> result;
+            ICollection<(int Id, string shortName, string longName, bool containsOCI)> result;
 
             using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
                     result = gbe.Workspaces.Where(x => x.TrackingNumber == ptmTrackingNumber && x.IsDeleted != true)
-                                    .Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName }).ToList()
-                                    .Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName)).ToList();
+                                    .Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName, containsOCI = x.ContainsOCI }).ToList()
+                                    .Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName, containsOCI: x.containsOCI)).ToList();
                 }
             }
 
@@ -714,6 +716,31 @@ namespace GenBOE.DataBridge.DTO
             return tempWorkspaceId;
         }
 
+		/// <summary>
+		/// Get the ContainsOCI setting for the given workspace
+		/// </summary>
+		/// <param name="shortName">workspace shortname</param>
+		/// <returns>ContainsOCI setting</returns>
+		[DbQuery]
+        public bool? GetWorkspaceOciSettingByShortname(string shortName)
+        {
+            bool? containsOci = null;
+
+            if (!string.IsNullOrWhiteSpace(shortName))
+            {
+                using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+                {
+                    using (GenBoeEntities gbe = new GenBoeEntities())
+                    {
+                        containsOci = (from w in gbe.Workspaces.Where(w => w.WorkspaceShortName == shortName)
+                                       select w.ContainsOCI).FirstOrDefault();
+                    }
+                }
+            }
+
+            return containsOci;
+        }
+
         #endregion
 
         #region Commits
@@ -890,7 +917,6 @@ namespace GenBOE.DataBridge.DTO
                        wsToSave.Shortname.Trim(),
                        Convert.ToInt32(wsToSave.WorkspaceState),
                        wsToSave.ContractStartDate,
-                       // ?
                        wsToSave.ContractEndDate,
                        wsToSave.ProposalSubmittalDate,
                        wsToSave.Description,
@@ -930,7 +956,8 @@ namespace GenBOE.DataBridge.DTO
                         wsToSave.LastProPricerProposal,
                         wsToSave.RteSizeLimit,
                         wsToSave.RevisedSubmittalDate,
-                        wsToSave.UsingTemplateBOE).FirstOrDefault());
+                        wsToSave.UsingTemplateBOE,
+                        wsToSave.EnableSAPConnection).FirstOrDefault());
 
                     // if the result ID is not a positive number, something bad went wrong so Log it
                     if (resultID <= 0)

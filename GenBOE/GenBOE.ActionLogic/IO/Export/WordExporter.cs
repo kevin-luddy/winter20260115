@@ -811,6 +811,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		internal IDictionary<string, IList<string>> GetEmployeeIds(string filter)
         {
             IDictionary<string, IList<string>> toReturn = new Dictionary<string, IList<string>>();
+            filter = filter ?? String.Empty;
             IList<string> filterComponents = filter.Split(new string[] { "\n" }, StringSplitOptions.None).ToList();
             IList<string> employeeIdFilters = filterComponents.Where(x => x.StartsWith(BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL) || x.StartsWith("( " + BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL)).ToList();
 
@@ -861,7 +862,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="employeeIdFilters">dictionary of of employee id filters and the employee ids in them</param>
 		/// <param name="additionalQueryFilters">Full Additional Query Filters string</param>
 		/// <returns>filters with employee ids masked</returns>
-		private string MaskRmsEmployeeIds(IDictionary<string, IList<string>> employeeIdFilters, string additionalQueryFilters)
+		internal string MaskRmsEmployeeIds(IDictionary<string, IList<string>> employeeIdFilters, string additionalQueryFilters)
         {
             foreach (KeyValuePair<string, IList<string>> employeeIdFilter in employeeIdFilters)
             {
@@ -869,11 +870,16 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				foreach (string employeeId in employeeIdFilter.Value)
                 {
-                    string maskedId = employeeId.Length > 3 ? $"***{employeeId.Substring(3)}" : new string('*', employeeId.Length);
+                    // mask all but the last 3 characters of the id
+                    bool moreThanThreeChars = employeeId.Length > 3;
+                    int maskingLength = employeeId.Length - 3;
+
+					string lastThreeChars = moreThanThreeChars ? employeeId.Substring(maskingLength) : employeeId;
+                    string masking = moreThanThreeChars ? new string('*', maskingLength) : string.Empty;
 
 					// use ReplaceFirst so a smaller id doesn't risk replacing a portion of a later one
 					// ex. a filter of "Starts with 1, 4321" using regular string replace would result in "Starts with *, 432*". ReplaceFirst results in "Starts with *, ***1"
-					maskedFilter = maskedFilter.ReplaceFirst(employeeId, maskedId);
+					maskedFilter = maskedFilter.ReplaceFirst(employeeId, $"{masking}{lastThreeChars}");
                 }
 
 				additionalQueryFilters = additionalQueryFilters.Replace(employeeIdFilter.Key, maskedFilter);

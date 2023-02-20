@@ -672,7 +672,7 @@ namespace APTSPropricerApi.Controllers
         /// </summary>
         /// <param name="ppc">ProPricer Connection</param>
         /// <returns>All Proposals in the system</returns>
-        private List<ProposalFolderInfo> GetAllProposals(IProPricerConnection ppc)
+        internal List<ProposalFolderInfo> GetAllProposals(IProPricerConnection ppc)
         {
             List<ProposalFolderInfo> tree = new List<ProposalFolderInfo>();
 

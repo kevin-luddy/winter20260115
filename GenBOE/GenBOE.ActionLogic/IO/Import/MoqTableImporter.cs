@@ -44,14 +44,15 @@ namespace GenBOE.ActionLogic.IO.Import
 
         internal const string IMPORT_TAB = "MOQ Tables";
 
-        protected virtual List<string> REQUIRED_COLUMNS  => new List<string> { TABLE_NAME, REPOSITORY_NAME, QUERY_TYPE, DATE_OF_REPORT, HISTORICAL_PROGRAM_NAME, WBS_ELEMENT, START_DATE, END_DATE, EMPLOYEE_ID_FILTERS, TOTAL_RELEVANT_HOURS_SSC };
+        protected virtual List<string> REQUIRED_COLUMNS  => new List<string> { TABLE_NAME, REPOSITORY_NAME, QUERY_TYPE, DATE_OF_REPORT, HISTORICAL_PROGRAM_NAME, WBS_ELEMENT, START_DATE, END_DATE };
+		protected virtual List<string> ALL_COLUMNS => new List<string> { TABLE_NAME, REPOSITORY_NAME, QUERY_TYPE, DATE_OF_REPORT, HISTORICAL_PROGRAM_NAME, WBS_ELEMENT, START_DATE, END_DATE, EMPLOYEE_ID_FILTERS, TOTAL_RELEVANT_HOURS_SSC };
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// construtor
-        /// </summary>
-        public MoqTableImporter()
+		/// <summary>
+		/// construtor
+		/// </summary>
+		public MoqTableImporter()
         {
         }
 
@@ -74,7 +75,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
                     using (SpreadsheetDocument document = SpreadsheetDocument.Open(excelFileStream, false))
                     {
-                        IList<string> allColumns = this.REQUIRED_COLUMNS;
+                        IList<string> allColumns = this.ALL_COLUMNS;
                         IList<string> requiredColumns = this.REQUIRED_COLUMNS;
 
                         ICollection<CustomFieldDTO> customFields = ws.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay).ToCollection();
@@ -93,7 +94,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
                         ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, IMPORT_TAB, requiredColumns.ToArray(), allColumns.ToArray(), null, null, null, true);
 
-                        results = this.CreateImportedMoqTables(allRows, customFields);
+                        results = this.CreateImportedMoqTables(allRows, customFields, ws.EnableSAPConnection);
                     }
 
                     return results;
@@ -110,8 +111,9 @@ namespace GenBOE.ActionLogic.IO.Import
         /// </summary>
         /// <param name="allRows">all rows from the import file</param>
         /// <param name="customFields">MOQ Table custom fields</param>
+        /// <param name="sapConnectionEnabled">Workspace SAP Connection Enabled setting</param>
         /// <returns>Imported MOQ Table data</returns>
-        private ICollection<ImportedMoqTable> CreateImportedMoqTables(ICollection<Dictionary<string, string>> allRows, ICollection<CustomFieldDTO> customFields)
+        private ICollection<ImportedMoqTable> CreateImportedMoqTables(ICollection<Dictionary<string, string>> allRows, ICollection<CustomFieldDTO> customFields, bool sapConnectionEnabled)
         {
             ICollection<ImportedMoqTable> toReturn = new Collection<ImportedMoqTable>();
 
@@ -121,27 +123,28 @@ namespace GenBOE.ActionLogic.IO.Import
 
                 foreach(Dictionary<string, string> row in allRows)
                 {
-                    toReturn.Add(this.ConstructAndValidateMoqTable(row, customFields, newMoqTableIndex));
+                    toReturn.Add(this.ConstructAndValidateMoqTable(row, customFields, newMoqTableIndex, sapConnectionEnabled));
                 }
             }
 
             return toReturn;
         }
 
-        /// <summary>
-        /// Construct the MOQ Table from the imported row and validate the data
-        /// </summary>
-        /// <param name="row">Row from the import file</param>
-        /// <param name="customFields">MOQ Table Custom Fields</param>
-        /// <param name="index">new ID index</param>
-        /// <returns>Imported MOQ Table for the row</returns>
-        private ImportedMoqTable ConstructAndValidateMoqTable(Dictionary<string, string> row, ICollection<CustomFieldDTO> customFields, int index)
+		/// <summary>
+		/// Construct the MOQ Table from the imported row and validate the data
+		/// </summary>
+		/// <param name="row">Row from the import file</param>
+		/// <param name="customFields">MOQ Table Custom Fields</param>
+		/// <param name="index">new ID index</param>
+		/// <param name="sapConnectionEnabled">Workspace SAP Connection Enabled setting</param>
+		/// <returns>Imported MOQ Table for the row</returns>
+		private ImportedMoqTable ConstructAndValidateMoqTable(Dictionary<string, string> row, ICollection<CustomFieldDTO> customFields, int index, bool sapConnectionEnabled)
         {
             _ = row ?? throw new ArgumentNullException(nameof(row));
 
             ImportedMoqTable toReturn = new ImportedMoqTable() { Id = index-- };
 
-            this.ImportCompanySpecificMoqTableData(toReturn, row);
+            this.ImportCompanySpecificMoqTableData(toReturn, row, sapConnectionEnabled);
 
             // Table Name
             if (row.ContainsKey(TABLE_NAME) && !string.IsNullOrEmpty(row[TABLE_NAME]))
@@ -164,7 +167,7 @@ namespace GenBOE.ActionLogic.IO.Import
                 {
                     if (dateOfReport <= DateTime.Now)
                     {
-                        toReturn.DateOfReport = dateOfReport;
+                        toReturn.DateOfReport = dateOfReport.Normalize(DateTimePrecision.Day);
                     }
                     else
                     {
@@ -220,7 +223,7 @@ namespace GenBOE.ActionLogic.IO.Import
                     bool validStartDate = DateTime.TryParse(row[START_DATE], out popStartDate);
                     if (validStartDate && popStartDate <= DateTime.Now)
                     {
-                        toReturn.PoPStart = popStartDate;
+                        toReturn.PoPStart = popStartDate.Normalize(DateTimePrecision.Day);
                     }
                     else
                     {
@@ -258,7 +261,7 @@ namespace GenBOE.ActionLogic.IO.Import
                     bool validEndDate = DateTime.TryParse(row[END_DATE], out popEndDate);
                     if (validEndDate && popEndDate <= DateTime.Now)
                     {
-                        toReturn.PoPEnd = popEndDate;
+                        toReturn.PoPEnd = popEndDate.Normalize(DateTimePrecision.Day);
                     }
                     else
                     {
@@ -288,12 +291,13 @@ namespace GenBOE.ActionLogic.IO.Import
             return toReturn;
         }
 
-        /// <summary>
-        /// Populate the company specific fields for the MOQ Table
-        /// </summary>
-        /// <param name="moqTable">The imported MOQ Table</param>
-        /// <param name="row">row from the import file</param>
-        protected virtual void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row)
+		/// <summary>
+		/// Populate the company specific fields for the MOQ Table
+		/// </summary>
+		/// <param name="moqTable">The imported MOQ Table</param>
+		/// <param name="row">row from the import file</param>
+		/// <param name="sapConnectionEnabled">Workspace SAP Connection Enabled setting</param>
+		protected virtual void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row, bool sapConnectionEnabled)
         {
             _ = moqTable ?? throw new ArgumentNullException(nameof(moqTable));
             _ = row ?? throw new ArgumentNullException(nameof(row));
@@ -348,27 +352,32 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 moqTable.AdditionalQueryFilters = row[EMPLOYEE_ID_FILTERS];
             }
-            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField) &&
+				(!Utilities.IsSAPEnabled || moqTable.RepositoryName != RepositoryName.SapWebi.GetDescription()))
             {
+				// Employee ID filter is required if SAP is disabled or if Repo is not set to SAP/Webi
                 moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
             }
 
-            // Total Relevant Hours
-            if (row.ContainsKey(TOTAL_RELEVANT_HOURS_SSC) && !string.IsNullOrEmpty(row[TOTAL_RELEVANT_HOURS_SSC]))
-            {
-                if (decimal.TryParse(row[TOTAL_RELEVANT_HOURS_SSC], out decimal totalRelevantHours))
-                {
-                    moqTable.TotalRelevantHours = totalRelevantHours;
-                }
-                else
-                {
-                    moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalRelevantHours);
-                }
-            }
-            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
-            {
-                moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
-            }
+            // Total Relevant Hours 
+            if (!Utilities.IsSAPEnabled || !sapConnectionEnabled)
+			{
+				if (row.ContainsKey(TOTAL_RELEVANT_HOURS_SSC) && !string.IsNullOrEmpty(row[TOTAL_RELEVANT_HOURS_SSC]))
+				{
+					if (decimal.TryParse(row[TOTAL_RELEVANT_HOURS_SSC], out decimal totalRelevantHours))
+					{
+						moqTable.TotalRelevantHours = totalRelevantHours;
+					}
+					else
+					{
+						moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalRelevantHours);
+					}
+				}
+				else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+				{
+					moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+				}
+			}
         }
 
         /// <summary>

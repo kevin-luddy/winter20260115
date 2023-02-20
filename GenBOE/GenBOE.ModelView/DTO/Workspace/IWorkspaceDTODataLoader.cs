@@ -74,7 +74,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         [DbQuery]
-        ICollection<(int Id, string shortName, string longName)> GetWorkspaceDataForProposal(string ptmTrackingNumber);
+        ICollection<(int Id, string shortName, string longName, bool containsOCI)> GetWorkspaceDataForProposal(string ptmTrackingNumber);
 
         #endregion
 
@@ -127,18 +127,25 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="userID">The User Id.</param>
         void UpdateDeletedStatus(int inWorkspaceID, DateTime inUpdateDT, bool inSoftDelete, int userID);
 
-        #endregion
-
-        #region Commits
-
         /// <summary>
-        /// The SaveWorkspaceSettings will save the following items:
-        /// - Inserts/Edits/Deletes to Workspace variables
-        /// - Inserts/Edits Workspace Identification and Output Format Template
+        /// Get the ContainsOCI setting for the given workspace
         /// </summary>
-        /// <param name="userID">Curent user ID</param>
-        /// <param name="wsToSave">workspace to save</param>
-        int SaveWorkspaceSettings(int userID, WorkspaceDTO wsToSave);
+        /// <param name="shortName">workspace shortname</param>
+        /// <returns>ContainsOCI setting</returns>
+        bool? GetWorkspaceOciSettingByShortname(string shortName);
+
+		#endregion
+
+		#region Commits
+
+		/// <summary>
+		/// The SaveWorkspaceSettings will save the following items:
+		/// - Inserts/Edits/Deletes to Workspace variables
+		/// - Inserts/Edits Workspace Identification and Output Format Template
+		/// </summary>
+		/// <param name="userID">Curent user ID</param>
+		/// <param name="wsToSave">workspace to save</param>
+		int SaveWorkspaceSettings(int userID, WorkspaceDTO wsToSave);
 
         /// <summary>
         /// Save the data within Workspace Identification and the Output Format Template

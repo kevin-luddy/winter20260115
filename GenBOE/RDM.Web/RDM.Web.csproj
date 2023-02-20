@@ -22,7 +22,7 @@
     <UseIISExpress>true</UseIISExpress>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>disabled</IISExpressAnonymousAuthentication>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
@@ -258,7 +258,7 @@
     <Content Include="Content\images\excel.png" />
     <Content Include="Content\images\helpSmall.png" />
     <Content Include="Content\images\in_progress_white.gif" />
-    <Content Include="Content\images\LM_logo_notagline_black.png" />
+    <Content Include="Content\images\LM-logo-White.png" />
     <Content Include="Content\images\logo_RDM_wide.jpg" />
     <Content Include="Content\images\menu_arrow.png" />
     <Content Include="Content\images\message_close.png" />

@@ -247,6 +247,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\images\Cancel_16x.png" />
+    <Content Include="Content\images\LM-logo-White.png" />
     <Content Include="Content\images\UploadFile_16x.png" />
     <Content Include="Content\images\ui-icons_444444_256x240.png" />
     <Content Include="Content\images\ui-icons_555555_256x240.png" />
@@ -274,7 +275,6 @@
     <Content Include="Content\images\helpSmall.png" />
     <Content Include="Content\images\homepage\bg.png" />
     <Content Include="Content\images\in_progress_white.gif" />
-    <Content Include="Content\images\LM_logo_notagline_black.png" />
     <Content Include="Content\images\logo_PTM_wide.jpg" />
     <Content Include="Content\images\menu_arrow.png" />
     <Content Include="Content\images\message_large_gray.png" />

@@ -120,7 +120,9 @@
 }
 
 .lm-logo {
-    text-align: right;
+    width: 200px;
+    padding-top: 5px;
+    filter: invert(1);
 }
 
 .lm-logo>img {

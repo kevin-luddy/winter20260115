@@ -1410,8 +1410,10 @@ namespace IES.Common
         InvalidPopRange = 14,
         InvalidTotalRelevantHours = 15,
         InvalidPopStartFW = 16,
-        InvalidPopEndFW = 17
-    }
+        InvalidPopEndFW = 17,
+		InvalidSapCalculation = 18,
+		InvalidTotalWbsHours = 19
+	}
 
     /// <summary>
     /// Selectable options for Repository Name
@@ -1421,6 +1423,11 @@ namespace IES.Common
         None = 0,
         [Description("SAP / WEBI")]
         SapWebi = 1,
-        Other = 2
-    }
+        Other = 2,
+        // Below values are for when SAP Connection is NOT enabled or for RMS and should not be displayed in the repository name drop-down
+		User = 3,
+		SAP = 4,
+		[Description("SAP - WEBI")]
+		ConnectionDisabledSapWebi = 5
+	}
 }

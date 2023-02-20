@@ -310,16 +310,13 @@ namespace GenBOE.ActionLogic
         /// <returns>file name for the export</returns>
         string ExportMoqTables(int moqTypeId, FullWorkspace ws, string templateFileLocation);
 
-        /// <summary>
-        /// Import MOQ Tables
-        /// </summary>
-        /// <param name="ws">Workspace</param>
-        /// <param name="request">http request containing import file</param>
-        /// <param name="dataToSave">Data to save</param>
-        /// <param name="errorsOccurred">if errors occurred</param>
-        /// <param name="exception">Exception</param>
-        /// <returns>Imported MOQ Table modelviews</returns>
-        ICollection<ImportMoqTableResultsModelView> ImportMoqTables(FullWorkspace ws, HttpRequestBase request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
+		/// <summary>
+		/// Import MOQ Tables
+		/// </summary>
+		/// <param name="ws">Workspace</param>
+		/// <param name="request">http request containing import file</param>
+		/// <returns>Imported MOQ Table modelviews</returns>
+		Task<ImportMoqTableResultDataModelView> ImportMoqTables(FullWorkspace ws, HttpRequestBase request);
 
         /// <summary>
         /// Complete the MOQ Table import

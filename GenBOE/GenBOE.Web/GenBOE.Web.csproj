@@ -359,6 +359,7 @@
     <Content Include="Content\images\dateshift\ShiftRightNoChange.png" />
     <Content Include="Content\images\dateshift\ShiftRightToPOP.png" />
     <Content Include="Content\images\dateshift\ShiftRightToStart.png" />
+    <Content Include="Resources\css\images\homepage\LM-logo-White.png" />
     <Content Include="Resources\DateShiftStep5.html" />
     <Content Include="Resources\DateShiftStep3.html" />
     <Content Include="Resources\DateShiftStep4.html" />
@@ -492,7 +493,6 @@
     <Content Include="Resources\css\images\homepage\dd_arrow.png" />
     <Content Include="Resources\css\images\homepage\icon_complete.png" />
     <Content Include="Resources\css\images\homepage\icon_info.png" />
-    <Content Include="Resources\css\images\homepage\LM_logo.png" />
     <Content Include="Resources\css\images\homepage\nav_bg.png" />
     <Content Include="Resources\css\images\homepage\tool_button_left.png" />
     <Content Include="Resources\css\images\homepage\tool_button_middle.png" />

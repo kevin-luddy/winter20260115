@@ -254,10 +254,11 @@ namespace GenBOE.Web.Common
             }
 
             ViewData["DisplayINLForms"] = displayINLForms;
+            ViewData["EnableSAP"] = Utilities.IsSAPEnabled && ws.EnableSAPConnection;
 
-            #endregion
+			#endregion
 
-            ViewResult toReturn = View(WebConstants.VIEW_SITE_MASTER_MENU, theModelViews);
+			ViewResult toReturn = View(WebConstants.VIEW_SITE_MASTER_MENU, theModelViews);
 
             // Action Finalize
             FinalizeAction(_log, "DisplayMasterMenu", sw);
