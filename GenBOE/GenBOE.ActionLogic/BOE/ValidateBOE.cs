@@ -698,7 +698,15 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
 
                                 ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
-                                ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
+
+                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && !ws.EnableSAPConnection)
+                                {
+									ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH, errorMessages);
+								}
+                                else
+								{
+									ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
+								}
 
                                 if (row.PoPStart.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
                                 if (row.PoPStart.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
@@ -720,9 +728,10 @@ namespace GenBOE.ActionLogic.WBS.BOE
 									}
 								}
 
-                                // "Additional Query Fields" is required ONLY when SAP is disabled OR (Company mode == space && repository name != SAP / Webi)
+                                // "Additional Query Fields" is required ONLY when SAP is disabled OR (Company mode == space && repository name != SAP / Webi) OR (Company mode == RMS && SAP Connection is disabled for the ws)
                                 if ((!Utilities.IsSAPEnabled ||
-                                        (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && row.RepositoryName != RepositoryName.SapWebi.GetDescription()))
+                                        (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && row.RepositoryName != RepositoryName.SapWebi.GetDescription()) ||
+										SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && !ws.EnableSAPConnection)
                                     && string.IsNullOrEmpty(row.AdditionalQueryFilters))
                                 {
                                     errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A.");

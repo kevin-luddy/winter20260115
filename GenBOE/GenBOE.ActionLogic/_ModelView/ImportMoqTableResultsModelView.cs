@@ -18,7 +18,7 @@ namespace GenBOE.ActionLogic.ModelView
         {
 		}
 
-        public ImportMoqTableResultsModelView(ImportedMoqTable table, MoqTableImportType importType)
+        public ImportMoqTableResultsModelView(ImportedMoqTable table, MoqTableImportType importType, bool wsSapConnectionEnabled)
             :base ()
         {
             _ = table ?? throw new ArgumentNullException(nameof(table));
@@ -44,6 +44,7 @@ namespace GenBOE.ActionLogic.ModelView
             MOQTypeSelectionId = table.MOQTypeSelectionId;
             CustomFieldValueContainers = table.CustomFieldValueContainers;
             ImportType = (int)importType;
+            WsSapConnectionEnabled = wsSapConnectionEnabled;
         }
 
         /// <summary>
@@ -55,5 +56,10 @@ namespace GenBOE.ActionLogic.ModelView
 		/// Error messages from SAP validation/calculation
 		/// </summary>
 		public ICollection<string> ErrorMessages { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Workspace SAP Connection Enabled?
+        /// </summary>
+        public bool WsSapConnectionEnabled { get; set; }
     }
 }

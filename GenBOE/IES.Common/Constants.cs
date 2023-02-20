@@ -414,10 +414,15 @@ namespace IES.Common
         /// </summary>
         public const int MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH = 125;
 
-        /// <summary>
-        /// Length for MOQ Type WBS Element field for SSC (matches db length)
-        /// </summary>
-        public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 5000;
+		/// <summary>
+		/// Length for MOQ Type WBS Element field for RMS (matches db length)
+		/// </summary>
+		public const int MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH = 12;
+
+		/// <summary>
+		/// Length for MOQ Type WBS Element field for SSC (matches db length)
+		/// </summary>
+		public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 5000;
 
         #endregion
 
