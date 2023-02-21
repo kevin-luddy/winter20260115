@@ -59,7 +59,7 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 moqTable.WbsElement = row[WBS_ELEMENT];
                 
-                if ((!sapConnectionEnabled && moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH) 
+                if (((!Utilities.IsSAPEnabled || !sapConnectionEnabled) && moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH) 
                     || moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH)
                 {
                     moqTable.ImportTypes.Add(MoqTableImportType.LargeWBSElement);
