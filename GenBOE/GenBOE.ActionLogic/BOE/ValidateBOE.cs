@@ -699,7 +699,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                                 ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
 
-                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && !ws.EnableSAPConnection)
+                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && (!Utilities.IsSAPEnabled || !ws.EnableSAPConnection))
                                 {
 									ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH, errorMessages);
 								}
@@ -715,7 +715,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                                 if (row.PoPEnd.Date < row.PoPStart.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
                                 
-                                if (ws.EnableSAPConnection && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                                if (Utilities.IsSAPEnabled && ws.EnableSAPConnection && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                                 {
                                     if (row.PoPStart.Year > 1 && row.PoPStart.DayOfWeek != DayOfWeek.Monday)
                                     {
