@@ -86,7 +86,7 @@
             ProposalClass: '-1',                    // SSC only
             SelectedContractTypes: [],              // SSC only, array of strings
             UsingTemplateBoe: '',
-            EnableSAPConnection: true
+            EnableSAPConnection: false
         };
     };
 
@@ -937,6 +937,13 @@
             }
         } else {
             $scope.isDataLoading = false;
+        }
+    };
+
+    $scope.templateBoeChange = function () {
+
+        if ($scope.data.UsingTemplateBoe === false) {
+            $scope.data.EnableSAPConnection = false;
         }
     };
 

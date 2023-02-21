@@ -332,7 +332,7 @@
         </div>
     </div>
     <div class="form-element" id="TemplateBoeSelect">
-        <select name="UsingTemplateBoe" id="UsingTemplateBoe" data-ng-model="data.UsingTemplateBoe" data-ng-disabled="data.WorkspaceToCopyID > 0 && data.InitialUsingTemplateBoe == true">
+        <select name="UsingTemplateBoe" id="UsingTemplateBoe" data-ng-change="templateBoeChange()" data-ng-model="data.UsingTemplateBoe" data-ng-disabled="data.WorkspaceToCopyID > 0 && data.InitialUsingTemplateBoe == true">
             <option data-ng-value="true">Yes</option>
             <option data-ng-value="false">No</option>
         </select>
@@ -348,12 +348,10 @@
         </div>
     </div>
     <div class="form-element" id="SAPConnectionSelect">
-        <!-- There isn't a readonly attr for selects, need to use disabled and pass in the value via hidden attr -->
         <select name="EnableSAPConnection" id="EnableSAPConnection" data-ng-model="data.EnableSAPConnection" data-ng-disabled="data.WorkspaceToCopyID > 0 || (!data.UsingTemplateBoe)">
-            <option data-ng-value="true">Yes</option>
-            <option data-ng-value="false" data-ng-selected="!data.UsingTemplateBoe">No</option>
+            <option data-ng-if="data.UsingTemplateBoe === true && model.isSAPConfigurationEnabled" data-ng-value="true">Yes</option>
+            <option data-ng-value="false">No</option>
         </select>
-        <input type="hidden" name="EnableSAPConnection" id="EnableSAPConnection" />
     </div>
 </div>
     {{setupIdentificationPage()}}
