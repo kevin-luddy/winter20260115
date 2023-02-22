@@ -393,6 +393,9 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <EmbeddedResource Include="Aspose.Total.lic" />
+    <Content Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </Content>
     <None Include="Properties\PublishProfiles\ReleaseTFS.pubxml" />
     <None Include="Properties\PublishProfiles\Dev.pubxml" />
     <Content Include="logs\readme.txt" />
