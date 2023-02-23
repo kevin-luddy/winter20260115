@@ -269,8 +269,9 @@
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">
-                                <span data-ng-if="!IsSapEnabledAndSetAsRepository(tableData.RepositoryName)">Employee ID Filters *</span>
-                                <span data-ng-if="IsSapEnabledAndSetAsRepository(tableData.RepositoryName)">Additional Query Filters *</span>
+                                <span data-ng-if="model.IsRMS || (!model.IsRMS && IsSapEnabledAndSetAsRepository(tableData.RepositoryName))">Additional Query Filters</span>
+                                <span data-ng-if="!model.IsRMS && !IsSapEnabledAndSetAsRepository(tableData.RepositoryName)">Employee ID Filters</span>
+                                <span data-ng-if="!IsSapEnabledAndSetAsRepository(tableData.RepositoryName)">*</span>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersComparativeSuffix);"></div>
                                 <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="ShowFilterDialog(tableData)">Update Filters</button>
