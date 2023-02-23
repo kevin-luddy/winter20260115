@@ -26,15 +26,11 @@
     <None Remove="Aspose.Total.lic" />
     <None Remove="DeleteMe\readme.txt" />
     <None Remove="logs\readme.txt" />
-    <None Remove="parameters.xml" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="DeleteMe\readme.txt" />
     <Content Include="logs\readme.txt" />
-    <Content Include="parameters.xml">
-      <SubType>Designer</SubType>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
