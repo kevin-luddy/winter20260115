@@ -44,6 +44,11 @@ namespace GenTRAC.ActionLogic.ModelView
         public DateTime? previousROMDt { private get; set; }
 
         /// <summary>
+        /// Customer Due Date
+        /// </summary>
+        public DateTime? CustomerDueDt { get; set; }
+
+        /// <summary>
         /// Customer Submittal Date
         /// </summary>
         public DateTime? CustomerSubmittalDt { get; set; }
@@ -88,9 +93,28 @@ namespace GenTRAC.ActionLogic.ModelView
         public string PreviousROMValue => this.PreviousROMValueDecimal?.ToString("C");
 
         /// <summary>
-        /// Proposal Submittal Date to Customer string representation.
+        /// Customer Due Date
         /// </summary>
-        [Display(Name = "Proposal Submittal Date to Customer")]
+        [Display(Name = "Customer Due Date")]
+		[Required(ErrorMessage = "Customer Due Date is required.")]
+		public string CustomerDueDate
+		{
+			get => this.CustomerDueDt?.Date.ToShortDateString();
+
+			set
+			{
+				this.CustomerDueDt = null;
+				if (DateTime.TryParse(value, out DateTime result))
+				{
+					this.CustomerDueDt = result.Normalize(DateTimePrecision.Day);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Proposal Submittal Date to Customer string representation.
+		/// </summary>
+		[Display(Name = "Proposal Submittal Date to Customer")]
         public string CustomerSubmittalDate
         {
             get => this.CustomerSubmittalDt?.Date.ToShortDateString();

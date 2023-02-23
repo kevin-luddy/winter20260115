@@ -23,6 +23,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **      3/8/2022	Koovackal			IES-849 Changes to "Revise" button. 
 **										Removed contract offer code.
 **		7/25/2022	Dusan / Thomas		IES-1499, IES-1510, IES-1511: Added new fields into the report: Cage Codes, Type of Contract Action, Cost thru COM
+**		2/22/2023	ranzalon			Add CustomerDueDate
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -170,6 +171,7 @@ SELECT
 	pCD.PreCorporateEppDate AS ContractsPreCorporateEppDate,
 	pCD.CorporateEppDate AS ContractsCorporateEppDate,
 	pCD.EppRosDelegationNotes AS ContractsEppRosDelegationNotes,
+	pCD.CustomerDueDate AS CustomerDueDate,
 	CASE
 		WHEN pCD.LmWon = 1 THEN 'Yes'
 		WHEN pCD.LmWon = 0 THEN 'No'

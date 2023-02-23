@@ -1503,13 +1503,16 @@ function GenWidget(inConfig) {
         var helpfulElements = $("[" + GenConstants.HELPTEXT_ATTRIBUTE + "]", context);
 
         helpfulElements.each(function () {
-            var helptext = $(this).attr(GenConstants.HELPTEXT_ATTRIBUTE);
-            $(this).after(
-					'<div class="help-icon"></div>'
-							+ '<!-- This comment is needed for the jquery animation to work in IE8... -->'
-							+ '<div class="help-dialog" style="max-width: 275px;">'
-							+ '<div class="help-dialog-text">' + helptext
-							+ '</div>' + '</div>');
+            // Check the help icon wasn't already added, such as from the index
+            if (!$(this).next().hasClass('help-icon')) {
+                var helptext = $(this).attr(GenConstants.HELPTEXT_ATTRIBUTE);
+                $(this).after(
+                    '<div class="help-icon"></div>'
+                    + '<!-- This comment is needed for the jquery animation to work in IE8... -->'
+                    + '<div class="help-dialog" style="max-width: 275px;">'
+                    + '<div class="help-dialog-text">' + helptext
+                    + '</div>' + '</div>');
+            }
         });
 
         // help features
