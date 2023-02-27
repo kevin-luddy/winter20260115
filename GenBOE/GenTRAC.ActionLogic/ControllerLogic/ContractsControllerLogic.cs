@@ -340,6 +340,7 @@ namespace GenTRAC.ActionLogic
             dto.Id = model.Id;
             dto.ProposalId = model.ProposalId;
             dto.PreviouslySubmittedROM = model.PreviouslySubmittedROM;
+            dto.CustomerDueDate = model.CustomerDueDate == null ? (DateTime?)null : DateTime.Parse(model.CustomerDueDate);
             dto.CustomerSubmittalDate = model.CustomerSubmittalDate == null ? (DateTime?)null : DateTime.Parse(model.CustomerSubmittalDate);
             dto.ContractsCorrespondenceLogNumber = model.ContractsCorrespondenceLogNumber;
             dto.FinalNegotiatedValue = model.FinalNegotiatedValueLong;
@@ -378,6 +379,7 @@ namespace GenTRAC.ActionLogic
             model.Id = dto.Id;
             model.ProposalId = dto.ProposalId;
             model.PreviouslySubmittedROM = dto.PreviouslySubmittedROM;
+            model.CustomerDueDt = dto.CustomerDueDate;
             model.CustomerSubmittalDt = dto.CustomerSubmittalDate;
             model.ContractsCorrespondenceLogNumber = dto.ContractsCorrespondenceLogNumber;
             model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
@@ -410,7 +412,7 @@ namespace GenTRAC.ActionLogic
 
             if ((fullProposal.ProposalStatus == ProposalStatus.PendingCertification || fullProposal.ProposalStatus == ProposalStatus.PendingAward)
                 && (!contractInfo.LmWon.HasValue || !contractInfo.LmWon.Value) // null or false
-                && contractInfo.CustomerSubmittalDate.HasValue)
+                && contractInfo.CustomerSubmittalDate.HasValue && contractInfo.CustomerDueDate.HasValue)
             {
                 valid = true;
             }

@@ -33,6 +33,7 @@ namespace GenTRAC.Models
         public Nullable<bool> LmWon { get; set; }
         public Nullable<System.DateTime> ModCompletedDate { get; set; }
         public string CageCode { get; set; }
+        public Nullable<System.DateTime> CustomerDueDate { get; set; }
     
         public virtual EppDelegationAuthorityLU EppDelegationAuthorityLU { get; set; }
         public virtual Proposal Proposal { get; set; }

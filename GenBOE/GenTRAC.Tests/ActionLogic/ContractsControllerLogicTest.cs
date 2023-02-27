@@ -196,6 +196,7 @@ namespace GenTRAC.Tests.ActionLogic
                 Updateable = UpdateType.Upsert,
                 ProposalId = proposalId,
                 PreviouslySubmittedROM = 2,
+                CustomerDueDate = DateTime.Now,
                 CustomerSubmittalDate = DateTime.Now,
                 ContractsCorrespondenceLogNumber = "Test_Log_Number",
                 FinalNegotiatedValue = 3,
@@ -250,6 +251,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsNotNull(contractsModelView);
             Assert.IsTrue(contractsModelView.ProposalId > 0);
             Assert.AreEqual(contractDto.ProposalId, contractsModelView.ProposalId);
+            Assert.AreEqual(contractDto.CustomerDueDate, contractsModelView.CustomerDueDt);
             Assert.AreEqual(contractDto.CustomerSubmittalDate, contractsModelView.CustomerSubmittalDt);
             Assert.AreEqual(contractDto.ContractsCorrespondenceLogNumber, contractsModelView.ContractsCorrespondenceLogNumber);
             Assert.AreEqual(contractDto.FinalNegotiatedValue, contractsModelView.FinalNegotiatedValueLong);

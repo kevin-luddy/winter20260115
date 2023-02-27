@@ -41,6 +41,7 @@ AS
 **		7/25/2022	Dusan / Thomas		IES-1499, IES-1510, IES-1511: Added new fields into the report: Cage Codes, Type of Contract Action, Cost thru COM
 **		7/28/2022	Dusan				IES-1578 Add [Profit/Fee] and [COM] individual fields to the report
 **		10/13/2022	RJ					IES-1933 Cost Volume Tool
+**		02/22/23	ranzalon			Add CustomerDueDate
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -331,6 +332,7 @@ SELECT V.[ProposalID]
 	 ,V.CageCode
 	 ,V.ContractActionType
 	 ,V.CostThroughCom
+	 ,V.CustomerDueDate
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
