@@ -638,6 +638,11 @@ namespace IES.Common
         #region Contracts
 
         /// <summary>
+        /// Validation failed for Customer Due Date
+        /// </summary>
+        public const string INVALID_CUSTOMER_DUE_DATE = "Customer Due Date is required.";
+
+        /// <summary>
         /// Validation failed for Cage Code
         /// </summary>
         public const string INVALID_CAGE_CODE = "Cage # is required.";
@@ -681,6 +686,26 @@ namespace IES.Common
         /// Validation that Days to Certification must be positive
         /// </summary>
         public const string INVALID_DAYS_TO_CERT = "\"The Date that the Certificate of CCoPD and any additional disclosures were delivered to the customer\" cannot be prior to the \"Date of Agreement on Final Price (Handshake)\"";
+
+        /// <summary>
+        /// Validation that user has sufficient permissions to set Proposal as Lost
+        /// </summary>
+        public const string INSUFFICIENT_PERMISSIONS_FOR_LOST = "Insufficient permissions to set proposal as Lost.";
+
+        /// <summary>
+        /// Validation that Proposal has a valid status to be set as Lost
+        /// </summary>
+		public const string INVALID_STATUS_FOR_LOST = "The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'.";
+
+        /// <summary>
+        /// Validation that Customer Due Date is set
+        /// </summary>
+		public const string DUE_DATE_REQUIRED_FOR_LOST = "The Customer Due Date is required in order to set the proposal as Lost.";
+
+        /// <summary>
+        /// Validation that Customer Submittal Date is set
+        /// </summary>
+		public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Lost.";
 
 		#endregion
 

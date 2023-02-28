@@ -145,7 +145,6 @@ namespace GenTRAC.ActionLogic
             model.CompleteButtonEnabled = this.IsValidForCompleteStatus(dto, fullProposal);
             model.IsNoBid = fullProposal.ProposalStatus == ProposalStatus.NoBid;
             model.HasAccessToSetNoBid = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions) || this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
-            model.HasAccessToSetLost = ValidForLostProposalStatusSave(fullProposal, null);
             model.IsReadOnly = fullProposal.ProposalStatus == ProposalStatus.Completed || highestAccess == SecurityAuthorization.Read;
 
             // Load additional values
@@ -303,8 +302,9 @@ namespace GenTRAC.ActionLogic
         public async Task SetProposalLost(int proposalId, List<string> messages)
         {
             FullProposal fullProposal = await GetFullProposalAsync(proposalId);
+            ContractsDto contracts = this.contractsLoader.GetContractForProposal(proposalId);
 
-            if (this.ValidForLostProposalStatusSave(fullProposal, messages))
+            if (this.ValidForLostProposalStatusSave(fullProposal, contracts, messages))
             {
                 using (StopwatchTimer sw = new StopwatchTimer("ContractsControllerLogic.SetProposalLost", this.log))
                 {
@@ -557,17 +557,19 @@ namespace GenTRAC.ActionLogic
             this.approvalsLogic.ResetWorkflow(proposalId);
         }
 
-        /// <summary>
-        /// Checks permissions and status to ensure that the proposal is valid for setting "Lost" status.
-        /// a) Must have the primary or backup contracts role or be an administrator
-        /// b) The status must currently be Pending Certification or Pending Contractual Award.
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <param name="messages">Response object to be returned</param>
-        /// <returns>true if valid for setting the status</returns>
-        public bool ValidForLostProposalStatusSave(FullProposal fullProposal, List<string> messages)
+		/// <summary>
+		/// Checks permissions and status to ensure that the proposal is valid for setting "Lost" status.
+		/// a) Must have the primary or backup contracts role or be an administrator
+		/// b) The status must currently be Pending Certification or Pending Contractual Award.
+		/// </summary>
+		/// <param name="fullProposal">Proposal</param>
+		/// <param name="contracts">Contracts dto</param>
+		/// <param name="messages">Response object to be returned</param>
+		/// <returns>true if valid for setting the status</returns>
+		public bool ValidForLostProposalStatusSave(FullProposal fullProposal, ContractsDto contracts, List<string> messages)
         {
             _ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
+            _ = contracts ?? throw new ArgumentNullException(nameof(contracts));
 
             bool isValid = true;
 
@@ -576,15 +578,27 @@ namespace GenTRAC.ActionLogic
 
             if (!isLeadOrBackupContractsUser && !isAdmin)
             {
-                messages?.Add("Insufficient permissions to set proposal as Lost.");
+                messages?.Add(Constants.INSUFFICIENT_PERMISSIONS_FOR_LOST);
                 isValid = false;
             }
 
             if (fullProposal.ProposalStatus != ProposalStatus.PendingCertification && fullProposal.ProposalStatus != ProposalStatus.PendingAward)
             {
-                messages?.Add("The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'");
+                messages?.Add(Constants.INVALID_STATUS_FOR_LOST);
                 isValid = false;
             }
+
+            if (!contracts.CustomerDueDate.HasValue)
+			{
+				messages?.Add(Constants.DUE_DATE_REQUIRED_FOR_LOST);
+				isValid = false;
+			}
+
+            if (!contracts.CustomerSubmittalDate.HasValue)
+			{
+				messages?.Add(Constants.SUBMITTAL_DATE_REQUIRED_FOR_LOST);
+				isValid = false;
+			}
 
             return isValid;
         }
@@ -654,6 +668,13 @@ namespace GenTRAC.ActionLogic
                     messages.Add(msg);
                     isValid = false;
                     break;
+            }
+
+            // Customer Due Date required for validation
+            if (dto.CustomerDueDate is null)
+            {
+                isValid = false;
+                messages.Add(Constants.INVALID_CUSTOMER_DUE_DATE);
             }
 
             // Cage Code required for validation
