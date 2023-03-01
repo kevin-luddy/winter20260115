@@ -96,7 +96,6 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Customer Due Date
         /// </summary>
         [Display(Name = "Customer Due Date")]
-		[Required(ErrorMessage = "Customer Due Date is required.")]
 		public string CustomerDueDate
 		{
 			get => this.CustomerDueDt?.Date.ToShortDateString();
@@ -290,10 +289,5 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Does user have access to set No Bid?
         /// </summary>
         public bool HasAccessToSetNoBid { get; set; }
-
-        /// <summary>
-        /// Does user have access to set Lost?
-        /// </summary>
-        public bool HasAccessToSetLost { get; set; }
     }
 }

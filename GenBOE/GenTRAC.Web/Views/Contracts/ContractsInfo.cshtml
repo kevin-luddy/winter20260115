@@ -273,7 +273,7 @@
             </div>
             <div class="form-row">
                 <div class="form-label">
-                    <span helptext="If this is an Unsolicited Bid, enter the Proposal Submittal Date. Ensure most recent due date is entered.">@Html.LabelFor(x => x.CustomerDueDate) *</span>
+                    <span helptext="If this is an Unsolicited Bid, enter the Proposal Submittal Date. Ensure most recent due date is entered.">@Html.LabelFor(x => x.CustomerDueDate)</span>
                 </div>
                 <div class="form-element">
                     @Html.TextBoxFor(x => x.CustomerDueDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
