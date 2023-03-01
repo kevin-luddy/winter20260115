@@ -67,6 +67,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             // Update Contract
             testContractActual.Updateable = UpdateType.Upsert;
+            testContractActual.CustomerDueDate = DateTime.Now;
             testContractActual.CustomerSubmittalDate = DateTime.Now;
             testContractActual.ContractsCorrespondenceLogNumber = "TestLogNumber2";
             testContractActual.FinalNegotiatedValue = 201;
@@ -104,6 +105,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 Updateable = UpdateType.Upsert,
                 ProposalId = proposalId,
                 PreviouslySubmittedROM = previouslySubmittedProposalId,
+                CustomerDueDate = DateTime.Now,
                 CustomerSubmittalDate = DateTime.Now,
                 ContractsCorrespondenceLogNumber = "Test LogNumber",
                 FinalNegotiatedValue = 222L,
@@ -131,6 +133,7 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected.ProposalId, actual.ProposalId);
             Assert.AreEqual(expected.PreviouslySubmittedROM, actual.PreviouslySubmittedROM);
+            Assert.AreEqual(expected.CustomerDueDate.Value.Date, actual.CustomerDueDate.Value.Date);
             Assert.AreEqual(expected.CustomerSubmittalDate.Value.Date, actual.CustomerSubmittalDate.Value.Date);
             Assert.AreEqual(expected.ContractsCorrespondenceLogNumber, actual.ContractsCorrespondenceLogNumber);
             Assert.AreEqual(expected.FinalNegotiatedValue, actual.FinalNegotiatedValue);

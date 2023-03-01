@@ -196,6 +196,7 @@ namespace GenTRAC.Tests.ActionLogic
                 Updateable = UpdateType.Upsert,
                 ProposalId = proposalId,
                 PreviouslySubmittedROM = 2,
+                CustomerDueDate = DateTime.Now,
                 CustomerSubmittalDate = DateTime.Now,
                 ContractsCorrespondenceLogNumber = "Test_Log_Number",
                 FinalNegotiatedValue = 3,
@@ -250,6 +251,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsNotNull(contractsModelView);
             Assert.IsTrue(contractsModelView.ProposalId > 0);
             Assert.AreEqual(contractDto.ProposalId, contractsModelView.ProposalId);
+            Assert.AreEqual(contractDto.CustomerDueDate, contractsModelView.CustomerDueDt);
             Assert.AreEqual(contractDto.CustomerSubmittalDate, contractsModelView.CustomerSubmittalDt);
             Assert.AreEqual(contractDto.ContractsCorrespondenceLogNumber, contractsModelView.ContractsCorrespondenceLogNumber);
             Assert.AreEqual(contractDto.FinalNegotiatedValue, contractsModelView.FinalNegotiatedValueLong);
@@ -314,12 +316,19 @@ namespace GenTRAC.Tests.ActionLogic
             FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.PendingCertification);
             List<string> errors = new List<string>();
 
+            ContractsDto contractDto = new ContractsDto()
+            {
+                CustomerDueDate = DateTime.Now,
+                CustomerSubmittalDate = DateTime.Now
+            };
+
             this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
             this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
             this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
 
@@ -339,18 +348,25 @@ namespace GenTRAC.Tests.ActionLogic
             FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.PendingCertification);
             List<string> errors = new List<string>();
 
+            ContractsDto contractDto = new ContractsDto()
+            {
+                CustomerDueDate = DateTime.Now,
+                CustomerSubmittalDate = DateTime.Now
+            };
+
             this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
             this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadEstimatorUserForMocks());
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
             this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
 
             await sut.SetProposalLost(fp.Id, errors);
 
-            Assert.AreEqual(errors.First(), "Insufficient permissions to set proposal as Lost.");
+            Assert.AreEqual(errors.First(), Constants.INSUFFICIENT_PERMISSIONS_FOR_LOST);
         }
 
         /// <summary>
@@ -364,18 +380,87 @@ namespace GenTRAC.Tests.ActionLogic
             FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.NoBid);
             List<string> errors = new List<string>();
 
+            ContractsDto contractDto = new ContractsDto()
+            {
+                CustomerDueDate = DateTime.Now,
+                CustomerSubmittalDate = DateTime.Now
+            };
+
             this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
             this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
             this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
 
             await sut.SetProposalLost(fp.Id, errors);
 
-            Assert.AreEqual(errors.First(), "The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'");
+            Assert.AreEqual(errors.First(), Constants.INVALID_STATUS_FOR_LOST);
+        }
+
+        /// <summary>
+        /// Test for setting the proposal status to Lost
+        /// </summary>
+        /// <returns>Async Task</returns>
+        [TestMethod]
+        public async Task SetProposalLostMissingDueDate()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+            FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.PendingCertification);
+            List<string> errors = new List<string>();
+
+            ContractsDto contractDto = new ContractsDto()
+            {
+                CustomerSubmittalDate = DateTime.Now
+            };
+
+            this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
+            this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
+            this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
+            this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
+            this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
+            this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
+
+            await sut.SetProposalLost(fp.Id, errors);
+
+            Assert.AreEqual(errors.First(), Constants.DUE_DATE_REQUIRED_FOR_LOST);
+        }
+
+        /// <summary>
+        /// Test for setting the proposal status to Lost
+        /// </summary>
+        /// <returns>Async Task</returns>
+        [TestMethod]
+        public async Task SetProposalLostTestMissingSubmittalDate()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+            FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.PendingCertification);
+            List<string> errors = new List<string>();
+
+            ContractsDto contractDto = new ContractsDto()
+            {
+                CustomerDueDate = DateTime.Now
+            };
+
+            this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
+            this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
+            this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
+            this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
+            this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
+            this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
+
+            await sut.SetProposalLost(fp.Id, errors);
+
+            Assert.AreEqual(errors.First(), Constants.SUBMITTAL_DATE_REQUIRED_FOR_LOST);
         }
 
         /// <summary>
@@ -631,7 +716,8 @@ namespace GenTRAC.Tests.ActionLogic
                 PreSpaceEppDate = DateTime.Now,
                 ProgramEppDate = DateTime.Now,
                 CageCode = "ABC123",
-                LobEppDate = DateTime.Now
+                LobEppDate = DateTime.Now,
+                CustomerDueDate = DateTime.Now
             };
 
             ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now };
@@ -671,7 +757,8 @@ namespace GenTRAC.Tests.ActionLogic
                 FinalNegotiatedValue = 0,
                 ModCompletedDate = DateTime.Now,
                 NegotiationsSubmitted = DateTime.Now,
-                LmWon = true
+                LmWon = true,
+                CustomerDueDate = DateTime.Now
             };
 
             ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now };

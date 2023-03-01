@@ -61,7 +61,8 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.EppRosDelegationNotes,
                             dtoToUpsert.LmWon,
                             dtoToUpsert.ModCompletedDate,
-                            dtoToUpsert.CageCode
+                            dtoToUpsert.CageCode,
+                            dtoToUpsert.CustomerDueDate
                             ).FirstOrDefault();
                     }
                 }
@@ -104,6 +105,7 @@ namespace GenTRAC.DataBridge.DTO
                             UpdateDate = x.UpdateDT,
                             ProposalId = x.ProposalID,
                             PreviouslySubmittedROM = x.PreviouslySubmittedROM,
+                            CustomerDueDate = x.CustomerDueDate,
                             CustomerSubmittalDate = x.CustomerSubmittalDate,
                             ContractsCorrespondenceLogNumber = x.ContractsCorrespondLogNumber,
                             FinalNegotiatedValue = x.FinalNegotiatedValue,
@@ -149,6 +151,7 @@ namespace GenTRAC.DataBridge.DTO
                             UpdateDate = x.UpdateDT,
                             ProposalId = x.ProposalID,
                             PreviouslySubmittedROM = x.PreviouslySubmittedROM,
+                            CustomerDueDate = x.CustomerDueDate,
                             CustomerSubmittalDate = x.CustomerSubmittalDate,
                             ContractsCorrespondenceLogNumber = x.ContractsCorrespondLogNumber,
                             FinalNegotiatedValue = x.FinalNegotiatedValue,

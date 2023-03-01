@@ -1,0 +1,120 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>APTSPropricerApi</RootNamespace>
+    <UserSecretsId>e43ed8bd-127f-4a8c-80c4-bd1ccdb9329a</UserSecretsId>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Aspose.Total.lic" />
+    <None Remove="DeleteMe\readme.txt" />
+    <None Remove="logs\readme.txt" />
+    <None Remove="parameters.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="DeleteMe\readme.txt" />
+    <Content Include="logs\readme.txt" />
+    <Content Include="parameters.xml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Aspose.Total.lic" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ACV.Common" Version="1.0.7423219" />
+    <PackageReference Include="ACV.Shared" Version="1.0.7423219" />
+    <PackageReference Include="Aspose.Cells" Version="22.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="6.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.3" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+    <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+    <PackageReference Include="Serilog.Sinks.Splunk" Version="3.7.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DevExpress.Data.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Data.v20.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Office.v20.2.Core">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Office.v20.2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Printing.v20.2.Core">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Printing.v20.2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Spreadsheet.v20.2.Core">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Spreadsheet.v20.2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Utils.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Utils.v20.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.XtraBars.v20.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraEditors.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.XtraEditors.v20.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraNavBar.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.XtraNavBar.v20.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml">
+      <HintPath>..\_ProPricer Libraries\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Core">
+      <HintPath>..\_ProPricer Libraries\EBS.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Core.Controls">
+      <HintPath>..\_ProPricer Libraries\EBS.Core.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Core.DocumentFormat">
+      <HintPath>..\_ProPricer Libraries\EBS.Core.DocumentFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Core.ServiceModel">
+      <HintPath>..\_ProPricer Libraries\EBS.Core.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.Client">
+      <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.Configuration">
+      <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.EditionManager">
+      <HintPath>..\_ProPricer Libraries\EBS.ProPricer.EditionManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.ImportExport">
+      <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.ImportExport.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.Registration">
+      <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.Registration.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.ProPricer.Reports">
+      <HintPath>..\_ProPricer Libraries\EBS.ProPricer.Reports.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Registration">
+      <HintPath>..\_ProPricer Libraries\EBS.Registration.dll</HintPath>
+    </Reference>
+    <Reference Include="PLUSManaged">
+      <HintPath>..\_ProPricer Libraries\PLUSManaged.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
