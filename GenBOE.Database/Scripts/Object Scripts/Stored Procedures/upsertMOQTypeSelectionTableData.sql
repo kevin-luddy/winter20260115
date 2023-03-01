@@ -25,7 +25,7 @@ CREATE PROCEDURE [dbo].[upsertMOQTypeSelectionTableData]
 	@PeriodOfPerformanceEndDate datetime2,
 	@TotalWbsHours decimal(10,2),
 	@AdditionalQueryFilters varchar(2500),
-	@TotalRelevantHoursAfterQueryFilters decimal(10,2)
+	@TotalRelevantHoursAfterQueryFilters decimal(11,2)
 )
 AS
 /******************************************************************************
@@ -43,6 +43,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
 **		10/27/22	ranzalon			IES-1951 - fix WBS Element size
+**		3/1/23		twilson3			ACV-343 Update MOQ Column sizes
 *******************************************************************************/
 SET NOCOUNT ON 
 
