@@ -159,11 +159,12 @@
     <Build Include="Object Scripts\Stored Procedures\upsertProposalContractsData.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2021.2 Generated On 2_25_2021.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.10 Generated On 3_22_2022.sql" />
-    <Build Include="_Full Script Files For Specific Versions\PTM - 2022.27 Generated On 7_27_2022.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.15 Generated On 5_16_2022.sql" />
     <Build Include="Release Scripts\Release 2022.34\Release 2022.34.sql" />
-    <Build Include="_Full Script Files For Specific Versions\PTM - 2022.34 Generated On 10_20_2022.sql" />
     <Build Include="Release Scripts\Release 2023.3\Release 2023.3.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2023.3 Generated On 3_1_2023.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.27 Generated On 7_27_2022.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.34 Generated On 10_20_2022.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
