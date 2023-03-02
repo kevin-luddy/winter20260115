@@ -9,7 +9,7 @@
     IEnumerable<WorkspaceVariableModelView> workspaceVariables = (IEnumerable<WorkspaceVariableModelView>)ViewData["WorkspaceVariables"];
     var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
     int taskElementId = Model.TaskElementId > 0 ? Model.TaskElementId : -1;
-    bool showMoqQuestions = Model.MoqTemplateAnswers.Any();;
+    bool showMoqQuestions = Model.MoqTemplateAnswers.Any();
     int numberMoqQuestions = showMoqQuestions ? Model.MoqTemplateAnswers.Count : 1;
 
     // these 2 fields, as well as the processing below is necessary to deal with the date serialization weirdness
@@ -598,6 +598,7 @@
                 <button id="Back-ImportMoqTableVerification" type="button" class="ies" data-ng-click="backFromImport()" name="back-button">Back</button>
                 <button id="CompleteImportButton-ImportMoqTableVerification" class="ies-action" data-ng-if="!dialog.invalidData" data-ng-hide="dialog.completeImportWorking" data-ng-click="completeImportMoqTables()">Complete Import</button>
                 <div id="CompleteImportLoader-ImportMoqTableVerification" class="loader" data-ng-show="dialog.completeImportWorking" style="width: 129px"></div>
+                <span data-ng-if="dialog.invalidData && dialog.importResults.length === 0" class="important">There are no valid Tables to import.  Update the Excel file to have at least one valid row.</span>
             </div>
         </div>
     </div>

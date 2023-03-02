@@ -188,6 +188,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			$scope.$apply(function () {
 				var index = $scope.model.SelectedMoqTypes.indexOf(item);
 				$scope.model.SelectedMoqTypes.splice(index, 1);
+				if (item.TableData && item.TableData.length > 0) {
+					item.TableData.forEach(function (tableData) {
+						$scope.actualsValidation.isDirty.delete(tableData.Id);		
+					});
+				}
+				
 				$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
 				MOQEquationFieldWidget.setDirty();
 				$scope.refreshDisableSave();
