@@ -3619,6 +3619,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 
+			if (resultData.Result == null || !resultData.Result.Any(r => r.ErrorMessages.Count == 0))
+			{
+				resultData.ErrorsOccurred = true;
+			}
+
 			return resultData;
         }
 
