@@ -77,7 +77,7 @@ namespace IES.Common
 			if (!this.cache.Contains(CACHE_KEY_TOKEN))
 			{
 				token = await this.CreateToken();
-				this.cache.Add(CACHE_KEY_TOKEN, token, 5 * 60);
+				this.cache.AddAbsolute(CACHE_KEY_TOKEN, token, 5 * 60);
 			}
 			else
 			{
