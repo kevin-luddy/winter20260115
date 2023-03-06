@@ -187,7 +187,7 @@
         </div>
     </div>
     <% } else { %>
-        <div class="import-results">
+        <div class="moq-table-import-results">
             <div class="title">
                 There are no changes to import.
                 <%if(errorsOccurred) { %>
