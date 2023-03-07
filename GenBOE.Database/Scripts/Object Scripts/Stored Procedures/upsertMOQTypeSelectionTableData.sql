@@ -23,7 +23,7 @@ CREATE PROCEDURE [dbo].[upsertMOQTypeSelectionTableData]
 	@WbsElement varchar(8000),
 	@PeriodOfPerformanceStartDate datetime2,
 	@PeriodOfPerformanceEndDate datetime2,
-	@TotalWbsHours decimal(10,2),
+	@TotalWbsHours decimal(11,2),
 	@AdditionalQueryFilters varchar(2500),
 	@TotalRelevantHoursAfterQueryFilters decimal(11,2)
 )
