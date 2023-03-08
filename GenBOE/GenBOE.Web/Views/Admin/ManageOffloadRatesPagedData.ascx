@@ -73,7 +73,6 @@
         $('#DeleteAllRates').click(ManageOffloadRatesGridWidget.DeleteAllRecords);
 
         ManageOffloadRatesGridWidget.registerForEvent('GET_DELETED_RATES', function () {
-
             // find all values that are no longer checked
             var toRemove = new Array();
             for (var k in ManageOffloadRatesGridWidget.data.CheckedItems) {
@@ -86,8 +85,8 @@
             for (var j in toRemove) {
                 ManageOffloadRatesGridWidget.data.CheckedItems.splice(toRemove[j],1);
             }
-            $(document).trigger('DELETE_RATES', ManageOffloadRatesGridWidget.data); 
-            
+
+            $(document).trigger('DELETE_RATES', ManageOffloadRatesGridWidget.data);            
         });
 
         $('#ManageOffloadRatesGrid td.edit-rate-link').click(function() {
@@ -126,6 +125,7 @@
             <a name="Year"><%: item.Year %></a>
             <input type="hidden" name="Year" value="<%: item.Year %>" />
             <input type="hidden" name="OffloadRateID" value="<%: item.OffloadRateID %>" />
+            <input type="hidden" name="UpdateDateLong" value="<%: item.UpdateDateLong %>" />
         </td>
         <td class="resource edit-rate-link">
             <a name="Resource"><%: item.Resource%></a>

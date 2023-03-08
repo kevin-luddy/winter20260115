@@ -314,10 +314,10 @@ namespace IES.Common
         /// </summary>
         public const string CUSTOM_FIELD_IS_REQUIRED = "Custom Field {0} is required.";
 
-		/// <summary>
-		/// MOQ Custom Field should be empty when SAP/Webi Repository is chosen
-		/// </summary>
-		public const string MOQ_CUSTOM_FIELD_EMPTY_WHEN_SAP_WEBI = "Custom Field {0} should be empty when SAP/WEBI Repository is chosen.  Place the filter into the correct box and clear the custom field text box.";
+        /// <summary>
+        /// MOQ Custom Field should be empty when SAP/Webi Repository is chosen
+        /// </summary>
+        public const string MOQ_CUSTOM_FIELD_EMPTY_WHEN_SAP_WEBI = "Custom Field {0} should be empty when SAP/WEBI Repository is chosen. Place the filter into the Additional Query Filter box, and clear the custom field text box.";
 
         /// <summary>
         /// At least 1 MOQ type is required for a task.

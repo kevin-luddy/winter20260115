@@ -3619,6 +3619,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 
+			if (resultData.Result == null || !resultData.Result.Any(r => r.ErrorMessages.Count == 0) ||
+                !resultData.Result.Any(r => r.ImportType == (int)MoqTableImportType.CreateMoqTable))
+			{
+				resultData.ErrorsOccurred = true;
+			}
+
 			return resultData;
         }
 
