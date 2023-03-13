@@ -699,7 +699,8 @@ namespace GenBOE.ActionLogic.IO.Export
 						else
 						{
 							// mask the employee ids
-							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), MaskSpaceEmployeeIds(EmployeeIdFilters, table.AdditionalQueryFilters));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), 
+                                exportInputs.Workspace.EnableSAPConnection && table.RepositoryName == RepositoryName.SapWebi.GetDescription() ? MaskSpaceEmployeeIds(EmployeeIdFilters, table.AdditionalQueryFilters) : BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT);
 						}
 					}
 					else
