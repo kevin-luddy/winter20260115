@@ -366,7 +366,14 @@ namespace GenBOE.ActionLogic.IO.Import
 				{
 					if (decimal.TryParse(row[TOTAL_RELEVANT_HOURS_SSC], out decimal totalRelevantHours))
 					{
-						moqTable.TotalRelevantHours = totalRelevantHours;
+						if (totalRelevantHours <= 0 || totalRelevantHours >= 1000000000)
+						{
+							moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalRelevantHours);
+						}
+						else
+						{
+							moqTable.TotalRelevantHours = totalRelevantHours;
+						}
 					}
 					else
 					{

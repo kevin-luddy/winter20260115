@@ -3363,7 +3363,8 @@ namespace GenBOE.Tests.ActionLogic
                             PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-                            TotalRelevantHours = 1000
+                            TotalRelevantHours = 1000,
+                            TotalWbsHours = 2000
                         }
                     },
                 Rationale = "Test Rationale",
@@ -3475,7 +3476,8 @@ namespace GenBOE.Tests.ActionLogic
                             PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-                            TotalRelevantHours = 1000
+                            TotalRelevantHours = 1000,
+                            TotalWbsHours = 2000
                         }
                     },
                 Rationale = "Test Rationale",
@@ -3586,6 +3588,7 @@ namespace GenBOE.Tests.ActionLogic
                             PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "aaa",
+                            TotalWbsHours = 2000,
                             TotalRelevantHours = 1000,
 							RepositoryName = "aa",
 							QueryType = "aa"
@@ -3677,6 +3680,134 @@ namespace GenBOE.Tests.ActionLogic
 			// SSC && SAP = false -> Required - True (IsAny)
 			Utilities.IsSAPEnabled = false;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			Assert.IsTrue(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask, specifically rules for Total Relevant Hours - Space Company
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_Hours_Space()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabled = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000,
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = "aa"
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// Valid data to start
+			Assert.IsFalse(result.Any());
+
+            // Relevant Hours less than 0
+            moqType.TableData.First().TotalRelevantHours = -1;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+            Assert.IsTrue(result.Any());
+
+			// Relevant Hours over 10 digits
+			moqType.TableData.First().TotalRelevantHours = 1000000000;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask, specifically rules for Total Relevant Hours - RMS
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_Hours_RMS()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+			Utilities.IsSAPEnabled = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalWbsHours = 2000,
+							TotalRelevantHours = 1000,
+							RepositoryName = "aa",
+							QueryType = "aa"
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// Valid data to start
+			Assert.IsFalse(result.Any());
+
+			// WBS Hours less than 0
+			moqType.TableData.First().TotalWbsHours = -1;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+
+			// WBS Hours over 10 digits
+			moqType.TableData.First().TotalWbsHours = 1000000000;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+
+			// Relevant Hours less than 0
+			moqType.TableData.First().TotalWbsHours = 1000;
+			moqType.TableData.First().TotalRelevantHours = -1;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+
+			// Relevant Hours over 10 digits
+			moqType.TableData.First().TotalRelevantHours = 1000000000;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
 			Assert.IsTrue(result.Any());
 		}
 	}
