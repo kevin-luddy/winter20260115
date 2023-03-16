@@ -573,8 +573,15 @@ namespace IES.Common
 
             if (!string.IsNullOrEmpty(token))
             {
-                client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
-                client.DefaultRequestHeaders.Add(HeaderNames.Authorization, Constants.TOKEN_PREFIX + token);
+                string fullToken = Constants.TOKEN_PREFIX + token;
+				if (!client.DefaultRequestHeaders.Any(h => h.Key == HeaderNames.Authorization && h.Value.Any(v => v == fullToken)))
+                {
+                    lock (lockObject)
+                    {
+                        client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
+                        client.DefaultRequestHeaders.Add(HeaderNames.Authorization, fullToken);
+                    }
+                }
             }
         }
 

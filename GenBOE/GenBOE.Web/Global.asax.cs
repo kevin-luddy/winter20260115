@@ -438,6 +438,7 @@ namespace GenBOE
                 new ResolvedParameter(typeof(IBoeDTODataLoader)),
                 new ResolvedParameter(typeof(IPermissionsDTODataLoader))));
 
+            _SapHttpClient.Timeout = Constants.HTTP_TIMEOUT;
 			GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient), typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient), GetLifetimeManager(), new InjectionConstructor(ConfigurationUtilities.GetAppSetting("IESSAPUrl"), _SapHttpClient));
 
             // Controller Logic
