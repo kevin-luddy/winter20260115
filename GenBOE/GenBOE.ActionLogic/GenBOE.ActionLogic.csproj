@@ -8,7 +8,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <ProjectGuid>{8B23113C-48A0-4F65-8ED5-0F725AC170E7}</ProjectGuid>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
