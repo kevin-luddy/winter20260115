@@ -213,9 +213,9 @@ namespace GenBOE.ActionLogic.ModelView
         public static string FormatMoqTablePoPDate(DateTime date, int? week, int? year, string queryType)
         {
             return
-                SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
-                    ? date.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) :
-                    queryType != MoqTableData.WEEKLY ? $"{date.Month.ToString("00")}/{date.Year}" : $"FW {week ?? 0:00}/{year}";
+                SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || queryType == MoqTableData.WEEKLY_DATETIME
+					? date.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) :
+                    queryType == MoqTableData.MONTHLY ? $"{date.Month.ToString("00")}/{date.Year}" : $"FW {week ?? 0:00}/{year}";
         }
 
 		/// <summary>
