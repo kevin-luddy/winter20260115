@@ -19,6 +19,11 @@ namespace GenBOE.ActionLogic.ModelView
         public string WbsElement { get; set; }
 
         /// <summary>
+        /// Gets or sets the Query Type
+        /// </summary>
+        public string QueryType { get; set; }
+
+        /// <summary>
         /// Gets or sets the POP Start
         /// </summary>
         public DateTime? PoPStart { get; set; }

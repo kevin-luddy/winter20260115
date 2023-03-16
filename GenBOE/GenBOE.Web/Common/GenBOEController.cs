@@ -254,7 +254,7 @@ namespace GenBOE.Web.Common
             }
 
             ViewData["DisplayINLForms"] = displayINLForms;
-            ViewData["EnableSAP"] = Utilities.IsSAPEnabled && ws.EnableSAPConnection;
+            ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
 
 			#endregion
 

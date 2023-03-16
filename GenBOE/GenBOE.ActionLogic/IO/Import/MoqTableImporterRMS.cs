@@ -35,7 +35,8 @@ namespace GenBOE.ActionLogic.IO.Import
         /// </summary>
         /// <param name="moqTable">The imported MOQ Table</param>
         /// <param name="row">row from the import file</param>
-        protected override void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row, bool sapConnectionEnabled)
+        protected override void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row, bool sapConnectionEnabled,
+            DateTime? workspaceCreationDate)
         {
             _ = moqTable ?? throw new ArgumentNullException(nameof(moqTable));
             _ = row ?? throw new ArgumentNullException(nameof(row));
@@ -59,7 +60,7 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 moqTable.WbsElement = row[WBS_ELEMENT];
                 
-                if (((!Utilities.IsSAPEnabled || !sapConnectionEnabled) && moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH) 
+                if ((!Utilities.IsSAPEnabledForWorkspace(sapConnectionEnabled, workspaceCreationDate) && moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH) 
                     || moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH)
                 {
                     moqTable.ImportTypes.Add(MoqTableImportType.LargeWBSElement);
@@ -75,13 +76,13 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 moqTable.AdditionalQueryFilters = row[ADDITIONAL_QUERY_FILTERS];
             }
-			else if ((!Utilities.IsSAPEnabled || !sapConnectionEnabled) && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+			else if (!Utilities.IsSAPEnabledForWorkspace(sapConnectionEnabled, workspaceCreationDate) && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
 			{
 				// Additional Query Filters is required if SAP is disabled 
 				moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
 			}
 
-			if (!Utilities.IsSAPEnabled || !sapConnectionEnabled)
+			if (!Utilities.IsSAPEnabledForWorkspace(sapConnectionEnabled, workspaceCreationDate))
 			{
 			    // Total WBS/WBS Element Hours
 				if ((!row.ContainsKey(TOTAL_WBS_HOURS) || string.IsNullOrEmpty(row[TOTAL_WBS_HOURS])) && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))

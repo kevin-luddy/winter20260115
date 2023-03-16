@@ -64,7 +64,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.refreshDisableSave = function () {
 		// only check for disabling save if SAP is enabled
-		if ($scope.model.SAPEnabled && $scope.model.SapConnectionEnabled) {
+		if ($scope.model.SAPEnabled) {
 			// only look at historical and comparative moq
 			let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
 
@@ -969,6 +969,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			WbsElement: tableData.WbsElement,
 			PoPStart: tableData.PoPStart,
 			PoPEnd: tableData.PoPEnd,
+			QueryType: tableData.QueryType,
 			Filters: tableData.AdditionalQueryFilters,
 			TableId: tableData.Id
 		};
@@ -1059,6 +1060,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								WbsElement: tableData.WbsElement,
 								PoPStart: tableData.PoPStart,
 								PoPEnd: tableData.PoPEnd,
+								QueryType: tableData.QueryType,
 								Filters: tableData.AdditionalQueryFilters,
 								TableId: tableData.Id
 							};
@@ -1172,6 +1174,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			WbsElement: tableData.WbsElement,
 			PoPStart: tableData.PoPStart,
 			PoPEnd: tableData.PoPEnd,
+			QueryType: tableData.QueryType,
 			Filters: tableData.AdditionalQueryFilters,
 			TableId: tableData.Id
 		};
@@ -1262,7 +1265,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.ValidatePopStart = function (date) {
 		// validate PoP Start is on a Monday (1)
-		if (!$scope.model.SapConnectionEnabled) {
+		if (!$scope.model.SAPEnabled) {
 			return false; // true means invalid
 		} else {
 			return typeof date !== "undefined" && date.getDay() != 1;
@@ -1272,7 +1275,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.ValidatePopEnd = function (date) {
 		// validate PoP End is on a Sunday (0)
 		// validate PoP Start is on a Monday (1)
-		if (!$scope.model.SapConnectionEnabled) {
+		if (!$scope.model.SAPEnabled) {
 			return false; // true means invalid
 		} else {
 			return typeof date !== "undefined" && date.getDay() != 0;
@@ -1287,10 +1290,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.IsSapEnabledAndSetAsRepository = function (repositoryName) {
 		if ($scope.model.IsRMS) {
 			// RMS does not use Repository Name, so just return SAP Enabled
-			return $scope.model.SAPEnabled && $scope.model.SapConnectionEnabled;
+			return $scope.model.SAPEnabled;
 		} else {
 			// SSC requires Repository Name to be set to SAP / WEBI
-			return $scope.model.SAPEnabled && $scope.model.SapConnectionEnabled && repositoryName == $scope.model.SapWebiRepository;
+			return $scope.model.SAPEnabled && repositoryName == $scope.model.SapWebiRepository;
 		}
 	};
 

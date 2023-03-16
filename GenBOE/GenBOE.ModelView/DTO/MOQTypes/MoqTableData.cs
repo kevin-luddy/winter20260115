@@ -30,6 +30,11 @@ namespace GenBOE.ActionLogic.ModelView
 		public static readonly string WEEKLY = "Weekly";
 
 		/// <summary>
+		/// Query Type Weekly (DateTime), the space on the end is intentional
+		/// </summary>
+		public static readonly string WEEKLY_DATETIME = "Weekly ";
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
 		public MoqTableData()
@@ -184,16 +189,6 @@ namespace GenBOE.ActionLogic.ModelView
 		public string PoPEndString { get { return FormatMoqTablePoPDate(this.PoPEnd, this.PoPEndWeek, this.PoPEndYear, this.QueryType); } }
 
 		/// <summary>
-		/// SAP API String version of the PoP Start date. Needed because SSC and RMS are handling things differently..
-		/// </summary>
-		public string SAPApiPoPStartString { get { return FormatSAPApiPopDate(this.PoPStartWeek, this.PoPStartYear, this.QueryType); } }
-
-		/// <summary>
-		/// SAP API String version of the PoP End date. Needed because SSC and RMS are handling things differently..
-		/// </summary>
-		public string SAPApiPoPEndString { get { return FormatSAPApiPopDate(this.PoPEndWeek, this.PoPEndYear, this.QueryType); } }
-
-		/// <summary>
 		/// Number of months between PoP Start and PoP End
 		/// </summary>
 		public decimal PoPMonths { get { return this.PoPStart.MonthDifferenceDecimal(this.PoPEnd); } }
@@ -220,28 +215,8 @@ namespace GenBOE.ActionLogic.ModelView
             return
                 SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
                     ? date.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) :
-                    queryType == MoqTableData.MONTHLY ? $"{date.Month.ToString("00")}/{date.Year}" : $"FW {week ?? 0:00}/{year}";
+                    queryType != MoqTableData.WEEKLY ? $"{date.Month.ToString("00")}/{date.Year}" : $"FW {week ?? 0:00}/{year}";
         }
-
-		/// <summary>
-		/// Formats the PoP Date for SAP API purposes, based on the Company and Query Type
-		/// 
-		/// RMS -> empty string
-		/// 
-		/// Space -> the date is formatted based on the query Type (Weekly / Monthly)
-		///         month -> empty string
-		///         weeks -> YYYYww, where ww is the week value of 1-53
-		/// </summary>
-		/// <param name="week">The fiscal week</param>
-		/// <param name="year">The fiscal year</param>
-		/// <param name="queryType">Whether this is monthly or weekly</param>
-		/// <returns></returns>
-		public static string FormatSAPApiPopDate(int? week, int? year, string queryType)
-		{
-			return
-				SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || queryType == MoqTableData.MONTHLY
-					? string.Empty : $"{year}{week ?? 0:00}";
-		}
 
 		/// <summary>
 		/// Creates a date out of week / year. The way we split weeks is week 1-30 will fall into January 1-30. Weeks 31-53 will fall into February.

@@ -1572,7 +1572,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateMoqTypeTableCustomFields()
         {
-            Utilities.IsSAPEnabled = false;
+            Utilities.IsSAPEnabledForSystem = false;
 
             Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
@@ -3342,10 +3342,10 @@ namespace GenBOE.Tests.ActionLogic
         public void BL_ValidateTemplateMoqForTask_PoPStartMonday_RmsMode()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             ValidateBOE sut = CreateSystem();
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             // Create a valid MOQ Table
             MoqTypeSelection moqType = new MoqTypeSelection()
@@ -3403,11 +3403,10 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_PoPStartMonday_SpaceMode()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
-			Utilities.IsSAPEnabled = true;
-
+			
 			// Create a valid MOQ Table
 			MoqTypeSelection moqType = new MoqTypeSelection()
 			{
@@ -3455,7 +3454,7 @@ namespace GenBOE.Tests.ActionLogic
         public void BL_ValidateTemplateMoqForTask_PoPEndSunday_MstMode()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             ValidateBOE sut = CreateSystem();
 
@@ -3515,7 +3514,7 @@ namespace GenBOE.Tests.ActionLogic
         public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             ValidateBOE sut = CreateSystem();
 
@@ -3566,7 +3565,7 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_RMS()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3607,12 +3606,12 @@ namespace GenBOE.Tests.ActionLogic
 			moqType.TableData.First().AdditionalQueryFilters = null;
 
 			// RMS && SAP = true -> Not Required - False (IsAny)
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 			Assert.IsFalse(result.Any());
 
 			// RMS && SAP = false -> Required - True (IsAny)
-			Utilities.IsSAPEnabled = false;
+			Utilities.IsSAPEnabledForSystem = false;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 			Assert.IsTrue(result.Any());
 		}
@@ -3624,7 +3623,7 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_Space()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3675,7 +3674,7 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsTrue(result.Any());
 
 			// SSC && SAP = false -> Required - True (IsAny)
-			Utilities.IsSAPEnabled = false;
+			Utilities.IsSAPEnabledForSystem = false;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 			Assert.IsTrue(result.Any());
 		}
