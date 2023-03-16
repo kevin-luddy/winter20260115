@@ -692,7 +692,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 else
                                 {
                                     ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                                }
+									if (row.TotalWbsHours <= 0 || Math.Round(row.TotalWbsHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0 and less than 1,000,000,000."); }
+								}
 
                                 if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
                                 if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
@@ -737,9 +738,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                     errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A.");
                                 }
 
-                                if (row.TotalRelevantHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0."); }
-
-                                if (onButtonPress)
+                                if (row.TotalRelevantHours <= 0 || Math.Round(row.TotalRelevantHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0 and less than 1,000,000,000."); }
+                                
+								if (onButtonPress)
                                 {
                                     // only run this as part of the Validate BOE button validation as it relies on using already saved data - save validation of custom fields is handled elsewhere
                                     errorMessages.AddRange(this.ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id));
