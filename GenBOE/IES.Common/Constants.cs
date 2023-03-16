@@ -271,9 +271,9 @@ namespace IES.Common
         /// <summary>
         /// Timeout for HTTP CLients
         /// 
-        /// It is set to 5 minutes.  If calls to http APIs like SAP API take longer than 5 minutes, that is an issue in itself
+        /// It is set to 15 minutes.  If calls to http APIs like SAP API take longer than 15 minutes, that is an issue in itself
         /// </summary>
-        public static readonly TimeSpan HTTP_TIMEOUT = TimeSpan.FromMinutes(5);
+        public static readonly TimeSpan HTTP_TIMEOUT = TimeSpan.FromMinutes(15);
 
         /// <summary>
         /// Used for Zone Travel Resources when there is no Resource entered
