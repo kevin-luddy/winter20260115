@@ -3785,6 +3785,9 @@ namespace GenBOE.Tests.ActionLogic
 			// Valid data to start
 			Assert.IsFalse(result.Any());
 
+			// SAP disabled to test invalid WBS Hours
+			Utilities.IsSAPEnabled = false;
+
 			// WBS Hours less than 0
 			moqType.TableData.First().TotalWbsHours = -1;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3796,6 +3799,12 @@ namespace GenBOE.Tests.ActionLogic
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
 			Assert.IsTrue(result.Any());
+
+			// WBS Hours not validated when SAP enabled
+			Utilities.IsSAPEnabled = true;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
 
 			// Relevant Hours less than 0
 			moqType.TableData.First().TotalWbsHours = 1000;
