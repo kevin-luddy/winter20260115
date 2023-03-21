@@ -8,7 +8,9 @@
 		hours: 'TotalRelevantHours',
 		order: 'Order',
 		wbsHoursPrevious: 'WbsHoursPrevious',
-		wbsHours: 'WbsHours'
+		wbsHours: 'WbsHours',
+		clinNumber: 'ClinNumber',
+		wbsString: 'WbsString'
     };
     $scope.errors = [];
     $scope.modalErrors = [];
@@ -29,7 +31,6 @@
     $scope.pageSize = 100;
     $scope.currentPage = 0;
     $scope.searchText = '';
-	$scope.colSpan = WorkspaceCalculateActualsModel.colSpan;
 
     // reset current page when a user searches
     $scope.searchChanged = function () {
