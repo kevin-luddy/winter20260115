@@ -3689,7 +3689,7 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_Hours_Space()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3746,7 +3746,7 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_Hours_RMS()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3785,7 +3785,7 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsFalse(result.Any());
 
 			// SAP disabled to test invalid WBS Hours
-			Utilities.IsSAPEnabled = false;
+			Utilities.IsSAPEnabledForSystem = false;
 
 			// WBS Hours less than 0
 			moqType.TableData.First().TotalWbsHours = -1;
@@ -3800,7 +3800,7 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsTrue(result.Any());
 
 			// WBS Hours not validated when SAP enabled
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
 			Assert.IsFalse(result.Any());
