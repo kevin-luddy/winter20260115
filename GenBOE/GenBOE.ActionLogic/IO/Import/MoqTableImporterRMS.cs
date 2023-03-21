@@ -93,7 +93,14 @@ namespace GenBOE.ActionLogic.IO.Import
 				{
 					if (decimal.TryParse(row[TOTAL_WBS_HOURS], out decimal totalWbsHours))
 					{
-						moqTable.TotalWbsHours = totalWbsHours;
+						if (totalWbsHours <= 0 || totalWbsHours >= 1000000000)
+						{
+							moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalWbsHours);
+						}
+						else
+						{
+							moqTable.TotalWbsHours = totalWbsHours;
+						}
 					}
 					else
 					{
@@ -106,7 +113,14 @@ namespace GenBOE.ActionLogic.IO.Import
 				{
 					if (decimal.TryParse(row[TOTAL_RELEVANT_HOURS_RMS], out decimal totalRelevantHours))
 					{
-						moqTable.TotalRelevantHours = totalRelevantHours;
+                        if (totalRelevantHours <= 0 || totalRelevantHours >= 1000000000)
+                        {
+                            moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalRelevantHours);
+                        }
+                        else
+                        {
+                            moqTable.TotalRelevantHours = totalRelevantHours;
+                        }
 					}
 					else
 					{

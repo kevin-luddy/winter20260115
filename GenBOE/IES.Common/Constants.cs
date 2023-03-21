@@ -269,6 +269,13 @@ namespace IES.Common
         public static readonly TimeSpan REGEX_TIMEOUT = new TimeSpan(0, 5, 0);
 
         /// <summary>
+        /// Timeout for HTTP CLients
+        /// 
+        /// It is set to 15 minutes.  If calls to http APIs like SAP API take longer than 15 minutes, that is an issue in itself
+        /// </summary>
+        public static readonly TimeSpan HTTP_TIMEOUT = TimeSpan.FromMinutes(15);
+
+        /// <summary>
         /// Used for Zone Travel Resources when there is no Resource entered
         /// </summary>
         public static readonly string ZONE_TRAVEL_RESOURCE_NO_RATE = "NO-RATE";

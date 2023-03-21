@@ -171,7 +171,7 @@
             </ul>
         </div>
         <div <% if (Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidTotalRelevantHours).Count() == 0) { %> class="display-none"<% } %>>
-            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidTotalRelevantHours).Count()%> MOQ Table(s) will not be added because the Total Relevant Hours must be a numerical value:</div>
+            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidTotalRelevantHours).Count()%> MOQ Table(s) will not be added because the Total Relevant Hours must be a numerical value between 0 and 1,000,000,000:</div>
             <ul>
                 <% foreach (ImportMoqTableResultsModelView result in Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidTotalRelevantHours))
                    { %>
@@ -180,7 +180,7 @@
             </ul>
         </div>
 		 <div <% if (Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidTotalWbsHours).Count() == 0) { %> class="display-none"<% } %>>
-            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidTotalWbsHours).Count()%> MOQ Table(s) will not be added because the Total Wbs Hours must be a numerical value:</div>
+            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidTotalWbsHours).Count()%> MOQ Table(s) will not be added because the Total Wbs Hours must be a numerical value between 0 and 1,000,000,000:</div>
             <ul>
                 <% foreach (ImportMoqTableResultsModelView result in Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidTotalWbsHours))
                    { %>
