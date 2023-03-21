@@ -136,6 +136,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple" />
     <Reference Include="System.Web.DynamicData">
       <Private>True</Private>
     </Reference>
