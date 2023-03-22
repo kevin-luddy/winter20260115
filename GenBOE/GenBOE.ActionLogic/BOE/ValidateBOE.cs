@@ -692,7 +692,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 else
                                 {
                                     ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                                    if (!Utilities.IsSAPEnabled || !ws.EnableSAPConnection)
+                                    if (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate))
                                     {
                                         if (row.TotalWbsHours <= 0 || Math.Round(row.TotalWbsHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0 and less than 1,000,000,000."); }
                                     }
@@ -703,7 +703,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                                 ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
 
-                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && (!Utilities.IsSAPEnabled || !ws.EnableSAPConnection))
+                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate)))
                                 {
 									ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH, errorMessages);
 								}
@@ -719,7 +719,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                                 if (row.PoPEnd.Date < row.PoPStart.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
                                 
-                                if (Utilities.IsSAPEnabled && ws.EnableSAPConnection && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                                if (Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                                 {
                                     if (row.PoPStart.Year > 1 && row.PoPStart.DayOfWeek != DayOfWeek.Monday)
                                     {
@@ -732,8 +732,26 @@ namespace GenBOE.ActionLogic.WBS.BOE
 									}
 								}
 
-                                // "Additional Query Fields" is required ONLY when SAP is disabled OR (Company mode == space && repository name != SAP / Webi) OR (Company mode == RMS && SAP Connection is disabled for the ws)
-                                if ((!Utilities.IsSAPEnabled ||
+								// check PopStart/End for Space Fiscal Weekly DateTime
+								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && 
+                                    !Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate) && 
+                                    Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && 
+                                    row.RepositoryName == RepositoryName.SapWebi.GetDescription())
+								{
+									// SAP is enabled, only allow sundays to be selected
+									if (row.PoPStart.Year > 1 && row.PoPStart.DayOfWeek != DayOfWeek.Sunday)
+									{
+										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on a Sunday.");
+									}
+
+									if (row.PoPEnd.Year > 1 && row.PoPEnd.DayOfWeek != DayOfWeek.Sunday)
+									{
+										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on a Sunday.");
+									}
+								}
+
+								// "Additional Query Fields" is required ONLY when SAP is disabled OR (Company mode == space && repository name != SAP / Webi) OR (Company mode == RMS && SAP Connection is disabled for the ws)
+								if ((!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) ||
                                         (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && row.RepositoryName != RepositoryName.SapWebi.GetDescription()) ||
 										SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && !ws.EnableSAPConnection)
                                     && string.IsNullOrEmpty(row.AdditionalQueryFilters))

@@ -39,9 +39,14 @@ namespace IES.Common
         private static object lockObject = new object();
 
         /// <summary>
-        /// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.
+        /// Space cutoff time for workspaces
         /// </summary>
-        private static Regex regexNewLine = new Regex(@"<br( )*/*( )*>", RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+		private static readonly DateTime SAPSpaceStartDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("SAPSpaceStartDate"));
+
+		/// <summary>
+		/// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.
+		/// </summary>
+		private static Regex regexNewLine = new Regex(@"<br( )*/*( )*>", RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
 
         #region Adjusting precision of decimal numbers, based on workspace settings
 
@@ -590,10 +595,10 @@ namespace IES.Common
         /// </summary>
         private static bool? isSapEnabled;
 
-        /// <summary>
+		/// <summary>
 		/// Indicates whether SAP features are enabled
 		/// </summary>
-		public static bool IsSAPEnabled
+		public static bool IsSAPEnabledForSystem
         {
             get
             {
@@ -610,5 +615,39 @@ namespace IES.Common
                 isSapEnabled = value;
             }
         }
+
+		/// <summary>
+		/// Is SAP Enabled for this workspace
+		/// </summary>
+		/// <param name="workspaceCreationDate">workspace creation date</param>
+		/// <returns>True if SAP is enabled for this workspace</returns>
+		public static bool IsSAPEnabledForWorkspace(bool workspaceEnabledSAPConnection, DateTime? workspaceCreationDate)
+        {
+            return workspaceEnabledSAPConnection && IsSAPEnabledForSystem &&
+				!IsWorkspaceBeforeSAPCutoff(workspaceCreationDate);
+        }
+
+        /// <summary>
+        /// Is the workspace before the SAP cutoff (always false for RMS)
+        /// </summary>
+        /// <param name="workspaceCreationDate">workspace creation date</param>
+        /// <returns>True if workspace creation date is before SAP cutoff, always false if RMS.</returns>
+        public static bool IsWorkspaceBeforeSAPCutoff(DateTime? workspaceCreationDate)
+        {
+            return SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
+                (!workspaceCreationDate.HasValue || workspaceCreationDate < SAPSpaceStartDate);
+		}
+
+		/// <summary>
+		/// Is SAP connection shown to the user for this workspace
+		/// </summary>
+		/// <param name="workspaceCreationDate"></param>
+		/// <returns></returns>
+		public static bool ShowSAPForWorkspace(DateTime? workspaceCreationDate)
+        {
+			return IsSAPEnabledForSystem &&
+				(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ||
+				workspaceCreationDate >= SAPSpaceStartDate);
+		}
     }
 }

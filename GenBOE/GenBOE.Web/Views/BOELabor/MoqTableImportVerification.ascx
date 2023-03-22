@@ -116,6 +116,15 @@
                 <% } %>
             </ul>
         </div>
+        <div <% if (Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopStartSunday).Count() == 0) { %> class="display-none"<% } %>>
+            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopStartSunday).Count()%> MOQ Table(s) will not be added because the PoP Start Date must be a valid date on a Sunday and on or before today's date:</div>
+            <ul>
+                <% foreach (ImportMoqTableResultsModelView result in Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopStartSunday))
+                   { %>
+                <li><%: result.TableName %></li>
+                <% } %>
+            </ul>
+        </div>
         <div <% if (Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopStartFW).Count() == 0) { %> class="display-none"<% } %>>
             <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopStartFW).Count()%> MOQ Table(s) will not be added because the PoP Start Date must be a valid Fiscal Week (fw/yyyy) with a week value of 1-53:</div>
             <ul>
@@ -126,9 +135,18 @@
             </ul>
         </div>
         <div <% if (Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopEnd).Count() == 0) { %> class="display-none"<% } %>>
-            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopEnd).Count()%> MOQ Table(s) will not be added because the PoP End Date must a valid date and be on or before today's date:</div>
+            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopEnd).Count()%> MOQ Table(s) will not be added because the PoP End Date must be a valid date and be on or before today's date:</div>
             <ul>
                 <% foreach (ImportMoqTableResultsModelView result in Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopEnd))
+                   { %>
+                <li><%: result.TableName %></li>
+                <% } %>
+            </ul>
+        </div>
+         <div <% if (Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopEndSunday).Count() == 0) { %> class="display-none"<% } %>>
+            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopEndSunday).Count()%> MOQ Table(s) will not be added because the PoP End Date must be a valid date on a Sunday and be on or before today's date:</div>
+            <ul>
+                <% foreach (ImportMoqTableResultsModelView result in Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidPopEndSunday))
                    { %>
                 <li><%: result.TableName %></li>
                 <% } %>

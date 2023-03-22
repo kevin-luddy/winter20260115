@@ -2276,35 +2276,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType)
 		{
 			ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
-			{
-				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST || t.QueryType == "Monthly")
+				new MoqTableDataModelView()
 				{
-					return new MoqTableDataModelView()
-					{
-						Filters = t.AdditionalQueryFilters,
-						PoPStart = t.PoPStart,
-						PoPEnd = t.PoPEnd,
-						TableId = t.Id,
-						WbsElement = t.WbsElement
-					};
-				} 
-				else
-				{
-					string startYear = t.PoPStartYear?.ToString("") ?? string.Empty;
-					string startFw = t.PoPStartWeek?.ToString("00") ?? string.Empty;
-					string endYear = t.PoPEndYear?.ToString("") ?? string.Empty;
-					string endFw = t.PoPEndWeek?.ToString("00") ?? string.Empty;
-					return new MoqTableDataModelView()
-					{
-						Filters = t.AdditionalQueryFilters,
-						PoPStartFW = startYear + startFw,
-						PoPEndFW = endYear + endFw,
-						TableId = t.Id,
-						WbsElement = t.WbsElement
-					};
+					Filters = t.AdditionalQueryFilters,
+					PoPStart = t.PoPStart,
+					PoPEnd = t.PoPEnd,
+					QueryType = t.QueryType,
+					TableId = t.Id,
+					WbsElement = t.WbsElement
 				}
-
-			}).ToList();
+			).ToList();
 
 			// Make one bulk call to SAP
 			ICollection<IESResponse<CalculateActualsViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSap(tableData);

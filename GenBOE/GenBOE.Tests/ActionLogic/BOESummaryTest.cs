@@ -77,18 +77,15 @@ namespace GenBOE.Tests.ActionLogic
                 new WorkspaceRMSTravelNonzoneFeesAndCostsDTO { ModeID = (int)MSTTravelMode.ZoneNoAirfare, MiscOther =1, TravelAgencyFee = 1 }
             };
 
-            List<WorkspaceRMSEscalationRatesDTO> workspaceRMSEscalationRates = new List<WorkspaceRMSEscalationRatesDTO>
-            {
-                new WorkspaceRMSEscalationRatesDTO { Year = 2015, AirfareRate = 1, MiscRate = 1, PerDiemRate = 1, Id = 1, WorkspaceId = wsid },
-                new WorkspaceRMSEscalationRatesDTO { Year = 2016, AirfareRate = 1, MiscRate = 1, PerDiemRate = 1, Id = 1, WorkspaceId = wsid },
-                new WorkspaceRMSEscalationRatesDTO { Year = 2017, AirfareRate = 1, MiscRate = 1, PerDiemRate = 1, Id = 1, WorkspaceId = wsid },
-                new WorkspaceRMSEscalationRatesDTO { Year = 2018, AirfareRate = 1, MiscRate = 1, PerDiemRate = 1, Id = 1, WorkspaceId = wsid },
-                new WorkspaceRMSEscalationRatesDTO { Year = 2019, AirfareRate = 1, MiscRate = 1, PerDiemRate = 1, Id = 1, WorkspaceId = wsid },
-                new WorkspaceRMSEscalationRatesDTO { Year = 2020, AirfareRate = 1, MiscRate = 1, PerDiemRate = 1, Id = 1, WorkspaceId = wsid },
-                new WorkspaceRMSEscalationRatesDTO { Year = 2021, AirfareRate = 1, MiscRate = 1, PerDiemRate = 1, Id = 1, WorkspaceId = wsid },
-                new WorkspaceRMSEscalationRatesDTO { Year = 2022, AirfareRate = 1, MiscRate = 1, PerDiemRate = 1, Id = 1, WorkspaceId = wsid }
-            };
+            List<WorkspaceRMSEscalationRatesDTO> workspaceRMSEscalationRates = new List<WorkspaceRMSEscalationRatesDTO>();
 
+            for(int i = 2015; i <= DateTime.Now.Year; i++)
+            {
+                workspaceRMSEscalationRates.Add(
+                    new WorkspaceRMSEscalationRatesDTO { Year = i, AirfareRate = 1, MiscRate = 1, PerDiemRate = 1, Id = 1, WorkspaceId = wsid }
+                    );
+			}
+            
             TravelDTO travel = new TravelDTO();
             travel.BoeID = boe.Id;
 

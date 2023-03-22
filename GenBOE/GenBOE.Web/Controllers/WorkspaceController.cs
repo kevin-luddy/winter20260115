@@ -739,7 +739,7 @@ namespace GenBOE.Web.Controllers
                 false :
                 _securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
 
-            model.IsSAPConnectionEnabled = Utilities.IsSAPEnabled;
+            model.IsSAPConnectionEnabled = Utilities.IsSAPEnabledForSystem;
 
             ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE, model);
 
@@ -1343,9 +1343,11 @@ namespace GenBOE.Web.Controllers
 
             ViewData["LineOfBusinessTypes"] = this.boePickListMapper.GetPickListValues(PickListEnum.LineOfBusiness).PickLists;
             ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
-            
-            // gather up proposal class types
-            this.GetProposalClassOptionList();
+			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
+			ViewData["ShowSAP"] = Utilities.ShowSAPForWorkspace(ws.CreationDate);
+
+			// gather up proposal class types
+			this.GetProposalClassOptionList();
 
             // gather up contract types
             ViewData["ContractTypes"] = this.boePickListMapper.GetPickListValues(PickListEnum.ContractType).PickLists.Where(p => p.IsActive || ws.SelectedContractTypes.Contains(p.Id)).ToList();
@@ -4827,7 +4829,7 @@ namespace GenBOE.Web.Controllers
                 // Default Template BOE switch to Yes if CCoPD is set to true
                 usingTemplateBoe = proposal.IsCCPDRequired.HasValue ? proposal.IsCCPDRequired.Value : false;
 
-                isSAPEnabledConfig = Utilities.IsSAPEnabled;
+                isSAPEnabledConfig = Utilities.IsSAPEnabledForSystem;
             }
             else
             {

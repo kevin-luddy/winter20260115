@@ -3284,7 +3284,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <returns>Collection of view model operators</returns>
 		public async Task<ICollection<QueryOperatorViewModel>> GetAllOperators()
 		{
-            if (Utilities.IsSAPEnabled)
+            if (Utilities.IsSAPEnabledForSystem)
             {
                 try
                 {
@@ -3311,7 +3311,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>Collection of view model fields</returns>
         public async Task<ICollection<QueryFieldViewModel>> GetAllFields()
 		{
-            if (Utilities.IsSAPEnabled)
+            if (Utilities.IsSAPEnabledForSystem)
             {
                 try
                 {
