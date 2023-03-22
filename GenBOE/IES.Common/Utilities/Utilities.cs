@@ -635,7 +635,7 @@ namespace IES.Common
         public static bool IsWorkspaceBeforeSAPCutoff(DateTime? workspaceCreationDate)
         {
             return SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
-                workspaceCreationDate < SAPSpaceStartDate;
+                (!workspaceCreationDate.HasValue || workspaceCreationDate < SAPSpaceStartDate);
 		}
 
 		/// <summary>
