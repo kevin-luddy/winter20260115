@@ -54,7 +54,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 				}
 			};
 
-			sut.CopyMoqTypes(moqTypesToCopy, 2, false, DateTime.Parse("12/20/2000"));
+			sut.CopyMoqTypes(moqTypesToCopy, 2, false, DateTime.Parse("12/20/2000"), DateTime.Now);
 
 			moqTypeDataLoader.Verify(x => x.Save(It.Is<ICollection<MoqTypeSelection>>(u =>
 			
@@ -88,7 +88,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 				}
 			};
 
-			sut.CopyMoqTypes(moqTypesToCopy, 2, false, DateTime.Now);
+			sut.CopyMoqTypes(moqTypesToCopy, 2, false, DateTime.Now, DateTime.Now);
 
 			moqTypeDataLoader.Verify(x => x.Save(It.Is<ICollection<MoqTypeSelection>>(u =>
 
@@ -124,7 +124,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 				}
 			};
 
-			sut.CopyMoqTypes(moqTypesToCopy, 2, true, DateTime.Parse("12/20/2000"));
+			sut.CopyMoqTypes(moqTypesToCopy, 2, true, DateTime.Parse("12/20/2000"), DateTime.Now);
 
 			moqTypeDataLoader.Verify(x => x.Save(It.Is<ICollection<MoqTypeSelection>>(u =>
 
