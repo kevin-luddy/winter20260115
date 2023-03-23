@@ -9,7 +9,7 @@
 		order: 'Order',
 		wbsHoursPrevious: 'WbsHoursPrevious',
 		wbsHours: 'WbsHours',
-		clinNumber: 'ClinNumber',
+		clinString: 'ClinString',
 		wbsString: 'WbsString'
     };
     $scope.errors = [];
@@ -28,9 +28,10 @@
 
 	$scope.reverse = false;
 	$scope.predicate = [$scope.columns.order];
-    $scope.pageSize = 100;
-    $scope.currentPage = 0;
+	$scope.pageSize = 100;
+	$scope.currentPage = 0;
     $scope.searchText = '';
+    $scope.colSpan = WorkspaceCalculateActualsModel.colSpan;
 
     // reset current page when a user searches
     $scope.searchChanged = function () {

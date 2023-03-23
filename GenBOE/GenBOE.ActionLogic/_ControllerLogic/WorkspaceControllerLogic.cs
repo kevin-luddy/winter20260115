@@ -2306,8 +2306,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				resultModel.WbsHoursPrevious = table.TotalWbsHours;
 				resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
 				resultModel.BoeStatePrevious = boe.State.GetDescription(); 
-				resultModel.ClinNumber = boe.Clin.ClinNumber;
-				resultModel.WbsString = boe.Wbs.WbsString;
+				resultModel.ClinString = boe.Clin?.ClinString;
+				resultModel.WbsString = boe.Wbs?.WbsString;
 				resultModel.BoeTitle = boe.Title;
 				resultModel.Task = tasks[moqType.TaskId];
 				resultModel.Order = table.Order;

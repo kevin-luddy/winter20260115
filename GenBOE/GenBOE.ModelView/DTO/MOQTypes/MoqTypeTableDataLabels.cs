@@ -33,12 +33,12 @@ namespace GenBOE.ActionLogic.ModelView
             if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
             {
                 this.AdditionalQueryFilters = "Employee ID Filters";
-                this.TotalRelevantHours = "Total Relevant Hours After Filters Applied";
+                this.TotalRelevantHours = "Current Total Relevant Hours After Filters Applied";
             }
             else
             {
                 this.AdditionalQueryFilters = "Additional Query Filters";
-                this.TotalRelevantHours = "Total Relevant Hours After Additional Query Filters Applied";
+                this.TotalRelevantHours = "New Total Relevant Hours After Additional Query Filters Applied";
             }
         }
 
