@@ -2265,6 +2265,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 		/// <summary>
 		/// Recalculates the SAP Actuals across a Workspace, and finds any BOEs that were updated
+		/// ToDo Thomas: Look here to add CLIN
 		/// </summary>
 		/// <param name="result">The list of Models that were updated</param>
 		/// <param name="boes">Dictionary of BOEs</param>
@@ -2304,12 +2305,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				resultModel.TableName = table.TableName;
 				resultModel.WbsHoursPrevious = table.TotalWbsHours;
 				resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
-				resultModel.BoeStatePrevious = boe.State.GetDescription();
+				resultModel.BoeStatePrevious = boe.State.GetDescription(); 
+				resultModel.ClinString = boe.Clin?.ClinString;
+				resultModel.WbsString = boe.Wbs?.WbsString;
 				resultModel.BoeTitle = boe.Title;
 				resultModel.Task = tasks[moqType.TaskId];
 				resultModel.Order = table.Order;
 				resultModel.IsSuccessful = response.IsSuccessful;
-
+				
 				if (response.IsSuccessful)
 				{
 					if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)

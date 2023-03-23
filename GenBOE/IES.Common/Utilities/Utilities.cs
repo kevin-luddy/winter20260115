@@ -37,11 +37,30 @@ namespace IES.Common
 
         private static string versionAndUpdatedDate = null;
         private static object lockObject = new object();
+        private static DateTime? sapSpaceStartDate;
 
-        /// <summary>
-        /// Space cutoff time for workspaces
-        /// </summary>
-		public static readonly DateTime SAPSpaceStartDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("SAPSpaceStartDate"));
+		/// <summary>
+		/// Space cutoff time for workspaces
+		/// </summary>
+		public static DateTime SAPSpaceStartDate
+        {
+            get
+            {
+                if (!sapSpaceStartDate.HasValue)
+                {
+                    if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("SAPSpaceStartDate"), out DateTime sapTime))
+                    {
+                        sapSpaceStartDate = DateTime.MaxValue;
+					}
+                    else
+                    {
+                        sapSpaceStartDate = sapTime;
+                    }
+                }
+
+                return sapSpaceStartDate.Value;
+            }
+        }
 
 		/// <summary>
 		/// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.

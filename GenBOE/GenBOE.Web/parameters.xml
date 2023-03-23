@@ -8,6 +8,10 @@
   
   <!--appSettings-->
   
+  <parameter name="SAPSpaceStartDate" description="doesn't matter" defaultvalue="__SAPSpaceStartDate__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SAPSpaceStartDate']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="IESSAPUrl" description="doesn't matter" defaultvalue="__IESSAPUrl__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESSAPUrl']/@value">
     </parameterentry>

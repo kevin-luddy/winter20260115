@@ -59,6 +59,16 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		public decimal? WbsHours { get; set; }
 
 		/// <summary>
+		/// The current CLIN String.
+		/// </summary>
+		public string ClinString { get; set; }
+
+		/// <summary>
+		/// The current Wbs String.
+		/// </summary>
+		public string WbsString { get; set; }
+
+		/// <summary>
 		/// Whether the call was successful
 		/// </summary>
 		public bool IsSuccessful { get; set; }
