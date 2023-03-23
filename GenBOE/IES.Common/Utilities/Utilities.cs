@@ -41,7 +41,7 @@ namespace IES.Common
         /// <summary>
         /// Space cutoff time for workspaces
         /// </summary>
-		private static readonly DateTime SAPSpaceStartDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("SAPSpaceStartDate"));
+		public static readonly DateTime SAPSpaceStartDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("SAPSpaceStartDate"));
 
 		/// <summary>
 		/// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.

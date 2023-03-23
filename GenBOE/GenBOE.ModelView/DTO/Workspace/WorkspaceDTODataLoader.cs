@@ -16,6 +16,7 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Common.PickList;
+    using IES.Common.classes;
 
     public class WorkspaceDTODataLoader : DataLoader<WorkspaceDTO>, IWorkspaceDTODataLoader
     {
@@ -670,7 +671,15 @@ namespace GenBOE.DataBridge.DTO
                         gbe.Database.CommandTimeout = 300;  // give the SP enough time to execute
 
                         // Save the workspace identification and output format template
-                        outNewWorkspaceID = gbe.copyWorkspace(inWorkspaceIDtoCopy, newWorkspaceName, newShortName, costVolumeLeadPricerId).FirstOrDefault().GetValueOrDefault();
+                        DateTime? spaceSAPCutoff = null;
+                        
+                        if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                        {
+                            spaceSAPCutoff = Utilities.SAPSpaceStartDate;
+                        }
+
+
+						outNewWorkspaceID = gbe.copyWorkspace(inWorkspaceIDtoCopy, newWorkspaceName, newShortName, costVolumeLeadPricerId, spaceSAPCutoff).FirstOrDefault().GetValueOrDefault();
                     }
                 }
             } catch (SqlException ex)

@@ -197,7 +197,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (originalMoqTypes.Any())
                         {
-                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId, true, ws.CreationDate);
+                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId, true, null, null);
                         }
 
                         if (rteTemplateAnswers.Any())
@@ -706,7 +706,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (moqTypesToCopy.Any())
                         {
-                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, copyWithinSameWorkspace, inSourceBOE.Workspace.CreationDate);
+                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, copyWithinSameWorkspace, inSourceBOE.Workspace.CreationDate, inDestinationWorkspace.CreationDate);
                         }
 
                         if (inUseMetricIDs.Any())
@@ -779,8 +779,10 @@ namespace GenBOE.ActionLogic.CopyBOE
 		/// <param name="moqTypesToCopy">MOQ Types to copy</param>
 		/// <param name="newTaskId">New Task Id</param>
 		/// <param name="copyWithinSameWorkspace">Are we copying within the same workspace</param>
-		/// <param name="workspaceCreationDate">Original Workspace Creation Date</param>
-		internal void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, bool copyWithinSameWorkspace, DateTime? workspaceCreationDate)
+        /// <param name="originalWorkspaceCreationDate">Original workspace creation date</param>
+		/// <param name="workspaceCreationDate">Workspace Creation Date</param>
+		internal void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, bool copyWithinSameWorkspace, DateTime? originalWorkspaceCreationDate,
+            DateTime? workspaceCreationDate)
         {
             _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
 
@@ -806,17 +808,19 @@ namespace GenBOE.ActionLogic.CopyBOE
                         newTable.CustomFieldValueContainers = this.GetCustomFieldValueContainersCopy(newTable.CustomFieldValueContainers);
                     }
 
+                    // if Space copy is not in the same workspace, SAP is enabled, and one workspace shows SAP when other does not make the cutoff
+                    // Empty out the POP Start/End because of Fiscal Week changes
 					if (!copyWithinSameWorkspace && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && 
-                        Utilities.IsSAPEnabledForSystem && newTable.QueryType == MoqTableData.WEEKLY && 
-                        !Utilities.ShowSAPForWorkspace(workspaceCreationDate))
+                        Utilities.IsSAPEnabledForSystem && (Utilities.ShowSAPForWorkspace(originalWorkspaceCreationDate) != Utilities.ShowSAPForWorkspace(workspaceCreationDate)) &&
+                        (newTable.QueryType == MoqTableData.WEEKLY || newTable.QueryType == MoqTableData.WEEKLY_DATETIME))
 					{
-						newTable.QueryType = MoqTableData.WEEKLY_DATETIME;
+                        newTable.QueryType = (newTable.QueryType == MoqTableData.WEEKLY) ? MoqTableData.WEEKLY_DATETIME : MoqTableData.WEEKLY;
 						newTable.PoPStartYear = null;
 						newTable.PoPStartWeek = null;
 						newTable.PoPEndYear = null;
 						newTable.PoPEndWeek = null;
-						newTable.PoPStart = DateTime.MinValue;
-						newTable.PoPEnd = DateTime.MinValue;
+						newTable.PoPStart = DateTime.MaxValue;
+						newTable.PoPEnd = DateTime.MaxValue;
 					}
 
 					newMoqType.TableData.Add(newTable); 
