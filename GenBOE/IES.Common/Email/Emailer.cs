@@ -520,7 +520,8 @@ namespace IES.Common
         {
             Subject = "PPR&D REVISION {0} Published {1}",
             Body = "The PPR&D has been revised and is available in RDM.<br/><br/>" +
-                    "Program Contracts and Estimating are expected to review the revised PPR&D in full and provide the appropriate disclosures for your CCOPD proposal(s) to your Contracting Officers. Disclosable information may include data beyond rates and factors such as CAS, system status and Proposal Disclosures. Please note that disclosure artifacts are to be kept in the Contracts file and tracked in the proposal disclosure log for proper records retention and audit purposes.<br/>" +
+                    "Program Contracts and Estimating are expected to review the revised PPR&D in full and provide the appropriate disclosures for your CCOPD proposal(s) to your Contracting Officers. Disclosable information may include data beyond rates and factors such as CAS, system status and Proposal Disclosures. Please note that disclosure artifacts are to be kept in the Contracts file and tracked in the proposal disclosure log for proper records retention and audit purposes.<br/><br/>" +
+                    "For Contract POCs, the PPR&D Disclosure Log can be used to create the necessary disclosures for CCoPD covered proposals.  The log will be updated to include the specifics of this revision shortly.<br/>" + 
                     "{0}<br/>" +
                         "<a href=\"{1}\">RDM Home</a><br/>" +
                         "<a href=\"{2}\">Export Current Published PPR&D</a><br/>" +
