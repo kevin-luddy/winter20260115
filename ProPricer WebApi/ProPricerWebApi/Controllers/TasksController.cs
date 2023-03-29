@@ -17,6 +17,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
 	using Microsoft.AspNetCore.Mvc;
+	using static EBS.ProPricer.Model.General.SpreadInfo;
 	using Task = EBS.ProPricer.Model.Task;
 
 	/// <summary>
@@ -512,12 +513,11 @@ namespace APTSPropricerApi.Controllers
 								//  7ma.MaterialDescription = newma.description;
 
 								whichvar = "material assignment spread";
-								IAmountCollection rsd = ma.Spread.Distribution;
 
 								foreach (SpreadDto s in newma.ResourceAssignment.Spread)
 								{
 									TimeFrame mnyr = TimeFrame.FromMonth(s.Year, s.Month);
-									rsd[mnyr] = double.Parse(s.Value);
+									ma.Spread[mnyr] = double.Parse(s.Value);
 								}
 
 								//AddAmount can also be used to add a new resource to an existing one.
@@ -635,12 +635,11 @@ namespace APTSPropricerApi.Controllers
 										}
 
 										whichvar = "material associated costs spread";
-										IAmountCollection asd = maasc.Spread.Distribution;
 
 										foreach (SpreadDto s in ascitem.Spread)
 										{
 											TimeFrame mnyr = TimeFrame.FromMonth(s.Year, s.Month);
-											asd[mnyr] = double.Parse(s.Value);
+											maasc.Spread[mnyr] = double.Parse(s.Value);
 										}
 
 										//AddAmount can also be used to add a new resource to an existing one.
@@ -749,12 +748,11 @@ namespace APTSPropricerApi.Controllers
 						//  tra.totalCost = newtr.TotalCost;
 
 						whichvar = "travel assignment spread";
-						IAmountCollection rsd = tra.Spread.Distribution;
 
 						foreach (SpreadDto s in newtr.ResourceAssignment.Spread)
 						{
 							TimeFrame mnyr = TimeFrame.FromMonth(s.Year, s.Month);
-							rsd[mnyr] = double.Parse(s.Value);
+							tra.Spread[mnyr] = double.Parse(s.Value);
 						}
 
 						whichvar = "travel resource fields";
@@ -917,13 +915,12 @@ namespace APTSPropricerApi.Controllers
 									resource.Spread.Curve = c;
 								}
 
-								IAmountCollection rsd = resource.Spread.Distribution;
 
 								whichvar = "resource spread";
 								foreach (SpreadDto s in item.Spread)
 								{
 									TimeFrame mnyr = TimeFrame.FromMonth(s.Year, s.Month);
-									rsd[mnyr] = double.Parse(s.Value);
+									resource.Spread[mnyr] = double.Parse(s.Value);
 								}
 
 								whichvar = "resource fields";
