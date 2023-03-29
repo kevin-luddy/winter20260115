@@ -42,7 +42,7 @@ namespace IES.Common
 		/// <summary>
 		/// Space cutoff time for workspaces
 		/// </summary>
-		private static DateTime SAPSpaceStartDate
+		public static DateTime SAPSpaceStartDate
         {
             get
             {

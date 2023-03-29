@@ -16,7 +16,8 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
-	using Microsoft.Practices.ObjectBuilder2;
+    using IES.Common.classes;
+    using Microsoft.Practices.ObjectBuilder2;
 
 	public class WorkspaceCopier
     {
@@ -146,7 +147,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
             if (copyTasks)
             {
-                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping, workspaceToCopy.Id, templateIdMapping, questionIdMapping, workspaceToCopy.MoqTypeSelections.Where(x => BOEToCopy.Contains(x.BoeId)).ToList()) && finishedCorrectly;
+                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping, workspaceToCopy.Id, templateIdMapping, questionIdMapping, workspaceToCopy.MoqTypeSelections.Where(x => BOEToCopy.Contains(x.BoeId)).ToList(), workspaceToCopy.CreationDate) && finishedCorrectly;
             }
 
             return finishedCorrectly;
@@ -1111,11 +1112,12 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         /// <param name="templateIdMapping">Mapping of old and new RTE Template IDs</param>
         /// <param name="questionIdMapping">Mapping of old and new RTE Template Question IDs</param>
         /// <param name="moqTypesToCopy">Selected Moq Types for the WS</param>
+        /// <param name="workspaceCreationDate">The Workspace Creation Date</param>
         /// <returns>Boolean indicating whether there was any bad data that the user should be notified about</returns>
         private bool CopyTasks(Dictionary<int, int> boeIDMapping, Dictionary<int, int> wbsIDMapping, Dictionary<int, int> clinIDMapping,
             Dictionary<int, int> variableIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping, 
             bool copyLaborSpreads, Dictionary<int, int> Resources, Dictionary<int, int> perfOrgs, int workspaceId, IDictionary<int, int> templateIdMapping, 
-            IDictionary<int, int> questionIdMapping, ICollection<MoqTypeSelection> moqTypesToCopy)
+            IDictionary<int, int> questionIdMapping, ICollection<MoqTypeSelection> moqTypesToCopy, DateTime? workspaceCreationDate)
         {
             // Key: existing Id, value: negative Id
             IDictionary<int, int> originalTaskIdMapping = new Dictionary<int, int>(); 
@@ -1281,7 +1283,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 
                 originalTaskIdMapping.ForEach(x => { postSaveMapping.Add(x.Key, postSaveTaskElementMapping[x.Value]); } );
 
-                this.CopyMoqTypes(moqTypesToCopy, postSaveMapping, customFieldIDMapping, customFieldValueIDMapping);
+                this.CopyMoqTypes(moqTypesToCopy, postSaveMapping, customFieldIDMapping, customFieldValueIDMapping, workspaceCreationDate);
             }
 
             // Copy any Task-level RTE Custom Template Answers
@@ -1318,15 +1320,17 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             return finishedCorrectly;
         }
 
-        /// <summary>
-        /// Copies MOQ Type Selections
-        /// </summary>
-        /// <param name="moqTypesToCopy">MOQ Types to copy</param>
-        /// <param name="newTaskId">New Task Id</param>
-        /// <param name="newBoeId">New Boe Id</param>
-        /// <param name="customFieldIDMapping">Workspace custom field id mappings</param>
-        /// <param name="customFieldValueIDMapping">Custom Field Value Id Mapping</param>
-        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, IDictionary<int, int> taskIdMapping, IDictionary<int, int> customFieldIDMapping, IDictionary<int, int> customFieldValueIDMapping)
+		/// <summary>
+		/// Copies MOQ Type Selections
+		/// </summary>
+		/// <param name="moqTypesToCopy">MOQ Types to copy</param>
+		/// <param name="newTaskId">New Task Id</param>
+		/// <param name="newBoeId">New Boe Id</param>
+		/// <param name="customFieldIDMapping">Workspace custom field id mappings</param>
+		/// <param name="customFieldValueIDMapping">Custom Field Value Id Mapping</param>
+		/// <param name="workspaceCreationDate">Original Workspace Creation Date</param>
+		private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, IDictionary<int, int> taskIdMapping, IDictionary<int, int> customFieldIDMapping, IDictionary<int, int> customFieldValueIDMapping,
+            DateTime? workspaceCreationDate)
         {
             _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
             _ = taskIdMapping ?? throw new ArgumentNullException(nameof(taskIdMapping));
@@ -1359,8 +1363,21 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
                     MoqTableData newTable = existingTable.DeepClone();
                     newTable.Id = --i;
-                    
-                    newMoqType.TableData.Add(newTable);
+
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && 
+                        Utilities.IsSAPEnabledForSystem && newTable.QueryType == MoqTableData.WEEKLY && 
+                        !Utilities.ShowSAPForWorkspace(workspaceCreationDate))
+					{
+						newTable.QueryType = MoqTableData.WEEKLY_DATETIME;
+						newTable.PoPStartYear = null;
+						newTable.PoPStartWeek = null;
+						newTable.PoPEndYear = null;
+						newTable.PoPEndWeek = null;
+						newTable.PoPStart = DateTime.MaxValue;
+						newTable.PoPEnd = DateTime.MaxValue;
+					}
+
+					newMoqType.TableData.Add(newTable);
                 });
 
                 moqTypesToSave.Add(newMoqType);
