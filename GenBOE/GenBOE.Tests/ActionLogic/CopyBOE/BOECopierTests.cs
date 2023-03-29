@@ -16,12 +16,21 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using Moq;
 
+	/// <summary>
+	/// Unit tests for BOECopier class
+	/// </summary>
 	[TestClass]
 	public class BOECopierTests : MOQObject
 	{
-		private MoqTableData saveObject;
+		/// <summary>
+		/// Mocked out MOQ Type Data Loader
+		/// </summary>
 		private readonly Mock<IMoqTypeDataLoader> moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
 
+		/// <summary>
+		/// Create the System under test
+		/// </summary>
+		/// <returns>SUT</returns>
 		private BOECopier CreateSUT()
 		{
 			BOECopier copier = new BOECopier(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, moqTypeDataLoader.Object);
@@ -30,6 +39,9 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 			return copier;
 		}
 
+		/// <summary>
+		/// Copy MOQ Types using old Fiscal Week scenario for Space
+		/// </summary>
 		[TestMethod]
 		public void CopyMOQTypesOldFiscalWeek()
 		{
@@ -57,7 +69,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 			sut.CopyMoqTypes(moqTypesToCopy, 2, false, DateTime.Parse("12/20/2000"), DateTime.Now);
 
 			moqTypeDataLoader.Verify(x => x.Save(It.Is<ICollection<MoqTypeSelection>>(u =>
-			
+
 				!u.First().TableData.First().PoPStartWeek.HasValue &&
 				!u.First().TableData.First().PoPStartYear.HasValue &&
 				!u.First().TableData.First().PoPEndWeek.HasValue &&
@@ -65,6 +77,9 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 			)), Times.Once());
 		}
 
+		/// <summary>
+		/// Copy MOQ Types using new Fiscal Week scenario for Space
+		/// </summary>
 		[TestMethod]
 		public void CopyMOQTypesNewFiscalWeek()
 		{
@@ -99,6 +114,9 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 			)), Times.Once());
 		}
 
+		/// <summary>
+		/// Copy MOQ Types using old Fiscal Week scenario for Space in same workspace
+		/// </summary>
 		[TestMethod]
 		public void CopyMOQTypesOldFiscalWeekSameWorkspace()
 		{
