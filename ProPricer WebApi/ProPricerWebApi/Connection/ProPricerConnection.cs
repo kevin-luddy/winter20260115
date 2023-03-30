@@ -141,14 +141,6 @@ namespace APTSPropricerApi.Connection
 				{
 					// dispose managed state (managed objects)
 					this.poolManagerList.GetInstance(this.InstanceId).GiveObjectBackToPool(this);
-					if (this.Workspace is not null)
-					{
-						if (this.Workspace.IsOpened())
-						{
-							Workspace.Close();
-						}
-						this.Workspace = null;
-					}
 				}
 
 				// free unmanaged resources (unmanaged objects) and override finalizer
