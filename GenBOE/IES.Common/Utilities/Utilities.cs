@@ -341,6 +341,15 @@ namespace IES.Common
         }
 
         /// <summary>
+        /// Gets PPR&D Disclosure Log URL from web.config
+        /// </summary>
+        /// <returns>PPR&D Disclosure Log URL</returns>
+        public static string PPRDDisclosureLogURL()
+        {
+            return ConfigurationUtilities.GetAppSetting("PPRDDisclosureLogURL");
+        }
+
+        /// <summary>
         /// Gets the PTM URL from web.config
         /// </summary>
         /// <returns>PTM Url</returns>
