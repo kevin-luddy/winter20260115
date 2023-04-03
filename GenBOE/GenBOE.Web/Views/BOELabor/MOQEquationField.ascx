@@ -40,9 +40,9 @@
         IsRMS: '<%:Model.Company == CompanyConfiguration.MST%>'.isTrue(),
         HistoricalMoqType: <%:(int)MOQType.Historical%>,
         ComparativeMoqType: <%:(int)MOQType.Comparative%>,
-        SAPEnabled: '<%:Utilities.IsSAPEnabled%>'.isTrue(),
+        SAPEnabled: '<%:(bool)ViewData["EnableSAP"]%>'.isTrue(),
+        SAPWorkspaceBeforeCutoff: '<%:(bool)ViewData["SAPWorkspaceBeforeCutoff"]%>'.isTrue(),
         SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
-		SapConnectionEnabled: '<%=Model.EnableSAPConnection%>'.isTrue(),
 		RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
 		RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>'
     };
@@ -177,13 +177,13 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <select data-ng-if="model.SapConnectionEnabled" data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
+                                <select data-ng-if="model.SAPEnabled" data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
                                     <option value=""></option>
                                     <option value="<%: RepositoryName.SapWebi.GetDescription() %>"><%: RepositoryName.SapWebi.GetDescription() %></option>
                                     <option value="<%: RepositoryName.Other.GetDescription() %>"><%: RepositoryName.Other.GetDescription() %></option>
                                 </select>
-                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>' && model.SapConnectionEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
-                                <input data-ng-if="!model.SapConnectionEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.RepositoryName" />
+                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>' && model.SAPEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
+                                <input data-ng-if="!model.SAPEnabled" data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.RepositoryName" />
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
@@ -194,7 +194,8 @@
                                 <select data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.QueryType" data-ng-change="clearPoPDates(tableData)">
                                     <option value=""></option>
                                     <option value="<%: MoqTableData.MONTHLY%>"><%: MoqTableData.MONTHLY%></option>
-                                    <option value="<%: MoqTableData.WEEKLY%>"><%: MoqTableData.WEEKLY%></option>
+                                    <option data-ng-if="model.SAPWorkspaceBeforeCutoff" value="<%: MoqTableData.WEEKLY%>"><%: MoqTableData.WEEKLY%></option>
+                                    <option data-ng-if="!model.SAPWorkspaceBeforeCutoff" value="<%: MoqTableData.WEEKLY_DATETIME%>"><%: MoqTableData.WEEKLY_DATETIME%></option>
                                 </select>
                             </td>
                         </tr>
@@ -220,7 +221,10 @@
                             <td>
                                 <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" data-ng-class="{'ng-invalid': ValidatePopStart(tableData.PoPStart) }" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);SetTableDirty(tableData);" />
                                 <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPStart" data-ng-change="SetTableDirty(tableData)" />
-
+                                <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY_DATETIME%>'">
+                                    <span data-ng-if="IsSapEnabledAndSetAsRepository(tableData.RepositoryName)">Process Pay Period Week Ending </span> 
+                                    <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date" required data-ng-model="tableData.PoPStart" data-ng-change="SetTableDirty(tableData)" />
+                                </span>
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
                                     FW <input data-ng-readonly="ActualReadOnly()" type="number" class="weekYear skip-read-only" min="1" max="53" step="1" required data-ng-model="tableData.PoPStartWeek" onchange="MOQEquationFieldWidget.setDirty()" />
                                     Year <input data-ng-readonly="ActualReadOnly()" type="number" class="weekYear skip-read-only" min="1980" max="2050" step="1" required data-ng-model="tableData.PoPStartYear" onchange="MOQEquationFieldWidget.setDirty()" />
@@ -235,6 +239,10 @@
                             <td>
                                 <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" data-ng-class="{'ng-invalid': ValidatePopEnd(tableData.PoPEnd) }" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);SetTableDirty(tableData);" />
                                 <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPEnd" data-ng-change="SetTableDirty(tableData)" />
+                                <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY_DATETIME%>'">
+                                    <span data-ng-if="IsSapEnabledAndSetAsRepository(tableData.RepositoryName)">Process Pay Period Week Ending </span> 
+                                    <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date" required data-ng-model="tableData.PoPEnd" data-ng-change="SetTableDirty(tableData)" />
+                                </span>
                                 
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
                                     FW <input data-ng-readonly="ActualReadOnly()" type="number" class="weekYear skip-read-only" min="1" max="53" step="1" required data-ng-model="tableData.PoPEndWeek" onchange="MOQEquationFieldWidget.setDirty()" />

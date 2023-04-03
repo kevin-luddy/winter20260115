@@ -1306,7 +1306,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
 			sut.ValidateTaskDetails(boe, task, results, ws);
-			Assert.AreEqual(1, results.Count);
+			Assert.AreEqual(0, results.Count);
 		}
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]

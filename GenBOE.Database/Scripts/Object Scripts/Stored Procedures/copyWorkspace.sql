@@ -12,7 +12,8 @@ CREATE  PROCEDURE [dbo].[copyWorkspace]
 @WorkspaceID int ,
 @WorkspaceName varchar (115),
 @WorkspaceShortName varchar(21),
-@CostVolumeLeadPricerUserID int
+@CostVolumeLeadPricerUserID int,
+@SAPSpaceCutoff datetime2(7) NULL
 )
 AS
 /******************************************************************************
@@ -38,6 +39,8 @@ AS
 **		5/2/2022	jquijano			IES-1126: Add VendorId, SupplierProposedValue
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
 **		3/1/23		twilson3			ACV-343 Update MOQ Column sizes
+**		3/20/23		Dusan				ACV-498: Updated MOQ Column size (Wbs Element due to prod issue)
+**		3/23/23		twilson3			ACV-274 Handle SAP Fiscal Week Cutoff
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -46,6 +49,8 @@ BEGIN TRANSACTION
 BEGIN TRY
 
 DECLARE @CopyFromWorkspaceID int = @WorkspaceID
+DECLARE @CopyWorkspaceCreated datetime2(7)
+SELECT @CopyWorkspaceCreated = [WorkspaceCreationDate] FROM [dbo].[Workspace] WHERE WorkspaceID = @CopyFromWorkspaceID
 
 DECLARE @ResourceListID int
 INSERT INTO [dbo].[ResourceList]
@@ -1598,7 +1603,7 @@ DECLARE @MOQTypeSelectionTableData TABLE
 	[DateOfReport] [datetime2](7) NOT NULL,
 	[HistoricalProgramName] [varchar](125) NOT NULL,
 	[ContractNumber] [varchar](255) NULL,
-	[WbsElement] [varchar](2500) NOT NULL,
+	[WbsElement] [varchar](8000) NOT NULL,
 	[PeriodOfPerformanceStartDate] [datetime2](7) NOT NULL,
 	[PeriodOfPerformanceEndDate] [datetime2](7) NOT NULL,
 	[TotalWbsHours] [decimal](11,2) NOT NULL,
@@ -1631,6 +1636,10 @@ SELECT
 	S.NewMOQTypeSelectionId
 FROM [dbo].[MOQTypeSelectionTableData] TD
 INNER JOIN @MOQTypeSelection S ON TD.MOQTypeSelectionId = S.MOQTypeSelectionId
+
+/* If before SAP Cutoff, reset the POP Start/End dates */
+IF @SAPSpaceCutoff IS NOT NULL AND @SAPSpaceCutoff >= @CopyWorkspaceCreated
+   UPDATE @MOQTypeSelectionTableData SET [PeriodOfPerformanceStartDate] = '0001-01-01', [PeriodOfPerformanceEndDate] = '0001-01-01', [QueryType] = 'Weekly ' WHERE [QueryType] = 'Weekly'
 
 DECLARE @MOQTypeSelectionTableDataId int
 WHILE EXISTS (SELECT 1 FROM @MOQTypeSelectionTableData WHERE Processed = 0)

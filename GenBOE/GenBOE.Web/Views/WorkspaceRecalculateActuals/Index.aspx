@@ -17,7 +17,7 @@
         controller: '<%:WebConstants.CONTROLLER_WORKSPACE_RECALCULATE_ACTUALS %>',
         action: '<%:WebConstants.ACTION_GET_WORKSPACE_RECALCULATE_ACTUALS_MODEL %>',
 		workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>',
-		colSpan: <%: (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) ? 8 : 6 %>
+		colSpan: 8
      });
 
 	var WorkspaceCalculateActualsWidget;
@@ -54,31 +54,41 @@
                             <col width="100px"/>
                             <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) 
 								{  %>
-							<col />
-							<col />
+                            <col />
+                            <col />
 							<%  } %>
 							<col/>
 							<col/>
                         </colgroup>
                         <thead>
                             <tr>
-								<th class="bootstrap"><a data-ng-click="changeSorting(columns.boe)" data-ng-class="{ 'bold': boldSort(columns.boe) }">Boe Title</a></th>
+                                <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) 
+								   {  %>
+								<th class="bootstrap"><a data-ng-click="changeSorting(columns.wbsString)" data-ng-class="{ 'bold': boldSort(columns.wbsString) }">WBS</a></th>
+                                <th class="bootstrap"><a data-ng-click="changeSorting(columns.clinString)" data-ng-class="{ 'bold': boldSort(columns.clinString) }">CLIN</a></th>
+								<% } %>
+								<th class="bootstrap"><a data-ng-click="changeSorting(columns.boe)" data-ng-class="{ 'bold': boldSort(columns.boe) }">BOE Title</a></th>
 								<th class="bootstrap"><a data-ng-click="changeSorting(columns.task)" data-ng-class="{ 'bold': boldSort(columns.task) }">Task Title</a></th>
 								<th class="bootstrap"><a data-ng-click="changeSorting(columns.table)" data-ng-class="{ 'bold': boldSort(columns.table) }">Table Name</a></th>
-                                <th class="bootstrap"><a data-ng-click="changeSorting(columns.boeState)" data-ng-class="{ 'bold': boldSort(columns.boePrevState) }">Boe Previous State</a></th>
+                                <th class="bootstrap"><a data-ng-click="changeSorting(columns.boeState)" data-ng-class="{ 'bold': boldSort(columns.boePrevState) }">BOE Previous State</a></th>
 								 <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) 
 								   {  %>
 								<th class="bootstrap"><a data-ng-click="changeSorting(columns.wbsHoursPrevious)" data-ng-class="{ 'bold': boldSort(columns.wbsHoursPrevious) }">Previous <%:labels.TotalWbsHours %></a></th>
 								<th class="bootstrap"><a data-ng-click="changeSorting(columns.wbsHours)" data-ng-class="{ 'bold': boldSort(columns.wbsHours) }">New <%:labels.TotalWbsHours %></a></th>
 								<% } %>
-								<th class="bootstrap"><a data-ng-click="changeSorting(columns.hoursPrevious)" data-ng-class="{ 'bold': boldSort(columns.hoursPrevious) }">Previous <%:labels.TotalRelevantHours %></a></th>
-								<th class="bootstrap"><a data-ng-click="changeSorting(columns.hours)" data-ng-class="{ 'bold': boldSort(columns.hours) }">New <%:labels.TotalRelevantHours %></a></th>
+                                <th class="bootstrap"><a data-ng-click="changeSorting(columns.hoursPrevious)" data-ng-class="{ 'bold': boldSort(columns.hoursPrevious) }">Previous <%:labels.TotalRelevantHours %></a></th>
+								<th class="bootstrap"><a data-ng-click="changeSorting(columns.hours)" data-ng-class="{ 'bold': boldSort(columns.hours) }"><%:labels.TotalRelevantHours %></a></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-ng-show="isLoading"><td colspan="{{colSpan}}"><div class="loader"></div></td></tr>
-                            <tr data-ng-show="hasLoaded && !isLoading && (data.length === 0 || filteredResults.length === 0)"><td colspan="{{colSpan}}"><div class="empty-grid-text">There are no updates to Actuals inside MOQ Tables.</div></td></tr>
+                            <tr data-ng-show="isLoading"><td colspan="8"><div class="loader"></div></td></tr>
+                            <tr data-ng-show="hasLoaded && !isLoading && (data.length === 0 || filteredResults.length === 0)"><td colspan="8"><div class="empty-grid-text">There are no updates to Actuals inside MOQ Tables.</div></td></tr>
                             <tr data-ng-repeat="actual in (filteredResults = (data | filter:filterActuals | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize">
+                               <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) 
+								   {  %>
+								<td class="text" title="{{::actual.WbsString}}">{{::actual.WbsString}}</td>
+                                <td class="text" title="{{::actual.ClinString}}">{{::actual.ClinString}}</td>
+								<% } %>
                                 <td class="text" title="{{::actual.BoeTitle}}">{{::actual.BoeTitle}}</td>
                                 <td class="text"  title="{{::actual.Task}}">{{::actual.Task}}</td>
                                 <td class="text"  title="{{::actual.TableName}}">{{::actual.TableName}}</td>

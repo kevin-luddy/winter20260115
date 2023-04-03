@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GenBOE.Tests</RootNamespace>
     <AssemblyName>GenBOE.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SccProjectName>SAK</SccProjectName>
@@ -158,6 +158,7 @@
     <Compile Include="ActionLogic\ControllerLogic\ReportsControllerLogicSpaceSystemsTest.cs" />
     <Compile Include="ActionLogic\ControllerLogic\ReportsControllerLogicTest.cs" />
     <Compile Include="ActionLogic\ControllerLogic\SSRSControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\CopyBOE\BOECopierTests.cs" />
     <Compile Include="ActionLogic\DateShift\DateShiftTest.cs" />
     <Compile Include="ActionLogic\Export\MoqTableExporterTest.cs" />
     <Compile Include="ActionLogic\Export\TraceTableExporterTest.cs" />

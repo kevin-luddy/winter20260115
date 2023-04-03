@@ -2265,6 +2265,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 		/// <summary>
 		/// Recalculates the SAP Actuals across a Workspace, and finds any BOEs that were updated
+		/// ToDo Thomas: Look here to add CLIN
 		/// </summary>
 		/// <param name="result">The list of Models that were updated</param>
 		/// <param name="boes">Dictionary of BOEs</param>
@@ -2275,35 +2276,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType)
 		{
 			ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
-			{
-				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST || t.QueryType == "Monthly")
+				new MoqTableDataModelView()
 				{
-					return new MoqTableDataModelView()
-					{
-						Filters = t.AdditionalQueryFilters,
-						PoPStart = t.PoPStart,
-						PoPEnd = t.PoPEnd,
-						TableId = t.Id,
-						WbsElement = t.WbsElement
-					};
-				} 
-				else
-				{
-					string startYear = t.PoPStartYear?.ToString("") ?? string.Empty;
-					string startFw = t.PoPStartWeek?.ToString("00") ?? string.Empty;
-					string endYear = t.PoPEndYear?.ToString("") ?? string.Empty;
-					string endFw = t.PoPEndWeek?.ToString("00") ?? string.Empty;
-					return new MoqTableDataModelView()
-					{
-						Filters = t.AdditionalQueryFilters,
-						PoPStartFW = startYear + startFw,
-						PoPEndFW = endYear + endFw,
-						TableId = t.Id,
-						WbsElement = t.WbsElement
-					};
+					Filters = t.AdditionalQueryFilters,
+					PoPStart = t.PoPStart,
+					PoPEnd = t.PoPEnd,
+					QueryType = t.QueryType,
+					TableId = t.Id,
+					WbsElement = t.WbsElement
 				}
-
-			}).ToList();
+			).ToList();
 
 			// Make one bulk call to SAP
 			ICollection<IESResponse<CalculateActualsViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSap(tableData);
@@ -2323,12 +2305,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				resultModel.TableName = table.TableName;
 				resultModel.WbsHoursPrevious = table.TotalWbsHours;
 				resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
-				resultModel.BoeStatePrevious = boe.State.GetDescription();
+				resultModel.BoeStatePrevious = boe.State.GetDescription(); 
+				resultModel.ClinString = boe.Clin?.ClinString;
+				resultModel.WbsString = boe.Wbs?.WbsString;
 				resultModel.BoeTitle = boe.Title;
 				resultModel.Task = tasks[moqType.TaskId];
 				resultModel.Order = table.Order;
 				resultModel.IsSuccessful = response.IsSuccessful;
-
+				
 				if (response.IsSuccessful)
 				{
 					if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)

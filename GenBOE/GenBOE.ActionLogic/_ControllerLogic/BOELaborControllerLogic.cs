@@ -3567,7 +3567,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			ICollection<ImportMoqTableResultsModelView> dataToSave = resultData.DataToSave();
 
-			if (Utilities.IsSAPEnabled && ws.EnableSAPConnection && dataToSave.Any())
+			if (Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && dataToSave.Any())
             {
 				// Convert into SAP API params
 				string sapRepo = RepositoryName.SapWebi.GetDescription();
@@ -3582,9 +3582,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							WbsElement = d.WbsElement,
 							PoPStart = d.PoPStart,
 							PoPEnd = d.PoPEnd,
-							// pop start/end FW only set if SSC and if using FW
-							PoPStartFW = d.SAPApiPoPStartString,
-							PoPEndFW = d.SAPApiPoPEndString,
+                            QueryType = d.QueryType,
 							Filters = d.AdditionalQueryFilters,
 							TableId = index++
 						}).ToList();
@@ -3759,13 +3757,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
 
                 // Convert table data
+
                 DataTableViewModel dataTable = new DataTableViewModel()
                 {
                     Filters = tableData.Filters,
                     PoPEnd = tableData.PoPEnd,
                     PoPStart = tableData.PoPStart,
-					PoPStartFW = tableData.PoPStartFW,
-					PoPEndFW = tableData.PoPEndFW,
+                    IsWeekly = tableData.QueryType == MoqTableData.WEEKLY_DATETIME,
 					WbsElement = tableData.WbsElement,
                     TableId = tableData.TableId
                 };
@@ -3811,11 +3809,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 new DataTableViewModel()
                 {
                     Filters = t.Filters,
-                    PoPEnd = t.PoPEnd,
-                    PoPStart = t.PoPStart,
-                    PoPStartFW = t.PoPStartFW,
-                    PoPEndFW = t.PoPEndFW,
-                    WbsElement = t.WbsElement,
+					PoPEnd = t.PoPEnd,
+					PoPStart = t.PoPStart,
+					IsWeekly = t.QueryType == MoqTableData.WEEKLY_DATETIME,
+					WbsElement = t.WbsElement,
                     TableId = t.TableId
                 }).ToList();
 

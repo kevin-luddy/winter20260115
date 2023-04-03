@@ -725,7 +725,7 @@
 				<%} %>
 			</div>
 		</div>
-		<%if (Utilities.IsSAPEnabled) { %>
+		<%if ((bool)ViewData["ShowSAP"]) { %>
 			<div class="form-row">
 				<div class="form-label">
 					<span helptext="Does this Workspace use the SAP in its BOEs?">SAP Connection Enabled</span>

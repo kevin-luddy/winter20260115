@@ -631,13 +631,8 @@
             "format": "date-time",
             "nullable": true
           },
-          "poPStartFW": {
-            "type": "string",
-            "nullable": true
-          },
-          "poPEndFW": {
-            "type": "string",
-            "nullable": true
+          "isWeekly": {
+            "type": "boolean"
           },
           "filters": {
             "type": "string",

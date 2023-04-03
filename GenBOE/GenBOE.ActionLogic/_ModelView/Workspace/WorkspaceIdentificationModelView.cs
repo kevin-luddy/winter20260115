@@ -235,5 +235,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Was WS created prior to Boe Templates being enabled
 		/// </summary>
 		public bool CreatedPriorToBoeTemplates { get; set; }
+
+		/// <summary>
+		/// Indicates whether SAP features are enabled for this particular workspace
+		/// </summary>
+		public bool IsWorkspaceSAPEnabled { get; set; }
 	}
 }

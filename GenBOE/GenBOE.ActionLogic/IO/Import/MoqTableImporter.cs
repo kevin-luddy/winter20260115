@@ -94,7 +94,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
                         ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, IMPORT_TAB, requiredColumns.ToArray(), allColumns.ToArray(), null, null, null, true);
 
-                        results = this.CreateImportedMoqTables(allRows, customFields, ws.EnableSAPConnection);
+                        results = this.CreateImportedMoqTables(allRows, customFields, ws.EnableSAPConnection, ws.CreationDate);
                     }
 
                     return results;
@@ -112,8 +112,10 @@ namespace GenBOE.ActionLogic.IO.Import
         /// <param name="allRows">all rows from the import file</param>
         /// <param name="customFields">MOQ Table custom fields</param>
         /// <param name="sapConnectionEnabled">Workspace SAP Connection Enabled setting</param>
+        /// <param name="workspaceCreationDate">Workspace creation date</param>
         /// <returns>Imported MOQ Table data</returns>
-        private ICollection<ImportedMoqTable> CreateImportedMoqTables(ICollection<Dictionary<string, string>> allRows, ICollection<CustomFieldDTO> customFields, bool sapConnectionEnabled)
+        private ICollection<ImportedMoqTable> CreateImportedMoqTables(ICollection<Dictionary<string, string>> allRows, ICollection<CustomFieldDTO> customFields, bool sapConnectionEnabled,
+            DateTime? workspaceCreationDate)
         {
             ICollection<ImportedMoqTable> toReturn = new Collection<ImportedMoqTable>();
 
@@ -123,7 +125,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
                 foreach(Dictionary<string, string> row in allRows)
                 {
-                    toReturn.Add(this.ConstructAndValidateMoqTable(row, customFields, newMoqTableIndex, sapConnectionEnabled));
+                    toReturn.Add(this.ConstructAndValidateMoqTable(row, customFields, newMoqTableIndex, sapConnectionEnabled, workspaceCreationDate));
                 }
             }
 
@@ -137,14 +139,16 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// <param name="customFields">MOQ Table Custom Fields</param>
 		/// <param name="index">new ID index</param>
 		/// <param name="sapConnectionEnabled">Workspace SAP Connection Enabled setting</param>
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
 		/// <returns>Imported MOQ Table for the row</returns>
-		private ImportedMoqTable ConstructAndValidateMoqTable(Dictionary<string, string> row, ICollection<CustomFieldDTO> customFields, int index, bool sapConnectionEnabled)
+		private ImportedMoqTable ConstructAndValidateMoqTable(Dictionary<string, string> row, ICollection<CustomFieldDTO> customFields, int index, bool sapConnectionEnabled,
+            DateTime? workspaceCreationDate)
         {
             _ = row ?? throw new ArgumentNullException(nameof(row));
 
             ImportedMoqTable toReturn = new ImportedMoqTable() { Id = index-- };
 
-            this.ImportCompanySpecificMoqTableData(toReturn, row, sapConnectionEnabled);
+            this.ImportCompanySpecificMoqTableData(toReturn, row, sapConnectionEnabled, workspaceCreationDate);
 
             // Table Name
             if (row.ContainsKey(TABLE_NAME) && !string.IsNullOrEmpty(row[TABLE_NAME]))
@@ -202,6 +206,7 @@ namespace GenBOE.ActionLogic.IO.Import
             DateTime popStartDate = new DateTime();
             if (row.ContainsKey(START_DATE) && !string.IsNullOrEmpty(row[START_DATE]))
             {
+                // If Historical Weekly (using FW mm/YYYY format)
                 if (toReturn.QueryType == MoqTableData.WEEKLY)
                 {
                     if (IsFiscalWeekValid(row[START_DATE], out int weekValue, out int yearValue))
@@ -221,7 +226,12 @@ namespace GenBOE.ActionLogic.IO.Import
                 else
                 {
                     bool validStartDate = DateTime.TryParse(row[START_DATE], out popStartDate);
-                    if (validStartDate && popStartDate <= DateTime.Now)
+                    if (validStartDate && toReturn.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
+                        popStartDate.DayOfWeek != DayOfWeek.Sunday)
+                    {
+						toReturn.ImportTypes.Add(MoqTableImportType.InvalidPopStartSunday);
+					}
+                    else if (validStartDate && popStartDate <= DateTime.Now)
                     {
                         toReturn.PoPStart = popStartDate.Normalize(DateTimePrecision.Day);
                     }
@@ -259,7 +269,12 @@ namespace GenBOE.ActionLogic.IO.Import
                 else
                 {
                     bool validEndDate = DateTime.TryParse(row[END_DATE], out popEndDate);
-                    if (validEndDate && popEndDate <= DateTime.Now)
+					if (validEndDate && toReturn.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
+						popEndDate.DayOfWeek != DayOfWeek.Sunday)
+					{
+						toReturn.ImportTypes.Add(MoqTableImportType.InvalidPopEndSunday);
+					}
+					else if (validEndDate && popEndDate <= DateTime.Now)
                     {
                         toReturn.PoPEnd = popEndDate.Normalize(DateTimePrecision.Day);
                     }
@@ -297,7 +312,8 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// <param name="moqTable">The imported MOQ Table</param>
 		/// <param name="row">row from the import file</param>
 		/// <param name="sapConnectionEnabled">Workspace SAP Connection Enabled setting</param>
-		protected virtual void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row, bool sapConnectionEnabled)
+		protected virtual void ImportCompanySpecificMoqTableData(ImportedMoqTable moqTable, Dictionary<string, string> row, bool sapConnectionEnabled,
+            DateTime? workspaceCreationDate)
         {
             _ = moqTable ?? throw new ArgumentNullException(nameof(moqTable));
             _ = row ?? throw new ArgumentNullException(nameof(row));
@@ -319,9 +335,21 @@ namespace GenBOE.ActionLogic.IO.Import
             // Query Type
             if (row.ContainsKey(QUERY_TYPE) && !string.IsNullOrEmpty(row[QUERY_TYPE]))
             {
-                if (row[QUERY_TYPE] == MoqTableData.WEEKLY || row[QUERY_TYPE] == MoqTableData.MONTHLY)
+                if (row[QUERY_TYPE] == MoqTableData.MONTHLY)
                 {
-                    moqTable.QueryType = row[QUERY_TYPE];
+					moqTable.QueryType = row[QUERY_TYPE];
+				}
+                else if (row[QUERY_TYPE] == MoqTableData.WEEKLY)
+                {
+                    if (Utilities.IsWorkspaceBeforeSAPCutoff(workspaceCreationDate))
+                    {
+						moqTable.QueryType = row[QUERY_TYPE];
+					}
+					else
+                    {
+                        // this workspace was created after the cutoff, so it uses FW with a Datetime
+						moqTable.QueryType = MoqTableData.WEEKLY_DATETIME;
+					}
                 }
                 else
                 {
@@ -353,14 +381,14 @@ namespace GenBOE.ActionLogic.IO.Import
                 moqTable.AdditionalQueryFilters = row[EMPLOYEE_ID_FILTERS];
             }
             else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField) &&
-				(!Utilities.IsSAPEnabled || moqTable.RepositoryName != RepositoryName.SapWebi.GetDescription()))
+				(!Utilities.IsSAPEnabledForWorkspace(sapConnectionEnabled, workspaceCreationDate) || moqTable.RepositoryName != RepositoryName.SapWebi.GetDescription()))
             {
 				// Employee ID filter is required if SAP is disabled or if Repo is not set to SAP/Webi
                 moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
             }
 
             // Total Relevant Hours 
-            if (!Utilities.IsSAPEnabled || !sapConnectionEnabled)
+            if (!Utilities.IsSAPEnabledForWorkspace(sapConnectionEnabled, workspaceCreationDate))
 			{
 				if (row.ContainsKey(TOTAL_RELEVANT_HOURS_SSC) && !string.IsNullOrEmpty(row[TOTAL_RELEVANT_HOURS_SSC]))
 				{
@@ -442,13 +470,19 @@ namespace GenBOE.ActionLogic.IO.Import
         /// <returns>True if fiscal week string was in the valid format</returns>
         private bool IsFiscalWeekValid(string fiscalWeekString, out int weekValue, out int yearValue)
         {
+			weekValue = 0;
+			yearValue = 0;
+
+			if (!fiscalWeekString.Contains("FW"))
+            {
+				return false;
+			}
+
             string cleanedFiscalWeekString = fiscalWeekString.Replace("FW", string.Empty).Trim();
             string[] fiscalWeekValues = cleanedFiscalWeekString.Split('/');
 
             if (fiscalWeekValues.Length != 2)
             {
-                weekValue = 0;
-                yearValue = 0;
                 return false;
             }
 

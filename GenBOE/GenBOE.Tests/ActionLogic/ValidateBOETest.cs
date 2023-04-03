@@ -1572,7 +1572,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateMoqTypeTableCustomFields()
         {
-            Utilities.IsSAPEnabled = false;
+            Utilities.IsSAPEnabledForSystem = false;
 
             Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
@@ -3342,10 +3342,10 @@ namespace GenBOE.Tests.ActionLogic
         public void BL_ValidateTemplateMoqForTask_PoPStartMonday_RmsMode()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             ValidateBOE sut = CreateSystem();
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             // Create a valid MOQ Table
             MoqTypeSelection moqType = new MoqTypeSelection()
@@ -3404,11 +3404,10 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_PoPStartMonday_SpaceMode()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
-			Utilities.IsSAPEnabled = true;
-
+			
 			// Create a valid MOQ Table
 			MoqTypeSelection moqType = new MoqTypeSelection()
 			{
@@ -3450,13 +3449,64 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Sunday for SAP FW; Space Mode, no validation should happen
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPStartSunday_SpaceMode()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000,
+							RepositoryName = "aa",
+							QueryType = "aa"
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+
+			// Add a day so PoP start is no longer on a Sunday
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 3);
+
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+		}
+
+		/// <summary>
 		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for RMS, validation should happen
 		/// </summary>
 		[TestMethod]
         public void BL_ValidateTemplateMoqForTask_PoPEndSunday_MstMode()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             ValidateBOE sut = CreateSystem();
 
@@ -3517,7 +3567,7 @@ namespace GenBOE.Tests.ActionLogic
         public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             ValidateBOE sut = CreateSystem();
 
@@ -3568,7 +3618,7 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_RMS()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3610,12 +3660,12 @@ namespace GenBOE.Tests.ActionLogic
 			moqType.TableData.First().AdditionalQueryFilters = null;
 
 			// RMS && SAP = true -> Not Required - False (IsAny)
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 			Assert.IsFalse(result.Any());
 
 			// RMS && SAP = false -> Required - True (IsAny)
-			Utilities.IsSAPEnabled = false;
+			Utilities.IsSAPEnabledForSystem = false;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 			Assert.IsTrue(result.Any());
 		}
@@ -3627,7 +3677,7 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_Space()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3644,7 +3694,7 @@ namespace GenBOE.Tests.ActionLogic
 							DateOfReport = DateTime.Now,
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
-							PoPStart = new DateTime(2022, 1, 3), // Monday
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "aaa",
 							TotalRelevantHours = 1000,
@@ -3664,23 +3714,24 @@ namespace GenBOE.Tests.ActionLogic
 			// Valid data to start
 			Assert.IsFalse(result.Any());
 
-			// Make the additional query filters null
-			moqType.TableData.First().AdditionalQueryFilters = null;
+			// Make the additional query filters N/A
+			moqType.TableData.First().AdditionalQueryFilters = "N/A";
 
 			// SSC && SAP = True && Repo = SAP -> Not Required - False (IsAny)
 			moqType.TableData.First().RepositoryName = RepositoryName.SapWebi.GetDescription();
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 			Assert.IsFalse(result.Any());
 
-			// SSC && SAP = True && Repo = Other -> Required - True (IsAny)
+			// SSC && SAP = True && Repo = Other -> Required - False (IsAny)
 			moqType.TableData.First().RepositoryName = RepositoryName.Other.GetDescription();
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
-			Assert.IsTrue(result.Any());
+			Assert.IsFalse(result.Any());
 
-			// SSC && SAP = false -> Required - True (IsAny)
-			Utilities.IsSAPEnabled = false;
+			// SSC && SAP = false -> Required - False (IsAny)
+			Utilities.IsSAPEnabledForSystem = false;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
-			Assert.IsTrue(result.Any());
+			Assert.IsFalse(result.Any());
+
 		}
 
 		/// <summary>
@@ -3690,7 +3741,7 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_Hours_Space()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3707,7 +3758,7 @@ namespace GenBOE.Tests.ActionLogic
 							DateOfReport = DateTime.Now,
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
-							PoPStart = new DateTime(2022, 1, 3), // Monday
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "aaa",
 							TotalRelevantHours = 1000,
@@ -3747,7 +3798,7 @@ namespace GenBOE.Tests.ActionLogic
 		public void BL_ValidateTemplateMoqForTask_Hours_RMS()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3786,7 +3837,7 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsFalse(result.Any());
 
 			// SAP disabled to test invalid WBS Hours
-			Utilities.IsSAPEnabled = false;
+			Utilities.IsSAPEnabledForSystem = false;
 
 			// WBS Hours less than 0
 			moqType.TableData.First().TotalWbsHours = -1;
@@ -3801,7 +3852,7 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsTrue(result.Any());
 
 			// WBS Hours not validated when SAP enabled
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
 			Assert.IsFalse(result.Any());

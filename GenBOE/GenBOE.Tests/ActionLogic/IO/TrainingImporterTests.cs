@@ -123,8 +123,8 @@ namespace GenBOE.Tests.ActionLogic.IO
             // Check BOE
             TrainingCourseGroupModelView boe = groups.First(g => g.CourseGroupName.Contains("BOE"));
             overdue = sut.GetOverdueTraining(new ADTest(), models, boe.CourseGroupName);
-            // There should be 1 overdue, and 1 missing, and 1 invalid
-            Assert.AreEqual(3, overdue.Count);
+            // There should be 1 overdue, and 3 missing, and 1 invalid
+            Assert.AreEqual(5, overdue.Count);
             expired = overdue.FirstOrDefault(o => o.CourseId == Constants.SHARED_BOE_WRITING_COURSE && o.UserDisplayName == ExpiredGuy && o.NTID == ExpiredGuy.ToLower());
             missing = overdue.FirstOrDefault(o => o.CourseId == Constants.SHARED_BOE_WRITING_COURSE && o.UserDisplayName == MissingGuy && o.NTID == MissingGuy.ToLower());
             TrainingModelView invalid = overdue.FirstOrDefault(o => o.CourseId == Constants.SSC_OLD_BOE_WRITING_COURSE && o.UserDisplayName == InvalidGuy);
