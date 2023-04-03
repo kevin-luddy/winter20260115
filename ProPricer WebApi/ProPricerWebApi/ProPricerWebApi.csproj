@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -41,6 +41,7 @@
     <PackageReference Include="ACV.Shared" Version="1.0.7423219" />
     <PackageReference Include="Aspose.Cells" Version="22.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="6.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Client" Version="6.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.3" />
     <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
     <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
