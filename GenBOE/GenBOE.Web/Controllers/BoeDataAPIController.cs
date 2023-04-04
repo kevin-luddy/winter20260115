@@ -21,6 +21,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
+    using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -84,10 +85,10 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         private readonly ContractTypeLoader contractTypeLoader;
 
-        /// <summary>
-        /// Logger
-        /// </summary>
-        private Logger logger = new Logger("BoeDataAPIController");
+		/// <summary>
+		/// Logger
+		/// </summary>
+		private Logger logger = new Logger("BoeDataAPIController");
 
         /// <summary>
         /// Ctor
@@ -548,5 +549,47 @@ namespace GenBOE.Web.Controllers
 
             return result;
         }
+
+        /// <summary>
+        /// Get workspaces for user (id via token) for use in NLF
+        /// </summary>
+        /// <returns>List of Workspace Data for user for use in NLF</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        [HttpGet]
+        public IESResponse<NlfWorkspaceData> GetNlfWorkspacesForUser()
+        {
+			IESResponse<NlfWorkspaceData> result = new IESResponse<NlfWorkspaceData>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+                // check if user is system admin
+                IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
+
+                ICollection<(int id, string url, string name)> boes = new Collection<(int id, string url, string name)>();
+
+				if (isSystemAdmin)
+                {
+                    // get all workspaces
+                    boes = loader.GetAllWorkspaceDataForNlf();
+                }
+                else
+                {
+                    // get workspaces where user is WS Admin or GSCO
+                    boes = loader.GetWorkspaceDataByNtidForNlf(ntid);
+				}
+
+                result.Data = boes.Select(x => new NlfWorkspaceData() { WorkspaceId = x.id, WorkspaceUrl = x.url, WorkspaceName = x.name }).ToCollection();
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning NLF Workspace data: {ex.Message}");
+			}
+
+			return result;
+		}
     }
 }

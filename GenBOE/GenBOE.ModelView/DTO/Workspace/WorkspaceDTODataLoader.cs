@@ -533,6 +533,57 @@ namespace GenBOE.DataBridge.DTO
 			return result;
 		}
 
+		/// <summary>
+		/// Get Workspace data by NTID to be used in NLF home grid
+		/// </summary>
+		/// <param name="ntid">user NTID</param>
+		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
+		[DbQuery]
+		public ICollection<(int id, string url, string name)> GetWorkspaceDataByNtidForNlf(string ntid)
+		{
+			ICollection<(int id, string url, string name)> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
+							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
+							  where eu.NTID == ntid
+								&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
+								&& w.IsDeleted == false
+							  select new {id = w.WorkspaceID, url = w.WorkspaceShortName, name = w.WorkspaceName}).ToList()
+							  .Select(x => (id: x.id, url: x.url, name: x.name)).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get all Workspace data for a system admin to be used in NLF home grid
+		/// </summary>
+		/// <returns>Collection of Workspace IDs, URLs, and Names</returns>
+		[DbQuery]
+		public ICollection<(int id, string url, string name)> GetAllWorkspaceDataForNlf()
+		{
+			ICollection<(int id, string url, string name)> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  where w.IsDeleted == false
+							  select new { id = w.WorkspaceID, url = w.WorkspaceShortName, name = w.WorkspaceName }).ToList()
+							  .Select(x => (id: x.id, url: x.url, name: x.name)).ToList();
+				}
+			}
+
+			return result;
+		}
+
 		#endregion
 
 		#region Restores and Copies

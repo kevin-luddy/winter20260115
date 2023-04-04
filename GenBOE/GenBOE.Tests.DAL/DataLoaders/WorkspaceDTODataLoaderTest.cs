@@ -914,6 +914,79 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
 			Assert.IsNull(result);
 		}
+
+		/// <summary>
+		/// Test GetWorkspaceDataByNtidForNlf for a user with Workspace Admin
+		/// </summary>
+		[TestMethod]
+        public void TestGetWorkspaceDataByNtidForNlf_WorkspaceAdmin()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+            string ntid;
+            Workspace workspace;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+                workspace = gbe.Workspaces.FirstOrDefault(x => x.WorkspaceUserRoles.Any(y => y.RoleID == (int)Role.WorkspaceAdmin) && x.IsDeleted == false);
+                WorkspaceUserRole user = gbe.WorkspaceUserRoles.FirstOrDefault(x => x.RoleID == (int)Role.WorkspaceAdmin && x.WorkspaceID == workspace.WorkspaceID);
+                ntid = user.ETIuser.NTID;
+			}
+
+			ICollection<(int id, string url, string name)> result = sut.GetWorkspaceDataByNtidForNlf(ntid);
+
+            Assert.IsTrue(result.Any());
+            Assert.IsTrue(result.Any(x => x.id == workspace.WorkspaceID && x.url == workspace.WorkspaceShortName && x.name == workspace.WorkspaceName));
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceDataByNtidForNlf for a user with GSCO Admin
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceDataByNtidForNlf_GSCOAdmin()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace workspace;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				workspace = gbe.Workspaces.FirstOrDefault(x => x.WorkspaceUserRoles.Any(y => y.RoleID == (int)Role.SubcontractAdmin) && x.IsDeleted == false);
+				WorkspaceUserRole user = gbe.WorkspaceUserRoles.FirstOrDefault(x => x.RoleID == (int)Role.WorkspaceAdmin && x.WorkspaceID == workspace.WorkspaceID);
+				ntid = user.ETIuser.NTID;
+			}
+
+			ICollection<(int id, string url, string name)> result = sut.GetWorkspaceDataByNtidForNlf(ntid);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.id == workspace.WorkspaceID && x.url == workspace.WorkspaceShortName && x.name == workspace.WorkspaceName));
+		}
+
+		/// <summary>
+		/// Test GetAllWorkspaceDataForNlf (for a user with System Admin)
+		/// </summary>
+		[TestMethod]
+		public void TestGetAllWorkspaceDataForNlf()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace workspace;
+            int workspaceCount;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				workspace = gbe.Workspaces.FirstOrDefault(x => x.IsDeleted == false);
+				workspaceCount = gbe.Workspaces.Count(x => x.IsDeleted == false);
+			}
+
+			ICollection<(int id, string url, string name)> result = sut.GetAllWorkspaceDataForNlf();
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.id == workspace.WorkspaceID && x.url == workspace.WorkspaceShortName && x.name == workspace.WorkspaceName));
+            Assert.AreEqual(workspaceCount, result.Count);
+		}
 	}
 
     /// <summary>
