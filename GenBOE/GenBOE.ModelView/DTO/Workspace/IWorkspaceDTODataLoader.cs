@@ -76,11 +76,28 @@ namespace GenBOE.DataBridge.DTO
         [DbQuery]
         ICollection<(int Id, string shortName, string longName, bool containsOCI)> GetWorkspaceDataForProposal(string ptmTrackingNumber);
 
-        #endregion
+        /// <summary>
+        /// Get Workspace data by NTID to be used in NLF home grid
+        /// </summary>
+        /// <param name="ntid">user NTID</param>
+        /// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [DbQuery]
+		ICollection<(int id, string url, string name)> GetWorkspaceDataByNtidForNlf(string ntid);
 
-        #region Restores and Copies
+        /// <summary>
+        /// Get all Workspace data for a system admin to be used in NLF home grid
+        /// </summary>
+        /// <returns>Collection of Workspace IDs, URLs, and Names</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [DbQuery]
+        ICollection<(int id, string url, string name)> GetAllWorkspaceDataForNlf();
 
-        void RestoreTravelForWorkspace(int inWorkspaceId);
+		#endregion
+
+		#region Restores and Copies
+
+		void RestoreTravelForWorkspace(int inWorkspaceId);
 
         void LockTravelAndResourceRatesForWorkspace(int inWorkspaceId);
 
