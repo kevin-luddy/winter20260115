@@ -16,6 +16,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using static EBS.ProPricer.Model.General.SpreadInfo;
 	using Task = EBS.ProPricer.Model.Task;
@@ -48,6 +49,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns the tasks for a given proposal
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public IEnumerable<TaskDto> Get(int instanceId, string id)
 		{
@@ -62,6 +64,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="proposalAndTasks">The proposal and tasks.</param>
 		/// <returns></returns>
 		[HttpPost]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<TaskDto> Post(int instanceId, [FromBody] ProposalDto proposalAndTasks)
 		{
@@ -146,6 +149,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The instance identifier.</param>
 		/// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
 		[HttpDelete]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public void Delete(int instanceId, string id)
 		{
@@ -1008,6 +1012,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="proposalAndTasks">The proposal and tasks.</param>
 		/// <returns></returns>
 		[HttpPut]
+		[Authorize]
 		[Route("{instanceId}")]
 		public ReturnDto Put(int instanceId, [FromBody] ProposalDto proposalAndTasks)
 		{

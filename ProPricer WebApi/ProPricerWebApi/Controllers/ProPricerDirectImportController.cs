@@ -10,6 +10,7 @@
 namespace APTSPropricerApi
 {
 	using APTSPropricerApi.DTOs;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using System.IO;
 
@@ -41,6 +42,7 @@ namespace APTSPropricerApi
 		/// <param name="container">The container housing the import data.</param>
 		/// <returns></returns>
 		[HttpPost]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public ProPricerExportResults Post(int instanceId, string id, [FromBody] ProPricerImportContainer container)
 		{

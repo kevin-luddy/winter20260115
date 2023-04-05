@@ -15,6 +15,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -97,6 +98,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns a collection of summary field definitions from the proposal.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public IEnumerable<SummaryFieldDefinitionsDto> Get(int instanceId, string id)
 		{
@@ -179,6 +181,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The instance identifier.</param>
 		/// <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
 		[HttpPost]
+		[Authorize]
 		[Route("{instanceId}")]
 		public void Post(int instanceId, [FromBody] ProposalDto proposalAndSummaryFields)
 		{
@@ -247,6 +250,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The instance identifier.</param>
 		/// <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
 		[HttpPut]
+		[Authorize]
 		[Route("{instanceId}")]
 		public void Put(int instanceId, [FromBody] ProposalDto proposalAndSummaryFields)
 		{
@@ -318,6 +322,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The instance identifier.</param>
 		/// <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
 		[HttpDelete]
+		[Authorize]
 		[Route("{instanceId}")]
 		public void Delete(int instanceId, [FromBody] ProposalDto proposalAndSummaryFields)
 		{
@@ -380,6 +385,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The instance identifier.</param>
 		/// <param name="id">The EntityId of the proposal to obtain the summary field definitions. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
 		[HttpDelete]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public void Delete(int instanceId, string id)
 		{
