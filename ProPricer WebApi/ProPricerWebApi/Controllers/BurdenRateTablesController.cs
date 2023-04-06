@@ -11,6 +11,7 @@ namespace APTSPropricerApi.Controllers
 {
 	using APTSPropricerApi.Connection;
 	using APTSPropricerApi.DTOs;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -40,6 +41,7 @@ namespace APTSPropricerApi.Controllers
 		/// A collection of burden rate table entries.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<BurdenRateTableDto> Get(int instanceId)
 		{

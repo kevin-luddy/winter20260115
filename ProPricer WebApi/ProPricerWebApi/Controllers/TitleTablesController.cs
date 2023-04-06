@@ -15,6 +15,7 @@ namespace APTSPropricerApi.Controllers
 	using APTSPropricerApi.DTOs;
 	using EBS.Core;
 	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -44,6 +45,7 @@ namespace APTSPropricerApi.Controllers
 		/// A collection of title table names.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<string> Get(int instanceId)
 		{
@@ -76,6 +78,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns the title rows for the given title table
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public IEnumerable<TitleTablesDto> Get(int instanceId, string id)
 		{

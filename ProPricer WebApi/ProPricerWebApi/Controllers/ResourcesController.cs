@@ -13,6 +13,7 @@ namespace APTSPropricerApi.Controllers
 	using APTSPropricerApi.Connection;
 	using APTSPropricerApi.DTOs;
 	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -42,6 +43,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns a collection of resource information from the instance of PROPRICER.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<ResourcesDto> Get(int instanceId)
 		{
