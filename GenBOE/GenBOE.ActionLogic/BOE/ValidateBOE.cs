@@ -654,6 +654,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <param name="ws">the workspace</param>
         /// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
         /// <returns>Errors, if any</returns>
+        [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         public ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress)
         {
             _ = moqTypesForTask ?? throw new ArgumentNullException(nameof(moqTypesForTask));
@@ -736,7 +737,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && 
                                     !Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate) && 
                                     Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && 
-                                    row.RepositoryName == RepositoryName.SapWebi.GetDescription())
+                                    row.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
+                                    row.QueryType == MoqTableData.WEEKLY)
 								{
 									// SAP is enabled, only allow sundays to be selected
 									if (row.PoPStart.Year > 1 && row.PoPStart.DayOfWeek != DayOfWeek.Sunday)
