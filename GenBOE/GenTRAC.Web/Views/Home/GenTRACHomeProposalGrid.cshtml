@@ -143,7 +143,7 @@
                 {
                     <br />
                     <a title="View or Edit Attachments" class="fa fa-paperclip button psa-button" onmousedown="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></a>
-                    if (item.Workspaces.Any() || (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised))
+                    if (item.Workspaces.Any() || (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised && item.Status != ProposalStatus.Lost))
                     {
                         <div class="dropdown">
                             <button class="dropbtn boe-button"></button>
@@ -152,7 +152,7 @@
                                 {
                                     <a href="@(boeUrl)@workspace" target="_blank">@workspace</a>
                                 }
-                                @if (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised)
+                                @if (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised && item.Status != ProposalStatus.Lost)
                                 {
                                     <a href="@(boeUrl)default/Workspace/CreateWorkspace?TrackingNumber=@item.TrackingNumber" target="_blank">Create New genBOE Workspace</a>
                                 }
@@ -177,7 +177,7 @@
                                 </div>
                             </div>
                         }
-                        else if (item.HasWriteAccessToLinkedDocument && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised)
+                        else if (item.HasWriteAccessToLinkedDocument && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised && item.Status != ProposalStatus.Lost)
                         {
                             <div class="add-document-div">
                                 <div class="document-button-div fa-stack add-document-icon-stack">

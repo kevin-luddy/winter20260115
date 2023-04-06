@@ -280,7 +280,7 @@ namespace GenTRAC.ActionLogic.ModelView.Home
                 }
                 else
                 {
-                    if (this.Status.Equals(ProposalStatus.Completed) || this.Status.Equals(ProposalStatus.NoBid))
+                    if (this.Status.Equals(ProposalStatus.Completed) || this.Status.Equals(ProposalStatus.NoBid) || this.Status.Equals(ProposalStatus.Lost))
                     {
                         return Constants.GREY_BACKGROUND_CSS_CLASS_STRING;
                     }

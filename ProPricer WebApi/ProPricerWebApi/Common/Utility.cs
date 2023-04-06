@@ -355,7 +355,7 @@ namespace APTSPropricerApi.Common
 
 									r.GetCost();
 
-									if (r.Spread.Distribution != null)
+									if (r.Spread.Distribution.Any())
 									{
 										spread.AddRange(r.Spread.Distribution.Select(s => new SpreadDto
 										{
@@ -437,7 +437,7 @@ namespace APTSPropricerApi.Common
 
 								if (ma.Spread != null)
 								{
-									foreach (KeyValuePair<TimeFrame, double> s in ma.Spread)
+									foreach (KeyValuePair<TimeFrame, EBS.Number> s in ma.Spread.Distribution)
 									{
 										SpreadDto sdto = new()
 										{
@@ -502,7 +502,7 @@ namespace APTSPropricerApi.Common
 
 									if (asc.Spread != null)
 									{
-										foreach (KeyValuePair<TimeFrame, double> s in asc.Spread)
+										foreach (KeyValuePair<TimeFrame, EBS.Number> s in asc.Spread.ActualDistribution)
 										{
 											SpreadDto sdto = new()
 											{
@@ -591,7 +591,7 @@ namespace APTSPropricerApi.Common
 							List<SpreadDto> trvspread = new();
 							if (trv.Spread != null)
 							{
-								foreach (KeyValuePair<TimeFrame, double> s in trv.Spread)
+								foreach (KeyValuePair<TimeFrame, EBS.Number> s in trv.Spread.Distribution)
 								{
 									SpreadDto sdto = new()
 									{

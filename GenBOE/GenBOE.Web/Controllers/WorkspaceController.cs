@@ -1548,7 +1548,7 @@ namespace GenBOE.Web.Controllers
 
             // Perform Action
             // gather up output format types
-            Collection<SelectListItemWithTitle> outputFormatTypes = new Collection<SelectListItemWithTitle>();
+            List<SelectListItemWithTitle> outputFormatTypes = new List<SelectListItemWithTitle>();
 
             Collection<WorkspaceExportFormatDTO> exportFormats = ws.WorkspaceExportFormats.ToCollection();
 
@@ -1566,7 +1566,7 @@ namespace GenBOE.Web.Controllers
             }
             }
 
-            ViewData["ExportFormatTypes"] = outputFormatTypes;
+            ViewData["ExportFormatTypes"] = outputFormatTypes.OrderBy(x => x.Text).ToList();
 
 
             // gather up output sort order types

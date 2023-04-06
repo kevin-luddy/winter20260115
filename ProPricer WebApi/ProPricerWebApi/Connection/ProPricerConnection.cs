@@ -42,11 +42,6 @@ namespace APTSPropricerApi.Connection
 		private readonly PoolManagerList poolManagerList;
 
 		/// <summary>
-		/// True if this connection has been disposed
-		/// </summary>
-		private bool disposedValue;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ProPricerConnection" /> class.
 		/// </summary>
 		/// <param name="instanceId">The instance identifier.</param>
@@ -132,39 +127,9 @@ namespace APTSPropricerApi.Connection
 		/// <summary>
 		/// Dispose of managed and unmanaged objects
 		/// </summary>
-		/// <param name="disposing">true for disposing of managed objects</param>
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!disposedValue)
-			{
-				if (disposing)
-				{
-					// dispose managed state (managed objects)
-					this.poolManagerList.GetInstance(this.InstanceId).GiveObjectBackToPool(this);
-					if (this.Workspace is not null)
-					{
-						if (this.Workspace.IsOpened())
-						{
-							Workspace.Close();
-						}
-						this.Workspace = null;
-					}
-				}
-
-				// free unmanaged resources (unmanaged objects) and override finalizer
-				// set large fields to null
-				disposedValue = true;
-			}
-		}
-
-		/// <summary>
-		/// Dispose of this instance
-		/// </summary>
 		public void Dispose()
 		{
-			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-			Dispose(disposing: true);
-			GC.SuppressFinalize(this);
+			this.poolManagerList.GetInstance(this.InstanceId).GiveObjectBackToPool(this);
 		}
 	}
 }
