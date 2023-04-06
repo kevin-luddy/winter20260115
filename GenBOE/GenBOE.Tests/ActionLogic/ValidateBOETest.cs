@@ -3449,10 +3449,10 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Sunday for SAP FW; Space Mode, no validation should happen
+		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Sunday for SAP FW; Space Mode with Weekly query type, validation should happen
 		/// </summary>
 		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_PoPStartSunday_SpaceMode()
+		public void BL_ValidateTemplateMoqForTask_PoPStartSunday_SpaceMode_Weekly()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 			Utilities.IsSAPEnabledForSystem = true;
@@ -3468,6 +3468,8 @@ namespace GenBOE.Tests.ActionLogic
 						new MoqTableData()
 						{
 							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
 							ContractNumber = "1",
 							DateOfReport = DateTime.Now,
 							HistoricalProgramName = "Test Name",
@@ -3475,9 +3477,59 @@ namespace GenBOE.Tests.ActionLogic
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-							TotalRelevantHours = 1000,
-							RepositoryName = "aa",
-							QueryType = "aa"
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+
+			// Add a day so PoP start is no longer on a Sunday
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 3);
+
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains("Sunday")));
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Sunday for SAP FW; Space Mode with Monthly query type, no validation should happen
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPStartSunday_SpaceMode_Monthly()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.MONTHLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
 						}
 					},
 				Rationale = "Test Rationale",
@@ -3560,11 +3612,63 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsFalse(result.Any(x => x.Contains("Sunday")));
         }
 
-        /// <summary>
-        /// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for Space, no validation should happen
-        /// </summary>
-        [TestMethod]
-        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode()
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for Space with Monthly Weekly Type, validation should happen
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode_Weekly()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+
+			// Add a day so PoP start is no longer on a Sunday
+			moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
+
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains("Sunday")));
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for Space with Monthly Query Type, no validation should happen
+		/// </summary>
+		[TestMethod]
+        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode_Monthly()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
             Utilities.IsSAPEnabledForSystem = true;
@@ -3580,23 +3684,23 @@ namespace GenBOE.Tests.ActionLogic
                         new MoqTableData()
                         {
                             TableName = "Test Table",
+                            RepositoryName = RepositoryName.SapWebi.GetDescription(),
+                            QueryType = MoqTableData.MONTHLY,
                             ContractNumber = "1",
                             DateOfReport = DateTime.Now,
                             HistoricalProgramName = "Test Name",
                             WbsElement = "Test WBS",
-                            PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPStart = new DateTime(2022, 1, 3), // Sunday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-                            TotalRelevantHours = 1000,
-                            RepositoryName = "aa",
-                            QueryType = "aa"
-                        }
+                            TotalRelevantHours = 1000
+						}
                     },
                 Rationale = "Test Rationale",
                 SkillMixRationale = "Test Skill Mix"
             };
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
 
             ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
