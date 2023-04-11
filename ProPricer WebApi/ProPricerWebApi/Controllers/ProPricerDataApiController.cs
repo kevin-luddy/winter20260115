@@ -51,6 +51,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The connection instance id to retrieve proposals on</param>
 		/// <returns>A list of proposals inside folders</returns>
 		[Route("Proposals/{instanceId}")]
+		[Authorize]
 		[HttpGet]
 		public ProPricerResponse<ICollection<ProposalFolderInfo>> Get(int instanceId)
 		{
@@ -104,6 +105,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="proposalId">Proposal Id</param>
 		/// <returns>Pricing data for a Proposal</returns>
 		[Route("PricingData/{instanceId}/{proposalId}")]
+		[Authorize]
 		[HttpGet]
 		public ProPricerResponse<PricingData> GetPricingData(int instanceId, string proposalId)
 		{
@@ -137,6 +139,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="proposalId">Proposal Id</param>
 		/// <returns>Pricing data for a Proposal</returns>
 		[Route("PricingDataTotals/{instanceId}/{proposalId}")]
+		[Authorize]
 		[HttpGet]
 		public ProPricerResponse<PricingTotals> GetPricingDataTotals(int instanceId, string proposalId)
 		{

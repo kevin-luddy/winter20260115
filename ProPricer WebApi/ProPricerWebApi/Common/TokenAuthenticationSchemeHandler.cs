@@ -65,8 +65,8 @@ namespace APTSPropricerApi.Common
 				// If the session is valid, return success:
 				// Set the current user to the NTID that is coming in.
 				GenericIdentity identity = new(ntid);
-				var principal = new ClaimsPrincipal(identity);
-				var ticket = new AuthenticationTicket(principal, this.Scheme.Name);
+				ClaimsPrincipal principal = new(identity);
+				AuthenticationTicket ticket = new(principal, this.Scheme.Name);
 				return AuthenticateResult.Success(ticket);
 			}
 			else

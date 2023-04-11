@@ -12,6 +12,7 @@ namespace APTSPropricerApi.Controllers
 	using APTSPropricerApi.Common;
 	using APTSPropricerApi.Connection;
 	using APTSPropricerApi.DTOs;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -42,6 +43,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns the general proposal data and tasks for a given proposal
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public ProposalDto Get(int instanceId, string id)
 		{

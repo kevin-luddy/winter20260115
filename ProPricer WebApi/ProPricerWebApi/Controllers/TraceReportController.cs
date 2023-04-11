@@ -17,6 +17,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
 	using EBS.ProPricer.Model.Pricing;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using Task = EBS.ProPricer.Model.Task;
 
@@ -48,6 +49,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns the traceability report numbers for a given proposal
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public IEnumerable<TraceReportDto> Get(int instanceId, string id)
 		{

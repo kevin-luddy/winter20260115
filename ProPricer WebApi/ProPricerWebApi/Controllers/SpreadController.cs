@@ -18,6 +18,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -51,6 +52,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns a collection of the monthly spread amounts.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<SpreadDto> Get(int instanceId, double amount, string curve, string startDate, string endDate)
 		{
