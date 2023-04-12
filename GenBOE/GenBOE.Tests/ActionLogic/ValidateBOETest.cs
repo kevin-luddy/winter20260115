@@ -3371,7 +3371,7 @@ namespace GenBOE.Tests.ActionLogic
                 SkillMixRationale = "Test Skill Mix"
             };
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
 
             ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3396,57 +3396,6 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(result.Any(x => x.Contains("required")));
             Assert.IsFalse(result.Any(x => x.Contains("Monday")));
         }
-
-		/// <summary>
-		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Monday; Space Mode, no validation should happen
-		/// </summary>
-		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_PoPStartMonday_SpaceMode()
-		{
-			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			Utilities.IsSAPEnabledForSystem = true;
-
-			ValidateBOE sut = CreateSystem();
-			
-			// Create a valid MOQ Table
-			MoqTypeSelection moqType = new MoqTypeSelection()
-			{
-				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
-				TableData = new Collection<MoqTableData>()
-					{
-						new MoqTableData()
-						{
-							TableName = "Test Table",
-							ContractNumber = "1",
-							DateOfReport = DateTime.Now,
-							HistoricalProgramName = "Test Name",
-							WbsElement = "Test WBS",
-							PoPStart = new DateTime(2022, 1, 3), // Monday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "TestFilter",
-							TotalRelevantHours = 1000,
-							RepositoryName = "aa",
-							QueryType = "aa"
-						}
-					},
-				Rationale = "Test Rationale",
-				SkillMixRationale = "Test Skill Mix"
-			};
-
-			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
-			FullWorkspace ws = new FullWorkspace(workspace);
-
-			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
-
-			Assert.IsFalse(result.Any());
-
-			// Add a day so PoP start is no longer on a Monday
-			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 4);
-
-			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
-
-			Assert.IsFalse(result.Any());
-		}
 
 		/// <summary>
 		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Sunday for SAP FW; Space Mode with Weekly query type, validation should happen
@@ -3555,7 +3504,7 @@ namespace GenBOE.Tests.ActionLogic
 		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for RMS, validation should happen
 		/// </summary>
 		[TestMethod]
-        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_MstMode()
+        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_RmsMode()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
             Utilities.IsSAPEnabledForSystem = true;
@@ -3586,7 +3535,7 @@ namespace GenBOE.Tests.ActionLogic
                 SkillMixRationale = "Test Skill Mix"
             };
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
 
             ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3716,10 +3665,102 @@ namespace GenBOE.Tests.ActionLogic
         }
 
 		/// <summary>
+		/// Test ValidateTemplateMoqForTask for additional PoP date and Date of Report validation
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_AdditionalDateValidation()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeTableDataLabels labels = new MoqTypeTableDataLabels();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.MONTHLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+
+			// 'Remove' date of report to test required validation
+			moqType.TableData.First().DateOfReport = new DateTime(1, 1, 1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains(labels.DateOfReport) && x.Contains("required")));
+
+			// adjust date of report to after today to test on/before today validation
+			moqType.TableData.First().DateOfReport = DateTime.Now.AddDays(1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains($"{labels.DateOfReport} must be on or before today's date.")));
+
+			// 'Remove' start date to test required validation
+			moqType.TableData.First().DateOfReport = DateTime.Now;
+			moqType.TableData.First().PoPStart = new DateTime(1, 1, 1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains(labels.PoPStart) && x.Contains("required")));
+
+			// add start date back and 'remove' end date to test required validation
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 3);
+			moqType.TableData.First().PoPEnd = new DateTime(1, 1, 1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains(labels.PoPEnd) && x.Contains("required")));
+
+			// add end date back and adjust start date to after today (this also sets start date after end date, so test that too)
+			moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 9);
+			moqType.TableData.First().PoPStart = DateTime.Now.AddDays(1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains($"{labels.PoPStart} must be on or before today's date")));
+			Assert.IsTrue(result.Any(x => x.Contains($"{labels.PoPStart} must be on or before {labels.PoPEnd}")));
+
+			// reset start date and adjust end date to after today
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 3);
+			moqType.TableData.First().PoPEnd = DateTime.Now.AddDays(1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains($"{labels.PoPEnd} must be on or before today's date")));
+		}
+
+		/// <summary>
 		/// Test ValidateTemplateMoqForTask, specifically rules for Additional Query Field.. RMS Company
 		/// </summary>
 		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_RMS()
+		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_RmsMode()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			Utilities.IsSAPEnabledForSystem = true;
@@ -3743,16 +3784,14 @@ namespace GenBOE.Tests.ActionLogic
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "aaa",
                             TotalWbsHours = 2000,
-                            TotalRelevantHours = 1000,
-							RepositoryName = "aa",
-							QueryType = "aa"
+                            TotalRelevantHours = 1000
 						}
                     },
                 Rationale = "Test Rationale",
                 SkillMixRationale = "Test Skill Mix"
             };
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
 
             ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3778,7 +3817,7 @@ namespace GenBOE.Tests.ActionLogic
 		/// Test ValidateTemplateMoqForTask, specifically rules for Additional Query Field.. Space Company
 		/// </summary>
 		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_Space()
+		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_SpaceMode()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 			Utilities.IsSAPEnabledForSystem = true;
@@ -3794,6 +3833,8 @@ namespace GenBOE.Tests.ActionLogic
 						new MoqTableData()
 						{
 							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
 							ContractNumber = "1",
 							DateOfReport = DateTime.Now,
 							HistoricalProgramName = "Test Name",
@@ -3801,16 +3842,14 @@ namespace GenBOE.Tests.ActionLogic
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "aaa",
-							TotalRelevantHours = 1000,
-							RepositoryName = RepositoryName.SapWebi.GetDescription(),
-							QueryType = "aa"
+							TotalRelevantHours = 1000
 						}
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix"
 			};
 
-			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
 			FullWorkspace ws = new FullWorkspace(workspace);
 
 			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3842,7 +3881,7 @@ namespace GenBOE.Tests.ActionLogic
 		/// Test ValidateTemplateMoqForTask, specifically rules for Total Relevant Hours - Space Company
 		/// </summary>
 		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_Hours_Space()
+		public void BL_ValidateTemplateMoqForTask_Hours_SpaceMode()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 			Utilities.IsSAPEnabledForSystem = true;
@@ -3858,6 +3897,8 @@ namespace GenBOE.Tests.ActionLogic
 						new MoqTableData()
 						{
 							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
 							ContractNumber = "1",
 							DateOfReport = DateTime.Now,
 							HistoricalProgramName = "Test Name",
@@ -3865,16 +3906,14 @@ namespace GenBOE.Tests.ActionLogic
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "aaa",
-							TotalRelevantHours = 1000,
-							RepositoryName = RepositoryName.SapWebi.GetDescription(),
-							QueryType = "aa"
+							TotalRelevantHours = 1000
 						}
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix"
 			};
 
-			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
 			FullWorkspace ws = new FullWorkspace(workspace);
 
 			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3899,7 +3938,7 @@ namespace GenBOE.Tests.ActionLogic
 		/// Test ValidateTemplateMoqForTask, specifically rules for Total Relevant Hours - RMS
 		/// </summary>
 		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_Hours_RMS()
+		public void BL_ValidateTemplateMoqForTask_Hours_RmsMode()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			Utilities.IsSAPEnabledForSystem = true;
@@ -3932,7 +3971,7 @@ namespace GenBOE.Tests.ActionLogic
 				SkillMixRationale = "Test Skill Mix"
 			};
 
-			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
 			FullWorkspace ws = new FullWorkspace(workspace);
 
 			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
