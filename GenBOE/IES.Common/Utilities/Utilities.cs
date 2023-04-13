@@ -340,6 +340,24 @@ namespace IES.Common
             return ConfigurationUtilities.GetAppSetting("HelpdeskEmailAddress");
         }
 
+		/// <summary>
+		/// Gets Service Central Support Link for RMS
+		/// </summary>
+		/// <returns>Service Central Link (RMS)</returns>
+		public static string ServiceCentralLinkMST()
+		{
+			return ConfigurationUtilities.GetAppSetting("ServiceCentralLinkMST");
+		}
+
+		/// <summary>
+		/// Gets Service Central Support Link for RMS
+		/// </summary>
+		/// <returns>Service Central Link (Space)</returns>
+		public static string ServiceCentralLinkSpaceSystems()
+		{
+			return ConfigurationUtilities.GetAppSetting("ServiceCentralLinkSpaceSystems");
+		}
+
         /// <summary>
         /// Gets PPR&D Disclosure Log URL from web.config
         /// </summary>
@@ -677,5 +695,23 @@ namespace IES.Common
 				(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ||
 				workspaceCreationDate >= SAPSpaceStartDate);
 		}
-    }
+
+		/// <summary>
+		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
+		/// to not point at unclassified locations that are not accessible.
+		/// </summary>
+		/// <returns>Bool whether the links should be shut off or not</returns>
+		public static bool DisableExternalHelpLinksForClassifiedInstallations()
+		{
+			bool result = false;
+
+			if (!string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall"))
+				&& ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall").ToLower().Equals("true"))
+			{
+				result = true;
+			}
+
+			return result;
+		}
+	}
 }

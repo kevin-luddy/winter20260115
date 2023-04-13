@@ -1714,7 +1714,21 @@ namespace GenBOE.Web.Controllers
                 this.log.Error(e);
                 if (ws.IsProjectMapWorkspace)
                 {
-                    toReturn = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", Utilities.HelpdeskEmailAddress()));
+					string supportLink = string.Empty;
+
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+					{
+						supportLink = "<a href=\"" + Utilities.ServiceCentralLinkMST() + "\">" + "Service Central RMS Ticket</a>";
+					}
+
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					{
+						// Since Space does not have link yet the next line of code is replaced with plain text from config file
+						//supportLink = "<a href=\"" + Utilities.ServiceCentralLinkSpaceSystems() + "\">" + "Service Central Space Ticket</a>";
+						supportLink = Utilities.ServiceCentralLinkSpaceSystems();
+					}
+
+					toReturn = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", supportLink));
                 }
                 else
                 {

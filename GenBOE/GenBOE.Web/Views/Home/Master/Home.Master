@@ -19,7 +19,7 @@
         var prodGenBoeUrl_Global = "<%: SiteMasterUtilities.ProductionUrl() %>";
 
         // Do we disable external links?
-        var disableLinks_Global = "<%: SiteMasterUtilities.DisableExternalHelpLinksForClassifiedInstallations() %>" == "True";
+        var disableLinks_Global = "<%: Utilities.DisableExternalHelpLinksForClassifiedInstallations() %>" == "True";
     </script>
 
     <title>
