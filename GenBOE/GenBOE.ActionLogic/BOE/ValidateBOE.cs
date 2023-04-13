@@ -713,21 +713,21 @@ namespace GenBOE.ActionLogic.WBS.BOE
 									ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
 								}
 
-                                if (row.PoPStart.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
-                                if (row.PoPStart.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
-                                if (row.PoPEnd.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} is required."); }
-                                if (row.PoPEnd.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
+                                if (!row.PoPStart.HasValue || row.PoPStart?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
+                                if (row.PoPStart?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
+                                if (!row.PoPEnd.HasValue || row.PoPEnd?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} is required."); }
+                                if (row.PoPEnd?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
 
-                                if (row.PoPEnd.Date < row.PoPStart.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
+                                if (row.PoPEnd?.Date < row.PoPStart?.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
                                 
                                 if (Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                                 {
-                                    if (row.PoPStart.Year > 1 && row.PoPStart.DayOfWeek != DayOfWeek.Monday)
+                                    if (row.PoPStart?.Year > 1 && row.PoPStart?.DayOfWeek != DayOfWeek.Monday)
                                     {
                                         errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on a Monday.");
                                     }
 
-									if (row.PoPEnd.Year > 1 && row.PoPEnd.DayOfWeek != DayOfWeek.Sunday)
+									if (row.PoPEnd?.Year > 1 && row.PoPEnd?.DayOfWeek != DayOfWeek.Sunday)
 									{
 										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on a Sunday.");
 									}
@@ -741,12 +741,12 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                     row.QueryType == MoqTableData.WEEKLY)
 								{
 									// SAP is enabled, only allow sundays to be selected
-									if (row.PoPStart.Year > 1 && row.PoPStart.DayOfWeek != DayOfWeek.Sunday)
+									if (row.PoPStart?.Year > 1 && row.PoPStart?.DayOfWeek != DayOfWeek.Sunday)
 									{
 										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on a Sunday.");
 									}
 
-									if (row.PoPEnd.Year > 1 && row.PoPEnd.DayOfWeek != DayOfWeek.Sunday)
+									if (row.PoPEnd?.Year > 1 && row.PoPEnd?.DayOfWeek != DayOfWeek.Sunday)
 									{
 										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on a Sunday.");
 									}

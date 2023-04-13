@@ -246,9 +246,14 @@ namespace IES.Common
 		/// <param name="startDate">Start Date</param>
 		/// <param name="endDate">End Date</param>
 		/// <returns>Month difference</returns>
-		public static decimal MonthDifferenceDecimal(this DateTime startDate, DateTime endDate)
+		public static decimal MonthDifferenceDecimal(this DateTime? startDate, DateTime? endDate)
         {
-            return (decimal)(endDate.Subtract(startDate).Days / 30M);
+            if (startDate == null || endDate == null)
+            {
+                return 0;
+            }
+
+            return (decimal)(endDate.Value.Subtract(startDate.Value).Days / 30M);
         }
 
 		#endregion Date/Time methods

@@ -290,7 +290,7 @@ namespace GenBOE.ActionLogic.IO.Import
             }
 
             // Validate PoP date range
-            if(toReturn.PoPStart != DateTime.MinValue && toReturn.PoPEnd != DateTime.MinValue && toReturn.PoPEnd < toReturn.PoPStart)
+            if(toReturn.PoPStart.HasValue && toReturn.PoPStart != DateTime.MinValue && toReturn.PoPEnd.HasValue && toReturn.PoPEnd != DateTime.MinValue && toReturn.PoPEnd < toReturn.PoPStart)
             {
                 toReturn.ImportTypes.Add(MoqTableImportType.InvalidPopRange);
             }

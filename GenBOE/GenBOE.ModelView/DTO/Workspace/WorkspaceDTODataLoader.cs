@@ -724,7 +724,8 @@ namespace GenBOE.DataBridge.DTO
 						// Save the workspace identification and output format template
 						DateTime? spaceSAPCutoff = null;
 
-						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && 
+							Utilities.IsSAPEnabledForSystem)
 						{
 							spaceSAPCutoff = Utilities.SAPSpaceStartDate;
 						}
