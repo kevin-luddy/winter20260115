@@ -224,3 +224,4 @@ project.lock.json
 # RDSB Performance
 rdsb.performance.csv
 /ProPricer WebApi/ProPricerWebApi/appsettings.Local.json
+/PTM.ReportingServices/genTracReportingServices/genTracReportingServices.rptproj.rsuser
