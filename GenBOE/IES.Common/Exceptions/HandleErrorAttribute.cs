@@ -11,11 +11,9 @@ namespace IES.Common.Exceptions
     using System.Data.Entity.Core;
     using System.Data.SqlClient;
     using System.Net;
-	using System.Text;
 	using System.Web.Mvc;
     using IES.Common;
 	using IES.Common.classes;
-	using Microsoft.Extensions.Primitives;
 
 	/// <summary>
 	/// Handle Error Attribute, overridden to log errors to a file.
