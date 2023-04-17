@@ -45,7 +45,7 @@ namespace IES.Common.Exceptions
 
 				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
 				{
-					supportLink = "<a href=\"" + Utilities.ServiceCentralLinkMST() + "\">" + "Service Central RMS Ticket</a>";
+					supportLink = "<a href=\"" + Utilities.ServiceCentralLinkMST() + "\" target=\"_blank\">" + "Service Central RMS Ticket</a>";
 				}
 
 				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
