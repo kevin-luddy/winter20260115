@@ -692,12 +692,6 @@ namespace GenBOE.Web.Controllers
             _ = modelView.TaskElementData ?? throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
 			_ = modelView.LaborTypesData ?? throw new ArgumentNullException("modelView", "LaborTypesData is null inside modelView");
 
-			int i = 0;
-			if (i == 0)
-			{
-				throw new GeneralAppException("Test");
-			}
-
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, modelView.TaskElementData.BOEID);
 

@@ -51,7 +51,7 @@ namespace IES.Common.Exceptions
 				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 				{
 					// Since Space does not have link yet the next line of code is replaced with plain text from config file
-					//supportLink = "<a href=\"" + Utilities.ServiceCentralLinkSpaceSystems() + "\">" + "Service Central Space Ticket</a>";
+					//supportLink = "<a href=\"" + Utilities.ServiceCentralLinkSpaceSystems() + "\" target=\"_blank\">" + "Service Central Space Ticket</a>";
 					supportLink = Utilities.ServiceCentralLinkSpaceSystems();
 				}
 
