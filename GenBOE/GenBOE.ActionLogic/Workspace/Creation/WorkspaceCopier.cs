@@ -1373,8 +1373,8 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 						newTable.PoPStartWeek = null;
 						newTable.PoPEndYear = null;
 						newTable.PoPEndWeek = null;
-						newTable.PoPStart = DateTime.MaxValue;
-						newTable.PoPEnd = DateTime.MaxValue;
+                        newTable.PoPStart = null;
+                        newTable.PoPEnd = null;
 					}
 
 					newMoqType.TableData.Add(newTable);

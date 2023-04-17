@@ -268,8 +268,8 @@ namespace GenBOE.Tests.Common
         public void MonthDifferenceDecimalTest()
         {
             // Difference of 30 days returns 1 month
-            DateTime start = DateTime.Now;
-            DateTime end = DateTime.Now.AddDays(30);
+            DateTime? start = DateTime.Now;
+            DateTime? end = DateTime.Now.AddDays(30);
             decimal result = start.MonthDifferenceDecimal(end);
             Assert.AreEqual(1M, result);
 
@@ -287,6 +287,15 @@ namespace GenBOE.Tests.Common
 			end = DateTime.Now.AddDays(50);
 			result = start.MonthDifferenceDecimal(end);
 			Assert.AreEqual(5/3M, result);
+
+            start = null;
+			result = start.MonthDifferenceDecimal(end);
+			Assert.AreEqual(0, result);
+
+            end = null;
+			start = DateTime.Now;
+			result = start.MonthDifferenceDecimal(end);
+			Assert.AreEqual(0, result);
 		}
 
         [TestMethod]

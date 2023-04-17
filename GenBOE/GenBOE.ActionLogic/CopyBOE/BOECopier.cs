@@ -814,13 +814,13 @@ namespace GenBOE.ActionLogic.CopyBOE
                         Utilities.IsSAPEnabledForSystem && (Utilities.ShowSAPForWorkspace(originalWorkspaceCreationDate) != Utilities.ShowSAPForWorkspace(workspaceCreationDate)) &&
                         (newTable.QueryType == MoqTableData.WEEKLY || newTable.QueryType == MoqTableData.WEEKLY_DATETIME))
 					{
-                        newTable.QueryType = (newTable.QueryType == MoqTableData.WEEKLY) ? MoqTableData.WEEKLY_DATETIME : MoqTableData.WEEKLY;
+                        newTable.QueryType = Utilities.ShowSAPForWorkspace(workspaceCreationDate) ? MoqTableData.WEEKLY_DATETIME : MoqTableData.WEEKLY;
 						newTable.PoPStartYear = null;
 						newTable.PoPStartWeek = null;
 						newTable.PoPEndYear = null;
 						newTable.PoPEndWeek = null;
-						newTable.PoPStart = DateTime.MaxValue;
-						newTable.PoPEnd = DateTime.MaxValue;
+                        newTable.PoPStart = null;
+                        newTable.PoPEnd = null;
 					}
 
 					newMoqType.TableData.Add(newTable); 
