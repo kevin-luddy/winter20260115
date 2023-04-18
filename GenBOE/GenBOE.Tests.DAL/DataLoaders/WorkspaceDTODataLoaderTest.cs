@@ -933,10 +933,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 ntid = user.ETIuser.NTID;
 			}
 
-			ICollection<(int id, string url, string name)> result = sut.GetWorkspaceDataByNtidForNlf(ntid);
+			ICollection<NlfWorkspaceDataDTO> result = sut.GetWorkspaceDataByNtidForNlf(ntid);
 
             Assert.IsTrue(result.Any());
-            Assert.IsTrue(result.Any(x => x.id == workspace.WorkspaceID && x.url == workspace.WorkspaceShortName && x.name == workspace.WorkspaceName));
+            Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID && x.WorkspaceUrl == workspace.WorkspaceShortName && x.WorkspaceName == workspace.WorkspaceName));
 		}
 
 		/// <summary>
@@ -957,10 +957,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				ntid = user.ETIuser.NTID;
 			}
 
-			ICollection<(int id, string url, string name)> result = sut.GetWorkspaceDataByNtidForNlf(ntid);
+			ICollection<NlfWorkspaceDataDTO> result = sut.GetWorkspaceDataByNtidForNlf(ntid);
 
 			Assert.IsTrue(result.Any());
-			Assert.IsTrue(result.Any(x => x.id == workspace.WorkspaceID && x.url == workspace.WorkspaceShortName && x.name == workspace.WorkspaceName));
+			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID && x.WorkspaceUrl == workspace.WorkspaceShortName && x.WorkspaceName == workspace.WorkspaceName));
 		}
 
 		/// <summary>
@@ -981,10 +981,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				workspaceCount = gbe.Workspaces.Count(x => x.IsDeleted == false);
 			}
 
-			ICollection<(int id, string url, string name)> result = sut.GetAllWorkspaceDataForNlf();
+			ICollection<NlfWorkspaceDataDTO> result = sut.GetAllWorkspaceDataForNlf();
 
 			Assert.IsTrue(result.Any());
-			Assert.IsTrue(result.Any(x => x.id == workspace.WorkspaceID && x.url == workspace.WorkspaceShortName && x.name == workspace.WorkspaceName));
+			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID && x.WorkspaceUrl == workspace.WorkspaceShortName && x.WorkspaceName == workspace.WorkspaceName));
             Assert.AreEqual(workspaceCount, result.Count);
 		}
 	}

@@ -568,7 +568,7 @@ namespace GenBOE.Web.Controllers
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
 				bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
 
-				ICollection<(int id, string url, string name)> boes = new Collection<(int id, string url, string name)>();
+				ICollection<NlfWorkspaceDataDTO> boes = new Collection<NlfWorkspaceDataDTO>();
 
 				if (isSystemAdmin)
 				{
@@ -581,12 +581,54 @@ namespace GenBOE.Web.Controllers
 					boes = loader.GetWorkspaceDataByNtidForNlf(ntid);
 				}
 
-				result.Data = boes.Select(x => new NlfWorkspaceData() { WorkspaceId = x.id, WorkspaceUrl = x.url, WorkspaceName = x.name }).ToCollection();
+				result.Data = (ICollection<NlfWorkspaceData>)boes.ToCollection();
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown Error occurred returning NLF Workspace data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get workspaces inner data for user (id via token) for use in NLF
+		/// </summary>
+		/// <returns>List of Workspace Inner Data for user for use in NLF</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<NlfWorkspaceInnerData> GetNlfWorkspacesInnerDataForUser()
+		{
+			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// check if user is system admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
+
+				ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
+
+				if (isSystemAdmin)
+				{
+					// get all workspaces
+					boes = loader.GetAllWorkspaceInnerDataForNlf();
+				}
+				else
+				{
+					// get workspaces where user is WS Admin or GSCO
+					boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid);
+				}
+
+				result.Data = (ICollection<NlfWorkspaceInnerData>)boes.ToCollection();
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning NLF Workspace inner data: {ex.Message}");
 			}
 
 			return result;

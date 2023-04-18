@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
 	using System.Collections.ObjectModel;
 	using System.Data.SqlClient;
 	using System.Linq;
+	using System.Security.Policy;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using IES.Common;
@@ -539,9 +540,9 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="ntid">user NTID</param>
 		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
 		[DbQuery]
-		public ICollection<(int id, string url, string name)> GetWorkspaceDataByNtidForNlf(string ntid)
+		public ICollection<NlfWorkspaceDataDTO> GetWorkspaceDataByNtidForNlf(string ntid)
 		{
-			ICollection<(int id, string url, string name)> result;
+			ICollection<NlfWorkspaceDataDTO> result;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
@@ -553,8 +554,12 @@ namespace GenBOE.DataBridge.DTO
 							  where eu.NTID == ntid
 								&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
 								&& w.IsDeleted == false
-							  select new {id = w.WorkspaceID, url = w.WorkspaceShortName, name = w.WorkspaceName}).ToList()
-							  .Select(x => (id: x.id, url: x.url, name: x.name)).ToList();
+							  select new NlfWorkspaceDataDTO 
+							  {
+								  WorkspaceId = w.WorkspaceID, 
+								  WorkspaceUrl = w.WorkspaceShortName, 
+								  WorkspaceName = w.WorkspaceName
+							  }).ToList();
 				}
 			}
 
@@ -566,9 +571,9 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <returns>Collection of Workspace IDs, URLs, and Names</returns>
 		[DbQuery]
-		public ICollection<(int id, string url, string name)> GetAllWorkspaceDataForNlf()
+		public ICollection<NlfWorkspaceDataDTO> GetAllWorkspaceDataForNlf()
 		{
-			ICollection<(int id, string url, string name)> result;
+			ICollection<NlfWorkspaceDataDTO> result;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
@@ -576,8 +581,80 @@ namespace GenBOE.DataBridge.DTO
 				{
 					result = (from w in gbe.Workspaces
 							  where w.IsDeleted == false
-							  select new { id = w.WorkspaceID, url = w.WorkspaceShortName, name = w.WorkspaceName }).ToList()
-							  .Select(x => (id: x.id, url: x.url, name: x.name)).ToList();
+							  select new NlfWorkspaceDataDTO 
+							  { 
+								  WorkspaceId = w.WorkspaceID, 
+								  WorkspaceUrl = w.WorkspaceShortName, 
+								  WorkspaceName = w.WorkspaceName 
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get Workspace data by NTID to be used in NLF home grid
+		/// </summary>
+		/// <param name="ntid">user NTID</param>
+		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
+		[DbQuery]
+		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid)
+		{
+			ICollection<NlfWorkspaceInnerDataDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
+							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
+							  where eu.NTID == ntid
+								&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
+								&& w.IsDeleted == false
+							  select new NlfWorkspaceInnerDataDTO
+							  {
+								  WorkspaceId = w.WorkspaceID,
+								  WorkspaceUrl = w.WorkspaceShortName,
+								  WorkspaceName = w.WorkspaceName,
+								  LineOfBusiness = w.LineOfBusiness,
+								  PTMTrackingNumber = w.TrackingNumber,
+								  WorkspaceCreationDate = w.WorkspaceCreationDate,
+								  EstimatingLead = eu.DisplayName
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get all Workspace Inner Data for a System Admin to be used in the NLF Home Grid
+		/// </summary>
+		/// <returns>Collection of Workspace Inner Data</returns>
+		[DbQuery]
+		public ICollection<NlfWorkspaceInnerDataDTO> GetAllWorkspaceInnerDataForNlf()
+		{
+			ICollection<NlfWorkspaceInnerDataDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  join eti in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eti.ETIUserID
+							  where w.IsDeleted == false
+							  select new NlfWorkspaceInnerDataDTO
+							  {
+								  WorkspaceId = w.WorkspaceID,
+								  WorkspaceUrl = w.WorkspaceShortName,
+								  WorkspaceName = w.WorkspaceName,
+								  LineOfBusiness = w.LineOfBusiness,
+								  PTMTrackingNumber = w.TrackingNumber,
+								  WorkspaceCreationDate = w.WorkspaceCreationDate,
+								  EstimatingLead = eti.DisplayName
+							  }).ToList();
 				}
 			}
 
