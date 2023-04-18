@@ -41,19 +41,7 @@ namespace IES.Common.Exceptions
             {
 				// Separate out the ticket link since for classified it will not exist
 				string helpDeskLink = "If the error persists, please open a ticket with the Helpdesk at: ";
-				string supportLink = string.Empty;
-
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-				{
-					supportLink = "<a href=\"" + Utilities.ServiceCentralLinkMST() + "\" target=\"_blank\">" + "Service Central RMS Ticket</a>";
-				}
-
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-				{
-					// Since Space does not have link yet the next line of code is replaced with plain text from config file
-					//supportLink = "<a href=\"" + Utilities.ServiceCentralLinkSpaceSystems() + "\" target=\"_blank\">" + "Service Central Space Ticket</a>";
-					supportLink = Utilities.ServiceCentralLinkSpaceSystems();
-				}
+				string supportLink = Utilities.ServiceCentralLink();
 
 				helpDeskLink = helpDeskLink + supportLink;
 

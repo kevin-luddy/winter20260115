@@ -344,18 +344,21 @@ namespace IES.Common
 		/// Gets Service Central Support Link for RMS
 		/// </summary>
 		/// <returns>Service Central Link (RMS)</returns>
-		public static string ServiceCentralLinkMST()
+		public static string ServiceCentralLink()
 		{
-			return ConfigurationUtilities.GetAppSetting("ServiceCentralLinkMST");
-		}
+			string supportLink = string.Empty;
 
-		/// <summary>
-		/// Gets Service Central Support Link for RMS
-		/// </summary>
-		/// <returns>Service Central Link (Space)</returns>
-		public static string ServiceCentralLinkSpaceSystems()
-		{
-			return ConfigurationUtilities.GetAppSetting("ServiceCentralLinkSpaceSystems");
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				supportLink = "<a href=\"" + ConfigurationUtilities.GetAppSetting("ServiceCentralLinkMST") + "\" target=\"_blank\">" + "Service Central RMS Ticket</a>";
+			} else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				// Since Space does not have link yet the next line of code is replaced with plain text from config file
+				//supportLink = "<a href=\"" + Utilities.ServiceCentralLinkSpaceSystems() + "\" target=\"_blank\">" + "Service Central Space Ticket</a>";
+				supportLink = ConfigurationUtilities.GetAppSetting("ServiceCentralLinkSpaceSystems");
+			}
+
+			return supportLink;
 		}
 
         /// <summary>

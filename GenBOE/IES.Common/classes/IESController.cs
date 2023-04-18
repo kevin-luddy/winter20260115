@@ -225,19 +225,7 @@ namespace IES.Common
             }
             else
             {
-				string supportLink = string.Empty;
-
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-				{
-					supportLink = "<a href=\"" + Utilities.ServiceCentralLinkMST() + "\">" + "Service Central RMS Ticket</a>";
-				}
-
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-				{
-					// Since Space does not have link yet the next line of code is replaced with plain text from config file
-					//supportLink = "<a href=\"" + Utilities.ServiceCentralLinkSpaceSystems() + "\">" + "Service Central Space Ticket</a>";
-					supportLink = Utilities.ServiceCentralLinkSpaceSystems();
-				}
+				string supportLink = Utilities.ServiceCentralLink();
 
 				return this.CreateTextFileWithErrorMessage(
                     $"An error has occurred.  This might be the result of invalid data.  If the data is valid, and the error persists, please create a ticket with IES Helpdesk at {supportLink}.");

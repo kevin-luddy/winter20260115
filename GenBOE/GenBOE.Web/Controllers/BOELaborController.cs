@@ -688,8 +688,8 @@ namespace GenBOE.Web.Controllers
         /// <returns></returns>
         public ActionResult SaveTaskDataModel(string workspace, LaborTaskDataModelView modelView, bool isLocked = false)
         {
-            _ = modelView ?? throw new ArgumentNullException(nameof(modelView));
-            _ = modelView.TaskElementData ?? throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
+			_ = modelView ?? throw new ArgumentNullException(nameof(modelView));
+			_ = modelView.TaskElementData ?? throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
 			_ = modelView.LaborTypesData ?? throw new ArgumentNullException("modelView", "LaborTypesData is null inside modelView");
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
