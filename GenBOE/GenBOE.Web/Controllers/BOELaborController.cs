@@ -688,10 +688,11 @@ namespace GenBOE.Web.Controllers
         /// <returns></returns>
         public ActionResult SaveTaskDataModel(string workspace, LaborTaskDataModelView modelView, bool isLocked = false)
         {
-            _ = modelView ?? throw new ArgumentNullException(nameof(modelView));
-            _ = modelView.TaskElementData ?? throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
+			_ = modelView ?? throw new ArgumentNullException(nameof(modelView));
+			_ = modelView.TaskElementData ?? throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
+			_ = modelView.LaborTypesData ?? throw new ArgumentNullException("modelView", "LaborTypesData is null inside modelView");
 
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, modelView.TaskElementData.BOEID);
 
             ICollection<ValidationMessage> validationErrors = isLocked ? new Collection<ValidationMessage>() : this._BoeLaborControllerLogic.ValidateLaborTaskDataWithDataModification(ws, modelView);
@@ -716,7 +717,7 @@ namespace GenBOE.Web.Controllers
                 IList<ValidationMessage> mvcPreScrubValidationErrors = new List<ValidationMessage>(validationErrors.Concat(mvcValidationErrors));
                 IList<ValidationMessage> mvcScrubbedValidationErrors = new List<ValidationMessage>();
 
-                LaborTypeDataModelView[] laborTypesArray = modelView.LaborTypesData.ToArray();
+				LaborTypeDataModelView[] laborTypesArray = modelView.LaborTypesData.ToArray();
 
                 // update errors to reference the correct form
                 foreach (ValidationMessage validationError in mvcPreScrubValidationErrors)

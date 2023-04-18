@@ -2199,7 +2199,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>Fully populate BOESearchResult view model.</returns>
         private BOESearchResult GetBOESearchResult(FullBoe boe, FullWorkspace ws)
         {
-            int currentWorkspaceID = ws.Id;
+			int currentWorkspaceID = ws.Id;
             WbsDTO wbs = boe.Wbs;
             string wbsNum = (wbs == null ? CommonConstants.Unassigned_WBS_Display_Text : wbs.WbsNumber);
             string wbsTitle = (wbs == null ? CommonConstants.Unassigned_WBS_Display_Text : wbs.WbsTitle);

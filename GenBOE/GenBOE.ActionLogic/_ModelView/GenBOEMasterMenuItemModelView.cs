@@ -378,7 +378,7 @@ namespace GenBOE.ActionLogic.ModelView
         /// <param name="menuItems"></param>
         private static void AppendHelpMenuItems(ICollection<GenBOEMasterMenuItemModelView> menuItems)
         {
-            if (ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall").ToLower().Equals("false"))
+            if (!Utilities.DisableExternalHelpLinksForClassifiedInstallations())
             {
                 if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                 {

@@ -340,6 +340,27 @@ namespace IES.Common
             return ConfigurationUtilities.GetAppSetting("HelpdeskEmailAddress");
         }
 
+		/// <summary>
+		/// Gets Service Central Support Link for RMS
+		/// </summary>
+		/// <returns>Service Central Link (RMS)</returns>
+		public static string ServiceCentralLink()
+		{
+			string supportLink = string.Empty;
+
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				supportLink = "<a href=\"" + ConfigurationUtilities.GetAppSetting("ServiceCentralLinkMST") + "\" target=\"_blank\">" + "Service Central RMS Ticket</a>";
+			} else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				// Since Space does not have link yet the next line of code is replaced with plain text from config file
+				//supportLink = "<a href=\"" + Utilities.ServiceCentralLinkSpaceSystems() + "\" target=\"_blank\">" + "Service Central Space Ticket</a>";
+				supportLink = ConfigurationUtilities.GetAppSetting("ServiceCentralLinkSpaceSystems");
+			}
+
+			return supportLink;
+		}
+
         /// <summary>
         /// Gets PPR&D Disclosure Log URL from web.config
         /// </summary>
@@ -677,5 +698,23 @@ namespace IES.Common
 				(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ||
 				workspaceCreationDate >= SAPSpaceStartDate);
 		}
-    }
+
+		/// <summary>
+		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
+		/// to not point at unclassified locations that are not accessible.
+		/// </summary>
+		/// <returns>Bool whether the links should be shut off or not</returns>
+		public static bool DisableExternalHelpLinksForClassifiedInstallations()
+		{
+			bool result = false;
+
+			if (!string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall"))
+				&& ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall").ToLower().Equals("true"))
+			{
+				result = true;
+			}
+
+			return result;
+		}
+	}
 }
