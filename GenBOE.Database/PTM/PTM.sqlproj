@@ -84,6 +84,7 @@
     <Folder Include="Release Scripts\Release 2022.27" />
     <Folder Include="Release Scripts\Release 2022.34" />
     <Folder Include="Release Scripts\Release 2023.3" />
+    <Folder Include="Release Scripts\Release 2023.12" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -165,6 +166,9 @@
     <Build Include="_Full Script Files For Specific Versions\PTM - 2023.3 Generated On 3_1_2023.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.27 Generated On 7_27_2022.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.34 Generated On 10_20_2022.sql" />
+    <Build Include="Object Scripts\Stored Procedures\CopyPARChecklist.sql" />
+    <Build Include="Object Scripts\Stored Procedures\CopyPPRChecklist.sql" />
+    <Build Include="Release Scripts\Release 2023.12\Release 2023.12.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
