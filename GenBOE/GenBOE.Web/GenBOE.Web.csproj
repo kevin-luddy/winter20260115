@@ -247,6 +247,7 @@
     <Compile Include="ModelView\ErrorModelView.cs" />
     <Compile Include="ModelView\ImportLaborSpreadModelView.cs" />
     <Compile Include="ModelView\ManageOffloadRatesGridModelView.cs" />
+    <Compile Include="ModelView\MPBoeData.cs" />
     <Compile Include="ModelView\MyInfoModelView.cs" />
     <Compile Include="ModelView\NlfWorkspaceData.cs" />
     <Compile Include="ModelView\PagedSystemOffloadRateModelView.cs" />

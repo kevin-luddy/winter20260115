@@ -584,6 +584,35 @@ namespace GenBOE.DataBridge.DTO
 			return result;
 		}
 
+		/// <summary>
+		/// Get Material PBoe Data for a given Workspace
+		/// </summary>
+		/// <param name="workspaceID"></param>
+		/// <returns>Collection of Material PBoe</returns>
+		[DbQuery]
+		public ICollection<MPBoeDataDTO> GetMaterialPBoeForWorkspace(int workspaceID)
+		{
+			ICollection<MPBoeDataDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log)) 
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  where w.WorkspaceID == workspaceID
+							  select new MPBoeDataDTO
+							  {
+								  PTMProposalTitle = w.ProposalTitle,
+								  RFPNumber = w.RFPNumber,
+								  CLINNumbers = w.CLINs.Select(x => x.DisplayedCLINNumber).ToList(),
+								  WBSNumbers = w.WorkBreakdownStructures.Select(x => x.DisplayedWBSNumber).ToList()
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
 		#endregion
 
 		#region Restores and Copies
