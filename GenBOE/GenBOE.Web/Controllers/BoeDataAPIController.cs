@@ -616,6 +616,7 @@ namespace GenBOE.Web.Controllers
 				if (isAllowed)
 				{
 					result.Data = (ICollection<MPBoeData>)loader.GetMaterialPBoeForWorkspace(workspaceID);
+					result.IsSuccessful = true;
 				}
 				else
 				{
