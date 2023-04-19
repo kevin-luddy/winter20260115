@@ -582,6 +582,7 @@ namespace GenBOE.Web.Controllers
 				}
 
 				result.Data = (ICollection<NlfWorkspaceData>)boes.ToCollection();
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
@@ -624,6 +625,7 @@ namespace GenBOE.Web.Controllers
 				}
 
 				result.Data = (ICollection<NlfWorkspaceInnerData>)boes.ToCollection();
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
