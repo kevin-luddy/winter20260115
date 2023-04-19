@@ -582,6 +582,7 @@ namespace GenBOE.Web.Controllers
 				}
 
 				result.Data = boes.Select(x => new NlfWorkspaceData() { WorkspaceId = x.id, WorkspaceUrl = x.url, WorkspaceName = x.name }).ToCollection();
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
