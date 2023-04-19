@@ -83,7 +83,7 @@ namespace GenBOE.DataBridge.DTO
         /// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         [DbQuery]
-		ICollection<(int id, string url, string name)> GetWorkspaceDataByNtidForNlf(string ntid);
+		ICollection<NlfWorkspaceDataDTO> GetWorkspaceDataByNtidForNlf(string ntid);
 
         /// <summary>
         /// Get all Workspace data for a system admin to be used in NLF home grid
@@ -91,7 +91,26 @@ namespace GenBOE.DataBridge.DTO
         /// <returns>Collection of Workspace IDs, URLs, and Names</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         [DbQuery]
-        ICollection<(int id, string url, string name)> GetAllWorkspaceDataForNlf();
+        ICollection<NlfWorkspaceDataDTO> GetAllWorkspaceDataForNlf();
+
+		/// <summary>
+		/// Get Workspace inner data by NTID to be used in NLF home grid
+		/// This is basically an extension method of 'GetWorkspaceDataByNtidForNlf'
+		/// </summary>
+		/// <param name="ntid">user NTID</param>
+		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[DbQuery]
+		ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid);
+
+		/// <summary>
+		/// Get all Workspace inner data for a system admin to be used in NLF home grid
+		/// This is basically an extention method of 'GetAllWorkspaceDataForNlf'
+		/// </summary>
+		/// <returns>Collection of NlfWorkspaceInnerData</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[DbQuery]
+		ICollection<NlfWorkspaceInnerDataDTO> GetAllWorkspaceInnerDataForNlf();
 
 		/// <summary>
 		/// Get Material PBoe Data for a given Workspace

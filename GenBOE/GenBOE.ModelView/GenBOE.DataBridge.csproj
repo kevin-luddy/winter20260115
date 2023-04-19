@@ -155,6 +155,8 @@
     <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelDestinationDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelOriginDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelResourceDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\NlfWorkspaceDataDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\NlfWorkspaceInnerDataDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OffloadRatesDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OrdinaryVariableDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OtherDirectCostSpread.cs" />
