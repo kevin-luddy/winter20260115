@@ -380,7 +380,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // If the external links are disabled, we need to remove these from the menu, to make the page look right
-            if (SiteMasterUtilities.DisableExternalHelpLinksForClassifiedInstallations())
+            if (Utilities.DisableExternalHelpLinksForClassifiedInstallations())
             {
                 // ToList makes a copy of this, so we can iterate through it
                 foreach (GenBOEMasterMenuItemModelView item in MenuItems.ToList())

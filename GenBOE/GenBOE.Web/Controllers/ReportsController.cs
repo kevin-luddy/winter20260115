@@ -1714,7 +1714,9 @@ namespace GenBOE.Web.Controllers
                 this.log.Error(e);
                 if (ws.IsProjectMapWorkspace)
                 {
-                    toReturn = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", Utilities.HelpdeskEmailAddress()));
+					string supportLink = Utilities.ServiceCentralLink();
+
+					toReturn = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", supportLink));
                 }
                 else
                 {
