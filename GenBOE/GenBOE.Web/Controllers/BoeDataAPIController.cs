@@ -655,8 +655,6 @@ namespace GenBOE.Web.Controllers
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
 				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
 
-				
-
 				if (isAllowed)
 				{
 					result.Data = (ICollection<MPBoeData>)loader.GetMaterialPBoeForWorkspace(workspaceID);
