@@ -20,8 +20,8 @@
      <div class="error" style="word-spacing:normal">
 
         An error has occurred. Please try your request again. If the problem persists, 
-        please contact the GenBOE Helpdesk. Sorry for the inconvenience. 
-       <p> Email: <%: Utilities.HelpdeskEmailAddress() %></p>
+        please create a ticket with Service Central. Sorry for the inconvenience. 
+       <p> Link: <%: Utilities.ServiceCentralLink() %></p>
     <br />
     <br />
     <br />
