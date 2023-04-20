@@ -653,9 +653,9 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin
-													|| x.AuthorizedRole == Role.WorkspaceAdmin
-													|| x.AuthorizedRole == Role.SubcontractAdmin);
+				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+
+				
 
 				if (isAllowed)
 				{
