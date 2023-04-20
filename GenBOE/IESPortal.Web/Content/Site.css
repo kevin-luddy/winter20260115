@@ -881,3 +881,8 @@ div.action-buttons {
     background-image: url(/Content/images/logo_ACV.jpg);
     background-size: cover;
 }
+
+.nlfLogo {
+    background-image: url(/Content/images/logo_NLF.png);
+    background-size: cover;
+}
