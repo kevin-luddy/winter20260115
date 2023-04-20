@@ -581,7 +581,13 @@ namespace GenBOE.Web.Controllers
 					boes = loader.GetWorkspaceDataByNtidForNlf(ntid);
 				}
 
-				result.Data = (ICollection<NlfWorkspaceData>)boes.ToCollection();
+				result.Data = boes.Select<NlfWorkspaceDataDTO, NlfWorkspaceData>(x => new NlfWorkspaceData() 
+				{ 
+					WorkspaceId = x.WorkspaceId, 
+					WorkspaceUrl = x.WorkspaceUrl, 
+					WorkspaceName = x.WorkspaceName 
+				}).ToCollection();
+
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
@@ -624,7 +630,16 @@ namespace GenBOE.Web.Controllers
 					boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid);
 				}
 
-				result.Data = (ICollection<NlfWorkspaceInnerData>)boes.ToCollection();
+				result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
+				{
+					WorkspaceId = x.WorkspaceId,
+					WorkspaceUrl = x.WorkspaceUrl,
+					WorkspaceName = x.WorkspaceName,
+					WorkspaceCreationDate = x.WorkspaceCreationDate,
+					PTMTrackingNumber = x.PTMTrackingNumber,
+					EstimatingLead = x.EstimatingLead,
+					LineOfBusiness = x.LineOfBusiness,
+				}).ToCollection();
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
