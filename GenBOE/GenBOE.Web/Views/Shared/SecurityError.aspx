@@ -20,8 +20,8 @@
   
          <div class="error" style="word-spacing:normal">
             You do not have permission to this page.
-            Please contact the workspace owner or the GenBOE Helpdesk.
-           <p> Email: <%: Utilities.HelpdeskEmailAddress() %></p>
+            Please create a ticket with Service Central.
+           <p> Link: <%: Utilities.ServiceCentralLink() %></p>
       </div>
    </div>
    
