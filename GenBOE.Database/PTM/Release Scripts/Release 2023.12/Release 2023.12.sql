@@ -212,3 +212,17 @@ END
 
                 4/13/23 [RJ] - PROPH-247 - Update FAR Checklist
 */
+
+/*
+                ## START ##
+                4/24/23 [Dusan] - PROPH-503 - Minor tweak to question 18
+*/
+DECLARE @newChecklistId INT = 16;
+DECLARE @q18 INT;
+SELECT @q18 = PARChecklistContentID FROM dbo.PARChecklistContent WHERE QuestionNumber = '18' AND ColumnOrder = 1 AND ProposalAdequacyReviewID = @newChecklistId;
+
+UPDATE [dbo].[PARChecklistContent] SET ChecklistText = '<p>18. Has the offeror submitted an exception to the submission of certified cost or pricing data for commercial items proposed either at the prime or subcontractor level, in accordance with provision 52.215-20?<br />  a.  Has the offeror specifically identified the type of commercial item claim (FAR 2.101 commercial item definition, paragraphs (1) through (8)), and the basis on which the item meets the definition?<br />  b.  For modified commercial items (FAR 2.101 commercial item definition paragraph (3)); did the offeror classify the modification(s) as either—<br />  &nbsp;&nbsp;i.  A modification of a type customarily available in the commercial marketplace (paragraph (3)(i)); or<br />  &nbsp;&nbsp;ii.  A minor modification (paragraph (3)(ii)) of a type not customarily available in the commercial marketplace made to meet Federal Government requirements not exceeding the thresholds in FAR 15.403-1(c)(3)(iii)(B)?<br />  c.  For proposed commercial items "of a type", or "evolved" or modified (FAR 2.101 commercial item definition paragraphs (1) through (3)), did the contractor provide a technical description of the differences between the proposed item and the comparison item(s)?<br />  (FAR 52.215-20; FAR 2.101,"commercial product" or "commercial service")</p>' WHERE PARChecklistContentId = @q18;GO
+/*
+                4/24/23 [Dusan] - PROPH-503 - Minor tweak to question 18
+                ## END ##
+*/
