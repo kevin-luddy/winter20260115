@@ -650,5 +650,47 @@ namespace GenBOE.Web.Controllers
 
 			return result;
 		}
+
+		/// <summary>
+		/// Get Material PBoe Data for given Workspace
+		/// </summary>
+		/// <param name="workspaceID"></param>
+		/// <returns>Collection of Material PBoe Data</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<MPBoeData> GetMaterialPBoeForWorkspace(int workspaceID)
+		{
+			IESResponse<MPBoeData> result = new IESResponse<MPBoeData>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// Check if user is System Admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+
+				if (isAllowed)
+				{
+					result.Data = (ICollection<MPBoeData>)loader.GetMaterialPBoeForWorkspace(workspaceID);
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					string message = "Invalid permission to Workspace with ID:" + workspaceID + ".";
+					logger.Error(message + " NTID: " + ntid);
+					result.Messages.Add(message);
+					result.IsSuccessful = false;
+					result.Data = null;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with ID: {workspaceID}: {ex.Message}");
+			}
+
+			return result;
+		}
 	}
 }

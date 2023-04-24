@@ -112,6 +112,14 @@ namespace GenBOE.DataBridge.DTO
 		[DbQuery]
 		ICollection<NlfWorkspaceInnerDataDTO> GetAllWorkspaceInnerDataForNlf();
 
+		/// <summary>
+		/// Get Material PBoe Data for a given Workspace
+		/// </summary>
+		/// <param name="workspaceID"></param>
+		/// <returns>Collection of Material PBoe</returns>
+		[DbQuery]
+		ICollection<MPBoeDataDTO> GetMaterialPBoeForWorkspace(int workspaceID);
+
 		#endregion
 
 		#region Restores and Copies

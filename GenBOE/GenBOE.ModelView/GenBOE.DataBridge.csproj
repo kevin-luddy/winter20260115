@@ -146,6 +146,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\MetricNameTaskElementMappingDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MileReimbursementRateDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MiscTravelRateDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MPBoeDataDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricDetailsDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchCriteriaDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchDTO.cs" />
