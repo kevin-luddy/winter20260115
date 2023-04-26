@@ -474,7 +474,7 @@ namespace GenBOE.ActionLogic.IO.Import
         /// </summary>
         /// <param name="isSAPEnabled">Is SAP Enabled for this workspace</param>
         /// <param name="repositoryName">The Repository name</param>
-        /// <returns></returns>
+        /// <returns>True if custom field should still be required; otherwise false.</returns>
         private bool IsCustomFieldSAPRequired(bool isSAPEnabled, string repositoryName)
         {
             if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
