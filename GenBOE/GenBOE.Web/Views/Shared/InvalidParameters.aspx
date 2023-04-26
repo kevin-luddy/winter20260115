@@ -20,7 +20,7 @@
      <div class="error" style="word-spacing:normal">
 
        The page cannot be found. Please check the address and try again. If the problem persists, please create a ticket with Service Central. Sorry for the inconvenience. 
-       <p> Link: <%: Utilities.ServiceCentralLink() %></p>
+       <p> Link: <div></div><%: Utilities.ServiceCentralLink() %></div></p>
  </div>
 
 </asp:Content>
