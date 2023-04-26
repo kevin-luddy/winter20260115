@@ -97,21 +97,21 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// PoP Start Date field, to allow us the different handling of weekly dates
 		/// </summary>
-		private DateTime popStart { get; set; }
+		private DateTime? popStart { get; set; }
 
 		/// <summary>
 		/// PoP End Date field, to allow us the different handling of weekly dates
 		/// </summary>
-		private DateTime popEnd { get; set; }
+		private DateTime? popEnd { get; set; }
 
 		/// <summary>
 		/// PoP Start
 		/// </summary>
-		public DateTime PoPStart
+		public DateTime? PoPStart
 		{
 			get
 			{
-				DateTime result = this.popStart;
+				DateTime? result = this.popStart;
 				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
 				{
 					result = GetDateFromWeekYear(this.PoPStartWeek ?? 0, this.PoPStartYear ?? 0);
@@ -121,10 +121,21 @@ namespace GenBOE.ActionLogic.ModelView
 			}
 			set
 			{
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
+				if (value == null)
 				{
-					this.PoPStartWeek = GetWeekFromDate(value);
-					this.PoPStartYear = value.Year;
+					this.PoPStartWeek = null;
+					this.PoPStartYear = null;
+				}
+				else if (value.Value.Date == DateTime.MinValue.Date)
+				{
+					value = null;
+					this.PoPStartWeek = null;
+					this.PoPStartYear = null;
+				}
+				else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
+				{
+					this.PoPStartWeek = GetWeekFromDate(value.Value);
+					this.PoPStartYear = value.Value.Year;
 				}
 
 				this.popStart = value;
@@ -134,11 +145,11 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// PoP End
 		/// </summary>
-		public DateTime PoPEnd
+		public DateTime? PoPEnd
 		{
 			get
 			{
-				DateTime result = this.popEnd;
+				DateTime? result = this.popEnd;
 				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
 				{
 					result = GetDateFromWeekYear(this.PoPEndWeek ?? 0, this.PoPEndYear ?? 0);
@@ -148,10 +159,21 @@ namespace GenBOE.ActionLogic.ModelView
 			}
 			set
 			{
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
+				if (value == null)
 				{
-					this.PoPEndWeek = GetWeekFromDate(value);
-					this.PoPEndYear = value.Year;
+					this.PoPEndWeek = null;
+					this.PoPEndYear = null;
+				}
+				else if (value.Value.Date == DateTime.MinValue.Date)
+				{
+					value = null;
+					this.PoPStartWeek = null;
+					this.PoPStartYear = null;
+				}
+				else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
+				{
+					this.PoPEndWeek = GetWeekFromDate(value.Value);
+					this.PoPEndYear = value.Value.Year;
 				}
 
 				this.popEnd = value;
@@ -210,12 +232,14 @@ namespace GenBOE.ActionLogic.ModelView
         /// <param name="date"></param>
         /// <param name="queryType"></param>
         /// <returns></returns>
-        public static string FormatMoqTablePoPDate(DateTime date, int? week, int? year, string queryType)
+        public static string FormatMoqTablePoPDate(DateTime? date, int? week, int? year, string queryType)
         {
-            return
-                SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || queryType == MoqTableData.WEEKLY_DATETIME
-					? date.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) :
-                    queryType == MoqTableData.MONTHLY ? $"{date.Month.ToString("00")}/{date.Year}" : $"FW {week ?? 0:00}/{year}";
+			return date.HasValue ?
+				SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || queryType == MoqTableData.WEEKLY_DATETIME
+					? date.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) :
+					queryType == MoqTableData.MONTHLY ? $"{date.Value.Month.ToString("00")}/{date.Value.Year}" : $"FW {week ?? 0:00}/{year}"
+					: string.Empty;
+
         }
 
 		/// <summary>
@@ -224,9 +248,9 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <param name="week">Week</param>
 		/// <param name="year">Year</param>
 		/// <returns>Date representing the Week / Year</returns>
-		public static DateTime GetDateFromWeekYear(int week, int year)
+		public static DateTime? GetDateFromWeekYear(int week, int year)
 		{
-			if (week == 0) { return DateTime.MinValue; }
+			if (week == 0) { return null; }
 
 			int month = week > 30 ? 2 : 1;
 			int day = week > 30 ? week - 30 : week;

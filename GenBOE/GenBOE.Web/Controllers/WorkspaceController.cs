@@ -422,8 +422,9 @@ namespace GenBOE.Web.Controllers
             catch (Exception e)
             {
                 _log.Error(e);
+				string supportLink = Utilities.ServiceCentralLink();
 
-                result = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", Utilities.HelpdeskEmailAddress()));
+				result = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", supportLink));
             }
             
             // Finalize Action

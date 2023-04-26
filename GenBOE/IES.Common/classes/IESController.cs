@@ -16,6 +16,7 @@ namespace IES.Common
     using System.Web.Mvc;
     using Exceptions;
     using System.Diagnostics;
+	using IES.Common.classes;
 
     [IES.Common.Exceptions.HandleError]
     public class IESController : Controller
@@ -224,8 +225,10 @@ namespace IES.Common
             }
             else
             {
-                return this.CreateTextFileWithErrorMessage(
-                    $"An error has occurred.  This might be the result of invalid data.  If the data is valid, and the error persists, please contact the IES Helpdesk at {Utilities.HelpdeskEmailAddress()}.");
+				string supportLink = Utilities.ServiceCentralLink();
+
+				return this.CreateTextFileWithErrorMessage(
+                    $"An error has occurred.  This might be the result of invalid data.  If the data is valid, and the error persists, please create a ticket with IES Helpdesk at {supportLink}.");
             }
         }
 

@@ -146,6 +146,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\MetricNameTaskElementMappingDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MileReimbursementRateDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MiscTravelRateDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MPBoeDataDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricDetailsDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchCriteriaDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchDTO.cs" />
@@ -154,6 +155,8 @@
     <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelDestinationDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelOriginDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelResourceDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\NlfWorkspaceDataDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\NlfWorkspaceInnerDataDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OffloadRatesDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OrdinaryVariableDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OtherDirectCostSpread.cs" />

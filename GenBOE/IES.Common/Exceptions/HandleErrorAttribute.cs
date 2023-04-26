@@ -11,12 +11,13 @@ namespace IES.Common.Exceptions
     using System.Data.Entity.Core;
     using System.Data.SqlClient;
     using System.Net;
-    using System.Web.Mvc;
+	using System.Web.Mvc;
     using IES.Common;
+	using IES.Common.classes;
 
-    /// <summary>
-    /// Handle Error Attribute, overridden to log errors to a file.
-    /// </summary>
+	/// <summary>
+	/// Handle Error Attribute, overridden to log errors to a file.
+	/// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
     public sealed class HandleErrorAttribute : System.Web.Mvc.HandleErrorAttribute
     {
@@ -38,9 +39,19 @@ namespace IES.Common.Exceptions
 
             if (filterContext.HttpContext.Request.IsAjaxRequest())
             {
-                string supportEmailLink = "<a href=\"mailto:" + Utilities.HelpdeskEmailAddress() + "\">" + Utilities.HelpdeskEmailAddress() + "</a>";
+				// Separate out the ticket link since for classified it will not exist
+				string helpDeskLink = "If the error persists, please open a ticket with the Helpdesk at: ";
+				string supportLink = Utilities.ServiceCentralLink();
 
-                string message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again. If the error persists, please contact the Helpdesk at " + supportEmailLink;
+				helpDeskLink = helpDeskLink + supportLink;
+
+                string message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
+
+				if (!Utilities.DisableExternalHelpLinksForClassifiedInstallations())
+				{
+					message = message + " " + helpDeskLink;
+				}
+
                 string title = "Application Error";
                 string returnType = filterContext.Exception.GetType().ToString();
                 ICollection<ValidationMessage> messageList = new List<ValidationMessage>();
@@ -69,7 +80,13 @@ namespace IES.Common.Exceptions
                     {
                         log.Error(filterContext.Exception.InnerException);
 
-                        message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again. If the error persists, please contact the GenBOE Helpdesk at " + supportEmailLink;
+                        message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
+
+						if (!Utilities.DisableExternalHelpLinksForClassifiedInstallations())
+						{
+							message = message + " " + helpDeskLink;
+						}
+
                         title = "Application Error";
                         details = message;
                     }
@@ -77,7 +94,13 @@ namespace IES.Common.Exceptions
                 else if (filterContext.Exception.GetType() == typeof(EntityCommandExecutionException) || filterContext.Exception.GetType() == typeof(EntityException) || filterContext.Exception.GetType() == typeof(SqlException))
                 {
                     log.Error(filterContext.Exception);
-                    message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again. If the error persists, please contact the GenBOE Helpdesk at " + supportEmailLink;
+                    message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
+
+					if (!Utilities.DisableExternalHelpLinksForClassifiedInstallations())
+					{
+						message = message + " " + helpDeskLink;
+					}
+
                     title = "Application Error";
                     details = message;
                 }
@@ -105,7 +128,8 @@ namespace IES.Common.Exceptions
                 }
                 else if (filterContext.Exception.GetType() == typeof(AuthorizationException))
                 {
-                    message = @"You do not have permission to this page.  Please contact the workspace owner or the Helpdesk at " + supportEmailLink;
+
+                    message = @"You do not have permission to this page. Please contact the workspace owner or open a ticket with Helpdesk at " + supportLink;
                     details = filterContext.Exception.Message;
                     title = "Authorization Error";
                 }

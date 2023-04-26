@@ -110,23 +110,31 @@
                 {
                     <a href="@ViewBag.BOEUrl"><img class="button-img" src="~/Content/images/logo_genBOE.jpg" alt="Basis of Estimate" /></a>
                 }
-                <a href="@ViewBag.PPUrl" target="_blank"><img class="button-img" src="~/Content/images/logo_ProPricer.jpg" alt="PROPRICER" /></a>
-            </div>
-            <div class="button-row">
-                <a href="@ViewBag.RDMUrl"><img class="button-img" src="~/Content/images/logo_RDM.jpg" alt="Rates and Disclosure Module" /></a>
-                <a href="@ViewBag.RDSBUrl"><img class="button-img" src="~/Content/images/logo_RDSB.jpg" alt="Rates &amp; Disclosure Section Builder" /></a>
-                <a href="@ViewBag.RPMUrl"><img class="button-img" src="~/Content/images/logo_RPM.jpg" alt="Resource Planning Module" /></a>
-            </div>
-            <div class="button-row">
+
                 @if (string.IsNullOrEmpty(ViewBag.ACVUrl))
                 {
-                    <a><img class="button-img acvLogo" src="~/Content/images/logo_ComingSoon.png" alt="Electronic Executive Planning Panel" /></a>
+                    <a><img class="button-img acvLogo" src="~/Content/images/logo_ComingSoon.png" alt="Automated Cost Volume" /></a>
                 }
                 else
                 {
-                    <a href="@ViewBag.ACVUrl"><img class="button-img" src="~/Content/images/logo_ACV.jpg" alt="Electronic Executive Planning Panel" /></a>
+                    <a href="@ViewBag.ACVUrl"><img class="button-img" src="~/Content/images/logo_ACV.jpg" alt="Automated Cost Volume" /></a>
                 }
-
+                <a href="@ViewBag.PPUrl" target="_blank"><img class="button-img" src="~/Content/images/logo_ProPricer.jpg" alt="PROPRICER" /></a>
+            </div>
+            <div class="button-row">
+                @if (string.IsNullOrEmpty(ViewBag.NLFUrl))
+                {
+                    <a><img class="button-img nlfLogo" src="~/Content/images/logo_ComingSoon.png" alt="Non-Labor Forms" /></a>
+                }
+                else
+                {
+                    <a href="@ViewBag.NLFUrl"><img class="button-img" src="~/Content/images/logo_NLF.png" alt="Non-Labor Forms" /></a>
+                }
+                <a href="@ViewBag.RDMUrl"><img class="button-img" src="~/Content/images/logo_RDM.jpg" alt="Rates and Disclosure Module" /></a>
+                <a href="@ViewBag.RDSBUrl"><img class="button-img" src="~/Content/images/logo_RDSB.jpg" alt="Rates &amp; Disclosure Section Builder" /></a>
+            </div>
+            <div class="button-row">
+                <a href="@ViewBag.RPMUrl"><img class="button-img" src="~/Content/images/logo_RPM.jpg" alt="Resource Planning Module" /></a>
                 @if (string.IsNullOrEmpty(ViewBag.eEPPUrl))
                 {
                     <a><img class="button-img eeppLogo" src="~/Content/images/logo_ComingSoon.png" alt="Electronic Executive Planning Panel" /></a>

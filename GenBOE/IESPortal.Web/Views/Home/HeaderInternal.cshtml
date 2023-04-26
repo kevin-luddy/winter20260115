@@ -15,9 +15,15 @@
 
                 @if (!string.IsNullOrEmpty(ViewBag.BOEUrl))
                 { <li id="nav-boe" class="@((ViewBag.ActiveTab == "BOE") ? "open" : string.Empty)"><a href="#boe" onclick="top.location='@ViewBag.BOEUrl';">genBOE</a></li> }
+
+                @if (!string.IsNullOrEmpty(ViewBag.ACVUrl))
+                { <li id="nav-acv" class="@((ViewBag.ActiveTab == "ACV") ? "open" : string.Empty)"><a href="#ACV" onclick="top.location='@ViewBag.ACVUrl';">ACV</a></li> }
                 
                 @if (!string.IsNullOrEmpty(ViewBag.PPUrl))
                 { <li id="nav-propricer"><a href="@ViewBag.PPUrl" target="_blank">PRO<strong>PRICER</strong></a></li> }
+
+                @if (!string.IsNullOrEmpty(ViewBag.NLFUrl))
+                { <li id="nav-nlf" class="@((ViewBag.ActiveTab == "NLF") ? "open" : string.Empty)"><a href="#NLF" onclick="top.location='@ViewBag.NLFUrl';">NLF</a></li> }
                 
                 @if (!string.IsNullOrEmpty(ViewBag.RDMUrl))
                 { <li id="nav-rdm" class="@((ViewBag.ActiveTab == "RDM") ? "open" : string.Empty)"><a href="#rdm" onclick="top.location='@ViewBag.RDMUrl';">RDM</a></li> }
@@ -27,9 +33,6 @@
 
                 @if (!string.IsNullOrEmpty(ViewBag.RPMUrl))
                 { <li id="nav-rpm" class="@((ViewBag.ActiveTab == "RPM") ? "open" : string.Empty)"><a href="#rpm" onclick="top.location='@ViewBag.RPMUrl';">RPM</a></li> }
-
-                @if (!string.IsNullOrEmpty(ViewBag.ACVUrl))
-                { <li id="nav-acv" class="@((ViewBag.ActiveTab == "ACV") ? "open" : string.Empty)"><a href="#ACV" onclick="top.location='@ViewBag.ACVUrl';">ACV</a></li> }
 
                 @if (!string.IsNullOrEmpty(ViewBag.eEPPUrl))
                 { <li id="nav-eepp" class="@((ViewBag.ActiveTab == "eEPP") ? "open" : string.Empty)"><a href="#eEPP" onclick="top.location='@ViewBag.eEPPUrl';">eEPP</a></li> }

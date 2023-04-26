@@ -215,24 +215,6 @@ namespace GenBOE.Web.Common
 			return ConfigurationUtilities.GetAppSetting("ProdUrlBoe");
 		}
 
-		/// <summary>
-		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
-		/// to not point at unclassified locations that are not accessible.
-		/// </summary>
-		/// <returns>Bool whether the links should be shut off or not</returns>
-		public static bool DisableExternalHelpLinksForClassifiedInstallations()
-		{
-			bool result = false;
-
-			if (!string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall"))
-				&& ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall").ToLower().Equals("true"))
-			{
-				result = true;
-			}
-
-			return result;
-		}
-
 		#endregion
 
 		/// <summary>
