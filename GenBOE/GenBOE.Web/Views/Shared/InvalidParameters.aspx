@@ -17,10 +17,10 @@
     </h2>
     
   
-     <div class="error" style="word-spacing:normal">
+    <div class="error" style="word-spacing:normal">
 
        The page cannot be found. Please check the address and try again. If the problem persists, please create a ticket with Service Central. Sorry for the inconvenience. 
-       <p> Link: <div><%: Utilities.ServiceCentralLink() %></div></p>
- </div>
+       <p> Link: <%= Utilities.ServiceCentralLink() %></p>
+	</div>
 
 </asp:Content>
