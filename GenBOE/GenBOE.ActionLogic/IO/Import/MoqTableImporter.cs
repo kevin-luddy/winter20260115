@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic.IO.Import
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
+    using IES.Common.classes;
     using IES.Common.OfficeUtilities;
 
     /// <summary>
@@ -227,6 +228,7 @@ namespace GenBOE.ActionLogic.IO.Import
                 {
                     bool validStartDate = DateTime.TryParse(row[START_DATE], out popStartDate);
                     if (validStartDate && toReturn.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
+                        toReturn.QueryType == MoqTableData.WEEKLY_DATETIME &&
                         popStartDate.DayOfWeek != DayOfWeek.Sunday)
                     {
 						toReturn.ImportTypes.Add(MoqTableImportType.InvalidPopStartSunday);
@@ -270,7 +272,8 @@ namespace GenBOE.ActionLogic.IO.Import
                 {
                     bool validEndDate = DateTime.TryParse(row[END_DATE], out popEndDate);
 					if (validEndDate && toReturn.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
-						popEndDate.DayOfWeek != DayOfWeek.Sunday)
+                        toReturn.QueryType == MoqTableData.WEEKLY_DATETIME &&
+                        popEndDate.DayOfWeek != DayOfWeek.Sunday)
 					{
 						toReturn.ImportTypes.Add(MoqTableImportType.InvalidPopEndSunday);
 					}
@@ -295,7 +298,8 @@ namespace GenBOE.ActionLogic.IO.Import
                 toReturn.ImportTypes.Add(MoqTableImportType.InvalidPopRange);
             }
 
-            this.ImportCustomFields(toReturn, row, customFields, ref index);
+            bool isSapEnabledForThisWorkspace = Utilities.IsSAPEnabledForWorkspace(sapConnectionEnabled, workspaceCreationDate);
+            this.ImportCustomFields(toReturn, row, customFields, ref index, isSapEnabledForThisWorkspace);
 
             // If no import types, there are no issues, so add CreateMoqTable import type
             if(!toReturn.ImportTypes.Any())
@@ -422,7 +426,9 @@ namespace GenBOE.ActionLogic.IO.Import
         /// <param name="row">row from the import file</param>
         /// <param name="customFields">MOQ Table custom fields</param>
         /// <param name="index">new ID index</param>
-        private void ImportCustomFields(ImportedMoqTable moqTable, Dictionary<string, string> row, ICollection<CustomFieldDTO> customFields, ref int index)
+        /// <param name="isSAPEnabled">Is SAP Enabled for this workspace</param>
+        private void ImportCustomFields(ImportedMoqTable moqTable, Dictionary<string, string> row, ICollection<CustomFieldDTO> customFields, ref int index,
+            bool isSAPEnabled)
         {
             if(customFields.Any())
             {
@@ -454,10 +460,32 @@ namespace GenBOE.ActionLogic.IO.Import
                     }
                     else if (customField.CustomFieldRequired && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
                     {
-                        moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+                        if (IsCustomFieldSAPRequired(isSAPEnabled, moqTable.RepositoryName))
+                        {
+                            moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+                        }
                     }
-
                 }
+            }
+        }
+
+        /// <summary>
+        /// Determine whether Custom Fields are required for this SAP Import
+        /// </summary>
+        /// <param name="isSAPEnabled">Is SAP Enabled for this workspace</param>
+        /// <param name="repositoryName">The Repository name</param>
+        /// <returns></returns>
+        private bool IsCustomFieldSAPRequired(bool isSAPEnabled, string repositoryName)
+        {
+            if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+            {
+                // RMS always sets to true
+                return true;
+            } 
+            else
+            {
+                // SSC requires if SAP is not enabled or if Repository Name is not set to SAP / WEBI 
+                return !isSAPEnabled || repositoryName != RepositoryName.SapWebi.GetDescription();
             }
         }
 
