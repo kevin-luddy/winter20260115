@@ -227,6 +227,7 @@ namespace GenBOE.ActionLogic.IO.Import
                 {
                     bool validStartDate = DateTime.TryParse(row[START_DATE], out popStartDate);
                     if (validStartDate && toReturn.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
+                        toReturn.QueryType == MoqTableData.WEEKLY_DATETIME &&
                         popStartDate.DayOfWeek != DayOfWeek.Sunday)
                     {
 						toReturn.ImportTypes.Add(MoqTableImportType.InvalidPopStartSunday);
@@ -270,7 +271,8 @@ namespace GenBOE.ActionLogic.IO.Import
                 {
                     bool validEndDate = DateTime.TryParse(row[END_DATE], out popEndDate);
 					if (validEndDate && toReturn.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
-						popEndDate.DayOfWeek != DayOfWeek.Sunday)
+                        toReturn.QueryType == MoqTableData.WEEKLY_DATETIME &&
+                        popEndDate.DayOfWeek != DayOfWeek.Sunday)
 					{
 						toReturn.ImportTypes.Add(MoqTableImportType.InvalidPopEndSunday);
 					}
