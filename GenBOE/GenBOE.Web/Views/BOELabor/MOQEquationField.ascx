@@ -576,7 +576,8 @@
                     <div data-ng-if="model.IsRMS">Date of Report, PoP Start Date, and PoP End date must be in the format mm/dd/yyyy or m/d/yyyy.</div>
                     <div data-ng-if="!model.IsRMS">
                         <div>Date of Report must be in the format m/yyyy or mm/yyyy</div>
-                        <div>For Weekly Query Type, PoP Start Date and PoP End date must be in the format fw/yyyy</div>
+                        <div data-ng-if="model.SAPWorkspaceBeforeCutoff">For Weekly Query Type, PoP Start Date and PoP End date must be in the format fw/yyyy</div>
+                        <div data-ng-if="!model.SAPWorkspaceBeforeCutoff">For Weekly Query Type, PoP Start Date and PoP End date must be in the format mm/dd/yyyy (Sunday)</div>
                         <div>For Monthly Query Type, PoP Start Date and PoP End date must be in the format m/yyyy or mm/yyyy</div>
                     </div>
                     <br />                    
