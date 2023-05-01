@@ -127,6 +127,7 @@ namespace GenTRAC.Web.Controllers
         /// </summary>
         /// <param name="proposalId">Proposal ID</param>
         /// <returns>Header data</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [HttpGet]
         public IESResponse<AcvHeaderDataDto> GetHeaderData(int proposalId)
         {
