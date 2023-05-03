@@ -12,6 +12,9 @@ namespace GenTRAC
     using System.Web.Configuration;
     using System.Web.Http;
     using System.Web.Http.Cors;
+    using System.Web.Http.ExceptionHandling;
+    using Elmah.Contrib.WebApi;
+    using IES.Common;
 
     /// <summary>
     /// Class to add Web API to an MVC application
@@ -35,7 +38,7 @@ namespace GenTRAC
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
+                routeTemplate: "api/{controller}/{action}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
 
@@ -43,6 +46,11 @@ namespace GenTRAC
             formatter.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
+
+            // enable elmah
+            config.Services.Add(typeof(IExceptionLogger), new ElmahExceptionLogger());
+
+            config.Filters.Add(new UnhandledExceptionFilterAttribute());
         }
     }
 }

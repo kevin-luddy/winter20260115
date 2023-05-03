@@ -123,6 +123,33 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
+        /// Get header data for ACV
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>Header data</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        [HttpGet]
+        public IESResponse<AcvHeaderDataDto> GetHeaderData(int proposalId)
+        {
+            IESResponse<AcvHeaderDataDto> result = new IESResponse<AcvHeaderDataDto>();
+
+            try
+            {
+                tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+                result.Data.Add(loader.GetAcvHeaderDataByProposalId(proposalId));
+                result.IsSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+                result.Messages.Add($"Unknown error occurred returning Header data: {ex.Message}");
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Is Service Alive?
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
