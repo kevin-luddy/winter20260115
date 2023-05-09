@@ -32,10 +32,13 @@ namespace GenBOE.Web.ModelView
 		public string WorkspaceName { get; set; }
 
 		/// <summary>
-		/// Line of Business
+		/// Line of Business Id
 		/// </summary>
 		public int? LineOfBusinessId { get; set; }
 
+		/// <summary>
+		/// Line Of Business Name
+		/// </summary>
 		public string LineOfBusinessName { get; set; }
 
 		/// <summary>
