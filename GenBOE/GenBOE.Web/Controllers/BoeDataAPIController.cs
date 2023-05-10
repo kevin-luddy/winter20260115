@@ -638,7 +638,8 @@ namespace GenBOE.Web.Controllers
 					WorkspaceCreationDate = x.WorkspaceCreationDate,
 					PTMTrackingNumber = x.PTMTrackingNumber,
 					EstimatingLead = x.EstimatingLead,
-					LineOfBusiness = x.LineOfBusiness,
+					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
+                    LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
 				}).ToCollection();
 				result.IsSuccessful = true;
 			}
