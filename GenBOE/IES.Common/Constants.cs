@@ -271,9 +271,10 @@ namespace IES.Common
         /// <summary>
         /// Timeout for HTTP CLients
         /// 
-        /// It is set to 15 minutes.  If calls to http APIs like SAP API take longer than 15 minutes, that is an issue in itself
+        /// It is set to 20 minutes.  If calls to http APIs like SAP API take longer than 20 minutes, that is an issue in itself
+        /// Tibco times out after 20 minutes on its own
         /// </summary>
-        public static readonly TimeSpan HTTP_TIMEOUT = TimeSpan.FromMinutes(15);
+        public static readonly TimeSpan HTTP_TIMEOUT = TimeSpan.FromMinutes(value: 20);
 
         /// <summary>
         /// Used for Zone Travel Resources when there is no Resource entered

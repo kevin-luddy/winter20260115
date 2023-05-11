@@ -32,9 +32,14 @@ namespace GenBOE.Web.ModelView
 		public string WorkspaceName { get; set; }
 
 		/// <summary>
-		/// Line of Business
+		/// Line of Business Id
 		/// </summary>
-		public LineOfBusiness LineOfBusiness { get; set; }
+		public int? LineOfBusinessId { get; set; }
+
+		/// <summary>
+		/// Line Of Business Name
+		/// </summary>
+		public string LineOfBusinessName { get; set; }
 
 		/// <summary>
 		/// PTM Tracking Number
