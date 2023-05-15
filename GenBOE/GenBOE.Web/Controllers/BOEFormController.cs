@@ -22,7 +22,8 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.Metrics;
-	using GenBOE.DataBridge.Common;
+    using GenBOE.ActionLogic.Validation;
+    using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
@@ -475,6 +476,14 @@ namespace GenBOE.Web.Controllers
             if (ModelState.IsValid)
             {
                 Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>(this.ScrubViewModelRichTextForSave(boeFormsVM).ToList());
+
+				// Check that only one option selected for Certified Cost or Pricing Data (CCoPD) Applicability
+				bool[] expectedApplicabilities = new bool[] { boeFormsVM.CCoPDApplies, boeFormsVM.CommercialItemExceptionApplies, 
+                    boeFormsVM.CompetitionExceptionApplies, boeFormsVM.LessThanThresholdExceptionApplies, boeFormsVM.OtherExceptionApplies };
+                if (expectedApplicabilities.Count(x => x) > 1)
+                {
+                    validationErrors.Add(new ValidationMessage(ValidationConstants.PBOE_ONE_CCOPD_APPLICABILITY));
+                }
 
                 if (validationErrors.Any())
                 {

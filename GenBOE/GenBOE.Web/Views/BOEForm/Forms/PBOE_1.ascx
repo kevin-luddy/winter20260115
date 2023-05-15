@@ -41,17 +41,6 @@
                 }
             });
 
-            // setup hide/show of CCOPD Other Exception Text
-            $('#OtherExceptionApplies').change(function() {
-                if ($(this).is(':checked')) {
-                    $("#OtherText").removeClass('display-none');
-                }
-                else {
-                    $("#OtherText").addClass("display-none");
-                    $("#OtherText").val("");
-                }
-            });
-
             // Show or hide the Date picker and text box for "Should Cost/Engineering Estimate" section's radio buttons
             ManageBOEFormsWidget.ShowHideDate = function(radioButtonValue, dateElement, textElement){
                 // the next() hides/shows the calendar button
@@ -139,10 +128,6 @@
     });
 
     $(document).ready(function () {
-        $('#CCoPDApplies').on('click', function () {
-            toggleCCoPDApplies();
-        });        
-
         function toggleCCoPDApplies() {
             if ($('#CCoPDApplies').is(':checked')) {
                 $('#proposalReceived').show();
@@ -154,6 +139,16 @@
             }
         }
 
+        function toggleOtherException() {
+			if ($('#OtherExceptionApplies').is(':checked')) {
+				$("#OtherText").removeClass('display-none');
+			}
+			else {
+				$("#OtherText").addClass("display-none");
+				$("#OtherText").val("");
+			}
+		}
+
         // ensure we have the option properly displayed
         toggleCCoPDApplies();
 
@@ -164,7 +159,14 @@
 
         // ensure we format the money properly
         $('#SupplierProposedValue').trigger('change');
-    });
+
+        // Only allow one Expected Certified Cost or Pricing Data (CCoPD) Applicability field to be selected
+		$(document).on('change', 'input.ExpectedApplicability', function () {
+			$('input.ExpectedApplicability').not(this).prop('checked', false);
+			toggleOtherException();
+			toggleCCoPDApplies();
+		});
+	});
 </script>
 <div id="manage-pboe">
     <%: Html.Hidden("BOEFormId", Model.PBOEModel.BOEFormId.ToString()) %>
@@ -272,7 +274,7 @@
     <div class="form-row"> 
         <div class="form-label"><span helptext="Select to indicate whether certified cost or pricing data is applicable to the procurement, or if not, which exception applies.">Expected Certified Cost or Pricing Data (CCoPD) Applicability **</span></div>
         <div class="form-element">
-            <input <%: Model.PBOEModel.CCoPDApplies ? "checked=\"checked\"" : string.Empty %> id="CCoPDApplies" name="CCoPDApplies" type="checkbox" value="true"><label>CCoPD Applies</label><br />
+            <input <%: Model.PBOEModel.CCoPDApplies ? "checked=\"checked\"" : string.Empty %> id="CCoPDApplies" name="CCoPDApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>CCoPD Applies</label><br />
                 <div id="proposalReceived">
                     a)	If Supplier CCoPD applies, proposal received if >$15M or > CCoPD Threshold AND >10% of the LM proposal<br />
                     <div style="padding-left:1px;">
@@ -281,10 +283,10 @@
                         <%: Html.RadioButton("SupplierCCoPD", TripleBooleanState.NA, Model.PBOEModel.SupplierCCoPD == TripleBooleanState.NA, new { id = "SupplierCCoPD" }) %><label>N/A</label>
                     </div>                
                 </div>
-            <input <%: Model.PBOEModel.CommercialItemExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CommercialItemExceptionApplies" name="CommercialItemExceptionApplies" type="checkbox" value="true"><label>Commercial Item Exception Applies</label><br />
-            <input <%: Model.PBOEModel.CompetitionExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CompetitionExceptionApplies" name="CompetitionExceptionApplies" type="checkbox" value="true"><label>Competition Exception Applies</label><br />
-            <input <%: Model.PBOEModel.LessThanThresholdExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="LessThanThresholdExceptionApplies" name="LessThanThresholdExceptionApplies" type="checkbox" value="true"><label>< CCoPD Threshold Exception applies</label><br />
-            <input <%: Model.PBOEModel.OtherExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="OtherExceptionApplies" name="OtherExceptionApplies" type="checkbox" value="true"><label>Other Exception Applies (explain)</label><br />
+            <input <%: Model.PBOEModel.CommercialItemExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CommercialItemExceptionApplies" name="CommercialItemExceptionApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>Commercial Item Exception Applies</label><br />
+            <input <%: Model.PBOEModel.CompetitionExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CompetitionExceptionApplies" name="CompetitionExceptionApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>Competition Exception Applies</label><br />
+            <input <%: Model.PBOEModel.LessThanThresholdExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="LessThanThresholdExceptionApplies" name="LessThanThresholdExceptionApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>< CCoPD Threshold Exception Applies</label><br />
+            <input <%: Model.PBOEModel.OtherExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="OtherExceptionApplies" name="OtherExceptionApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>Other Exception Applies (explain)</label><br />
             <div class="label-padding-left"><%: Html.TextBox("OtherText", Model.PBOEModel.OtherText, new { id = "OtherText", @class = otherTextClass, maxlength="100" }) %></div>
         </div>
     </div>
