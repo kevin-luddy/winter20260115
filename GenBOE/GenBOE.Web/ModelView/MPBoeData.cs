@@ -24,6 +24,11 @@ namespace GenBOE.Web.ModelView
 		public string RFPNumber { get; set; }
 
 		/// <summary>
+		/// Workspace ShortName
+		/// </summary>
+		public string WorkspaceName { get; set; }
+
+		/// <summary>
 		/// Collection of CLIN Numbers ('DisplayedCLINNumber')
 		/// </summary>
 		public ICollection<string> CLINNumbers { get; set; }

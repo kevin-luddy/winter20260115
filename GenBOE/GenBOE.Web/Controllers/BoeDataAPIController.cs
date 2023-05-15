@@ -673,7 +673,15 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					result.Data = (ICollection<MPBoeData>)loader.GetMaterialPBoeForWorkspace(workspaceID);
+					result.Data = loader.GetMaterialPBoeForWorkspace(workspaceID).Select<MPBoeDataDTO, MPBoeData>(x => new MPBoeData()
+					{
+						CLINNumbers = x.CLINNumbers,
+						RFPNumber = x.RFPNumber,
+						PTMProposalTitle = x.PTMProposalTitle,
+						WBSNumbers = x.WBSNumbers,
+						WorkspaceName = x.WorkspaceName
+					}).ToCollection();
+
 					result.IsSuccessful = true;
 				}
 				else

@@ -681,7 +681,8 @@ namespace GenBOE.DataBridge.DTO
 								  PTMProposalTitle = w.ProposalTitle,
 								  RFPNumber = w.RFPNumber,
 								  CLINNumbers = w.CLINs.Select(x => x.DisplayedCLINNumber).ToList(),
-								  WBSNumbers = w.WorkBreakdownStructures.Select(x => x.DisplayedWBSNumber).ToList()
+								  WBSNumbers = w.WorkBreakdownStructures.Select(x => x.DisplayedWBSNumber).ToList(),
+								  WorkspaceName = w.WorkspaceShortName
 							  }).ToList();
 				}
 			}
