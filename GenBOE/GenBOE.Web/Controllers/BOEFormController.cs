@@ -478,6 +478,8 @@ namespace GenBOE.Web.Controllers
                 Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>(this.ScrubViewModelRichTextForSave(boeFormsVM).ToList());
 
 				// Check that only one option selected for Certified Cost or Pricing Data (CCoPD) Applicability
+                // Do this by adding all options to a bool array, then getting a count of bools set to true via .Count(x=>x), equivalent to .Count(x=> x==true)
+                // then check that the count is 1 or less
 				bool[] expectedApplicabilities = new bool[] { boeFormsVM.CCoPDApplies, boeFormsVM.CommercialItemExceptionApplies, 
                     boeFormsVM.CompetitionExceptionApplies, boeFormsVM.LessThanThresholdExceptionApplies, boeFormsVM.OtherExceptionApplies };
                 if (expectedApplicabilities.Count(x => x) > 1)
