@@ -679,7 +679,8 @@ namespace GenBOE.Web.Controllers
 						RFPNumber = x.RFPNumber,
 						PTMProposalTitle = x.PTMProposalTitle,
 						WBSNumbers = x.WBSNumbers,
-						WorkspaceName = x.WorkspaceName
+						WorkspaceName = x.WorkspaceName,
+						ShortName = x.ShortName
 					}).ToCollection();
 
 					result.IsSuccessful = true;

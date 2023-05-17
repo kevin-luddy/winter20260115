@@ -44,9 +44,14 @@ namespace GenBOE.Dtos
 		public ICollection<string> CLINNumbers { get; set; }
 
 		/// <summary>
-		/// Workspace ShortName
+		/// Workspace Name
 		/// </summary>
 		public string WorkspaceName { get; set; }
+
+		/// <summary>
+		/// Workspace ShortName
+		/// </summary>
+		public string ShortName { get; set; }
 
 		/// <summary>
 		/// Collection of WBS Numbers ('DisplayedWBSNumber')
