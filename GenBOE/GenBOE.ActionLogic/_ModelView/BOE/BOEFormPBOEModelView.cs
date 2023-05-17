@@ -361,11 +361,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public string CostAnalysisDescription { get; set; }
 
         /// <summary>
-        /// Rationale for LM Proposed Value Summary
+        /// Rationale for LM Fair & Reasonable Proposed Value
         /// </summary>
         [HtmlTextLength(ValidationConstants.MAX_RTE_LENGTH)]
         [RichText(RichTextDbColumn.PBOE_RATIONALE_VALUE_SUMMARY, "PBOEFormID")]
-        [Required(ErrorMessage = "Rationale for LM Proposed Value Summary is required.")]
+        [Required(ErrorMessage = "Rationale for LM Fair & Reasonable Proposed Value is required.")]
         public string RationaleValueSummary { get; set; }
 
         /// <summary>
