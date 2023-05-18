@@ -50,5 +50,8 @@ namespace GenBOE.ActionLogic.Validation
         public const string MULTI_BOE_NEEDS_WBS = "Multi BOE needs Multi WBS assigned to it";
         public const string MULTI_BOE_NEEDS_CLIN = "Multi BOE needs Multi CLIN assigned to it";
         public const string MULTI_BOE_MATERIAL_BOE = "BOE cannot be a Multi BOE and a Material BOE";
+
+        // Validation for INL Forms
+        public const string PBOE_ONE_CCOPD_APPLICABILITY = "Only one option may be selected for Certified Cost or Pricing Data (CCoPD) Applicability.";
     }
 }

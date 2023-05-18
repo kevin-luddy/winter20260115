@@ -235,7 +235,7 @@ namespace GenBOE.Dtos
         public string CostAnalysisDescription { get; set; }
 
         /// <summary>
-        /// Rationale for LM Proposed Value Summary
+        /// Rationale for LM Fair & Reasonable Proposed Value
         /// </summary>
         public string RationaleValueSummary { get; set; }
     }
