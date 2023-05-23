@@ -879,10 +879,15 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 // PKID to indicate a new permission
                 foreach (PermissionsDTO workspacePermission in workspaceToCopyPermissions)
                 {
-                    bool permissionsExist = (from p in newWorkspacePermissions
+                    bool permissionsExist = ((from p in newWorkspacePermissions
                                              where p.ETIUserId == workspacePermission.ETIUserId &&
                                              p.Role == workspacePermission.Role
-                                             select p).Any();
+                                             select p).Any()
+											 ||
+											 (from s in permissionsToSave
+											  where s.ETIUserId == workspacePermission.ETIUserId &&
+											  s.Role == workspacePermission.Role
+											  select s).Any());
 
                     if (!permissionsExist)
                     {
