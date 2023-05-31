@@ -88,8 +88,8 @@ namespace RDM.Web.Controllers
             }
             catch (Exception ex)
             {
-				this.Log.Error(ex);
-				throw new GenValidationException(ex.Message);
+                this.Log.Error(ex);
+                throw new GenValidationException(ex.Message);
             }
 
             return response;
