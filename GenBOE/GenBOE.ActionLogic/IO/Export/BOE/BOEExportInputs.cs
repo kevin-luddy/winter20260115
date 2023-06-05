@@ -46,17 +46,12 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
             this.SetRteTemplateOverrides(rteTemplatesOverrides);
             this.SetMoqTypes(moqTypes);
-            IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
             this.Boes = new List<BoeDTO> { boe }.AsReadOnly();
             this.TaskElements = workspace.TaskElements;
             this.Workspace = workspace;
 
             // since the resources used may not contain offloaded resources, need to manually get this
-            ICollection<int> resourceIds = workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
-                        .Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
-                        .Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
-                        .Distinct().ToList();
-            this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
+            this.ResourcesUsedInWsBoes = workspace.ResourcesUsedInWsBoes;
             this.FullWorkspace = workspace;
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
         }
