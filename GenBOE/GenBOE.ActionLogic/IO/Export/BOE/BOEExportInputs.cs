@@ -46,7 +46,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
             this.SetRteTemplateOverrides(rteTemplatesOverrides);
             this.SetMoqTypes(moqTypes);
-            IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
             this.Boes = new List<BoeDTO> { boe }.AsReadOnly();
             this.TaskElements = workspace.TaskElements;
             this.Workspace = workspace;
