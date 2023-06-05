@@ -610,7 +610,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     decimal totalCostTravel = this.CalculateTotalCostTravel(travels, ws.DecimalPrecision, escalationRates, fees);
 
                     ManageBOEModelView manageBoe = new ManageBOEModelView(boe, wbsDto, clinDto, users, authors.ToCollection(),
-                        subcontractorAuthors.ToCollection(), approvers.ToCollection(), boe.TaskElements.ToCollection(), totalCostTravel);
+                        subcontractorAuthors.ToCollection(), approvers.ToCollection(), ws.TaskElements.Where(t => t.BoeID == boe.Id).ToCollection(), totalCostTravel);
 
                 modelViews.Add(manageBoe);
             }

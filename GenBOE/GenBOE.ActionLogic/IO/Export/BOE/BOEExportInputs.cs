@@ -52,11 +52,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.Workspace = workspace;
 
             // since the resources used may not contain offloaded resources, need to manually get this
-            ICollection<int> resourceIds = workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
-                        .Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
-                        .Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
-                        .Distinct().ToList();
-            this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
+            this.ResourcesUsedInWsBoes = workspace.ResourcesUsedInWsBoes;
             this.FullWorkspace = workspace;
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
         }
