@@ -1283,8 +1283,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	}
 
 	$scope.RefreshPoPMonths = function (popStart, popEnd) {
-		// Get the difference between the two dates in months (30 days), rounded to 2 decimals
-		return +((popEnd - popStart) / (1000 * 60 * 60 * 24) / 30).toFixed(2);
+		// Get the difference between the two dates in months (30.42 days), rounded to 2 decimals
+		return +((popEnd - popStart) / (1000 * 60 * 60 * 24) / ManageTaskModel.PoPMonthsDivisor).toFixed(2);
 	};
 
 	$scope.IsSapEnabledAndSetAsRepository = function (repositoryName) {

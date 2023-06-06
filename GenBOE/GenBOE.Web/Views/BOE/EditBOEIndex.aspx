@@ -1,15 +1,15 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Views/Shared/Master/Site.Master" Inherits="System.Web.Mvc.ViewPage<dynamic>" %>
 <%@ Import Namespace="System.Web.Script.Serialization" %>
-<%@ Import namespace="System.Web.Optimization" %>
+<%@ Import Namespace="System.Web.Optimization" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
-	Edit BOE - <%: ((GenBOEMasterModelView)Model).ProposalName %>
+    Edit BOE - <%: ((GenBOEMasterModelView)Model).ProposalName %>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-<% 
-    var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
-    int rteFieldSize = ViewBag.RteFieldSize;
-%>
+    <% 
+        var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
+        int rteFieldSize = ViewBag.RteFieldSize;
+    %>
     <%: Scripts.Render("~/bundles/manageTask") %>
     <script type="text/javascript">
         app.value('ManageTaskModel', {
@@ -37,19 +37,20 @@
             SpreadCurvesDiscreteHours: '<%= (int)SpreadCurves.DiscreteHours %>',
             SpreadCurvesDiscreteCost: '<%= (int)SpreadCurves.DiscreteCost %>',
             RteFieldSize: <%= rteFieldSize %>,
-			IsSpace: <%= ((bool)(IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)).ToString().ToLower() %>,
-			SapFields: <%=serializer.Serialize(ViewData["SapFields"])%>,
-			SapOperators: <%=serializer.Serialize(ViewData["SapOperators"])%>,
-			ParseSapFilterAction: '<%: WebConstants.ACTION_PARSE_SAP_FILTER %>',
-			ConvertSapFilterAction: '<%: WebConstants.ACTION_CONVERT_SAP_FILTER %>',
-			CalculateAllActualsSapAction: '<%: WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP %>',
-			ExportActualsSapAction: '<%: WebConstants.ACTION_EXPORT_ACTUALS_SAP %>',
-			DisableSave: false,
-			DisableSaveText: '',
-			SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
-			SapConnectionEnabled: '<%=ViewData["EnableSAP"]%>'.isTrue(),
+            IsSpace: <%= ((bool)(IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)).ToString().ToLower() %>,
+            SapFields: <%=serializer.Serialize(ViewData["SapFields"])%>,
+            SapOperators: <%=serializer.Serialize(ViewData["SapOperators"])%>,
+            ParseSapFilterAction: '<%: WebConstants.ACTION_PARSE_SAP_FILTER %>',
+            ConvertSapFilterAction: '<%: WebConstants.ACTION_CONVERT_SAP_FILTER %>',
+            CalculateAllActualsSapAction: '<%: WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP %>',
+            ExportActualsSapAction: '<%: WebConstants.ACTION_EXPORT_ACTUALS_SAP %>',
+            DisableSave: false,
+            DisableSaveText: '',
+            SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
+            SapConnectionEnabled: '<%=ViewData["EnableSAP"]%>'.isTrue(),
             RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
-			SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>'
+            SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>',
+            PoPMonthsDivisor: '<%: Constants.POP_MONTHS_DIVISOR %>'
         });
 
         $(function () {
@@ -66,7 +67,7 @@
                 $("#SubmitForApproval").hide();
             }
         });
-	</script>
+    </script>
 
     <% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_HEADER, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 
@@ -89,8 +90,8 @@
         <% Html.RenderAction(WebConstants.ACTION_DISPLAY_SUBMIT_FOR_APPROVAL, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
     </div>
     <script type="text/javascript">
-    angular.element(document).ready(function () {
-        angular.bootstrap(document, ['genboe']);
-    });
-    </script> 
+        angular.element(document).ready(function () {
+            angular.bootstrap(document, ['genboe']);
+        });
+    </script>
 </asp:Content>

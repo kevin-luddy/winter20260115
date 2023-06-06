@@ -253,7 +253,7 @@ namespace IES.Common
                 return 0;
             }
 
-            return (decimal)(endDate.Value.Subtract(startDate.Value).Days / 30M);
+            return (decimal)(endDate.Value.Subtract(startDate.Value).Days / Constants.POP_MONTHS_DIVISOR);
         }
 
 		#endregion Date/Time methods
