@@ -888,5 +888,10 @@ namespace IES.Common
         public const string EXCEL_SSRS_FORMAT = "EXCELOPENXML";
 
         public const string PDF_SSRS_FORMAT = "pdf";
+
+        /// <summary>
+        /// Divisor for Formula of PoP Months Calculation
+        /// </summary>
+        public const decimal POP_MONTHS_DIVISOR = 30.42m;
     }
 }
