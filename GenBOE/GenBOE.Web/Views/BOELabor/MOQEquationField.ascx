@@ -284,7 +284,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersComparativeSuffix);"></div>
                                 <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="ShowFilterDialog(tableData)">Update Filters</button>
                             </td>
-                            <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" data-ng-model="tableData.AdditionalQueryFilters" data-ng-change="SetTableDirty(tableData)" /></td>
+                            <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" data-ng-model="tableData.AdditionalQueryFilters" data-ng-change="ParseSemiColons(tableData)" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} * 
