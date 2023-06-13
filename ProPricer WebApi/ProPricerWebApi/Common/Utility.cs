@@ -323,9 +323,9 @@ namespace APTSPropricerApi.Common
 									}
 
 									// COST for v9.2+
-									if (r.GetCost() != null)
+									CostInfo c = r.GetCost();
+									if (c != null)
 									{
-										CostInfo c = r.GetCost();
 										rdto.DirectCost = c.DirectCost.ToString();
 										// Look in BurdenElements to find the Price element (Linq)
 										IEnumerable<IBurdenCostElement> price =
@@ -351,6 +351,10 @@ namespace APTSPropricerApi.Common
 										}
 
 										rdto.BurdenCost = burdensDto;
+									}
+									else
+									{
+										rdto.BurdenCost = new List<BurdenCostDto>();
 									}
 
 									r.GetCost();

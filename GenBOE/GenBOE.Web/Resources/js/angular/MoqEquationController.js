@@ -1348,6 +1348,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		MOQEquationFieldWidget.setDirty();
 	};
 
+	$scope.ParseSemiColons = function (tableData) {
+		if (!$scope.model.IsRMS) {
+			tableData.AdditionalQueryFilters = tableData.AdditionalQueryFilters.replace(/;/g, ',');
+		}
+
+		$scope.SetTableDirty(tableData);
+	};
+
 	$scope.UpdateRepository = function (tableData) {
 		if (tableData.RepositoryNameSelection == $scope.model.SapWebiRepository) {
 			$scope.actualsValidation.isDirty.set(tableData.Id, true);

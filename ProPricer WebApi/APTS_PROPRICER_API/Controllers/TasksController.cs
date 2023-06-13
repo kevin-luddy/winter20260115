@@ -144,36 +144,40 @@ namespace APTSPropricerApi.Controllers
                                         rdto.SourceType = "CER";
                                     }
 
-                                    // COST for v9.2+
-                                    if (r.GetCost() != null)
-                                    {
-                                        CostInfo c = r.GetCost();
-                                        rdto.DirectCost = c.DirectCost.ToString();
-                                        // Look in BurdenElements to find the Price element (Linq)
-                                        IEnumerable<IBurdenCostElement> price =
-                                            from ele in c.BurdenElements
-                                            where ele.Name.Equals("Price")
-                                            select ele;
+									// COST for v9.2+
+									CostInfo c = r.GetCost();
+									if (c != null)
+									{
+										rdto.DirectCost = c.DirectCost.ToString();
+										// Look in BurdenElements to find the Price element (Linq)
+										IEnumerable<IBurdenCostElement> price =
+											from ele in c.BurdenElements
+											where ele.Name.Equals("Price")
+											select ele;
 
-                                        if (price != null && price.Any())
-                                        {
-                                            rdto.Price = c.BurdenCost(price.ElementAt(0).Position).ToString();
-                                        }
+										if (price != null && price.Any())
+										{
+											rdto.Price = c.BurdenCost(price.ElementAt(0).Position).ToString();
+										}
 
-                                        List<BurdenCostDto> burdensDto = new List<BurdenCostDto>();
-                                        foreach (IBurdenCostElement el in c.BurdenElements)
-                                        {
-                                            BurdenCostDto burdens = new BurdenCostDto
-                                            {
-                                                Name = el.Name
-                                            };
-                                            int pos = el.Position;
-                                            burdens.Value = c.BurdenCost(pos).ToString();
-                                            burdensDto.Add(burdens);
-                                        }
+										List<BurdenCostDto> burdensDto = new List<BurdenCostDto>();
+										foreach (IBurdenCostElement el in c.BurdenElements)
+										{
+											BurdenCostDto burdens = new BurdenCostDto
+											{
+												Name = el.Name
+											};
+											int pos = el.Position;
+											burdens.Value = c.BurdenCost(pos).ToString();
+											burdensDto.Add(burdens);
+										}
 
-                                        rdto.BurdenCost = burdensDto;
-                                    }
+										rdto.BurdenCost = burdensDto;
+									}
+									else
+									{
+										rdto.BurdenCost = new List<BurdenCostDto>();
+									}
 
                                     r.GetCost();
 
