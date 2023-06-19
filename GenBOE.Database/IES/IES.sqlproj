@@ -156,6 +156,7 @@
     <Build Include="Release Scripts\Older\Release 2019.1\1 - Release 2019.1 Script.sql" />
     <Build Include="Release Scripts\Older\Release 2019.5\1 - Release 2019.5 Script.sql" />
     <Build Include="Release Scripts\Release 2022.x\1 - Release 2022.x Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Sql Script For Release 2022.x Generated On 6_14_2023.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Object Scripts\Stored Procedures\ELMAH_LogError.sql" />
