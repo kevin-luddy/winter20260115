@@ -56,7 +56,6 @@ namespace GenBOE.DeleteWorkspaces
 			{
 				List<string> workspaceIds = LoadWorkspaceIdsFromCSV();
 				SoftDeleteWorkspaces(workspaceIds);
-				HardDeleteWorkspaces();
 			}
 			catch (Exception ex)
 			{
@@ -66,27 +65,6 @@ namespace GenBOE.DeleteWorkspaces
 
 			Console.WriteLine("Done processing, hit Enter to exit");
 			Console.ReadLine();
-		}
-
-		/// <summary>
-		/// Run stored procedure to Hard Delete the workspaces
-		/// </summary>
-		private static void HardDeleteWorkspaces()
-		{
-			using (SqlConnection conn = new SqlConnection(connectionString))
-			{
-				conn.Open();
-
-				using (SqlCommand cmd = new SqlCommand(HARD_DELETE_SP, conn)
-				{
-					CommandTimeout = 0,
-					CommandType = System.Data.CommandType.StoredProcedure,
-
-				})
-				{
-					cmd.ExecuteNonQuery();
-				}
-			}
 		}
 
 		/// <summary>
@@ -101,16 +79,27 @@ namespace GenBOE.DeleteWorkspaces
 			int batchIndex = 1;
 			foreach (IEnumerable<string> batch in workspaceIds.Batch(batchSize))
 			{
-				Console.WriteLine($"Updating Workspaces in batch {batchIndex++}");
+				Console.WriteLine($"Updating then Deleting Workspaces in batch {batchIndex++}");
 				string ids = string.Join(", ", batch);
 				string sqlString = string.Format(SOFT_DELETE_SQL, ids);
 				using (SqlConnection conn = new SqlConnection(connectionString))
 				{
 					conn.Open();
+
 					using (SqlCommand cmd = new SqlCommand(sqlString, conn)
 						{
 							CommandTimeout = 0
 						})
+					{
+						cmd.ExecuteNonQuery();
+					}
+
+					using (SqlCommand cmd = new SqlCommand(HARD_DELETE_SP, conn)
+					{
+						CommandTimeout = 0,
+						CommandType = System.Data.CommandType.StoredProcedure,
+
+					})
 					{
 						cmd.ExecuteNonQuery();
 					}
