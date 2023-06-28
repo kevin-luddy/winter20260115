@@ -94,7 +94,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetFullWorkspaceById(this.Workspace.Id)).Returns(new FullWorkspace(this.Workspace));
             retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>());
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(this.Workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1) });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1) });
             retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new List<FullWbs>() { new FullWbs(Wbs) });
             retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { fullClin1 });
             retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(new Collection<ResourceDTO>() { this.Resource });

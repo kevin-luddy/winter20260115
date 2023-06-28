@@ -64,7 +64,7 @@ namespace GenBOE.Tests.ActionLogic.Import
             // setup loaders
             perfOrg = new PerformingOrgDTO() { Id = 1, PerformingOrgName = "SSC", PerformingOrgDesc = "SSC" };
             this.perfOrgLoader.Setup(x => x.GetById(It.IsAny<int>())).Returns(perfOrg);
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new Collection<FullBoe>() { BOEMultiFalse });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiFalse });
             SetupSpreadCurves();
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<FullWbs>() { });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<FullClin>() { });
@@ -959,7 +959,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 Id = 2,
                 IsMultiClinWbs = true
             };
-           this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4)).Returns(new Collection<FullBoe>() { BOEMultiTrue });
+           this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiTrue });
            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(4)).Returns(new Collection<FullWbs>() { new FullWbs() { Id = 2, WbsNumber = "01", WbsTitle = "title" }, new FullWbs() { Id = 3, WbsNumber = "02", WbsTitle = "title2" } });
            this.retriever.Setup(x => x.GetClinsByWorkspaceId(4)).Returns(new Collection<FullClin>() { });
 
@@ -993,7 +993,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 Id = 2,
                 IsMultiClinWbs = true
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4)).Returns(new Collection<FullBoe>() { BOEMultiTrue });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiTrue });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(4)).Returns(new Collection<FullWbs>() { new FullWbs() { Id = 2, WbsNumber = "01", WbsTitle = "title" }, new FullWbs() { Id = 3, WbsNumber = "02", WbsTitle = "title2" } });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(4)).Returns(new Collection<FullClin>() { });
             this.commonDataMapper.Setup(x => x.getSpreadCurve()).Returns(new Collection<SpreadCurveModelView>());
@@ -1025,7 +1025,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 Id = 2,
                 IsMultiClinWbs = true
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4)).Returns(new Collection<FullBoe>() { BOEMultiTrue });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiTrue });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(4)).Returns(new Collection<FullWbs>() { new FullWbs() { Id = 3, WbsNumber = "03", WbsTitle = "title3" }, new FullWbs() { Id = 3, WbsNumber = "02", WbsTitle = "title2" } });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(4)).Returns(new Collection<FullClin>() { });
 
@@ -1052,7 +1052,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 Id = 2,
                 IsMultiClinWbs = true
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4)).Returns(new Collection<FullBoe>() { BOEMultiTrue });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiTrue });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(4)).Returns(new Collection<FullWbs>() { });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(4)).Returns(new Collection<FullClin>() { new FullClin() {Id =2, ClinNumber ="01", ClinTitle = "title"}});
 
@@ -1085,7 +1085,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 Id = 2,
                 IsMultiClinWbs = true
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4)).Returns(new Collection<FullBoe>() { BOEMultiTrue });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiTrue });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(4)).Returns(new Collection<FullWbs>() { new FullWbs() { Id = 2, WbsNumber = "01", WbsTitle = "title" }, new FullWbs() { Id = 3, WbsNumber = "02", WbsTitle = "title2" } });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(4)).Returns(new Collection<FullClin>() { new FullClin() { Id = 2, ClinNumber = "01", ClinTitle = "title" } });
 
@@ -1129,7 +1129,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 Id = 2,
                 IsMultiClinWbs = true
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4)).Returns(new Collection<FullBoe>() { BOEMultiTrue });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiTrue });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(4)).Returns(new Collection<FullWbs>() { });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(4)).Returns(new Collection<FullClin>() { new FullClin() { Id = 2, ClinNumber = "01", ClinTitle = "title" } });
 
@@ -1164,7 +1164,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 Id = 2,
                 IsMultiClinWbs = true
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4)).Returns(new Collection<FullBoe>() { BOEMultiTrue });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(4, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiTrue });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(4)).Returns(new Collection<FullWbs>() { });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(4)).Returns(new Collection<FullClin>() { new FullClin() { Id = 3, ClinNumber = "03", ClinTitle = "title3" } });
 

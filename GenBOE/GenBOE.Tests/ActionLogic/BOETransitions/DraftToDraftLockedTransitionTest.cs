@@ -6,7 +6,8 @@
 
 namespace GenBOE.Tests.ActionLogic.BOETransitions
 {
-    using System.Collections.ObjectModel;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.DataBridge.Common;
@@ -53,7 +54,7 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             FullBoe boeFull4 = new FullBoe(boe4);
             FullBoe boeFull5 = new FullBoe(boe5);
 
-            this.retriever.Setup(r => r.GetFullBoesByWorkspaceId(workspaceID)).Returns(new Collection<FullBoe> { boeFull1, boeFull2, boeFull3, boeFull4, boeFull5 });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeFull1, boeFull2, boeFull3, boeFull4, boeFull5 });
 
             int? lastLockedBoeID = boe1.Id;
             workspaceDataLoader.Setup(r => r.GetLastLockedBOEID(workspaceID)).Returns(lastLockedBoeID);

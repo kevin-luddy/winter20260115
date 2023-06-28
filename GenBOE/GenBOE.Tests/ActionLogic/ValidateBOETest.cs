@@ -155,7 +155,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
@@ -255,7 +255,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { boeTE });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
@@ -414,7 +414,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
@@ -523,7 +523,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -648,7 +648,7 @@ namespace GenBOE.Tests.ActionLogic
                                                 EndDate = Convert.ToDateTime("06/01/2011")
                     } } } });
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
@@ -788,7 +788,7 @@ namespace GenBOE.Tests.ActionLogic
                                                 EndDate = Convert.ToDateTime("06/01/2011")
                     } } } });
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
@@ -884,7 +884,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1014,7 +1014,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
@@ -1136,7 +1136,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1244,7 +1244,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1363,7 +1363,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1506,7 +1506,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1696,7 +1696,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1833,7 +1833,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1955,7 +1955,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2096,7 +2096,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2196,7 +2196,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2302,7 +2302,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2416,7 +2416,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
@@ -2487,7 +2487,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -2566,7 +2566,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
@@ -2693,7 +2693,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>() { new CustomFieldDTO() });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
@@ -2805,7 +2805,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             //setup custom fields to be false, we'll check them in another test
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
@@ -2837,7 +2837,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2911,7 +2911,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -2991,7 +2991,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { materialDTO });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -3093,7 +3093,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { materialDTO });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -3216,7 +3216,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullBoe>() { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(boe.WorkspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObject });
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO>() { });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
@@ -3311,7 +3311,7 @@ namespace GenBOE.Tests.ActionLogic
             Collection<FullBoe> boesToValidate = new Collection<FullBoe>();
             boesToValidate.Add(boeObject);
             boesToValidate.Add(boeObject2);
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, true)).Returns(boesToValidate);
+            retriever.Setup(i => i.GetFullBoesByWorkspaceId(workspace.Id, true, It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boesToValidate);
 
             //Act
             validationBOE = sut.ValidateAllBOEs(ws);

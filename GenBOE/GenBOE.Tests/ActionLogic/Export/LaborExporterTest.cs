@@ -80,7 +80,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 new SpreadCurveModelView() { SpreadCurveID = SpreadCurves.SpreadCurve1, SpreadCurveName = "Curve 1" },
                 new SpreadCurveModelView() { SpreadCurveID = SpreadCurves.SpreadCurve13, SpreadCurveName = "Curve 13" }
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new Collection<FullBoe>() { BOEMultiFalse });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiFalse });
 
             this.commonDataMapper.Setup(x => x.getSpreadCurve()).Returns(spreadCurves);
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<FullWbs>() { });
@@ -773,7 +773,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 IsMultiClinWbs = true,
                 WorkspaceID = 5         
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(5)).Returns(new Collection<FullBoe>() { BOEMultiTrue });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(5, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { BOEMultiTrue });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(5)).Returns(new Collection<FullWbs>() { new FullWbs() { Id = 2, WbsNumber = "01", WbsTitle = "title" }, new FullWbs() { Id = 3, WbsNumber = "02", WbsTitle = "title2" } });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(5)).Returns(new Collection<FullClin>() { new FullClin() { Id = 2, ClinNumber = "01", ClinTitle = "title" } });
             TestTaskElement(this.CreateExistingCostCustomFieldMultiTaskElement(), true);

@@ -342,7 +342,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new Collection<WorkspaceVariableDTO> { workspaceVar });
             retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(new Collection<FullWbs>());
             retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new Collection<FullClin>());
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             retriever.Setup(x => x.GetResourcesByResourceListId(ws.ResourceListID)).Returns(new Collection<ResourceDTO>() { });
 
             return toReturn;
@@ -400,7 +400,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullBoe boeBObject = new FullBoe(boeB);
             FullBoe boeCObject = new FullBoe(boeC);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new List<FullBoe>() { boeAObject, boeBObject, boeCObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeAObject, boeBObject, boeCObject });
             this.retriever.Setup(x => x.GetWorkspaceById(this.Workspace.Id)).Returns(workspace);
 
             this.factory.Setup(x => x.CreateFullWorkspace(workspace.Id)).Returns(ws);
@@ -476,7 +476,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullBoe boeBObject = new FullBoe(boeB);
             FullBoe boeCObject = new FullBoe(boeC);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new List<FullBoe>() { boeAObject, boeBObject, boeCObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeAObject, boeBObject, boeCObject });
             this.retriever.Setup(x => x.GetWorkspaceById(this.Workspace.Id)).Returns(workspace);
 
             this.factory.Setup(x => x.CreateFullWorkspace(workspace.Id)).Returns(ws);
@@ -553,7 +553,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullBoe boeBObject = new FullBoe(boeB);
             FullBoe boeCObject = new FullBoe(boeC);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new List<FullBoe>() { boeAObject, boeBObject, boeCObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeAObject, boeBObject, boeCObject });
             this.retriever.Setup(x => x.GetWorkspaceById(this.Workspace.Id)).Returns(workspace);
 
             this.factory.Setup(x => x.CreateFullWorkspace(workspace.Id)).Returns(ws);
@@ -657,7 +657,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             LaborTaskDataModelView task = new LaborTaskDataModelView { TaskElementData = taskDetail, LaborTypesData = new Collection<LaborTypeDataModelView> { labor } };
             Collection<ValidationMessage> validations = new Collection<ValidationMessage>();
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(new Collection<FullWbs>());
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new List<FullClin>());
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO> { });
             this.retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(new Collection<ResourceDTO>());
@@ -740,7 +740,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             BoeTaskElementDTO boeTask = new BoeTaskElementDTO { Id = taskDetail2.TaskElementDetailID.Value, OrdinaryVariables = new Collection<OrdinaryVariableDto> { new OrdinaryVariableDto { Id = taskVar.OrdinaryVariableID, OrdinaryVariableName = taskVar.OrdinaryVariableName, BoeID = boe.Id } }, BoeID = boe.Id };
             factory.Setup(x => x.CreateTaskElement(boeTask.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTask);
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO> { workspaceVar });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(workspace.Id)).Returns(new Collection<FullWbs>());
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
@@ -1468,7 +1468,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
 
@@ -1496,7 +1496,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             // Change Task ID
             task.TaskElementData.TaskID = "2";
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
 
@@ -1526,7 +1526,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             // Change Task Title
             task.TaskElementData.Title = "Wrong title";
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
 
@@ -1557,7 +1557,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             // Change Task Start Date
             task.TaskElementData.StartDate = DateTime.Now.AddDays(1).ToMonthString();
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
 
@@ -1597,7 +1597,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             // Change MOQ text
             task.TaskElementData.MOQHoursEquation = "Wrong text";
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
 
@@ -1624,7 +1624,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
 
@@ -1731,7 +1731,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
 

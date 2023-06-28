@@ -1636,11 +1636,10 @@ namespace GenBOE.Web.Controllers
                 }
                 else if (reportID == (int)Reports.WorkspaceData)
                 {
-                    ws.LoadBoesRTEData();
+                    ws.LoadBoesAndTaskElementsRTEData();
                     ws.LoadTravelRTEData();
                     ws.LoadODCsRTEData();
                     ws.LoadMaterialsRTEData();
-                    ws.LoadTaskElementRTEData();
 
                     // All BOEs for the workspace as a default
                     List<FullBoe> boes = ws.Boes.ToList();

@@ -776,22 +776,13 @@ namespace GenBOE.Objects
         }
 
         /// <summary>
-        /// Gets all FullBoe objects that belong to the workspace (WITHOUT RTE DATA)
-        /// </summary>
-        /// <param name="workspaceId">Workspace Id</param>
-        /// <returns>FullBoe objects</returns>
-        public ICollection<FullBoe> GetFullBoesByWorkspaceId(int workspaceId)
-        {
-            return this.GetFullBoesByWorkspaceId(workspaceId, false);
-        }
-
-        /// <summary>
         /// Gets all FullBoe objects that belong to the workspace
         /// </summary>
         /// <param name="workspaceId">Workspace Id</param>
         /// <param name="loadRteData">Indicate whether RTE data should be loaded automatically</param>
+        /// <param name="taskElements">Task Elements to populate into BOEs, assuming they are populated with RTE data if loadRteData is true</param>
         /// <returns>FullBoe objects</returns>
-        public ICollection<FullBoe> GetFullBoesByWorkspaceId(int workspaceId, bool loadRteData)
+        public ICollection<FullBoe> GetFullBoesByWorkspaceId(int workspaceId, bool loadRteData, IEnumerable<BoeTaskElementDTO> taskElements)
         {
             ICollection<BoeDTO> boes = this.boeLoader.GetByWorkspaceId(workspaceId, loadRteData);
 
@@ -799,7 +790,15 @@ namespace GenBOE.Objects
 
             foreach (BoeDTO boe in boes)
             {
-                result.Add(new FullBoe(boe));
+                FullBoe fullBoe = new FullBoe(boe);
+
+                // Load the boe's tasks more efficiently if possible
+                if (taskElements != null)
+                {
+					fullBoe.SetTaskElements(taskElements);
+                }
+
+                result.Add(fullBoe);
             }
 
             return result;

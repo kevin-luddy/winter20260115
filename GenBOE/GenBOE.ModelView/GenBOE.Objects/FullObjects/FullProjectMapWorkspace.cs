@@ -171,7 +171,7 @@ namespace GenBOE.Objects
         /// <summary>
         /// Populates RTE data for all Boes
         /// </summary>
-        public override void LoadBoesRTEData()
+        public override void LoadBoesAndTaskElementsRTEData()
         {
             if (this.boes == null)
             {
