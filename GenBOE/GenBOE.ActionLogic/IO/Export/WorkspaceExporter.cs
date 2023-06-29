@@ -535,9 +535,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     toReturn.Add(row);
 
-                    HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this.resourceDTODataLoader.GetByIds(task.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList()));
-                    HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(task.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-                    
                     foreach (ResourceTypeDto resourceType in task.taskElementLabors)
                     {
                         row = new List<string>();
@@ -589,8 +586,8 @@ namespace GenBOE.ActionLogic.IO.Export
                             row.Add(this.sEmpty);
                         }
 
-                        ResourceDTO aResource = resourceType.ResourceID.HasValue ? resourcesFromDb.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
-                        PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? perfOrgsFromDb.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
+                        ResourceDTO aResource = resourceType.ResourceID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
+                        PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? exportInputs.PerformingOrgsUsedInBoes.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
                         string percentSpread = this.sEmpty;
 
                         if (resourceType.SpreadType == SpreadType.Hours)
@@ -1322,7 +1319,7 @@ namespace GenBOE.ActionLogic.IO.Export
             }
 
             IReadOnlyCollection<ResourceDTO> workspaceResources = exportInputs.ResourcesUsedInWsBoes;
-            HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(exportInputs.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
+            HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);
             HashSet<BoeTaskElementDTO> allTaskElements = new HashSet<BoeTaskElementDTO>(exportInputs.TaskElements);
             HashSet<OtherDirectCostDTO> allOdcs = new HashSet<OtherDirectCostDTO>(exportInputs.Odcs);
             HashSet<ClinDTO> allClins = new HashSet<ClinDTO>(exportInputs.Clins);
@@ -2263,7 +2260,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                select new
                                {
                                    WBSID = w.Id,
-                                   ClinString = string.Join(", ", w.Clins.Select(c => c.ClinNumber).OrderBy(c => c))
+                                   ClinString = string.Join(", ", exportInputs.Clins.Where(x => w.ClinIDs.Contains(x.Id)).Select(c => c.ClinNumber).OrderBy(c => c))
                                }).ToDictionary(w => w.WBSID, w => w.ClinString);
 
             // Reuse WBS Exporter since formats are the same
@@ -2306,29 +2303,26 @@ namespace GenBOE.ActionLogic.IO.Export
 
             // Combine Admin and BOE permissions and group by userID, groupID and displayName, then get all roles for each grouping
             var combinedPermissions = from p in workspacePotentialPermissions.Union(workspacePermissions)
-                                      group p by new
-                                      {
-                                          p.ETIUserId,
-                                          this.UserDTODataLoader.GetUserByID(p.ETIUserId).DisplayName
-                                      }
+                                      group p by p.ETIUserId
                                           into permissionsGroup
-                                          orderby permissionsGroup.Key.DisplayName
                                           select new
                                           {
-                                              permissionsGroup.Key.ETIUserId,
-                                              permissionsGroup.Key.DisplayName,
+                                              permissionsGroup.Key,
                                               Roles = permissionsGroup.Select(p => p.Role)
                                           };
 
+            // now pull out all the users from the database
+            ICollection<UserDTO> users = this.UserDTODataLoader.GetByIds(combinedPermissions.Select(c => c.Key).ToList()).OrderBy(u => u.DisplayName).ToList();
+
             // Output to sheet
-            foreach (var workspacePotentialPermission in combinedPermissions)
+            foreach (UserDTO user in users)
             {
-                UserDTO user = this.UserDTODataLoader.GetUserByID(workspacePotentialPermission.ETIUserId);
+                var workspacePotentialPermission = combinedPermissions.First(c => c.Key == user.UserID);
                 bool isADGroup = user.NTID.Contains('.');
                 if (isADGroup)
                 {
                     toReturn.Add(
-                        workspacePotentialPermission.ETIUserId.ToString(),
+                        workspacePotentialPermission.Key.ToString(),
                         user.DisplayName,
                         string.Empty,
                         workspacePotentialPermission.Roles.Contains(Role.WorkspaceAdmin) ? this.sYes : this.sNo,
@@ -2341,7 +2335,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 else
                 {
                     toReturn.Add(
-                     workspacePotentialPermission.ETIUserId.ToString(),
+                     workspacePotentialPermission.Key.ToString(),
                      string.Empty,
                      user.DisplayName,
                      workspacePotentialPermission.Roles.Contains(Role.WorkspaceAdmin) ? this.sYes : this.sNo,

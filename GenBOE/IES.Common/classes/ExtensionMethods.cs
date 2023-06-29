@@ -998,5 +998,20 @@ namespace IES.Common
 
             return $"{text.Substring(0, i)}{replace}{text.Substring(i + search.Length)}";
         }
-    }
+
+		/// <summary>
+		/// Batches the specified the list into batches of max size.
+		/// </summary>
+		/// <typeparam name="T">The type of items in the list.</typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="maxItems">The maximum size for a batch of items.</param>
+		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> items, int maxItems)
+		{
+			return items.Select((item, inx) => new { item, inx })
+					.GroupBy(x => x.inx / maxItems)
+					.Select(g => g.Select(x => x.item));
+		}
+	}
 }

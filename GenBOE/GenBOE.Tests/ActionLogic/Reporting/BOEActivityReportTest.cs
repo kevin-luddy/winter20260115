@@ -273,7 +273,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(ws);
             factory.Setup(x => x.CreateFullWorkspace(workspace.Id)).Returns(ws);
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { new FullBoe(boes[0]), new FullBoe(boes[1]), new FullBoe(boes[2]) });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe(boes[0]), new FullBoe(boes[1]), new FullBoe(boes[2]) });
             retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(clins);
             retriever.Setup(x => x.GetClinById(clins[0].Id)).Returns(clins[0]);
             retriever.Setup(x => x.GetClinById(clins[1].Id)).Returns(clins[1]);

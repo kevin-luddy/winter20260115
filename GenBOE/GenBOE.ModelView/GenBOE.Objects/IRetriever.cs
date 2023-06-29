@@ -28,19 +28,12 @@ namespace GenBOE.Objects
         ICollection<FullClin> GetClinsByWorkspaceId(int workspaceId);
 
         /// <summary>
-        /// Gets all FullBoe objects that belong to the workspace (WITHOUT RTE DATA)
-        /// </summary>
-        /// <param name="workspaceId">Workspace Id</param>
-        /// <returns>FullBoe objects</returns>
-        ICollection<FullBoe> GetFullBoesByWorkspaceId(int workspaceId);
-
-        /// <summary>
         /// Gets all FullBoe objects that belong to the workspace
         /// </summary>
         /// <param name="workspaceId">Workspace Id</param>
         /// <param name="loadRteData">Indicate whether RTE data should be loaded automatically</param>
         /// <returns>FullBoe objects</returns>
-        ICollection<FullBoe> GetFullBoesByWorkspaceId(int workspaceId, bool loadRteData);
+        ICollection<FullBoe> GetFullBoesByWorkspaceId(int workspaceId, bool loadRteData, IEnumerable<BoeTaskElementDTO> taskElements);
 
         /// <summary>
         /// Gets all Wbs elements that belong to the workspace

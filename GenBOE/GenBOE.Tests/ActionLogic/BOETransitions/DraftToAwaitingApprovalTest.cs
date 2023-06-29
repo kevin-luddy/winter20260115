@@ -57,7 +57,7 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             FullBoe boeFull4 = new FullBoe(boe4);
             FullBoe boeFull5 = new FullBoe(boe5);
 
-            this.retriever.Setup(r => r.GetFullBoesByWorkspaceId(workspaceID)).Returns(new Collection<FullBoe> { boeFull1, boeFull2, boeFull3, boeFull4, boeFull5 });
+            this.retriever.Setup(r => r.GetFullBoesByWorkspaceId(workspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeFull1, boeFull2, boeFull3, boeFull4, boeFull5 });
 
             DraftToAwaitingApprovalTransition sut = new DraftToAwaitingApprovalTransition(emailer.Object,
                                                                                   secInfoLoader.Object, userLoader.Object, boeApproverLoader.Object, workspaceDataLoader.Object);

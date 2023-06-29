@@ -1385,7 +1385,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			_retriever.Setup(x => x.GetApproverResponseCollectionByBoeId(ws.Id)).Returns(new Collection<BoeApproverResponseDTO>() { new BoeApproverResponseDTO() { BoeID = boe.Id, ETIUserID = user2.Id } });
 			_retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new Collection<FullClin>());
 			_retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(new Collection<FullWbs>() { wbs1, multi });
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			validatorWBSMove.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, object>>>())).Returns(new Collection<string>() { "The selected WBS # would create a circular reference." });
 			_userLoader.Setup(x => x.GetUserByID(user2.Id)).Returns(approver);
 			validatorMaterials.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
@@ -1468,7 +1468,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			_retriever.Setup(x => x.GetApproverResponseCollectionByBoeId(ws.Id)).Returns(new Collection<BoeApproverResponseDTO>() { new BoeApproverResponseDTO() { BoeID = boe.Id, ETIUserID = user2.Id } });
 			_retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new Collection<FullClin>() { clin1, multi });
 			_retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(new Collection<FullWbs>() { });
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			validatorClinMove.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, object>>>())).Returns(new Collection<string>() { "The selected Clin # would create a circular reference." });
 			_userLoader.Setup(x => x.GetUserByID(user2.Id)).Returns(approver);
 			validatorMaterials.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
@@ -1560,7 +1560,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 			Factory.Setup(x => x.CreateFullWbs(It.IsAny<WbsDTO>())).Returns(multiwbs);
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { "The BOE is not a validate Material" });
 			_userLoader.Setup(x => x.GetUserByID(user2.Id)).Returns(approver);
 			validatorMaterials.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
@@ -1654,7 +1654,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			Factory.Setup(x => x.CreateFullWbs(It.IsAny<WbsDTO>())).Returns(multiwbs);
 
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(user2.Id)).Returns(approver);
 			validatorMaterials.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { "BOE contaitns Material Task Elements" });
 			_permissionsLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(1)).Returns(permissions);
@@ -1744,7 +1744,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 			Factory.Setup(x => x.CreateFullWbs(It.IsAny<WbsDTO>())).Returns(multiwbs);
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(user2.Id)).Returns(approver);
 			validatorMaterials.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 			_permissionsLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(1)).Returns(permissions);
@@ -1841,7 +1841,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(user2.Id)).Returns(approver);
 			validatorMaterials.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 			_permissionsLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(1)).Returns(permissions);
@@ -1930,7 +1930,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 			Factory.Setup(x => x.CreateFullWbs(It.IsAny<WbsDTO>())).Returns(multiwbs);
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(user2.Id)).Returns(approver);
 			validatorMaterials.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 			_permissionsLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(1)).Returns(permissions);
@@ -2020,7 +2020,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(user2.Id)).Returns(approver);
 			validatorMaterials.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 			_permissionsLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(1)).Returns(permissions);
@@ -2112,7 +2112,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(100)).Returns(approver);
 			_userLoader.Setup(x => x.GetUserByID(2)).Returns(approver);
 			_userLoader.Setup(x => x.GetByIds(new List<int>() { 2 })).Returns(new Collection<UserDTO>() { approver });
@@ -2219,7 +2219,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(100)).Returns(approver);
 			_userLoader.Setup(x => x.GetUserByID(2)).Returns(approver);
 			_userLoader.Setup(x => x.GetByIds(new List<int>() { 2 })).Returns(new Collection<UserDTO>() { group });
@@ -2318,7 +2318,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(2)).Returns(approver);
 			_userLoader.Setup(x => x.GetByIds(new List<int>() { 2 })).Returns(new Collection<UserDTO>() { });
 			_userLoader.Setup(x => x.UserExists("test", out userId)).Returns(true);
@@ -2415,7 +2415,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 			Factory.Setup(x => x.CreateFullWbs(It.IsAny<WbsDTO>())).Returns(multiwbs);
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(2)).Returns(approver);
 			_userLoader.Setup(x => x.GetByIds(new List<int>() { 2 })).Returns(new Collection<UserDTO>() { });
 			_userLoader.Setup(x => x.UserExists("test", out userId)).Returns(true);
@@ -2512,7 +2512,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 			validatorCost.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>() { });
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 			_userLoader.Setup(x => x.GetUserByID(2)).Returns(author);
 			_userLoader.Setup(x => x.GetByIds(new List<int>() { 2 })).Returns(new Collection<UserDTO>() { });
 			_userLoader.Setup(x => x.UserExists("test", out userId)).Returns(true);
@@ -2827,7 +2827,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			List<WorkspaceVariableDTO> userWorkspaceVar = new List<WorkspaceVariableDTO>();
 
 			_retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(1)).Returns(workspaceVars);
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1)).Returns(new Collection<FullBoe>());
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>());
 			_retriever.Setup(x => x.GetResourcesByResourceListId(1)).Returns(new Collection<ResourceDTO>());
 			_retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
 			_retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(new Collection<ResourceDTO>());
@@ -2896,7 +2896,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			List<WorkspaceVariableDTO> userWorkspaceVar = new List<WorkspaceVariableDTO>();
 
 			_retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(1)).Returns(workspaceVars);
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1)).Returns(new Collection<FullBoe>());
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>());
 			_retriever.Setup(x => x.GetResourcesByResourceListId(1)).Returns(new Collection<ResourceDTO>());
 			_retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
 
@@ -2958,7 +2958,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			List<WorkspaceVariableDTO> userWorkspaceVar = null;
 
 			_retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(1)).Returns(workspaceVars);
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1)).Returns(new Collection<FullBoe>());
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>());
 			_retriever.Setup(x => x.GetResourcesByResourceListId(1)).Returns(new Collection<ResourceDTO>());
 			_retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
 
@@ -3022,7 +3022,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			task1.BoeID = 1;
 
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1)).Returns(new Collection<FullBoe>() { new FullBoe() { CLINID = 1 } });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe() { CLINID = 1 } });
 			_retriever.Setup(x => x.GetResourcesByResourceListId(1)).Returns(new Collection<ResourceDTO>());
 			_retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task1 });
 
@@ -3088,7 +3088,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			task1.BoeID = 1;
 
 
-			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1)).Returns(new Collection<FullBoe>() { new FullBoe() { CLINID = 1 } });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe() { CLINID = 1 } });
 			_retriever.Setup(x => x.GetResourcesByResourceListId(1)).Returns(new Collection<ResourceDTO>());
 			_retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task1 });
 

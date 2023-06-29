@@ -190,7 +190,7 @@ namespace GenBOE.Tests.ActionLogic.Common
             };
 
             ICollection<FullBoe> boes = new List<FullBoe>() { boe1, boe2, boe3 };
-            this.Retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(boes);
+            this.Retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             #endregion
 

@@ -60,10 +60,9 @@ namespace GenBOE.ActionLogic.IO.Import
             if (excelFileStream == null) { throw new ArgumentNullException(nameof(excelFileStream)); }
             if (ws == null) { throw new ArgumentNullException(nameof(ws)); }
 
-            ws.LoadBoesRTEData();
+            ws.LoadBoesAndTaskElementsRTEData();
             ws.LoadMaterialsRTEData();
             ws.LoadODCsRTEData();
-            ws.LoadTaskElementRTEData();
             ws.LoadTravelRTEData();
 
             WorkofflineImport importedResults = new WorkofflineImport();

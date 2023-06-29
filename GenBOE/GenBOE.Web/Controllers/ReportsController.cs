@@ -262,14 +262,8 @@ namespace GenBOE.Web.Controllers
 
             ICollection<PermissionsDTO> adminDtos = this.PermissionsLoader.GetWorkspacePermissions(ws.Id)
                 .Where(x => x.Role == Role.WorkspaceAdmin).ToCollection();
-            ICollection<string> adminNames = new Collection<string>();
-            foreach (PermissionsDTO adminDto in adminDtos)
-            {
-                UserDTO adminData = this.userLoader.GetUserByID(adminDto.ETIUserId);
-                adminNames.Add(adminData.DisplayName);
-            }
-
-            this.ViewData["WorkspaceAdmins"] = adminNames;
+            ICollection<UserDTO> users = this.userLoader.GetByIds(adminDtos.Select(a => a.ETIUserId).ToList());
+            this.ViewData["WorkspaceAdmins"] = users.Select(u => u.DisplayName).ToCollection();
 
             // find the position of "allBOEs"
             int? pos = theModelViews.Select((report, index) => new { report, index }).FirstOrDefault(x => x.report.ReportID == (int)Reports.AllBOEs)?.index;
@@ -1636,11 +1630,10 @@ namespace GenBOE.Web.Controllers
                 }
                 else if (reportID == (int)Reports.WorkspaceData)
                 {
-                    ws.LoadBoesRTEData();
+                    ws.LoadBoesAndTaskElementsRTEData();
                     ws.LoadTravelRTEData();
                     ws.LoadODCsRTEData();
                     ws.LoadMaterialsRTEData();
-                    ws.LoadTaskElementRTEData();
 
                     // All BOEs for the workspace as a default
                     List<FullBoe> boes = ws.Boes.ToList();

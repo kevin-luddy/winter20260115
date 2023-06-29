@@ -374,7 +374,7 @@ namespace GenBOE.Tests.ActionLogic.Import
 
             FullWorkspace ws = new FullWorkspace(workspace);
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(wbsObjects);
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(boeObjects);
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boeObjects);
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(clinTestData);
 
             using (MemoryStream file = new MemoryStream(Properties.Resources.BOEImporterTest))
