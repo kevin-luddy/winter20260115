@@ -381,7 +381,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             factory.Setup(x => x.CreateFullBoe(It.Is<BoeDTO>(b => b.Id == boe4.Id))).Returns(boe4);
             factory.Setup(x => x.CreateFullClin(It.IsAny<ClinDTO>())).Returns(clin1);
             factory.Setup(x => x.CreateFullWbs(It.IsAny<WbsDTO>())).Returns(wbs1);
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe> {boe1, boe2});
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> {boe1, boe2});
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe1.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(new List<BoeTaskElementDTO> {taskElement1, taskElement2 });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe2.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))

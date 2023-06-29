@@ -264,7 +264,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
             ValidationAllBOEModelView CollectionOfErrors = new ValidationAllBOEModelView();
 
             // preload RTE data.. for validation
-            ws.LoadBoesRTEData();
+            ws.LoadBoesAndTaskElementsRTEData();
 
             // For every BOE
             foreach (FullBoe boe in ws.Boes)

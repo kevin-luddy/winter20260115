@@ -131,11 +131,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
             
             // Pre-load the RTE data since this is faster than loading all objects in ResourcesUsedInWsBoes property, then later adding RTE data to each object.
-            workspace.LoadBoesRTEData();
+            workspace.LoadBoesAndTaskElementsRTEData();
             workspace.LoadTravelRTEData();
             workspace.LoadODCsRTEData();
             workspace.LoadMaterialsRTEData();
-            workspace.LoadTaskElementRTEData();
 
             // All BOEs for the workspace as a default
             List<FullBoe> boes = workspace.Boes.ToList();

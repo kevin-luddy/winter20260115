@@ -222,7 +222,7 @@ namespace GenBOE.Tests.Objects
                 new FullBoe(new BoeDTO { Id = 1, WorkspaceID = 1 })
             };
             
-            _retriever.Setup(i => i.GetFullBoesByWorkspaceId(fullWorkspace.Id)).Returns(boe);
+            _retriever.Setup(i => i.GetFullBoesByWorkspaceId(fullWorkspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boe);
 
             IReadOnlyCollection<FullBoe> returnedBoe = fullWorkspace.Boes;
 
@@ -230,12 +230,12 @@ namespace GenBOE.Tests.Objects
             
             // Call a second time. Ensure it does not go to the DB again to retrieve.
             returnedBoe = fullWorkspace.Boes;
-            _retriever.Verify(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id), Times.Exactly(1));
+            _retriever.Verify(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>()), Times.Exactly(1));
             
             // Refresh and ensure task elements are re-fetched from the DB.
             fullWorkspace.RefreshBoes();
             returnedBoe = fullWorkspace.Boes;
-            _retriever.Verify(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id), Times.Exactly(2));
+            _retriever.Verify(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>()), Times.Exactly(2));
             Assert.AreEqual(1, returnedBoe.Count);
             Assert.AreEqual(boe[0].Id, returnedBoe.First().Id);
 
@@ -247,18 +247,19 @@ namespace GenBOE.Tests.Objects
             Assert.IsFalse(returnedBoe.First().WasDescriptionSet);
 
             _retriever.Setup(x => x.PopulateRTEData(boe));
-            fullWorkspace.LoadBoesRTEData();
+            fullWorkspace.LoadBoesAndTaskElementsRTEData();
             Assert.IsTrue(returnedBoe.Any());
             _retriever.Verify(x => x.PopulateRTEData(boe), Times.Exactly(1));
 
             // Do a freash load w/ the data
             fullWorkspace.RefreshBoes();
-            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id, true)).Returns(boe);
-            fullWorkspace.LoadBoesRTEData();
+            _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(fullWorkspace.Id, true, fullWorkspace.DecimalPrecision, fullWorkspace.CostDecimalPrecision)).Returns(new List<BoeTaskElementDTO>());
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id, true, It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boe);
+            fullWorkspace.LoadBoesAndTaskElementsRTEData();
             returnedBoe = fullWorkspace.Boes; // this should just return the Boe, as the load would have loaded the whole thing
             Assert.IsTrue(returnedBoe.Any());
-            _retriever.Verify(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id, true), Times.Exactly(1));
-            _retriever.Verify(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id, false), Times.Exactly(0)); // this would have been called by .Boes, but that should not be loading anything
+            _retriever.Verify(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id, true, It.IsAny<IEnumerable<BoeTaskElementDTO>>()), Times.Exactly(1));
+            _retriever.Verify(x => x.GetFullBoesByWorkspaceId(fullWorkspace.Id, false, It.IsAny<IEnumerable<BoeTaskElementDTO>>()), Times.Exactly(3)); // this would have been called by .Boes, but that should not be loading anything
         }
 
         /// <summary>
@@ -652,7 +653,7 @@ namespace GenBOE.Tests.Objects
             _retriever.Setup(i => i.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), It.IsAny<bool>())).Returns(materials);
             Collection<FullBoe> boes = new Collection<FullBoe>();
             boes.Add(new FullBoe { Id = 1 });
-            _retriever.Setup(i => i.GetFullBoesByWorkspaceId(_workspaceDto.Id)).Returns(boes);
+            _retriever.Setup(i => i.GetFullBoesByWorkspaceId(_workspaceDto.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             IReadOnlyCollection<MaterialDTO> returnedMaterials = fullWorkspace.Materials;
             // Call a second time. Ensure it does not go to the DB again to retrieve.
@@ -697,7 +698,7 @@ namespace GenBOE.Tests.Objects
             _retriever.Setup(i => i.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), It.IsAny<bool>())).Returns(odcs);
             Collection<FullBoe> boes = new Collection<FullBoe>();
             boes.Add(new FullBoe { Id = 1 });
-            _retriever.Setup(i => i.GetFullBoesByWorkspaceId(_workspaceDto.Id)).Returns(boes);
+            _retriever.Setup(i => i.GetFullBoesByWorkspaceId(_workspaceDto.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             IReadOnlyCollection<OtherDirectCostDTO> returnedOdcs = fullWorkspace.Odcs;
             // Call a second time. Ensure it does not go to the DB again to retrieve.

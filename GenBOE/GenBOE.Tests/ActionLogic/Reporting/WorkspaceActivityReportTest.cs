@@ -223,7 +223,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
             _IPermissionsDTOLoader.Setup(x => x.GetBOEPermissions(boeIds)).Returns(allPermissionsCollection);
 
 
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(boes[0]), new FullBoe(boes[1]), new FullBoe(boes[2]) });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(boes[0]), new FullBoe(boes[1]), new FullBoe(boes[2]) });
             retriever.Setup(x => x.GetWorkspaceHistoryByWorkspaceId(workspace.Id)).Returns(histories);
 
             WorkspaceActivityReport sut = new WorkspaceActivityReport(_IPermissionsDTOLoader.Object);

@@ -574,7 +574,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.iboeFormDataLoader.Setup(x => x.GetById(StubbedData.Iboe.Id)).Returns(StubbedData.Iboe);
             this.pboeFormDataLoader.Setup(x => x.GetById(StubbedData.Pboe.Id)).Returns(StubbedData.Pboe);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 1000 } });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 1000 } });
             this.retriever.Setup(x => x.GetLaborTypesTypesForBoeId(1000)).Returns(new List<ResourceTypeDto>()
             {
                 new ResourceTypeDto() { ResourceID = StubbedData.Res1.Id, StartDateValue = new DateTime(2012, 9, 15), EndDateValue = new DateTime(2012, 9, 15) },
@@ -621,7 +621,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             FullWorkspace workspace2 = new FullWorkspace() { Id = 2, ContractStartDate = new DateTime(2012, 7, 15), ContractEndDate = new DateTime(2015, 4, 15), IsUsingTM = true };
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 2000 } });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 2000 } });
             this.retriever.Setup(x => x.GetLaborTypesTypesForBoeId(2000)).Returns(new List<ResourceTypeDto>()
             {
                 new ResourceTypeDto() { ResourceID = StubbedData.Res1.Id, StartDateValue = new DateTime(2012, 4, 15), EndDateValue = new DateTime(2012, 9, 15) },
@@ -697,7 +697,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.resourceDTODataLoader.Setup(x => x.GetById(6)).Returns(StubbedData.Res6);
             this.tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(tmResourceRatesFromDB);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 17 } });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 17 } });
             this.retriever.Setup(x => x.GetLaborTypesTypesForBoeId(17)).Returns(new List<ResourceTypeDto>()
             {
                 new ResourceTypeDto() { ResourceID = StubbedData.Res1.Id, StartDateValue = new DateTime(2012, 9, 15), EndDateValue = new DateTime(2012, 9, 15) },
@@ -775,7 +775,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.resourceDTODataLoader.Setup(x => x.GetById(2)).Returns(StubbedData.Res2);
             this.tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new Collection<TMResourceRateDTO>() { });
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 88 } });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 88 } });
             this.retriever.Setup(x => x.GetLaborTypesTypesForBoeId(88)).Returns(new List<ResourceTypeDto>()
             {
                 new ResourceTypeDto() { ResourceID = StubbedData.Res1.Id, StartDateValue = new DateTime(2012, 9, 15), EndDateValue = new DateTime(2012, 9, 15) },
@@ -808,7 +808,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 tmResourceRateToUpdate = tmResourceRatesFromDB.Single(x => x.Id == 5);
                 tmResourceRateToUpdate.StartDate = new DateTime(2013, 5, 15);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 66 } });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 66 } });
             this.retriever.Setup(x => x.GetLaborTypesTypesForBoeId(66)).Returns(new List<ResourceTypeDto>()
             {
                 new ResourceTypeDto() { ResourceID = StubbedData.Res1.Id, StartDateValue = new DateTime(2013, 5, 15), EndDateValue = new DateTime(2013, 5, 15) },
@@ -847,7 +847,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.resourceDTODataLoader.Setup(x => x.GetById(3)).Returns(StubbedData.Res3);
             this.tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(StubbedData.TmResourceRateCollection);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 28 } });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 28 } });
             this.retriever.Setup(x => x.GetLaborTypesTypesForBoeId(28)).Returns(new List<ResourceTypeDto>()
             {
                 new ResourceTypeDto() { ResourceID = StubbedData.Res1.Id, StartDateValue = new DateTime(2012, 9, 15), EndDateValue = new DateTime(2012, 9, 15) },
@@ -879,7 +879,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             resourceIdsWithValidTMRates.Clear();
             FullWorkspace workspace3 = new FullWorkspace() { Id = 1, ContractStartDate = new DateTime(2012, 4, 15), ContractEndDate = new DateTime(2015, 5, 15), IsUsingTM = true };
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 99 } });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 99 } });
             this.retriever.Setup(x => x.GetLaborTypesTypesForBoeId(99)).Returns(new List<ResourceTypeDto>()
             {
                 new ResourceTypeDto() { ResourceID = StubbedData.Res1.Id, StartDateValue = new DateTime(2012, 4, 15), EndDateValue = new DateTime(2015, 5, 15) },
@@ -902,7 +902,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             resourceIdsWithValidTMRates.Clear();
             FullWorkspace workspace4 = new FullWorkspace() { Id = 1, ContractStartDate = new DateTime(2012, 6, 15), ContractEndDate = new DateTime(2015, 7, 15), IsUsingTM = true };
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 789 } });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 789 } });
             this.retriever.Setup(x => x.GetLaborTypesTypesForBoeId(789)).Returns(new List<ResourceTypeDto>()
             {
                 new ResourceTypeDto() { ResourceID = StubbedData.Res1.Id, StartDateValue = new DateTime(2012, 6, 15), EndDateValue = new DateTime(2015, 7, 15) },

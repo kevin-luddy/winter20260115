@@ -330,7 +330,7 @@ namespace GenBOE.Tests.ActionLogic
             System.Configuration.ConfigurationManager.AppSettings["ShowEquivalentPersonsOption"] = "true";
             FullObjectHelper.RefreshEPForTests();
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
@@ -461,7 +461,7 @@ namespace GenBOE.Tests.ActionLogic
              
             FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
@@ -570,7 +570,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
             FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
@@ -702,7 +702,7 @@ namespace GenBOE.Tests.ActionLogic
         //    GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
         //    FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-        //    this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+        //    this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
         //    this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
         //    this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
         //    this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
@@ -956,7 +956,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
             FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
@@ -1099,7 +1099,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
             FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
@@ -1205,7 +1205,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
             FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2), new FullBoe(this.Boe3) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2), new FullBoe(this.Boe3) });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
@@ -1537,7 +1537,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
             this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
 
             var TripCalculate = new Mock<TravelTripCostCalculation>();
             var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
@@ -1599,7 +1599,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
             this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
 
             var TripCalculate = new Mock<TravelTripCostCalculation>();
             var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
@@ -1661,7 +1661,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
             this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
 
             var TripCalculate = new Mock<TravelTripCostCalculation>();
             var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
@@ -1704,7 +1704,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
             FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
@@ -1832,7 +1832,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
             FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
@@ -2203,7 +2203,7 @@ namespace GenBOE.Tests.ActionLogic
 
             FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);

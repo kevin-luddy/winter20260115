@@ -180,7 +180,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe2.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task3 });
 			retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), false)).Returns(new Collection<OtherDirectCostDTO>());
 			retriever.Setup(x => x.GetTravelByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<TravelDTO>());
-			retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe1, boe2 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe1, boe2 });
 
 			ResourceDTO resource1 = new ResourceDTO() { Id = 1, ResourceName = "TEST1", ResourceDesc = "TEST1 - TESTING ONE", ElementOfCost = ElementOfCostType.LMLabor };
 			ResourceDTO resource2 = new ResourceDTO() { Id = 2, ResourceName = "TEST2", ResourceDesc = "TEST2 - TESTING TWO", ElementOfCost = ElementOfCostType.LMLabor };
@@ -493,7 +493,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task});
 			retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), false)).Returns(new Collection<OtherDirectCostDTO>());
 			retriever.Setup(x => x.GetTravelByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<TravelDTO>());
-			retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 
 			ResourceDTO resource1 = new ResourceDTO() { Id = 1, ResourceName = "TEST1", ResourceDesc = "TEST1 - TESTING ONE", ElementOfCost = ElementOfCostType.LMLabor };
 			ResourceDTO resource2 = new ResourceDTO() { Id = 2, ResourceName = "TEST2", ResourceDesc = "TEST2 - TESTING TWO", ElementOfCost = ElementOfCostType.LMLabor };

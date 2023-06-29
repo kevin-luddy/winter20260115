@@ -909,7 +909,7 @@ namespace GenBOE.Tests.ActionLogic
             this.rteTemplateDataLoader.Setup(x => x.SaveAnswers(It.IsAny<ICollection<RTECustomTemplateQuestionAnswerModelView>>())).Verifiable();
             this.rteTemplateDataLoader.Setup(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>())).Verifiable();
             this.retriever.Setup(x => x.GetCurrentActiveUser()).Returns(new UserDTO() { UserID = 333 });
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new List<FullBoe>());
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>());
             this.versionLoader.Setup(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>())).Verifiable();
             this.rteTemplateDataLoader.Setup(x => x.GetTemplates(ws.Id)).Returns(templatesFromDb);
             this.boeMediator.Setup(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>())).Verifiable();

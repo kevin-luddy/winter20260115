@@ -6,7 +6,8 @@
 
 namespace GenBOE.Tests.ActionLogic
 {
-    using System.Collections.ObjectModel;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.WorkspaceTransitions;
     using GenBOE.DataBridge.DTO;
@@ -49,7 +50,7 @@ namespace GenBOE.Tests.ActionLogic
 
             FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO { WorkspaceName = workspaceName, Id = workspaceID });
             Collection<FullBoe> boes = new Collection<FullBoe>(){ new FullBoe(new BoeDTO { WBSID = 1, CLINID = 2, Id = 1, State = BOEState.AwaitingApproval }) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspaceID)).Returns(boes);
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspaceID, false, It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             sut.Action(workspace, WorkspaceState.Locked, WorkspaceState.Complete);
         }
@@ -69,7 +70,7 @@ namespace GenBOE.Tests.ActionLogic
                 new FullBoe(new BoeDTO { WBSID = 1, CLINID = 2, Id = 1, State = BOEState.Approved }), 
                 new FullBoe(new BoeDTO { WBSID = 3, CLINID = 4, Id = 2, State = BOEState.Approved })
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspaceID)).Returns(boes);
+            this.retriever.Setup(i => i.GetFullBoesByWorkspaceId(workspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             sut.Action(workspace, WorkspaceState.Locked, WorkspaceState.Complete);
 
@@ -93,7 +94,7 @@ namespace GenBOE.Tests.ActionLogic
                 new FullBoe(new BoeDTO { WBSID = 1, CLINID = 2, Id = 1, State = BOEState.AwaitingApproval }), 
                 new FullBoe(new BoeDTO { WBSID = 3, CLINID = 4, Id = 2, State = BOEState.Approved })
             };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspaceID)).Returns(boes);
+            this.retriever.Setup(i => i.GetFullBoesByWorkspaceId(workspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             sut.Action(workspace, WorkspaceState.Locked, WorkspaceState.Complete);
 

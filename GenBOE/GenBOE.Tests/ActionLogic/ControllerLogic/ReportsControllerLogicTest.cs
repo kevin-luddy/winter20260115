@@ -146,8 +146,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             //Setup
             _retriever.Setup(x => x.GetWorkspaceExportFormatsByWorkspaceId(1)).Returns(wsExportFormatDTOCollection);
-            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(1)).Returns(boes);
-            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>())).Returns(boes);
+            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(1, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(2, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO>());
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(3, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO>());
@@ -279,7 +278,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             //Setup
             _retriever.Setup(x => x.GetWorkspaceExportFormatsByWorkspaceId(1)).Returns(wsExportFormatDTOCollection);
-            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(1)).Returns(boes);
+            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetQuestionsAndAnswersByWorkspaceId(workspace.Id)).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
             _retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
@@ -740,7 +739,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 new ResourceDTO(){ Id = 1 },
                 new ResourceDTO(){ Id = 2 }};
 
-            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
@@ -787,7 +786,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 new FullWbs() { Id = 3, WbsNumber = "2" }
             };
 
-            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
@@ -840,7 +839,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             dtoID = new Collection<OtherDirectCostDTO>();
             ICollection<ResourceDTO> resourcesFromDB = new Collection<ResourceDTO>();
 
-            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);

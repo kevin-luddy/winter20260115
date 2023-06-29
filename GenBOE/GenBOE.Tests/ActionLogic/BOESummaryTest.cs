@@ -62,7 +62,7 @@ namespace GenBOE.Tests.ActionLogic
             ResourceLoader.Setup(x => x.GetById(this.Resource.Id)).Returns(this.Resource);
             ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { this.Resource });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), false, It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO>() { task });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id)).Returns(new List<FullBoe>() { boe });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boe });
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, false)).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = Perforg.Id, ResourceID = Resource.Id } } } });
             retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
             retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, false)).Returns(new Collection<MaterialDTO> { });
@@ -156,7 +156,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, false)).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boe });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boe });
             
             var sut = new BOESummary(TravelTripCostCalculator.Object, rmsTripCalculate.Object);
             BOEExportInputs exportInputs = new BOEExportInputs(boe, workspace);

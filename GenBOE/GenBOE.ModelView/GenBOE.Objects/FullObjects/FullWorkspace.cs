@@ -258,19 +258,22 @@ namespace GenBOE.Objects
         {
             if (this.boes == null)
             {
-                this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id).ToList().AsReadOnly();
+                this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id, false, null).ToList().AsReadOnly();
             }
         }
 
         /// <summary>
         /// Populates RTE data for all Boes
         /// </summary>
-        public virtual void LoadBoesRTEData()
+        public virtual void LoadBoesAndTaskElementsRTEData()
         { 
             if(this.boes == null)
-            { 
+            {
+                // Confirming that Task Elements are loaded with RTE data
+                this.LoadTaskElementRTEData();
+
                 // Data has not been pulled yet, so we can do a full retrieval, including the RTE data
-                this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id, true).ToList().AsReadOnly();
+                this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id, true, this.TaskElements).ToList().AsReadOnly();
             }
             else
             { 
@@ -291,7 +294,8 @@ namespace GenBOE.Objects
 
             if (this.boes == null)
             {
-                this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id).ToList().AsReadOnly();
+                // passing in this.taskElements here to reuse Task Elements only if they are already loaded
+                this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id, false, this.taskElements).ToList().AsReadOnly();
             }
 
             foreach (FullClin clin in this.clins)

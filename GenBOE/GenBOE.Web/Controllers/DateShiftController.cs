@@ -196,9 +196,9 @@ namespace GenBOE.Web.Controllers
                         dateShiftable = ws;
                         parentStart = parentEnd = null;
 
-                        // pre-load the data efficiently
-                        ws.LoadClinsAndBoes();
-                        ws.LoadTaskElementRTEData();
+						// pre-load the data efficiently
+						ws.LoadTaskElementRTEData();
+						ws.LoadClinsAndBoes();
                         ICollection<BoeTaskElementDTO> tasks = ws.TaskElements.ToList();
                         ICollection<TravelDTO> travels = ws.Travels.ToList();
                         foreach (FullBoe fullboe in ws.Boes)

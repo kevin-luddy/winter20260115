@@ -87,7 +87,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetFullBoesByClinId(clin.Id)).Returns(new Collection<FullBoe> { boeClinObject });
             this.retriever.Setup(x => x.GetFullBoesByClinId(clin2.Id)).Returns(new Collection<FullBoe> { boeObject });
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject, boeClinObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject, boeClinObject });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElementClin, boeTaskElement, boeTaskElement2 });
 
             //setup workspace variable with a selected BOE, clin, and a wbs ID
@@ -150,7 +150,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinById(clin2.Id)).Returns(clin2);
             BoeDTO boe = new BoeDTO { Id = 1, WorkspaceID = workspace.Id, CLINID = clin2.Id };
             FullBoe boeObject2 = new FullBoe(boe);
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject, boeObject2 });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject, boeObject2 });
 
             this.retriever.Setup(x => x.GetFullBoesByClinId(clin.Id)).Returns(new Collection<FullBoe> { boeObject });
             this.retriever.Setup(x => x.GetFullBoesByClinId(clin2.Id)).Returns(new Collection<FullBoe> { boeObject2 });
@@ -211,7 +211,7 @@ namespace GenBOE.Tests.ActionLogic
             BoeDTO boe = new BoeDTO { Id = 1, WorkspaceID = workspace.Id, CLINID = clin2.Id };
             FullBoe boeObj = new FullBoe(boe);
             FullBoe boeObjClin = new FullBoe(boeClin);
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObj, boeObjClin });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObj, boeObjClin });
 
             this.retriever.Setup(x => x.GetFullBoesByClinId(clin.Id)).Returns(new Collection<FullBoe> { boeObjClin });
             this.retriever.Setup(x => x.GetFullBoesByClinId(clin2.Id)).Returns(new Collection<FullBoe> { boeObj });
@@ -258,7 +258,7 @@ namespace GenBOE.Tests.ActionLogic
             FullWorkspace ws = new FullWorkspace(workspace);
             Collection<FullBoe> fullBoes = new Collection<FullBoe>() { new FullBoe(boe) };
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(fullBoes[0].WorkspaceID)).Returns(fullBoes);
+            this.retriever.Setup(i => i.GetFullBoesByWorkspaceId(fullBoes[0].WorkspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(fullBoes);
             this.retriever.Setup(x => x.GetFullWorkspaceById(fullBoes[0].WorkspaceID)).Returns(ws);
 
             ResourceDTO resource1 = new ResourceDTO { Id = 1, ResourceName = "1CE1", ResourceDesc = "1CE1 - DS On Prem West E1", SegRegion = "1C", LaborType = "E1", Segment = SegmentType.DS, ElementOfCost = ElementOfCostType.LMLabor };
@@ -293,7 +293,7 @@ namespace GenBOE.Tests.ActionLogic
             FullWorkspace ws = new FullWorkspace(workspace);
             FullBoe boeObj = new FullBoe(boe);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boeObj });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObj });
             this.retriever.Setup(x => x.GetFullWorkspaceById(ws.Id)).Returns(ws);
 
             ResourceDTO resource1 = new ResourceDTO { Id = 1, ResourceName = "1CE1", ResourceDesc = "1CE1 - DS On Prem West E1", SegRegion = "1C", LaborType = "E1", Segment = SegmentType.SSC, ElementOfCost = ElementOfCostType.LMLabor };
@@ -332,7 +332,7 @@ namespace GenBOE.Tests.ActionLogic
             FullBoe boeObj = new FullBoe(boes[0]);
             FullBoe boeObj2 = new FullBoe(boes[1]);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boeObj, boeObj2 });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObj, boeObj2 });
             this.retriever.Setup(x => x.GetFullWorkspaceById(ws.Id)).Returns(ws);
 
             ResourceDTO resource1 = new ResourceDTO { Id = 1, ResourceName = "1CE1", ResourceDesc = "1CE1 - DS On Prem West E1", SegRegion = "1C", LaborType = "E1", Segment = SegmentType.DS, ElementOfCost = ElementOfCostType.LMLabor };
@@ -378,7 +378,7 @@ namespace GenBOE.Tests.ActionLogic
             FullBoe boeObj = new FullBoe(boes[0]);
             FullBoe boeObj2 = new FullBoe(boes[1]);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boeObj, boeObj2 });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObj, boeObj2 });
             this.retriever.Setup(x => x.GetFullWorkspaceById(ws.Id)).Returns(ws);
 
             ResourceDTO resource1 = new ResourceDTO { Id = 1, ResourceName = "1CE1", ResourceDesc = "1CE1 - DS On Prem West E1", SegRegion = "1C", LaborType = "E1", Segment = SegmentType.SSC, ElementOfCost = ElementOfCostType.LMLabor };
@@ -425,7 +425,7 @@ namespace GenBOE.Tests.ActionLogic
             FullBoe boeObject = new FullBoe(boe);
             FullBoe boeObject2 = new FullBoe(boe2);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boeObject, boeObject2 });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObject, boeObject2 });
             this.retriever.Setup(x => x.GetFullWorkspaceById(ws.Id)).Returns(ws);
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new Collection<FullClin> { fullClin });
 
@@ -473,7 +473,7 @@ namespace GenBOE.Tests.ActionLogic
             FullBoe boeObject = new FullBoe(boe);
             FullBoe boeObject2 = new FullBoe(boe2);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boeObject, boeObject2 });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObject, boeObject2 });
             this.retriever.Setup(x => x.GetFullWorkspaceById(ws.Id)).Returns(ws);
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new Collection<FullClin> { fullClin });
 
@@ -521,7 +521,7 @@ namespace GenBOE.Tests.ActionLogic
             Collection<FullBoe> fullBoes = new Collection<FullBoe>() { new FullBoe(boes[0]), new FullBoe(boes[1]) };
 
             this.retriever.Setup(x => x.GetWorkspaceById(fullBoes[0].WorkspaceID)).Returns(ws);
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(fullBoes[0].WorkspaceID)).Returns(fullBoes);
+            this.retriever.Setup(i => i.GetFullBoesByWorkspaceId(fullBoes[0].WorkspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(fullBoes);
             this.retriever.Setup(x => x.GetFullWorkspaceById(fullBoes[0].WorkspaceID)).Returns(ws);
 
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>() { new FullWbs(wbs) });
@@ -581,7 +581,7 @@ namespace GenBOE.Tests.ActionLogic
             Collection<FullBoe> fullBoes = new Collection<FullBoe>() { new FullBoe(boes[0]), new FullBoe(boes[1]) };
 
             this.retriever.Setup(x => x.GetWorkspaceById(fullBoes[1].WorkspaceID)).Returns(ws);
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(fullBoes[0].WorkspaceID)).Returns(fullBoes);
+            this.retriever.Setup(i => i.GetFullBoesByWorkspaceId(fullBoes[0].WorkspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(fullBoes);
 
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>() { new FullWbs(wbs) });
             this.factory.Setup(x => x.CreateFullWbs(wbs)).Returns(new FullWbs(wbs));
@@ -633,7 +633,7 @@ namespace GenBOE.Tests.ActionLogic
             FullWorkspace ws = new FullWorkspace(workspace);
             FullBoe boeObj = new FullBoe(boe);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boeObj });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObj });
             this.retriever.Setup(x => x.GetFullWorkspaceById(ws.Id)).Returns(ws);
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new List<FullClin>());
 
@@ -687,7 +687,7 @@ namespace GenBOE.Tests.ActionLogic
             FullBoe boeObj = new FullBoe(boe);
 
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boeObj });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObj });
             this.retriever.Setup(x => x.GetFullWorkspaceById(ws.Id)).Returns(ws);
 
             // before enhancement 12460 we would filter out resources based on the name, but now as long as the segment is correct we will grab it
@@ -735,7 +735,7 @@ namespace GenBOE.Tests.ActionLogic
             FullWorkspace ws = new FullWorkspace(workspace);
             FullBoe boeObj = new FullBoe(boe);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boeObj });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObj });
             this.retriever.Setup(x => x.GetFullWorkspaceById(ws.Id)).Returns(ws);
 
             // before enhancement 12460 we would filter out resources based on the name, but now as long as the segment is correct we will grab it

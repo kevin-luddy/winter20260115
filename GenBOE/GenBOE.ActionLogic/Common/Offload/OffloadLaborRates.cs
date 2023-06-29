@@ -139,8 +139,7 @@ namespace GenBOE.ActionLogic.Common
             else
             {
                 workspace = this.fullObjectFactory.CreateFullWorkspace(workspace);
-                workspace.LoadBoesRTEData();
-                workspace.LoadTaskElementRTEData();
+                workspace.LoadBoesAndTaskElementsRTEData();
                 
                 // create copies of the boes
                 boes = this.CreateBoeCopies(boes, workspace);

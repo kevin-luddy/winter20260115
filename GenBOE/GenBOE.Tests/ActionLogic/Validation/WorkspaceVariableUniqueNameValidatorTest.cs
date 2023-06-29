@@ -48,7 +48,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = wsid };
             factory.Setup(x => x.CreateFullWorkspace(wsid)).Returns(ws);
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(wsid)).Returns(new Collection<FullBoe>() { new FullBoe(boe1) });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(wsid, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(boe1) });
 
             ICollection<WorkspaceVariableDTO> workspaceVariables = new Collection<WorkspaceVariableDTO>()
             {

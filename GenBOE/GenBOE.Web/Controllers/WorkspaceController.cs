@@ -391,6 +391,7 @@ namespace GenBOE.Web.Controllers
             ActionResult result = new EmptyResult();
             try
             {
+				ws.LoadBoesAndTaskElementsRTEData();
                 // Get the modelviews
                 IReadOnlyCollection<ProjectMapModelView> modelViews;
                 if (offload && (ws.IsProjectMapWorkspace || ws.ProjectMapType == ProjectMapType.StandardWithOffload))
@@ -4400,11 +4401,10 @@ namespace GenBOE.Web.Controllers
             int tempWsId = this._ControllerLogic.CopyWorkspaceVersion(ws, versionId, exportAllBoes, boesToExport);
 
             FullWorkspace tempWs = this.Factory.CreateFullWorkspace(tempWsId);
-            tempWs.LoadBoesRTEData();
+            tempWs.LoadBoesAndTaskElementsRTEData();
             tempWs.LoadTravelRTEData();
             tempWs.LoadODCsRTEData();
             tempWs.LoadMaterialsRTEData();
-            tempWs.LoadTaskElementRTEData();
 
             string excelTemplateLocaiton = Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH);
             MetricNameTaskElementMappingDTO metricTaskElementMappings = this.reportsControllerLogic.GetMetricNameTaskElementMappingDTO(tempWs);
