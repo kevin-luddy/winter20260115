@@ -30,13 +30,18 @@ namespace IES.Common
         /// </summary>
         private static readonly Regex regexCarriageReturns = new Regex(@"[\n\r]+", RegexOptions.None, Constants.REGEX_TIMEOUT);
 
-        /// <summary>
-        /// Returns true if the value is equal after both ToLower, and Trim
-        /// </summary>
-        /// <param name="str">The item being tested</param>
-        /// <param name="value">The comparison value</param>
-        /// <returns>True, if the items are equivalent; false, if not</returns>
-        public static bool IsEquivalentTo(this string str, string value)
+		/// <summary>
+		/// Crate static Regex object for Illegal Excel Characters. // [^\u0009\u000A\u000D\u0020-\u007F]
+		/// </summary> 
+		private static readonly Regex regexIllegalExcelCharacters = new Regex(@"[^\w]", RegexOptions.None, Constants.REGEX_TIMEOUT);
+
+		/// <summary>
+		/// Returns true if the value is equal after both ToLower, and Trim
+		/// </summary>
+		/// <param name="str">The item being tested</param>
+		/// <param name="value">The comparison value</param>
+		/// <returns>True, if the items are equivalent; false, if not</returns>
+		public static bool IsEquivalentTo(this string str, string value)
         {
             if (string.IsNullOrWhiteSpace(str) && string.IsNullOrWhiteSpace(value) ||
                 (str != null && value != null && str.Trim().ToLower() == value.Trim().ToLower()))
@@ -964,6 +969,18 @@ namespace IES.Common
                 ? regexCarriageReturns.Replace(str, " ")
                 : string.Empty;
         }
+
+        /// <summary>
+        /// Removes illegal excel characters from a string
+        /// </summary>
+        /// <param name="str">The string to work on</param>
+        /// <returns>The original string minus the illegel excel characters</returns>
+        public static string RemoveIllegalExcelCharacters(this string str)
+        {
+			return !string.IsNullOrEmpty(str)
+				? regexIllegalExcelCharacters.Replace(str, " ")
+				: string.Empty;
+		}
 
         /// <summary>
         /// Opposite of Linq Any() operator

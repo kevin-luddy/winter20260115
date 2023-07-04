@@ -1080,8 +1080,6 @@ namespace GenBOE
                     GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTableImporter), typeof(MoqTableImporterRMS), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(WorkspaceExporter), typeof(WorkspaceExporterMST), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICommonDataMapper)),
                                                                                                                                                 new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
-                                                                                                                                                new ResolvedParameter(typeof(IResourceDTODataLoader)),
-                                                                                                                                                new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(IUserDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(IBOEStatusReport)),
@@ -1100,8 +1098,6 @@ namespace GenBOE
                     GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTableImporter), typeof(MoqTableImporter), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(WorkspaceExporter), typeof(WorkspaceExporterSpaceSystems), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICommonDataMapper)),
                                                                                                                                                 new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
-                                                                                                                                                new ResolvedParameter(typeof(IResourceDTODataLoader)),
-                                                                                                                                                new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(IUserDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(IBOEStatusReport)),
