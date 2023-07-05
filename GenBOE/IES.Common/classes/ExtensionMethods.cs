@@ -31,11 +31,6 @@ namespace IES.Common
 		private static readonly Regex regexCarriageReturns = new Regex(@"[\n\r]+", RegexOptions.None, Constants.REGEX_TIMEOUT);
 
 		/// <summary>
-		/// Crate static Regex object for Illegal Excel Characters. // [^\u0009\u000A\u000D\u0020-\u007F]
-		/// </summary> 
-		private static readonly Regex regexIllegalExcelCharacters = new Regex(@"[^\w]", RegexOptions.None, Constants.REGEX_TIMEOUT);
-
-		/// <summary>
 		/// Returns true if the value is equal after both ToLower, and Trim
 		/// </summary>
 		/// <param name="str">The item being tested</param>
@@ -979,10 +974,6 @@ namespace IES.Common
 		{
 			// TODO Holding off on replacement for now, just returning string or empty if null
 			return str ?? string.Empty;
-
-			//return !string.IsNullOrEmpty(str)
-			//	? regexIllegalExcelCharacters.Replace(str, " ")
-			//	: string.Empty;
 		}
 
 		/// <summary>
