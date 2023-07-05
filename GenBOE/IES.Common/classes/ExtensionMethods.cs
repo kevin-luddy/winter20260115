@@ -977,9 +977,12 @@ namespace IES.Common
 		/// <returns>The original string minus the illegel excel characters</returns>
 		public static string RemoveIllegalExcelCharacters(this string str)
 		{
-			return !string.IsNullOrEmpty(str)
-				? regexIllegalExcelCharacters.Replace(str, " ")
-				: string.Empty;
+			// TODO Holding off on replacement for now, just returning string or empty if null
+			return str ?? string.Empty;
+
+			//return !string.IsNullOrEmpty(str)
+			//	? regexIllegalExcelCharacters.Replace(str, " ")
+			//	: string.Empty;
 		}
 
 		/// <summary>
