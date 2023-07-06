@@ -126,7 +126,7 @@ namespace IES.Common
                             string filter = "(&(objectClass=user)(|(cn=" + inNtid + ")(sAMAccountName=" + inNtid + ")))";
                             if (isGroup)
                             {
-                                filter = string.Format("(&(objectClass=group)(|(cn=" + inNtid + ")(dn=" + inNtid + ")))");
+                                filter = string.Format("(&(objectClass=group)(|(cn=" + inNtid + ")(dn=" + inNtid + ")(samAccountName=" + inNtid + ")))");
                             }
 
                             using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
@@ -362,7 +362,7 @@ namespace IES.Common
                             mySearcher.Filter = "(&(objectClass=user)(|(cn=" + objectName + ")(sAMAccountName=" + objectName + ")))";
                             break;
                         case ObjectClass.group:
-                            mySearcher.Filter = string.Format("(&(objectClass=group)(|(cn=" + objectName + ")(dn=" + objectName + ")))");
+                            mySearcher.Filter = string.Format("(&(objectClass=group)(|(cn=" + objectName + ")(dn=" + objectName + ")(samAccountName=" + objectName + ")))");
                             break;
                         case ObjectClass.computer:
                             mySearcher.Filter = "(&(objectClass=computer)(|(cn=" + objectName + ")(dn=" + objectName + ")))";
@@ -444,7 +444,7 @@ namespace IES.Common
                     {
                         directoryEntry.AuthenticationType = AuthenticationTypes.Secure;
 
-                        string filter = string.Format("(&(objectClass=group)(|(cn=" + inGroupName + ")(dn=" + inGroupName + ")))");
+                        string filter = string.Format("(&(objectClass=group)(|(cn=" + inGroupName + ")(dn=" + inGroupName + ")(samAccountName=" + inGroupName + ")))");
 
                         using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
                         {
@@ -779,7 +779,7 @@ namespace IES.Common
                             groupSearchString = $"*{groupSearchString}*";
                         }
 
-                        search.Filter = $"(&(objectClass=group)(|(cn={groupSearchString})(dn={groupSearchString})))";
+                        search.Filter = $"(&(objectClass=group)(|(cn={groupSearchString})(dn={groupSearchString})(samAccountName={groupSearchString})))";
 
                         return search.FindAll();
                     }
