@@ -1630,24 +1630,30 @@ namespace GenBOE.Web.Controllers
                 }
                 else if (reportID == (int)Reports.WorkspaceData)
                 {
-                    ws.LoadBoesAndTaskElementsRTEData();
-                    ws.LoadTravelRTEData();
+					bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
+                    List<FullBoe> boes;
+                    List<BoeTaskElementDTO> tasks;
+					// Get RTE overrides
+					ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = ws.TemplateQuestionsAndAnswers.ToList();
+
                     ws.LoadODCsRTEData();
-                    ws.LoadMaterialsRTEData();
+					ws.LoadMaterialsRTEData();
 
-                    // All BOEs for the workspace as a default
-                    List<FullBoe> boes = ws.Boes.ToList();
-                    List<BoeTaskElementDTO> tasks = ws.TaskElements.OrderBy(t=> t.BOETaskElementOrder).ToList();
-
-                    // Get RTE overrides
-                    ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = ws.TemplateQuestionsAndAnswers.ToList();
-                    
-                    bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
-                    if (isOffloading)
+					if (!isOffloading)
                     {
-                        OffloadLaborRates offloader = new OffloadLaborRates();
-                        List<int> selectedBoeIds = boes.Select(b => b.Id).ToList();
-                        OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes.Where(b => selectedBoeIds.Contains(b.Id)).ToList(), ws);
+                        // offloading will create a copy of workspace so no need to retrieve data twice
+                        ws.LoadBoesAndTaskElementsRTEData();
+                        ws.LoadTravelRTEData();
+                        
+                        // All BOEs for the workspace as a default
+                        boes = ws.Boes.ToList();
+                        tasks = ws.TaskElements.OrderBy(t => t.BOETaskElementOrder).ToList();
+                    }
+                    else
+                    {
+						boes = ws.Boes.ToList();
+						OffloadLaborRates offloader = new OffloadLaborRates();
+                        OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes, ws);
 
                         boes = results.Boes.ToList();
                         tasks = boes.SelectMany(b => b.TaskElements).OrderBy(t => t.BOETaskElementOrder).ToList();

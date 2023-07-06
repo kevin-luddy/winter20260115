@@ -29,8 +29,6 @@ namespace GenBOE.ActionLogic.IO.Export
         public WorkspaceExporterSpaceSystems(
             ICommonDataMapper inICommonDataMapper,
             IPermissionsDTODataLoader inIPermissionsDTOLoader,
-            IResourceDTODataLoader inIResourceDTODataLoader,
-            IPerformingOrgDTODataLoader perfOrgLoader,
             ICustomFieldValueDTODataLoader inICustomFieldValueDTODataLoader,
             IUserDTODataLoader inIUserDTODataLoader,
             IBOEStatusReport inBOEStatusReport,
@@ -40,8 +38,6 @@ namespace GenBOE.ActionLogic.IO.Export
             ICLINExporter inClinExporter)
             : base(inICommonDataMapper,
              inIPermissionsDTOLoader,
-             inIResourceDTODataLoader,
-             perfOrgLoader,
              inICustomFieldValueDTODataLoader,
              inIUserDTODataLoader,
              inBOEStatusReport,
