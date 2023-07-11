@@ -13,7 +13,18 @@ CREATE PROCEDURE [dbo].[CreateMetricAnalysisReport]
 	@TypeID int /*0 = Totals/1=Details*/
 )
 AS
-
+/******************************************************************************
+**		 
+**		Name: [CreateMetricAnalysisReport]
+**		Desc: Creates Metric Analysis Report for SSRS
+**
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			---------------------------------------
+**		7/11/23		twilson3			PROPH-911 Add PTM Number and LOB
+*******************************************************************************/
 SET NOCOUNT ON
 
 /* For SSRS to Run Correctly*/
@@ -38,7 +49,8 @@ SELECT
 
 	   W.[WorkspaceName]
       ,W.[WorkspaceShortName]
-
+	  ,W.[TrackingNumber]
+	  ,L.[LineOfBusinessName]
 	  ,CAST (W.[UpdateDT] AS [DATE]) AS [Latest Activity Date]
 
       /*,W.[WorkspaceStateID]*/
@@ -64,6 +76,7 @@ FROM [dbo].[Workspace] W
 	INNER JOIN dbo.WorkspaceStateLU S ON W.WorkspaceStateID = S.WorkspaceStateID
 	INNER JOIN [dbo].[WorkspaceStateHistory] WSH ON W.[WorkspaceID] = WSH.WorkspaceID
 	LEFT OUTER JOIN dbo.ETIuser CostVolume ON W.CostVolumeLeadPricerUserID = CostVolume.ETIUserID
+	LEFT OUTER JOIN dbo.LineOfBusiness L ON W.[LineOfBusinessID] = L.[LineOfBusinessID]
 	LEFT OUTER JOIN dbo.ETIuser CreatedBy ON W.[CreatedByETIUserID] = CreatedBy.ETIUserID
 	INNER JOIN 
 		(
@@ -168,11 +181,14 @@ SELECT
 	  ,IsNull(BOECount.[Number of BOEs], 0) AS [Number of BOEs]
 
 	  ,IsNull(TaskCount.[Total Tasks], 0) AS [Number of Tasks]
-
+	  ,W.[TrackingNumber]
+	  ,L.[LineOfBusinessName]
+	  
 FROM [dbo].[Workspace] W 
 	INNER JOIN dbo.WorkspaceStateLU S ON W.WorkspaceStateID = S.WorkspaceStateID
 	INNER JOIN [dbo].[WorkspaceStateHistory] WSH ON W.[WorkspaceID] = WSH.WorkspaceID
 	LEFT OUTER JOIN dbo.ETIuser CostVolume ON W.CostVolumeLeadPricerUserID = CostVolume.ETIUserID
+	LEFT OUTER JOIN dbo.LineOfBusiness L ON W.[LineOfBusinessID] = L.[LineOfBusinessID]
 	LEFT OUTER JOIN dbo.ETIuser CreatedBy ON W.[CreatedByETIUserID] = CreatedBy.ETIUserID
 	LEFT OUTER JOIN 
 		(
