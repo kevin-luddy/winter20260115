@@ -1107,6 +1107,33 @@ namespace GenBOE.Tests.DAL.DataLoaders
 										&& x.WBSNumbers.Count == ws.WorkBreakdownStructures.Count
 										&& x.WBSNumbers.All(ws.WorkBreakdownStructures.Select(w => w.DisplayedWBSNumber).Contains)));
 		}
+
+		/// <summary>
+		/// Test GetMaterialPBoeForWorkspace
+		/// </summary>
+		[TestMethod]
+		public void TestGetPBOEsForWorkspacee()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace ws;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				ws = gbe.Workspaces.Include("CLINs").Include("WorkBreakdownStructures").FirstOrDefault(x => x.IsDeleted == false);
+			}
+
+			ICollection<MPBoeDataDTO> result = sut.GetMaterialPBoeForWorkspace(ws.WorkspaceID);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.PTMProposalTitle == ws.ProposalTitle && x.RFPNumber == ws.RFPNumber
+										&& x.CLINNumbers.Count == ws.CLINs.Count && x.WorkspaceName == ws.WorkspaceName
+										&& x.ShortName == ws.WorkspaceShortName
+										&& x.CLINNumbers.All(ws.CLINs.Select(c => c.DisplayedCLINNumber).Contains)
+										&& x.WBSNumbers.Count == ws.WorkBreakdownStructures.Count
+										&& x.WBSNumbers.All(ws.WorkBreakdownStructures.Select(w => w.DisplayedWBSNumber).Contains)));
+		}
 	}
 
     /// <summary>

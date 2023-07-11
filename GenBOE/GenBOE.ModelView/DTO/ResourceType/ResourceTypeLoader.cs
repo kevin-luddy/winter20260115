@@ -113,14 +113,14 @@ namespace GenBOE.DataBridge.DTO
             }
         }
 
-        #region Sikorsky / Project Map Custom Fields
+		#region Sikorsky / Project Map Custom Fields
 
-        /// <summary>
-        /// Loads Sikorsky Custom Fields into Resource Type properties
-        /// </summary>
-        /// <param name="gbe">GenBOE Entities connected to the DB</param>
-        /// <param name="resourcesToLoad">Resources to load</param>
-        [DbQuery]
+		/// <summary>
+		/// Loads Sikorsky Custom Fields into Resource Type properties
+		/// </summary>
+		/// <param name="gbe">GenBOE Entities connected to the DB</param>
+		/// <param name="resourcesToLoad">Resources to load</param>
+		[DbQuery]
         public static void LoadSikorskyFields(GenBoeEntities gbe, List<ResourceTypeDto> resourcesToLoad)
         {
             if(gbe == null || resourcesToLoad == null) { return; }

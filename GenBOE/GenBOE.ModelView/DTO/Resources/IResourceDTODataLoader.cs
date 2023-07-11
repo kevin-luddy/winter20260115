@@ -22,13 +22,20 @@ namespace GenBOE.DataBridge.DTO
         ICollection<ResourceDTO> GetByListId(int inResourceListID);
         ICollection<ResourceDTO> GetByIds(ICollection<int> inResourceIDs);
 
-        /// <summary>
-        /// Get Resource By Resource Desc and List Id
-        /// </summary>
-        /// <param name="inResourceDescription">Resource Description</param>
-        /// <param name="inResourceListID">List Id</param>
-        /// <returns>Resource Dto</returns>
-        ResourceDTO GetByDescriptionAndListId(string inResourceDescription, int inResourceListID);
+		/// <summary>
+		/// Gets the Resource Names by an incoming list of Resource IDs.
+		/// </summary>
+		/// <param name="inResourceIDs">Resource IDs</param>
+		/// <returns>Collection of Resource Names</returns>
+		IList<string> GetResourceNamesByIds(IList<int> inResourceIDs);
+
+		/// <summary>
+		/// Get Resource By Resource Desc and List Id
+		/// </summary>
+		/// <param name="inResourceDescription">Resource Description</param>
+		/// <param name="inResourceListID">List Id</param>
+		/// <returns>Resource Dto</returns>
+		ResourceDTO GetByDescriptionAndListId(string inResourceDescription, int inResourceListID);
 
         /// <summary>
         /// Get Resource By Resource Name and List Id

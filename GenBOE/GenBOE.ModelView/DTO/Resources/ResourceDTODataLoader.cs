@@ -145,6 +145,31 @@ namespace GenBOE.DataBridge.DTO
             return result;
         }
 
+		/// <summary>
+		/// Gets the Resource Names by an incoming list of Resource IDs.
+		/// </summary>
+		/// <param name="inResourceIDs">Resource IDs</param>
+		/// <returns>Collection of Resource Names</returns>
+		/// <exception cref="ArgumentNullException">Null exception on no resource IDs.</exception>
+		virtual public IList<string> GetResourceNamesByIds(IList<int> inResourceIDs)
+        {
+			if (inResourceIDs == null) { throw new ArgumentNullException(nameof(inResourceIDs)); }
+
+			IList<string> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from r in gbe.Resources
+							  where inResourceIDs.Contains(r.ResourceID)
+							  select r.ResourceName).ToList();
+				}
+			}
+
+			return result;
+		}
+
         /// <summary>
         /// Get Resource By Resource Name and List Id
         /// </summary>

@@ -8,6 +8,7 @@ namespace GenBOE.Dtos
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using IES.Common;
 
@@ -56,9 +57,9 @@ namespace GenBOE.Dtos
 		public string VendorId { get; set; }
 
 		/// <summary>
-		/// The selected Sub Resources
+		/// The selected Sub Resource Ids
 		/// </summary>
-		public ICollection<ResourceDTO> SubResources { get; set; }
+		public IList<string> SubResources { get; set; }
 
 		/// <summary>
 		/// LM Proposed Value for Procurement.
