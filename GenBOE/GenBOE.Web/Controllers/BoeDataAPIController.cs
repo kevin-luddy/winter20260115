@@ -661,7 +661,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Get Material PBoe Data for given Workspace
 		/// </summary>
-		/// <param name="workspaceID"></param>
+		/// <param name="workspaceID">Workspace ID</param>
 		/// <returns>Collection of Material PBoe Data</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
@@ -710,7 +710,50 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Get all PBOEs for a given Workspace. 
+		/// Checks to see if workspace exists and user has authorization to it
+		/// </summary>
+		/// <param name="workspaceID">Workspace ID</param>
+		/// <returns>Boolean</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<bool> CheckAuthorizationForWorkspaceID(int workspaceID)
+		{
+
+			IESResponse<bool> result = new IESResponse<bool>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// Check if user is System Admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+
+				if (isAllowed)
+				{
+					result.Data = new Collection<bool>() {true};
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					result.Data = new Collection<bool>() { false };
+					string message = "Invalid permission to Workspace with ID:" + workspaceID + ".";
+					logger.Error(message + " NTID: " + ntid);
+					result.Messages.Add(message);
+					result.IsSuccessful = false;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred checking authorization for Workspace ID: {workspaceID}: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get all PBOEs for a given Workspace.
 		/// </summary>
 		/// <param name="workspaceID">Workspace ID</param>
 		/// <returns>Collection of PBOEs by Workspace ID</returns>
