@@ -217,14 +217,18 @@
 	height: 16px;
 	font-size: 6pt;
 	padding: 0;
-	float: right;
 }
 
 #UpdateFiltersMoqDialog .add-filter-button span {
-	margin-top: -5px;
 	display: block;
+    position: relative;
+    top: -5px;
 }
 
 #UpdateFiltersMoqDialog-ParensButton {
 	float: right;
+}
+
+.grid div.value-delete {
+    padding-bottom: 3px;
 }
