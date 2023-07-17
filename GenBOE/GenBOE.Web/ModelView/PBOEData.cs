@@ -34,7 +34,7 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// The selected Sub Resources
 		/// </summary>
-		public ICollection<ResourceDTO> SubResources { get; set; }
+		public IList<string> SubResources { get; set; }
 
 		/// <summary>
 		/// LM Proposed Value for Procurement.

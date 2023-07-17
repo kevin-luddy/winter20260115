@@ -2,7 +2,7 @@
 <RptDataSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="genBOE">
   <ConnectionProperties>
     <Extension>SQL</Extension>
-    <ConnectString>Data Source=IDESQL35D\SSAPPVFDEV;Initial Catalog=genBOEMST</ConnectString>
+    <ConnectString>Data Source=Lyness\SSAPPVFQAS;Initial Catalog=genBOESpace_UAT</ConnectString>
     <IntegratedSecurity>true</IntegratedSecurity>
   </ConnectionProperties>
   <DataSourceID>dad8e8f0-f13d-4f18-b0b5-7c1598173b12</DataSourceID>

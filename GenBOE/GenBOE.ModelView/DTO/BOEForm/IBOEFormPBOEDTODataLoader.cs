@@ -20,10 +20,25 @@ namespace GenBOE.DataBridge.DTO
         ICollection<BOEFormPBOEDTO> GetByWorkspaceId(int wsId);
 
         /// <summary>
-        /// Retrieves the latest version number of the form.
+        /// Returns a collection of PBOE BOE Form DTOs based on the Collection of Ids.
         /// </summary>
-        /// <returns>Latest version number of the form.</returns>
-        int GetCurrentFormVersion();
+        /// <param name="workspaceId">Capture Ids.</param>
+        /// <returns>The matching DTOs.</returns>
+        ICollection<PBOEDataDTO> GetPBOEsForWorkspace(int workspaceId);
+
+		/// <summary>
+		/// Get a single PBOE from a Workspace ID and PBOE ID.
+		/// </summary>
+		/// <param name="workspaceId">Workspace ID</param>
+		/// <param name="pboeId">PBOE ID</param>
+		/// <returns>Single PBOE by Workspace ID and PBOE ID</returns>
+		ICollection<PBOEDataDTO> GetPBOEByIDs(int workspaceId, int pboeId);
+
+		/// <summary>
+		/// Retrieves the latest version number of the form.
+		/// </summary>
+		/// <returns>Latest version number of the form.</returns>
+		int GetCurrentFormVersion();
 
         /// <summary>
         /// Gets a list of currently used resources inside a workspace, excluding the boeForm passed in.

@@ -123,7 +123,45 @@ namespace GenBOE.Tests.DAL.DataLoaders
             }
         }
 
-        [TestMethod]
+		[TestMethod]
+		public void GetPBOEsForWorkspace()
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				Collection<int> ids = gbe.BOEFormPBOEs.Select(x => x.WorkspaceID).Take(1000).ToCollection();
+				Assert.IsTrue(ids.Count > 0, "no test data?");
+
+				foreach (int workspaceId in ids)
+				{
+					var item = sut.GetPBOEsForWorkspace(workspaceId);
+					Assert.IsNotNull(item);
+				}
+			}
+		}
+
+		[TestMethod]
+		public void GetPBOEByIDs()
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+                int idAmount = 10;
+
+				Collection<int> workspaceIds = gbe.BOEFormPBOEs.Select(x => x.WorkspaceID).Take(idAmount).ToCollection();
+				Collection<int> pboeIds = gbe.BOEFormPBOEs.Select(x => x.PBOEFormID).Take(idAmount).ToCollection();
+
+				Assert.IsTrue(workspaceIds.Count > 0, "no test data?");
+
+			    for (int i = 0; i < idAmount; i++)
+                {
+					List<PBOEDataDTO> pboe = new List<PBOEDataDTO>();
+					pboe.Add(sut.GetPBOEByIDs(workspaceIds[i], pboeIds[i]).FirstOrDefault());
+                    Assert.IsNotNull(pboe);
+                    Assert.IsTrue(pboe.Count is 1);
+                }
+			}
+		}
+
+		[TestMethod]
         public void GetCurrentFormVersionTest()
         {
             var version = sut.GetCurrentFormVersion();

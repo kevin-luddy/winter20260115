@@ -81,6 +81,11 @@ namespace GenBOE.Web.Controllers
 		private readonly ITraceTableExporter traceTableExporter;
 
 		/// <summary>
+		/// BOE Form PBOE Data Loader
+		/// </summary>
+		private readonly IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader;
+
+		/// <summary>
 		/// Contract Type loader
 		/// </summary>
 		private readonly ContractTypeLoader contractTypeLoader;
@@ -106,7 +111,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, ContractTypeLoader contractTypeLoader)
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, ContractTypeLoader contractTypeLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -117,6 +122,7 @@ namespace GenBOE.Web.Controllers
 			this.workspaceExportFormatDTOLoader = workspaceExportFormatDTOLoader;
 			this.traceTableExporter = traceTableExporter;
 			this.boeFormControllerLogic = boeFormControllerLogic;
+			this.boeFormPBOEDTODataLoader = boeFormPBOEDTODataLoader;
 			this.contractTypeLoader = contractTypeLoader;
 		}
 		#endregion
@@ -655,7 +661,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Get Material PBoe Data for given Workspace
 		/// </summary>
-		/// <param name="workspaceID"></param>
+		/// <param name="workspaceID">Workspace ID</param>
 		/// <returns>Collection of Material PBoe Data</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
@@ -704,13 +710,56 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Checks to see if workspace exists and user has authorization to it
+		/// </summary>
+		/// <param name="workspaceID">Workspace ID</param>
+		/// <returns>Boolean</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<bool> CheckAuthorizationForWorkspaceID(int workspaceID)
+		{
+
+			IESResponse<bool> result = new IESResponse<bool>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// Check if user is System Admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+
+				if (isAllowed)
+				{
+					result.Data = new Collection<bool>() {true};
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					result.Data = new Collection<bool>() { false };
+					string message = "Invalid permission to Workspace with ID:" + workspaceID + ".";
+					logger.Error(message + " NTID: " + ntid);
+					result.Messages.Add(message);
+					result.IsSuccessful = false;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred checking authorization for Workspace ID: {workspaceID}: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Get all PBOEs for a given Workspace.
 		/// </summary>
 		/// <param name="workspaceID">Workspace ID</param>
 		/// <returns>Collection of PBOEs by Workspace ID</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<PBOEData> GetAllPBOEs(int workspaceID)
+		public IESResponse<PBOEData> GetPBOEsForWorkspace(int workspaceID)
 		{
 			IESResponse<PBOEData> result = new IESResponse<PBOEData>();
 
@@ -724,7 +773,25 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					// Todo Thomas: Implement in PROPH-894.
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForWorkspace(workspaceID).Select<PBOEDataDTO, PBOEData>(x => new PBOEData()
+					{
+						PBoeID = x.PBoeID,
+						SupplierName = x.SupplierName,
+						VendorId = x.VendorId,
+						SubResources = x.SubResources,
+						TotalCost = x.TotalCost.GetValueOrDefault(),
+						SupplierProposedValue = x.SupplierProposedValue,
+						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
+						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
+						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
+						CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
+						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
+						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
+						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
+						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault()
+					}).ToList();
+
 					result.IsSuccessful = true;
 				}
 				else
@@ -767,7 +834,25 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					// Todo Thomas: Implement in PROPH-894.
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEByIDs(workspaceID, pboeID).Select<PBOEDataDTO, PBOEData>(x => new PBOEData()
+					{
+						PBoeID = x.PBoeID,
+						SupplierName = x.SupplierName,
+						VendorId = x.VendorId,
+						SubResources = x.SubResources,
+						TotalCost = x.TotalCost.GetValueOrDefault(),
+						SupplierProposedValue = x.SupplierProposedValue,
+						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
+						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
+						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
+						CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
+						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
+						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
+						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
+						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault()
+					}).ToList();
+
 					result.IsSuccessful = true;
 				}
 				else

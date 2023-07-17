@@ -48,6 +48,7 @@ AS
 	**		9/8/2017	brunworg			Modified ProPricerBurdenRateMap delete statement.
 	**		1/2/2018	twilson3			BOEJ-2704 File Attachments
 	**		1/25/2018	ranzalon			BOEJ-2715 - RDSB Document Information
+	**      7/12/2023	twilson3			PROPH-917 - Delete XRefs for RateCode and Section
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500), @ErrorSeverity INT, @ErrorState INT, @ErrorProcedure VARCHAR(1000), @ErrorLine INT;
@@ -65,8 +66,14 @@ AS
 				DELETE FROM [dbo].[RateCodeYear] 
 				WHERE EXISTS 
 					(SELECT * FROM [dbo].RateCode rc where  RateCodeID = rc.ID AND rc.RevisionID = @Id)
+				DELETE FROM [dbo].[RDSBRateCodeXref] 
+				WHERE EXISTS
+					(SELECT * FROM [dbo].RateCode rc where  RateCodeID = rc.ID AND rc.RevisionID = @Id)
 				DELETE FROM [dbo].[RateCode] WHERE RevisionID = @Id
 				DELETE FROM [dbo].[BurdenPoolLU] where RevisionID = @Id	
+				DELETE FROM [dbo].[RDSBSectionXref]
+				WHERE EXISTS
+					(SELECT * FROM [dbo].[Section] sec where  SectionID = sec.ID AND sec.RevisionID = @Id)
 				DELETE FROM [dbo].[Section] WHERE RevisionID = @Id
 				DELETE FROM [dbo].[RDSBDocumentInformation] WHERE RDMRevisionID = @Id
 				DELETE FROM [dbo].[Revision] WHERE ID = @Id
