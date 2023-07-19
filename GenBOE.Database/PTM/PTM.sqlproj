@@ -16,7 +16,7 @@
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
@@ -28,6 +28,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <AutoCreateStatistics>False</AutoCreateStatistics>
     <AutoUpdateStatistics>False</AutoUpdateStatistics>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -85,6 +86,7 @@
     <Folder Include="Release Scripts\Older\Release 2022.15" />
     <Folder Include="Release Scripts\Older\Release 2022.27" />
     <Folder Include="Release Scripts\Older\Release 2022.34" />
+    <Folder Include="Release Scripts\Release 2023.26" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -171,6 +173,7 @@
     <Build Include="Release Scripts\Older\Release 2022.15\Release 2022.15.sql" />
     <None Include="Release Scripts\Older\Release 2022.27\Release 2022.27.sql" />
     <Build Include="Release Scripts\Older\Release 2022.34\Release 2022.34.sql" />
+    <Build Include="Release Scripts\Release 2023.26\Release 2023.26.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
