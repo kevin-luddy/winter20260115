@@ -19,7 +19,7 @@ INSERT INTO [dbo].[SectionContentTypeLU]
 END
 
 
-/* 2. Update upsertSection stored procedure to take in new properties*/
+/* 2.Adding new properties/columns into Section Table */
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE Name = N'Office' AND Object_ID = Object_ID(N'[dbo].[Section]'))
 BEGIN
 	ALTER TABLE [dbo].[Section]
@@ -99,10 +99,10 @@ ALTER PROCEDURE [dbo].[upsertSection]
 	@SectionContainsCasbDisclosure BIT,
 	@SectionContainsNonCompliance BIT,
 	@Office					varchar(100),
-	@Agency				varchar(100),
+	@Agency				    varchar(100),
 	@LMBA					varchar(100),
 	@Name					varchar(100),
-	@Street				varchar(100),
+	@Street				    varchar(100),
 	@CityST					varchar(100),
 	@Phone					varchar(100),
 	@Email					varchar(100),
@@ -131,7 +131,7 @@ AS
 	**		10/10/2017	Dusan				Added RevisionUniqueSectionId
 	**		05/15/2018	ranzalon			Added IsRdsbRequired
 	**		07/07/2022	Dusan				Added SectionContainsCasbDisclosure and SectionContainsNonCompliance
-	**		07/18/2023	May				    Added address fields into section table
+	**		07/18/2023	May				    PROPH-925 Added address fields into section table
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500)
