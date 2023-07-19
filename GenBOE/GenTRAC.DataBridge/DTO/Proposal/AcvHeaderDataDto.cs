@@ -24,6 +24,11 @@ namespace GenTRAC.DataBridge.DTO
 		public string ProposalTitle { get; set; }
 
 		/// <summary>
+		/// Proposal Status
+		/// </summary>
+		public string ProposalStatus { get; set; }
+
+		/// <summary>
 		/// RFP Number
 		/// </summary>
 		public string RfpNumber { get; set; }
