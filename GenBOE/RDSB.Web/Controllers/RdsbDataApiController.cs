@@ -186,5 +186,33 @@ namespace RDSB.Web.Controllers
 
 			return toReturn;
 		}
+
+		/// <summary>
+		/// Gets data necessary for CPS Reports
+		/// </summary>
+		/// <param name="rateCodes">List of rate codes</param>
+		/// <param name="proposalId">PTM Proposal ID</param>
+		/// <returns>Data to support a CPS Report</returns>
+		[HttpGet]
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<(string rateCode, string parentSectionNumber)> GetSectionsForRateCodes(ICollection<string> rateCodes, int proposalId)
+		{
+			IESResponse<(string rateCode, string parentSectionNumber)> toReturn = new IESResponse<(string rateCode, string parentSectionNumber)>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				toReturn.Data = documentControllerLogic.GetSectionsForRateCodes(rateCodes, proposalId);
+				toReturn.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				toReturn.Messages.Add($"Error occurred while retrieving data from RDSB");
+			}
+
+			return toReturn;
+		}
 	}
 }
