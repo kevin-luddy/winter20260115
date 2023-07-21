@@ -2241,6 +2241,7 @@ namespace GenTRAC.DataBridge.DTO
                         PtmTrackingNumber = x.ProposalTrackingID,
                         ProposalTitle = x.ProposalTitle,
                         RfpNumber = x.RFPNumber,
+						ProposalStatus = x.ProposalStatusLU.ProposalStatus,
                         // Set date to null if CCoPD required so it will be populated in ACV
                         CostVolumeSubmittalDate = x.CCPDRequired.HasValue && x.CCPDRequired.Value ? null 
                             : x.RevisedSubmittalDate.HasValue ? x.RevisedSubmittalDate : x.AnticipatedDeliveryDate
