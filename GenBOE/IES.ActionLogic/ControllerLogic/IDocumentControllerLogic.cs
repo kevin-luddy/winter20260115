@@ -125,6 +125,15 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a CPS Report</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		ICollection<(string rateCode, string parentSectionNumber)> GetSectionsForRateCodes(ICollection<string> rateCodes, int proposalId);
+		ICollection<(string rateCode, string parentSectionNumber)> GetTopLevelSectionsForRateCodes(ICollection<string> rateCodes, int proposalId);
+
+		/// <summary>
+		/// Gets data necessary for CPS Reports
+		/// </summary>
+		/// <param name="rateDescriptions">List of rate descriptions</param>
+		/// <param name="proposalId">PTM Proposal ID</param>
+		/// <returns>Data to support a CPS Report</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		ICollection<(string rateDescription, string parentSectionNumber)> GetTopLevelSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId);
 	}
 }

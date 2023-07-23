@@ -203,7 +203,35 @@ namespace RDSB.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = documentControllerLogic.GetSectionsForRateCodes(rateCodes, proposalId);
+				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateCodes(rateCodes, proposalId);
+				toReturn.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				toReturn.Messages.Add($"Error occurred while retrieving data from RDSB");
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Gets data necessary for CPS Reports
+		/// </summary>
+		/// <param name="rateDescriptions">List of rate descriptions</param>
+		/// <param name="proposalId">PTM Proposal ID</param>
+		/// <returns>Data to support a CPS Report</returns>
+		[HttpGet]
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<(string rateDescription, string parentSectionNumber)> GetSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId)
+		{
+			IESResponse<(string rateDescription, string parentSectionNumber)> toReturn = new IESResponse<(string rateDescription, string parentSectionNumber)>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateDescriptions(rateDescriptions, proposalId);
 				toReturn.IsSuccessful = true;
 			}
 			catch (Exception ex)
