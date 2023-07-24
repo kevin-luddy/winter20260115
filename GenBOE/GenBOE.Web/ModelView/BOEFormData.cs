@@ -20,5 +20,10 @@ namespace GenBOE.Web.ModelView
 		/// The Total Cost for a BOE Form instance
 		/// </summary>
 		public decimal TotalCost { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is incomplete.
+		/// </summary>
+		public bool IsIncomplete { get; set; }
 	}
 }
