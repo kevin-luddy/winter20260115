@@ -56,7 +56,7 @@ namespace IES.Tests
         public void TestSearchFound()
         {
             ActiveDirectoryUtilities sut = new ActiveDirectoryUtilities(30);
-            UserData userdata = sut.GetUserByQualifiedAccount("ectl0401", false);
+            UserData userdata = sut.GetUserByQualifiedAccount("iestibco", false);
             Assert.IsNotNull(userdata);
             Assert.AreEqual(string.Empty, userdata.Email);
         }
@@ -79,7 +79,7 @@ namespace IES.Tests
         public void TestSearchFoundNoDomain()
         {
             ActiveDirectoryUtilities sut = new ActiveDirectoryUtilities(30);
-            UserData userdata = sut.GetUserByQualifiedAccount("ectl0401", false);
+            UserData userdata = sut.GetUserByQualifiedAccount("iestibco", false);
             Assert.IsNotNull(userdata);
             Assert.AreEqual(string.Empty, userdata.Email);
         }
@@ -106,7 +106,6 @@ namespace IES.Tests
             Assert.IsTrue(sut.IsValidADGroup("EBS.EstimationInitiative.DevTeam"));
             Assert.IsFalse(sut.IsValidADGroup("doesnotexist"));
             Assert.IsFalse(sut.IsValidADGroup("does.not.exist"));
-            Assert.IsTrue(sut.IsValidADGroup("EO.Test Space Group"));
         }
 
         /// <summary>
@@ -117,17 +116,8 @@ namespace IES.Tests
         {
             ActiveDirectoryUtilities sut = new ActiveDirectoryUtilities(30);
 
-            Assert.IsFalse(sut.CheckUsersBoeAccess(new List<UserData>() { new UserData() { Ntid = "a-wilsot" } },
-                    new List<GroupData>() { new GroupData() { Ntid = "EO.Test Space Group" } }).First().Value);
-
-            Assert.IsTrue(sut.CheckUsersBoeAccess(new List<UserData>() { new UserData() { Ntid = "paliderd" } }, 
-                                new List<GroupData>() { new GroupData() { Ntid = "EO.Test Space Group" } }).First().Value);
-
-            Assert.IsTrue(sut.IsMemberOfADGroup("paliderd", "EBS.EstimationInitiative.DevTeam"));
+			Assert.IsTrue(sut.IsMemberOfADGroup("paliderd", "EBS.EstimationInitiative.DevTeam"));
             Assert.IsFalse(sut.IsMemberOfADGroup("a-wilsot", "all.lmco.us.nonemp"));
-
-            Assert.IsTrue(sut.IsMemberOfADGroup("paliderd", "EO.Test Space Group"));
-            Assert.IsFalse(sut.IsMemberOfADGroup("a-wilsot", "EO.Test Space Group"));
         }
 
         /// <summary>
@@ -180,31 +170,6 @@ namespace IES.Tests
         }
 
         /// <summary>
-        /// CheckUsersBoeAccess_TestWithData With a space in the group
-        /// </summary>
-        [TestMethod]
-        public void CheckUsersBoeAccess_TestWithData_WithSpace()
-        {
-            ActiveDirectoryUtilities sut = new ActiveDirectoryUtilities(30);
-
-            List<UserData> users = new List<UserData>()
-            {
-                new UserData() { Ntid = "paliderd" },
-                new UserData() { Ntid = "rokey" }
-            };
-
-            List<GroupData> groups = new List<GroupData>()
-            {
-                new GroupData() { Ntid = "EO.Test Space Group" }
-            };
-
-            Dictionary<UserData, bool> result = sut.CheckUsersBoeAccess(users, groups);
-
-            Assert.IsTrue(result[users[0]]);
-            Assert.IsFalse(result[users[1]]);
-        }
-
-        /// <summary>
         /// Tests w/ a bad group, to make sure an exception is not thrown
         /// </summary>
         [TestMethod]
@@ -241,21 +206,7 @@ namespace IES.Tests
             Assert.IsNotNull(result.Select(x => x.Ntid == "a-wilsot"));
         }
 
-        /// <summary>
-        /// GetADGroupUsersTest With Space in the group
-        /// </summary>
-        [TestMethod]
-        public void GetADGroupUsersTest_WithSpace()
-        {
-            ActiveDirectoryUtilities sut = new ActiveDirectoryUtilities(30);
-
-            var result = sut.GetAdGroupUsers("EO.Test Space Group");
-
-            Assert.IsTrue(result.Count > 0);
-            Assert.IsNotNull(result.Select(x => x.Ntid == "paliderd"));
-        }
-
-        /// <summary>
+		/// <summary>
         /// Ensures that users can be found by an Exact search and that using the partial search terms (missing beginning or end) with the Exact search does not work.
         /// </summary>
         [TestMethod]
@@ -354,14 +305,10 @@ namespace IES.Tests
             user = activeDirectory.GetUserByQualifiedAccount("EBS.EstimationInitiative.DevTeam", true);
             Assert.AreEqual("EBS.EstimationInitiative.DevTeam", user.Ntid, true);
 
-            user = activeDirectory.GetUserByQualifiedAccount("EO.Test Space Group", true);
-            Assert.AreEqual("EO.Test Space Group", user.Ntid, true);
 
             isMember = activeDirectory.IsMemberOfADGroup("paliderd", "EBS.EstimationInitiative.DevTeam");
             Assert.IsTrue(isMember);
 
-            isMember = activeDirectory.IsMemberOfADGroup("paliderd", "EO.Test Space Group");
-            Assert.IsTrue(isMember);
 
             groups = activeDirectory.GetGroupsForUser("paliderd");
             Assert.IsTrue(groups.Any());
@@ -370,9 +317,6 @@ namespace IES.Tests
             Assert.IsTrue(!groups.Any());
 
             isValid = activeDirectory.IsValidADGroup("EBS.EstimationInitiative.DevTeam");
-            Assert.IsTrue(isValid);
-
-            isValid = activeDirectory.IsValidADGroup("EO.Test Space Group");
             Assert.IsTrue(isValid);
 
             isValid = activeDirectory.IsValidADGroup("EO.Test Space X Group");
@@ -498,22 +442,6 @@ namespace IES.Tests
         }
 
         /// <summary>
-        /// Tests group lookup with space
-        /// </summary>
-        [TestMethod]
-        public void TestSearchGroupValid_WithSpace()
-        {
-            ActiveDirectoryUtilities sut = new ActiveDirectoryUtilities(30);
-
-            UserData groupInfo = sut.GetUserByQualifiedAccount("EO.Test Space Group", true);
-
-            Assert.IsNotNull(groupInfo);
-            Assert.IsNotNull(groupInfo.DisplayName);
-            Assert.IsNotNull(groupInfo.Ntid);
-            Assert.AreEqual(groupInfo.DisplayName.ToLower(), groupInfo.Ntid.ToLower());
-        }
-
-        /// <summary>
         /// Tests group lookup, with a wrong group name
         /// </summary>
         [TestMethod]
@@ -540,10 +468,6 @@ namespace IES.Tests
             groupName = "goodwik1";
             isGroup = sut.IsGroup(groupName);
             Assert.IsFalse(isGroup, "This is not a user");
-
-            groupName = "EO.Test Space Group";
-            isGroup = sut.IsGroup(groupName);
-            Assert.IsTrue(isGroup, "This is not a group");
         }
 
         /// <summary>
