@@ -12,6 +12,11 @@ namespace GenBOE.Web.ModelView
 	public class BOEFormData
 	{
 		/// <summary>
+		/// Boe Form Id
+		/// </summary>
+		public int GenBOEId { get; set; }
+
+		/// <summary>
 		/// The BOE Form's Name
 		/// </summary>
 		public string Name { get; set; }

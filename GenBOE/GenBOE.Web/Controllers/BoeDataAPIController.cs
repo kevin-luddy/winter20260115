@@ -505,6 +505,7 @@ namespace GenBOE.Web.Controllers
 					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
 						new BOEFormData()
 						{
+							GenBOEId = p.BOEFormId,
 							Name = p.BOEFormName,
 							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost,
 							IsIncomplete = p.IsIncomplete
