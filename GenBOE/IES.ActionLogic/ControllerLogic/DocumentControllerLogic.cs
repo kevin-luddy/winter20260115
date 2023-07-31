@@ -9,6 +9,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
 	using System.Text.RegularExpressions;
@@ -20,6 +21,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Common;
 	using IES.Common.Exceptions;
 	using IES.DataBridge.ModelViews;
+	using IES.Models;
 	using IO.Export;
 
 	/// <summary>
@@ -750,6 +752,148 @@ namespace IES.ActionLogic.ControllerLogic
 		public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
 		{
 			return sectionLoader.GetCoverSheetData(proposalId);
+		}
+
+		/// <summary>
+		/// Gets data necessary for CPS Reports
+		/// </summary>
+		/// <param name="rateCodes">List of rate codes</param>
+		/// <param name="proposalId">PTM Proposal ID</param>
+		/// <returns>Data to support a CPS Report</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public ICollection<(string rateCode, string parentSectionNumber)> GetTopLevelSectionsForRateCodes(ICollection<string> rateCodes, int proposalId)
+		{
+			if (rateCodes == null)
+			{
+				throw new ArgumentNullException(nameof(rateCodes));
+			}
+
+			List<(string rateCode, string parentSectionNumber)> rateSections = new List<(string rateCode, string parentSectionNumber)>();
+			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
+			if (modelView == null)
+			{
+				throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString(), nameof(proposalId));
+			}
+
+			ICollection<SectionModelView> sections = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
+			Dictionary<int, string> sectionIdToParentSection = new Dictionary<int, string>();
+
+			// set all reference numbers to top parent
+			AddSectionsToDictionary(sections, sectionIdToParentSection);
+
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+
+			foreach (string rateCode in rateCodes)
+			{
+				if (string.IsNullOrWhiteSpace(rateCode))
+				{
+					throw new ArgumentException("Cannot have a null or empty Rate Code", nameof(rateCodes));
+				}
+				else if (rateCode.Length < 6)
+				{
+					throw new ArgumentException("Rate Code found with a length less than 6: " + rateCode, nameof(rateCodes));
+				}
+
+				string modifiedRateCode = rateCode.Substring(0, 6);
+
+				RdsbRateDetailModelView rate = rates.FirstOrDefault(r => r.RateCode.StartsWith(modifiedRateCode));
+
+				if (rate == null)
+				{
+					// logg
+					logger.Warn("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode);
+					rateSections.Add((rateCode, string.Empty));
+				}
+				else
+				{
+					// now try to find section
+					if (sectionIdToParentSection.TryGetValue(rate.Section, out string parentRefCode))
+					{
+						rateSections.Add((rateCode, parentRefCode));
+					}
+					else
+					{
+						logger.Warn("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode + " using Rate " + rate.RateCode + " for searching");
+						rateSections.Add((rateCode, string.Empty));
+					}
+				}
+			}
+
+			return rateSections;
+		}
+
+		/// <summary>
+		/// Gets data necessary for CPS Reports
+		/// </summary>
+		/// <param name="rateDescriptions">List of rate descriptions</param>
+		/// <param name="proposalId">PTM Proposal ID</param>
+		/// <returns>Data to support a CPS Report</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public ICollection<(string rateDescription, string parentSectionNumber)> GetTopLevelSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId)
+		{
+			if (rateDescriptions == null)
+			{
+				throw new ArgumentNullException(nameof(rateDescriptions));
+			}
+
+			List<(string rateCode, string parentSectionNumber)> rateSections = new List<(string rateCode, string parentSectionNumber)>();
+			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
+			if (modelView == null)
+			{
+				throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString(), nameof(proposalId));
+			}
+
+			ICollection<SectionModelView> sections = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
+			Dictionary<int, string> sectionIdToParentSection = new Dictionary<int, string>();
+
+			// set all reference numbers to top parent
+			AddSectionsToDictionary(sections, sectionIdToParentSection);
+
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+
+			foreach (string rateDescription in rateDescriptions)
+			{
+				if (string.IsNullOrWhiteSpace(rateDescription))
+				{
+					throw new ArgumentException("Cannot have a null or empty Rate Description", nameof(rateDescriptions));
+				}
+
+				RdsbRateDetailModelView rate = rates.FirstOrDefault(r => r.Description.Contains(rateDescription));
+
+				if (rate == null)
+				{
+					// logg
+					logger.Warn("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription);
+					rateSections.Add((rateDescription, string.Empty));
+				}
+				else
+				{
+					// now try to find section
+					if (sectionIdToParentSection.TryGetValue(rate.Section, out string parentRefCode))
+					{
+						rateSections.Add((rateDescription, parentRefCode));
+					}
+					else
+					{
+						logger.Warn("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription + " using Rate " + rate.RateCode + " for searching");
+						rateSections.Add((rateDescription, string.Empty));
+					}
+				}
+			}
+
+			return rateSections;
+		}
+
+		private static void AddSectionsToDictionary(ICollection<SectionModelView> sections, Dictionary<int, string> sectionIdToParentSection)
+		{
+			foreach (SectionModelView section in sections)
+			{
+				sectionIdToParentSection[section.Id] = section.ReferenceNumber.Split('.').First();
+				if (section.ChildNodes != null && section.ChildNodes.Any())
+				{
+					AddSectionsToDictionary(section.ChildNodes, sectionIdToParentSection);
+				}
+			}
 		}
 	}
 }
