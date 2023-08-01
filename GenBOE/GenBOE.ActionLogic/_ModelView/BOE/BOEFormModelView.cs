@@ -218,5 +218,10 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Gets or sets the incomplete messages.
         /// </summary>
         public ICollection<string> IncompleteMessages { get; set; }
+
+        /// <summary>
+        /// Vendor ID
+        /// </summary>
+        public string VendorID { get; set; }
     }
 }
