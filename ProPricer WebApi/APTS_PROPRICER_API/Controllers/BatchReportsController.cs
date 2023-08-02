@@ -158,12 +158,16 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="container">The param container for the Post event</param>
 		/// <param name="tempFile">The location of the temporary file created by Pro Pricer export</param>
 		/// <returns>A ProPricerResponse object containing Tables from an exported Batch Report</returns>
-		internal ProPricerResponse<string> ExportBatchReport(int instanceId, ProPricerExportContainer container, out string tempFile)
+		internal ProPricerResponse<string> ExportBatchReport(int instanceId, ProPricerExportContainer container, string exportType)
 		{
 			ProPricerResponse<string> response = new ProPricerResponse<string>();
-			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response);
-			// TODO: Fix this so that it returns original File;
-			//ReadBatchFile(tempFile, response);
+			GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response);
+
+			if (exportType == Constants.REPORT_TYPE_EXCEL)
+			{
+				ReadBatchFile(response);
+			}
+
 			response.IsSuccessful = true;
 			return response;
 		}
@@ -173,7 +177,7 @@ namespace APTSPropricerApi.Controllers
 		/// </summary>
 		/// <param name="tempFile">The location of the temp file to read</param>
 		/// <param name="response">The response object used to add Table data and error messages</param>
-		private void ReadBatchFile(string tempFile, ProPricerResponse<ICollection<Table>> response)
+		private void ReadBatchFile(ProPricerResponse<string> response)
 		{
 			TxtLoadOptions opts = new TxtLoadOptions(LoadFormat.TabDelimited)
 			{
@@ -184,12 +188,11 @@ namespace APTSPropricerApi.Controllers
 				ConvertDateTimeData = false
 			};
 
-			using (Workbook book = new Workbook(tempFile, opts))
+			using (Workbook book = new Workbook(response.Data, opts))
 			{
 				foreach (Worksheet sheet in book.Worksheets)
 				{
 					Table convertedSheet = new Table();
-					response.Data.Add(convertedSheet);
 					foreach (Aspose.Cells.Row row in sheet.Cells.Rows)
 					{
 						Common.Row convertedRow = new Common.Row();
@@ -215,7 +218,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="batchReportId">The batch report Id</param>
 		/// <param name="response">The response object used to add error messages into.</param>
 		/// <returns>The temporary File location that was generated.</returns>
-		private static string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<string> response)
+		private static void GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<string> response)
 		{
 			string tempFile = null;
 			using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
@@ -279,7 +282,9 @@ namespace APTSPropricerApi.Controllers
 				}
 			}
 
-			return tempFile;
+			response.Data = tempFile;
+
+			//return tempFile;
 		}
 	}
 }
