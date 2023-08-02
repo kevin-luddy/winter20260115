@@ -40,13 +40,13 @@
 			services.AddAuthorization(options =>
 			{
 				// this lets us put [Authorize(Policy = "OnlyIesToken")] onto Controller
-				var onlyIesTokenSchemePolicyBuilder = new AuthorizationPolicyBuilder(Constants.IES_TOKEN_SCHEME);
+				AuthorizationPolicyBuilder onlyIesTokenSchemePolicyBuilder = new(Constants.IES_TOKEN_SCHEME);
 				options.AddPolicy("OnlyIesToken", onlyIesTokenSchemePolicyBuilder
 					.RequireAuthenticatedUser()
 					.Build());
 
 				// this lets us put [Authorize(Policy = "OnlyNegotiate")] onto Controller
-				var negotiatePolicyBuilder = new AuthorizationPolicyBuilder(NegotiateDefaults.AuthenticationScheme);
+				AuthorizationPolicyBuilder negotiatePolicyBuilder = new(NegotiateDefaults.AuthenticationScheme);
 				options.AddPolicy("OnlyNegotiate", negotiatePolicyBuilder
 					.RequireAuthenticatedUser()
 					.Build());

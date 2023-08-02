@@ -292,6 +292,7 @@
     <Compile Include="Common\SystemConfiguration.cs" />
     <Compile Include="Common\SystemConfigurationSection.cs" />
     <Compile Include="Common\TokenHandling.cs" />
+    <Compile Include="Common\ProPricerUtility.cs" />
     <Compile Include="Connection\PoolManager.cs" />
     <Compile Include="Connection\ProPricerConnection.cs" />
     <Compile Include="Connection\IProPricerConnection.cs" />

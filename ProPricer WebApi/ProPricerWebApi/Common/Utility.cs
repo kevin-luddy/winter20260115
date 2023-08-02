@@ -16,7 +16,6 @@ namespace APTSPropricerApi.Common
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
-	using EBS.ProPricer.Model.Pricing;
 
 	/// <summary>
 	/// Utility Class for Common Methods used in multiple Controllers.
@@ -644,7 +643,6 @@ namespace APTSPropricerApi.Common
 					logger.LogError(ex, "Error with " + whichvar);
 					tasks[tasks.Count].Id = "Error with " + whichvar + " - " + ex.Message;
 				}
-				//////////////////////////////////
 
 				pr.Close();
 			}
