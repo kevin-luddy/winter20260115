@@ -22,6 +22,7 @@ namespace APTSPropricerApi.Controllers
 	using DevExpress.Utils.About;
 	using EBS.Core;
 	using EBS.ProPricer.Model;
+	using EBS.ProPricer.Reports;
 
 	/// <summary>
 	/// Batch Reports Controller
@@ -74,9 +75,9 @@ namespace APTSPropricerApi.Controllers
 		/// <returns>Pro Pricer Response containing the Tables of data</returns>
 		[HttpPost]
 		[Route("api/BatchReports/Export/{instanceId}")]
-		public ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, [FromBody] ProPricerExportContainer container)
+		public ProPricerResponse<string> ExportBatchReport(int instanceId, [FromBody] ProPricerExportContainer container)
 		{
-			ProPricerResponse<ICollection<Table>> response = new ProPricerResponse<ICollection<Table>>();
+			ProPricerResponse<string> response = new ProPricerResponse<string>();
 
 			if (container == null)
 			{
@@ -157,12 +158,12 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="container">The param container for the Post event</param>
 		/// <param name="tempFile">The location of the temporary file created by Pro Pricer export</param>
 		/// <returns>A ProPricerResponse object containing Tables from an exported Batch Report</returns>
-		internal ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, ProPricerExportContainer container, out string tempFile)
+		internal ProPricerResponse<string> ExportBatchReport(int instanceId, ProPricerExportContainer container, out string tempFile)
 		{
-			ProPricerResponse<ICollection<Table>> response = new ProPricerResponse<ICollection<Table>>();
-			response.Data = new List<Table>();
+			ProPricerResponse<string> response = new ProPricerResponse<string>();
 			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response);
-			ReadBatchFile(tempFile, response);
+			// TODO: Fix this so that it returns original File;
+			//ReadBatchFile(tempFile, response);
 			response.IsSuccessful = true;
 			return response;
 		}
@@ -214,7 +215,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="batchReportId">The batch report Id</param>
 		/// <param name="response">The response object used to add error messages into.</param>
 		/// <returns>The temporary File location that was generated.</returns>
-		private static string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<ICollection<Table>> response)
+		private static string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<string> response)
 		{
 			string tempFile = null;
 			using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
@@ -234,24 +235,23 @@ namespace APTSPropricerApi.Controllers
 						if (batchReport != null)
 						{
 							batchReport.Open();
-							tempFile = ProPricerUtility.GenerateFile(proposal, batchReport, EBS.ProPricer.Reports.Export.ExportType.Excel, ".xlsx");
-							//tempFile = Path.GetRandomFileName();
+							tempFile = Path.GetRandomFileName();
 
-							//BatchReportContextManager mgr = new BatchReportContextManager(proposal);
-							//BatchReportRuntimeContext ctx = new BatchReportRuntimeContext(batchReport, mgr);
-							//ctx.Options.ExportType = EBS.ProPricer.Reports.Export.ExportType.Excel;
-							//ctx.Options.Folder = Constants.TEMP_DIRECTORY;
-							//ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
-							//ctx.Options.Destination = ReportDestination.File;
-							//ctx.Options.OutputMode = OutputMode.Combined;
-							//ctx.ProcessAll = true;
+							BatchReportContextManager mgr = new BatchReportContextManager(proposal);
+							BatchReportRuntimeContext ctx = new BatchReportRuntimeContext(batchReport, mgr);
+							ctx.Options.ExportType = EBS.ProPricer.Reports.Export.ExportType.Excel;
+							ctx.Options.Folder = Constants.TEMP_DIRECTORY;
+							ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
+							ctx.Options.Destination = ReportDestination.File;
+							ctx.Options.OutputMode = OutputMode.Combined;
+							ctx.ProcessAll = true;
 
-							//BatchReportGenerator generator = new BatchReportGenerator(ctx);
-							//ctx.Generator = generator;
+							BatchReportGenerator generator = new BatchReportGenerator(ctx);
+							ctx.Generator = generator;
 
-							//generator.Process();
+							generator.Process();
 
-							//tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + ".xlsx");
+							tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + ".xlsx");
 						}
 						else
 						{
