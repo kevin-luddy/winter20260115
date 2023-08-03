@@ -4,6 +4,8 @@
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Reports;
 	using System.IO;
+	using DevExpress.XtraPrinting;
+	using EBS.ProPricer.Reports.Engine.Runtime;
 
 	/// <summary>
 	/// Utility Class for Common Methods used in multiple Controllers
@@ -25,6 +27,7 @@
 
 			BatchReportContextManager mgr = new BatchReportContextManager(proposal);
 			BatchReportRuntimeContext ctx = new BatchReportRuntimeContext(batchReport, mgr);
+
 			ctx.Options.ExportType = exportType;
 			ctx.Options.Folder = Constants.TEMP_DIRECTORY;
 			ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);

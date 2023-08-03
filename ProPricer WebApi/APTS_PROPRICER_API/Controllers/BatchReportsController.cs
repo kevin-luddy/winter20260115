@@ -244,7 +244,7 @@ namespace APTSPropricerApi.Controllers
 		internal ProPricerResponse<byte[]> ExportBatchReportAsPdf(int instanceId, ProPricerExportContainer container, out string tempFile)
 		{
 			ProPricerResponse<byte[]> response = new ProPricerResponse<byte[]>();
-			tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Pdf);
+			tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Word);
 			response.IsSuccessful = true;
 			return response;
 		}
