@@ -142,6 +142,65 @@ namespace APTSPropricerApi.Controllers
 			return response;
 		}
 
+		// POST api/batchreports/{instanceid}
+		/// <summary>
+		/// Creates a batch report PDF export
+		/// </summary>
+		/// <param name="instanceId">The connection instance identifier.</param>
+		/// <param name="container">The param container for the Post event</param>
+		/// <returns>Pro Pricer Response containing the Tables of data</returns>
+		[HttpPost]
+		[Route("ExportAsPdf/{instanceId}")]
+		public ProPricerResponse<byte[]> ExportBatchReportAsPdf(int instanceId, [FromBody] ProPricerExportContainer container)
+		{
+			ProPricerResponse<byte[]> response = new();
+
+			if (container == null)
+			{
+				response.Messages.Add("The [POST] container passed in cannot be null.");
+			}
+			else if (string.IsNullOrEmpty(container.proposalId))
+			{
+				response.Messages.Add("The Proposal Id cannot be null.");
+			}
+			else if (string.IsNullOrEmpty(container.batchReportId))
+			{
+				response.Messages.Add("The Batch Report Id cannot be null.");
+			}
+			else
+			{
+
+				string tempFile = null;
+				try
+				{
+					response = ExportBatchReportAsPdf(instanceId, container, out tempFile);
+				}
+				catch (Exception ex)
+				{
+					string message = $"Error exporting Batch Report as PDF from Pro Pricer for Connection Id: {instanceId}, Proposal Id: {container.proposalId}, and Batch Report Id: {container.batchReportId}";
+					Logger.LogError(ex, message);
+					response.Messages.Add(message);
+				}
+				finally
+				{
+					// Delete the temp file if it exists, swallow the error
+					try
+					{
+						if (System.IO.File.Exists(tempFile))
+						{
+							System.IO.File.Delete(tempFile);
+						}
+					}
+					catch (Exception)
+					{
+						// error deleting file, will delete during next app startup
+					}
+				}
+			}
+
+			return response;
+		}
+
 		/// <summary>
 		/// Gets the Batch Reports
 		/// </summary>
@@ -184,6 +243,21 @@ namespace APTSPropricerApi.Controllers
 			};
 			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response, ExportType.Excel);
 			ReadBatchFile(tempFile, response);
+			response.IsSuccessful = true;
+			return response;
+		}
+
+		/// <summary>
+		/// Exports a Batch Report
+		/// </summary>
+		/// <param name="instanceId">The connection instance identifier.</param>
+		/// <param name="container">The param container for the Post event</param>
+		/// <param name="tempFile">The location of the temporary file created by Pro Pricer export</param>
+		/// <returns>A ProPricerResponse object containing a file exported via Batch Report</returns>
+		internal ProPricerResponse<byte[]> ExportBatchReportAsPdf(int instanceId, ProPricerExportContainer container, out string tempFile)
+		{
+			ProPricerResponse<byte[]> response = new();
+			tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Pdf);
 			response.IsSuccessful = true;
 			return response;
 		}
@@ -254,25 +328,59 @@ namespace APTSPropricerApi.Controllers
 						batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id.ToString() == batchReportId);
 						if (batchReport != null)
 						{
-							batchReport.Open();
+							tempFile = Utility.GenerateTempFile(batchReport, proposal, exportType);
+						}
+						else
+						{
+							response.Messages.Add("Batch Report was not found or could not be opened in the workspace.");
+						}
+					}
+					else
+					{
+						response.Messages.Add("Proposal was not found or could not be opened in the workspace.");
+					}
+				}
+				finally
+				{
+					proposal?.Close();
 
-							tempFile = Path.GetRandomFileName();
+					batchReport?.Close();
 
-							BatchReportContextManager mgr = new(proposal);
-							BatchReportRuntimeContext ctx = new(batchReport, mgr);
-							ctx.Options.ExportType = exportType;
-							ctx.Options.Folder = Constants.TEMP_DIRECTORY;
-							ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
-							ctx.Options.Destination = ReportDestination.File;
-							ctx.Options.OutputMode = OutputMode.Combined;
-							ctx.ProcessAll = true;
+					ppc.Workspace.Reports.BatchReports.Close();
+				}
+			}
 
-							BatchReportGenerator generator = new(ctx);
-							ctx.Generator = generator;
+			return tempFile;
+		}
 
-							generator.Process();
+		/// <summary>
+		/// Generates a Batch Report File as PDF
+		/// </summary>
+		/// <param name="instanceId">The connection instance identifier.</param>
+		/// <param name="proposalId">The proposal Id to use for the Batch Report</param>
+		/// <param name="batchReportId">The batch report Id</param>
+		/// <param name="response">The response object used to add error messages into.</param>
+		/// <returns>The temporary File location that was generated.</returns>
+		private string GenerateBatchReportFileAsPdf(int instanceId, string proposalId, string batchReportId, ProPricerResponse<byte[]> response, ExportType exportType)
+		{
+			string tempFile = null;
+			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+			{
+				Proposal proposal = null;
+				BatchReport batchReport = null;
+				try
+				{
+					Guid proposalGuid = new(proposalId);
+					proposal = ppc.Workspace.Proposals.Find(proposalGuid).Value();
 
-							tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + Utility.GetExportExtension(ctx.Options.ExportType));
+					if (proposal != null)
+					{
+						proposal.Open();
+						ppc.Workspace.Reports.BatchReports.Open();
+						batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id.ToString() == batchReportId);
+						if (batchReport != null)
+						{
+							tempFile = Utility.GenerateTempFile(batchReport, proposal, exportType);
 						}
 						else
 						{
