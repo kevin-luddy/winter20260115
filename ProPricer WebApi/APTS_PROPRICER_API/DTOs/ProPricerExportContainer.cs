@@ -23,10 +23,5 @@ namespace APTSPropricerApi.DTOs
 		/// Gets or sets the batch report id.
 		/// </summary>
 		public string batchReportId { get; set; }
-
-		/// <summary>
-		/// Gets or Sets Export Type for the Export
-		/// </summary>
-		public string exportType { get; set; }
 	}
 }

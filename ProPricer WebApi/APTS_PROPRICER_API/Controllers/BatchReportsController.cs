@@ -161,7 +161,7 @@ namespace APTSPropricerApi.Controllers
 		internal ProPricerResponse<string> ExportBatchReport(int instanceId, ProPricerExportContainer container, string exportType)
 		{
 			ProPricerResponse<string> response = new ProPricerResponse<string>();
-			GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response);
+			GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response, exportType);
 
 			if (exportType.ToLower() == Constants.REPORT_TYPE_EXCEL.ToLower())
 			{
@@ -206,6 +206,7 @@ namespace APTSPropricerApi.Controllers
 						}
 					}
 				}
+
 				MemoryStream ms = book.SaveToStream();
 				ms.Position = 0;
 				StreamReader sr = new StreamReader(ms);
@@ -221,8 +222,8 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="proposalId">The proposal Id to use for the Batch Report</param>
 		/// <param name="batchReportId">The batch report Id</param>
 		/// <param name="response">The response object used to add error messages into.</param>
-		/// <returns>The temporary File location that was generated.</returns>
-		private static void GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<string> response)
+		/// <param name="exportType">The Export File Type</param>
+		private static void GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<string> response, string exportType)
 		{
 			string tempFile = null;
 			using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
@@ -246,7 +247,7 @@ namespace APTSPropricerApi.Controllers
 
 							BatchReportContextManager mgr = new BatchReportContextManager(proposal);
 							BatchReportRuntimeContext ctx = new BatchReportRuntimeContext(batchReport, mgr);
-							ctx.Options.ExportType = EBS.ProPricer.Reports.Export.ExportType.Excel;
+							ctx.Options.ExportType = ProPricerUtility.GetExportType(exportType);
 							ctx.Options.Folder = Constants.TEMP_DIRECTORY;
 							ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
 							ctx.Options.Destination = ReportDestination.File;
@@ -258,7 +259,7 @@ namespace APTSPropricerApi.Controllers
 
 							generator.Process();
 
-							tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + ".xlsx");
+							tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + ProPricerUtility.GetExportExtension(ctx.Options.ExportType));
 						}
 						else
 						{

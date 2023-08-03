@@ -144,11 +144,11 @@ namespace APTSPropricerApi
 		/// <summary>
 		/// Report Type Pdf
 		/// </summary>
-		public static readonly string REPORT_TYPE_PDF = "Pdf";
+		public const string REPORT_TYPE_PDF = "Pdf";
 
 		/// <summary>
 		/// Report Type Excel
 		/// </summary>
-		public static readonly string REPORT_TYPE_EXCEL = "Excel";
+		public const string REPORT_TYPE_EXCEL = "Excel";
 	}
 }

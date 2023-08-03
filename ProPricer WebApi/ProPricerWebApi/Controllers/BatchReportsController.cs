@@ -21,6 +21,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.Core;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Reports;
+	using EBS.ProPricer.Reports.Export;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
@@ -174,14 +175,14 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The connection instance identifier.</param>
 		/// <param name="container">The param container for the Post event</param>
 		/// <param name="tempFile">The location of the temporary file created by Pro Pricer export</param>
-		/// <returns>A ProPricerResponse object containing Tables from an exported Batch Report</returns>
+		/// <returns>A ProPricerResponse object containing a file exported via Batch Report</returns>
 		internal ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, ProPricerExportContainer container, out string tempFile)
 		{
 			ProPricerResponse<ICollection<Table>> response = new()
 			{
 				Data = new List<Table>()
 			};
-			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response);
+			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response, ExportType.Excel);
 			ReadBatchFile(tempFile, response);
 			response.IsSuccessful = true;
 			return response;
@@ -234,7 +235,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="batchReportId">The batch report Id</param>
 		/// <param name="response">The response object used to add error messages into.</param>
 		/// <returns>The temporary File location that was generated.</returns>
-		private string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<ICollection<Table>> response)
+		private string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<ICollection<Table>> response, ExportType exportType)
 		{
 			string tempFile = null;
 			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
@@ -259,7 +260,7 @@ namespace APTSPropricerApi.Controllers
 
 							BatchReportContextManager mgr = new(proposal);
 							BatchReportRuntimeContext ctx = new(batchReport, mgr);
-							ctx.Options.ExportType = EBS.ProPricer.Reports.Export.ExportType.Excel;
+							ctx.Options.ExportType = exportType;
 							ctx.Options.Folder = Constants.TEMP_DIRECTORY;
 							ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
 							ctx.Options.Destination = ReportDestination.File;
@@ -271,7 +272,7 @@ namespace APTSPropricerApi.Controllers
 
 							generator.Process();
 
-							tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + ".xlsx");
+							tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + Utility.GetExportExtension(ctx.Options.ExportType));
 						}
 						else
 						{

@@ -1,8 +1,8 @@
 ﻿namespace APTSPropricerApi.Common
 {
+	using EBS.ProPricer.Reports.Export;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Reports;
-	using EBS.ProPricer.Reports.Export;
 	using System.IO;
 
 	/// <summary>
@@ -10,16 +10,17 @@
 	/// </summary>
 	public static class ProPricerUtility
 	{
-
 		/// <summary>
-		/// Takes BatchReport and Proposal and Generates a file given the Report Type
+		/// Generate TempFile for Export to utilize
 		/// </summary>
-		/// <param name="proposal">Proposal</param>
 		/// <param name="batchReport">Batch Report</param>
-		/// <param name="exportType">Type of Export</param>
-		/// <returns>File for given Report Type</returns>
-		public static string GenerateFile(Proposal proposal, BatchReport batchReport, ExportType exportType, string extensionType)
+		/// <param name="proposal">Proposal</param>
+		/// <param name="exportType">Export Type</param>
+		/// <returns>Temp File</returns>
+		public static string GenerateTempFile(BatchReport batchReport, Proposal proposal, ExportType exportType)
 		{
+			batchReport.Open();
+
 			string tempFile = Path.GetRandomFileName();
 
 			BatchReportContextManager mgr = new BatchReportContextManager(proposal);
@@ -33,12 +34,34 @@
 
 			BatchReportGenerator generator = new BatchReportGenerator(ctx);
 			ctx.Generator = generator;
-
 			generator.Process();
 
-			tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + extensionType);
+			tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + GetExportExtension(ctx.Options.ExportType));
 
 			return tempFile;
+		}
+
+		/// <summary>
+		/// Get File extension for Report (Default is Excel => .xlsx)
+		/// </summary>
+		/// <param name="exportType">Enum of File type</param>
+		/// <returns>Complete extension of File (i.e .xlsx)</returns>
+		public static string GetExportExtension(ExportType exportType)
+		{
+			// Defaulting to Excel
+			string extension = ".xlsx";
+
+			if (exportType == ExportType.Pdf)
+			{
+				extension = ".pdf";
+			}
+
+			if (exportType == ExportType.Word)
+			{
+				extension = ".docx";
+			}
+
+			return extension;
 		}
 	}
 }

@@ -16,12 +16,68 @@ namespace APTSPropricerApi.Common
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
+	using EBS.ProPricer.Reports;
+	using EBS.ProPricer.Reports.Export;
 
 	/// <summary>
 	/// Utility Class for Common Methods used in multiple Controllers.
 	/// </summary>
 	public static class Utility
 	{
+		/// <summary>
+		/// Generate TempFile for Export to utilize
+		/// </summary>
+		/// <param name="batchReport">Batch Report</param>
+		/// <param name="proposal">Proposal</param>
+		/// <param name="exportType">Export Type</param>
+		/// <returns>Temp File</returns>
+		public static string GenerateTempFile(BatchReport batchReport, Proposal proposal, ExportType exportType)
+		{
+			batchReport.Open();
+
+			string tempFile = Path.GetRandomFileName();
+
+			BatchReportContextManager mgr = new(proposal);
+			BatchReportRuntimeContext ctx = new(batchReport, mgr);
+			ctx.Options.ExportType = exportType;
+			ctx.Options.Folder = Constants.TEMP_DIRECTORY;
+			ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
+			ctx.Options.Destination = ReportDestination.File;
+			ctx.Options.OutputMode = OutputMode.Combined;
+			ctx.ProcessAll = true;
+
+			BatchReportGenerator generator = new(ctx);
+			ctx.Generator = generator;
+			generator.Process();
+
+			tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + GetExportExtension(ctx.Options.ExportType));
+
+			return tempFile;
+		}
+
+		/// <summary>
+		/// Get File extension for Report (Default is Excel => .xlsx)
+		/// </summary>
+		/// <param name="exportType">Enum of File type</param>
+		/// <returns>Complete extension of File (i.e .xlsx)</returns>
+		public static string GetExportExtension(ExportType exportType)
+		{
+			// Defaulting to Excel
+			string extension = ".xlsx";
+
+			if (exportType == ExportType.Pdf)
+			{
+				extension = ".pdf";
+			}
+
+			if (exportType == ExportType.Word)
+			{
+				extension = ".docx";
+			}
+
+			return extension;
+		}
+
 		/// <summary>
 		/// Get All Proposals
 		/// </summary>
