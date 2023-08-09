@@ -2303,7 +2303,7 @@
             <param name="response">The response object used to add error messages into.</param>
             <returns>The temporary File location that was generated.</returns>
         </member>
-        <member name="M:APTSPropricerApi.Controllers.BatchReportsController.GenerateBatchReportFileAsPdf(System.Int32,System.String,System.String,APTSPropricerApi.Common.ProPricerResponse{System.Byte[]},EBS.ProPricer.Reports.Export.ExportType)">
+        <member name="M:APTSPropricerApi.Controllers.BatchReportsController.GenerateBatchReportFileAsPdf(System.Int32,System.String,System.String,APTSPropricerApi.Common.ProPricerResponse{System.Byte[]})">
             <summary>
             Generates a Batch Report File as PDF
             </summary>

@@ -244,7 +244,7 @@ namespace APTSPropricerApi.Controllers
 		internal ProPricerResponse<byte[]> ExportBatchReportAsPdf(int instanceId, ProPricerExportContainer container, out string tempFile)
 		{
 			ProPricerResponse<byte[]> response = new ProPricerResponse<byte[]>();
-			tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Word);
+			tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response);
 			response.IsSuccessful = true;
 			return response;
 		}
@@ -313,6 +313,7 @@ namespace APTSPropricerApi.Controllers
 						proposal.Open();
 						ppc.Workspace.Reports.BatchReports.Open();
 						batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id.ToString() == batchReportId);
+
 						if (batchReport != null)
 						{
 							tempFile = ProPricerUtility.GenerateTempFile(batchReport, proposal, exportType);
@@ -348,7 +349,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="batchReportId">The batch report Id</param>
 		/// <param name="response">The response object used to add error messages into.</param>
 		/// <returns>The temporary File location that was generated.</returns>
-		private string GenerateBatchReportFileAsPdf(int instanceId, string proposalId, string batchReportId, ProPricerResponse<byte[]> response, ExportType exportType)
+		private string GenerateBatchReportFileAsPdf(int instanceId, string proposalId, string batchReportId, ProPricerResponse<byte[]> response)
 		{
 			string tempFile = null;
 			using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
@@ -365,9 +366,10 @@ namespace APTSPropricerApi.Controllers
 						proposal.Open();
 						ppc.Workspace.Reports.BatchReports.Open();
 						batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id.ToString() == batchReportId);
+
 						if (batchReport != null)
 						{
-							tempFile = ProPricerUtility.GenerateTempFile(batchReport, proposal, exportType);
+							tempFile = ProPricerUtility.GenerateTempFile(batchReport, proposal, ExportType.Pdf);
 						}
 						else
 						{

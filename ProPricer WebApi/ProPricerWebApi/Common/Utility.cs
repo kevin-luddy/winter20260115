@@ -17,6 +17,7 @@ namespace APTSPropricerApi.Common
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
 	using EBS.ProPricer.Reports;
+	using EBS.ProPricer.Reports.Engine.Processing;
 	using EBS.ProPricer.Reports.Export;
 
 	/// <summary>
@@ -37,18 +38,47 @@ namespace APTSPropricerApi.Common
 
 			string tempFile = Path.GetRandomFileName();
 
-			BatchReportContextManager mgr = new(proposal);
-			BatchReportRuntimeContext ctx = new(batchReport, mgr);
-			ctx.Options.ExportType = exportType;
-			ctx.Options.Folder = Constants.TEMP_DIRECTORY;
-			ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
-			ctx.Options.Destination = ReportDestination.File;
-			ctx.Options.OutputMode = OutputMode.Combined;
-			ctx.ProcessAll = true;
+			if (batchReport.ReportType == EBS.ProPricer.Data.ReportType.Regular)
+			{
+				BatchReportContextManager mgr = new(proposal);
+				BatchReportRuntimeContext ctx = new(batchReport, mgr);
+				ctx.Options.ExportType = exportType;
+				ctx.Options.Folder = Constants.TEMP_DIRECTORY;
+				ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
+				ctx.Options.Destination = ReportDestination.File;
+				ctx.Options.OutputMode = OutputMode.Combined;
+				ctx.ProcessAll = true;
 
-			BatchReportGenerator generator = new(ctx);
-			ctx.Generator = generator;
-			generator.Process();
+				BatchReportGenerator generator = new(ctx);
+				ctx.Generator = generator;
+				generator.Process();
+				ctx.RuntimeReports.ForEach(x =>
+				{
+					x.OutputOptions.Destination = ReportDestination.File;
+					x.OutputOptions.ExportDestinationType = exportType;
+					x.OutputOptions.ExportPath = Directory.GetParent(tempFile).FullName;
+					x.OutputOptions.ExportFileName = Path.GetFileName(tempFile);
+					x.OutputOptions.OpenExportedDocument = false;
+
+					ReportGenerator generator = new(x);
+					generator.ProcessReport();
+				});
+			}
+			else
+			{
+				BatchReportContextManager mgr = new(proposal);
+				BatchReportRuntimeContext ctx = new(batchReport, mgr);
+				ctx.Options.ExportType = exportType;
+				ctx.Options.Folder = Constants.TEMP_DIRECTORY;
+				ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
+				ctx.Options.Destination = ReportDestination.File;
+				ctx.Options.OutputMode = OutputMode.Combined;
+				ctx.ProcessAll = true;
+
+				BatchReportGenerator generator = new(ctx);
+				ctx.Generator = generator;
+				generator.Process();
+			}
 
 			tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + GetExportExtension(ctx.Options.ExportType));
 
