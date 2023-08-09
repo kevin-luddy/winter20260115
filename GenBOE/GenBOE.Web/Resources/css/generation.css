@@ -8727,3 +8727,9 @@ div.WarningBanner {
     width: 80%;
     color: #ff3333;
 }
+
+span.blue-link,
+span.blue-link a{
+    color: #5297AD !important;
+    text-decoration: none;
+}
