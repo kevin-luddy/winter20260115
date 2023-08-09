@@ -17,6 +17,11 @@ namespace GenBOE.Web.ModelView
 		public string VendorID { get; set; }
 
 		/// <summary>
+		/// PBOE Database Id
+		/// </summary>
+		public int PBOEId { get; set; }
+
+		/// <summary>
 		/// The BOE Form's Name
 		/// </summary>
 		public string Name { get; set; }
