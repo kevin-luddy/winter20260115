@@ -6,7 +6,10 @@
 
 namespace GenBOE.ActionLogic.ModelView
 {
-	using System.Collections.Generic;
+    using GenBOE.DataBridge.DTO;
+    using MoreLinq;
+    using System;
+    using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 
 	/// <summary>
@@ -14,10 +17,40 @@ namespace GenBOE.ActionLogic.ModelView
 	/// </summary>
 	public class TraceTableBoeData
 	{
-		/// <summary>
-		/// Summary field name
-		/// </summary>
-		public string SummaryField { get; set; }
+        /// <summary>
+        /// Converts TraceTableBoeDataGroup to TraceTableBoeData model
+        /// </summary>
+        /// <param name="boeDataGroup">TraceTableBoeData model</param>
+        public TraceTableBoeData(TraceTableBoeDataGroup boeDataGroup)
+        {
+            if (boeDataGroup == null)
+            {
+                throw new ArgumentNullException(nameof(boeDataGroup));
+            }
+            SummaryField = boeDataGroup.SummaryField;
+            SummaryFieldValue = boeDataGroup.SummaryFieldValue;
+            TotalValue = boeDataGroup.TotalValue;
+            SpreadPrecision = boeDataGroup.SpreadPrecision;
+
+            foreach (KeyValuePair<string, decimal> boeDataKvp in boeDataGroup.SpreadValuesForGroup)
+            {
+				int year = 0;
+				int.TryParse(boeDataKvp.Key, out year);
+                SpreadValuesForYear.Add(year, boeDataKvp.Value);
+            }
+
+            boeDataGroup.ChildData.ForEach(x => ChildData.Add(new TraceTableBoeData(x)));
+        }
+
+        /// <summary>
+        /// Blank constructor
+        /// </summary>
+        public TraceTableBoeData() { }
+
+        /// <summary>
+        /// Summary field name
+        /// </summary>
+        public string SummaryField { get; set; }
 
 		/// <summary>
 		/// Summary Field Value

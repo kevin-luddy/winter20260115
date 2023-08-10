@@ -422,7 +422,7 @@ namespace GenBOE.Web.Controllers
 		[HttpPost]
 		public IESResponse<TraceTableBoeData> GetWorkspaceDataForTraceTable(string workspaceShortName, TraceTableSettingsData settingsData)
 		{
-			IESResponse<TraceTableBoeData> boeData = new IESResponse<TraceTableBoeData>();
+            IESResponse<TraceTableBoeData> boeData = new IESResponse<TraceTableBoeData>();
 
 			try
 			{
@@ -431,25 +431,58 @@ namespace GenBOE.Web.Controllers
 				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
 				if (this.HasOciPermission(SecurityPage.Reports, workspace))
 				{
-					boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
-					boeData.IsSuccessful = true;
+                    boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
+                    boeData.IsSuccessful = true;
 				}
-			}
-			catch (Exception ex)
+
+            }
+            catch (Exception ex)
 			{
 				logger.Error(ex);
-				boeData.Messages.Add($"Unknown error occurred returning Workspace data for Trace Table: {ex.Message}");
+                boeData.Messages.Add($"Unknown error occurred returning Workspace data for Trace Table: {ex.Message}");
 			}
 
 			return boeData;
 		}
 
-		/// <summary>
-		/// Gets all of the IWTA Company Names for a Workspace
-		/// </summary>
-		/// <param name="workspaceShortName">Short name of the workspace</param>
-		/// <returns>HttpResponseMessage</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        /// <summary>
+        /// Get the genBOE Workspace data group for use with a Trace Table in ACV
+        /// </summary>
+        /// <param name="workspaceShortName">Workspace short name</param>
+        /// <param name="settingsData">Trace Table Settings Data</param>
+        /// <returns>genBOE Workspace data group for use with a Trace Table in ACV</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        [HttpPost]
+        public IESResponse<TraceTableBoeDataGroup> GetWorkspaceDataForTraceTableGroup(string workspaceShortName, TraceTableSettingsData settingsData)
+        {
+            IESResponse<TraceTableBoeDataGroup> boeData = new IESResponse<TraceTableBoeDataGroup>();
+
+            try
+            {
+                tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+                FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+                if (this.HasOciPermission(SecurityPage.Reports, workspace))
+                {
+                    boeData.Data = traceTableExporter.ExportTraceTableDataGroup(workspace, settingsData);
+                    boeData.IsSuccessful = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+                boeData.Messages.Add($"Unknown error occurred returning Workspace data group for Trace Table: {ex.Message}");
+            }
+
+            return boeData;
+        }
+
+        /// <summary>
+        /// Gets all of the IWTA Company Names for a Workspace
+        /// </summary>
+        /// <param name="workspaceShortName">Short name of the workspace</param>
+        /// <returns>HttpResponseMessage</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<BOEFormData> GetIwtaCompanies(string workspaceShortName)
 		{
