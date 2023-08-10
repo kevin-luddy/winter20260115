@@ -52,6 +52,26 @@ namespace GenBOE.Web.ModelView
 		public bool IsCCoPD { get; set; }
 
 		/// <summary>
+		/// Expected Certified Cost or Pricing Data (CCoPD) Applicability and Commercial Item Expcetion
+		/// </summary>
+		public bool? IsCommercialItemException { get; set; }
+
+		/// <summary>
+		/// Expected Certified Cost or Pricing Data (CCoPD) Applicability and Competition Exception
+		/// </summary>
+		public bool? IsCompetitionException { get; set; }
+
+		/// <summary>
+		/// Expected Certified Cost or Pricing Data (CCoPD) Applicability with other Exception
+		/// </summary>
+		public bool? IsCCoPDOtherException { get; set; }
+
+		/// <summary>
+		/// Expected Certified Cost or Pricing Data (CCoPD) Applicability with CCoPD Threshold Exception
+		/// </summary>
+		public bool? IsCCoPDThresholdException { get; set; }
+
+		/// <summary>
 		/// Schedule of Events Price Analysis
 		/// </summary>
 		public ScheduleEvent PriceAnalysis { get; set; }
