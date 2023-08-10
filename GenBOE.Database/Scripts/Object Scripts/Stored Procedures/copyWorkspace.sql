@@ -41,6 +41,7 @@ AS
 **		3/1/23		twilson3			ACV-343 Update MOQ Column sizes
 **		3/20/23		Dusan				ACV-498: Updated MOQ Column size (Wbs Element due to prod issue)
 **		3/23/23		twilson3			ACV-274 Handle SAP Fiscal Week Cutoff
+**      8/10/23     twilson             PROPH-1029 Investigate Project Spreads
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -639,6 +640,7 @@ SELECT 	    @NewWorkspaceID,
 FROM  ProjectMapSpread S
 INNER JOIN ProjectMap P ON P.ID = S.ProjectMapId
 INNER JOIN ProjectMap NewP ON NewP.WorkspaceId = @NewWorkspaceID AND NewP.OrderID = P.OrderID
+WHERE S.WorkspaceID = @WorkspaceID
 
 /**** Custom Fields ****/
 INSERT INTO [dbo].[CustomField]
