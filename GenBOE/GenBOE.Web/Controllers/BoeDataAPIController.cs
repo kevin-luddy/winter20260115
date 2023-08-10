@@ -505,6 +505,8 @@ namespace GenBOE.Web.Controllers
 					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
 						new BOEFormData()
 						{
+							PBOEId = p.BOEFormId,
+							VendorID = p.VendorID,
 							Name = p.BOEFormName,
 							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost,
 							IsIncomplete = p.IsIncomplete
@@ -844,6 +846,10 @@ namespace GenBOE.Web.Controllers
 						TotalCost = x.TotalCost.GetValueOrDefault(),
 						SupplierProposedValue = x.SupplierProposedValue,
 						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+						IsCommercialItemException = x.IsCommercialItemException.GetValueOrDefault(),
+						IsCompetitionException = x.IsCompetitionException.GetValueOrDefault(),
+						IsCCoPDOtherException = x.IsCCoPDOtherException.GetValueOrDefault(),
+						IsCCoPDThresholdException = x.IsCCoPDThresholdException.GetValueOrDefault(),
 						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
 						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
 						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
