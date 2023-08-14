@@ -45,6 +45,7 @@ AS
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
 **		3/1/23		twilson3			ACV-343 Update MOQ Column sizes
 **		3/20/23		Dusan				ACV-498: Updated MOQ Column size (Wbs Element due to prod issue)
+**      8/10/23     twilson             PROPH-1029 Investigate Project Spreads
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -734,7 +735,7 @@ BEGIN TRY
 	FROM  [version].[ProjectMapSpread] S
 	INNER JOIN [version].ProjectMap P ON P.ID = S.ProjectMapId AND S.VersionID = P.VersionID
 	INNER JOIN ProjectMap NewP ON NewP.WorkspaceId = @NewWorkspaceID AND NewP.OrderID = P.OrderID
-	WHERE S.VersionID = @VersionID
+	WHERE S.WorkspaceID = @WorkspaceID AND S.VersionID = @VersionID
 
 	/**** Custom Fields ****/
 	INSERT INTO [dbo].[CustomField]
