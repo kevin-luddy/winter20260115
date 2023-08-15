@@ -139,10 +139,10 @@
                             { %>
                                 <div>Company Mode: <%: SystemConfiguration.Instance().CompanyMode.GetDescription() %>
                                <% if (SiteMasterUtilities.IsRMSProduction()) { %>
-                                <span class="blue-link">Production - <a href="<%=SiteMasterUtilities.ArchiveUrl()%>">Switch to Archive</a></span>
+                                Production - <span class="blue-link"><a href="<%=SiteMasterUtilities.ArchiveUrl()%>">Switch to Archive</a></span>
                                <% } %>
                                 <% if (SiteMasterUtilities.IsRMSArchive()) { %>
-                                <span class="blue-link">Archive - <a href="<%=SiteMasterUtilities.ProductionUrl()%>">Switch to Production</a></span>
+                                Archive - <span class="blue-link"><a href="<%=SiteMasterUtilities.ProductionUrl()%>">Switch to Production</a></span>
                                <% } %>
                                 </div>                               
                           <% } %> 
