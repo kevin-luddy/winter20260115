@@ -288,7 +288,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 Collection<ValidationMessage> pboeErrors = new Collection<ValidationMessage>();
                 this.ValidatePBOE(pboe, pboeErrors, proposalTitleAndRfpNumber);
-                BOEFormModelView modelView = this.ConvertSummaryDtoToModelView(pboe, workspace, resourceIdsWithValidTMRates);                modelView.IsIncomplete = pboeErrors.Any();
+                BOEFormModelView modelView = this.ConvertSummaryDtoToModelView(pboe, workspace, resourceIdsWithValidTMRates);
+                modelView.IsIncomplete = pboeErrors.Any();
                 modelView.IncompleteMessages = pboeErrors.Select(e => e.ValidationIssue).ToList();
                 forms.Add(modelView);
             }
