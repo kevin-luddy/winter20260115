@@ -289,7 +289,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 Collection<ValidationMessage> pboeErrors = new Collection<ValidationMessage>();
                 this.ValidatePBOE(pboe, pboeErrors, proposalTitleAndRfpNumber);
                 BOEFormModelView modelView = this.ConvertSummaryDtoToModelView(pboe, workspace, resourceIdsWithValidTMRates);
-                modelView.VendorID = pboe.VendorId;
                 modelView.IsIncomplete = pboeErrors.Any();
                 modelView.IncompleteMessages = pboeErrors.Select(e => e.ValidationIssue).ToList();
                 forms.Add(modelView);
