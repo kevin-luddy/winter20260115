@@ -131,6 +131,23 @@ namespace IES.Common
 
                             using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
                             {
+                                if (isGroup)
+                                {
+                                    ds.PropertiesToLoad.Add("sAMAccountName");
+                                    ds.PropertiesToLoad.Add("name");
+                                }
+                                else
+                                {
+                                    ds.PropertiesToLoad.Add("sAMAccountName");
+                                    ds.PropertiesToLoad.Add("givenname");
+                                    ds.PropertiesToLoad.Add("sn");
+                                    ds.PropertiesToLoad.Add("displayname");
+                                    ds.PropertiesToLoad.Add("mail");
+                                    ds.PropertiesToLoad.Add("telephonenumber");
+                                    ds.PropertiesToLoad.Add("lmcUSAPersonIndicator");
+                                    ds.PropertiesToLoad.Add("employeeType");
+                                }
+
                                 SearchResult searchResult = ds.FindOne();
 
                                 if (searchResult == null)
@@ -253,6 +270,8 @@ namespace IES.Common
                                     ds.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
                                 }
 
+                                ds.PropertyNamesOnly = true;
+                                
                                 SearchResult samResult = ds.FindOne();
 
                                 if (samResult != null)
@@ -360,12 +379,18 @@ namespace IES.Common
                     {
                         case ObjectClass.user:
                             mySearcher.Filter = "(&(objectClass=user)(|(cn=" + objectName + ")(sAMAccountName=" + objectName + ")))";
+                            // TODO TIW never used
+                            //mySearcher.PropertiesToLoad.Add("sAMAccountName");
+                            //mySearcher.PropertiesToLoad.Add("distinguishedName");
                             break;
                         case ObjectClass.group:
                             mySearcher.Filter = string.Format("(&(objectClass=group)(|(cn=" + objectName + ")(dn=" + objectName + ")(samAccountName=" + objectName + ")))");
+                            mySearcher.PropertyNamesOnly = true;
                             break;
                         case ObjectClass.computer:
                             mySearcher.Filter = "(&(objectClass=computer)(|(cn=" + objectName + ")(dn=" + objectName + ")))";
+                            // TODO TIW never used
+                            // mySearcher.PropertyNamesOnly = true;
                             break;
                     }
 
@@ -703,7 +728,8 @@ namespace IES.Common
         /// <param name="searchBy">Search by last name or account</param>
         /// <param name="matchBy">Starts-with, exact match, or contains</param>
         /// <returns>Active Directory search results</returns>
-        private SearchResultCollection FindMatchingUsers(string userSearchString, ActiveDirectorySearchBy searchBy, ActiveDirectoryMatchType matchBy)
+        private SearchResultCollection FindMatchingUsers(string userSearchString, ActiveDirectorySearchBy searchBy, ActiveDirectoryMatchType matchBy,
+            string[] propertiesToLoad)
         {
             if (string.IsNullOrEmpty(userSearchString))
             {
@@ -713,7 +739,7 @@ namespace IES.Common
             {
                 using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(this.activeDirectoryPath))
                 {
-                    using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=person)"))
+                    using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=person)", propertiesToLoad))
                     {
                         if (CLIENT_TIMEOUT_SECONDS > 0)
                         {
@@ -764,6 +790,8 @@ namespace IES.Common
                 {
                     using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=group)"))
                     {
+                        // TODO TIW
+                        // search.PropertyNamesOnly = true;
                         if (CLIENT_TIMEOUT_SECONDS > 0)
                         {
                             search.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
@@ -826,7 +854,7 @@ namespace IES.Common
                     "employeeType"
                 };
 
-                SearchResultCollection searchResults = this.FindMatchingUsers(sanitizedString, searchBy, matchBy);
+                SearchResultCollection searchResults = this.FindMatchingUsers(sanitizedString, searchBy, matchBy, propertyNames);
 
                 if (searchResults != null && searchResults.Count > 0)
                 { 
