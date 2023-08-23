@@ -506,7 +506,7 @@ namespace GenBOE.Web.Controllers
 						new BOEFormData()
 						{
 							PBOEId = p.BOEFormId,
-							Name = p.BOEFormName,
+							Name = p.NLFSupplierName,
 							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost,
 							IsIncomplete = p.IsIncomplete
 						}).ToList();
