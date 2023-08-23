@@ -482,14 +482,14 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-		/// <summary>
-		/// Gets all of the Subcontractors for a Workspace
-		/// </summary>
-		/// <param name="workspaceShortName">Short name of the workspace</param>
-		/// <returns>HttpResponseMessage</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        /// <summary>
+        /// Gets all of the Subcontractors for a Workspace
+        /// </summary>
+        /// <param name="workspaceID">Workspace Id</param>
+        /// <returns>HttpResponseMessage</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<BOEFormData> GetSubcontractors(string workspaceShortName)
+		public IESResponse<BOEFormData> GetSubcontractors(int workspaceID)
 		{
 			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
 
@@ -497,7 +497,7 @@ namespace GenBOE.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceID);
 				if (this.HasOciPermission(SecurityPage.ManageBOEForms, workspace))
 				{
 					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
