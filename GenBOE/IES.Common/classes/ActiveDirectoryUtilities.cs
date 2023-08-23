@@ -379,9 +379,9 @@ namespace IES.Common
                     {
                         case ObjectClass.user:
                             mySearcher.Filter = "(&(objectClass=user)(|(cn=" + objectName + ")(sAMAccountName=" + objectName + ")))";
-                            // TODO TIW never used
-                            //mySearcher.PropertiesToLoad.Add("sAMAccountName");
-                            //mySearcher.PropertiesToLoad.Add("distinguishedName");
+                            // TODO This code is never used, if we do use it in the future then test out the performance fix below
+                            // mySearcher.PropertiesToLoad.Add("sAMAccountName");
+                            // mySearcher.PropertiesToLoad.Add("distinguishedName");
                             break;
                         case ObjectClass.group:
                             mySearcher.Filter = string.Format("(&(objectClass=group)(|(cn=" + objectName + ")(dn=" + objectName + ")(samAccountName=" + objectName + ")))");
@@ -389,7 +389,7 @@ namespace IES.Common
                             break;
                         case ObjectClass.computer:
                             mySearcher.Filter = "(&(objectClass=computer)(|(cn=" + objectName + ")(dn=" + objectName + ")))";
-                            // TODO TIW never used
+                            // TODO This code is never used, if we do use it in the future then test out the performance fix below
                             // mySearcher.PropertyNamesOnly = true;
                             break;
                     }
@@ -790,7 +790,7 @@ namespace IES.Common
                 {
                     using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=group)"))
                     {
-                        // TODO TIW
+                        // TODO This code is only used in PTM, if we do use it in the future in genBOE then test out the performance fix below
                         // search.PropertyNamesOnly = true;
                         if (CLIENT_TIMEOUT_SECONDS > 0)
                         {
