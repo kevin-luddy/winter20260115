@@ -9,10 +9,11 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Linq;
-	using GenBOE.ActionLogic.ModelView;
-	using GenBOE.Dtos;
-	using GenBOE.Objects;
+    using System.Linq;
+    using GenBOE.ActionLogic.ModelView;
+    using GenBOE.Dtos;
+    using GenBOE.Models;
+    using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
     using Microsoft.Practices.ObjectBuilder2;
@@ -151,37 +152,63 @@ namespace GenBOE.ActionLogic.IO.Export
 				parent.TotalValue = spreads.Sum(x => x.LaborSpreadValue);
 				parent.SpreadPrecision = resourceTypes.FirstOrDefault()?.SpreadType == SpreadType.Cost ? workspace.CostDecimalPrecision : workspace.DecimalPrecision;
 
-                //if (includeYearlyData)
-                //{
-                //	for(int year = workspace.StartDate.Value.Year; year <= workspace.EndDate.Value.Year; year++)
-                //	{
-                //		parent.SpreadValuesForYear.Add(year, spreads.Where(x => x.LaborSpreadDate.Year == year).Sum(x => x.LaborSpreadValue));
-                //	}
-                //}
-                switch (groupingField)
-                {
-                    case "CalendarYear":
-                        for (int year = workspace.StartDate.Value.Year; year <= workspace.EndDate.Value.Year; year++)
-                        {
-                            parent.SpreadValuesForGroup.Add(year.ToString(), spreads.Where(x => x.LaborSpreadDate.Year == year).Sum(x => x.LaborSpreadValue));
-                        }
-                        break;
-                    case "CLIN":
-                        foreach (var clin in workspace.Clins)
-                        {
-                            parent.SpreadValuesForGroup.Add(clin.ClinString, spreads.Sum(x => x.LaborSpreadValue));
-                        }
-                        break;
-                    case "WBS":
-                        foreach (var wbs in workspace.WbsElements)
-                        {
-                            parent.SpreadValuesForGroup.Add(wbs.WbsString, spreads.Sum(x => x.LaborSpreadValue));
-                        }
-                        break;
-                    case "Blank":
-                        break;
-                    default:
-                        break;
+				//if (includeYearlyData)
+				//{
+				//	for(int year = workspace.StartDate.Value.Year; year <= workspace.EndDate.Value.Year; year++)
+				//	{
+				//		parent.SpreadValuesForYear.Add(year, spreads.Where(x => x.LaborSpreadDate.Year == year).Sum(x => x.LaborSpreadValue));
+				//	}
+				//}
+
+				if (string.IsNullOrEmpty(customGroupingField))
+				{
+					switch (groupingField)
+					{
+						case "CalendarYear":
+							for (int year = workspace.StartDate.Value.Year; year <= workspace.EndDate.Value.Year; year++)
+							{
+								parent.SpreadValuesForGroup.Add(year.ToString(), spreads.Where(x => x.LaborSpreadDate.Year == year).Sum(x => x.LaborSpreadValue));
+							}
+							break;
+						case "CLIN":
+							foreach (var clin in workspace.Clins)
+							{
+								parent.SpreadValuesForGroup.Add(clin.ClinString, resourceTypes.Where(r => r.CLINID == clin.Id).SelectMany(s => s.LaborSpreads).Sum(x => x.LaborSpreadValue)); 
+							}
+							break;
+						case "WBS":
+							foreach (var wbs in workspace.WbsElements)
+							{
+                                parent.SpreadValuesForGroup.Add(wbs.WbsString, resourceTypes.Where(r => r.WBSID == wbs.Id).SelectMany(s => s.LaborSpreads).Sum(x => x.LaborSpreadValue));
+                            }
+                            break;
+                        case "Blank":
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+				{
+                    CustomFieldDTO customField = workspace.CustomFields.FirstOrDefault(x => x.CustomFieldName.Equals(currentLevel, StringComparison.CurrentCultureIgnoreCase));
+
+					if (customField != null)
+					{
+						ICollection<string> customFieldValues = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x => x.CustomFieldValueDescription).Distinct().ToList();
+
+						foreach (string customFieldValue in customFieldValues)
+						{
+							// figure out which resources should be selected; the complication is that the custom field can be on resource, task or BOE levels, so we have to check all 3
+							List<ResourceTypeDto> resourcesForCustomField = resourceTypes
+								.Where(x => x.CustomFieldValueContainers.Any(z => z.CustomFieldID == customField.Id && z.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))
+									|| workspace.TaskElements.First(t => t.Id == x.TaskElementId).CustomFieldValueContainers.Any(z => z.CustomFieldID == customField.Id && z.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))
+									|| workspace.Boes.First(b => b.Id == x.BoeID).CustomFieldValueContainers.Any(z => z.CustomFieldID == customField.Id && z.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))
+									).ToList();
+
+							parent.SpreadValuesForGroup.Add(customFieldValue, resourcesForCustomField.SelectMany(s => s.LaborSpreads).Sum(x => x.LaborSpreadValue));
+						}
+					}
+					else throw new ArgumentNullException(customGroupingField, "Custom field not found");
                 }
 			}
 			else
