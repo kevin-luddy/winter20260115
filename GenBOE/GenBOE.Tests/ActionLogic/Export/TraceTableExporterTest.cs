@@ -342,27 +342,29 @@ namespace GenBOE.Tests.ActionLogic.Export
             Assert.AreEqual(customField1.CustomFieldName, clinGroupField.SummaryField);
             Assert.AreEqual(cfvc1.OpenEndedValue, clinGroupField.SummaryFieldValue);
             Assert.AreEqual(0, clinGroupField.TotalValue);
-            Assert.IsTrue(clinGroupField.SpreadValuesForGroup.Any());
+            Assert.IsTrue(clinGroupField.ChildData.FirstOrDefault().SpreadValuesForGroup.Any());
             Assert.IsTrue(clinGroupField.ChildData.Any());
 
             // WBS grouping field for new TraceTableBoeDataGroup model
+            settings.GroupingField = "WBS";
             ICollection<TraceTableBoeDataGroup> wbsGroupingFields = sut.ExportTraceTableDataGroup(ws, settings);
             TraceTableBoeDataGroup wbsGroupField = wbsGroupingFields.FirstOrDefault();
             Assert.IsNotNull(wbsGroupField);
             Assert.AreEqual(customField1.CustomFieldName, wbsGroupField.SummaryField);
             Assert.AreEqual(cfvc1.OpenEndedValue, wbsGroupField.SummaryFieldValue);
             Assert.AreEqual(0, wbsGroupField.TotalValue);
-            Assert.IsFalse(wbsGroupField.SpreadValuesForGroup.Any());
+            Assert.IsTrue(clinGroupField.ChildData.FirstOrDefault().SpreadValuesForGroup.Any());
             Assert.IsTrue(wbsGroupField.ChildData.Any());
 
             // Calendar Year grouping field for new TraceTableBoeDataGroup model
+            settings.GroupingField = "CalendarYear";
             ICollection<TraceTableBoeDataGroup> calendarYearGroupingFields = sut.ExportTraceTableDataGroup(ws, settings);
             TraceTableBoeDataGroup calendarYearGroupField = calendarYearGroupingFields.FirstOrDefault();
             Assert.IsNotNull(calendarYearGroupField);
             Assert.AreEqual(customField1.CustomFieldName, calendarYearGroupField.SummaryField);
             Assert.AreEqual(cfvc1.OpenEndedValue, calendarYearGroupField.SummaryFieldValue);
             Assert.AreEqual(0, calendarYearGroupField.TotalValue);
-            Assert.IsFalse(calendarYearGroupField.SpreadValuesForGroup.Any());
+            Assert.IsTrue(clinGroupField.ChildData.FirstOrDefault().SpreadValuesForGroup.Any());
             Assert.IsTrue(calendarYearGroupField.ChildData.Any());
 
             // Blank grouping field for new TraceTableBoeDataGroup model
