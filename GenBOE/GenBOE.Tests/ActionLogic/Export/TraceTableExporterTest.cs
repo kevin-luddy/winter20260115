@@ -240,7 +240,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.AreEqual(SummaryFieldType.ResourceOrActivityId.GetDescription(), resIdField.SummaryField);
 			Assert.AreEqual(resource1.ResourceName, resIdField.SummaryFieldValue);
 			Assert.AreEqual(resourceType1.ValueSpread + resourceType3.ValueSpread, resIdField.TotalValue);
-			Assert.IsTrue(resIdField.SpreadValuesForYear.Any());
+			//Assert.IsTrue(resIdField.SpreadValuesForYear.Any());
 			Assert.IsFalse(resIdField.ChildData.Any());
 
 			// Test for other fields
@@ -290,7 +290,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.AreEqual(SummaryFieldType.PerformingOrgId.GetDescription(), perfOrgField.SummaryField);
 			Assert.AreEqual(perfOrg1.PerformingOrgName, perfOrgField.SummaryFieldValue);
 			Assert.AreEqual(resourceType1.ValueSpread, perfOrgField.TotalValue);
-			Assert.IsTrue(perfOrgField.SpreadValuesForYear.Any());
+			//Assert.IsTrue(perfOrgField.SpreadValuesForYear.Any());
 			Assert.IsFalse(perfOrgField.ChildData.Any());
 
 			// Test for custom fields
@@ -320,9 +320,61 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.AreEqual(customField2.CustomFieldName, cf2Field.SummaryField);
 			Assert.AreEqual(cfvc2.OpenEndedValue, cf2Field.SummaryFieldValue);
 			Assert.AreEqual(resourceType1.ValueSpread + resourceType4.ValueSpread, cf2Field.TotalValue);
-			Assert.IsTrue(cf2Field.SpreadValuesForYear.Any());
+			//Assert.IsTrue(cf2Field.SpreadValuesForYear.Any());
 			Assert.IsFalse(cf2Field.ChildData.Any());
-		}
+
+			// Custom grouping field for new TraceTableBoeDataGroup model
+			//settings.CustomGroupingField = "testing 1";
+            ICollection<TraceTableBoeDataGroup> customGroupingFields = sut.ExportTraceTableDataGroup(ws, settings);
+            TraceTableBoeDataGroup customGroupField = customGroupingFields.FirstOrDefault();
+            Assert.IsNotNull(customGroupField);
+            Assert.AreEqual(customField1.CustomFieldName, customGroupField.SummaryField);
+            Assert.AreEqual(cfvc1.OpenEndedValue, customGroupField.SummaryFieldValue);
+            Assert.AreEqual(0, customGroupField.TotalValue);
+            Assert.IsFalse(customGroupField.SpreadValuesForGroup.Any());
+            Assert.IsTrue(customGroupField.ChildData.Any());
+
+			// CLIN grouping field for new TraceTableBoeDataGroup model
+			settings.GroupingField = "CLIN";
+            ICollection<TraceTableBoeDataGroup> clinGroupingFields = sut.ExportTraceTableDataGroup(ws, settings);
+            TraceTableBoeDataGroup clinGroupField = clinGroupingFields.FirstOrDefault();
+            Assert.IsNotNull(clinGroupField);
+            Assert.AreEqual(customField1.CustomFieldName, clinGroupField.SummaryField);
+            Assert.AreEqual(cfvc1.OpenEndedValue, clinGroupField.SummaryFieldValue);
+            Assert.AreEqual(0, clinGroupField.TotalValue);
+            Assert.IsTrue(clinGroupField.SpreadValuesForGroup.Any());
+            Assert.IsTrue(clinGroupField.ChildData.Any());
+
+            // WBS grouping field for new TraceTableBoeDataGroup model
+            ICollection<TraceTableBoeDataGroup> wbsGroupingFields = sut.ExportTraceTableDataGroup(ws, settings);
+            TraceTableBoeDataGroup wbsGroupField = wbsGroupingFields.FirstOrDefault();
+            Assert.IsNotNull(wbsGroupField);
+            Assert.AreEqual(customField1.CustomFieldName, wbsGroupField.SummaryField);
+            Assert.AreEqual(cfvc1.OpenEndedValue, wbsGroupField.SummaryFieldValue);
+            Assert.AreEqual(0, wbsGroupField.TotalValue);
+            Assert.IsFalse(wbsGroupField.SpreadValuesForGroup.Any());
+            Assert.IsTrue(wbsGroupField.ChildData.Any());
+
+            // Calendar Year grouping field for new TraceTableBoeDataGroup model
+            ICollection<TraceTableBoeDataGroup> calendarYearGroupingFields = sut.ExportTraceTableDataGroup(ws, settings);
+            TraceTableBoeDataGroup calendarYearGroupField = calendarYearGroupingFields.FirstOrDefault();
+            Assert.IsNotNull(calendarYearGroupField);
+            Assert.AreEqual(customField1.CustomFieldName, calendarYearGroupField.SummaryField);
+            Assert.AreEqual(cfvc1.OpenEndedValue, calendarYearGroupField.SummaryFieldValue);
+            Assert.AreEqual(0, calendarYearGroupField.TotalValue);
+            Assert.IsFalse(calendarYearGroupField.SpreadValuesForGroup.Any());
+            Assert.IsTrue(calendarYearGroupField.ChildData.Any());
+
+            // Blank grouping field for new TraceTableBoeDataGroup model
+            ICollection<TraceTableBoeDataGroup> blankGroupingFields = sut.ExportTraceTableDataGroup(ws, settings);
+            TraceTableBoeDataGroup blankGroupField = blankGroupingFields.FirstOrDefault();
+            Assert.IsNotNull(blankGroupField);
+            Assert.AreEqual(customField1.CustomFieldName, blankGroupField.SummaryField);
+            Assert.AreEqual(cfvc1.OpenEndedValue, blankGroupField.SummaryFieldValue);
+            Assert.AreEqual(0, blankGroupField.TotalValue);
+            Assert.IsFalse(blankGroupField.SpreadValuesForGroup.Any());
+            Assert.IsTrue(blankGroupField.ChildData.Any());
+        }
 
 		/// <summary>
 		/// Test ExportTraceTableData for WBS

@@ -32,11 +32,14 @@ namespace GenBOE.ActionLogic.ModelView
             TotalValue = boeDataGroup.TotalValue;
             SpreadPrecision = boeDataGroup.SpreadPrecision;
 
-            foreach (KeyValuePair<string, decimal> boeDataKvp in boeDataGroup.SpreadValuesForGroup)
-            {
-				int year = 0;
-				int.TryParse(boeDataKvp.Key, out year);
-                SpreadValuesForYear.Add(year, boeDataKvp.Value);
+			if (boeDataGroup.SpreadValuesForGroup != null)
+			{
+                foreach (KeyValuePair<string, decimal> boeDataKvp in boeDataGroup.SpreadValuesForGroup)
+                {
+                    int year = 0;
+                    int.TryParse(boeDataKvp.Key, out year);
+                    SpreadValuesForYear.Add(year, boeDataKvp.Value);
+                }
             }
 
             boeDataGroup.ChildData.ForEach(x => ChildData.Add(new TraceTableBoeData(x)));
