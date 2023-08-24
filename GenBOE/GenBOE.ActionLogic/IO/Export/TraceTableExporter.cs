@@ -152,14 +152,6 @@ namespace GenBOE.ActionLogic.IO.Export
 				parent.TotalValue = spreads.Sum(x => x.LaborSpreadValue);
 				parent.SpreadPrecision = resourceTypes.FirstOrDefault()?.SpreadType == SpreadType.Cost ? workspace.CostDecimalPrecision : workspace.DecimalPrecision;
 
-				//if (includeYearlyData)
-				//{
-				//	for(int year = workspace.StartDate.Value.Year; year <= workspace.EndDate.Value.Year; year++)
-				//	{
-				//		parent.SpreadValuesForYear.Add(year, spreads.Where(x => x.LaborSpreadDate.Year == year).Sum(x => x.LaborSpreadValue));
-				//	}
-				//}
-
 				if (string.IsNullOrEmpty(customGroupingField))
 				{
 					switch (groupingField)

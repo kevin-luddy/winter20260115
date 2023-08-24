@@ -240,7 +240,6 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.AreEqual(SummaryFieldType.ResourceOrActivityId.GetDescription(), resIdField.SummaryField);
 			Assert.AreEqual(resource1.ResourceName, resIdField.SummaryFieldValue);
 			Assert.AreEqual(resourceType1.ValueSpread + resourceType3.ValueSpread, resIdField.TotalValue);
-			//Assert.IsTrue(resIdField.SpreadValuesForYear.Any());
 			Assert.IsFalse(resIdField.ChildData.Any());
 
 			// Test for other fields
@@ -290,7 +289,6 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.AreEqual(SummaryFieldType.PerformingOrgId.GetDescription(), perfOrgField.SummaryField);
 			Assert.AreEqual(perfOrg1.PerformingOrgName, perfOrgField.SummaryFieldValue);
 			Assert.AreEqual(resourceType1.ValueSpread, perfOrgField.TotalValue);
-			//Assert.IsTrue(perfOrgField.SpreadValuesForYear.Any());
 			Assert.IsFalse(perfOrgField.ChildData.Any());
 
 			// Test for custom fields
@@ -320,7 +318,6 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.AreEqual(customField2.CustomFieldName, cf2Field.SummaryField);
 			Assert.AreEqual(cfvc2.OpenEndedValue, cf2Field.SummaryFieldValue);
 			Assert.AreEqual(resourceType1.ValueSpread + resourceType4.ValueSpread, cf2Field.TotalValue);
-			//Assert.IsTrue(cf2Field.SpreadValuesForYear.Any());
 			Assert.IsFalse(cf2Field.ChildData.Any());
 
 			// Custom grouping field for new TraceTableBoeDataGroup model
