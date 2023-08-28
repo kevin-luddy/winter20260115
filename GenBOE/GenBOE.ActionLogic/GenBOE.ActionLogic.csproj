@@ -417,6 +417,7 @@
     <Compile Include="_ModelView\Task\RecalcSpreadModelView.cs" />
     <Compile Include="_ModelView\Task\TaskElementDuplicateFormCollection.cs" />
     <Compile Include="_ModelView\Task\TaskElementDuplicateFormModelView.cs" />
+    <Compile Include="_ModelView\TraceTableBoeDataGroup.cs" />
     <Compile Include="_ModelView\TraceTableBoeData.cs" />
     <Compile Include="_ModelView\TraceTableSettingsData.cs" />
     <Compile Include="_ModelView\TrainingModelView.cs" />
