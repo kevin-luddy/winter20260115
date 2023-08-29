@@ -33,6 +33,13 @@
                     </div>
                 </div>
 
+				<div class="form-row">
+					<div class="form-label-wide">Disclosure Type:</div>
+					<div class="form-element">
+						<select data-ng-disabled="!canEdit()" data-ng-options="" data-ng-model="model.DT" style="width: 175px"></select>
+					</div>
+				</div>
+
                 <div class="form-group" data-ng-show="model.RT == '1'">
                     <div class="form-row">
                         <div class="form-label-wide">Generate Additional Direct Labor Rates</div>

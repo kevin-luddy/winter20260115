@@ -155,6 +155,12 @@ namespace IES.DataBridge.ModelViews
         [JsonProperty(PropertyName = "Ra")]
         public RateType? RateType { get; set; }
 
+		/// <summary>
+		/// Disclosure Type
+		/// </summary>
+		[JsonProperty(PropertyName = "DT")]
+		public DisclosureType? DisclosureType { get; set; }
+
         /// <summary>
         /// GenerateAdditionalDirectLaborRates
         /// </summary>
