@@ -362,7 +362,8 @@
             $scope.rateCategories = response.data.RateCategories;
             $scope.sections = response.data.Sections;
             $scope.rateTypes = response.data.RateTypes;
-            $scope.resourceTypes = response.data.ResourceTypes;
+			$scope.resourceTypes = response.data.ResourceTypes;
+			$scope.disclosureTypes = response.data.DisclosureTypes;
             $scope.resourceClasses = response.data.ResourceClasses;
             $scope.commercialBurdenPools = response.data.CommercialBurdenPools;
             $scope.governmentBurdenPools = response.data.GovernmentBurdenPools;

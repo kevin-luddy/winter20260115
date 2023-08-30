@@ -112,7 +112,8 @@ namespace IES.ActionLogic.ControllerLogic
                 RateCategories = ExtensionMethods.GetOptions<RateCategory>().OrderBy(x => x.Label).ToList(),
                 LockInfo = this.homeControllerLogic.GetCurrentLockInfo(LockArea.RDMRates),
                 RateTypes = ExtensionMethods.GetOptions<RateType>().OrderBy(x => x.Label).ToList(),
-                ResourceClasses = this.commonDataMapper.GetResourceClassOptions(revision.Id),
+                DisclosureTypes = ExtensionMethods.GetOptions<DisclosureType>().OrderBy(x => x.Id).ToList(),
+				ResourceClasses = this.commonDataMapper.GetResourceClassOptions(revision.Id),
                 ResourceTypes = ExtensionMethods.GetOptions<DirectRateMappingResourceType>().OrderBy(x => x.Label).ToList(),
                 CommercialBurdenPools = commercialBurdenPoolOptions,
                 GovernmentBurdenPools = governmentBurdenPoolOptions
