@@ -270,6 +270,7 @@
             RD5: '',
             RD6: '',
             RD7: '',
+            RD8: '',
             RCId: 0, // Resource Class Ids
             RCId1: 0,
             RCId2: 0,
@@ -278,6 +279,7 @@
             RCId5: 0,
             RCId6: 0,
             RCId7: 0,
+            RCId8: 0,
             RS: '', // RateSet
             Ra: 0,
             RT: 0,
@@ -502,6 +504,9 @@
                 prevYear = value.Yr;
             });
         });
+
+        console.log(dirtyRates);
+        console.log(saveUrl);
 
         return $http({
             method: 'POST',

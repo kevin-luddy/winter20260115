@@ -32,6 +32,7 @@ angular.module("RDM").controller("EditMappingsController",
                     content.RD5 = "";
                     content.RD6 = "";
                     content.RD7 = "";
+                    content.RD8 = "";
                     content.RCId1 = 0;
                     content.RCId2 = 0;
                     content.RCId3 = 0;
@@ -39,6 +40,7 @@ angular.module("RDM").controller("EditMappingsController",
                     content.RCId5 = 0;
                     content.RCId6 = 0;
                     content.RCId7 = 0;
+                    content.RCId8 = 0;
                 }
 
                 // Warn user if ProPricer mappings are empty.
@@ -101,9 +103,11 @@ angular.module("RDM").controller("EditMappingsController",
         // update rateModel with current mapping values
         $scope.updateMappings = function(content) {
             for (var i = 0; i < $scope.rateModel.data.length; i++) {
+                console.log("for loop: " + i);
                 if ($scope.rateModel.data[i].Id === content.Id) {
                     content.D = true;
                     $scope.rateModel.data[i] = content;
+                    console.log("in if");
                     break;
                 }
             }
@@ -133,7 +137,8 @@ angular.module("RDM").controller("EditMappingsController",
                 content.RD4 ||
                 content.RD5 ||
                 content.RD6 ||
-                content.RD7;
+                content.RD7 ||
+                content.RD8;
             return result;
         };
 

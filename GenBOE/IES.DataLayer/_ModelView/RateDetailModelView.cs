@@ -35,6 +35,7 @@ namespace IES.DataBridge.ModelViews
             this.RateDescription5 = string.Empty;
             this.RateDescription6 = string.Empty;
             this.RateDescription7 = string.Empty;
+            this.RateDescription8 = string.Empty;
             this.ResourceClass = string.Empty;
             this.ResourceClass1 = string.Empty;
             this.ResourceClass2 = string.Empty;
@@ -43,6 +44,7 @@ namespace IES.DataBridge.ModelViews
             this.ResourceClass5 = string.Empty;
             this.ResourceClass6 = string.Empty;
             this.ResourceClass7 = string.Empty;
+            this.ResourceClass8 = string.Empty;
             this.ResourceClassId = 0;
             this.ResourceClassId1 = 0;
             this.ResourceClassId2 = 0;
@@ -51,6 +53,7 @@ namespace IES.DataBridge.ModelViews
             this.ResourceClassId5 = 0;
             this.ResourceClassId6 = 0;
             this.ResourceClassId7 = 0;
+            this.ResourceClassId8 = 0;
             this.RatePrecision = -1;
             this.GovernmentBurdenPool = string.Empty;
             this.CommercialBurdenPool = string.Empty;
@@ -315,10 +318,28 @@ namespace IES.DataBridge.ModelViews
         [JsonProperty(PropertyName = "RCId7")]
         public int? ResourceClassId7 { get; set; }
 
-        /// <summary>
-        /// GovernmentBurdenPool
-        /// </summary>
-        [JsonIgnore]
+		/// <summary>
+		/// RateDescription8
+		/// </summary>
+		[JsonProperty(PropertyName = "RD8")]
+		public string RateDescription8 { get; set; }
+
+		/// <summary>
+		/// ResourceClass8
+		/// </summary>
+		[JsonIgnore]
+		public string ResourceClass8 { get; set; }
+
+		/// <summary>
+		/// ResourceClassId7
+		/// </summary>
+		[JsonProperty(PropertyName = "RCId8")]
+		public int? ResourceClassId8 { get; set; }
+
+		/// <summary>
+		/// GovernmentBurdenPool
+		/// </summary>
+		[JsonIgnore]
         public string GovernmentBurdenPool { get; set; }
 
         /// <summary>
