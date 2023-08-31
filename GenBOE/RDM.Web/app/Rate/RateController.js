@@ -505,9 +505,6 @@
             });
         });
 
-        console.log(dirtyRates);
-        console.log(saveUrl);
-
         return $http({
             method: 'POST',
             url: saveUrl,

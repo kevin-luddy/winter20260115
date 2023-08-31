@@ -103,11 +103,9 @@ angular.module("RDM").controller("EditMappingsController",
         // update rateModel with current mapping values
         $scope.updateMappings = function(content) {
             for (var i = 0; i < $scope.rateModel.data.length; i++) {
-                console.log("for loop: " + i);
                 if ($scope.rateModel.data[i].Id === content.Id) {
                     content.D = true;
                     $scope.rateModel.data[i] = content;
-                    console.log("in if");
                     break;
                 }
             }
