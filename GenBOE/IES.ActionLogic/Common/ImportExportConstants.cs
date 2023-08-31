@@ -256,16 +256,6 @@ namespace IES.ActionLogic.Common
         /// </summary>
         public static readonly string PRO_PRICER_RESOURCE_CLASS7_COLUMN_HEADER = "Resource Class7";
 
-		/// <summary>
-		/// ProPricer Description8 Column Header
-		/// </summary>
-		public static readonly string PRO_PRICER_DESCRIPTION8_COLUMN_HEADER = "ProPricer Description8";
-
-		/// <summary>
-		/// ProPricer Resource Class8 Column Header
-		/// </summary>
-		public static readonly string PRO_PRICER_RESOURCE_CLASS8_COLUMN_HEADER = "Resource Class8";
-
 		// data validation defined names
 
 		/// <summary>

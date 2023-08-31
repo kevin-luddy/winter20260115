@@ -178,13 +178,12 @@ namespace IES.ActionLogic.IO.Export
                     string.IsNullOrEmpty(rate.RateDescription4) &&
                     string.IsNullOrEmpty(rate.RateDescription5) &&
                     string.IsNullOrEmpty(rate.RateDescription6) &&
-                    string.IsNullOrEmpty(rate.RateDescription7) &&
-                    string.IsNullOrEmpty(rate.RateDescription8))
+                    string.IsNullOrEmpty(rate.RateDescription7))
                 {
                     continue;   // skip
                 }
 
-                // Determine if we have rate descriptions for 1-8, if so we have to create mappings
+                // Determine if we have rate descriptions for 1-7, if so we have to create mappings
                 if (!string.IsNullOrEmpty(rate.RateDescription))
                 {
                     toReturn.AddRange(this.CreateDirectRateRows(rate, 0, rate.RateDescription, rate.ResourceClass, isGovOrComm));
@@ -224,11 +223,6 @@ namespace IES.ActionLogic.IO.Export
                 {
                     toReturn.AddRange(this.CreateDirectRateRows(rate, 7, rate.RateDescription7, rate.ResourceClass7, isGovOrComm));
                 }
-                
-                if (!string.IsNullOrEmpty(rate.RateDescription8))
-                {
-                    toReturn.AddRange(this.CreateDirectRateRows(rate, 8, rate.RateDescription8, rate.ResourceClass8, isGovOrComm));
-                }
             }
 
             return toReturn;
@@ -236,12 +230,12 @@ namespace IES.ActionLogic.IO.Export
 
         /// <summary>
         /// Adds rows to rate collection for export based on available rates/years for rate code
-        /// Creates using appropriate mapping sequence, either 0 (for base rate) or 1-8 for AAAAA1 - AAAAAA8
+        /// Creates using appropriate mapping sequence, either 0 (for base rate) or 1-7 for AAAAA1 - AAAAAA7
         /// </summary>
         /// <param name="rate">rate</param>
-        /// <param name="mappingSequence">mapping sequence 0 or 1-8</param>
-        /// <param name="description">base or description for mapped code 1-8</param>
-        /// <param name="resourceClass">resource class for mapped code 0-8</param>
+        /// <param name="mappingSequence">mapping sequence 0 or 1-7</param>
+        /// <param name="description">base or description for mapped code 1-7</param>
+        /// <param name="resourceClass">resource class for mapped code 0-7</param>
         /// <param name="isGovOrComm">IsGovOrComm enum</param>
         /// <returns>ProPricerDirectRateExportRowModelViews</returns>
         private ICollection<ProPricerDirectRateExportRowModelView> CreateDirectRateRows(
@@ -261,19 +255,19 @@ namespace IES.ActionLogic.IO.Export
 
         /// <summary>
         /// Add single row to direct rate collection for export
-        /// Creates using appropriate mapping sequence, either 0 (for base rate) or 1-8 for AAAAA1 - AAAAAA8
+        /// Creates using appropriate mapping sequence, either 0 (for base rate) or 1-7 for AAAAA1 - AAAAAA7
         /// </summary>
         /// <param name="rate">rate</param>
-        /// <param name="mappingSequence">mapping sequence 0 or 1-8</param>
-        /// <param name="description">base or description for mapped code 1-8</param>
-        /// <param name="resourceClass">resource class for mapped code 0-8</param>
+        /// <param name="mappingSequence">mapping sequence 0 or 1-7</param>
+        /// <param name="description">base or description for mapped code 1-7</param>
+        /// <param name="resourceClass">resource class for mapped code 0-7</param>
         /// <param name="isGovOrComm">IsGovOrComm enum</param>
         /// <param name="year">int year</param>
         /// <returns>ProPricerDirectRateExportRowModelView</returns>
         private ProPricerDirectRateExportRowModelView CreateDirectRateRow(RateDetailModelView rate, int mappingSequence, string description, string resourceClass, IsGovOrComm isGovOrComm, int year)
         {
             ProPricerDirectRateExportRowModelView toReturn = new ProPricerDirectRateExportRowModelView();
-            // use base ratecode for resource or create [RATECODE]1,2,3,4,5,6,7, or 8
+            // use base ratecode for resource or create [RATECODE]1,2,3,4,5,6, or 7
             toReturn.ResourceType = rate.ResourceType.GetName();
             toReturn.Resource = mappingSequence == 0 ? rate.RateCode : string.Format(rate.RateCode + "{0}", mappingSequence.ToString());
             toReturn.Description = description;

@@ -124,8 +124,6 @@ namespace IES.ActionLogic.IO.Export
                         data.ResourceClassId6.HasValue ? rates.ResourceClasses.Single(x => x.Id == data.ResourceClassId6).Label : string.Empty,
                         data.RateDescription7,
                         data.ResourceClassId7.HasValue ? rates.ResourceClasses.Single(x => x.Id == data.ResourceClassId7).Label : string.Empty,
-                        data.RateDescription8,
-                        data.ResourceClassId8.HasValue ? rates.ResourceClasses.Single(x => x.Id == data.ResourceClassId8).Label : string.Empty,
                         data.GovernmentBurdenPoolId.HasValue ? rates.GovernmentBurdenPools.Single(x => x.Id == data.GovernmentBurdenPoolId).Label : string.Empty,
                         data.CommercialBurdenPoolId.HasValue ? rates.CommercialBurdenPools.Single(x => x.Id == data.CommercialBurdenPoolId).Label : string.Empty
                     };

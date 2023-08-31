@@ -54,8 +54,6 @@ namespace IES.ActionLogic.IO.Import
             ImportExportConstants.PRO_PRICER_RESOURCE_CLASS6_COLUMN_HEADER,
             ImportExportConstants.PRO_PRICER_DESCRIPTION7_COLUMN_HEADER,
             ImportExportConstants.PRO_PRICER_RESOURCE_CLASS7_COLUMN_HEADER,
-            ImportExportConstants.PRO_PRICER_DESCRIPTION8_COLUMN_HEADER,
-            ImportExportConstants.PRO_PRICER_RESOURCE_CLASS8_COLUMN_HEADER,
             ImportExportConstants.GOVERNMENT_BURDEN_POOL_COLUMN_HEADER,
             ImportExportConstants.COMMERCIAL_BURDEN_POOL_COLUMN_HEADER
         };
@@ -209,7 +207,6 @@ namespace IES.ActionLogic.IO.Import
                 rateCodeMapRow.ResourceClassId6 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS6_COLUMN_HEADER, rates.ResourceClasses);
                 rateCodeMapRow.RateDescription7 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION7_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION7_COLUMN_HEADER] : string.Empty;
                 rateCodeMapRow.ResourceClassId7 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS7_COLUMN_HEADER, rates.ResourceClasses);
-                //rateCodeMapRow.RateDescription8 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCR)
                 rateCodeMapRow.GovernmentBurdenPoolId = GetNullableIdFromCell(row, ImportExportConstants.GOVERNMENT_BURDEN_POOL_COLUMN_HEADER, rates.GovernmentBurdenPools);
                 rateCodeMapRow.CommercialBurdenPoolId = GetNullableIdFromCell(row, ImportExportConstants.COMMERCIAL_BURDEN_POOL_COLUMN_HEADER, rates.CommercialBurdenPools);
                 rateCodeMapRow.Values = new Collection<RateYearModelView>();
