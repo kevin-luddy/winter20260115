@@ -9,7 +9,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[DisclosureTypeLU](
-	[DisclosureTypeID] [int] IDENTITY(0, 1) NOT NULL,
+	[DisclosureTypeID] [int] IDENTITY(1, 1) NOT NULL,
 	[DisclosureType] [varchar](50) NOT NULL,
  CONSTRAINT [PK_DisclosureTypeLU] PRIMARY KEY CLUSTERED 
 (
@@ -23,25 +23,32 @@ SET IDENTITY_INSERT DisclosureTypeLU ON
 INSERT INTO DisclosureTypeLU 
     (DisclosureTypeID, DisclosureType)
 VALUES 
-    (0, ''),
 	(1, 'Legacy Space'),
 	(2, '1LMX')
 
 SET IDENTITY_INSERT DisclosureTypeLU OFF
 
+GO
+
 /*** Alter Table RateCode to include DisclosureType ID ***/
 ALTER TABLE [dbo].[RateCode]
 ADD [DisclosureTypeId] INT NULL
-DEFAULT (0)
+DEFAULT (1)
+
+GO
 
 /*** ALTER Table RateCode to ADD Foreign Key Constraint on newly added Column ***/
 ALTER TABLE [dbo].[RateCode] WITH CHECK 
 ADD CONSTRAINT FK_RateCode_DisclosureTypeLU
 FOREIGN KEY (DisclosureTypeID) REFERENCES [dbo].[DisclosureTypeLU] ([DisclosureTypeID])
 
+GO
+
 ALTER TABLE [dbo].[RateCode] CHECK CONSTRAINT [FK_RateCode_DisclosureTypeLU]
 
-/*** UPDATE Existing Table Records to Have 'Legacy Space' Value which is 2 ***/
+/*** UPDATE Existing Table Records to Have 'Legacy Space' Value which is 1 ***/
+GO
+
 UPDATE RateCode SET DisclosureTypeID = 1
 
 GO
