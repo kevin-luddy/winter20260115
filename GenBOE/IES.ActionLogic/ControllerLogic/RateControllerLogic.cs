@@ -509,10 +509,10 @@ namespace IES.ActionLogic.ControllerLogic
         }
 
         /// <summary>
-        /// Helper method to determine if any of the extended Rate Descriptions (i.e. 1-8) are populated.
+        /// Helper method to determine if any of the extended Rate Descriptions (i.e. 1-7) are populated.
         /// </summary>
         /// <param name="rateDetailModelView">The rate detail mv</param>
-        /// <returns>True if any of the extended Rate Descriptions (i.e. 1-8) are populated; False otherwise.</returns>
+        /// <returns>True if any of the extended Rate Descriptions (i.e. 1-7) are populated; False otherwise.</returns>
         private bool IsAnyExtendedRateDescriptionPopulated(RateDetailModelView rateDetailModelView)
         {
             return !string.IsNullOrEmpty(rateDetailModelView.RateDescription1) ||

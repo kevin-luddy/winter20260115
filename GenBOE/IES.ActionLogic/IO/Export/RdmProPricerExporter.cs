@@ -267,7 +267,7 @@ namespace IES.ActionLogic.IO.Export
         private ProPricerDirectRateExportRowModelView CreateDirectRateRow(RateDetailModelView rate, int mappingSequence, string description, string resourceClass, IsGovOrComm isGovOrComm, int year)
         {
             ProPricerDirectRateExportRowModelView toReturn = new ProPricerDirectRateExportRowModelView();
-            // use base ratecode for resource or create [RATECODE]1,2,3,4,5,6, or 7
+            // use base ratecode for resource or create [RATECODE]1,2,3,4,5,6 or 7
             toReturn.ResourceType = rate.ResourceType.GetName();
             toReturn.Resource = mappingSequence == 0 ? rate.RateCode : string.Format(rate.RateCode + "{0}", mappingSequence.ToString());
             toReturn.Description = description;
