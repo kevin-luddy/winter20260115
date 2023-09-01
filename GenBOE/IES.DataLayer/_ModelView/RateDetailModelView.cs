@@ -315,10 +315,10 @@ namespace IES.DataBridge.ModelViews
         [JsonProperty(PropertyName = "RCId7")]
         public int? ResourceClassId7 { get; set; }
 
-        /// <summary>
-        /// GovernmentBurdenPool
-        /// </summary>
-        [JsonIgnore]
+		/// <summary>
+		/// GovernmentBurdenPool
+		/// </summary>
+		[JsonIgnore]
         public string GovernmentBurdenPool { get; set; }
 
         /// <summary>
