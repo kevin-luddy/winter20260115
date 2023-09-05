@@ -488,14 +488,15 @@ namespace IES.ActionLogic.ControllerLogic
                    string.IsNullOrEmpty(rateDetailModelView.RateDescription4) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass4, rateDetailModelView.ResourceClassId4) &&
                    string.IsNullOrEmpty(rateDetailModelView.RateDescription5) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass5, rateDetailModelView.ResourceClassId5) &&
                    string.IsNullOrEmpty(rateDetailModelView.RateDescription6) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6) &&
-                   string.IsNullOrEmpty(rateDetailModelView.RateDescription7) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7);
+                   string.IsNullOrEmpty(rateDetailModelView.RateDescription7) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription8) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8);
         }
 
         /// <summary>
-        /// Helper method to determine if any of the extended Resource Classes (i.e. 1-7) are populated without a corresponding Rate Description.
+        /// Helper method to determine if any of the extended Resource Classes (i.e. 1-8) are populated without a corresponding Rate Description.
         /// </summary>
         /// <param name="rateDetailModelView">The rate detail mv</param>
-        /// <returns>True if any of the extended Resource Classes (i.e. 1-7) are populated without a corresponding Rate Description; False otherwise.</returns>
+        /// <returns>True if any of the extended Resource Classes (i.e. 1-8) are populated without a corresponding Rate Description; False otherwise.</returns>
         private bool IsAnyResourceClassMissingCorrespondingRateDescription(RateDetailModelView rateDetailModelView)
         {
             return (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass, rateDetailModelView.ResourceClassId)) ||
@@ -505,14 +506,15 @@ namespace IES.ActionLogic.ControllerLogic
                    (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription4) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass4, rateDetailModelView.ResourceClassId4)) ||
                    (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription5) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass5, rateDetailModelView.ResourceClassId5)) ||
                    (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription6) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6)) ||
-                   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription7) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7));
+                   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription7) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription8) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8));
         }
 
         /// <summary>
-        /// Helper method to determine if any of the extended Rate Descriptions (i.e. 1-7) are populated.
+        /// Helper method to determine if any of the extended Rate Descriptions (i.e. 1-8) are populated.
         /// </summary>
         /// <param name="rateDetailModelView">The rate detail mv</param>
-        /// <returns>True if any of the extended Rate Descriptions (i.e. 1-7) are populated; False otherwise.</returns>
+        /// <returns>True if any of the extended Rate Descriptions (i.e. 1-8) are populated; False otherwise.</returns>
         private bool IsAnyExtendedRateDescriptionPopulated(RateDetailModelView rateDetailModelView)
         {
             return !string.IsNullOrEmpty(rateDetailModelView.RateDescription1) ||
@@ -521,7 +523,8 @@ namespace IES.ActionLogic.ControllerLogic
                    !string.IsNullOrEmpty(rateDetailModelView.RateDescription4) ||
                    !string.IsNullOrEmpty(rateDetailModelView.RateDescription5) ||
                    !string.IsNullOrEmpty(rateDetailModelView.RateDescription6) ||
-                   !string.IsNullOrEmpty(rateDetailModelView.RateDescription7);
+                   !string.IsNullOrEmpty(rateDetailModelView.RateDescription7) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription8);
         }
 
         /// <summary>
@@ -778,7 +781,8 @@ namespace IES.ActionLogic.ControllerLogic
             updatedRateCode.RateDescription5 = importedRateCode.RateDescription5;
             updatedRateCode.RateDescription6 = importedRateCode.RateDescription6;
             updatedRateCode.RateDescription7 = importedRateCode.RateDescription7;
-            updatedRateCode.ResourceClassId = importedRateCode.ResourceClassId;
+			updatedRateCode.RateDescription8 = importedRateCode.RateDescription8;
+			updatedRateCode.ResourceClassId = importedRateCode.ResourceClassId;
             updatedRateCode.ResourceClassId1 = importedRateCode.ResourceClassId1;
             updatedRateCode.ResourceClassId2 = importedRateCode.ResourceClassId2;
             updatedRateCode.ResourceClassId3 = importedRateCode.ResourceClassId3;
@@ -786,7 +790,8 @@ namespace IES.ActionLogic.ControllerLogic
             updatedRateCode.ResourceClassId5 = importedRateCode.ResourceClassId5;
             updatedRateCode.ResourceClassId6 = importedRateCode.ResourceClassId6;
             updatedRateCode.ResourceClassId7 = importedRateCode.ResourceClassId7;
-            updatedRateCode.ResourceClass = string.Empty;
+			updatedRateCode.ResourceClassId8 = importedRateCode.ResourceClassId8;
+			updatedRateCode.ResourceClass = string.Empty;
             updatedRateCode.ResourceClass1 = string.Empty;
             updatedRateCode.ResourceClass2 = string.Empty;
             updatedRateCode.ResourceClass3 = string.Empty;
@@ -794,7 +799,8 @@ namespace IES.ActionLogic.ControllerLogic
             updatedRateCode.ResourceClass5 = string.Empty;
             updatedRateCode.ResourceClass6 = string.Empty;
             updatedRateCode.ResourceClass7 = string.Empty;
-            updatedRateCode.GovernmentBurdenPoolId = importedRateCode.GovernmentBurdenPoolId;
+			updatedRateCode.ResourceClass8 = string.Empty;
+			updatedRateCode.GovernmentBurdenPoolId = importedRateCode.GovernmentBurdenPoolId;
             updatedRateCode.GovernmentBurdenPool = string.Empty;
             updatedRateCode.CommercialBurdenPoolId = importedRateCode.CommercialBurdenPoolId;
             updatedRateCode.CommercialBurdenPool = string.Empty;
@@ -826,7 +832,8 @@ namespace IES.ActionLogic.ControllerLogic
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription5, importedRateCode.RateDescription5) ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription6, importedRateCode.RateDescription6) ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription7, importedRateCode.RateDescription7) ||
-                !this.IsNullableIdPropertyEquivalent((int?)existingRateCode.RateType, (int?)importedRateCode.RateType) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription8, importedRateCode.RateDescription8) ||
+				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.RateType, (int?)importedRateCode.RateType) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId, importedRateCode.ResourceClassId) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId1, importedRateCode.ResourceClassId1) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId2, importedRateCode.ResourceClassId2) ||
@@ -835,7 +842,8 @@ namespace IES.ActionLogic.ControllerLogic
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId5, importedRateCode.ResourceClassId5) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId6, importedRateCode.ResourceClassId6) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId7, importedRateCode.ResourceClassId7) ||
-                !this.IsNullableIdPropertyEquivalent((int?)existingRateCode.ResourceType, (int?)importedRateCode.ResourceType) ||
+                !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId8, importedRateCode.ResourceClassId8) ||
+				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.ResourceType, (int?)importedRateCode.ResourceType) ||
                 existingRateCode.RevisionId != importedRateCode.RevisionId ||
                 !this.IsNullableIdPropertyEquivalent((int?)existingRateCode.Section, (int?)importedRateCode.Section);
         }
