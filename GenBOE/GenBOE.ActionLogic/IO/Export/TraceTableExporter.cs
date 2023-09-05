@@ -156,7 +156,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
                 else
 				{
-                    CustomFieldDTO customField = workspace.CustomFields.FirstOrDefault(x => x.CustomFieldName.Equals(currentLevel, StringComparison.CurrentCultureIgnoreCase));
+                    CustomFieldDTO customField = workspace.CustomFields.FirstOrDefault();
 
 					if (customField != null)
 					{

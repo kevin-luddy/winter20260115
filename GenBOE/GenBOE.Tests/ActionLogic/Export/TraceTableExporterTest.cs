@@ -321,14 +321,14 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.IsFalse(cf2Field.ChildData.Any());
 
 			// Custom grouping field for new TraceTableBoeDataGroup model
-			//settings.CustomGroupingField = "testing 1";
+			settings.CustomGroupingField = "testing 1";
             ICollection<TraceTableBoeDataGroup> customGroupingFields = sut.ExportTraceTableDataGroup(ws, settings);
             TraceTableBoeDataGroup customGroupField = customGroupingFields.FirstOrDefault();
             Assert.IsNotNull(customGroupField);
             Assert.AreEqual(customField1.CustomFieldName, customGroupField.SummaryField);
             Assert.AreEqual(cfvc1.OpenEndedValue, customGroupField.SummaryFieldValue);
             Assert.AreEqual(0, customGroupField.TotalValue);
-            Assert.IsFalse(customGroupField.SpreadValuesForGroup.Any());
+            Assert.IsTrue(customGroupField.ChildData.FirstOrDefault().SpreadValuesForGroup.Any());
             Assert.IsTrue(customGroupField.ChildData.Any());
 
 			// CLIN grouping field for new TraceTableBoeDataGroup model
