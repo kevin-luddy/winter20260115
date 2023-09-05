@@ -321,7 +321,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.IsFalse(cf2Field.ChildData.Any());
 
 			// Custom grouping field for new TraceTableBoeDataGroup model
-			settings.CustomGroupingField = "testing 1";
+			settings.CustomGroupingField = "TEST 1";
             ICollection<TraceTableBoeDataGroup> customGroupingFields = sut.ExportTraceTableDataGroup(ws, settings);
             TraceTableBoeDataGroup customGroupField = customGroupingFields.FirstOrDefault();
             Assert.IsNotNull(customGroupField);
