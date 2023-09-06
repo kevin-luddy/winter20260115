@@ -5665,3 +5665,281 @@
 8/31/2023 3:43:07 PM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,308
 8/31/2023 3:43:07 PM,US\e403038,ACTION - GetMenuOptions,185
 8/31/2023 3:43:07 PM,US\e403038,ACTION - GetRevisions,582
+9/5/2023 4:56:37 PM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/5/2023 4:56:38 PM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,1617
+9/5/2023 4:56:38 PM,US\e403038,ACTION - Index,490
+9/5/2023 4:56:45 PM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateConfigLoader.GetAll ,0
+9/5/2023 4:57:04 PM,US\e403038,IES.DataBridge.Loaders.RateConfigLoader.GetAll ,18768
+9/6/2023 8:52:27 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:52:28 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,1683
+9/6/2023 8:52:29 AM,US\e403038,ACTION - Index,837
+9/6/2023 8:52:36 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateConfigLoader.GetAll ,0
+9/6/2023 8:52:38 AM,US\e403038,IES.DataBridge.Loaders.RateConfigLoader.GetAll ,1640
+9/6/2023 8:52:39 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:52:39 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,32
+9/6/2023 8:52:39 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:52:39 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RevisionLoader.GetAll ,0
+9/6/2023 8:52:39 AM,US\e403038,IES.DataBridge.Loaders.RevisionLoader.GetAll ,270
+9/6/2023 8:52:39 AM,US\e403038,MISS - GetAll -> Key: get_all_revisions,304
+9/6/2023 8:52:39 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,308
+9/6/2023 8:52:39 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:52:39 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,32
+9/6/2023 8:52:39 AM,US\e403038,ACTION - GetMenuOptions,97
+9/6/2023 8:52:40 AM,US\e403038,ACTION - GetRevisions,620
+9/6/2023 8:52:44 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:52:44 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,27
+9/6/2023 8:52:44 AM,US\e403038,ACTION - Index,3
+9/6/2023 8:52:46 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:52:46 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:52:46 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,36
+9/6/2023 8:52:46 AM,US\e403038,ACTION - GetMenuOptions,0
+9/6/2023 8:52:46 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,123
+9/6/2023 8:52:46 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:52:46 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,6
+9/6/2023 8:52:47 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 8:52:50 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,2759
+9/6/2023 8:52:50 AM,US\e403038,MISS - GetResourceClassOptions -> Key: resourceclasstype,17
+9/6/2023 8:52:50 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:52:50 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,7
+9/6/2023 8:52:50 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,0
+9/6/2023 8:52:51 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,328
+9/6/2023 8:52:51 AM,US\e403038,ACTION - GetRatesByVersion,4635
+9/6/2023 8:52:53 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:52:53 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,29
+9/6/2023 8:52:53 AM,US\e403038,ACTION - Lock,12
+9/6/2023 8:52:53 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:52:53 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,30
+9/6/2023 8:52:53 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:52:53 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,4
+9/6/2023 8:52:53 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 8:52:55 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,1607
+9/6/2023 8:52:56 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:52:56 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,6
+9/6/2023 8:52:56 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,0
+9/6/2023 8:52:56 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,320
+9/6/2023 8:52:56 AM,US\e403038,ACTION - GetRatesByVersion,2604
+9/6/2023 8:55:32 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:55:34 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,1643
+9/6/2023 8:55:34 AM,US\e403038,ACTION - Index,320
+9/6/2023 8:55:40 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateConfigLoader.GetAll ,0
+9/6/2023 8:55:41 AM,US\e403038,IES.DataBridge.Loaders.RateConfigLoader.GetAll ,1162
+9/6/2023 8:55:42 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:55:42 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,42
+9/6/2023 8:55:42 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:55:42 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RevisionLoader.GetAll ,0
+9/6/2023 8:55:42 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:55:42 AM,US\e403038,IES.DataBridge.Loaders.RevisionLoader.GetAll ,276
+9/6/2023 8:55:42 AM,US\e403038,MISS - GetAll -> Key: get_all_revisions,297
+9/6/2023 8:55:42 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,302
+9/6/2023 8:55:43 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,90
+9/6/2023 8:55:43 AM,US\e403038,ACTION - GetMenuOptions,86
+9/6/2023 8:55:43 AM,US\e403038,ACTION - GetRevisions,483
+9/6/2023 8:55:46 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:55:46 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,27
+9/6/2023 8:55:46 AM,US\e403038,ACTION - Index,2
+9/6/2023 8:55:48 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:55:48 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:55:48 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,27
+9/6/2023 8:55:48 AM,US\e403038,ACTION - GetMenuOptions,0
+9/6/2023 8:55:48 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,41
+9/6/2023 8:55:48 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:55:48 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,5
+9/6/2023 8:55:48 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 8:55:51 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,2164
+9/6/2023 8:55:51 AM,US\e403038,MISS - GetResourceClassOptions -> Key: resourceclasstype,20
+9/6/2023 8:55:51 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:55:51 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,7
+9/6/2023 8:55:51 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,0
+9/6/2023 8:55:52 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,329
+9/6/2023 8:55:52 AM,US\e403038,ACTION - GetRatesByVersion,3978
+9/6/2023 8:55:58 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:55:58 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,29
+9/6/2023 8:55:58 AM,US\e403038,ACTION - Lock,9
+9/6/2023 8:55:58 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:55:58 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,29
+9/6/2023 8:55:58 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:55:58 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,11
+9/6/2023 8:55:58 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 8:55:59 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,1451
+9/6/2023 8:56:00 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:56:00 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,7
+9/6/2023 8:56:00 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,0
+9/6/2023 8:56:00 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,285
+9/6/2023 8:56:00 AM,US\e403038,ACTION - GetRatesByVersion,2375
+9/6/2023 8:56:07 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:56:07 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,33
+9/6/2023 8:56:07 AM,US\e403038,ACTION - RefreshLock,11
+9/6/2023 8:56:09 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 8:56:09 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,28
+9/6/2023 8:56:09 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 8:56:09 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,7
+9/6/2023 8:56:13 AM,US\e403038,BEGIN - IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.ProPricerRateCodeXrefModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetByRateCodeId ,0
+9/6/2023 8:56:13 AM,US\e403038,IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.ProPricerRateCodeXrefModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetByRateCodeId ,62
+9/6/2023 8:56:16 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,0
+9/6/2023 8:56:24 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,0
+9/6/2023 9:00:05 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:00:07 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,2964
+9/6/2023 9:00:08 AM,US\e403038,ACTION - Index,328
+9/6/2023 9:00:15 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateConfigLoader.GetAll ,0
+9/6/2023 9:00:16 AM,US\e403038,IES.DataBridge.Loaders.RateConfigLoader.GetAll ,1205
+9/6/2023 9:00:17 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:00:17 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,159
+9/6/2023 9:00:17 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:00:18 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RevisionLoader.GetAll ,0
+9/6/2023 9:00:18 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:00:18 AM,US\e403038,IES.DataBridge.Loaders.RevisionLoader.GetAll ,199
+9/6/2023 9:00:18 AM,US\e403038,MISS - GetAll -> Key: get_all_revisions,212
+9/6/2023 9:00:18 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,218
+9/6/2023 9:00:18 AM,US\e403038,ACTION - GetRevisions,429
+9/6/2023 9:00:18 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,390
+9/6/2023 9:00:18 AM,US\e403038,ACTION - GetMenuOptions,31
+9/6/2023 9:00:21 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:00:21 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,140
+9/6/2023 9:00:22 AM,US\e403038,ACTION - Index,6
+9/6/2023 9:00:23 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:00:23 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:00:23 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,144
+9/6/2023 9:00:23 AM,US\e403038,ACTION - GetMenuOptions,0
+9/6/2023 9:00:23 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,200
+9/6/2023 9:00:23 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:00:23 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:00:24 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 9:00:29 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,5049
+9/6/2023 9:00:38 AM,US\e403038,ACTION - GetRatesByVersion,14517
+9/6/2023 9:00:53 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:00:53 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,152
+9/6/2023 9:00:53 AM,US\e403038,ACTION - Index,0
+9/6/2023 9:00:53 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:00:53 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:00:54 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,143
+9/6/2023 9:00:54 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:00:54 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,1
+9/6/2023 9:00:54 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,204
+9/6/2023 9:00:54 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 9:00:54 AM,US\e403038,ACTION - GetMenuOptions,5
+9/6/2023 9:00:58 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,4168
+9/6/2023 9:01:39 AM,US\e403038,ACTION - GetRatesByVersion,45166
+9/6/2023 9:01:41 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:01:42 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,152
+9/6/2023 9:01:42 AM,US\e403038,ACTION - Index,0
+9/6/2023 9:01:42 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:01:42 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:01:42 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,140
+9/6/2023 9:02:07 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,24432
+9/6/2023 9:02:07 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:02:07 AM,US\e403038,ACTION - GetMenuOptions,23
+9/6/2023 9:02:07 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,2
+9/6/2023 9:02:07 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 9:02:11 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,4094
+9/6/2023 9:27:45 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:27:46 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,1939
+9/6/2023 9:27:47 AM,US\e403038,ACTION - Index,577
+9/6/2023 9:27:51 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateConfigLoader.GetAll ,0
+9/6/2023 9:27:53 AM,US\e403038,IES.DataBridge.Loaders.RateConfigLoader.GetAll ,1895
+9/6/2023 9:27:53 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:27:54 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,155
+9/6/2023 9:27:54 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:27:54 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RevisionLoader.GetAll ,0
+9/6/2023 9:27:54 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:27:54 AM,US\e403038,IES.DataBridge.Loaders.RevisionLoader.GetAll ,182
+9/6/2023 9:27:54 AM,US\e403038,MISS - GetAll -> Key: get_all_revisions,193
+9/6/2023 9:27:54 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,197
+9/6/2023 9:27:54 AM,US\e403038,ACTION - GetRevisions,395
+9/6/2023 9:27:54 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,425
+9/6/2023 9:27:54 AM,US\e403038,ACTION - GetMenuOptions,28
+9/6/2023 9:28:43 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:28:43 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,154
+9/6/2023 9:28:43 AM,US\e403038,ACTION - Index,3
+9/6/2023 9:28:44 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:28:44 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:28:44 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,148
+9/6/2023 9:28:44 AM,US\e403038,ACTION - GetMenuOptions,1
+9/6/2023 9:28:44 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,200
+9/6/2023 9:28:51 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:28:51 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,1
+9/6/2023 9:28:51 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 9:28:56 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,4593
+9/6/2023 9:28:57 AM,US\e403038,MISS - GetResourceClassOptions -> Key: resourceclasstype,59
+9/6/2023 9:28:57 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:28:57 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:28:57 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,0
+9/6/2023 9:28:57 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,104
+9/6/2023 9:28:57 AM,US\e403038,ACTION - GetRatesByVersion,13407
+9/6/2023 9:29:01 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:29:01 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,155
+9/6/2023 9:29:01 AM,US\e403038,ACTION - Lock,14
+9/6/2023 9:29:01 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:29:01 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,151
+9/6/2023 9:29:01 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:29:01 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:29:01 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 9:29:05 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,4196
+9/6/2023 9:29:06 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:29:06 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:29:06 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,0
+9/6/2023 9:29:06 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,64
+9/6/2023 9:29:06 AM,US\e403038,ACTION - GetRatesByVersion,5294
+9/6/2023 9:29:14 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:29:14 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,161
+9/6/2023 9:29:14 AM,US\e403038,ACTION - RefreshLock,3
+9/6/2023 9:29:17 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:29:17 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,154
+9/6/2023 9:29:17 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:29:17 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:29:20 AM,US\e403038,BEGIN - IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.ProPricerRateCodeXrefModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetByRateCodeId ,0
+9/6/2023 9:29:20 AM,US\e403038,IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.ProPricerRateCodeXrefModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetByRateCodeId ,123
+9/6/2023 9:29:21 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,0
+9/6/2023 9:29:22 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,0
+9/6/2023 9:30:15 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,52719
+9/6/2023 9:30:15 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,53938
+9/6/2023 9:30:15 AM,US\e403038,ACTION - Save,57912
+9/6/2023 9:30:16 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:30:16 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,154
+9/6/2023 9:30:16 AM,US\e403038,ACTION - RefreshLock,0
+9/6/2023 9:30:20 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:30:20 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,155
+9/6/2023 9:30:20 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:30:20 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:30:25 AM,US\e403038,BEGIN - IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.ProPricerRateCodeXrefModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetByRateCodeId ,0
+9/6/2023 9:30:25 AM,US\e403038,IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.ProPricerRateCodeXrefModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetByRateCodeId ,104
+9/6/2023 9:30:33 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,0
+9/6/2023 9:30:41 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,0
+9/6/2023 9:38:43 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,481862
+9/6/2023 9:38:43 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,489747
+9/6/2023 9:38:43 AM,US\e403038,ACTION - Save,502611
+9/6/2023 9:38:43 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:38:43 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,155
+9/6/2023 9:38:44 AM,US\e403038,ACTION - RefreshLock,280
+9/6/2023 9:38:48 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:38:48 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,156
+9/6/2023 9:38:48 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:38:48 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,1
+9/6/2023 9:38:48 AM,US\e403038,BEGIN - IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.ProPricerRateCodeXrefModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetByRateCodeId ,0
+9/6/2023 9:38:48 AM,US\e403038,IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.ProPricerRateCodeXrefModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetByRateCodeId ,106
+9/6/2023 9:38:48 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,0
+9/6/2023 9:38:48 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,0
+9/6/2023 9:38:50 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,1928
+9/6/2023 9:38:50 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.BulkSave ,1930
+9/6/2023 9:38:50 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 9:38:55 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,4213
+9/6/2023 9:38:55 AM,US\e403038,ACTION - Save,6362
+9/6/2023 9:38:55 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:38:55 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,153
+9/6/2023 9:38:55 AM,US\e403038,ACTION - Unlock,3
+9/6/2023 9:38:58 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:38:58 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,154
+9/6/2023 9:38:58 AM,US\e403038,ACTION - Lock,0
+9/6/2023 9:38:58 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:38:58 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,154
+9/6/2023 9:38:58 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:38:58 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:38:59 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.GetRates ,0
+9/6/2023 9:39:03 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.GetRates ,4194
+9/6/2023 9:39:04 AM,US\e403038,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:39:04 AM,US\e403038,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+9/6/2023 9:39:04 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,0
+9/6/2023 9:39:04 AM,US\e403038,IES.DataBridge.Loaders.RateDetailLoader.VerifyRateCodeReplication ,61
+9/6/2023 9:39:04 AM,US\e403038,ACTION - GetRatesByVersion,5269
+9/6/2023 9:39:09 AM,US\e403038,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+9/6/2023 9:39:09 AM,US\e403038,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,153
+9/6/2023 9:39:09 AM,US\e403038,ACTION - RefreshLock,0

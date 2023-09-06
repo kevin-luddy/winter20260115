@@ -660,7 +660,7 @@ namespace IES.DataBridge.Loaders
             {
                 "ID", "UpdateDate", "RevisionID", "CategoryID", "Description",
                 "SectionID", "RateCode1", "ResourceTypeID", "GovernmentBurdenPoolID", "CommercialBurdenPoolID",
-                "RateTypeID"
+                "RateTypeID", "DisclosureTypeId"
             };
 
             return metaData;
