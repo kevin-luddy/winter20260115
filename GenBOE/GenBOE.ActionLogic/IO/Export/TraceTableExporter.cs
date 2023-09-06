@@ -43,39 +43,13 @@ namespace GenBOE.ActionLogic.IO.Export
 			TraceTableBoeData boeData = new TraceTableBoeData();
 			TraceTableBoeDataGroup boeDataGroup = new TraceTableBoeDataGroup();
 
-			// Get labors, filter by Rate Type from settings data
-			List<ResourceTypeDto> taskElementLabors = workspace.Boes
-				.SelectMany(x => x.TaskElements)
-				.SelectMany(x => x.taskElementLabors)
-				.Where(x => (int)x.SpreadType == settingsData.RateType).ToList();
-
-			// Filter by element of cost from the settings data
-			ICollection<int> laborsToRemove = new Collection<int>();
-			foreach (ResourceTypeDto labor in taskElementLabors)
+			if (settingsData != null)
 			{
-				ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
-				if (resource == null || !settingsData.ElementsOfCost.Contains((int)resource.ElementOfCost))
-				{
-					laborsToRemove.Add(labor.Id);
-				}
-			}
+                settingsData.GroupingField = "CalendarYear";
+            }
+			boeDataGroup.ChildData = ExportTraceTableDataGroup(workspace, settingsData);
 
-			taskElementLabors.RemoveAll(x => laborsToRemove.Contains(x.Id));
-
-			// Populate CLIN and WBS IDs for non-multi-clin-wbs
-			foreach (ResourceTypeDto labor in taskElementLabors)
-			{
-				FullBoe boe = workspace.Boes.FirstOrDefault(x => x.Id == labor.BoeID);
-				if (boe != null && !boe.IsMultiClinWbs)
-				{
-					labor.CLINID = boe.CLINID;
-					labor.WBSID = boe.WBSID;
-				}
-			}
-
-			ProcessLaborData(workspace, settingsData.SummaryFields.FirstOrDefault(), settingsData.SummaryFields.Skip(1).ToList(),
-				taskElementLabors, boeDataGroup, settingsData.ShowYears, settingsData.GroupingField, settingsData.CustomGroupingField);
-
+			// Convert new TraceTableBoeDataGroup model to old TraceTableBoeData model
 			boeDataGroup.ChildData.ForEach(x => boeData.ChildData.Add(new TraceTableBoeData(x)));
 
 			// return child data - top level is empty and child data will contain the first summary field
@@ -182,7 +156,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
                 else
 				{
-                    CustomFieldDTO customField = workspace.CustomFields.FirstOrDefault(x => x.CustomFieldName.Equals(currentLevel, StringComparison.CurrentCultureIgnoreCase));
+                    CustomFieldDTO customField = workspace.CustomFields.FirstOrDefault(x => x.CustomFieldName.Equals(customGroupingField));
 
 					if (customField != null)
 					{
