@@ -105,6 +105,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public string BOEFormName { get; set; }
 
         /// <summary>
+        /// Supplier Name used in NLF application
+        /// </summary>
+        public string NLFSupplierName { get; set; }
+
+        /// <summary>
         /// Total Cost
         /// </summary>
         public decimal TotalCost { get; set; }
@@ -218,10 +223,5 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Gets or sets the incomplete messages.
         /// </summary>
         public ICollection<string> IncompleteMessages { get; set; }
-
-        /// <summary>
-        /// Vendor ID
-        /// </summary>
-        public string VendorID { get; set; }
     }
 }

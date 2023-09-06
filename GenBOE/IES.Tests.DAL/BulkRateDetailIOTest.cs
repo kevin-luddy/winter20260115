@@ -268,6 +268,7 @@ namespace RDM.Tests.IO
                     RateDescription5 = "RateDescription5" + i,
                     RateDescription6 = "RateDescription6" + i,
                     RateDescription7 = "RateDescription7" + i,
+                    RateDescription8 = "RateDescription8" + i,
 
                     ResourceClassId = resourceClassOption0.Id,
                     ResourceClass = resourceClassOption0.Label,

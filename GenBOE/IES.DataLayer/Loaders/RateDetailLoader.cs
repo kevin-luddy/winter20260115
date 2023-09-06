@@ -23,7 +23,7 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// The Rate Description numbers.
         /// </summary>
-        private readonly int?[] numbers = { null, 1, 2, 3, 4, 5, 6, 7 };
+        private readonly int?[] numbers = { null, 1, 2, 3, 4, 5, 6, 7, 8 };
 
         /// <summary>
         /// RateYearLoader.
@@ -261,6 +261,11 @@ namespace IES.DataBridge.Loaders
                                 rate.RateDescription7 = mapping.Description;
                                 rate.ResourceClass7 = mapping.ResourceClass;
                                 rate.ResourceClassId7 = mapping.ResourceClassId;
+                                break;
+                            case 8:
+                                rate.RateDescription8 = mapping.Description;
+                                rate.ResourceClass8 = mapping.ResourceClass;
+                                rate.ResourceClassId8 = mapping.ResourceClassId;
                                 break;
                         }
 
@@ -550,8 +555,8 @@ namespace IES.DataBridge.Loaders
                 dtoToUpsert.ProPricerMappings = this.proPricerXrefLoader.GetByRateCodeId(dtoToUpsert.Id);
             }
 
-            string[] descs = { dtoToUpsert.RateDescription, dtoToUpsert.RateDescription1, dtoToUpsert.RateDescription2, dtoToUpsert.RateDescription3, dtoToUpsert.RateDescription4, dtoToUpsert.RateDescription5, dtoToUpsert.RateDescription6, dtoToUpsert.RateDescription7 };
-            int?[] resourceClassIds = { dtoToUpsert.ResourceClassId, dtoToUpsert.ResourceClassId1, dtoToUpsert.ResourceClassId2, dtoToUpsert.ResourceClassId3, dtoToUpsert.ResourceClassId4, dtoToUpsert.ResourceClassId5, dtoToUpsert.ResourceClassId6, dtoToUpsert.ResourceClassId7 };
+            string[] descs = { dtoToUpsert.RateDescription, dtoToUpsert.RateDescription1, dtoToUpsert.RateDescription2, dtoToUpsert.RateDescription3, dtoToUpsert.RateDescription4, dtoToUpsert.RateDescription5, dtoToUpsert.RateDescription6, dtoToUpsert.RateDescription7, dtoToUpsert.RateDescription8 };
+            int?[] resourceClassIds = { dtoToUpsert.ResourceClassId, dtoToUpsert.ResourceClassId1, dtoToUpsert.ResourceClassId2, dtoToUpsert.ResourceClassId3, dtoToUpsert.ResourceClassId4, dtoToUpsert.ResourceClassId5, dtoToUpsert.ResourceClassId6, dtoToUpsert.ResourceClassId7, dtoToUpsert.ResourceClassId8 };
             var numbersAndDescs = this.numbers.Zip(descs, (first, second) => new Tuple<int?, string>(first, second));
 
             foreach (Tuple<int?, string> numberAndDesc in numbersAndDescs)
