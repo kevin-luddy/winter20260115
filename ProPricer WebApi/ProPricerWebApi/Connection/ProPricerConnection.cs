@@ -10,6 +10,7 @@
 namespace APTSPropricerApi.Connection
 {
 	using ACV.Shared;
+	using DocumentFormat.OpenXml.Office2021.DocumentTasks;
 	using EBS.ProPricer.Client;
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
@@ -54,7 +55,7 @@ namespace APTSPropricerApi.Connection
 		{
 			this.InstanceId = instanceId;
 			this.poolManagerList = poolManagerList;
-			this.EstablishConnection(connectionName, server, port);
+			this.Workspace = this.EstablishConnection(connectionName, server, port).Result;
 		}
 
 		/// <summary>
@@ -63,10 +64,10 @@ namespace APTSPropricerApi.Connection
 		/// <param name="connection">The connection string</param>
 		/// <param name="serverName">The server name</param>
 		/// <param name="port">The port number</param>
-		private void EstablishConnection(string connection, string serverName, int port)
+		private async System.Threading.Tasks.Task<Workspace> EstablishConnection(string connection, string serverName, int port)
 		{
 			// Assigning the server name and port to the datacenter
-			DataCenter datacenter = DataCenter.Open(serverName, port);
+			DataCenter datacenter = await DataCenter.OpenAsync(serverName, port);
 
 			// Creating the dataserver and finding the connection
 
@@ -79,7 +80,7 @@ namespace APTSPropricerApi.Connection
 			//                workspace = dataServer.OpenWorkspace(GetUserLogon, null, null);
 
 			//This assumes that PROPRICER is installed as API DLL's and the PROPRICER app is not installed on this machine.
-			this.Workspace = this.DataServer.OpenWorkspace(this.GetUserLogon, GetRegistration, this.GetActivation);
+			return await this.DataServer.OpenWorkspaceAsync(this.GetUserLogon, GetRegistration, this.GetActivation);
 		}
 
 		/// <summary>
