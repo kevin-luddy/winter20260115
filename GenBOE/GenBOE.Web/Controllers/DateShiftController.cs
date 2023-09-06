@@ -198,7 +198,7 @@ namespace GenBOE.Web.Controllers
 
 						// pre-load the data efficiently
 						ws.LoadTaskElementRTEData();
-						ws.LoadClinsAndBoes();
+						ws.LoadClinsAndBoes(true);
                         ICollection<BoeTaskElementDTO> tasks = ws.TaskElements.ToList();
                         ICollection<TravelDTO> travels = ws.Travels.ToList();
                         foreach (FullBoe fullboe in ws.Boes)

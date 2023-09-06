@@ -285,7 +285,7 @@ namespace GenBOE.Objects
         /// <summary>
         /// Loads BOEs and Clins into the properties.. Used if you want to preload the BOEs and Clins ahead of time.
         /// </summary>
-        public virtual void LoadClinsAndBoes()
+        public virtual void LoadClinsAndBoes(bool loadBoeRteData = false)
         {
             if (this.clins == null)
             {
@@ -295,7 +295,7 @@ namespace GenBOE.Objects
             if (this.boes == null)
             {
                 // passing in this.taskElements here to reuse Task Elements only if they are already loaded
-                this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id, false, this.taskElements).ToList().AsReadOnly();
+                this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id, loadBoeRteData, this.taskElements).ToList().AsReadOnly();
             }
 
             foreach (FullClin clin in this.clins)

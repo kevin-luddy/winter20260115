@@ -515,14 +515,14 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-		/// <summary>
-		/// Gets all of the Subcontractors for a Workspace
-		/// </summary>
-		/// <param name="workspaceShortName">Short name of the workspace</param>
-		/// <returns>HttpResponseMessage</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        /// <summary>
+        /// Gets all of the Subcontractors for a Workspace
+        /// </summary>
+        /// <param name="workspaceID">Workspace Id</param>
+        /// <returns>HttpResponseMessage</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<BOEFormData> GetSubcontractors(string workspaceShortName)
+		public IESResponse<BOEFormData> GetSubcontractors(int workspaceID)
 		{
 			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
 
@@ -530,7 +530,7 @@ namespace GenBOE.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceID);
 				if (this.HasOciPermission(SecurityPage.ManageBOEForms, workspace))
 				{
 					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
@@ -538,7 +538,8 @@ namespace GenBOE.Web.Controllers
 					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
 						new BOEFormData()
 						{
-							Name = p.BOEFormName,
+							PBOEId = p.BOEFormId,
+							Name = p.NLFSupplierName,
 							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost,
 							IsIncomplete = p.IsIncomplete
 						}).ToList();
@@ -877,6 +878,10 @@ namespace GenBOE.Web.Controllers
 						TotalCost = x.TotalCost.GetValueOrDefault(),
 						SupplierProposedValue = x.SupplierProposedValue,
 						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+						IsCommercialItemException = x.IsCommercialItemException.GetValueOrDefault(),
+						IsCompetitionException = x.IsCompetitionException.GetValueOrDefault(),
+						IsCCoPDOtherException = x.IsCCoPDOtherException.GetValueOrDefault(),
+						IsCCoPDThresholdException = x.IsCCoPDThresholdException.GetValueOrDefault(),
 						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
 						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
 						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),

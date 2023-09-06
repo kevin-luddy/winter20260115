@@ -137,8 +137,15 @@
                             %>
                             <% if (ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration", false)) 
                             { %>
-                                <div>Company Mode: <%: SystemConfiguration.Instance().CompanyMode.GetDescription() %></div>
-                            <% } %> 
+                                <div>Company Mode: <%: SystemConfiguration.Instance().CompanyMode.GetDescription() %>
+                               <% if (SiteMasterUtilities.IsRMSProduction()) { %>
+                                Production - <span class="blue-link"><a href="<%=SiteMasterUtilities.ArchiveUrl()%>">Switch to Archive</a></span>
+                               <% } %>
+                                <% if (SiteMasterUtilities.IsRMSArchive()) { %>
+                                Archive - <span class="blue-link"><a href="<%=SiteMasterUtilities.ProductionUrl()%>">Switch to Production</a></span>
+                               <% } %>
+                                </div>                               
+                          <% } %> 
                             </div>
                         </div>
                         <div class="col-lg-5 col-md-5 col-sm-5">
