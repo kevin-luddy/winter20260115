@@ -125,6 +125,7 @@ AS
 **		--------	--------			-------------------------------------------
 **		8/10/2017	dray				Created.
 **		2/21/2018	brunworg			Removed CobraRateSet and CobraCode1ID.
+**		9/05/2023	hrafiqzadah			Added DisclosureTypeId
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -185,6 +186,7 @@ AS
 **		--------	--------			-------------------------------------------
 **		8/10/2017	dray				Created.
 **		11/9/2017	ranzalon			Remove ProPricer Burden Rate mappings
+**		9/05/2023	hrafiqzadah			Added DisclosureTypeId
 *******************************************************************************/
 SET NOCOUNT ON 
 
