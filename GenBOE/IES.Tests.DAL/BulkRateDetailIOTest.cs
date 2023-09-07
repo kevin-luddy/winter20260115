@@ -269,6 +269,7 @@ namespace RDM.Tests.IO
                     RateDescription6 = "RateDescription6" + i,
                     RateDescription7 = "RateDescription7" + i,
                     RateDescription8 = "RateDescription8" + i,
+                    RateDescription9 = "RateDescription9" + i,
 
                     ResourceClassId = resourceClassOption0.Id,
                     ResourceClass = resourceClassOption0.Label,
@@ -328,6 +329,8 @@ namespace RDM.Tests.IO
                         case 5:
                         case 6:
                         case 7:
+                        case 8:
+                        case 9:
                             StringAssert.Equals(ppx.ResourceClass, string.Empty);
                             break;
                         default:
