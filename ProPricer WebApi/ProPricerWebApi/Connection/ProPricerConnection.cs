@@ -10,7 +10,6 @@
 namespace APTSPropricerApi.Connection
 {
 	using ACV.Shared;
-	using DocumentFormat.OpenXml.Office2021.DocumentTasks;
 	using EBS.ProPricer.Client;
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
