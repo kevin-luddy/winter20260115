@@ -509,7 +509,7 @@ namespace IES.ActionLogic.ControllerLogic
                    (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription6) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6)) ||
                    (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription7) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7)) ||
                    (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription8) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription9) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId9));
+                   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription9) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId9));
         }
 
         /// <summary>
@@ -527,7 +527,7 @@ namespace IES.ActionLogic.ControllerLogic
                    !string.IsNullOrEmpty(rateDetailModelView.RateDescription6) ||
                    !string.IsNullOrEmpty(rateDetailModelView.RateDescription7) ||
                    !string.IsNullOrEmpty(rateDetailModelView.RateDescription8) ||
-				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription9);
+                   !string.IsNullOrEmpty(rateDetailModelView.RateDescription9);
         }
 
         /// <summary>
