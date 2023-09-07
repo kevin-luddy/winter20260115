@@ -633,7 +633,8 @@ namespace IES.Common
         ProjMapAddDelete = 67,
         ProjMapCategory = 72,
         ProjMapClassOfCost = 73,
-        ProjMapOldResource = 74
+        ProjMapOldResource = 74,
+		ResourceSegmentRegion = 76,
     }
 
     /// <summary>
@@ -668,7 +669,8 @@ namespace IES.Common
         ProjMapInitialResoure = 69,
         ProjMapSpreadCode = 70,
         ProjMapStartDate = 71,
-        ProjMapOldResource = 75
+        ProjMapOldResource = 75,
+		ResourceSegmentRegion = 76
     }
 
     /// <summary>
