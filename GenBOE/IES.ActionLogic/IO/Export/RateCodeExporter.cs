@@ -90,8 +90,8 @@ namespace IES.ActionLogic.IO.Export
                 ImportExportConstants.PRO_PRICER_RESOURCE_CLASS6_COLUMN_HEADER,
                 ImportExportConstants.PRO_PRICER_DESCRIPTION7_COLUMN_HEADER,
                 ImportExportConstants.PRO_PRICER_RESOURCE_CLASS7_COLUMN_HEADER,
-				ImportExportConstants.PRO_PRICER_DESCRIPTION8_COLUMN_HEADER,
-				ImportExportConstants.PRO_PRICER_RESOURCE_CLASS8_COLUMN_HEADER,
+                ImportExportConstants.PRO_PRICER_DESCRIPTION8_COLUMN_HEADER,
+                ImportExportConstants.PRO_PRICER_RESOURCE_CLASS8_COLUMN_HEADER,
                 ImportExportConstants.PRO_PRICER_DESCRIPTION9_COLUMN_HEADER,
                 ImportExportConstants.PRO_PRICER_RESOURCE_CLASS9_COLUMN_HEADER,
                 ImportExportConstants.GOVERNMENT_BURDEN_POOL_COLUMN_HEADER,
@@ -262,11 +262,11 @@ namespace IES.ActionLogic.IO.Export
                 ImportExportConstants.RESOURCE_CLASS6_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
             ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
                 ImportExportConstants.RESOURCE_CLASS7_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-				ImportExportConstants.RESOURCE_CLASS8_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-				ImportExportConstants.RESOURCE_CLASS9_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.GOVERNMENT_BURDEN_POOLS,
+            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+                ImportExportConstants.RESOURCE_CLASS8_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+                ImportExportConstants.RESOURCE_CLASS9_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.GOVERNMENT_BURDEN_POOLS,
                 ImportExportConstants.GOVT_BURDEN_POOL_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
             ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.COMMERCIAL_BURDEN_POOLS,
                 ImportExportConstants.COMM_BURDEN_POOL_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);

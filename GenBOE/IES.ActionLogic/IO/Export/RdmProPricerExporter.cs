@@ -179,7 +179,7 @@ namespace IES.ActionLogic.IO.Export
                     string.IsNullOrEmpty(rate.RateDescription5) &&
                     string.IsNullOrEmpty(rate.RateDescription6) &&
                     string.IsNullOrEmpty(rate.RateDescription7) &&
-					string.IsNullOrEmpty(rate.RateDescription8) &&
+                    string.IsNullOrEmpty(rate.RateDescription8) &&
                     string.IsNullOrEmpty(rate.RateDescription9))
                 {
                     continue;   // skip
@@ -226,16 +226,16 @@ namespace IES.ActionLogic.IO.Export
                     toReturn.AddRange(this.CreateDirectRateRows(rate, 7, rate.RateDescription7, rate.ResourceClass7, isGovOrComm));
                 }
 
-				if (!string.IsNullOrEmpty(rate.RateDescription8))
-				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 8, rate.RateDescription8, rate.ResourceClass8, isGovOrComm));
-				}
+                if (!string.IsNullOrEmpty(rate.RateDescription8))
+                {
+                    toReturn.AddRange(this.CreateDirectRateRows(rate, 8, rate.RateDescription8, rate.ResourceClass8, isGovOrComm));
+                }
 
-				if (!string.IsNullOrEmpty(rate.RateDescription9))
-				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 9, rate.RateDescription9, rate.ResourceClass9, isGovOrComm));
-				}
-			}
+                if (!string.IsNullOrEmpty(rate.RateDescription9))
+                {
+                    toReturn.AddRange(this.CreateDirectRateRows(rate, 9, rate.RateDescription9, rate.ResourceClass9, isGovOrComm));
+                }
+            }
 
             return toReturn;
         }
