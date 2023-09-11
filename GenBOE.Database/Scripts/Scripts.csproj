@@ -333,6 +333,7 @@
     <Content Include="Release Scripts\Release 2023.1\Release 2023.1.sql" />
     <Content Include="Release Scripts\Release 2023.26\1 - Release 2022.26 Script.sql" />
     <Content Include="Release Scripts\Release 2023.05\Release 2023.5.sql" />
+    <Content Include="Release Scripts\Release 2023.30\1 - Release 2023.30 Script.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2023.11 Generated On 4_11_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.5 Generated On 3_8_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2022.15 Generated On 5_16_2022.sql" />
@@ -395,7 +396,6 @@
     <Content Include="_Other Scripts\From Transition\quick collation fix 20150417 - Added Support to remove deprecated commands from SPs.sql" />
     <Content Include="_Other Scripts\From Transition\sp_helptext_custom.sql" />
     <Content Include="_Other Scripts\GenBOE - Insert Application Administrator.sql" />
-    <Content Include="_Other Scripts\GenBOE_Resource_INSERT.sql" />
     <Content Include="_Other Scripts\Realignment and DB Copy Scripts.sql" />
     <Content Include="_Other Scripts\RemoveNonDiscreteLaborSpreads.sql" />
     <Content Include="_Other Scripts\Sql To Move Templates for Hotfix 2.9.5.sql" />
