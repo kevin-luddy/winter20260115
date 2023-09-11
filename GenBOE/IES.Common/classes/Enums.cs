@@ -670,7 +670,7 @@ namespace IES.Common
 		ProjMapSpreadCode = 70,
 		ProjMapStartDate = 71,
 		ProjMapOldResource = 75,
-		ResourceSegmentRegion = 76
+		ResourceSegmentRegion = 77
 	}
 
 	/// <summary>
