@@ -438,6 +438,7 @@ namespace GenBOE
                 new ResolvedParameter(typeof(IBoeDTODataLoader)),
                 new ResolvedParameter(typeof(IPermissionsDTODataLoader))));
 
+            _SapHttpClient.Timeout = Constants.HTTP_TIMEOUT;
 			GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient), typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient), GetLifetimeManager(), new InjectionConstructor(ConfigurationUtilities.GetAppSetting("IESSAPUrl"), _SapHttpClient));
 
             // Controller Logic
@@ -1079,8 +1080,6 @@ namespace GenBOE
                     GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTableImporter), typeof(MoqTableImporterRMS), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(WorkspaceExporter), typeof(WorkspaceExporterMST), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICommonDataMapper)),
                                                                                                                                                 new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
-                                                                                                                                                new ResolvedParameter(typeof(IResourceDTODataLoader)),
-                                                                                                                                                new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(IUserDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(IBOEStatusReport)),
@@ -1099,8 +1098,6 @@ namespace GenBOE
                     GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTableImporter), typeof(MoqTableImporter), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(WorkspaceExporter), typeof(WorkspaceExporterSpaceSystems), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICommonDataMapper)),
                                                                                                                                                 new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
-                                                                                                                                                new ResolvedParameter(typeof(IResourceDTODataLoader)),
-                                                                                                                                                new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(IUserDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(IBOEStatusReport)),

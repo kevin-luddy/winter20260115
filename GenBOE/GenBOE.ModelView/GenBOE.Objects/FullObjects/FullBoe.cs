@@ -506,7 +506,7 @@ namespace GenBOE.Objects
         /// Overrides the task elements
         /// </summary>
         /// <param name="tasks">Task Elements</param>
-        public void SetTaskElements(ICollection<BoeTaskElementDTO> tasks)
+        public void SetTaskElements(IEnumerable<BoeTaskElementDTO> tasks)
         {
             this.taskElements = tasks.Where(t => t.BoeID == this.Id).ToList().AsReadOnly();
         }

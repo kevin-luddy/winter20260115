@@ -694,9 +694,9 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="WbsElement" Type="varchar" MaxLength="8000" />
           <Property Name="PeriodOfPerformanceStartDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="PeriodOfPerformanceEndDate" Type="datetime2" Precision="7" Nullable="false" />
-          <Property Name="TotalWbsHours" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="TotalWbsHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
           <Property Name="AdditionalQueryFilters" Type="varchar" MaxLength="2500" />
-          <Property Name="TotalRelevantHoursAfterQueryFilters" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="TotalRelevantHoursAfterQueryFilters" Type="decimal" Precision="11" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="MoqTypeTableCustomFieldValueXREF">
           <Key>
@@ -4220,6 +4220,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="WorkspaceName" Type="varchar" Mode="In" />
           <Parameter Name="WorkspaceShortName" Type="varchar" Mode="In" />
           <Parameter Name="CostVolumeLeadPricerUserID" Type="int" Mode="In" />
+          <Parameter Name="SAPSpaceCutoff" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="copyWorkspaceVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
@@ -12318,6 +12319,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="WorkspaceName" Mode="In" Type="String" />
             <Parameter Name="WorkspaceShortName" Mode="In" Type="String" />
             <Parameter Name="CostVolumeLeadPricerUserID" Mode="In" Type="Int32" />
+            <Parameter Name="SAPSpaceCutoff" Mode="In" Type="DateTime" />
           </FunctionImport>
           <EntitySet Name="MoqTypeTableCustomFieldValueXREFs" EntityType="GenBOE.Models.MoqTypeTableCustomFieldValueXREF" />
           <AssociationSet Name="FK__MoqTypeTa__Custo__503886C7" Association="GenBOE.Models.FK__MoqTypeTa__Custo__503886C7">
@@ -13582,9 +13584,9 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="WbsElement" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="PeriodOfPerformanceStartDate" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="PeriodOfPerformanceEndDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="TotalWbsHours" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
+          <Property Name="TotalWbsHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
           <Property Name="AdditionalQueryFilters" Type="String" MaxLength="2500" FixedLength="false" Unicode="false" />
-          <Property Name="TotalRelevantHoursAfterQueryFilters" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
+          <Property Name="TotalRelevantHoursAfterQueryFilters" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
           <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelectionTableData" ToRole="MOQTypeSelection" />
           <NavigationProperty Name="MoqTypeTableCustomFieldValueXREFs" Relationship="GenBOE.Models.FK__MoqTypeTa__MoqTy__4F44628E" FromRole="MOQTypeSelectionTableData" ToRole="MoqTypeTableCustomFieldValueXREF" />
         </EntityType>

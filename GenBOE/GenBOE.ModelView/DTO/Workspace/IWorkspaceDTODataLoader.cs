@@ -76,11 +76,55 @@ namespace GenBOE.DataBridge.DTO
         [DbQuery]
         ICollection<(int Id, string shortName, string longName, bool containsOCI)> GetWorkspaceDataForProposal(string ptmTrackingNumber);
 
-        #endregion
+        /// <summary>
+        /// Get Workspace data by NTID to be used in NLF home grid
+        /// </summary>
+        /// <param name="ntid">user NTID</param>
+        /// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [DbQuery]
+		ICollection<NlfWorkspaceDataDTO> GetWorkspaceDataByNtidForNlf(string ntid);
 
-        #region Restores and Copies
+        /// <summary>
+        /// Get all Workspace data for a system admin to be used in NLF home grid
+        /// </summary>
+        /// <returns>Collection of Workspace IDs, URLs, and Names</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [DbQuery]
+        ICollection<NlfWorkspaceDataDTO> GetAllWorkspaceDataForNlf();
 
-        void RestoreTravelForWorkspace(int inWorkspaceId);
+		/// <summary>
+		/// Get Workspace inner data by NTID to be used in NLF home grid
+		/// This is basically an extension method of 'GetWorkspaceDataByNtidForNlf'
+		/// </summary>
+		/// <param name="ntid">user NTID</param>
+		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[DbQuery]
+		ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid);
+
+		/// <summary>
+		/// Get all Workspace inner data for a system admin to be used in NLF home grid
+		/// This is basically an extention method of 'GetAllWorkspaceDataForNlf'
+		/// </summary>
+		/// <returns>Collection of NlfWorkspaceInnerData</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[DbQuery]
+		ICollection<NlfWorkspaceInnerDataDTO> GetAllWorkspaceInnerDataForNlf();
+
+		/// <summary>
+		/// Get Material PBoe Data for a given Workspace
+		/// </summary>
+		/// <param name="workspaceID"></param>
+		/// <returns>Collection of Material PBoe</returns>
+		[DbQuery]
+		ICollection<MPBoeDataDTO> GetMaterialPBoeForWorkspace(int workspaceID);
+
+		#endregion
+
+		#region Restores and Copies
+
+		void RestoreTravelForWorkspace(int inWorkspaceId);
 
         void LockTravelAndResourceRatesForWorkspace(int inWorkspaceId);
 

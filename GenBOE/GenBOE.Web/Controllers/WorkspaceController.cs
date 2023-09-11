@@ -391,6 +391,7 @@ namespace GenBOE.Web.Controllers
             ActionResult result = new EmptyResult();
             try
             {
+				ws.LoadBoesAndTaskElementsRTEData();
                 // Get the modelviews
                 IReadOnlyCollection<ProjectMapModelView> modelViews;
                 if (offload && (ws.IsProjectMapWorkspace || ws.ProjectMapType == ProjectMapType.StandardWithOffload))
@@ -422,8 +423,9 @@ namespace GenBOE.Web.Controllers
             catch (Exception e)
             {
                 _log.Error(e);
+				string supportLink = Utilities.ServiceCentralLink();
 
-                result = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", Utilities.HelpdeskEmailAddress()));
+				result = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", supportLink));
             }
             
             // Finalize Action
@@ -739,7 +741,7 @@ namespace GenBOE.Web.Controllers
                 false :
                 _securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
 
-            model.IsSAPConnectionEnabled = Utilities.IsSAPEnabled;
+            model.IsSAPConnectionEnabled = Utilities.IsSAPEnabledForSystem;
 
             ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE, model);
 
@@ -1343,9 +1345,11 @@ namespace GenBOE.Web.Controllers
 
             ViewData["LineOfBusinessTypes"] = this.boePickListMapper.GetPickListValues(PickListEnum.LineOfBusiness).PickLists;
             ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
-            
-            // gather up proposal class types
-            this.GetProposalClassOptionList();
+			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
+			ViewData["ShowSAP"] = Utilities.ShowSAPForWorkspace(ws.CreationDate);
+
+			// gather up proposal class types
+			this.GetProposalClassOptionList();
 
             // gather up contract types
             ViewData["ContractTypes"] = this.boePickListMapper.GetPickListValues(PickListEnum.ContractType).PickLists.Where(p => p.IsActive || ws.SelectedContractTypes.Contains(p.Id)).ToList();
@@ -1546,7 +1550,7 @@ namespace GenBOE.Web.Controllers
 
             // Perform Action
             // gather up output format types
-            Collection<SelectListItemWithTitle> outputFormatTypes = new Collection<SelectListItemWithTitle>();
+            List<SelectListItemWithTitle> outputFormatTypes = new List<SelectListItemWithTitle>();
 
             Collection<WorkspaceExportFormatDTO> exportFormats = ws.WorkspaceExportFormats.ToCollection();
 
@@ -1564,7 +1568,7 @@ namespace GenBOE.Web.Controllers
             }
             }
 
-            ViewData["ExportFormatTypes"] = outputFormatTypes;
+            ViewData["ExportFormatTypes"] = outputFormatTypes.OrderBy(x => x.Text).ToList();
 
 
             // gather up output sort order types
@@ -4397,11 +4401,10 @@ namespace GenBOE.Web.Controllers
             int tempWsId = this._ControllerLogic.CopyWorkspaceVersion(ws, versionId, exportAllBoes, boesToExport);
 
             FullWorkspace tempWs = this.Factory.CreateFullWorkspace(tempWsId);
-            tempWs.LoadBoesRTEData();
+            tempWs.LoadBoesAndTaskElementsRTEData();
             tempWs.LoadTravelRTEData();
             tempWs.LoadODCsRTEData();
             tempWs.LoadMaterialsRTEData();
-            tempWs.LoadTaskElementRTEData();
 
             string excelTemplateLocaiton = Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH);
             MetricNameTaskElementMappingDTO metricTaskElementMappings = this.reportsControllerLogic.GetMetricNameTaskElementMappingDTO(tempWs);
@@ -4827,7 +4830,7 @@ namespace GenBOE.Web.Controllers
                 // Default Template BOE switch to Yes if CCoPD is set to true
                 usingTemplateBoe = proposal.IsCCPDRequired.HasValue ? proposal.IsCCPDRequired.Value : false;
 
-                isSAPEnabledConfig = Utilities.IsSAPEnabled;
+                isSAPEnabledConfig = Utilities.IsSAPEnabledForSystem;
             }
             else
             {

@@ -8,7 +8,9 @@
 		hours: 'TotalRelevantHours',
 		order: 'Order',
 		wbsHoursPrevious: 'WbsHoursPrevious',
-		wbsHours: 'WbsHours'
+		wbsHours: 'WbsHours',
+		clinString: 'ClinString',
+		wbsString: 'WbsString'
     };
     $scope.errors = [];
     $scope.modalErrors = [];
@@ -26,10 +28,10 @@
 
 	$scope.reverse = false;
 	$scope.predicate = [$scope.columns.order];
-    $scope.pageSize = 100;
-    $scope.currentPage = 0;
+	$scope.pageSize = 100;
+	$scope.currentPage = 0;
     $scope.searchText = '';
-	$scope.colSpan = WorkspaceCalculateActualsModel.colSpan;
+    $scope.colSpan = WorkspaceCalculateActualsModel.colSpan;
 
     // reset current page when a user searches
     $scope.searchChanged = function () {

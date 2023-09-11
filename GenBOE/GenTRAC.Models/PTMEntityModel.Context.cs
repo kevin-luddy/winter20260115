@@ -1346,7 +1346,7 @@ namespace GenTRAC.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteProposalContractsOffer", proposalContractsOfferIdParameter, updateDTParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertProposalContractsData(Nullable<int> proposalContractsDataId, Nullable<System.DateTime> updateDT, Nullable<int> proposalID, Nullable<int> previouslySubmittedROM, Nullable<System.DateTime> customerSubmittalDate, string contractsCorrespondLogNumber, Nullable<long> finalNegotiatedValue, Nullable<System.DateTime> finalNegotiatedDate, Nullable<int> eppDelegationAuthority, Nullable<System.DateTime> programEppDate, Nullable<System.DateTime> lobEppDate, Nullable<System.DateTime> preSpaceEppDate, Nullable<System.DateTime> spaceEppDate, Nullable<System.DateTime> preCorporateEppDate, Nullable<System.DateTime> corporateEppDate, string eppRosDelegationNotes, Nullable<bool> lmWon, Nullable<System.DateTime> modCompletedDate, string cageCode)
+        public virtual ObjectResult<Nullable<int>> upsertProposalContractsData(Nullable<int> proposalContractsDataId, Nullable<System.DateTime> updateDT, Nullable<int> proposalID, Nullable<int> previouslySubmittedROM, Nullable<System.DateTime> customerSubmittalDate, string contractsCorrespondLogNumber, Nullable<long> finalNegotiatedValue, Nullable<System.DateTime> finalNegotiatedDate, Nullable<int> eppDelegationAuthority, Nullable<System.DateTime> programEppDate, Nullable<System.DateTime> lobEppDate, Nullable<System.DateTime> preSpaceEppDate, Nullable<System.DateTime> spaceEppDate, Nullable<System.DateTime> preCorporateEppDate, Nullable<System.DateTime> corporateEppDate, string eppRosDelegationNotes, Nullable<bool> lmWon, Nullable<System.DateTime> modCompletedDate, string cageCode, Nullable<System.DateTime> customerDueDate)
         {
             var proposalContractsDataIdParameter = proposalContractsDataId.HasValue ?
                 new ObjectParameter("ProposalContractsDataId", proposalContractsDataId) :
@@ -1424,7 +1424,11 @@ namespace GenTRAC.Models
                 new ObjectParameter("CageCode", cageCode) :
                 new ObjectParameter("CageCode", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalContractsData", proposalContractsDataIdParameter, updateDTParameter, proposalIDParameter, previouslySubmittedROMParameter, customerSubmittalDateParameter, contractsCorrespondLogNumberParameter, finalNegotiatedValueParameter, finalNegotiatedDateParameter, eppDelegationAuthorityParameter, programEppDateParameter, lobEppDateParameter, preSpaceEppDateParameter, spaceEppDateParameter, preCorporateEppDateParameter, corporateEppDateParameter, eppRosDelegationNotesParameter, lmWonParameter, modCompletedDateParameter, cageCodeParameter);
+            var customerDueDateParameter = customerDueDate.HasValue ?
+                new ObjectParameter("CustomerDueDate", customerDueDate) :
+                new ObjectParameter("CustomerDueDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalContractsData", proposalContractsDataIdParameter, updateDTParameter, proposalIDParameter, previouslySubmittedROMParameter, customerSubmittalDateParameter, contractsCorrespondLogNumberParameter, finalNegotiatedValueParameter, finalNegotiatedDateParameter, eppDelegationAuthorityParameter, programEppDateParameter, lobEppDateParameter, preSpaceEppDateParameter, spaceEppDateParameter, preCorporateEppDateParameter, corporateEppDateParameter, eppRosDelegationNotesParameter, lmWonParameter, modCompletedDateParameter, cageCodeParameter, customerDueDateParameter);
         }
     
         public virtual int upsertProposalContractsOffer(Nullable<int> proposalContractsOfferId, Nullable<System.DateTime> updateDT, Nullable<int> contractsDataId, Nullable<long> customerOfferAmount, Nullable<System.DateTime> customerOfferDate, Nullable<System.DateTime> lMCounterOfferDate, Nullable<long> lMCounterOfferCost, Nullable<long> lMCounterOfferCOM, Nullable<long> lMCounterOfferProfitFee)

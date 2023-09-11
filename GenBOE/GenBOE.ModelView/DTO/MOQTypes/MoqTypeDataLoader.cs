@@ -216,10 +216,10 @@ namespace GenBOE.DataBridge.DTO
                         dtoToUpsert.Order, dtoToUpsert.CerName, dtoToUpsert.DescriptionHoursRequired, dtoToUpsert.SmeReason, 
                         dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale).FirstOrDefault();
 
-                    foreach(MoqTableData table in dtoToUpsert.TableData.Where(x => x.DateOfReport.Date != DateTime.MinValue.Date && x.PoPStart.Date != DateTime.MinValue.Date && x.PoPEnd.Date != DateTime.MinValue.Date))
+                    foreach(MoqTableData table in dtoToUpsert.TableData.Where(x => x.DateOfReport.Date != DateTime.MinValue.Date))
                     {
                         int? tableId = gbe.upsertMOQTypeSelectionTableData(table.Id, toReturn, table.UpdateDate, table.Order, table.TableName, table.RepositoryName, table.QueryType,
-                            table.DateOfReport, table.HistoricalProgramName, table.ContractNumber, table.WbsElement, table.PoPStart, table.PoPEnd, table.TotalWbsHours,
+                            table.DateOfReport, table.HistoricalProgramName, table.ContractNumber, table.WbsElement, table.PoPStart ?? DateTime.MinValue, table.PoPEnd ?? DateTime.MinValue, table.TotalWbsHours,
                             table.AdditionalQueryFilters, table.TotalRelevantHours).FirstOrDefault();
                         
                         // Save custom fields
@@ -256,7 +256,7 @@ namespace GenBOE.DataBridge.DTO
                     foreach (MoqTableData table in moqType.TableData.Where(x => x.Updateable == UpdateType.Upsert))
                     {
                         int? tableId = gbe.upsertMOQTypeSelectionTableData(table.Id, moqType.Id, table.UpdateDate, table.Order, table.TableName, table.RepositoryName, table.QueryType,
-                            table.DateOfReport, table.HistoricalProgramName, table.ContractNumber, table.WbsElement, table.PoPStart, table.PoPEnd, table.TotalWbsHours,
+                            table.DateOfReport, table.HistoricalProgramName, table.ContractNumber, table.WbsElement, table.PoPStart ?? DateTime.MinValue, table.PoPEnd ?? DateTime.MinValue, table.TotalWbsHours,
                             table.AdditionalQueryFilters, table.TotalRelevantHours).FirstOrDefault();
 
                         // Save custom fields

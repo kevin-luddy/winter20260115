@@ -610,7 +610,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     decimal totalCostTravel = this.CalculateTotalCostTravel(travels, ws.DecimalPrecision, escalationRates, fees);
 
                     ManageBOEModelView manageBoe = new ManageBOEModelView(boe, wbsDto, clinDto, users, authors.ToCollection(),
-                        subcontractorAuthors.ToCollection(), approvers.ToCollection(), boe.TaskElements.ToCollection(), totalCostTravel);
+                        subcontractorAuthors.ToCollection(), approvers.ToCollection(), ws.TaskElements.Where(t => t.BoeID == boe.Id).ToCollection(), totalCostTravel);
 
                 modelViews.Add(manageBoe);
             }
@@ -2199,7 +2199,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>Fully populate BOESearchResult view model.</returns>
         private BOESearchResult GetBOESearchResult(FullBoe boe, FullWorkspace ws)
         {
-            int currentWorkspaceID = ws.Id;
+			int currentWorkspaceID = ws.Id;
             WbsDTO wbs = boe.Wbs;
             string wbsNum = (wbs == null ? CommonConstants.Unassigned_WBS_Display_Text : wbs.WbsNumber);
             string wbsTitle = (wbs == null ? CommonConstants.Unassigned_WBS_Display_Text : wbs.WbsTitle);
@@ -3284,7 +3284,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <returns>Collection of view model operators</returns>
 		public async Task<ICollection<QueryOperatorViewModel>> GetAllOperators()
 		{
-            if (Utilities.IsSAPEnabled)
+            if (Utilities.IsSAPEnabledForSystem)
             {
                 try
                 {
@@ -3311,7 +3311,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>Collection of view model fields</returns>
         public async Task<ICollection<QueryFieldViewModel>> GetAllFields()
 		{
-            if (Utilities.IsSAPEnabled)
+            if (Utilities.IsSAPEnabledForSystem)
             {
                 try
                 {

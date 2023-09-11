@@ -311,7 +311,7 @@ namespace GenBOE.Tests.ActionLogic.Export
             {
                 Assert.AreEqual(expected.ElementAt(i).TableName, results.ElementAt(i).TableName);
                 Assert.AreEqual(expected.ElementAt(i).RepositoryName, results.ElementAt(i).RepositoryName);
-                Assert.AreEqual(expected.ElementAt(i).QueryType, results.ElementAt(i).QueryType);
+                Assert.AreEqual(expected.ElementAt(i).QueryType, results.ElementAt(i).QueryType?.Trim()); // using Trim so "Weekly" and "Weekly " are the same
                 Assert.AreEqual(expected.ElementAt(i).DateOfReport.Normalize(DateTimePrecision.Day), results.ElementAt(i).DateOfReport);
                 Assert.AreEqual(expected.ElementAt(i).HistoricalProgramName, results.ElementAt(i).HistoricalProgramName);
                 Assert.AreEqual(expected.ElementAt(i).ContractNumber, results.ElementAt(i).ContractNumber);

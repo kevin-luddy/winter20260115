@@ -83,7 +83,8 @@ namespace IES.Common
 		///     The token is first validated, and if it is valid, then the user's NTID will be retrieved from it. 
 		///     Finally, the NTID will be set into the System's Current Principal
 		/// </summary>
-		public void AuthenticateUserFromAuthorizationToken()
+		/// <returns>NTID from the token</returns>
+		public string AuthenticateUserFromAuthorizationToken()
 		{
 			string token = HttpContext.Current.Request.Headers["IES_Authorization"];
 
@@ -93,6 +94,8 @@ namespace IES.Common
 			// Set the current user to the NTID that is coming in.
 			GenericIdentity identity = new GenericIdentity(ntid);
 			System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(identity, new string[] { });
+
+			return ntid;
 		}
 	}
 }

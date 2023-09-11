@@ -39,8 +39,6 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         /// <param name="commonDataMapper">The common data mapper.</param>
         /// <param name="permissionsDTOLoader">The permissions dto loader.</param>
-        /// <param name="resourceDTODataLoader">The resource dto data loader.</param>
-        /// <param name="perfOrgLoader">The perf org loader.</param>
         /// <param name="customFieldValueDTODataLoader">The custom field value dto data loader.</param>
         /// <param name="userDTODataLoader">The user dto data loader.</param>
         /// <param name="boeStatusReport">The boe status report.</param>
@@ -53,8 +51,6 @@ namespace GenBOE.ActionLogic.IO.Export
         public WorkspaceExporterMST(
             ICommonDataMapper commonDataMapper,
             IPermissionsDTODataLoader permissionsDTOLoader,
-            IResourceDTODataLoader resourceDTODataLoader,
-            IPerformingOrgDTODataLoader perfOrgLoader,
             ICustomFieldValueDTODataLoader customFieldValueDTODataLoader,
             IUserDTODataLoader userDTODataLoader,
             IBOEStatusReport boeStatusReport,
@@ -66,8 +62,6 @@ namespace GenBOE.ActionLogic.IO.Export
             TravelExtendedCostExporterRMS travelExtendedCostExporter)
             : base(commonDataMapper,
              permissionsDTOLoader,
-             resourceDTODataLoader,
-             perfOrgLoader,
              customFieldValueDTODataLoader,
              userDTODataLoader,
              boeStatusReport,

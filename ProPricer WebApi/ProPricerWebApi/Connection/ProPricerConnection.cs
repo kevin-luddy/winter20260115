@@ -42,11 +42,6 @@ namespace APTSPropricerApi.Connection
 		private readonly PoolManagerList poolManagerList;
 
 		/// <summary>
-		/// True if this connection has been disposed
-		/// </summary>
-		private bool disposedValue;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ProPricerConnection" /> class.
 		/// </summary>
 		/// <param name="instanceId">The instance identifier.</param>
@@ -59,7 +54,7 @@ namespace APTSPropricerApi.Connection
 		{
 			this.InstanceId = instanceId;
 			this.poolManagerList = poolManagerList;
-			this.EstablishConnection(connectionName, server, port);
+			this.Workspace = this.EstablishConnection(connectionName, server, port).Result;
 		}
 
 		/// <summary>
@@ -68,10 +63,10 @@ namespace APTSPropricerApi.Connection
 		/// <param name="connection">The connection string</param>
 		/// <param name="serverName">The server name</param>
 		/// <param name="port">The port number</param>
-		private void EstablishConnection(string connection, string serverName, int port)
+		private async System.Threading.Tasks.Task<Workspace> EstablishConnection(string connection, string serverName, int port)
 		{
 			// Assigning the server name and port to the datacenter
-			DataCenter datacenter = DataCenter.Open(serverName, port);
+			DataCenter datacenter = await DataCenter.OpenAsync(serverName, port);
 
 			// Creating the dataserver and finding the connection
 
@@ -84,7 +79,7 @@ namespace APTSPropricerApi.Connection
 			//                workspace = dataServer.OpenWorkspace(GetUserLogon, null, null);
 
 			//This assumes that PROPRICER is installed as API DLL's and the PROPRICER app is not installed on this machine.
-			this.Workspace = this.DataServer.OpenWorkspace(this.GetUserLogon, GetRegistration, this.GetActivation);
+			return await this.DataServer.OpenWorkspaceAsync(this.GetUserLogon, GetRegistration, this.GetActivation);
 		}
 
 		/// <summary>
@@ -132,39 +127,9 @@ namespace APTSPropricerApi.Connection
 		/// <summary>
 		/// Dispose of managed and unmanaged objects
 		/// </summary>
-		/// <param name="disposing">true for disposing of managed objects</param>
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!disposedValue)
-			{
-				if (disposing)
-				{
-					// dispose managed state (managed objects)
-					this.poolManagerList.GetInstance(this.InstanceId).GiveObjectBackToPool(this);
-					if (this.Workspace is not null)
-					{
-						if (this.Workspace.IsOpened())
-						{
-							Workspace.Close();
-						}
-						this.Workspace = null;
-					}
-				}
-
-				// free unmanaged resources (unmanaged objects) and override finalizer
-				// set large fields to null
-				disposedValue = true;
-			}
-		}
-
-		/// <summary>
-		/// Dispose of this instance
-		/// </summary>
 		public void Dispose()
 		{
-			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-			Dispose(disposing: true);
-			GC.SuppressFinalize(this);
+			this.poolManagerList.GetInstance(this.InstanceId).GiveObjectBackToPool(this);
 		}
 	}
 }

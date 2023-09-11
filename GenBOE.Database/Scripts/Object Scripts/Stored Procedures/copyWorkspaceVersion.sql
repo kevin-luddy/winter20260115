@@ -43,6 +43,9 @@ AS
 **		4/22/2022	jquijano			IES-1019: Add new fields to copy workspace
 **		5/2/2022	jquijano			IES-1126: Add VendorId, SupplierProposedValue
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
+**		3/1/23		twilson3			ACV-343 Update MOQ Column sizes
+**		3/20/23		Dusan				ACV-498: Updated MOQ Column size (Wbs Element due to prod issue)
+**      8/10/23     twilson             PROPH-1029 Investigate Project Spreads
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -732,7 +735,7 @@ BEGIN TRY
 	FROM  [version].[ProjectMapSpread] S
 	INNER JOIN [version].ProjectMap P ON P.ID = S.ProjectMapId AND S.VersionID = P.VersionID
 	INNER JOIN ProjectMap NewP ON NewP.WorkspaceId = @NewWorkspaceID AND NewP.OrderID = P.OrderID
-	WHERE S.VersionID = @VersionID
+	WHERE S.WorkspaceID = @WorkspaceID AND S.VersionID = @VersionID
 
 	/**** Custom Fields ****/
 	INSERT INTO [dbo].[CustomField]
@@ -1870,12 +1873,12 @@ BEGIN TRY
 		[DateOfReport] [datetime2](7) NOT NULL,
 		[HistoricalProgramName] [varchar](125) NOT NULL,
 		[ContractNumber] [varchar](255) NULL,
-		[WbsElement] [varchar](2500) NOT NULL,
+		[WbsElement] [varchar](8000) NOT NULL,
 		[PeriodOfPerformanceStartDate] [datetime2](7) NOT NULL,
 		[PeriodOfPerformanceEndDate] [datetime2](7) NOT NULL,
-		[TotalWbsHours] [decimal](10,2) NOT NULL,
+		[TotalWbsHours] [decimal](11,2) NOT NULL,
 		[AdditionalQueryFilters] [varchar](2500) NULL,
-		[TotalRelevantHoursAfterQueryFilters] [decimal](10,2) NOT NULL,
+		[TotalRelevantHoursAfterQueryFilters] [decimal](11,2) NOT NULL,
 		Processed bit,
 		NewMOQTypeSelectionTableDataId int,
 		NewMOQTypeSelectionId int

@@ -15,6 +15,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.Core;
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using System;
 	using System.Collections.Generic;
@@ -44,6 +45,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">ProPricer Instance Id</param>
 		/// <returns>An array of basic proposal information</returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public ICollection<ProposalFolderInfo> Get(int instanceId)
 		{
@@ -76,6 +78,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns the general proposal data for a given proposal
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public ProposalDto Get(int instanceId, string id)
 		{
@@ -98,6 +101,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns the id of the newly created proposal if successful. If not, returns an error message.
 		/// </returns>
 		[HttpPost]
+		[Authorize]
 		[Route("{instanceId}")]
 		public ReturnDto Post(int instanceId, [FromBody] ProposalDto newProp)
 		{
@@ -287,6 +291,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns 200 if successful. If not, returns an error message.
 		/// </returns>
 		[HttpPut]
+		[Authorize]
 		[Route("{instanceId}")]
 		public ReturnDto Put(int instanceId, [FromBody] ProposalDto changeProp)
 		{
@@ -524,6 +529,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
 		/// <returns></returns>
 		[HttpDelete]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public IActionResult Delete(int instanceId, string id)
 		{

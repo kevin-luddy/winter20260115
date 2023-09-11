@@ -37,11 +37,35 @@ namespace IES.Common
 
         private static string versionAndUpdatedDate = null;
         private static object lockObject = new object();
+        private static DateTime? sapSpaceStartDate;
 
-        /// <summary>
-        /// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.
-        /// </summary>
-        private static Regex regexNewLine = new Regex(@"<br( )*/*( )*>", RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+		/// <summary>
+		/// Space cutoff time for workspaces
+		/// </summary>
+		public static DateTime SAPSpaceStartDate
+        {
+            get
+            {
+                if (!sapSpaceStartDate.HasValue)
+                {
+                    if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("SAPSpaceStartDate"), out DateTime sapTime))
+                    {
+                        sapSpaceStartDate = DateTime.MaxValue;
+					}
+                    else
+                    {
+                        sapSpaceStartDate = sapTime;
+                    }
+                }
+
+                return sapSpaceStartDate.Value;
+            }
+        }
+
+		/// <summary>
+		/// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.
+		/// </summary>
+		private static Regex regexNewLine = new Regex(@"<br( )*/*( )*>", RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
 
         #region Adjusting precision of decimal numbers, based on workspace settings
 
@@ -316,6 +340,36 @@ namespace IES.Common
             return ConfigurationUtilities.GetAppSetting("HelpdeskEmailAddress");
         }
 
+		/// <summary>
+		/// Gets Service Central Support Link for RMS
+		/// </summary>
+		/// <returns>Service Central Link (RMS)</returns>
+		public static string ServiceCentralLink()
+		{
+			string supportLink = string.Empty;
+
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				supportLink = "<a href=\"" + ConfigurationUtilities.GetAppSetting("ServiceCentralLinkMST") + "\" target=\"_blank\">" + "Service Central RMS Ticket</a>";
+			} else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				// Since Space does not have link yet the next line of code is replaced with plain text from config file
+				//supportLink = "<a href=\"" + Utilities.ServiceCentralLinkSpaceSystems() + "\" target=\"_blank\">" + "Service Central Space Ticket</a>";
+				supportLink = ConfigurationUtilities.GetAppSetting("ServiceCentralLinkSpaceSystems");
+			}
+
+			return supportLink;
+		}
+
+        /// <summary>
+        /// Gets PPR&D Disclosure Log URL from web.config
+        /// </summary>
+        /// <returns>PPR&D Disclosure Log URL</returns>
+        public static string PPRDDisclosureLogURL()
+        {
+            return ConfigurationUtilities.GetAppSetting("PPRDDisclosureLogURL");
+        }
+
         /// <summary>
         /// Gets the PTM URL from web.config
         /// </summary>
@@ -573,8 +627,15 @@ namespace IES.Common
 
             if (!string.IsNullOrEmpty(token))
             {
-                client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
-                client.DefaultRequestHeaders.Add(HeaderNames.Authorization, Constants.TOKEN_PREFIX + token);
+                string fullToken = Constants.TOKEN_PREFIX + token;
+				if (!client.DefaultRequestHeaders.Any(h => h.Key == HeaderNames.Authorization && h.Value.Any(v => v == fullToken)))
+                {
+                    lock (lockObject)
+                    {
+                        client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
+                        client.DefaultRequestHeaders.Add(HeaderNames.Authorization, fullToken);
+                    }
+                }
             }
         }
 
@@ -583,10 +644,10 @@ namespace IES.Common
         /// </summary>
         private static bool? isSapEnabled;
 
-        /// <summary>
+		/// <summary>
 		/// Indicates whether SAP features are enabled
 		/// </summary>
-		public static bool IsSAPEnabled
+		public static bool IsSAPEnabledForSystem
         {
             get
             {
@@ -603,5 +664,57 @@ namespace IES.Common
                 isSapEnabled = value;
             }
         }
-    }
+
+		/// <summary>
+		/// Is SAP Enabled for this workspace
+		/// </summary>
+		/// <param name="workspaceCreationDate">workspace creation date</param>
+		/// <returns>True if SAP is enabled for this workspace</returns>
+		public static bool IsSAPEnabledForWorkspace(bool workspaceEnabledSAPConnection, DateTime? workspaceCreationDate)
+        {
+            return workspaceEnabledSAPConnection && IsSAPEnabledForSystem &&
+				!IsWorkspaceBeforeSAPCutoff(workspaceCreationDate);
+        }
+
+        /// <summary>
+        /// Is the workspace before the SAP cutoff (always false for RMS)
+        /// </summary>
+        /// <param name="workspaceCreationDate">workspace creation date</param>
+        /// <returns>True if workspace creation date is before SAP cutoff, always false if RMS.</returns>
+        public static bool IsWorkspaceBeforeSAPCutoff(DateTime? workspaceCreationDate)
+        {
+            return SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
+                (!workspaceCreationDate.HasValue || workspaceCreationDate < SAPSpaceStartDate);
+		}
+
+		/// <summary>
+		/// Is SAP connection shown to the user for this workspace
+		/// </summary>
+		/// <param name="workspaceCreationDate"></param>
+		/// <returns></returns>
+		public static bool ShowSAPForWorkspace(DateTime? workspaceCreationDate)
+        {
+			return IsSAPEnabledForSystem &&
+				(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ||
+				workspaceCreationDate >= SAPSpaceStartDate);
+		}
+
+		/// <summary>
+		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
+		/// to not point at unclassified locations that are not accessible.
+		/// </summary>
+		/// <returns>Bool whether the links should be shut off or not</returns>
+		public static bool DisableExternalHelpLinksForClassifiedInstallations()
+		{
+			bool result = false;
+
+			if (!string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall"))
+				&& ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall").ToLower().Equals("true"))
+			{
+				result = true;
+			}
+
+			return result;
+		}
+	}
 }

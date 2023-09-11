@@ -15,6 +15,7 @@ namespace GenBOE.Web.Common
 	using GenBOE.ActionLogic.Common;
 	using IES.Common;
 	using GenBOE.Objects;
+    using IES.Common.classes;
 
 	[ExcludeFromCodeCoverage]
 	sealed public class SiteMasterUtilities
@@ -203,6 +204,46 @@ namespace GenBOE.Web.Common
 			}
 		}
 
+        /// <summary>
+        /// Gets Archive URL for the site; used to decide if the app is running in archive
+        /// </summary>
+        /// <returns>Archive URL</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
+        public static string ArchiveUrl()
+        {
+            return ConfigurationUtilities.GetAppSetting("ArchiveUrlBoe");
+        }
+
+		/// <summary>
+		/// Gets the Server URL
+		/// </summary>
+		/// <returns>Server URL for this website</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
+        public static string ServerUrl()
+        {
+            return ConfigurationUtilities.GetAppSetting("ServerURL");
+        }        
+
+		/// <summary>
+		/// Returns true if RMS Archive
+		/// </summary>
+		/// <returns>True if RMS Archive</returns>
+        public static bool IsRMSArchive()
+		{
+			return SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST &&
+				ArchiveUrl() == ServerUrl();
+        }
+
+		/// <summary>
+		/// Returns true if this is RMS Production
+		/// </summary>
+		/// <returns>True if RMS Producvtion, false otherwise</returns>
+		public static bool IsRMSProduction()
+		{
+			return SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST &&
+				ProductionUrl() == ServerUrl();
+        }
+
 		#region A number of settings that were moved into web.config to support classified installations. These methods expose the settings.
 
 		/// <summary>
@@ -213,24 +254,6 @@ namespace GenBOE.Web.Common
 		public static string ProductionUrl()
 		{
 			return ConfigurationUtilities.GetAppSetting("ProdUrlBoe");
-		}
-
-		/// <summary>
-		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
-		/// to not point at unclassified locations that are not accessible.
-		/// </summary>
-		/// <returns>Bool whether the links should be shut off or not</returns>
-		public static bool DisableExternalHelpLinksForClassifiedInstallations()
-		{
-			bool result = false;
-
-			if (!string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall"))
-				&& ConfigurationUtilities.GetAppSetting("ShutOffExternalLinksForClassifiedInstall").ToLower().Equals("true"))
-			{
-				result = true;
-			}
-
-			return result;
 		}
 
 		#endregion

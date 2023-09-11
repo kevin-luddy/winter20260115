@@ -33,15 +33,20 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         public int? PreviouslySubmittedROM { get; set; }
 
-        /// <summary>
-        /// Customer Submittal Date string
-        /// </summary>
-        public DateTime? CustomerSubmittalDate { get; set; }
+		/// <summary>
+		/// Customer Submittal Date string
+		/// </summary>
+		public DateTime? CustomerDueDate { get; set; }
 
-        /// <summary>
-        /// Cage #
-        /// </summary>
-        public string CageCode { get; set; }
+		/// <summary>
+		/// Customer Submittal Date string
+		/// </summary>
+		public DateTime? CustomerSubmittalDate { get; set; }
+
+		/// <summary>
+		/// Cage #
+		/// </summary>
+		public string CageCode { get; set; }
 
         /// <summary>
         /// Contracts Correspondence Log Number

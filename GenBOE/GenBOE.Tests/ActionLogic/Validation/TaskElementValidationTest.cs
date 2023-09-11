@@ -87,7 +87,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 4, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -110,7 +110,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 2, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -133,7 +133,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 2, 1), EndDate = new DateTime(2014, 4, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -157,7 +157,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 4, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -181,7 +181,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -221,7 +221,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -261,7 +261,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -302,7 +302,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -343,7 +343,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -415,7 +415,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -457,7 +457,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -499,7 +499,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -541,7 +541,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
@@ -586,7 +586,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(boe.Id)).Returns(new List<MoqTypeSelection>());
 
@@ -699,7 +699,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 4, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>()
@@ -724,7 +724,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 2, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>
@@ -749,7 +749,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 2, 1), EndDate = new DateTime(2014, 4, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>
@@ -775,7 +775,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 4, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>()
@@ -801,7 +801,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 12, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>()
@@ -827,7 +827,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>() {
@@ -868,7 +868,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>()
@@ -910,7 +910,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>()
@@ -953,7 +953,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>() {
@@ -995,7 +995,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>() {
@@ -1069,7 +1069,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>()
@@ -1113,7 +1113,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>()
@@ -1157,7 +1157,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>()
@@ -1201,7 +1201,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
 
             IReadOnlyCollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>()

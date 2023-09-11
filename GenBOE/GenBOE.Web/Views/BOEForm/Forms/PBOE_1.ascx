@@ -41,17 +41,6 @@
                 }
             });
 
-            // setup hide/show of CCOPD Other Exception Text
-            $('#OtherExceptionApplies').change(function() {
-                if ($(this).is(':checked')) {
-                    $("#OtherText").removeClass('display-none');
-                }
-                else {
-                    $("#OtherText").addClass("display-none");
-                    $("#OtherText").val("");
-                }
-            });
-
             // Show or hide the Date picker and text box for "Should Cost/Engineering Estimate" section's radio buttons
             ManageBOEFormsWidget.ShowHideDate = function(radioButtonValue, dateElement, textElement){
                 // the next() hides/shows the calendar button
@@ -139,10 +128,6 @@
     });
 
     $(document).ready(function () {
-        $('#CCoPDApplies').on('click', function () {
-            toggleCCoPDApplies();
-        });        
-
         function toggleCCoPDApplies() {
             if ($('#CCoPDApplies').is(':checked')) {
                 $('#proposalReceived').show();
@@ -154,6 +139,16 @@
             }
         }
 
+        function toggleOtherException() {
+			if ($('#OtherExceptionApplies').is(':checked')) {
+				$("#OtherText").removeClass('display-none');
+			}
+			else {
+				$("#OtherText").addClass("display-none");
+				$("#OtherText").val("");
+			}
+		}
+
         // ensure we have the option properly displayed
         toggleCCoPDApplies();
 
@@ -164,7 +159,14 @@
 
         // ensure we format the money properly
         $('#SupplierProposedValue').trigger('change');
-    });
+
+        // Only allow one Expected Certified Cost or Pricing Data (CCoPD) Applicability field to be selected
+		$(document).on('change', 'input.ExpectedApplicability', function () {
+			$('input.ExpectedApplicability').not(this).prop('checked', false);
+			toggleOtherException();
+			toggleCCoPDApplies();
+		});
+	});
 </script>
 <div id="manage-pboe">
     <%: Html.Hidden("BOEFormId", Model.PBOEModel.BOEFormId.ToString()) %>
@@ -272,7 +274,7 @@
     <div class="form-row"> 
         <div class="form-label"><span helptext="Select to indicate whether certified cost or pricing data is applicable to the procurement, or if not, which exception applies.">Expected Certified Cost or Pricing Data (CCoPD) Applicability **</span></div>
         <div class="form-element">
-            <input <%: Model.PBOEModel.CCoPDApplies ? "checked=\"checked\"" : string.Empty %> id="CCoPDApplies" name="CCoPDApplies" type="checkbox" value="true"><label>CCoPD Applies</label><br />
+            <input <%: Model.PBOEModel.CCoPDApplies ? "checked=\"checked\"" : string.Empty %> id="CCoPDApplies" name="CCoPDApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>CCoPD Applies</label><br />
                 <div id="proposalReceived">
                     a)	If Supplier CCoPD applies, proposal received if >$15M or > CCoPD Threshold AND >10% of the LM proposal<br />
                     <div style="padding-left:1px;">
@@ -281,10 +283,10 @@
                         <%: Html.RadioButton("SupplierCCoPD", TripleBooleanState.NA, Model.PBOEModel.SupplierCCoPD == TripleBooleanState.NA, new { id = "SupplierCCoPD" }) %><label>N/A</label>
                     </div>                
                 </div>
-            <input <%: Model.PBOEModel.CommercialItemExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CommercialItemExceptionApplies" name="CommercialItemExceptionApplies" type="checkbox" value="true"><label>Commercial Item Exception Applies</label><br />
-            <input <%: Model.PBOEModel.CompetitionExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CompetitionExceptionApplies" name="CompetitionExceptionApplies" type="checkbox" value="true"><label>Competition Exception Applies</label><br />
-            <input <%: Model.PBOEModel.LessThanThresholdExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="LessThanThresholdExceptionApplies" name="LessThanThresholdExceptionApplies" type="checkbox" value="true"><label>< CCoPD Threshold Exception applies</label><br />
-            <input <%: Model.PBOEModel.OtherExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="OtherExceptionApplies" name="OtherExceptionApplies" type="checkbox" value="true"><label>Other Exception Applies (explain)</label><br />
+            <input <%: Model.PBOEModel.CommercialItemExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CommercialItemExceptionApplies" name="CommercialItemExceptionApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>Commercial Item Exception Applies</label><br />
+            <input <%: Model.PBOEModel.CompetitionExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CompetitionExceptionApplies" name="CompetitionExceptionApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>Competition Exception Applies</label><br />
+            <input <%: Model.PBOEModel.LessThanThresholdExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="LessThanThresholdExceptionApplies" name="LessThanThresholdExceptionApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>< CCoPD Threshold Exception Applies</label><br />
+            <input <%: Model.PBOEModel.OtherExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="OtherExceptionApplies" name="OtherExceptionApplies" class="ExpectedApplicability" type="checkbox" value="true"><label>Other Exception Applies (explain)</label><br />
             <div class="label-padding-left"><%: Html.TextBox("OtherText", Model.PBOEModel.OtherText, new { id = "OtherText", @class = otherTextClass, maxlength="100" }) %></div>
         </div>
     </div>
@@ -326,9 +328,9 @@
                 <%: Html.TextArea("Description_CostAnalysis", Model.PBOEModel.CostAnalysisDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_CostAnalysis" })%>
             </div>
         </div><div class="form-row">
-            <label class="form-label">Rationale for LM Proposed Value Summary</label><br /><br />
+            <label class="form-label">Rationale for LM Fair & Reasonable Proposed Value</label><br /><br />
             <div class="wrapper">
-                <%: Html.TextArea("Description_RationaleValueSummary", Model.PBOEModel.RationaleValueSummary, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_RationaleValueSummary" })%>
+                <%: Html.TextArea("Description_RationaleValueSummary", Model.PBOEModel.RationaleValueSummary, new { placeholder = "Include rationale why LM Proposed Value for Procurement has been determined to be Fair & Reasonable.", @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_RationaleValueSummary" })%>
             </div>
         </div>
     </div>
@@ -489,7 +491,7 @@
     </div>
     
     <div class="form-row"> 
-        <span class="form-label"><span helptext="The first POC is the buyer or subcontract administrator who is responsible as the LM POC with the supplier. The second POC is the Subcontract Proposal Manager, the person with the overall responsibility for the subcontract portion of LM’s proposal. These signatures do not indicate approval levels; they merely identify individuals knowledgeable about the content of the PBOE.">Points of Contact</span></span>
+        <span class="form-label"><span helptext="The first POC is the buyer or subcontract administrator who is responsible as the LM POC with the supplier. The second POC is the Subcontract Proposal Manager, the person with the overall responsibility for the subcontract portion of LM’s proposal. Inclusion of the Subcontract Proposal Manager Signature indicates that they have reviewed the form content and required supporting documents in its entirety, agree with the data and accuracy of the data as proposed.">Points of Contact</span></span>
     </div>
     <div class="form-row"> 
         <div class="form-label">Subcontract Administrator / Buyer Name **</div>
@@ -503,7 +505,10 @@
         </div>
     </div>
     <div class="form-row"> 
-        <div class="form-label">Subcontract Proposal Manager Name **</div>
+        <div class="form-label">
+            Subcontract Proposal Manager Signature **
+            <div class="pboe-signature-warning-text">By signing this form, I have reviewed the form content and required supporting documents in its entirety, agree with the data and accuracy of the data as proposed.</div>
+        </div>
         <div class="form-element"><%: Html.TextBox("Approver", Model.PBOEModel.Approver, new { id = "Approver" })%>
             <%: Html.Hidden("ApproverNTID", Model.PBOEModel.Approver, new { id = "ApproverNTID" })%>
         </div>

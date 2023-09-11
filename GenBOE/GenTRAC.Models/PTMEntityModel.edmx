@@ -438,6 +438,7 @@
           <Property Name="LmWon" Type="bit" />
           <Property Name="ModCompletedDate" Type="date" />
           <Property Name="CageCode" Type="varchar" MaxLength="10" />
+          <Property Name="CustomerDueDate" Type="date" />
         </EntityType>
         <EntityType Name="ProposalContractTypeXREF">
           <Key>
@@ -1825,6 +1826,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="LmWon" Type="bit" Mode="In" />
           <Parameter Name="ModCompletedDate" Type="date" Mode="In" />
           <Parameter Name="CageCode" Type="varchar" Mode="In" />
+          <Parameter Name="CustomerDueDate" Type="date" Mode="In" />
         </Function>
         <Function Name="upsertProposalType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -3305,6 +3307,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="LmWon" Mode="In" Type="Boolean" />
             <Parameter Name="ModCompletedDate" Mode="In" Type="DateTime" />
             <Parameter Name="CageCode" Mode="In" Type="String" />
+            <Parameter Name="CustomerDueDate" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalContractsOffer">
             <Parameter Name="ProposalContractsOfferId" Mode="In" Type="Int32" />
@@ -4037,6 +4040,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK__ProposalC__Propo__10D65D75" FromRole="ProposalContractsData" ToRole="Proposal" />
           <Property Name="CageCode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CageCode1" Relationship="genTRACModel.FK__ProposalC__CageC__6E4C3B47" FromRole="ProposalContractsData" ToRole="CageCode" />
+          <Property Name="CustomerDueDate" Type="DateTime" Precision="0" />
           </EntityType>
         <Association Name="FK__ProposalC__EPPDe__02925FBF">
           <End Type="genTRACModel.EppDelegationAuthorityLU" Role="EppDelegationAuthorityLU" Multiplicity="0..1" />
@@ -5267,6 +5271,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="ProposalContractsDatas">
             <EntityTypeMapping TypeName="genTRACModel.ProposalContractsData">
               <MappingFragment StoreEntitySet="ProposalContractsData">
+                <ScalarProperty Name="CustomerDueDate" ColumnName="CustomerDueDate" />
                 <ScalarProperty Name="CageCode" ColumnName="CageCode" />
                 <ScalarProperty Name="ModCompletedDate" ColumnName="ModCompletedDate" />
                 <ScalarProperty Name="LmWon" ColumnName="LmWon" />

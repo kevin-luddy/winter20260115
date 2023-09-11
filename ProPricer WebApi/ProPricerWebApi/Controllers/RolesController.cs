@@ -15,6 +15,7 @@ namespace APTSPropricerApi.Controllers
 	using APTSPropricerApi.DTOs;
 	using EBS.Core;
 	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -41,6 +42,7 @@ namespace APTSPropricerApi.Controllers
 		/// </summary>
 		/// <returns>Returns a collection of roles information.</returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<RolesDto> Get(int instanceId)
 		{
@@ -79,6 +81,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns a collection of user information who are members in the specified role.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public IEnumerable<UserDto> Get(int instanceId, string id)
 		{

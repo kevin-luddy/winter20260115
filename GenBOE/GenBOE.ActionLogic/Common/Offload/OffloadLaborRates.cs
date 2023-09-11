@@ -139,8 +139,7 @@ namespace GenBOE.ActionLogic.Common
             else
             {
                 workspace = this.fullObjectFactory.CreateFullWorkspace(workspace);
-                workspace.LoadBoesRTEData();
-                workspace.LoadTaskElementRTEData();
+                workspace.LoadBoesAndTaskElementsRTEData();
                 
                 // create copies of the boes
                 boes = this.CreateBoeCopies(boes, workspace);
@@ -174,7 +173,7 @@ namespace GenBOE.ActionLogic.Common
             foreach (FullBoe boe in boes)
             {
                 FullBoe clonedBoe = this.fullObjectFactory.CreateFullBoe(boe);
-                clonedBoe.SetTaskElements(workspace.TaskElements.ToList());
+                clonedBoe.SetTaskElements(workspace.TaskElements);
                 clonedBoes.Add(clonedBoe);
             }
 
@@ -417,14 +416,22 @@ namespace GenBOE.ActionLogic.Common
                 PerformingOrgDTO perfOrg = workspace.PerformingOrgsForWsList.FirstOrDefault(p => p.Id == laborResource.PerformingOrgID);
                 if (perfOrg == null)
                 {
-                    // performOrg not found, retrieve it directly from DB
-                    perfOrg = OffloadLaborRates.retriever.GetPerformingOrgsByIds(new Collection<int> { laborResource.PerformingOrgID.Value }).FirstOrDefault();
+                    perfOrg = workspace.PerformingOrgsUsedInBoes.FirstOrDefault(p => p.Id == laborResource.PerformingOrgID);
+                    if (perfOrg == null)
+                    {
+                        // performOrg not found, retrieve it directly from DB
+                        perfOrg = OffloadLaborRates.retriever.GetPerformingOrgsByIds(new Collection<int> { laborResource.PerformingOrgID.Value }).FirstOrDefault();
+                    }
                 }
                 ResourceDTO resource = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborResource.ResourceID);
                 if (resource == null)
                 {
-                    // resource not found, retrieve it directly from DB
-                    resource = OffloadLaborRates.retriever.GetResourcesByIds(new Collection<int> { laborResource.ResourceID.Value }).FirstOrDefault();
+                    resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(r => r.Id == laborResource.ResourceID);
+                    if (resource == null)
+                    {
+                        // resource not found, retrieve it directly from DB
+                        resource = OffloadLaborRates.retriever.GetResourcesByIds(new Collection<int> { laborResource.ResourceID.Value }).FirstOrDefault();
+                    }
                 }
 
                 // Skip offloading if perfOrg or Resource not found

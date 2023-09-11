@@ -161,7 +161,13 @@ namespace RDM.Tests.ControllerLogic
                     ResourceClassId6 = 0,
                     RateDescription7 = string.Empty,
                     ResourceClass7 = string.Empty,
-                    ResourceClassId7 = 0
+                    ResourceClassId7 = 0,
+                    RateDescription8 = string.Empty,
+                    ResourceClass8 = string.Empty,
+                    ResourceClassId8 = 0,
+                    RateDescription9 = string.Empty,
+                    ResourceClass9 = string.Empty,
+                    ResourceClassId9 = 0
                 },
                 new RateDetailModelView
                 {
@@ -203,8 +209,14 @@ namespace RDM.Tests.ControllerLogic
                     ResourceClassId6 = 0,
                     RateDescription7 = string.Empty,
                     ResourceClass7 = string.Empty,
-                    ResourceClassId7 = 0
-                },
+                    ResourceClassId7 = 0,
+                    RateDescription8 = string.Empty,
+                    ResourceClass8 = string.Empty,
+                    ResourceClassId8 = 0,
+					RateDescription9 = string.Empty,
+					ResourceClass9 = string.Empty,
+					ResourceClassId9 = 0
+				},
                 new RateDetailModelView
                 {
                     Id = 3,
@@ -245,8 +257,14 @@ namespace RDM.Tests.ControllerLogic
                     ResourceClassId6 = 0,
                     RateDescription7 = string.Empty,
                     ResourceClass7 = string.Empty,
-                    ResourceClassId7 = 0
-                },
+                    ResourceClassId7 = 0,
+                    RateDescription8 = string.Empty,
+                    ResourceClass8 = string.Empty,
+                    ResourceClassId8 = 0,
+					RateDescription9 = string.Empty,
+					ResourceClass9 = string.Empty,
+					ResourceClassId9 = 0
+				},
                 new RateDetailModelView
                 {
                     Id = 4,
@@ -287,8 +305,14 @@ namespace RDM.Tests.ControllerLogic
                     ResourceClassId6 = 0,
                     RateDescription7 = string.Empty,
                     ResourceClass7 = string.Empty,
-                    ResourceClassId7 = 0
-                }
+                    ResourceClassId7 = 0,
+                    RateDescription8 = string.Empty,
+                    ResourceClass8 = string.Empty,
+                    ResourceClassId8 = 0,
+					RateDescription9 = string.Empty,
+					ResourceClass9 = string.Empty,
+					ResourceClassId9 = 0
+				}
             };
 
             testRateCodes["FXDDAB"] = new RateDetailModelView
@@ -331,8 +355,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
 
             testRateCodes["C1NDAB"] = new RateDetailModelView
             {
@@ -374,8 +404,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
 
             testRateCodes["CASPRNET"] = new RateDetailModelView
             {
@@ -417,8 +453,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["Travel SERV Esc"] = new RateDetailModelView
             {
                 Id = 14,
@@ -459,8 +501,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["NLBESCCH"] = new RateDetailModelView
             {
                 Id = 15,
@@ -501,8 +549,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["OHDEVNET"] = new RateDetailModelView
             {
                 Id = 16,
@@ -543,8 +597,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["541760NL"] = new RateDetailModelView
             {
                 Id = 17,
@@ -585,8 +645,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["Mileage Serv"] = new RateDetailModelView
             {
                 Id = 18,
@@ -627,8 +693,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
 
             rateConfigLoader = new Mock<IRateConfigLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRateConfigLoader), rateConfigLoader.Object);

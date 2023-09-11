@@ -12,7 +12,8 @@ CREATE  PROCEDURE [dbo].[copyWorkspace]
 @WorkspaceID int ,
 @WorkspaceName varchar (115),
 @WorkspaceShortName varchar(21),
-@CostVolumeLeadPricerUserID int
+@CostVolumeLeadPricerUserID int,
+@SAPSpaceCutoff datetime2(7) NULL
 )
 AS
 /******************************************************************************
@@ -37,6 +38,10 @@ AS
 **		4/22/2022	jquijano			IES-1019: Add new fields to copy workspace
 **		5/2/2022	jquijano			IES-1126: Add VendorId, SupplierProposedValue
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
+**		3/1/23		twilson3			ACV-343 Update MOQ Column sizes
+**		3/20/23		Dusan				ACV-498: Updated MOQ Column size (Wbs Element due to prod issue)
+**		3/23/23		twilson3			ACV-274 Handle SAP Fiscal Week Cutoff
+**      8/10/23     twilson             PROPH-1029 Investigate Project Spreads
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -45,6 +50,8 @@ BEGIN TRANSACTION
 BEGIN TRY
 
 DECLARE @CopyFromWorkspaceID int = @WorkspaceID
+DECLARE @CopyWorkspaceCreated datetime2(7)
+SELECT @CopyWorkspaceCreated = [WorkspaceCreationDate] FROM [dbo].[Workspace] WHERE WorkspaceID = @CopyFromWorkspaceID
 
 DECLARE @ResourceListID int
 INSERT INTO [dbo].[ResourceList]
@@ -633,6 +640,7 @@ SELECT 	    @NewWorkspaceID,
 FROM  ProjectMapSpread S
 INNER JOIN ProjectMap P ON P.ID = S.ProjectMapId
 INNER JOIN ProjectMap NewP ON NewP.WorkspaceId = @NewWorkspaceID AND NewP.OrderID = P.OrderID
+WHERE S.WorkspaceID = @WorkspaceID
 
 /**** Custom Fields ****/
 INSERT INTO [dbo].[CustomField]
@@ -1597,12 +1605,12 @@ DECLARE @MOQTypeSelectionTableData TABLE
 	[DateOfReport] [datetime2](7) NOT NULL,
 	[HistoricalProgramName] [varchar](125) NOT NULL,
 	[ContractNumber] [varchar](255) NULL,
-	[WbsElement] [varchar](2500) NOT NULL,
+	[WbsElement] [varchar](8000) NOT NULL,
 	[PeriodOfPerformanceStartDate] [datetime2](7) NOT NULL,
 	[PeriodOfPerformanceEndDate] [datetime2](7) NOT NULL,
-	[TotalWbsHours] [decimal](10,2) NOT NULL,
+	[TotalWbsHours] [decimal](11,2) NOT NULL,
 	[AdditionalQueryFilters] [varchar](2500) NULL,
-	[TotalRelevantHoursAfterQueryFilters] [decimal](10,2) NOT NULL,
+	[TotalRelevantHoursAfterQueryFilters] [decimal](11,2) NOT NULL,
 	Processed bit,
 	NewMOQTypeSelectionTableDataId int,
 	NewMOQTypeSelectionId int
@@ -1630,6 +1638,10 @@ SELECT
 	S.NewMOQTypeSelectionId
 FROM [dbo].[MOQTypeSelectionTableData] TD
 INNER JOIN @MOQTypeSelection S ON TD.MOQTypeSelectionId = S.MOQTypeSelectionId
+
+/* If before SAP Cutoff, reset the POP Start/End dates */
+IF @SAPSpaceCutoff IS NOT NULL AND @SAPSpaceCutoff >= @CopyWorkspaceCreated
+   UPDATE @MOQTypeSelectionTableData SET [PeriodOfPerformanceStartDate] = '0001-01-01', [PeriodOfPerformanceEndDate] = '0001-01-01', [QueryType] = 'Weekly ' WHERE [QueryType] = 'Weekly'
 
 DECLARE @MOQTypeSelectionTableDataId int
 WHILE EXISTS (SELECT 1 FROM @MOQTypeSelectionTableData WHERE Processed = 0)

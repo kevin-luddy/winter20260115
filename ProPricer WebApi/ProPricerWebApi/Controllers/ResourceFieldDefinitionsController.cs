@@ -14,6 +14,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.Core;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -43,6 +44,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns a collection of resources summary definitions from the instance of PROPRICER.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<ResourceFieldDefinitionsDto> Get(int instanceId)
 		{
@@ -82,6 +84,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns a collection of resources summary definitions from the instance of PROPRICER.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public IEnumerable<ResourceFieldDefinitionsDto> Get(int instanceId, string id)
 		{
@@ -131,6 +134,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The instance identifier.</param>
 		/// <param name="rfddto">The rfddto.</param>
 		[HttpPut]
+		[Authorize]
 		[Route("{instanceId}")]
 		public void Put(int instanceId, [FromBody] ResourceFieldsDto rfddto)
 		{

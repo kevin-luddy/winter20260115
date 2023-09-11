@@ -16,6 +16,7 @@ namespace GenTRAC.Tests.DAL.Loader
     using ActionLogic.Mediator;
     using DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
+    using GenTRAC.Models;
     using IES.Common;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -1571,6 +1572,81 @@ namespace GenTRAC.Tests.DAL.Loader
             ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> result = sut.GetCostVolumeProposalData(ntid, isAdmin, searchString);
 
             Assert.IsFalse(result.Any(x => x.PtmTrackingNumber.Contains("20-00017-PR1")));
-        }
-    }
+		}
+
+		/// <summary>
+		/// Test GetAcvHeaderDataByProposalId for when CCoPD is true
+		/// </summary>
+		[TestMethod]
+		public void GetAcvHeaderDataByProposalId_CcopdTrue()
+		{
+			Proposal testProposal;
+
+			// get a proposal with CCoPD set to true to test with
+			using (genTRACEntities dbModel = new genTRACEntities())
+			{
+				testProposal = dbModel.Proposals.Where(x => x.CCPDRequired == true).OrderByDescending(x => x.ProposalID).FirstOrDefault();
+			}
+
+			ProposalLoader sut = this.CreateSystem();
+
+			AcvHeaderDataDto result = sut.GetAcvHeaderDataByProposalId(testProposal.ProposalID);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(testProposal.ProposalTrackingID, result.PtmTrackingNumber);
+			Assert.AreEqual(testProposal.ProposalTitle, result.ProposalTitle);
+			Assert.AreEqual(testProposal.RFPNumber, result.RfpNumber);
+			Assert.IsNull(result.CostVolumeSubmittalDate);
+		}
+
+		/// <summary>
+		/// Test GetAcvHeaderDataByProposalId for when CCoPD is false and Revised Anticipated Delivery Date is available
+		/// </summary>
+		[TestMethod]
+		public void GetAcvHeaderDataByProposalId_CcopdFalse_Revised()
+		{
+			Proposal testProposal;
+
+			// get a proposal with CCoPD set to true to test with
+			using (genTRACEntities dbModel = new genTRACEntities())
+			{
+				testProposal = dbModel.Proposals.Where(x => x.CCPDRequired == false && x.RevisedSubmittalDate.HasValue && x.RevisedSubmittalDate != x.AnticipatedDeliveryDate).OrderByDescending(x => x.ProposalID).FirstOrDefault();
+			}
+
+			ProposalLoader sut = this.CreateSystem();
+
+			AcvHeaderDataDto result = sut.GetAcvHeaderDataByProposalId(testProposal.ProposalID);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(testProposal.ProposalTrackingID, result.PtmTrackingNumber);
+			Assert.AreEqual(testProposal.ProposalTitle, result.ProposalTitle);
+			Assert.AreEqual(testProposal.RFPNumber, result.RfpNumber);
+			Assert.AreEqual(testProposal.RevisedSubmittalDate, result.CostVolumeSubmittalDate);
+		}
+
+		/// <summary>
+		/// Test GetAcvHeaderDataByProposalId for when CCoPD is false and Revised Anticipated Delivery Date is not available
+		/// </summary>
+		[TestMethod]
+		public void GetAcvHeaderDataByProposalId_CcopdFalse_NotRevised()
+		{
+			Proposal testProposal;
+
+			// get a proposal with CCoPD set to true to test with
+			using (genTRACEntities dbModel = new genTRACEntities())
+			{
+				testProposal = dbModel.Proposals.Where(x => x.CCPDRequired == false && !x.RevisedSubmittalDate.HasValue).OrderByDescending(x => x.ProposalID).FirstOrDefault();
+			}
+
+			ProposalLoader sut = this.CreateSystem();
+
+			AcvHeaderDataDto result = sut.GetAcvHeaderDataByProposalId(testProposal.ProposalID);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(testProposal.ProposalTrackingID, result.PtmTrackingNumber);
+			Assert.AreEqual(testProposal.ProposalTitle, result.ProposalTitle);
+			Assert.AreEqual(testProposal.RFPNumber, result.RfpNumber);
+			Assert.AreEqual(testProposal.AnticipatedDeliveryDate, result.CostVolumeSubmittalDate);
+		}
+	}
 }

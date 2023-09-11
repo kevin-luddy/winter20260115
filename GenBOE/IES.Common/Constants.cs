@@ -269,6 +269,14 @@ namespace IES.Common
         public static readonly TimeSpan REGEX_TIMEOUT = new TimeSpan(0, 5, 0);
 
         /// <summary>
+        /// Timeout for HTTP CLients
+        /// 
+        /// It is set to 20 minutes.  If calls to http APIs like SAP API take longer than 20 minutes, that is an issue in itself
+        /// Tibco times out after 20 minutes on its own
+        /// </summary>
+        public static readonly TimeSpan HTTP_TIMEOUT = TimeSpan.FromMinutes(value: 20);
+
+        /// <summary>
         /// Used for Zone Travel Resources when there is no Resource entered
         /// </summary>
         public static readonly string ZONE_TRAVEL_RESOURCE_NO_RATE = "NO-RATE";
@@ -314,10 +322,10 @@ namespace IES.Common
         /// </summary>
         public const string CUSTOM_FIELD_IS_REQUIRED = "Custom Field {0} is required.";
 
-		/// <summary>
-		/// MOQ Custom Field should be empty when SAP/Webi Repository is chosen
-		/// </summary>
-		public const string MOQ_CUSTOM_FIELD_EMPTY_WHEN_SAP_WEBI = "Custom Field {0} should be empty when SAP/WEBI Repository is chosen.  Place the filter into the correct box and clear the custom field text box.";
+        /// <summary>
+        /// MOQ Custom Field should be empty when SAP/Webi Repository is chosen
+        /// </summary>
+        public const string MOQ_CUSTOM_FIELD_EMPTY_WHEN_SAP_WEBI = "Custom Field {0} should be empty when SAP/WEBI Repository is chosen. Place the filter into the Additional Query Filter box, and clear the custom field text box.";
 
         /// <summary>
         /// At least 1 MOQ type is required for a task.
@@ -638,6 +646,11 @@ namespace IES.Common
         #region Contracts
 
         /// <summary>
+        /// Validation failed for Customer Due Date
+        /// </summary>
+        public const string INVALID_CUSTOMER_DUE_DATE = "Customer Due Date is required.";
+
+        /// <summary>
         /// Validation failed for Cage Code
         /// </summary>
         public const string INVALID_CAGE_CODE = "Cage # is required.";
@@ -681,6 +694,26 @@ namespace IES.Common
         /// Validation that Days to Certification must be positive
         /// </summary>
         public const string INVALID_DAYS_TO_CERT = "\"The Date that the Certificate of CCoPD and any additional disclosures were delivered to the customer\" cannot be prior to the \"Date of Agreement on Final Price (Handshake)\"";
+
+        /// <summary>
+        /// Validation that user has sufficient permissions to set Proposal as Lost
+        /// </summary>
+        public const string INSUFFICIENT_PERMISSIONS_FOR_LOST = "Insufficient permissions to set proposal as Lost.";
+
+        /// <summary>
+        /// Validation that Proposal has a valid status to be set as Lost
+        /// </summary>
+		public const string INVALID_STATUS_FOR_LOST = "The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'.";
+
+        /// <summary>
+        /// Validation that Customer Due Date is set
+        /// </summary>
+		public const string DUE_DATE_REQUIRED_FOR_LOST = "The Customer Due Date is required in order to set the proposal as Lost.";
+
+        /// <summary>
+        /// Validation that Customer Submittal Date is set
+        /// </summary>
+		public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Lost.";
 
 		#endregion
 
@@ -855,5 +888,10 @@ namespace IES.Common
         public const string EXCEL_SSRS_FORMAT = "EXCELOPENXML";
 
         public const string PDF_SSRS_FORMAT = "pdf";
+
+        /// <summary>
+        /// Divisor for Formula of PoP Months Calculation
+        /// </summary>
+        public const decimal POP_MONTHS_DIVISOR = 30.42m;
     }
 }

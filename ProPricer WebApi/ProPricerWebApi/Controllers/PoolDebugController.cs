@@ -11,6 +11,7 @@ namespace APTSPropricerApi.Controllers
 {
 	using APTSPropricerApi.Connection;
 	using APTSPropricerApi.DTOs;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -39,6 +40,7 @@ namespace APTSPropricerApi.Controllers
 		/// </summary>
 		/// /// <returns>Returns a collection of pools.</returns>
 		[Route("{instanceId}")]
+		[Authorize]
 		[HttpGet]
 		public IEnumerable<PoolDebugDto> Get(int instanceId)
 		{

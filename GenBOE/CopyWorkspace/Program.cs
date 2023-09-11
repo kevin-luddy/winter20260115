@@ -73,10 +73,8 @@ namespace CopyWorkspace
             FullWorkspace ws = factory.CreateFullWorkspace(shortWorkspaceName, true);
             Console.WriteLine("Loading Perf Orgs...");
             IReadOnlyCollection<PerformingOrgDTO> PerformingOrgsUsedInBoes = ws.PerformingOrgsForWsList;
-            Console.WriteLine("Loading BOEs...");
-            ws.LoadBoesRTEData();
-            Console.WriteLine("Loading Tasks...");
-            ws.LoadTaskElementRTEData();
+            Console.WriteLine("Loading Tasks and BOEs...");
+            ws.LoadBoesAndTaskElementsRTEData();
             Console.WriteLine("Loading Travel...");
             ws.LoadTravelRTEData();
             Console.WriteLine("Loading Permissions...");

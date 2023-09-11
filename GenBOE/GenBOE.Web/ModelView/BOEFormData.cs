@@ -12,6 +12,16 @@ namespace GenBOE.Web.ModelView
 	public class BOEFormData
 	{
 		/// <summary>
+		/// Vendor ID
+		/// </summary>
+		public string VendorID { get; set; }
+
+		/// <summary>
+		/// PBOE Database Id
+		/// </summary>
+		public int PBOEId { get; set; }
+
+		/// <summary>
 		/// The BOE Form's Name
 		/// </summary>
 		public string Name { get; set; }
@@ -20,5 +30,10 @@ namespace GenBOE.Web.ModelView
 		/// The Total Cost for a BOE Form instance
 		/// </summary>
 		public decimal TotalCost { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is incomplete.
+		/// </summary>
+		public bool IsIncomplete { get; set; }
 	}
 }

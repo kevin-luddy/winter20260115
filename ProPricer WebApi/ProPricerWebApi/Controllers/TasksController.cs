@@ -16,7 +16,9 @@ namespace APTSPropricerApi.Controllers
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
+	using static EBS.ProPricer.Model.General.SpreadInfo;
 	using Task = EBS.ProPricer.Model.Task;
 
 	/// <summary>
@@ -47,6 +49,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns the tasks for a given proposal
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public IEnumerable<TaskDto> Get(int instanceId, string id)
 		{
@@ -61,6 +64,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="proposalAndTasks">The proposal and tasks.</param>
 		/// <returns></returns>
 		[HttpPost]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<TaskDto> Post(int instanceId, [FromBody] ProposalDto proposalAndTasks)
 		{
@@ -145,6 +149,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The instance identifier.</param>
 		/// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
 		[HttpDelete]
+		[Authorize]
 		[Route("{instanceId}/{id}")]
 		public void Delete(int instanceId, string id)
 		{
@@ -512,12 +517,11 @@ namespace APTSPropricerApi.Controllers
 								//  7ma.MaterialDescription = newma.description;
 
 								whichvar = "material assignment spread";
-								IAmountCollection rsd = ma.Spread.Distribution;
 
 								foreach (SpreadDto s in newma.ResourceAssignment.Spread)
 								{
 									TimeFrame mnyr = TimeFrame.FromMonth(s.Year, s.Month);
-									rsd[mnyr] = double.Parse(s.Value);
+									ma.Spread[mnyr] = double.Parse(s.Value);
 								}
 
 								//AddAmount can also be used to add a new resource to an existing one.
@@ -635,12 +639,11 @@ namespace APTSPropricerApi.Controllers
 										}
 
 										whichvar = "material associated costs spread";
-										IAmountCollection asd = maasc.Spread.Distribution;
 
 										foreach (SpreadDto s in ascitem.Spread)
 										{
 											TimeFrame mnyr = TimeFrame.FromMonth(s.Year, s.Month);
-											asd[mnyr] = double.Parse(s.Value);
+											maasc.Spread[mnyr] = double.Parse(s.Value);
 										}
 
 										//AddAmount can also be used to add a new resource to an existing one.
@@ -749,12 +752,11 @@ namespace APTSPropricerApi.Controllers
 						//  tra.totalCost = newtr.TotalCost;
 
 						whichvar = "travel assignment spread";
-						IAmountCollection rsd = tra.Spread.Distribution;
 
 						foreach (SpreadDto s in newtr.ResourceAssignment.Spread)
 						{
 							TimeFrame mnyr = TimeFrame.FromMonth(s.Year, s.Month);
-							rsd[mnyr] = double.Parse(s.Value);
+							tra.Spread[mnyr] = double.Parse(s.Value);
 						}
 
 						whichvar = "travel resource fields";
@@ -917,13 +919,12 @@ namespace APTSPropricerApi.Controllers
 									resource.Spread.Curve = c;
 								}
 
-								IAmountCollection rsd = resource.Spread.Distribution;
 
 								whichvar = "resource spread";
 								foreach (SpreadDto s in item.Spread)
 								{
 									TimeFrame mnyr = TimeFrame.FromMonth(s.Year, s.Month);
-									rsd[mnyr] = double.Parse(s.Value);
+									resource.Spread[mnyr] = double.Parse(s.Value);
 								}
 
 								whichvar = "resource fields";
@@ -1011,6 +1012,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="proposalAndTasks">The proposal and tasks.</param>
 		/// <returns></returns>
 		[HttpPut]
+		[Authorize]
 		[Route("{instanceId}")]
 		public ReturnDto Put(int instanceId, [FromBody] ProposalDto proposalAndTasks)
 		{

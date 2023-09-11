@@ -14,6 +14,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.Core;
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -51,6 +52,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns the id of the newly created proposal if successful. If not, returns an error message.
 		/// </returns>
 		[HttpPost]
+		[Authorize]
 		[Route("{instanceId}")]
 		public ReturnDto Post(int instanceId, [FromBody] ProposalDto newProp)
 		{

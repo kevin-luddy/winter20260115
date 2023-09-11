@@ -1039,7 +1039,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullBoe boeBObject = new FullBoe(boeB);
             FullBoe boeCObject = new FullBoe(boeC);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new List<FullBoe>() { boeAObject, boeBObject, boeCObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeAObject, boeBObject, boeCObject });
             this.retriever.Setup(x => x.GetWorkspaceById(ws.Id)).Returns(workspace);
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElementC, boeTaskElementB, boeTaskElementA });
 
@@ -1522,7 +1522,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 WBSID = wbs1.Id
             };
             
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { new FullBoe(boe1), new FullBoe(boe2), new FullBoe(boe3), new FullBoe(boe4), new FullBoe(boe5), new FullBoe(boe6), new FullBoe(boe7), new FullBoe(boe8), new FullBoe(boe9)});
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe(boe1), new FullBoe(boe2), new FullBoe(boe3), new FullBoe(boe4), new FullBoe(boe5), new FullBoe(boe6), new FullBoe(boe7), new FullBoe(boe8), new FullBoe(boe9)});
             retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(workspace.Id)).Returns(new List<FullWbs>() { new FullWbs(wbs1) });
             retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>() { clin1 });
 
@@ -1730,7 +1730,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             factory.Setup(x => x.CreateFullBoe(boe8.Id)).Returns(new FullBoe(boe8));
             factory.Setup(x => x.CreateFullBoe(boe9.Id)).Returns(new FullBoe(boe9));
 
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>())).Returns(new Collection<FullBoe>() { new FullBoe(boe1), new FullBoe(boe2), new FullBoe(boe3),
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(boe1), new FullBoe(boe2), new FullBoe(boe3),
                 new FullBoe(boe4), new FullBoe(boe5), new FullBoe(boe6), new FullBoe(boe7), new FullBoe(boe8), new FullBoe(boe9)});
 
             // ===================================================================================================================
@@ -2544,7 +2544,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			};
 
 			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, ws.DecimalPrecision, ws.CostDecimalPrecision)).Returns(tasks);
-			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(boes);
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 			this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(ws.Id)).Returns(moqs);
 			this.retriever.Setup(x => x.GetCurrentActiveUser()).Returns(new UserDTO());
 			this._BOELaborControllerLogic.Setup(x => x.CalculateAllActualsSap(It.IsAny<ICollection<MoqTableDataModelView>>())).Returns(Task.FromResult(sapResponse));

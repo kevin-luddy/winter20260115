@@ -543,7 +543,21 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        private Collection<PermissionsGridModelView> _GetPermissionsGrid(Role inRole)
+		/// <summary>
+		/// Checks if users have access to GenBoe
+		/// </summary>
+		/// <param name="usersToCheck">Users to check</param>
+		/// <returns>A dictionary of users and a bool indicating if they have access or not</returns>
+		private Dictionary<UserData, bool> GetGenBOEAccess(ICollection<UserData> usersToCheck)
+		{
+			ICollection<GroupData> groups = this._ActiveDirectoryUtilities.GetAuthorizationGroupsFromWebConfig();
+
+			Dictionary<UserData, bool> result = _ActiveDirectoryUtilities.CheckUsersBoeAccess(usersToCheck, groups);
+
+			return result;
+		}
+
+		private Collection<PermissionsGridModelView> _GetPermissionsGrid(Role inRole)
         {
             // get the permissions dtos for each area
             Collection<PermissionsDTO> permissionsForSystem = this.PermissionsLoader.GetAdminPermissions();
@@ -2174,10 +2188,6 @@ namespace GenBOE.Web.Controllers
             /** Valid Model Check */
             if (ModelState.IsValid)
             {
-                // TODO jim - refactor to a business logic class and write unit tests ...
-                //Wi 31570
-
-                int? groupId = null; // if not a group .. this stays null
                 Collection<String> messages = new Collection<String>();
 
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
@@ -2187,20 +2197,46 @@ namespace GenBOE.Web.Controllers
                     foreach (string entity in inPermission.EntityIds)
                     {
                         string entityTrimmed = entity.Trim();
-
+                        bool isGroup = false;
+						
                         // check to see if this is a group, then insert if not yet in our database
-                        if (entityTrimmed.Contains('.'))
+						if (entityTrimmed.Contains('.'))
                         {
+                            isGroup = true;
+
                             if (entityTrimmed.Contains('\\'))
                             {
                                 entityTrimmed = entityTrimmed.Split(new char[] { '\\' })[1];
                             }
+
+                            if (!this._ActiveDirectoryUtilities.IsGroup(entity.Trim()))
+                            {
+                                ValidationErrors.Add(new ValidationMessage("The group '" + entity + "' was not found"));
+                            }
                         } // end if we are a group
+                        else
+                        {
+							// details from AD
+							UserData user = this._ActiveDirectoryUtilities.GetUserByQualifiedAccount(entity, false);
+							if (user == null)
+							{
+								ValidationErrors.Add(new ValidationMessage("UserNotFound", "User not found"));
+							}
+							else if (this.GetGenBOEAccess(new Collection<UserData>() { user }).Any(x => !x.Value))
+							{
+								ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", user.DisplayName + " does not have access to genBOE and cannot be added to this Workspace's permissions. Please have the user request access."));
+							}
+						}
 
-                        // check to see if user is in the database
-                        UserDTO userDTO = this.UserLoader.GetOrCreateUserByNtid(entityTrimmed);
+						if (ValidationErrors.Any())
+						{
+							throw new GenValidationException(ValidationErrors);
+						}
 
-                        Collection<PermissionsDTO> Permissions = this.PermissionsLoader.GetUserPermissions(userDTO);
+						// check to see if user is in the database
+						UserDTO userDTO = this.UserLoader.GetOrCreateUserByNtid(entityTrimmed);
+
+						Collection<PermissionsDTO> Permissions = this.PermissionsLoader.GetUserPermissions(userDTO);
 
                         PermissionsDTO check = new PermissionsDTO
                         {
@@ -2209,7 +2245,7 @@ namespace GenBOE.Web.Controllers
                         };
                         
                         // throw exception (pending inserts get rolled back) if attempt is made to grant permission to a subcontractor 
-                        if (_SecurityInformation.IsSubcontractorUser(userDTO.NTID, userDTO.IsSubcontractor))
+                        if (!isGroup && _SecurityInformation.IsSubcontractorUser(userDTO.NTID, userDTO.IsSubcontractor))
                         {
                             string message = "";
                             if (inRole == IES.Common.Role.CreateWorkspacePermissions)
@@ -2222,10 +2258,9 @@ namespace GenBOE.Web.Controllers
                                 message = "Subcontractor users are not permitted System Administrator permission";
                             }
                             ValidationErrors.Add(new ValidationMessage("SubcontractorAuthor", message));
-                            throw new GenValidationException(ValidationErrors);
                         }
 
-                        if (Permissions == null || !Permissions.Contains(check))
+                        if (ValidationErrors.Any() || Permissions == null || !Permissions.Contains(check))
                         {
 
                             _PermissionControllerLogic.SavePotentialPermission(new PermissionsDTO
@@ -2235,7 +2270,10 @@ namespace GenBOE.Web.Controllers
                                 Role = inRole,
                                 Updateable = UpdateType.Upsert
                             });
-                        }
+
+                            // clear their permissions cache
+							this.Factory.ClearPermissionsCache(userDTO.NTID);
+						}
                         else
                         {
                             ValidationErrors.Add(new ValidationMessage("Permissions already exist"));
@@ -2245,7 +2283,7 @@ namespace GenBOE.Web.Controllers
                         //} // end if this is a user
 
                     } // end foreach entity to insert
-                    if (ValidationErrors.Any() && groupId == null)
+                    if (ValidationErrors.Any())
                     {
                         throw new GenValidationException(ValidationErrors);
                     }

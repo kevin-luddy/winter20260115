@@ -1412,7 +1412,9 @@ namespace IES.Common
         InvalidPopStartFW = 16,
         InvalidPopEndFW = 17,
 		InvalidSapCalculation = 18,
-		InvalidTotalWbsHours = 19
+		InvalidTotalWbsHours = 19,
+        InvalidPopStartSunday = 20,
+        InvalidPopEndSunday = 21
 	}
 
     /// <summary>

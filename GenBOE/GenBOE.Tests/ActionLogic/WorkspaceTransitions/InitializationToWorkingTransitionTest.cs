@@ -6,7 +6,8 @@
 
 namespace GenBOE.Tests.ActionLogic
 {
-    using System.Collections.ObjectModel;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.WorkspaceTransitions;
     using GenBOE.DataBridge.DTO;
@@ -48,7 +49,7 @@ namespace GenBOE.Tests.ActionLogic
                 new FullBoe(new BoeDTO { WBSID=1, CLINID=2, Id = 1, State = BOEState.AwaitingApproval }),
                 new FullBoe(new BoeDTO { WBSID = 1, CLINID = 2, Id = 2, State = BOEState.Draft })
             };
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             InitializationToWorkingTransition sut = new InitializationToWorkingTransition(emailer.Object, workspaceLoader.Object);
 
@@ -77,7 +78,7 @@ namespace GenBOE.Tests.ActionLogic
                 new FullBoe(new BoeDTO { WBSID=1, CLINID=2, Id = 1, State = BOEState.Unassigned }),
                 new FullBoe(new BoeDTO { WBSID = 1, CLINID = 2, Id = 2, State = BOEState.Unassigned })
             };
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             InitializationToWorkingTransition sut = new InitializationToWorkingTransition(emailer.Object, workspaceLoader.Object);
 
@@ -111,7 +112,7 @@ namespace GenBOE.Tests.ActionLogic
                 new FullBoe(new BoeDTO { WBSID=1, CLINID=2, Id = 1, State = BOEState.Unassigned }),
                 new FullBoe(new BoeDTO { WBSID = 1, CLINID = 2, Id = 1, State = BOEState.Draft })
             };
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             InitializationToWorkingTransition sut = new InitializationToWorkingTransition(emailer.Object, workspaceLoader.Object);
 
@@ -129,7 +130,7 @@ namespace GenBOE.Tests.ActionLogic
                 new FullBoe(new BoeDTO { WBSID=1, CLINID=2, Id = 1, State = BOEState.AwaitingApproval }),
                 new FullBoe(new BoeDTO { WBSID = 1, CLINID = 2, Id = 1, State = BOEState.AwaitingApproval })
             };
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
 
             valid = sut.Validate(workspace, out validationMessage);
 

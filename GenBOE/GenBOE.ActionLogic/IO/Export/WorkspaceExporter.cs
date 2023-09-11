@@ -40,8 +40,6 @@ namespace GenBOE.ActionLogic.IO.Export
         protected string sMultiple { get { return "Multiple"; } }
 
         private IPermissionsDTODataLoader permissionsDTOLoader;
-        private IResourceDTODataLoader resourceDTODataLoader;
-        private IPerformingOrgDTODataLoader perfOrgLoader;
         private ICustomFieldValueDTODataLoader customFieldValueDTODataLoader;
         private IBOEStatusReport boeStatusReport;
         private WbsExporter wbsExporter;
@@ -54,8 +52,6 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         /// <param name="commonDataMapper">The common data mapper.</param>
         /// <param name="permissionsDTOLoader">The permissions dto loader.</param>
-        /// <param name="resourceDTODataLoader">The resource dto data loader.</param>
-        /// <param name="perfOrgLoader">The perf org loader.</param>
         /// <param name="customFieldValueDTODataLoader">The custom field value dto data loader.</param>
         /// <param name="userDTODataLoader">The user dto data loader.</param>
         /// <param name="boeStatusReport">The boe status report.</param>
@@ -66,8 +62,6 @@ namespace GenBOE.ActionLogic.IO.Export
         protected WorkspaceExporter(
             ICommonDataMapper commonDataMapper,
             IPermissionsDTODataLoader permissionsDTOLoader,
-            IResourceDTODataLoader resourceDTODataLoader,
-            IPerformingOrgDTODataLoader perfOrgLoader,
             ICustomFieldValueDTODataLoader customFieldValueDTODataLoader,
             IUserDTODataLoader userDTODataLoader,
             IBOEStatusReport boeStatusReport,
@@ -78,8 +72,6 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             this.CommonDataMapper = commonDataMapper;
             this.permissionsDTOLoader = permissionsDTOLoader;
-            this.resourceDTODataLoader = resourceDTODataLoader;
-            this.perfOrgLoader = perfOrgLoader;
             this.customFieldValueDTODataLoader = customFieldValueDTODataLoader;
             this.UserDTODataLoader = userDTODataLoader;
             this.boeStatusReport = boeStatusReport;
@@ -451,7 +443,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == boeCustomField.Id).ToCollection<CustomFieldValueDTO>();
                     CustomFieldValueDTO customFieldValueForBOE = customFieldValues.FirstOrDefault(c => boe.CustomFieldValueContainers.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID)); 
-                    row.Add(customFieldValueForBOE != null ? customFieldValueForBOE.CustomFieldValueDescription : this.sEmpty);
+                    row.Add(customFieldValueForBOE != null ? customFieldValueForBOE.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
                 }
 
                 row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe_HoursSum.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
@@ -496,11 +488,11 @@ namespace GenBOE.ActionLogic.IO.Export
                     string descriptionRteOverride = BOEExportConverter.GetRteOverride(boe.Id, task.Id, task.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
                     string moqRteOverride = BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
 
-                    ICollection<string> plainText = RTEUtilities.TurnHTMLIntoPlainText(new List<string>() { descriptionRteOverride, moqRteOverride });
+                     ICollection<string> plainText = RTEUtilities.TurnHTMLIntoPlainText(new List<string>() { descriptionRteOverride, moqRteOverride });
                     string taskDescription = plainText.ElementAt(0);
                     string taskMOQText = plainText.ElementAt(1);
 
-                    string[] taskpart1 = new string[] {
+					string[] taskpart1 = new string[] {
                         this.sEmpty, this.sEmpty,
                             boe.IsMultiClinWbs ? this.sYes : this.sNo,
                             boe.isMaterial ?  this.sYes: this.sNo,
@@ -523,21 +515,19 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == taskCustomField.Id).ToCollection<CustomFieldValueDTO>();
                         CustomFieldValueDTO customFieldValueForTask = customFieldValues.FirstOrDefault(c => task.CustomFieldValueContainers.Select(t => t.CustomFieldValueID).Contains(c.CustomFieldValueID));
-                        row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription : this.sEmpty);
-                    }
+                        row.Add(customFieldValueForTask != null ?
+                                customFieldValueForTask.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
+					}
 
-                    row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + task.taskElementLabors.Where(l => l.SpreadType == SpreadType.Hours).Sum(l => l.ValueSpread).ToString());
+					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + task.taskElementLabors.Where(l => l.SpreadType == SpreadType.Hours).Sum(l => l.ValueSpread).ToString());
 
                     // Sum up all the Cost type resources.
                     decimal taskElementCostTotal = task.taskElementLabors.Where(l => l.SpreadType == SpreadType.Cost).Sum(l => l.ValueSpread.HasValue ? l.ValueSpread.Value : 0);
-                    
-                    row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, taskElementCostTotal));
 
+                    row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, taskElementCostTotal));
+                    
                     toReturn.Add(row);
 
-                    HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this.resourceDTODataLoader.GetByIds(task.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList()));
-                    HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(task.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-                    
                     foreach (ResourceTypeDto resourceType in task.taskElementLabors)
                     {
                         row = new List<string>();
@@ -552,10 +542,10 @@ namespace GenBOE.ActionLogic.IO.Export
                             wbsNumber = resourceWbs != null ? resourceWbs.WbsNumber : this.sEmpty;
                             wbsTitle = resourceWbs != null ? CommonConstants.FORCE_AS_STRING_VALUE + resourceWbs.WbsTitle : this.sEmpty;
                             clinNumber = resourceClin != null ? CommonConstants.FORCE_AS_STRING_VALUE + resourceClin.ClinNumber : this.sEmpty;
-                            clinTitle = resourceClin != null ? CommonConstants.FORCE_AS_STRING_VALUE + resourceClin.ClinTitle : this.sEmpty; 
+                            clinTitle = resourceClin != null ? CommonConstants.FORCE_AS_STRING_VALUE + resourceClin.ClinTitle : this.sEmpty;
                         }
                         else
-                        { 
+                        {
                             wbsNumber = boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty;
                             wbsTitle = boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty;
                             clinNumber = boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty;
@@ -580,7 +570,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         {
                             row.Add(this.sEmpty);
                         }
-                        
+
                         row.AddRange(taskpart1);
 
                         emptyCellsToAdd = workspace_customFields.Count(c => c.CustomFieldDisplayID == CustomFieldType.TaskDisplay);
@@ -589,8 +579,8 @@ namespace GenBOE.ActionLogic.IO.Export
                             row.Add(this.sEmpty);
                         }
 
-                        ResourceDTO aResource = resourceType.ResourceID.HasValue ? resourcesFromDb.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
-                        PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? perfOrgsFromDb.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
+                        ResourceDTO aResource = resourceType.ResourceID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
+                        PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? exportInputs.PerformingOrgsUsedInBoes.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
                         string percentSpread = this.sEmpty;
 
                         if (resourceType.SpreadType == SpreadType.Hours)
@@ -608,31 +598,31 @@ namespace GenBOE.ActionLogic.IO.Export
 
                         row.AddRange(
                             new string[] {
-                                this.sEmpty, this.sEmpty,
-                                resourceType.ResourceID.HasValue ? aResource.ElementOfCost.ToString() : this.sEmpty,
-                                resourceType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
-                                resourceType.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
-                                resourceType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
-                                resourceType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
-                                resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
-                                resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty,
-                                resourceType.StartDate.HasValue ? resourceType.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
-                                resourceType.EndDate.HasValue ? resourceType.EndDate.Value.ToString("MM/yyyy") : this.sEmpty,
-                                resourceType.SpreadCurveID.HasValue ? allSpreadCurves[(int)resourceType.SpreadCurveID.Value].SpreadCurveName.Replace("Hours", FullObjectHelper.HoursLabel(exportInputs.Workspace)) : this.sEmpty,
-                                percentSpread,
-                                (resourceType.SpreadType == SpreadType.Hours && resourceType.ValueSpread.HasValue)
-                                    ? CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + resourceType.ValueSpread.Value.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))
-                                    : this.sEmpty,
-                                (resourceType.SpreadType == SpreadType.Cost && resourceType.ValueSpread.HasValue)
-                                    ? CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + resourceType.ValueSpread.Value.ToString(Utilities.CostPrecisionFormattingString(exportInputs.Workspace.CostDecimalPrecision))
-                                    : this.sEmpty
+                                    this.sEmpty, this.sEmpty,
+                                    resourceType.ResourceID.HasValue ? aResource.ElementOfCost.ToString() : this.sEmpty,
+                                    resourceType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
+                                    resourceType.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
+                                    resourceType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
+                                    resourceType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
+                                    resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
+                                    resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty,
+                                    resourceType.StartDate.HasValue ? resourceType.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
+                                    resourceType.EndDate.HasValue ? resourceType.EndDate.Value.ToString("MM/yyyy") : this.sEmpty,
+                                    resourceType.SpreadCurveID.HasValue ? allSpreadCurves[(int)resourceType.SpreadCurveID.Value].SpreadCurveName.Replace("Hours", FullObjectHelper.HoursLabel(exportInputs.Workspace)) : this.sEmpty,
+                                    percentSpread,
+                                    (resourceType.SpreadType == SpreadType.Hours && resourceType.ValueSpread.HasValue)
+                                        ? CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + resourceType.ValueSpread.Value.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))
+                                        : this.sEmpty,
+                                    (resourceType.SpreadType == SpreadType.Cost && resourceType.ValueSpread.HasValue)
+                                        ? CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + resourceType.ValueSpread.Value.ToString(Utilities.CostPrecisionFormattingString(exportInputs.Workspace.CostDecimalPrecision))
+                                        : this.sEmpty
                             });
 
                         foreach (CustomFieldDTO resourceCustomField in workspace_customFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay))
                         {
                             ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == resourceCustomField.Id).ToCollection<CustomFieldValueDTO>();
                             CustomFieldValueDTO customFieldValueForResource = customFieldValues.FirstOrDefault(c => resourceType.CustomFieldValueContainers.Select(r => r.CustomFieldValueID).Contains(c.CustomFieldValueID));
-                            row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueDescription : this.sEmpty);
+                            row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
                         }
 
                         toReturn.Add(row);
@@ -750,8 +740,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, ((decimal)(odc.ODCTypes.Sum(odct => odct.ODCSpreads.Sum(odcsp => odcsp.CostSpreadValue))) / 100)));
                     toReturn.Add(row);
 
-                    HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this.resourceDTODataLoader.GetByIds(odc.ODCTypes.Where(x=> x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList()));
-                    HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(odc.ODCTypes.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
+                    HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(exportInputs.ResourcesUsedInWsBoes);
+                    HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);
 
                     foreach (OtherDirectCostType odcType in odc.ODCTypes)
                     {
@@ -866,7 +856,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == taskCustomField.Id).ToCollection<CustomFieldValueDTO>();
                         CustomFieldValueDTO customFieldValueForTask = customFieldValues.FirstOrDefault(c => travel.CustomFieldValueContainers.Select(t => t.CustomFieldValueID).Contains(c.CustomFieldValueID));
-                        row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription : this.sEmpty);
+                        row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
                     }
 
                     row.Add(this.sEmpty);
@@ -883,7 +873,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, travelTripsSum));
                     toReturn.Add(row);
 
-                    HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(travel.TravelTrips.Select(x => x.PerfOrgID).Distinct().ToList()));
+                    HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);
 
                     foreach (TravelTripType travelTrip in travel.TravelTrips)
                     {
@@ -947,7 +937,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         {
                             ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == taskCustomField.Id).ToCollection();
                             CustomFieldValueDTO customFieldValueForTask = customFieldValues.FirstOrDefault(c => travelTrip.CustomFieldValueContainers.Select(t => t.CustomFieldValueID).Contains(c.CustomFieldValueID));
-                            row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription : this.sEmpty);
+                            row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
                         }
                         toReturn.Add(row);
                     }
@@ -989,7 +979,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             // need workspace resources in case there are travel trips
             IReadOnlyCollection<ResourceDTO> workspaceResources = exportInputs.ResourcesUsedInWsBoes;
-            HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(exportInputs.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
+            HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);
             HashSet<BoeTaskElementDTO> allTaskElements = new HashSet<BoeTaskElementDTO>(exportInputs.TaskElements);
             HashSet<OtherDirectCostDTO> allOdcs = new HashSet<OtherDirectCostDTO>(exportInputs.Odcs);
             HashSet<ClinDTO> allClins = new HashSet<ClinDTO>(exportInputs.Clins);
@@ -1095,8 +1085,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 ICollection<OtherDirectCostDTO> odcTasks = allOdcs.Where(i => i.BoeID == boe.Id).ToCollection();
 
-                HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this.resourceDTODataLoader.GetByIds(odcTasks.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList()));
-                HashSet<PerformingOrgDTO> perfOrgsFromDbForOdc = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(odcTasks.SelectMany(x => x.ODCTypes).Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
+                HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(exportInputs.ResourcesUsedInWsBoes);
+                HashSet<PerformingOrgDTO> perfOrgsFromDbForOdc = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);
 
                 foreach (OtherDirectCostDTO task in odcTasks)
                 {
@@ -1151,7 +1141,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 }              
 
                 ICollection<TravelDTO> travelTasks = allTravels.Where(i => i.BoeID == boe.Id).ToCollection();
-                HashSet<PerformingOrgDTO> perfOrgsFromDbForTravel = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(travelTasks.SelectMany(x => x.TravelTrips).Select(x => x.PerfOrgID).Distinct().ToList()));
+                HashSet<PerformingOrgDTO> perfOrgsFromDbForTravel = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);
 
                 foreach (TravelDTO task in travelTasks)
                 {
@@ -1322,7 +1312,7 @@ namespace GenBOE.ActionLogic.IO.Export
             }
 
             IReadOnlyCollection<ResourceDTO> workspaceResources = exportInputs.ResourcesUsedInWsBoes;
-            HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(exportInputs.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
+            HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);
             HashSet<BoeTaskElementDTO> allTaskElements = new HashSet<BoeTaskElementDTO>(exportInputs.TaskElements);
             HashSet<OtherDirectCostDTO> allOdcs = new HashSet<OtherDirectCostDTO>(exportInputs.Odcs);
             HashSet<ClinDTO> allClins = new HashSet<ClinDTO>(exportInputs.Clins);
@@ -1397,7 +1387,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 toReturn = this.GetLaborTaskDataforBOEResourceCombo(exportInputs, toReturn, boe, laborTasks, workspace_customFields, workspaceCustomFieldValues, metricNameTaskElementMappingDTO, allWbs, allClins, workspaceResources, allSpreadCurves, perfOrgsFromDb);
 
                 // ODC Tasks
-                toReturn = this.GetODCTaskDataforBOEResourceCombo(toReturn, boe, ODCs, allWbs, allClins, workspace_customFields, allOdcSpreadCurves);                
+                toReturn = this.GetODCTaskDataforBOEResourceCombo(exportInputs, toReturn, boe, ODCs, allWbs, allClins, workspace_customFields, allOdcSpreadCurves);                
             }
 
             return toReturn;
@@ -1629,7 +1619,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="workspace_customFields">Workspace Custom Fields</param>
         /// <param name="allOdcSpreadCurves">All ODC Spread Curves</param>
         /// <returns>Excel Export Worksheet with ODC Task data</returns>
-        private ExcelExportWorksheet GetODCTaskDataforBOEResourceCombo(ExcelExportWorksheet toReturn, BoeDTO boe, ICollection<OtherDirectCostDTO> ODCs, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, IDictionary<int, OtherDirectCostSpreadCurveModelView> allOdcSpreadCurves)
+        private ExcelExportWorksheet GetODCTaskDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ICollection<OtherDirectCostDTO> ODCs, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, IDictionary<int, OtherDirectCostSpreadCurveModelView> allOdcSpreadCurves)
         {
             foreach (OtherDirectCostDTO odc in ODCs)
             {
@@ -1677,9 +1667,9 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 toReturn.Add(row);
 
-                HashSet<ResourceDTO> odcResourcesFromDb = this.GetOdcResourcesFromDb(odc);
-                HashSet<PerformingOrgDTO> odcPerfOrgsFromDb = this.GetOdcPerfOrgsFromDb(odc);
-
+                HashSet<ResourceDTO> odcResourcesFromDb = new HashSet<ResourceDTO>(exportInputs.ResourcesUsedInWsBoes);
+				HashSet <PerformingOrgDTO> odcPerfOrgsFromDb = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);  
+                
                 toReturn = this.GetODCResourceTypeDataforBOEResourceCombo(toReturn, boe, odc, odcResourcesFromDb, odcPerfOrgsFromDb, MOQText, allWbs, allClins, workspace_customFields, taskfields, allOdcSpreadCurves);
             }
 
@@ -1920,7 +1910,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == boeCustomField.Id).ToCollection();
                 CustomFieldValueDTO customFieldValueForBOE = customFieldValues.FirstOrDefault(c => boe.CustomFieldValueContainers.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID));
-                row.Add(customFieldValueForBOE != null ? customFieldValueForBOE.CustomFieldValueDescription : this.sEmpty);
+                row.Add(customFieldValueForBOE != null ? customFieldValueForBOE.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
             }
         }
 
@@ -2076,7 +2066,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == taskCustomField.Id).ToCollection();
                 CustomFieldValueDTO customFieldValueForTask = customFieldValues.FirstOrDefault(c => task.CustomFieldValueContainers.Select(t => t.CustomFieldValueID).Contains(c.CustomFieldValueID));
-                row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription : this.sEmpty);
+                row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
             }
         }
 
@@ -2224,28 +2214,8 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == resourceCustomField.Id).ToCollection();
                 CustomFieldValueDTO customFieldValueForResource = customFieldValues.FirstOrDefault(c => resourceType.CustomFieldValueContainers.Select(r => r.CustomFieldValueID).Contains(c.CustomFieldValueID));
-                row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueDescription : this.sEmpty);
+                row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
             }
-        }
-
-        /// <summary>
-        /// Gets the ODC Resources
-        /// </summary>
-        /// <param name="odc">ODC Task</param>
-        /// <returns>ODC Resources</returns>
-        private HashSet<ResourceDTO> GetOdcResourcesFromDb(OtherDirectCostDTO odc)
-        {
-            return new HashSet<ResourceDTO>(this.resourceDTODataLoader.GetByIds(odc.ODCTypes.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList()));
-        }
-
-        /// <summary>
-        /// Gets the ODC Perf Orgs
-        /// </summary>
-        /// <param name="odc">ODC Task</param>
-        /// <returns>the ODC Perf Orgs</returns>
-        private HashSet<PerformingOrgDTO> GetOdcPerfOrgsFromDb(OtherDirectCostDTO odc)
-        {
-            return new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(odc.ODCTypes.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
         }
 
         /// <summary>
@@ -2263,7 +2233,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                select new
                                {
                                    WBSID = w.Id,
-                                   ClinString = string.Join(", ", w.Clins.Select(c => c.ClinNumber).OrderBy(c => c))
+                                   ClinString = string.Join(", ", exportInputs.Clins.Where(x => w.ClinIDs.Contains(x.Id)).Select(c => c.ClinNumber).OrderBy(c => c))
                                }).ToDictionary(w => w.WBSID, w => w.ClinString);
 
             // Reuse WBS Exporter since formats are the same
@@ -2306,29 +2276,26 @@ namespace GenBOE.ActionLogic.IO.Export
 
             // Combine Admin and BOE permissions and group by userID, groupID and displayName, then get all roles for each grouping
             var combinedPermissions = from p in workspacePotentialPermissions.Union(workspacePermissions)
-                                      group p by new
-                                      {
-                                          p.ETIUserId,
-                                          this.UserDTODataLoader.GetUserByID(p.ETIUserId).DisplayName
-                                      }
+                                      group p by p.ETIUserId
                                           into permissionsGroup
-                                          orderby permissionsGroup.Key.DisplayName
                                           select new
                                           {
-                                              permissionsGroup.Key.ETIUserId,
-                                              permissionsGroup.Key.DisplayName,
+                                              permissionsGroup.Key,
                                               Roles = permissionsGroup.Select(p => p.Role)
                                           };
 
+            // now pull out all the users from the database
+            ICollection<UserDTO> users = this.UserDTODataLoader.GetByIds(combinedPermissions.Select(c => c.Key).ToList()).OrderBy(u => u.DisplayName).ToList();
+
             // Output to sheet
-            foreach (var workspacePotentialPermission in combinedPermissions)
+            foreach (UserDTO user in users)
             {
-                UserDTO user = this.UserDTODataLoader.GetUserByID(workspacePotentialPermission.ETIUserId);
+                var workspacePotentialPermission = combinedPermissions.First(c => c.Key == user.UserID);
                 bool isADGroup = user.NTID.Contains('.');
                 if (isADGroup)
                 {
                     toReturn.Add(
-                        workspacePotentialPermission.ETIUserId.ToString(),
+                        workspacePotentialPermission.Key.ToString(),
                         user.DisplayName,
                         string.Empty,
                         workspacePotentialPermission.Roles.Contains(Role.WorkspaceAdmin) ? this.sYes : this.sNo,
@@ -2341,7 +2308,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 else
                 {
                     toReturn.Add(
-                     workspacePotentialPermission.ETIUserId.ToString(),
+                     workspacePotentialPermission.Key.ToString(),
                      string.Empty,
                      user.DisplayName,
                      workspacePotentialPermission.Roles.Contains(Role.WorkspaceAdmin) ? this.sYes : this.sNo,

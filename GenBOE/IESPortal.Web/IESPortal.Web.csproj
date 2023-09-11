@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>IESPortal.Web</RootNamespace>
     <AssemblyName>IESPortal.Web</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -191,6 +191,7 @@
     <Content Include="Content\images\astronaut\comicbookastronaut.png" />
     <Content Include="Content\images\astronaut\oilPaintingastronaut.png" />
     <Content Include="Content\images\astronaut\oldtimeyastronaut.png" />
+    <Content Include="Content\images\logo_NLF.png" />
     <Content Include="Content\images\clear_transparent_img.png" />
     <Content Include="Content\images\delete.png" />
     <Content Include="Content\images\deletehover.png" />

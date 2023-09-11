@@ -2222,5 +2222,34 @@ namespace GenTRAC.DataBridge.DTO
 
             return result;
         }
-    }
+
+        /// <summary>
+        /// Get the Header data for ACV
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>Header data for the proposal ID</returns>
+        public AcvHeaderDataDto GetAcvHeaderDataByProposalId(int proposalId)
+        {
+            AcvHeaderDataDto result = new AcvHeaderDataDto();
+
+            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetAcvHeaderDataByProposalId", Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    result = dbModel.Proposals.Where(x => x.ProposalID == proposalId).Select(x => new AcvHeaderDataDto()
+                    {
+                        PtmTrackingNumber = x.ProposalTrackingID,
+                        ProposalTitle = x.ProposalTitle,
+                        RfpNumber = x.RFPNumber,
+						ProposalStatus = x.ProposalStatusLU.ProposalStatus,
+                        // Set date to null if CCoPD required so it will be populated in ACV
+                        CostVolumeSubmittalDate = x.CCPDRequired.HasValue && x.CCPDRequired.Value ? null 
+                            : x.RevisedSubmittalDate.HasValue ? x.RevisedSubmittalDate : x.AnticipatedDeliveryDate
+                    }).FirstOrDefault();
+                }
+            }
+
+            return result;
+        }
+	}
 }

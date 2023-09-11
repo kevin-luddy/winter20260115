@@ -5397,7 +5397,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelectionTableData", mOQTypeSelectionTableDataIdParameter, mOQTypeSelectionIdParameter, updateDTParameter, orderParameter, tableNameParameter, repositoryNameParameter, queryTypeParameter, dateOfReportParameter, historicalProgramNameParameter, contractNumberParameter, wbsElementParameter, periodOfPerformanceStartDateParameter, periodOfPerformanceEndDateParameter, totalWbsHoursParameter, additionalQueryFiltersParameter, totalRelevantHoursAfterQueryFiltersParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> copyWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> costVolumeLeadPricerUserID)
+        public virtual ObjectResult<Nullable<int>> copyWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> costVolumeLeadPricerUserID, Nullable<System.DateTime> sAPSpaceCutoff)
         {
             var workspaceIDParameter = workspaceID.HasValue ?
                 new ObjectParameter("WorkspaceID", workspaceID) :
@@ -5415,7 +5415,11 @@ namespace GenBOE.Models
                 new ObjectParameter("CostVolumeLeadPricerUserID", costVolumeLeadPricerUserID) :
                 new ObjectParameter("CostVolumeLeadPricerUserID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("copyWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, costVolumeLeadPricerUserIDParameter);
+            var sAPSpaceCutoffParameter = sAPSpaceCutoff.HasValue ?
+                new ObjectParameter("SAPSpaceCutoff", sAPSpaceCutoff) :
+                new ObjectParameter("SAPSpaceCutoff", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("copyWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, costVolumeLeadPricerUserIDParameter, sAPSpaceCutoffParameter);
         }
     
         public virtual int deleteMoqTypeTableCustomFieldValue(Nullable<int> id, Nullable<int> moqTypeTableDataId, Nullable<int> customFieldValueId, Nullable<System.DateTime> updateDT, Nullable<bool> isOpenEnded)

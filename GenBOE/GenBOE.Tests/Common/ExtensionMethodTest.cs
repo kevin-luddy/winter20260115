@@ -267,26 +267,37 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void MonthDifferenceDecimalTest()
         {
-            // Difference of 30 days returns 1 month
-            DateTime start = DateTime.Now;
-            DateTime end = DateTime.Now.AddDays(30);
+            // Difference of 30.42 days returns 1 month
+            // Also need to adjust precision because of rounding error at the 20th or so decimal point :|
+            decimal monthAdjust = 30m / Constants.POP_MONTHS_DIVISOR;
+			DateTime? start = DateTime.Now;
+            DateTime? end = DateTime.Now.AddDays(30);
             decimal result = start.MonthDifferenceDecimal(end);
-            Assert.AreEqual(1M, result);
+            Assert.AreEqual(Utilities.AdjustPrecision(1M * monthAdjust, 10), Utilities.AdjustPrecision(result, 10));
 
             // 45 days returns 1.5 months
 			end = DateTime.Now.AddDays(45);
 			result = start.MonthDifferenceDecimal(end);
-			Assert.AreEqual(1.5M, result);
+			Assert.AreEqual(Utilities.AdjustPrecision(1.5M * monthAdjust, 10), Utilities.AdjustPrecision(result, 10));
 
             // 40 days returns 1.33333... months
 			end = DateTime.Now.AddDays(40);
 			result = start.MonthDifferenceDecimal(end);
-			Assert.AreEqual(4/3M, result);
+			Assert.AreEqual(Utilities.AdjustPrecision(4 / 3M * monthAdjust, 10), Utilities.AdjustPrecision(result, 10));
 
             // 50 days returns 1.66666... months
 			end = DateTime.Now.AddDays(50);
 			result = start.MonthDifferenceDecimal(end);
-			Assert.AreEqual(5/3M, result);
+			Assert.AreEqual(Utilities.AdjustPrecision(5 / 3M * monthAdjust, 10), Utilities.AdjustPrecision(result, 10));
+
+            start = null;
+			result = start.MonthDifferenceDecimal(end);
+			Assert.AreEqual(0, result);
+
+            end = null;
+			start = DateTime.Now;
+			result = start.MonthDifferenceDecimal(end);
+			Assert.AreEqual(0, result);
 		}
 
         [TestMethod]

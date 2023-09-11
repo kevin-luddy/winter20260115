@@ -254,7 +254,7 @@ namespace GenBOE.Web.Common
             }
 
             ViewData["DisplayINLForms"] = displayINLForms;
-            ViewData["EnableSAP"] = Utilities.IsSAPEnabled && ws.EnableSAPConnection;
+            ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
 
 			#endregion
 
@@ -862,7 +862,9 @@ namespace GenBOE.Web.Common
             }
             else
             {
-                return this.CreateTextFileWithErrorMessage(string.Format("An error has occurred.  This might be the result of invalid data.  Try running the 'Validate All BOEs' report, and correct any errors it may find.  If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", Utilities.HelpdeskEmailAddress()));
+				string supportLink = Utilities.ServiceCentralLink();
+
+				return this.CreateTextFileWithErrorMessage(string.Format("An error has occurred.  This might be the result of invalid data.  Try running the 'Validate All BOEs' report, and correct any errors it may find.  If the data is valid, and the error persists, please create a ticket with Helpdesk at {0}.", supportLink));
             }
         }
 

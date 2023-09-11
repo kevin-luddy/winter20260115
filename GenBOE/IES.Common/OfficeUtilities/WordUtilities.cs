@@ -258,7 +258,13 @@ namespace IES.Common.OfficeUtilities
             {
                 // disregard null inputs
                 inText = inText.Where(t => t != null).ToArray();
-            }
+
+				if (inText.Length == 0)
+				{
+					// if inputs are empty
+					inText = new string[] { string.Empty };
+				}
+			}
 
             // Break each text value at the line breaks (newline character)
             inText = (from text in inText

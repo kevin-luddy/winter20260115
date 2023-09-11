@@ -11,6 +11,7 @@ namespace APTSPropricerApi.Controllers
 {
 	using APTSPropricerApi.Connection;
 	using EBS.ProPricer.Model.General;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -37,6 +38,7 @@ namespace APTSPropricerApi.Controllers
 		/// </summary>
 		/// <param name="instanceId">The instance identifier.</param>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public void Get(int instanceId)
 		{

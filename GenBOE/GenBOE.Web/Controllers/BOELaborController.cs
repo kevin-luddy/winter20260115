@@ -558,8 +558,10 @@ namespace GenBOE.Web.Controllers
 
             var theModelView = CreateMOQModelView(ws, boe, taskElementID);
             ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
+			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
+            ViewData["SAPWorkspaceBeforeCutoff"] = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
 
-            ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
+			ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
 
             // Finalize Action
             FinalizeAction(_log, "DisplayTaskElementDetails", sw);
@@ -591,8 +593,7 @@ namespace GenBOE.Web.Controllers
             }
 
             modelView.UsingTemplateBOE = fullWorkspace.UsingTemplateBOE;
-            modelView.EnableSAPConnection = fullWorkspace.EnableSAPConnection;
-            modelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(fullWorkspace.CreationDate >= moqTemplateUsageStartDate, null);
+			modelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(fullWorkspace.CreationDate >= moqTemplateUsageStartDate, null);
             if (fullWorkspace.UsingTemplateBOE)
             {
                 modelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
@@ -687,10 +688,11 @@ namespace GenBOE.Web.Controllers
         /// <returns></returns>
         public ActionResult SaveTaskDataModel(string workspace, LaborTaskDataModelView modelView, bool isLocked = false)
         {
-            _ = modelView ?? throw new ArgumentNullException(nameof(modelView));
-            _ = modelView.TaskElementData ?? throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
+			_ = modelView ?? throw new ArgumentNullException(nameof(modelView));
+			_ = modelView.TaskElementData ?? throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
+			_ = modelView.LaborTypesData ?? throw new ArgumentNullException("modelView", "LaborTypesData is null inside modelView");
 
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, modelView.TaskElementData.BOEID);
 
             ICollection<ValidationMessage> validationErrors = isLocked ? new Collection<ValidationMessage>() : this._BoeLaborControllerLogic.ValidateLaborTaskDataWithDataModification(ws, modelView);
@@ -715,7 +717,7 @@ namespace GenBOE.Web.Controllers
                 IList<ValidationMessage> mvcPreScrubValidationErrors = new List<ValidationMessage>(validationErrors.Concat(mvcValidationErrors));
                 IList<ValidationMessage> mvcScrubbedValidationErrors = new List<ValidationMessage>();
 
-                LaborTypeDataModelView[] laborTypesArray = modelView.LaborTypesData.ToArray();
+				LaborTypeDataModelView[] laborTypesArray = modelView.LaborTypesData.ToArray();
 
                 // update errors to reference the correct form
                 foreach (ValidationMessage validationError in mvcPreScrubValidationErrors)
@@ -2278,9 +2280,7 @@ namespace GenBOE.Web.Controllers
             theModelView.HelpText = _BoeLaborControllerLogic.GetMOQTypesHelpText();
             theModelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
             theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
-            theModelView.EnableSAPConnection = ws.EnableSAPConnection;
-                        
-            theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.CreationDate >= moqTemplateUsageStartDate, null);
+			theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.CreationDate >= moqTemplateUsageStartDate, null);
 
             if (ws.UsingTemplateBOE)
             {

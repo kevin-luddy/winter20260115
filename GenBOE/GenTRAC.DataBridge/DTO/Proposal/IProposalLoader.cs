@@ -216,5 +216,12 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <returns>Collection of proposals meeting the send criteria</returns>
         ICollection<ProposalDto> GetModExecutedDateMissingNotifications();
+
+		/// <summary>
+		/// Get the Header data for ACV
+		/// </summary>
+		/// <param name="proposalId">Proposal ID</param>
+		/// <returns>Header data for the proposal ID</returns>
+		AcvHeaderDataDto GetAcvHeaderDataByProposalId(int proposalId);
     }
 }

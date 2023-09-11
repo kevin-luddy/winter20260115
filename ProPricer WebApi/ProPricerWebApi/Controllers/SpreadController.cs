@@ -18,6 +18,7 @@ namespace APTSPropricerApi.Controllers
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Model.General;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -51,6 +52,7 @@ namespace APTSPropricerApi.Controllers
 		/// Returns a collection of the monthly spread amounts.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<SpreadDto> Get(int instanceId, double amount, string curve, string startDate, string endDate)
 		{
@@ -66,12 +68,12 @@ namespace APTSPropricerApi.Controllers
 					TimeFrame end = new(DateTime.Parse(endDate + "-01"));
 					TimePeriod period = new(TimeUnit.Month, start, end);
 
-					IEnumerable<KeyValuePair<int, double>> rawSpreadList = SpreadUtils.GenerateSpread(amount, period, TimeUnit.Month, 2, SpreadMethod.WeightedAvg, c);
+					IEnumerable<KeyValuePair<int, EBS.Number>> rawSpreadList = SpreadUtils.GenerateSpread(amount, period, TimeUnit.Month, 2, SpreadMethod.WeightedAvg, c);
 
 					DateTime dtStart = DateTime.ParseExact(startDate, "yyyy-MM", CultureInfo.InvariantCulture);
 
 					// Translate the rawSpreadList to an array of SpreadDto objects
-					foreach (KeyValuePair<int, double> item in rawSpreadList)
+					foreach (KeyValuePair<int, EBS.Number> item in rawSpreadList)
 					{
 						Console.WriteLine(item.ToString());
 						SpreadDto s = new();

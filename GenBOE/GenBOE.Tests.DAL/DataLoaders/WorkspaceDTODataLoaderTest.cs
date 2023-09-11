@@ -19,7 +19,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using GenBOE.Objects;
     using GenBOE.Tests.ActionLogic;
     using GenBOE.Tests.DAL.DataLoaders;
-    using IES.Common;
+	using GenBOE.Web.ModelView;
+	using IES.Common;
     using IES.Common.classes;
     using IES.Common.Exceptions;
     using IES.Common.PickList;
@@ -34,10 +35,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
         // Discussed with Jim that having a test for the input null case or even a general exception
         // made little sense
 
-        // Used to create a random workspace variable name with no ints
+        // Used to create a random ws variable name with no ints
         public static Collection<string> _WorkspaceVarName { get; set; }
 
-        // define a list of possible workspace variable name add ons. These do not
+        // define a list of possible ws variable name add ons. These do not
         // really  need to make logical sense. They just have to be strings with no spaces/no symbols
         static WorkspaceRetrieveDataLoaderTest()
         {
@@ -408,22 +409,22 @@ namespace GenBOE.Tests.DAL.DataLoaders
             var sut = new WorkspaceDTODataLoader();
 
             WorkspaceDTO toReturn = sut.GetById(Workspace.Id);
-            Assert.IsNotNull(toReturn, "Did not locate workspace inserted by global test case setup");
+            Assert.IsNotNull(toReturn, "Did not locate ws inserted by global test case setup");
         }
 
         /// <summary>
-        /// This test case will verify soft delete of workspace is working correctly
+        /// This test case will verify soft delete of ws is working correctly
         /// </summary>
         [TestMethod]
         public void SoftDeleteWorkspace()
         {
             var sut = new WorkspaceDTODataLoader();
 
-            // Get the workspace data
+            // Get the ws data
             WorkspaceDTO workspaceModel = sut.GetById(Workspace.Id);
             sut.UpdateDeletedStatus(workspaceModel.Id, workspaceModel.UpdateDate, true, GlobalTestCaseSetup.GetEtiUserID());
 
-            // get the workspace data to verify isdeleted flag is true
+            // get the ws data to verify isdeleted flag is true
             workspaceModel = sut.GetById(Workspace.Id);
 
             Assert.IsTrue(workspaceModel.HasBeenDeleted);
@@ -462,7 +463,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         }
 
         /// <summary>
-        /// This test case will verify last accessed for a workspace
+        /// This test case will verify last accessed for a ws
         /// </summary>
         [TestMethod]
         public void LastAccessedWorkspace()
@@ -506,18 +507,18 @@ namespace GenBOE.Tests.DAL.DataLoaders
         }
 
         /// <summary>
-        /// This test case will verify soft delete of workspace is working correctly
+        /// This test case will verify soft delete of ws is working correctly
         /// </summary>
         [TestMethod]
         public void SoftDeleteRestoreWorkspace()
         {
             var sut = new WorkspaceDTODataLoader();
 
-            // Get the workspace data
+            // Get the ws data
             WorkspaceDTO workspaceModel = sut.GetById(Workspace.Id);
             sut.UpdateDeletedStatus(workspaceModel.Id, workspaceModel.UpdateDate, false, GlobalTestCaseSetup.GetEtiUserID());
 
-            // get the workspace data to verify isdeleted flag is false
+            // get the ws data to verify isdeleted flag is false
             workspaceModel = sut.GetById(Workspace.Id);
 
             Assert.IsFalse(workspaceModel.HasBeenDeleted);
@@ -534,7 +535,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             var sut = new WorkspaceDTODataLoader();
 
-            // Get the workspace data
+            // Get the ws data
             WorkspaceDTO workspaceModel = sut.GetById(Workspace.Id);
 
             // change the export to whatever is in global
@@ -543,13 +544,13 @@ namespace GenBOE.Tests.DAL.DataLoaders
             // add tracking number
             workspaceModel.TrackingNumber = "Mock Track";
 
-            // Save the workspace settings
+            // Save the ws settings
             sut.SaveWorkspaceSettings(Author.UserID, workspaceModel);
 
 
-            // get the workspace data to verify export is now 1 instead of 2
+            // get the ws data to verify export is now 1 instead of 2
             workspaceModel = sut.GetById(Workspace.Id);
-            Assert.AreEqual(GlobalTestCaseSetup.GlobalWorkspaceTemplateID, workspaceModel.TemplateID, "The workspace model is not correct");
+            Assert.AreEqual(GlobalTestCaseSetup.GlobalWorkspaceTemplateID, workspaceModel.TemplateID, "The ws model is not correct");
             Assert.AreEqual("Mock Track", workspaceModel.TrackingNumber, "The tracking number didn't match Mock Track");
 
             this.ResetTestData();
@@ -563,7 +564,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             var sut = new WorkspaceDTODataLoader();
 
-            // Get the workspace data
+            // Get the ws data
             WorkspaceDTO workspaceModel = sut.GetById(Workspace.Id);
 
             // change the export to whatever is in global
@@ -599,16 +600,16 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             var sut = new WorkspaceDTODataLoader();
 
-            // Get the workspace data
+            // Get the ws data
             WorkspaceDTO workspaceModel = sut.GetById(Workspace.Id);
 
             workspaceModel.AllowSearch = true;
             workspaceModel.ContainsTemplate = true;
 
-            // Save the workspace settings
+            // Save the ws settings
             sut.SaveWorkspaceSettings(Author.UserID, workspaceModel);
 
-            // get the workspace data to verify export is now 1 instead of 2
+            // get the ws data to verify export is now 1 instead of 2
             workspaceModel = sut.GetById(Workspace.Id);
 
             Assert.IsTrue(workspaceModel.AllowSearch == true, "The Allow Search value is not set to true");
@@ -655,7 +656,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             var sut = new WorkspaceDTODataLoader();
 
-            // Save the workspace settings
+            // Save the ws settings
             sut.SaveWorkspaceSettings(Author.UserID, null);
             Assert.Fail("Did not throw ArgumentNullException");
         }
@@ -666,7 +667,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             var sut = new WorkspaceDTODataLoader();
 
-            // Save the workspace settings
+            // Save the ws settings
             sut.SaveIdentificationAndExportFormat(Author.UserID, null);
             Assert.Fail("Did not throw ArgumentNullException");
         }
@@ -677,7 +678,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             var sut = new WorkspaceDTODataLoader();
 
-            // Save the workspace settings
+            // Save the ws settings
             sut.SaveAllowSearch(null);
             Assert.Fail("Did not throw ArgumentNullException");
         }
@@ -687,14 +688,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             var sut = new WorkspaceDTODataLoader();
 
-            // Get the workspace data
+            // Get the ws data
             WorkspaceDTO workspaceModel = sut.GetById(Workspace.Id);
 
 
-            // Since the workspace has been restored with the default list, set the flag to false (not updated)
+            // Since the ws has been restored with the default list, set the flag to false (not updated)
             sut.UpdatePerfOrgChangeFlag(workspaceModel, false);
 
-            // get the workspace data to verify change flag is false
+            // get the ws data to verify change flag is false
             workspaceModel = sut.GetById(Workspace.Id);
 
             Assert.IsTrue(workspaceModel.PerfOrgsChanged == false, "The Perf Org Changed did not save");
@@ -702,14 +703,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
         }
 
         /// <summary>
-        /// Ensure that once a workspace is soft-deleted, it is no longer returned in the API results
+        /// Ensure that once a ws is soft-deleted, it is no longer returned in the API results
         /// </summary>
         [TestMethod]
         public void DeletedWorkspaceNotReturnedTest()
         {
             WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
 
-            // Get the workspace data
+            // Get the ws data
             WorkspaceDTO workspaceModel = sut.GetById(Workspace.Id);
             workspaceModel.TrackingNumber = "TEST_ABC123";
             workspaceModel.Updateable = UpdateType.Upsert;
@@ -856,7 +857,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
         /// <summary>
         /// Tests the validation for RTE fields that are too long.
-        /// Setup a workspace that had the fields past the validation:
+        /// Setup a ws that had the fields past the validation:
         /// Uses this - https://uat-genboe.ssc.lmco.com/20-00005_05
         /// </summary>
         [TestMethod]
@@ -913,6 +914,225 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			bool? result = sut.GetWorkspaceOciSettingByShortname(shortName);
 
 			Assert.IsNull(result);
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceDataByNtidForNlf for a user with Workspace Admin
+		/// </summary>
+		[TestMethod]
+        public void TestGetWorkspaceDataByNtidForNlf_WorkspaceAdmin()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+            string ntid;
+            Workspace workspace;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+                workspace = gbe.Workspaces.FirstOrDefault(x => x.WorkspaceUserRoles.Any(y => y.RoleID == (int)Role.WorkspaceAdmin) && x.IsDeleted == false);
+                WorkspaceUserRole user = gbe.WorkspaceUserRoles.FirstOrDefault(x => x.RoleID == (int)Role.WorkspaceAdmin && x.WorkspaceID == workspace.WorkspaceID);
+                ntid = user.ETIuser.NTID;
+			}
+
+			ICollection<NlfWorkspaceDataDTO> result = sut.GetWorkspaceDataByNtidForNlf(ntid);
+
+            Assert.IsTrue(result.Any());
+            Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID && x.WorkspaceUrl == workspace.WorkspaceShortName && x.WorkspaceName == workspace.WorkspaceName));
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceDataByNtidForNlf for a user with GSCO Admin
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceDataByNtidForNlf_GSCOAdmin()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace workspace;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				workspace = gbe.Workspaces.FirstOrDefault(x => x.WorkspaceUserRoles.Any(y => y.RoleID == (int)Role.SubcontractAdmin) && x.IsDeleted == false);
+				WorkspaceUserRole user = gbe.WorkspaceUserRoles.FirstOrDefault(x => x.RoleID == (int)Role.WorkspaceAdmin && x.WorkspaceID == workspace.WorkspaceID);
+				ntid = user.ETIuser.NTID;
+			}
+
+			ICollection<NlfWorkspaceDataDTO> result = sut.GetWorkspaceDataByNtidForNlf(ntid);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID && x.WorkspaceUrl == workspace.WorkspaceShortName && x.WorkspaceName == workspace.WorkspaceName));
+		}
+
+		/// <summary>
+		/// Test GetAllWorkspaceDataForNlf (for a user with System Admin)
+		/// </summary>
+		[TestMethod]
+		public void TestGetAllWorkspaceDataForNlf()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace workspace;
+            int workspaceCount;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				workspace = gbe.Workspaces.FirstOrDefault(x => x.IsDeleted == false);
+				workspaceCount = gbe.Workspaces.Count(x => x.IsDeleted == false);
+			}
+
+			ICollection<NlfWorkspaceDataDTO> result = sut.GetAllWorkspaceDataForNlf();
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID && x.WorkspaceUrl == workspace.WorkspaceShortName && x.WorkspaceName == workspace.WorkspaceName));
+            Assert.AreEqual(workspaceCount, result.Count);
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceDataByNtidForNlf for a user with Workspace Admin
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceInnerDataByNtidForNlf_WorkspaceAdmin()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace workspace;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				workspace = gbe.Workspaces.Include(typeof(LineOfBusiness).Name).FirstOrDefault(x => x.WorkspaceUserRoles.Any(y => y.RoleID == (int)Role.WorkspaceAdmin) && x.IsDeleted == false);
+				WorkspaceUserRole user = gbe.WorkspaceUserRoles.FirstOrDefault(x => x.RoleID == (int)Role.WorkspaceAdmin && x.WorkspaceID == workspace.WorkspaceID);
+				ntid = user.ETIuser.NTID;
+			}
+
+			ICollection<NlfWorkspaceInnerDataDTO> result = sut.GetWorkspaceInnerDataByNtidForNlf(ntid);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID
+					&& x.WorkspaceUrl == workspace.WorkspaceShortName
+					&& x.WorkspaceName == workspace.WorkspaceName
+					&& x.LineOfBusiness.LineOfBusinessID == workspace.LineOfBusiness.LineOfBusinessID
+					&& x.PTMTrackingNumber == workspace.TrackingNumber
+					&& x.WorkspaceCreationDate == workspace.WorkspaceCreationDate
+					&& x.EstimatingLead == workspace.ETIuser.DisplayName));
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceInnerDataByNtidForNlf for a user with GSCO Admin
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceInnerDataByNtidForNlf_GSCOAdmin()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace workspace;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				workspace = gbe.Workspaces.Include(typeof(LineOfBusiness).Name).FirstOrDefault(x => x.WorkspaceUserRoles.Any(y => y.RoleID == (int)Role.SubcontractAdmin) && x.IsDeleted == false);
+				WorkspaceUserRole user = gbe.WorkspaceUserRoles.FirstOrDefault(x => x.RoleID == (int)Role.WorkspaceAdmin && x.WorkspaceID == workspace.WorkspaceID);
+				ntid = user.ETIuser.NTID;
+			}
+
+			ICollection<NlfWorkspaceInnerDataDTO> result = sut.GetWorkspaceInnerDataByNtidForNlf(ntid);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID
+					&& x.WorkspaceUrl == workspace.WorkspaceShortName
+					&& x.WorkspaceName == workspace.WorkspaceName
+					&& x.LineOfBusiness.LineOfBusinessID == workspace.LineOfBusiness.LineOfBusinessID
+					&& x.PTMTrackingNumber == workspace.TrackingNumber
+					&& x.WorkspaceCreationDate == workspace.WorkspaceCreationDate
+					&& x.EstimatingLead == workspace.ETIuser.DisplayName));
+		}
+
+		/// <summary>
+		/// Test GetAllWorkspaceDataForNlf (for a user with System Admin)
+		/// </summary>
+		[TestMethod]
+		public void TestGetAllWorkspaceInnerDataForNlf()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace workspace;
+			int workspaceCount;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				workspace = gbe.Workspaces.Include(typeof(LineOfBusiness).Name).Include(typeof(ETIuser).Name).FirstOrDefault(x => x.IsDeleted == false);
+				workspaceCount = gbe.Workspaces.Count(x => x.IsDeleted == false);
+			}
+
+			ICollection<NlfWorkspaceInnerDataDTO> result = sut.GetAllWorkspaceInnerDataForNlf();
+
+			NlfWorkspaceInnerDataDTO specificWorkspace = result.FirstOrDefault(r => r.WorkspaceId == workspace.WorkspaceID);
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(workspaceCount, result.Count);
+			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID
+				&& x.WorkspaceUrl == workspace.WorkspaceShortName
+				&& x.WorkspaceName == workspace.WorkspaceName
+				&& x.LineOfBusiness.LineOfBusinessID == workspace.LineOfBusiness.LineOfBusinessID
+				&& x.PTMTrackingNumber == workspace.TrackingNumber
+				&& x.WorkspaceCreationDate == workspace.WorkspaceCreationDate
+				&& x.EstimatingLead == workspace.ETIuser.DisplayName));
+		}
+
+		/// <summary>
+		/// Test GetMaterialPBoeForWorkspace
+		/// </summary>
+		[TestMethod]
+		public void TestGetMaterialPBoe()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace ws;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				ws = gbe.Workspaces.Include("CLINs").Include("WorkBreakdownStructures").FirstOrDefault(x => x.IsDeleted == false);
+			}
+
+			ICollection<MPBoeDataDTO> result = sut.GetMaterialPBoeForWorkspace(ws.WorkspaceID);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.PTMProposalTitle == ws.ProposalTitle && x.RFPNumber == ws.RFPNumber
+										&& x.CLINNumbers.Count == ws.CLINs.Count && x.WorkspaceName == ws.WorkspaceName
+                                        && x.ShortName == ws.WorkspaceShortName
+										&& x.CLINNumbers.All(ws.CLINs.Select(c => c.DisplayedCLINNumber).Contains)
+										&& x.WBSNumbers.Count == ws.WorkBreakdownStructures.Count
+										&& x.WBSNumbers.All(ws.WorkBreakdownStructures.Select(w => w.DisplayedWBSNumber).Contains)));
+		}
+
+		/// <summary>
+		/// Test GetMaterialPBoeForWorkspace
+		/// </summary>
+		[TestMethod]
+		public void TestGetPBOEsForWorkspacee()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace ws;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				ws = gbe.Workspaces.Include("CLINs").Include("WorkBreakdownStructures").FirstOrDefault(x => x.IsDeleted == false);
+			}
+
+			ICollection<MPBoeDataDTO> result = sut.GetMaterialPBoeForWorkspace(ws.WorkspaceID);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.PTMProposalTitle == ws.ProposalTitle && x.RFPNumber == ws.RFPNumber
+										&& x.CLINNumbers.Count == ws.CLINs.Count && x.WorkspaceName == ws.WorkspaceName
+										&& x.ShortName == ws.WorkspaceShortName
+										&& x.CLINNumbers.All(ws.CLINs.Select(c => c.DisplayedCLINNumber).Contains)
+										&& x.WBSNumbers.Count == ws.WorkBreakdownStructures.Count
+										&& x.WBSNumbers.All(ws.WorkBreakdownStructures.Select(w => w.DisplayedWBSNumber).Contains)));
 		}
 	}
 

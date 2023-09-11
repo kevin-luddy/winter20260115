@@ -105,6 +105,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public string BOEFormName { get; set; }
 
         /// <summary>
+        /// Supplier Name used in NLF application
+        /// </summary>
+        public string NLFSupplierName { get; set; }
+
+        /// <summary>
         /// Total Cost
         /// </summary>
         public decimal TotalCost { get; set; }

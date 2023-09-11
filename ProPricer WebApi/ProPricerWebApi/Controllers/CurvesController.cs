@@ -14,6 +14,7 @@ namespace APTSPropricerApi.Controllers
 	using APTSPropricerApi.Connection;
 	using APTSPropricerApi.DTOs;
 	using EBS.ProPricer.Model;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
@@ -43,6 +44,7 @@ namespace APTSPropricerApi.Controllers
 		/// A collection of curve information available from the global library.
 		/// </returns>
 		[HttpGet]
+		[Authorize]
 		[Route("{instanceId}")]
 		public IEnumerable<CurvesDto> Get(int instanceId)
 		{

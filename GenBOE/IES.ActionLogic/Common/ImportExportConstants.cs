@@ -256,12 +256,12 @@ namespace IES.ActionLogic.Common
         /// </summary>
         public static readonly string PRO_PRICER_RESOURCE_CLASS7_COLUMN_HEADER = "Resource Class7";
 
-        // data validation defined names
+		// data validation defined names
 
-        /// <summary>
-        /// Categories data validation
-        /// </summary>
-        public static readonly string CATEGORIES = "Categories";
+		/// <summary>
+		/// Categories data validation
+		/// </summary>
+		public static readonly string CATEGORIES = "Categories";
 
         /// <summary>
         /// Sections data validation

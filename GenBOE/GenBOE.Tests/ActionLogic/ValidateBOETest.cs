@@ -155,7 +155,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
@@ -255,7 +255,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { boeTE });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
@@ -414,7 +414,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
@@ -523,7 +523,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -648,7 +648,7 @@ namespace GenBOE.Tests.ActionLogic
                                                 EndDate = Convert.ToDateTime("06/01/2011")
                     } } } });
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
@@ -788,7 +788,7 @@ namespace GenBOE.Tests.ActionLogic
                                                 EndDate = Convert.ToDateTime("06/01/2011")
                     } } } });
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
@@ -884,7 +884,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1014,7 +1014,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
@@ -1136,7 +1136,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1244,7 +1244,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1363,7 +1363,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1506,7 +1506,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1572,7 +1572,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateMoqTypeTableCustomFields()
         {
-            Utilities.IsSAPEnabled = false;
+            Utilities.IsSAPEnabledForSystem = false;
 
             Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
@@ -1696,7 +1696,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1833,7 +1833,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -1955,7 +1955,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2096,7 +2096,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2196,7 +2196,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2302,7 +2302,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2416,7 +2416,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
@@ -2487,7 +2487,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -2566,7 +2566,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
@@ -2693,7 +2693,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>() { new CustomFieldDTO() });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
@@ -2805,7 +2805,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             //setup custom fields to be false, we'll check them in another test
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
@@ -2837,7 +2837,7 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
@@ -2911,7 +2911,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -2991,7 +2991,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { materialDTO });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -3093,7 +3093,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { materialDTO });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -3216,7 +3216,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullBoe>() { boeObject });
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(boe.WorkspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObject });
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO>() { });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
@@ -3311,7 +3311,7 @@ namespace GenBOE.Tests.ActionLogic
             Collection<FullBoe> boesToValidate = new Collection<FullBoe>();
             boesToValidate.Add(boeObject);
             boesToValidate.Add(boeObject2);
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, true)).Returns(boesToValidate);
+            retriever.Setup(i => i.GetFullBoesByWorkspaceId(workspace.Id, true, It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boesToValidate);
 
             //Act
             validationBOE = sut.ValidateAllBOEs(ws);
@@ -3342,10 +3342,10 @@ namespace GenBOE.Tests.ActionLogic
         public void BL_ValidateTemplateMoqForTask_PoPStartMonday_RmsMode()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             ValidateBOE sut = CreateSystem();
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             // Create a valid MOQ Table
             MoqTypeSelection moqType = new MoqTypeSelection()
@@ -3363,14 +3363,15 @@ namespace GenBOE.Tests.ActionLogic
                             PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-                            TotalRelevantHours = 1000
+                            TotalRelevantHours = 1000,
+                            TotalWbsHours = 2000
                         }
                     },
                 Rationale = "Test Rationale",
                 SkillMixRationale = "Test Skill Mix"
             };
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
 
             ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3397,16 +3398,15 @@ namespace GenBOE.Tests.ActionLogic
         }
 
 		/// <summary>
-		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Monday; Space Mode, no validation should happen
+		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Sunday for SAP FW; Space Mode with Weekly query type, validation should happen
 		/// </summary>
 		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_PoPStartMonday_SpaceMode()
+		public void BL_ValidateTemplateMoqForTask_PoPStartSunday_SpaceMode_Weekly()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
-			Utilities.IsSAPEnabled = true;
 
 			// Create a valid MOQ Table
 			MoqTypeSelection moqType = new MoqTypeSelection()
@@ -3417,31 +3417,83 @@ namespace GenBOE.Tests.ActionLogic
 						new MoqTableData()
 						{
 							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
 							ContractNumber = "1",
 							DateOfReport = DateTime.Now,
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
-							PoPStart = new DateTime(2022, 1, 3), // Monday
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-							TotalRelevantHours = 1000,
-							RepositoryName = "aa",
-							QueryType = "aa"
+							TotalRelevantHours = 1000
 						}
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix"
 			};
 
-			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
 			FullWorkspace ws = new FullWorkspace(workspace);
 
 			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
 			Assert.IsFalse(result.Any());
 
-			// Add a day so PoP start is no longer on a Monday
-			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 4);
+			// Add a day so PoP start is no longer on a Sunday
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 3);
+
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains("Sunday")));
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Sunday for SAP FW; Space Mode with Monthly query type, no validation should happen
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPStartSunday_SpaceMode_Monthly()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.MONTHLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+
+			// Add a day so PoP start is no longer on a Sunday
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 3);
 
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
@@ -3452,10 +3504,10 @@ namespace GenBOE.Tests.ActionLogic
 		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for RMS, validation should happen
 		/// </summary>
 		[TestMethod]
-        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_MstMode()
+        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_RmsMode()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             ValidateBOE sut = CreateSystem();
 
@@ -3475,14 +3527,15 @@ namespace GenBOE.Tests.ActionLogic
                             PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-                            TotalRelevantHours = 1000
+                            TotalRelevantHours = 1000,
+                            TotalWbsHours = 2000
                         }
                     },
                 Rationale = "Test Rationale",
                 SkillMixRationale = "Test Skill Mix"
             };
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
 
             ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3508,14 +3561,66 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsFalse(result.Any(x => x.Contains("Sunday")));
         }
 
-        /// <summary>
-        /// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for Space, no validation should happen
-        /// </summary>
-        [TestMethod]
-        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode()
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for Space with Monthly Weekly Type, validation should happen
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode_Weekly()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+
+			// Add a day so PoP start is no longer on a Sunday
+			moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
+
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains("Sunday")));
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for Space with Monthly Query Type, no validation should happen
+		/// </summary>
+		[TestMethod]
+        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode_Monthly()
         {
             SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-            Utilities.IsSAPEnabled = true;
+            Utilities.IsSAPEnabledForSystem = true;
 
             ValidateBOE sut = CreateSystem();
 
@@ -3528,23 +3633,23 @@ namespace GenBOE.Tests.ActionLogic
                         new MoqTableData()
                         {
                             TableName = "Test Table",
+                            RepositoryName = RepositoryName.SapWebi.GetDescription(),
+                            QueryType = MoqTableData.MONTHLY,
                             ContractNumber = "1",
                             DateOfReport = DateTime.Now,
                             HistoricalProgramName = "Test Name",
                             WbsElement = "Test WBS",
-                            PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPStart = new DateTime(2022, 1, 3), // Sunday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-                            TotalRelevantHours = 1000,
-                            RepositoryName = "aa",
-                            QueryType = "aa"
-                        }
+                            TotalRelevantHours = 1000
+						}
                     },
                 Rationale = "Test Rationale",
                 SkillMixRationale = "Test Skill Mix"
             };
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
 
             ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3560,13 +3665,105 @@ namespace GenBOE.Tests.ActionLogic
         }
 
 		/// <summary>
+		/// Test ValidateTemplateMoqForTask for additional PoP date and Date of Report validation
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_AdditionalDateValidation()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeTableDataLabels labels = new MoqTypeTableDataLabels();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.MONTHLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+
+			// 'Remove' date of report to test required validation
+			moqType.TableData.First().DateOfReport = new DateTime(1, 1, 1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains(labels.DateOfReport) && x.Contains("required")));
+
+			// adjust date of report to after today to test on/before today validation
+			moqType.TableData.First().DateOfReport = DateTime.Now.AddDays(1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains($"{labels.DateOfReport} must be on or before today's date.")));
+
+			// 'Remove' start date to test required validation
+			moqType.TableData.First().DateOfReport = DateTime.Now;
+			moqType.TableData.First().PoPStart = new DateTime(1, 1, 1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains(labels.PoPStart) && x.Contains("required")));
+
+			// add start date back and 'remove' end date to test required validation
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 3);
+			moqType.TableData.First().PoPEnd = new DateTime(1, 1, 1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains(labels.PoPEnd) && x.Contains("required")));
+
+			// add end date back and adjust start date to after today (this also sets start date after end date, so test that too)
+			moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 9);
+			moqType.TableData.First().PoPStart = DateTime.Now.AddDays(1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains($"{labels.PoPStart} must be on or before today's date")));
+			Assert.IsTrue(result.Any(x => x.Contains($"{labels.PoPStart} must be on or before {labels.PoPEnd}")));
+
+			// reset start date and adjust end date to after today
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 3);
+			moqType.TableData.First().PoPEnd = DateTime.Now.AddDays(1);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains($"{labels.PoPEnd} must be on or before today's date")));
+		}
+
+		/// <summary>
 		/// Test ValidateTemplateMoqForTask, specifically rules for Additional Query Field.. RMS Company
 		/// </summary>
 		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_RMS()
+		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_RmsMode()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3586,16 +3783,15 @@ namespace GenBOE.Tests.ActionLogic
                             PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "aaa",
-                            TotalRelevantHours = 1000,
-							RepositoryName = "aa",
-							QueryType = "aa"
+                            TotalWbsHours = 2000,
+                            TotalRelevantHours = 1000
 						}
                     },
                 Rationale = "Test Rationale",
                 SkillMixRationale = "Test Skill Mix"
             };
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
 
             ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3607,12 +3803,12 @@ namespace GenBOE.Tests.ActionLogic
 			moqType.TableData.First().AdditionalQueryFilters = null;
 
 			// RMS && SAP = true -> Not Required - False (IsAny)
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 			Assert.IsFalse(result.Any());
 
 			// RMS && SAP = false -> Required - True (IsAny)
-			Utilities.IsSAPEnabled = false;
+			Utilities.IsSAPEnabledForSystem = false;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 			Assert.IsTrue(result.Any());
 		}
@@ -3621,10 +3817,131 @@ namespace GenBOE.Tests.ActionLogic
 		/// Test ValidateTemplateMoqForTask, specifically rules for Additional Query Field.. Space Company
 		/// </summary>
 		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_Space()
+		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_SpaceMode()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			Utilities.IsSAPEnabled = true;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// Valid data to start
+			Assert.IsFalse(result.Any());
+
+			// Make the additional query filters N/A
+			moqType.TableData.First().AdditionalQueryFilters = "N/A";
+
+			// SSC && SAP = True && Repo = SAP -> Not Required - False (IsAny)
+			moqType.TableData.First().RepositoryName = RepositoryName.SapWebi.GetDescription();
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			Assert.IsFalse(result.Any());
+
+			// SSC && SAP = True && Repo = Other -> Required - False (IsAny)
+			moqType.TableData.First().RepositoryName = RepositoryName.Other.GetDescription();
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			Assert.IsFalse(result.Any());
+
+			// SSC && SAP = false -> Required - False (IsAny)
+			Utilities.IsSAPEnabledForSystem = false;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			Assert.IsFalse(result.Any());
+
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask, specifically rules for Total Relevant Hours - Space Company
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_Hours_SpaceMode()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// Valid data to start
+			Assert.IsFalse(result.Any());
+
+            // Relevant Hours less than 0
+            moqType.TableData.First().TotalRelevantHours = -1;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+            Assert.IsTrue(result.Any());
+
+			// Relevant Hours over 10 digits
+			moqType.TableData.First().TotalRelevantHours = 1000000000;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask, specifically rules for Total Relevant Hours - RMS
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_Hours_RmsMode()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+			Utilities.IsSAPEnabledForSystem = true;
 
 			ValidateBOE sut = CreateSystem();
 
@@ -3644,8 +3961,9 @@ namespace GenBOE.Tests.ActionLogic
 							PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "aaa",
+							TotalWbsHours = 2000,
 							TotalRelevantHours = 1000,
-							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							RepositoryName = "aa",
 							QueryType = "aa"
 						}
 					},
@@ -3653,7 +3971,7 @@ namespace GenBOE.Tests.ActionLogic
 				SkillMixRationale = "Test Skill Mix"
 			};
 
-			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
 			FullWorkspace ws = new FullWorkspace(workspace);
 
 			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
@@ -3661,22 +3979,38 @@ namespace GenBOE.Tests.ActionLogic
 			// Valid data to start
 			Assert.IsFalse(result.Any());
 
-			// Make the additional query filters null
-			moqType.TableData.First().AdditionalQueryFilters = null;
+			// SAP disabled to test invalid WBS Hours
+			Utilities.IsSAPEnabledForSystem = false;
 
-			// SSC && SAP = True && Repo = SAP -> Not Required - False (IsAny)
-			moqType.TableData.First().RepositoryName = RepositoryName.SapWebi.GetDescription();
+			// WBS Hours less than 0
+			moqType.TableData.First().TotalWbsHours = -1;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
-			Assert.IsFalse(result.Any());
 
-			// SSC && SAP = True && Repo = Other -> Required - True (IsAny)
-			moqType.TableData.First().RepositoryName = RepositoryName.Other.GetDescription();
-			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 			Assert.IsTrue(result.Any());
 
-			// SSC && SAP = false -> Required - True (IsAny)
-			Utilities.IsSAPEnabled = false;
+			// WBS Hours over 10 digits
+			moqType.TableData.First().TotalWbsHours = 1000000000;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+
+			// WBS Hours not validated when SAP enabled
+			Utilities.IsSAPEnabledForSystem = true;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+
+			// Relevant Hours less than 0
+			moqType.TableData.First().TotalWbsHours = 1000;
+			moqType.TableData.First().TotalRelevantHours = -1;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+
+			// Relevant Hours over 10 digits
+			moqType.TableData.First().TotalRelevantHours = 1000000000;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
 			Assert.IsTrue(result.Any());
 		}
 	}
