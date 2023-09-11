@@ -86,25 +86,34 @@ namespace IES.ActionLogic.Common
         /// </summary>
         public const int RESOURCE_CLASS6_CELL_COLUMN_OFFSET = 19;
 
-        /// <summary>
-        /// ProPricer Resource Class7 Column Offset
-        /// </summary>
-        public const int RESOURCE_CLASS7_CELL_COLUMN_OFFSET = 21;
+		/// <summary>
+		/// ProPricer Resource Class7 Column Offset
+		/// </summary>
+		public const int RESOURCE_CLASS7_CELL_COLUMN_OFFSET = 21;
 
-        /// <summary>
-        /// Government Burden Pool Column Offset
-        /// </summary>
-        public const int GOVT_BURDEN_POOL_CELL_COLUMN_OFFSET = 22;
+		/// <summary>
+		/// ProPricer Resource Class8 Column Offset
+		/// </summary>
+		public const int RESOURCE_CLASS8_CELL_COLUMN_OFFSET = 23;
 
-        /// <summary>
-        /// Commercial Burden Pool Column Offset
-        /// </summary>
-        public const int COMM_BURDEN_POOL_CELL_COLUMN_OFFSET = 23;
+		/// <summary>
+		/// ProPricer Resource Class9 Column Offset
+		/// </summary>
+		public const int RESOURCE_CLASS9_CELL_COLUMN_OFFSET = 25;
 
-        /// <summary>
-        /// Worksheets to be hidden on export, and excluded from import
-        /// </summary>
-        private static string[] excludedSheetNames = { OPTIONS_LISTS };
+		/// <summary>
+		/// Government Burden Pool Column Offset
+		/// </summary>
+		public const int GOVT_BURDEN_POOL_CELL_COLUMN_OFFSET = 26;
+
+		/// <summary>
+		/// Commercial Burden Pool Column Offset
+		/// </summary>
+		public const int COMM_BURDEN_POOL_CELL_COLUMN_OFFSET = 27;
+		/// <summary>
+		/// Worksheets to be hidden on export, and excluded from import
+		/// </summary>
+		private static string[] excludedSheetNames = { OPTIONS_LISTS };
         
         /// <summary>
         /// Excluded sheet names
@@ -255,6 +264,24 @@ namespace IES.ActionLogic.Common
         /// ProPricer Resource Class7 Column Header
         /// </summary>
         public static readonly string PRO_PRICER_RESOURCE_CLASS7_COLUMN_HEADER = "Resource Class7";
+
+		/// <summary>
+		/// ProPricer Description8 Column Header
+		/// </summary>
+		public static readonly string PRO_PRICER_DESCRIPTION8_COLUMN_HEADER = "ProPricer Description8";
+		/// <summary>
+		/// ProPricer Resource Class8 Column Header
+		/// </summary>
+		public static readonly string PRO_PRICER_RESOURCE_CLASS8_COLUMN_HEADER = "Resource Class8";
+
+		/// <summary>
+		/// ProPricer Description9 Column Header
+		/// </summary>
+		public static readonly string PRO_PRICER_DESCRIPTION9_COLUMN_HEADER = "ProPricer Description9";
+		/// <summary>
+		/// ProPricer Resource Class9 Column Header
+		/// </summary>
+		public static readonly string PRO_PRICER_RESOURCE_CLASS9_COLUMN_HEADER = "Resource Class9";
 
 		// data validation defined names
 
