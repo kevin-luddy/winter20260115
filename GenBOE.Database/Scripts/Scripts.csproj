@@ -395,6 +395,7 @@
     <Content Include="_Other Scripts\From Transition\quick collation fix 20150417 - Added Support to remove deprecated commands from SPs.sql" />
     <Content Include="_Other Scripts\From Transition\sp_helptext_custom.sql" />
     <Content Include="_Other Scripts\GenBOE - Insert Application Administrator.sql" />
+    <Content Include="_Other Scripts\GenBOE_Resource_INSERT.sql" />
     <Content Include="_Other Scripts\Realignment and DB Copy Scripts.sql" />
     <Content Include="_Other Scripts\RemoveNonDiscreteLaborSpreads.sql" />
     <Content Include="_Other Scripts\Sql To Move Templates for Hotfix 2.9.5.sql" />
