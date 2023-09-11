@@ -1334,8 +1334,8 @@
     <Content Include="Scripts\ui-grid.js" />
     <Content Include="Scripts\ui-grid.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Templates\Export\RateCodesImportExample.xlsx" />
     <Content Include="Views\Admin\RateCodeReplication.cshtml" />
+    <Content Include="Templates\Export\RateCodesImportExample.xlsx" />
     <None Include="Views\Shared\SecurityError.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
