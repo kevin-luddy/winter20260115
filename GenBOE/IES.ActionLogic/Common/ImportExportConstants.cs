@@ -92,15 +92,24 @@ namespace IES.ActionLogic.Common
         public const int RESOURCE_CLASS7_CELL_COLUMN_OFFSET = 21;
 
         /// <summary>
+        /// ProPricer Resource Class8 Column Offset
+        /// </summary>
+        public const int RESOURCE_CLASS8_CELL_COLUMN_OFFSET = 23;
+
+        /// <summary>
+        /// ProPricer Resource Class9 Column Offset
+        /// </summary>
+        public const int RESOURCE_CLASS9_CELL_COLUMN_OFFSET = 25;
+
+        /// <summary>
         /// Government Burden Pool Column Offset
         /// </summary>
-        public const int GOVT_BURDEN_POOL_CELL_COLUMN_OFFSET = 22;
+        public const int GOVT_BURDEN_POOL_CELL_COLUMN_OFFSET = 26;
 
         /// <summary>
         /// Commercial Burden Pool Column Offset
         /// </summary>
-        public const int COMM_BURDEN_POOL_CELL_COLUMN_OFFSET = 23;
-
+        public const int COMM_BURDEN_POOL_CELL_COLUMN_OFFSET = 27;
         /// <summary>
         /// Worksheets to be hidden on export, and excluded from import
         /// </summary>
@@ -256,12 +265,30 @@ namespace IES.ActionLogic.Common
         /// </summary>
         public static readonly string PRO_PRICER_RESOURCE_CLASS7_COLUMN_HEADER = "Resource Class7";
 
-		// data validation defined names
+        /// <summary>
+        /// ProPricer Description8 Column Header
+        /// </summary>
+        public static readonly string PRO_PRICER_DESCRIPTION8_COLUMN_HEADER = "ProPricer Description8";
+        /// <summary>
+        /// ProPricer Resource Class8 Column Header
+        /// </summary>
+        public static readonly string PRO_PRICER_RESOURCE_CLASS8_COLUMN_HEADER = "Resource Class8";
 
-		/// <summary>
-		/// Categories data validation
-		/// </summary>
-		public static readonly string CATEGORIES = "Categories";
+        /// <summary>
+        /// ProPricer Description9 Column Header
+        /// </summary>
+        public static readonly string PRO_PRICER_DESCRIPTION9_COLUMN_HEADER = "ProPricer Description9";
+        /// <summary>
+        /// ProPricer Resource Class9 Column Header
+        /// </summary>
+        public static readonly string PRO_PRICER_RESOURCE_CLASS9_COLUMN_HEADER = "Resource Class9";
+
+        // data validation defined names
+
+        /// <summary>
+        /// Categories data validation
+        /// </summary>
+        public static readonly string CATEGORIES = "Categories";
 
         /// <summary>
         /// Sections data validation
