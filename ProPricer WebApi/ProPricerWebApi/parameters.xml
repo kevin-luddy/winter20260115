@@ -1,57 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <parameters>
-  <!--  http://colinsalmcorner.com/post/end-to-end-walkthrough-deploying-web-applications-using-team-build-and-release-management
+	<!--  http://colinsalmcorner.com/post/end-to-end-walkthrough-deploying-web-applications-using-team-build-and-release-management
         The publish profile takes care of the connection strings – but you will have noticed that it doesn’t ask for values for appSettings 
-        (or any other configuration) anywhere. In order to tokenize anything in your web.config other than connection strings, you’ll need to 
+        (or any other configuration) anywhere. In order to tokenize anything in your appsettings.json other than connection strings, you’ll need to 
         create a parameters.xml file (yes, it has to be called that) in the root of your web application project. When the build runs, it 
         will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
-  
-  <!--appSettings-->
-  <parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
-	<parameterValidation kind="AllowEmpty" />
-	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthDomain']/@value">
-	</parameterentry>
-  </parameter><parameter name="CompanyConfiguration" description="doesn't matter" defaultvalue="__CompanyConfiguration__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='CompanyConfiguration']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="LogType" description="doesn't matter" defaultvalue="__LogType__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LogType']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="IsProduction" description="doesn't matter" defaultvalue="__IsProduction__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsProduction']/@value">
-    </parameterentry>
-  </parameter>
-  <!--system.web-->
-  <parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
-    </parameterentry>
-  </parameter>
-  <parameter name="debug" description="doesn't matter" defaultvalue="__debug__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/compilation/@debug">
-    </parameterentry>
-  </parameter>
-  
-  <!--loggingConfiguration-->
-  <parameter name="logFilePath" description="doesn't matter" defaultvalue="__logFilePath__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/loggingConfiguration/listeners/add[@name='Rolling Flat File Performance Listener']/@fileName">
-    </parameterentry>
-  </parameter>
 
-  <!--elmah-->
-  <parameter name="elmahConnectionString" description="doesn't matter" defaultvalue="__elmahConnectionString__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/elmah/errorLog[@type='Elmah.SqlErrorLog, Elmah']/@connectionString">
-    </parameterentry>
-  </parameter>
-  <parameter name="elmahApplicationName" description="doesn't matter" defaultvalue="__elmahApplicationName__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/elmah/errorLog[@type='Elmah.SqlErrorLog, Elmah']/@applicationName">
-    </parameterentry>
-  </parameter>
-
-  <!--system.webServer-->
-  <parameter name="enableSslRedirect" description="doesn't matter" defaultvalue="__enableSslRedirect__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.webServer/rewrite/rules/rule['Redirect to HTTPs']/@enabled">
-    </parameterentry>
-  </parameter>
+	<!--appSettings-->
+	<parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_AUTHORITY_">
+		</parameterentry>
+	</parameter>
+	<parameter name="ProPricerRegistrationKey" description="doesn't matter" defaultvalue="__ProPricerRegistrationKey__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PROPRICER_REGISTRATION_KEY_">
+		</parameterentry>
+	</parameter>
+	<parameter name="DetailedErrors" description="doesn't matter" defaultvalue="__DetailedErrors__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_DETAILEDERRORS_">
+		</parameterentry>
+	</parameter>
+	<parameter name="CompanyConfiguration" description="doesn't matter" defaultvalue="__CompanyConfiguration__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_COMPANYCONFIGURATION_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SplunkHost" description="doesn't matter" defaultvalue="__Splunk_Host__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_HOST_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SplunkToken" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+		</parameterentry>
+	</parameter>
+	<parameter name="IsProduction" description="doesn't matter" defaultvalue="__IsProduction__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IsProduction_">
+		</parameterentry>
+	</parameter>
+	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__GroupsAllowedAccess__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_GROUPSALLOWEDACCESS_">
+		</parameterentry>
+	</parameter>
+	
 </parameters>
