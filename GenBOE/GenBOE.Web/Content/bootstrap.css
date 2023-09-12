@@ -2387,7 +2387,7 @@
 .bootstrap .table-condensed > thead > tr > td,
 .bootstrap .table-condensed > tbody > tr > td,
 .bootstrap .table-condensed > tfoot > tr > td {
-  padding: 5px;
+  padding: 1px;
 }
 .bootstrap .table-bordered {
   border: 1px solid #ddd;

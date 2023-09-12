@@ -289,6 +289,10 @@ input[type="checkbox"] {
     cursor: pointer;
 }
 
+.lmx-container {
+	max-height: 100px;
+}
+
 /* Paging */
 .paging a.current-page,
 .paging a.page {
