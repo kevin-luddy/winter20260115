@@ -446,6 +446,42 @@ namespace IES.DataBridge.ModelViews
 		public int? ResourceClassId15 { get; set; }
 
 		/// <summary>
+		/// RateDescription16
+		/// </summary>
+		[JsonProperty(PropertyName = "RD16")]
+		public string RateDescription16 { get; set; }
+
+		/// <summary>
+		/// ResourceClass16
+		/// </summary>
+		[JsonIgnore]
+		public string ResourceClass16 { get; set; }
+
+		/// <summary>
+		/// ResourceClassId16
+		/// </summary>
+		[JsonProperty(PropertyName = "RCId16")]
+		public int? ResourceClassId61 { get; set; }
+
+		/// <summary>
+		/// RateDescription17
+		/// </summary>
+		[JsonProperty(PropertyName = "RD17")]
+		public string RateDescription17 { get; set; }
+
+		/// <summary>
+		/// ResourceClass17
+		/// </summary>
+		[JsonIgnore]
+		public string ResourceClass17 { get; set; }
+
+		/// <summary>
+		/// ResourceClassId17
+		/// </summary>
+		[JsonProperty(PropertyName = "RCId17")]
+		public int? ResourceClassId17 { get; set; }
+
+		/// <summary>
 		/// RateDescription21
 		/// </summary>
 		[JsonProperty(PropertyName = "RD21")]
@@ -534,6 +570,42 @@ namespace IES.DataBridge.ModelViews
 		/// </summary>
 		[JsonProperty(PropertyName = "RCId25")]
 		public int? ResourceClassId25 { get; set; }
+
+		/// <summary>
+		/// RateDescription26
+		/// </summary>
+		[JsonProperty(PropertyName = "RD26")]
+		public string RateDescription26 { get; set; }
+
+		/// <summary>
+		/// ResourceClass26
+		/// </summary>
+		[JsonIgnore]
+		public string ResourceClass26 { get; set; }
+
+		/// <summary>
+		/// ResourceClassId26
+		/// </summary>
+		[JsonProperty(PropertyName = "RCId26")]
+		public int? ResourceClassId26 { get; set; }
+
+		/// <summary>
+		/// RateDescription27
+		/// </summary>
+		[JsonProperty(PropertyName = "RD27")]
+		public string RateDescription27 { get; set; }
+
+		/// <summary>
+		/// ResourceClass27
+		/// </summary>
+		[JsonIgnore]
+		public string ResourceClass27 { get; set; }
+
+		/// <summary>
+		/// ResourceClassId27
+		/// </summary>
+		[JsonProperty(PropertyName = "RCId27")]
+		public int? ResourceClassId27 { get; set; }
 
 		/// <summary>
 		/// RateDescription31
@@ -626,6 +698,42 @@ namespace IES.DataBridge.ModelViews
 		public int? ResourceClassId35 { get; set; }
 
 		/// <summary>
+		/// RateDescription36
+		/// </summary>
+		[JsonProperty(PropertyName = "RD36")]
+		public string RateDescription36 { get; set; }
+
+		/// <summary>
+		/// ResourceClass36
+		/// </summary>
+		[JsonIgnore]
+		public string ResourceClass36 { get; set; }
+
+		/// <summary>
+		/// ResourceClassId63
+		/// </summary>
+		[JsonProperty(PropertyName = "RCId36")]
+		public int? ResourceClassId36 { get; set; }
+
+		/// <summary>
+		/// RateDescription37
+		/// </summary>
+		[JsonProperty(PropertyName = "RD37")]
+		public string RateDescription37 { get; set; }
+
+		/// <summary>
+		/// ResourceClass37
+		/// </summary>
+		[JsonIgnore]
+		public string ResourceClass37 { get; set; }
+
+		/// <summary>
+		/// ResourceClassId37
+		/// </summary>
+		[JsonProperty(PropertyName = "RCId37")]
+		public int? ResourceClassId37 { get; set; }
+
+		/// <summary>
 		/// RateDescription41
 		/// </summary>
 		[JsonProperty(PropertyName = "RD41")]
@@ -714,6 +822,42 @@ namespace IES.DataBridge.ModelViews
 		/// </summary>
 		[JsonProperty(PropertyName = "RCId45")]
 		public int? ResourceClassId45 { get; set; }
+
+		/// <summary>
+		/// RateDescription46
+		/// </summary>
+		[JsonProperty(PropertyName = "RD46")]
+		public string RateDescription46 { get; set; }
+
+		/// <summary>
+		/// ResourceClass64
+		/// </summary>
+		[JsonIgnore]
+		public string ResourceClass46 { get; set; }
+
+		/// <summary>
+		/// ResourceClassId46
+		/// </summary>
+		[JsonProperty(PropertyName = "RCId46")]
+		public int? ResourceClassId46 { get; set; }
+
+		/// <summary>
+		/// RateDescription47
+		/// </summary>
+		[JsonProperty(PropertyName = "RD47")]
+		public string RateDescription47 { get; set; }
+
+		/// <summary>
+		/// ResourceClass74
+		/// </summary>
+		[JsonIgnore]
+		public string ResourceClass47 { get; set; }
+
+		/// <summary>
+		/// ResourceClassId47
+		/// </summary>
+		[JsonProperty(PropertyName = "RCId47")]
+		public int? ResourceClassId47 { get; set; }
 
 		/// <summary>
 		/// RateDescription51
@@ -806,184 +950,40 @@ namespace IES.DataBridge.ModelViews
 		public int? ResourceClassId55 { get; set; }
 
 		/// <summary>
-		/// RateDescription61
+		/// RateDescription56
 		/// </summary>
-		[JsonProperty(PropertyName = "RD61")]
-		public string RateDescription61 { get; set; }
+		[JsonProperty(PropertyName = "RD56")]
+		public string RateDescription56 { get; set; }
 
 		/// <summary>
-		/// ResourceClass61
+		/// ResourceClass56
 		/// </summary>
 		[JsonIgnore]
-		public string ResourceClass61 { get; set; }
+		public string ResourceClass56 { get; set; }
 
 		/// <summary>
-		/// ResourceClassId61
+		/// ResourceClassId56
 		/// </summary>
-		[JsonProperty(PropertyName = "RCId61")]
-		public int? ResourceClassId61 { get; set; }
+		[JsonProperty(PropertyName = "RCId56")]
+		public int? ResourceClassId56 { get; set; }
 
 		/// <summary>
-		/// RateDescription62
+		/// RateDescription57
 		/// </summary>
-		[JsonProperty(PropertyName = "RD62")]
-		public string RateDescription62 { get; set; }
+		[JsonProperty(PropertyName = "RD57")]
+		public string RateDescription57 { get; set; }
 
 		/// <summary>
-		/// ResourceClass62
-		/// </summary>
-		[JsonIgnore]
-		public string ResourceClass62 { get; set; }
-
-		/// <summary>
-		/// ResourceClassId62
-		/// </summary>
-		[JsonProperty(PropertyName = "RCId62")]
-		public int? ResourceClassId62 { get; set; }
-
-		/// <summary>
-		/// RateDescription63
-		/// </summary>
-		[JsonProperty(PropertyName = "RD63")]
-		public string RateDescription63 { get; set; }
-
-		/// <summary>
-		/// ResourceClass63
+		/// ResourceClass57
 		/// </summary>
 		[JsonIgnore]
-		public string ResourceClass63 { get; set; }
+		public string ResourceClass57 { get; set; }
 
 		/// <summary>
-		/// ResourceClassId63
+		/// ResourceClassId57
 		/// </summary>
-		[JsonProperty(PropertyName = "RCId63")]
-		public int? ResourceClassId63 { get; set; }
-
-		/// <summary>
-		/// RateDescription64
-		/// </summary>
-		[JsonProperty(PropertyName = "RD64")]
-		public string RateDescription64 { get; set; }
-
-		/// <summary>
-		/// ResourceClass64
-		/// </summary>
-		[JsonIgnore]
-		public string ResourceClass64 { get; set; }
-
-		/// <summary>
-		/// ResourceClassId64
-		/// </summary>
-		[JsonProperty(PropertyName = "RCId64")]
-		public int? ResourceClassId64 { get; set; }
-
-		/// <summary>
-		/// RateDescription65
-		/// </summary>
-		[JsonProperty(PropertyName = "RD65")]
-		public string RateDescription65 { get; set; }
-
-		/// <summary>
-		/// ResourceClass65
-		/// </summary>
-		[JsonIgnore]
-		public string ResourceClass65 { get; set; }
-
-		/// <summary>
-		/// ResourceClassId65
-		/// </summary>
-		[JsonProperty(PropertyName = "RCId65")]
-		public int? ResourceClassId65 { get; set; }
-
-		/// <summary>
-		/// RateDescription71
-		/// </summary>
-		[JsonProperty(PropertyName = "RD71")]
-		public string RateDescription71 { get; set; }
-
-		/// <summary>
-		/// ResourceClass71
-		/// </summary>
-		[JsonIgnore]
-		public string ResourceClass71 { get; set; }
-
-		/// <summary>
-		/// ResourceClassId71
-		/// </summary>
-		[JsonProperty(PropertyName = "RCId71")]
-		public int? ResourceClassId71 { get; set; }
-
-		/// <summary>
-		/// RateDescription72
-		/// </summary>
-		[JsonProperty(PropertyName = "RD72")]
-		public string RateDescription72 { get; set; }
-
-		/// <summary>
-		/// ResourceClass72
-		/// </summary>
-		[JsonIgnore]
-		public string ResourceClass72 { get; set; }
-
-		/// <summary>
-		/// ResourceClassId72
-		/// </summary>
-		[JsonProperty(PropertyName = "RCId72")]
-		public int? ResourceClassId72 { get; set; }
-
-		/// <summary>
-		/// RateDescription73
-		/// </summary>
-		[JsonProperty(PropertyName = "RD73")]
-		public string RateDescription73 { get; set; }
-
-		/// <summary>
-		/// ResourceClass73
-		/// </summary>
-		[JsonIgnore]
-		public string ResourceClass73 { get; set; }
-
-		/// <summary>
-		/// ResourceClassId73
-		/// </summary>
-		[JsonProperty(PropertyName = "RCId73")]
-		public int? ResourceClassId73 { get; set; }
-
-		/// <summary>
-		/// RateDescription74
-		/// </summary>
-		[JsonProperty(PropertyName = "RD74")]
-		public string RateDescription74 { get; set; }
-
-		/// <summary>
-		/// ResourceClass74
-		/// </summary>
-		[JsonIgnore]
-		public string ResourceClass74 { get; set; }
-
-		/// <summary>
-		/// ResourceClassId74
-		/// </summary>
-		[JsonProperty(PropertyName = "RCId74")]
-		public int? ResourceClassId74 { get; set; }
-
-		/// <summary>
-		/// RateDescription75
-		/// </summary>
-		[JsonProperty(PropertyName = "RD75")]
-		public string RateDescription75 { get; set; }
-
-		/// <summary>
-		/// ResourceClass75
-		/// </summary>
-		[JsonIgnore]
-		public string ResourceClass75 { get; set; }
-
-		/// <summary>
-		/// ResourceClassId75
-		/// </summary>
-		[JsonProperty(PropertyName = "RCId75")]
-		public int? ResourceClassId75 { get; set; }
+		[JsonProperty(PropertyName = "RCId57")]
+		public int? ResourceClassId57 { get; set; }
 
 		#endregion
 
