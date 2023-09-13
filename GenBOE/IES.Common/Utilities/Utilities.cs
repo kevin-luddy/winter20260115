@@ -286,6 +286,16 @@ namespace IES.Common
         }
 
         /// <summary>
+        /// Returns true/false indicating whether the application is read only mode
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsReadOnly()
+        {
+			return !string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("IsReadOnly"))
+				&& ConfigurationUtilities.GetAppSetting("IsReadOnly").ToLower().Equals("true");
+		}
+
+        /// <summary>
         /// Returns true/false indicating whether the piwik should be disabled. This is used for classified installations.
         /// </summary>
         /// <returns>Bool whether the links should be shut off or not</returns>
