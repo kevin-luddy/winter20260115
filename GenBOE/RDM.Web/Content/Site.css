@@ -290,7 +290,8 @@ input[type="checkbox"] {
 }
 
 .lmx-container {
-	max-height: 100px;
+	max-height: 260px;
+	overflow: auto;
 }
 
 /* Paging */
