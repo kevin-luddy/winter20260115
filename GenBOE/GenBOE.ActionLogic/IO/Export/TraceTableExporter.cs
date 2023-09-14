@@ -45,7 +45,10 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			if (settingsData != null)
 			{
-                settingsData.GroupingField = "CalendarYear";
+				if (settingsData.ShowYears == true)
+				{
+					settingsData.GroupingField = "CalendarYear"; 
+				}
             }
 			boeDataGroup.ChildData = ExportTraceTableDataGroup(workspace, settingsData);
 

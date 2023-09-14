@@ -184,6 +184,19 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <th scope="row">{{model.Co}}9</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD9" data-ng-change="model.RCId9 = model.RD9 === '' ? 0 : model.RCId9;" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD9 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId9" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table> 
                     </div>
