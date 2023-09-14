@@ -270,6 +270,8 @@
             RD5: '',
             RD6: '',
             RD7: '',
+            RD8: '',
+            RD9: '',
             RCId: 0, // Resource Class Ids
             RCId1: 0,
             RCId2: 0,
@@ -278,6 +280,8 @@
             RCId5: 0,
             RCId6: 0,
             RCId7: 0,
+            RCId8: 0,
+            RCId9: 0,
             RS: '', // RateSet
             Ra: 0,
             RT: 0,

@@ -15,15 +15,15 @@ namespace IES.DataBridge.Loaders
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
 
-	/// <summary>
-	/// Rate Grid Loader
-	/// </summary>
-	public class RateDetailLoader : BulkDataLoader<RateDetailModelView, RateCode>, IRateDetailLoader
-	{
-		/// <summary>
-		/// The Rate Description numbers.
-		/// </summary>
-		private readonly int?[] numbers = { null, 1, 2, 3, 4, 5, 6, 7 };
+    /// <summary>
+    /// Rate Grid Loader
+    /// </summary>
+    public class RateDetailLoader : BulkDataLoader<RateDetailModelView, RateCode>, IRateDetailLoader
+    {
+        /// <summary>
+        /// The Rate Description numbers.
+        /// </summary>
+        private readonly int?[] numbers = { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
 		/// <summary>
 		/// RateYearLoader.
@@ -214,56 +214,66 @@ namespace IES.DataBridge.Loaders
 				// Get the CategoryDescription.
 				rate.RateCategoryDescription = rate.RateCategory.GetDescription();
 
-				// If we have generated mappings set Description to empty and set Generate to true, otherwise load the description.
-				foreach (ProPricerRateCodeXrefModelView mapping in rate.ProPricerMappings)
-				{
-					if (mapping.RateCodeExtensionId == null)
-					{
-						rate.RateDescription = mapping.Description;
-						rate.ResourceClass = mapping.ResourceClass;
-						rate.ResourceClassId = mapping.ResourceClassId;
-					}
-					else
-					{
-						// Load Description into the property based on Id.
-						switch (mapping.RateCodeExtensionId)
-						{
-							case 1:
-								rate.RateDescription1 = mapping.Description;
-								rate.ResourceClass1 = mapping.ResourceClass;
-								rate.ResourceClassId1 = mapping.ResourceClassId;
-								break;
-							case 2:
-								rate.RateDescription2 = mapping.Description;
-								rate.ResourceClass2 = mapping.ResourceClass;
-								rate.ResourceClassId2 = mapping.ResourceClassId;
-								break;
-							case 3:
-								rate.RateDescription3 = mapping.Description;
-								rate.ResourceClass3 = mapping.ResourceClass;
-								rate.ResourceClassId3 = mapping.ResourceClassId;
-								break;
-							case 4:
-								rate.RateDescription4 = mapping.Description;
-								rate.ResourceClass4 = mapping.ResourceClass;
-								rate.ResourceClassId4 = mapping.ResourceClassId;
-								break;
-							case 5:
-								rate.RateDescription5 = mapping.Description;
-								rate.ResourceClass5 = mapping.ResourceClass;
-								rate.ResourceClassId5 = mapping.ResourceClassId;
-								break;
-							case 6:
-								rate.RateDescription6 = mapping.Description;
-								rate.ResourceClass6 = mapping.ResourceClass;
-								rate.ResourceClassId6 = mapping.ResourceClassId;
-								break;
-							case 7:
-								rate.RateDescription7 = mapping.Description;
-								rate.ResourceClass7 = mapping.ResourceClass;
-								rate.ResourceClassId7 = mapping.ResourceClassId;
-								break;
-						}
+                // If we have generated mappings set Description to empty and set Generate to true, otherwise load the description.
+                foreach(ProPricerRateCodeXrefModelView mapping in rate.ProPricerMappings)
+                {
+                    if (mapping.RateCodeExtensionId == null)
+                    {
+                        rate.RateDescription = mapping.Description;
+                        rate.ResourceClass = mapping.ResourceClass;
+                        rate.ResourceClassId = mapping.ResourceClassId;
+                    }
+                    else
+                    {
+                        // Load Description into the property based on Id.
+                        switch (mapping.RateCodeExtensionId)
+                        {
+                            case 1:
+                                rate.RateDescription1 = mapping.Description;
+                                rate.ResourceClass1 = mapping.ResourceClass;
+                                rate.ResourceClassId1 = mapping.ResourceClassId;
+                                break;
+                            case 2:
+                                rate.RateDescription2 = mapping.Description;
+                                rate.ResourceClass2 = mapping.ResourceClass;
+                                rate.ResourceClassId2 = mapping.ResourceClassId;
+                                break;
+                            case 3:
+                                rate.RateDescription3 = mapping.Description;
+                                rate.ResourceClass3 = mapping.ResourceClass;
+                                rate.ResourceClassId3 = mapping.ResourceClassId;
+                                break;
+                            case 4:
+                                rate.RateDescription4 = mapping.Description;
+                                rate.ResourceClass4 = mapping.ResourceClass;
+                                rate.ResourceClassId4 = mapping.ResourceClassId;
+                                break;
+                            case 5:
+                                rate.RateDescription5 = mapping.Description;
+                                rate.ResourceClass5 = mapping.ResourceClass;
+                                rate.ResourceClassId5 = mapping.ResourceClassId;
+                                break;
+                            case 6:
+                                rate.RateDescription6 = mapping.Description;
+                                rate.ResourceClass6 = mapping.ResourceClass;
+                                rate.ResourceClassId6 = mapping.ResourceClassId;
+                                break;
+                            case 7:
+                                rate.RateDescription7 = mapping.Description;
+                                rate.ResourceClass7 = mapping.ResourceClass;
+                                rate.ResourceClassId7 = mapping.ResourceClassId;
+                                break;
+                            case 8:
+                                rate.RateDescription8 = mapping.Description;
+                                rate.ResourceClass8 = mapping.ResourceClass;
+                                rate.ResourceClassId8 = mapping.ResourceClassId;
+                                break;
+                            case 9:
+                                rate.RateDescription9 = mapping.Description;
+                                rate.ResourceClass9 = mapping.ResourceClass;
+                                rate.ResourceClassId9 = mapping.ResourceClassId;
+                                break;
+                        }
 
 						rate.GenerateAdditionalDirectLaborRates = true;
 					}
@@ -551,9 +561,9 @@ namespace IES.DataBridge.Loaders
 				dtoToUpsert.ProPricerMappings = this.proPricerXrefLoader.GetByRateCodeId(dtoToUpsert.Id);
 			}
 
-			string[] descs = { dtoToUpsert.RateDescription, dtoToUpsert.RateDescription1, dtoToUpsert.RateDescription2, dtoToUpsert.RateDescription3, dtoToUpsert.RateDescription4, dtoToUpsert.RateDescription5, dtoToUpsert.RateDescription6, dtoToUpsert.RateDescription7 };
-			int?[] resourceClassIds = { dtoToUpsert.ResourceClassId, dtoToUpsert.ResourceClassId1, dtoToUpsert.ResourceClassId2, dtoToUpsert.ResourceClassId3, dtoToUpsert.ResourceClassId4, dtoToUpsert.ResourceClassId5, dtoToUpsert.ResourceClassId6, dtoToUpsert.ResourceClassId7 };
-			var numbersAndDescs = this.numbers.Zip(descs, (first, second) => new Tuple<int?, string>(first, second));
+            string[] descs = { dtoToUpsert.RateDescription, dtoToUpsert.RateDescription1, dtoToUpsert.RateDescription2, dtoToUpsert.RateDescription3, dtoToUpsert.RateDescription4, dtoToUpsert.RateDescription5, dtoToUpsert.RateDescription6, dtoToUpsert.RateDescription7, dtoToUpsert.RateDescription8, dtoToUpsert.RateDescription9 };
+            int?[] resourceClassIds = { dtoToUpsert.ResourceClassId, dtoToUpsert.ResourceClassId1, dtoToUpsert.ResourceClassId2, dtoToUpsert.ResourceClassId3, dtoToUpsert.ResourceClassId4, dtoToUpsert.ResourceClassId5, dtoToUpsert.ResourceClassId6, dtoToUpsert.ResourceClassId7, dtoToUpsert.ResourceClassId8, dtoToUpsert.ResourceClassId9 };
+            var numbersAndDescs = this.numbers.Zip(descs, (first, second) => new Tuple<int?, string>(first, second));
 
 			foreach (Tuple<int?, string> numberAndDesc in numbersAndDescs)
 			{

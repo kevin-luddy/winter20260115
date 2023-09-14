@@ -32,6 +32,8 @@ angular.module("RDM").controller("EditMappingsController",
                     content.RD5 = "";
                     content.RD6 = "";
                     content.RD7 = "";
+                    content.RD8 = "";
+                    content.RD9 = "";
                     content.RCId1 = 0;
                     content.RCId2 = 0;
                     content.RCId3 = 0;
@@ -39,6 +41,8 @@ angular.module("RDM").controller("EditMappingsController",
                     content.RCId5 = 0;
                     content.RCId6 = 0;
                     content.RCId7 = 0;
+                    content.RCId8 = 0;
+                    content.RCId9 = 0;
                 }
 
                 // Warn user if ProPricer mappings are empty.
@@ -133,7 +137,9 @@ angular.module("RDM").controller("EditMappingsController",
                 content.RD4 ||
                 content.RD5 ||
                 content.RD6 ||
-                content.RD7;
+                content.RD7 ||
+                content.RD8 ||
+                content.RD9;
             return result;
         };
 
