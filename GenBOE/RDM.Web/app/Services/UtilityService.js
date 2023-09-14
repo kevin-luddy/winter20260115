@@ -208,6 +208,8 @@
             rate.RD5 = undefined;
             rate.RD6 = undefined;
             rate.RD7 = undefined;
+            rate.RD8 = undefined;
+            rate.RD9 = undefined;
             // Resource Classes
             rate.RCId1 = undefined;
             rate.RCId2 = undefined;
@@ -216,6 +218,8 @@
             rate.RCId5 = undefined;
             rate.RCId6 = undefined;
             rate.RCId7 = undefined;
+            rate.RCId8 = undefined;
+            rate.RCId9 = undefined;
             rate.R = undefined; // Revision Id
             rate.S = undefined; // Section
             rate.CS = undefined; // Compare State
@@ -311,6 +315,28 @@
                     rate7.RCId = rate7.RCId7;
                     utilityService.zeroOutExpandedRate(rate7);
                     expandedRates.push(rate7);
+                    expanded = true;
+                }
+
+                if (rate.RD8 !== undefined && rate.RD8 != null && rate.RD8 != '') {
+                    var rate8 = angular.copy(rate);
+                    rate8.hidePopup = true;
+                    rate8.Co = rate8.Co + '8';
+                    rate8.De = rate8.RD8;
+                    rate8.RCId = rate8.RCId8;
+                    utilityService.zeroOutExpandedRate(rate8);
+                    expandedRates.push(rate8);
+                    expanded = true;
+                }
+
+                if (rate.RD9 !== undefined && rate.RD9 != null && rate.RD9 != '') {
+                    var rate9 = angular.copy(rate);
+                    rate9.hidePopup = true;
+                    rate9.Co = rate9.Co + '9';
+                    rate9.De = rate9.RD9;
+                    rate9.RCId = rate9.RCId9;
+                    utilityService.zeroOutExpandedRate(rate9);
+                    expandedRates.push(rate9);
                     expanded = true;
                 }
 

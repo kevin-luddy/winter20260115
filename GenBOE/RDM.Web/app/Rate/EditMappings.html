@@ -91,7 +91,7 @@
                                     <th scope="row">{{model.Co}}1</th>
                                     <td>
                                         <div class="form-element">
-                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD1" data-ng-change="model.RCId1 = model.RD1 === '' ? 0 : model.RCId1;"/>
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD1" data-ng-change="model.RCId1 = model.RD1 === '' ? 0 : model.RCId1;" />
                                         </div>
                                     </td>
                                     <td>
@@ -104,7 +104,7 @@
                                     <th scope="row">{{model.Co}}2</th>
                                     <td>
                                         <div class="form-element">
-                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD2" data-ng-change="model.RCId2 = model.RD2 === '' ? 0 : model.RCId2;"/>
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD2" data-ng-change="model.RCId2 = model.RD2 === '' ? 0 : model.RCId2;" />
                                         </div>
                                     </td>
                                     <td>
@@ -117,7 +117,7 @@
                                     <th scope="row">{{model.Co}}3</th>
                                     <td>
                                         <div class="form-element">
-                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD3" data-ng-change="model.RCId3 = model.RD3 === '' ? 0 : model.RCId3;"/>
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD3" data-ng-change="model.RCId3 = model.RD3 === '' ? 0 : model.RCId3;" />
                                         </div>
                                     </td>
                                     <td>
@@ -130,7 +130,7 @@
                                     <th scope="row">{{model.Co}}4</th>
                                     <td>
                                         <div class="form-element">
-                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD4" data-ng-change="model.RCId4 = model.RD4 === '' ? 0 : model.RCId4;"/>
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD4" data-ng-change="model.RCId4 = model.RD4 === '' ? 0 : model.RCId4;" />
                                         </div>
                                     </td>
                                     <td>
@@ -143,7 +143,7 @@
                                     <th scope="row">{{model.Co}}5</th>
                                     <td>
                                         <div class="form-element">
-                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD5" data-ng-change="model.RCId5 = model.RD5 === '' ? 0 : model.RCId5;"/>
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD5" data-ng-change="model.RCId5 = model.RD5 === '' ? 0 : model.RCId5;" />
                                         </div>
                                     </td>
                                     <td>
@@ -156,7 +156,7 @@
                                     <th scope="row">{{model.Co}}6</th>
                                     <td>
                                         <div class="form-element">
-                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD6" data-ng-change="model.RCId6 = model.RD6 === '' ? 0 : model.RCId6;"/>
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD6" data-ng-change="model.RCId6 = model.RD6 === '' ? 0 : model.RCId6;" />
                                         </div>
                                     </td>
                                     <td>
@@ -170,11 +170,37 @@
                                     <td>
                                         <div class="form-element">
                                             <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD7" data-ng-change="model.RCId7 = model.RD7 === '' ? 0 : model.RCId7;" />
-                                         </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <div class="form-element">
                                             <select data-ng-disabled="!canEdit() || model.RD7 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId7" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{model.Co}}8</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD8" data-ng-change="model.RCId8 = model.RD8 === '' ? 0 : model.RCId8;" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD8 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId8" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{model.Co}}9</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD9" data-ng-change="model.RCId9 = model.RD9 === '' ? 0 : model.RCId9;" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD9 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId9" style="width: 300px"></select>
                                         </div>
                                     </td>
                                 </tr>
