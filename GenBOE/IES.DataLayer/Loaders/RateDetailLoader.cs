@@ -274,229 +274,229 @@ namespace IES.DataBridge.Loaders
                                 rate.ResourceClassId9 = mapping.ResourceClassId;
                                 break;
 							case 11:
-								rate.RateDescription1 = mapping.Description;
-								rate.ResourceClass1 = mapping.ResourceClass;
-								rate.ResourceClassId1 = mapping.ResourceClassId;
+								rate.RateDescription11 = mapping.Description;
+								rate.ResourceClass11 = mapping.ResourceClass;
+								rate.ResourceClassId11 = mapping.ResourceClassId;
 								break;
 							case 12:
-								rate.RateDescription1 = mapping.Description;
-								rate.ResourceClass1 = mapping.ResourceClass;
-								rate.ResourceClassId1 = mapping.ResourceClassId;
+								rate.RateDescription12 = mapping.Description;
+								rate.ResourceClass12 = mapping.ResourceClass;
+								rate.ResourceClassId12 = mapping.ResourceClassId;
 								break;
 							case 13:
-								rate.RateDescription1 = mapping.Description;
-								rate.ResourceClass1 = mapping.ResourceClass;
-								rate.ResourceClassId1 = mapping.ResourceClassId;
+								rate.RateDescription13 = mapping.Description;
+								rate.ResourceClass13 = mapping.ResourceClass;
+								rate.ResourceClassId13 = mapping.ResourceClassId;
 								break;
 							case 14:
-								rate.RateDescription1 = mapping.Description;
-								rate.ResourceClass1 = mapping.ResourceClass;
-								rate.ResourceClassId1 = mapping.ResourceClassId;
+								rate.RateDescription14 = mapping.Description;
+								rate.ResourceClass14 = mapping.ResourceClass;
+								rate.ResourceClassId14 = mapping.ResourceClassId;
 								break;
 							case 15:
-								rate.RateDescription1 = mapping.Description;
-								rate.ResourceClass1 = mapping.ResourceClass;
-								rate.ResourceClassId1 = mapping.ResourceClassId;
+								rate.RateDescription15 = mapping.Description;
+								rate.ResourceClass15 = mapping.ResourceClass;
+								rate.ResourceClassId15 = mapping.ResourceClassId;
 								break;
 							case 21:
-								rate.RateDescription2 = mapping.Description;
-								rate.ResourceClass2 = mapping.ResourceClass;
-								rate.ResourceClassId2 = mapping.ResourceClassId;
+								rate.RateDescription21 = mapping.Description;
+								rate.ResourceClass21 = mapping.ResourceClass;
+								rate.ResourceClassId21 = mapping.ResourceClassId;
 								break;
 							case 22:
-								rate.RateDescription2 = mapping.Description;
-								rate.ResourceClass2 = mapping.ResourceClass;
-								rate.ResourceClassId2 = mapping.ResourceClassId;
+								rate.RateDescription22 = mapping.Description;
+								rate.ResourceClass22 = mapping.ResourceClass;
+								rate.ResourceClassId22 = mapping.ResourceClassId;
 								break;
 							case 23:
-								rate.RateDescription2 = mapping.Description;
-								rate.ResourceClass2 = mapping.ResourceClass;
-								rate.ResourceClassId2 = mapping.ResourceClassId;
+								rate.RateDescription23 = mapping.Description;
+								rate.ResourceClass23 = mapping.ResourceClass;
+								rate.ResourceClassId23 = mapping.ResourceClassId;
 								break;
 							case 24:
-								rate.RateDescription2 = mapping.Description;
-								rate.ResourceClass2 = mapping.ResourceClass;
-								rate.ResourceClassId2 = mapping.ResourceClassId;
+								rate.RateDescription24 = mapping.Description;
+								rate.ResourceClass24 = mapping.ResourceClass;
+								rate.ResourceClassId24 = mapping.ResourceClassId;
 								break;
 							case 25:
-								rate.RateDescription2 = mapping.Description;
-								rate.ResourceClass2 = mapping.ResourceClass;
-								rate.ResourceClassId2 = mapping.ResourceClassId;
+								rate.RateDescription25 = mapping.Description;
+								rate.ResourceClass25 = mapping.ResourceClass;
+								rate.ResourceClassId25 = mapping.ResourceClassId;
 								break;
 							case 31:
-								rate.RateDescription3 = mapping.Description;
-								rate.ResourceClass3 = mapping.ResourceClass;
-								rate.ResourceClassId3 = mapping.ResourceClassId;
+								rate.RateDescription31 = mapping.Description;
+								rate.ResourceClass31 = mapping.ResourceClass;
+								rate.ResourceClassId31 = mapping.ResourceClassId;
 								break;
 							case 32:
-								rate.RateDescription3 = mapping.Description;
-								rate.ResourceClass3 = mapping.ResourceClass;
-								rate.ResourceClassId3 = mapping.ResourceClassId;
+								rate.RateDescription32 = mapping.Description;
+								rate.ResourceClass32 = mapping.ResourceClass;
+								rate.ResourceClassId32 = mapping.ResourceClassId;
 								break;
 							case 33:
-								rate.RateDescription3 = mapping.Description;
-								rate.ResourceClass3 = mapping.ResourceClass;
-								rate.ResourceClassId3 = mapping.ResourceClassId;
+								rate.RateDescription33 = mapping.Description;
+								rate.ResourceClass33 = mapping.ResourceClass;
+								rate.ResourceClassId33 = mapping.ResourceClassId;
 								break;
 							case 34:
-								rate.RateDescription3 = mapping.Description;
-								rate.ResourceClass3 = mapping.ResourceClass;
-								rate.ResourceClassId3 = mapping.ResourceClassId;
+								rate.RateDescription34 = mapping.Description;
+								rate.ResourceClass34 = mapping.ResourceClass;
+								rate.ResourceClassId34 = mapping.ResourceClassId;
 								break;
 							case 35:
-								rate.RateDescription3 = mapping.Description;
-								rate.ResourceClass3 = mapping.ResourceClass;
-								rate.ResourceClassId3 = mapping.ResourceClassId;
+								rate.RateDescription35 = mapping.Description;
+								rate.ResourceClass35 = mapping.ResourceClass;
+								rate.ResourceClassId35 = mapping.ResourceClassId;
 								break;
 							case 41:
-								rate.RateDescription4 = mapping.Description;
-								rate.ResourceClass4 = mapping.ResourceClass;
-								rate.ResourceClassId4 = mapping.ResourceClassId;
+								rate.RateDescription41 = mapping.Description;
+								rate.ResourceClass41 = mapping.ResourceClass;
+								rate.ResourceClassId41 = mapping.ResourceClassId;
 								break;
 							case 42:
-								rate.RateDescription4 = mapping.Description;
-								rate.ResourceClass4 = mapping.ResourceClass;
-								rate.ResourceClassId4 = mapping.ResourceClassId;
+								rate.RateDescription42 = mapping.Description;
+								rate.ResourceClass42 = mapping.ResourceClass;
+								rate.ResourceClassId42 = mapping.ResourceClassId;
 								break;
 							case 43:
-								rate.RateDescription4 = mapping.Description;
-								rate.ResourceClass4 = mapping.ResourceClass;
-								rate.ResourceClassId4 = mapping.ResourceClassId;
+								rate.RateDescription43 = mapping.Description;
+								rate.ResourceClass43 = mapping.ResourceClass;
+								rate.ResourceClassId43 = mapping.ResourceClassId;
 								break;
 							case 44:
-								rate.RateDescription4 = mapping.Description;
-								rate.ResourceClass4 = mapping.ResourceClass;
-								rate.ResourceClassId4 = mapping.ResourceClassId;
+								rate.RateDescription44 = mapping.Description;
+								rate.ResourceClass44 = mapping.ResourceClass;
+								rate.ResourceClassId44 = mapping.ResourceClassId;
 								break;
 							case 45:
-								rate.RateDescription4 = mapping.Description;
-								rate.ResourceClass4 = mapping.ResourceClass;
-								rate.ResourceClassId4 = mapping.ResourceClassId;
+								rate.RateDescription45 = mapping.Description;
+								rate.ResourceClass45 = mapping.ResourceClass;
+								rate.ResourceClassId45 = mapping.ResourceClassId;
 								break;
 							case 51:
-								rate.RateDescription5 = mapping.Description;
-								rate.ResourceClass5 = mapping.ResourceClass;
-								rate.ResourceClassId5 = mapping.ResourceClassId;
+								rate.RateDescription51 = mapping.Description;
+								rate.ResourceClass51 = mapping.ResourceClass;
+								rate.ResourceClassId51 = mapping.ResourceClassId;
 								break;
 							case 52:
-								rate.RateDescription5 = mapping.Description;
-								rate.ResourceClass5 = mapping.ResourceClass;
-								rate.ResourceClassId5 = mapping.ResourceClassId;
+								rate.RateDescription52 = mapping.Description;
+								rate.ResourceClass52 = mapping.ResourceClass;
+								rate.ResourceClassId52 = mapping.ResourceClassId;
 								break;
 							case 53:
-								rate.RateDescription5 = mapping.Description;
-								rate.ResourceClass5 = mapping.ResourceClass;
-								rate.ResourceClassId5 = mapping.ResourceClassId;
+								rate.RateDescription53 = mapping.Description;
+								rate.ResourceClass53 = mapping.ResourceClass;
+								rate.ResourceClassId53 = mapping.ResourceClassId;
 								break;
 							case 54:
-								rate.RateDescription5 = mapping.Description;
-								rate.ResourceClass5 = mapping.ResourceClass;
-								rate.ResourceClassId5 = mapping.ResourceClassId;
+								rate.RateDescription54 = mapping.Description;
+								rate.ResourceClass54 = mapping.ResourceClass;
+								rate.ResourceClassId54 = mapping.ResourceClassId;
 								break;
 							case 55:
-								rate.RateDescription5 = mapping.Description;
-								rate.ResourceClass5 = mapping.ResourceClass;
-								rate.ResourceClassId5 = mapping.ResourceClassId;
+								rate.RateDescription55 = mapping.Description;
+								rate.ResourceClass55 = mapping.ResourceClass;
+								rate.ResourceClassId55 = mapping.ResourceClassId;
 								break;
 							case 61:
-								rate.RateDescription6 = mapping.Description;
-								rate.ResourceClass6 = mapping.ResourceClass;
-								rate.ResourceClassId6 = mapping.ResourceClassId;
+								rate.RateDescription61 = mapping.Description;
+								rate.ResourceClass61 = mapping.ResourceClass;
+								rate.ResourceClassId61 = mapping.ResourceClassId;
 								break;
 							case 62:
-								rate.RateDescription6 = mapping.Description;
-								rate.ResourceClass6 = mapping.ResourceClass;
-								rate.ResourceClassId6 = mapping.ResourceClassId;
+								rate.RateDescription62 = mapping.Description;
+								rate.ResourceClass62 = mapping.ResourceClass;
+								rate.ResourceClassId62 = mapping.ResourceClassId;
 								break;
 							case 63:
-								rate.RateDescription6 = mapping.Description;
-								rate.ResourceClass6 = mapping.ResourceClass;
-								rate.ResourceClassId6 = mapping.ResourceClassId;
+								rate.RateDescription63 = mapping.Description;
+								rate.ResourceClass63 = mapping.ResourceClass;
+								rate.ResourceClassId63 = mapping.ResourceClassId;
 								break;
 							case 64:
-								rate.RateDescription6 = mapping.Description;
-								rate.ResourceClass6 = mapping.ResourceClass;
-								rate.ResourceClassId6 = mapping.ResourceClassId;
+								rate.RateDescription64 = mapping.Description;
+								rate.ResourceClass64 = mapping.ResourceClass;
+								rate.ResourceClassId64 = mapping.ResourceClassId;
 								break;
 							case 65:
-								rate.RateDescription6 = mapping.Description;
-								rate.ResourceClass6 = mapping.ResourceClass;
-								rate.ResourceClassId6 = mapping.ResourceClassId;
+								rate.RateDescription65 = mapping.Description;
+								rate.ResourceClass65 = mapping.ResourceClass;
+								rate.ResourceClassId65 = mapping.ResourceClassId;
 								break;
 							case 71:
-								rate.RateDescription7 = mapping.Description;
-								rate.ResourceClass7 = mapping.ResourceClass;
-								rate.ResourceClassId7 = mapping.ResourceClassId;
+								rate.RateDescription71 = mapping.Description;
+								rate.ResourceClass71 = mapping.ResourceClass;
+								rate.ResourceClassId71 = mapping.ResourceClassId;
 								break;
 							case 72:
-								rate.RateDescription7 = mapping.Description;
-								rate.ResourceClass7 = mapping.ResourceClass;
-								rate.ResourceClassId7 = mapping.ResourceClassId;
+								rate.RateDescription72 = mapping.Description;
+								rate.ResourceClass72 = mapping.ResourceClass;
+								rate.ResourceClassId72 = mapping.ResourceClassId;
 								break;
 							case 73:
-								rate.RateDescription7 = mapping.Description;
-								rate.ResourceClass7 = mapping.ResourceClass;
-								rate.ResourceClassId7 = mapping.ResourceClassId;
+								rate.RateDescription73 = mapping.Description;
+								rate.ResourceClass73 = mapping.ResourceClass;
+								rate.ResourceClassId73 = mapping.ResourceClassId;
 								break;
 							case 74:
-								rate.RateDescription7 = mapping.Description;
-								rate.ResourceClass7 = mapping.ResourceClass;
-								rate.ResourceClassId7 = mapping.ResourceClassId;
+								rate.RateDescription74 = mapping.Description;
+								rate.ResourceClass74 = mapping.ResourceClass;
+								rate.ResourceClassId74 = mapping.ResourceClassId;
 								break;
 							case 75:
-								rate.RateDescription7 = mapping.Description;
-								rate.ResourceClass7 = mapping.ResourceClass;
-								rate.ResourceClassId7 = mapping.ResourceClassId;
+								rate.RateDescription75 = mapping.Description;
+								rate.ResourceClass75 = mapping.ResourceClass;
+								rate.ResourceClassId75 = mapping.ResourceClassId;
 								break;
 							case 81:
-								rate.RateDescription8 = mapping.Description;
-								rate.ResourceClass8 = mapping.ResourceClass;
-								rate.ResourceClassId8 = mapping.ResourceClassId;
+								rate.RateDescription81 = mapping.Description;
+								rate.ResourceClass81 = mapping.ResourceClass;
+								rate.ResourceClassId81 = mapping.ResourceClassId;
 								break;
 							case 82:
-								rate.RateDescription8 = mapping.Description;
-								rate.ResourceClass8 = mapping.ResourceClass;
-								rate.ResourceClassId8 = mapping.ResourceClassId;
+								rate.RateDescription82 = mapping.Description;
+								rate.ResourceClass82 = mapping.ResourceClass;
+								rate.ResourceClassId82 = mapping.ResourceClassId;
 								break;
 							case 83:
-								rate.RateDescription8 = mapping.Description;
-								rate.ResourceClass8 = mapping.ResourceClass;
-								rate.ResourceClassId8 = mapping.ResourceClassId;
+								rate.RateDescription83 = mapping.Description;
+								rate.ResourceClass83 = mapping.ResourceClass;
+								rate.ResourceClassId83 = mapping.ResourceClassId;
 								break;
 							case 84:
-								rate.RateDescription8 = mapping.Description;
-								rate.ResourceClass8 = mapping.ResourceClass;
-								rate.ResourceClassId8 = mapping.ResourceClassId;
+								rate.RateDescription84 = mapping.Description;
+								rate.ResourceClass84 = mapping.ResourceClass;
+								rate.ResourceClassId84 = mapping.ResourceClassId;
 								break;
 							case 85:
-								rate.RateDescription8 = mapping.Description;
-								rate.ResourceClass8 = mapping.ResourceClass;
-								rate.ResourceClassId8 = mapping.ResourceClassId;
+								rate.RateDescription85 = mapping.Description;
+								rate.ResourceClass85 = mapping.ResourceClass;
+								rate.ResourceClassId85 = mapping.ResourceClassId;
 								break;
 							case 91:
-								rate.RateDescription9 = mapping.Description;
-								rate.ResourceClass9 = mapping.ResourceClass;
-								rate.ResourceClassId9 = mapping.ResourceClassId;
+								rate.RateDescription91 = mapping.Description;
+								rate.ResourceClass91 = mapping.ResourceClass;
+								rate.ResourceClassId91 = mapping.ResourceClassId;
 								break;
 							case 92:
-								rate.RateDescription9 = mapping.Description;
-								rate.ResourceClass9 = mapping.ResourceClass;
-								rate.ResourceClassId9 = mapping.ResourceClassId;
+								rate.RateDescription92 = mapping.Description;
+								rate.ResourceClass92 = mapping.ResourceClass;
+								rate.ResourceClassId92 = mapping.ResourceClassId;
 								break;
 							case 93:
-								rate.RateDescription9 = mapping.Description;
-								rate.ResourceClass9 = mapping.ResourceClass;
-								rate.ResourceClassId9 = mapping.ResourceClassId;
+								rate.RateDescription93 = mapping.Description;
+								rate.ResourceClass93 = mapping.ResourceClass;
+								rate.ResourceClassId93 = mapping.ResourceClassId;
 								break;
 							case 94:
-								rate.RateDescription9 = mapping.Description;
-								rate.ResourceClass9 = mapping.ResourceClass;
-								rate.ResourceClassId9 = mapping.ResourceClassId;
+								rate.RateDescription94 = mapping.Description;
+								rate.ResourceClass94 = mapping.ResourceClass;
+								rate.ResourceClassId94 = mapping.ResourceClassId;
 								break;
 							case 95:
-								rate.RateDescription9 = mapping.Description;
-								rate.ResourceClass9 = mapping.ResourceClass;
-								rate.ResourceClassId9 = mapping.ResourceClassId;
+								rate.RateDescription95 = mapping.Description;
+								rate.ResourceClass95 = mapping.ResourceClass;
+								rate.ResourceClassId95 = mapping.ResourceClassId;
 								break;
 						}
 

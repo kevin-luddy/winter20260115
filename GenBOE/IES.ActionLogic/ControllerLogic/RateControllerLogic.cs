@@ -497,7 +497,52 @@ namespace IES.ActionLogic.ControllerLogic
                    string.IsNullOrEmpty(rateDetailModelView.RateDescription6) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6) &&
                    string.IsNullOrEmpty(rateDetailModelView.RateDescription7) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7) &&
                    string.IsNullOrEmpty(rateDetailModelView.RateDescription8) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8) &&
-                   string.IsNullOrEmpty(rateDetailModelView.RateDescription9) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass9, rateDetailModelView.ResourceClassId9);
+                   string.IsNullOrEmpty(rateDetailModelView.RateDescription9) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass9, rateDetailModelView.ResourceClassId9) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription11) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass11, rateDetailModelView.ResourceClassId11) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription12) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass12, rateDetailModelView.ResourceClassId12) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription13) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass13, rateDetailModelView.ResourceClassId13) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription14) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass14, rateDetailModelView.ResourceClassId14) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription15) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass15, rateDetailModelView.ResourceClassId15) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription21) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass21, rateDetailModelView.ResourceClassId21) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription22) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass22, rateDetailModelView.ResourceClassId22) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription23) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass23, rateDetailModelView.ResourceClassId23) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription24) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass24, rateDetailModelView.ResourceClassId24) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription25) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass25, rateDetailModelView.ResourceClassId25) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription31) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass31, rateDetailModelView.ResourceClassId31) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription32) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass32, rateDetailModelView.ResourceClassId32) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription33) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass33, rateDetailModelView.ResourceClassId33) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription34) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass34, rateDetailModelView.ResourceClassId34) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription35) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass35, rateDetailModelView.ResourceClassId35) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription41) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass41, rateDetailModelView.ResourceClassId41) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription42) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass42, rateDetailModelView.ResourceClassId42) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription43) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass43, rateDetailModelView.ResourceClassId43) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription44) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass44, rateDetailModelView.ResourceClassId44) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription45) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass45, rateDetailModelView.ResourceClassId45) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription51) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass51, rateDetailModelView.ResourceClassId51) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription52) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass52, rateDetailModelView.ResourceClassId52) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription53) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass53, rateDetailModelView.ResourceClassId53) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription54) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass54, rateDetailModelView.ResourceClassId54) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription55) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass55, rateDetailModelView.ResourceClassId55) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription61) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass61, rateDetailModelView.ResourceClassId61) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription62) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass62, rateDetailModelView.ResourceClassId62) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription63) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass63, rateDetailModelView.ResourceClassId63) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription64) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass64, rateDetailModelView.ResourceClassId64) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription65) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass65, rateDetailModelView.ResourceClassId65) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription71) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass71, rateDetailModelView.ResourceClassId71) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription72) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass72, rateDetailModelView.ResourceClassId72) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription73) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass73, rateDetailModelView.ResourceClassId73) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription74) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass74, rateDetailModelView.ResourceClassId74) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription75) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass75, rateDetailModelView.ResourceClassId75) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription81) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass81, rateDetailModelView.ResourceClassId81) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription82) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass82, rateDetailModelView.ResourceClassId82) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription83) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass83, rateDetailModelView.ResourceClassId83) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription84) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass84, rateDetailModelView.ResourceClassId84) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription85) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass85, rateDetailModelView.ResourceClassId85) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription91) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass91, rateDetailModelView.ResourceClassId91) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription92) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass92, rateDetailModelView.ResourceClassId92) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription93) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass93, rateDetailModelView.ResourceClassId93) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription94) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass94, rateDetailModelView.ResourceClassId94) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription95) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass95, rateDetailModelView.ResourceClassId95);
         }
 
         /// <summary>
@@ -516,7 +561,52 @@ namespace IES.ActionLogic.ControllerLogic
                    (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription6) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6)) ||
                    (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription7) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7)) ||
                    (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription8) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8)) ||
-                   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription9) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId9));
+                   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription9) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass9, rateDetailModelView.ResourceClassId9)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription11) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass11, rateDetailModelView.ResourceClassId11)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription12) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass12, rateDetailModelView.ResourceClassId12)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription13) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass13, rateDetailModelView.ResourceClassId13)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription14) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass14, rateDetailModelView.ResourceClassId14)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription15) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass15, rateDetailModelView.ResourceClassId15)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription21) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass21, rateDetailModelView.ResourceClassId21)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription22) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass22, rateDetailModelView.ResourceClassId22)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription23) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass23, rateDetailModelView.ResourceClassId23)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription24) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass24, rateDetailModelView.ResourceClassId24)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription25) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass25, rateDetailModelView.ResourceClassId25)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription31) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass31, rateDetailModelView.ResourceClassId31)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription32) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass32, rateDetailModelView.ResourceClassId32)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription33) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass33, rateDetailModelView.ResourceClassId33)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription34) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass34, rateDetailModelView.ResourceClassId34)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription35) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass35, rateDetailModelView.ResourceClassId35)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription41) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass41, rateDetailModelView.ResourceClassId41)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription42) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass42, rateDetailModelView.ResourceClassId42)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription43) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass43, rateDetailModelView.ResourceClassId43)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription44) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass44, rateDetailModelView.ResourceClassId44)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription45) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass45, rateDetailModelView.ResourceClassId45)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription51) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass51, rateDetailModelView.ResourceClassId51)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription52) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass52, rateDetailModelView.ResourceClassId52)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription53) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass53, rateDetailModelView.ResourceClassId53)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription54) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass54, rateDetailModelView.ResourceClassId54)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription55) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass55, rateDetailModelView.ResourceClassId55)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription61) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass61, rateDetailModelView.ResourceClassId61)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription62) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass62, rateDetailModelView.ResourceClassId62)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription63) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass63, rateDetailModelView.ResourceClassId63)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription64) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass64, rateDetailModelView.ResourceClassId64)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription65) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass65, rateDetailModelView.ResourceClassId65)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription71) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass71, rateDetailModelView.ResourceClassId71)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription72) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass72, rateDetailModelView.ResourceClassId72)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription73) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass73, rateDetailModelView.ResourceClassId73)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription74) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass74, rateDetailModelView.ResourceClassId74)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription75) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass75, rateDetailModelView.ResourceClassId75)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription81) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass81, rateDetailModelView.ResourceClassId81)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription82) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass82, rateDetailModelView.ResourceClassId82)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription83) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass83, rateDetailModelView.ResourceClassId83)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription84) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass84, rateDetailModelView.ResourceClassId84)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription85) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass85, rateDetailModelView.ResourceClassId85)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription91) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass91, rateDetailModelView.ResourceClassId91)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription92) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass92, rateDetailModelView.ResourceClassId92)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription93) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass93, rateDetailModelView.ResourceClassId93)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription94) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass94, rateDetailModelView.ResourceClassId94)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription95) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass95, rateDetailModelView.ResourceClassId95));
         }
 
         /// <summary>
@@ -534,7 +624,52 @@ namespace IES.ActionLogic.ControllerLogic
                    !string.IsNullOrEmpty(rateDetailModelView.RateDescription6) ||
                    !string.IsNullOrEmpty(rateDetailModelView.RateDescription7) ||
                    !string.IsNullOrEmpty(rateDetailModelView.RateDescription8) ||
-                   !string.IsNullOrEmpty(rateDetailModelView.RateDescription9);
+                   !string.IsNullOrEmpty(rateDetailModelView.RateDescription9) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription11) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription12) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription13) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription14) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription15) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription21) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription22) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription23) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription24) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription25) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription31) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription32) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription33) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription34) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription35) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription41) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription42) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription43) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription44) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription45) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription51) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription52) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription53) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription54) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription55) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription61) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription62) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription63) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription64) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription65) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription71) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription72) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription73) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription74) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription75) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription81) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription82) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription83) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription84) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription85) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription91) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription92) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription93) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription94) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription95);
         }
 
 		/// <summary>
@@ -817,6 +952,102 @@ namespace IES.ActionLogic.ControllerLogic
             updatedRateCode.GovernmentBurdenPool = string.Empty;
             updatedRateCode.CommercialBurdenPoolId = importedRateCode.CommercialBurdenPoolId;
             updatedRateCode.CommercialBurdenPool = string.Empty;
+
+			#region 1LMX Rates
+
+			updatedRateCode.RateDescription11 = importedRateCode.RateDescription11;
+			updatedRateCode.RateDescription12 = importedRateCode.RateDescription12;
+			updatedRateCode.RateDescription13 = importedRateCode.RateDescription13;
+			updatedRateCode.RateDescription14 = importedRateCode.RateDescription14;
+			updatedRateCode.RateDescription15 = importedRateCode.RateDescription15;
+			updatedRateCode.RateDescription21 = importedRateCode.RateDescription21;
+			updatedRateCode.RateDescription22 = importedRateCode.RateDescription22;
+			updatedRateCode.RateDescription23 = importedRateCode.RateDescription23;
+			updatedRateCode.RateDescription24 = importedRateCode.RateDescription24;
+			updatedRateCode.RateDescription25 = importedRateCode.RateDescription25;
+			updatedRateCode.RateDescription31 = importedRateCode.RateDescription31;
+			updatedRateCode.RateDescription32 = importedRateCode.RateDescription32;
+			updatedRateCode.RateDescription33 = importedRateCode.RateDescription33;
+			updatedRateCode.RateDescription34 = importedRateCode.RateDescription34;
+			updatedRateCode.RateDescription35 = importedRateCode.RateDescription35;
+			updatedRateCode.RateDescription41 = importedRateCode.RateDescription41;
+			updatedRateCode.RateDescription42 = importedRateCode.RateDescription42;
+			updatedRateCode.RateDescription43 = importedRateCode.RateDescription43;
+			updatedRateCode.RateDescription44 = importedRateCode.RateDescription44;
+			updatedRateCode.RateDescription45 = importedRateCode.RateDescription45;
+			updatedRateCode.RateDescription51 = importedRateCode.RateDescription51;
+			updatedRateCode.RateDescription52 = importedRateCode.RateDescription52;
+			updatedRateCode.RateDescription53 = importedRateCode.RateDescription53;
+			updatedRateCode.RateDescription54 = importedRateCode.RateDescription54;
+			updatedRateCode.RateDescription55 = importedRateCode.RateDescription55;
+			updatedRateCode.RateDescription61 = importedRateCode.RateDescription61;
+			updatedRateCode.RateDescription62 = importedRateCode.RateDescription62;
+			updatedRateCode.RateDescription63 = importedRateCode.RateDescription63;
+			updatedRateCode.RateDescription64 = importedRateCode.RateDescription64;
+			updatedRateCode.RateDescription65 = importedRateCode.RateDescription65;
+			updatedRateCode.RateDescription71 = importedRateCode.RateDescription71;
+			updatedRateCode.RateDescription72 = importedRateCode.RateDescription72;
+			updatedRateCode.RateDescription73 = importedRateCode.RateDescription73;
+			updatedRateCode.RateDescription74 = importedRateCode.RateDescription74;
+			updatedRateCode.RateDescription75 = importedRateCode.RateDescription75;
+			updatedRateCode.RateDescription81 = importedRateCode.RateDescription81;
+			updatedRateCode.RateDescription82 = importedRateCode.RateDescription82;
+			updatedRateCode.RateDescription83 = importedRateCode.RateDescription83;
+			updatedRateCode.RateDescription84 = importedRateCode.RateDescription84;
+			updatedRateCode.RateDescription85 = importedRateCode.RateDescription85;
+			updatedRateCode.RateDescription91 = importedRateCode.RateDescription91;
+			updatedRateCode.RateDescription92 = importedRateCode.RateDescription92;
+			updatedRateCode.RateDescription93 = importedRateCode.RateDescription93;
+			updatedRateCode.RateDescription94 = importedRateCode.RateDescription94;
+			updatedRateCode.RateDescription95 = importedRateCode.RateDescription95;
+
+			updatedRateCode.ResourceClassId11 = importedRateCode.ResourceClassId11;
+			updatedRateCode.ResourceClassId12 = importedRateCode.ResourceClassId12;
+			updatedRateCode.ResourceClassId13 = importedRateCode.ResourceClassId13;
+			updatedRateCode.ResourceClassId14 = importedRateCode.ResourceClassId14;
+			updatedRateCode.ResourceClassId15 = importedRateCode.ResourceClassId15;
+			updatedRateCode.ResourceClassId21 = importedRateCode.ResourceClassId21;
+			updatedRateCode.ResourceClassId22 = importedRateCode.ResourceClassId22;
+			updatedRateCode.ResourceClassId23 = importedRateCode.ResourceClassId23;
+			updatedRateCode.ResourceClassId24 = importedRateCode.ResourceClassId24;
+			updatedRateCode.ResourceClassId25 = importedRateCode.ResourceClassId25;
+			updatedRateCode.ResourceClassId31 = importedRateCode.ResourceClassId31;
+			updatedRateCode.ResourceClassId32 = importedRateCode.ResourceClassId32;
+			updatedRateCode.ResourceClassId33 = importedRateCode.ResourceClassId33;
+			updatedRateCode.ResourceClassId34 = importedRateCode.ResourceClassId34;
+			updatedRateCode.ResourceClassId35 = importedRateCode.ResourceClassId35;
+			updatedRateCode.ResourceClassId41 = importedRateCode.ResourceClassId41;
+			updatedRateCode.ResourceClassId42 = importedRateCode.ResourceClassId42;
+			updatedRateCode.ResourceClassId43 = importedRateCode.ResourceClassId43;
+			updatedRateCode.ResourceClassId44 = importedRateCode.ResourceClassId44;
+			updatedRateCode.ResourceClassId45 = importedRateCode.ResourceClassId45;
+			updatedRateCode.ResourceClassId51 = importedRateCode.ResourceClassId51;
+			updatedRateCode.ResourceClassId52 = importedRateCode.ResourceClassId52;
+			updatedRateCode.ResourceClassId53 = importedRateCode.ResourceClassId53;
+			updatedRateCode.ResourceClassId54 = importedRateCode.ResourceClassId54;
+			updatedRateCode.ResourceClassId55 = importedRateCode.ResourceClassId55;
+			updatedRateCode.ResourceClassId61 = importedRateCode.ResourceClassId61;
+			updatedRateCode.ResourceClassId62 = importedRateCode.ResourceClassId62;
+			updatedRateCode.ResourceClassId63 = importedRateCode.ResourceClassId63;
+			updatedRateCode.ResourceClassId64 = importedRateCode.ResourceClassId64;
+			updatedRateCode.ResourceClassId65 = importedRateCode.ResourceClassId65;
+			updatedRateCode.ResourceClassId71 = importedRateCode.ResourceClassId71;
+			updatedRateCode.ResourceClassId72 = importedRateCode.ResourceClassId72;
+			updatedRateCode.ResourceClassId73 = importedRateCode.ResourceClassId73;
+			updatedRateCode.ResourceClassId74 = importedRateCode.ResourceClassId74;
+			updatedRateCode.ResourceClassId75 = importedRateCode.ResourceClassId75;
+			updatedRateCode.ResourceClassId81 = importedRateCode.ResourceClassId81;
+			updatedRateCode.ResourceClassId82 = importedRateCode.ResourceClassId82;
+			updatedRateCode.ResourceClassId83 = importedRateCode.ResourceClassId83;
+			updatedRateCode.ResourceClassId84 = importedRateCode.ResourceClassId84;
+			updatedRateCode.ResourceClassId85 = importedRateCode.ResourceClassId85;
+			updatedRateCode.ResourceClassId91 = importedRateCode.ResourceClassId91;
+			updatedRateCode.ResourceClassId92 = importedRateCode.ResourceClassId92;
+			updatedRateCode.ResourceClassId93 = importedRateCode.ResourceClassId93;
+			updatedRateCode.ResourceClassId94 = importedRateCode.ResourceClassId94;
+			updatedRateCode.ResourceClassId95 = importedRateCode.ResourceClassId95;
+
+			#endregion
 
 			return updatedRateCode;
 		}
