@@ -54,6 +54,10 @@ namespace IES.ActionLogic.IO.Import
             ImportExportConstants.PRO_PRICER_RESOURCE_CLASS6_COLUMN_HEADER,
             ImportExportConstants.PRO_PRICER_DESCRIPTION7_COLUMN_HEADER,
             ImportExportConstants.PRO_PRICER_RESOURCE_CLASS7_COLUMN_HEADER,
+            ImportExportConstants.PRO_PRICER_DESCRIPTION8_COLUMN_HEADER,
+            ImportExportConstants.PRO_PRICER_RESOURCE_CLASS8_COLUMN_HEADER,
+            ImportExportConstants.PRO_PRICER_DESCRIPTION9_COLUMN_HEADER,
+            ImportExportConstants.PRO_PRICER_RESOURCE_CLASS9_COLUMN_HEADER,
             ImportExportConstants.GOVERNMENT_BURDEN_POOL_COLUMN_HEADER,
             ImportExportConstants.COMMERCIAL_BURDEN_POOL_COLUMN_HEADER
         };
@@ -207,6 +211,10 @@ namespace IES.ActionLogic.IO.Import
                 rateCodeMapRow.ResourceClassId6 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS6_COLUMN_HEADER, rates.ResourceClasses);
                 rateCodeMapRow.RateDescription7 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION7_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION7_COLUMN_HEADER] : string.Empty;
                 rateCodeMapRow.ResourceClassId7 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS7_COLUMN_HEADER, rates.ResourceClasses);
+                rateCodeMapRow.RateDescription8 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION8_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION8_COLUMN_HEADER] : string.Empty;
+                rateCodeMapRow.ResourceClassId8 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS8_COLUMN_HEADER, rates.ResourceClasses);
+                rateCodeMapRow.RateDescription9 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION9_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION9_COLUMN_HEADER] : string.Empty;
+                rateCodeMapRow.ResourceClassId9 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS9_COLUMN_HEADER, rates.ResourceClasses);
                 rateCodeMapRow.GovernmentBurdenPoolId = GetNullableIdFromCell(row, ImportExportConstants.GOVERNMENT_BURDEN_POOL_COLUMN_HEADER, rates.GovernmentBurdenPools);
                 rateCodeMapRow.CommercialBurdenPoolId = GetNullableIdFromCell(row, ImportExportConstants.COMMERCIAL_BURDEN_POOL_COLUMN_HEADER, rates.CommercialBurdenPools);
                 rateCodeMapRow.Values = new Collection<RateYearModelView>();
@@ -217,7 +225,9 @@ namespace IES.ActionLogic.IO.Import
                     !string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription4) ||
                     !string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription5) ||
                     !string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription6) || 
-                    !string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription7);
+                    !string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription7) ||
+                    !string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription8) ||
+                    !string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription9);
             }
 
             // Return the collection of new DTOs
