@@ -87,6 +87,7 @@
     <Folder Include="Release Scripts\Release 2022.x" />
     <Folder Include="Release Scripts\Release 2023.24" />
     <Folder Include="Release Scripts\ToDo" />
+    <Folder Include="Release Scripts\Release 2023.29" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\ExportCobraRates.sql" />
@@ -163,6 +164,7 @@
     <Build Include="_Full Script Files For Specific Versions\Sql Script For Release 2023.24 Generated On 7_12_2023.sql" />
     <Build Include="Release Scripts\Release 2023.24\1 - Release 2022.24 Script.sql" />
     <Build Include="Release Scripts\ToDo\Update_db_for address Script.sql" />
+    <Build Include="Release Scripts\Release 2023.29\1 - Release 2023.29 Script.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Object Scripts\Stored Procedures\ELMAH_LogError.sql" />
