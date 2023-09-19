@@ -118,422 +118,543 @@ namespace GenBOE.DataBridge.Common
             // access to that page.
 
             // Home
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Home },
-                     new Role[] { Role.None, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // SelectWorkspace
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.SelectWorkspace },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                     SecurityAuthorization.Read);
-
-            // Workspace Home
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceHome },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                     SecurityAuthorization.Read);
-
-            // Workspace Home
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceHome },
-                     new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working },
-                     new Role[] { Role.WorkspaceAdmin },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Manage CLINs, Manage WBS, Manage BOEs
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs },
-                     new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working },
-                     new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs },
-                     new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed },
-                     new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                     SecurityAuthorization.Read);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.ManageBOEs },
-                     new WorkspaceState[] { WorkspaceState.Locked },
-                     new BOEState[] { BOEState.None },  // to allow updates from the Manage BOE summary grid
-                     new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-			InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceRecalculateActuals },
-					 new WorkspaceState[] { WorkspaceState.Working },
-					 new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+            if (!Utilities.IsReadOnly())
+            {
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Home },
+					 new Role[] { Role.None, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
 					 SecurityAuthorization.CreateReadUpdateDelete);
 
-			// Manage INL Forms
-			InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageBOEForms },
-                    new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
-                    new Role[] { Role.SubcontractAdmin, Role.SystemAdmin, Role.WorkspaceAdmin }, 
-                    SecurityAuthorization.CreateReadUpdateDelete);
+				// SelectWorkspace
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.SelectWorkspace },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						 SecurityAuthorization.Read);
 
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageBOEForms },
-                     new WorkspaceState[] { WorkspaceState.Complete, WorkspaceState.Closed },
-                     new Role[] { Role.SubcontractAdmin, Role.SystemAdmin, Role.WorkspaceAdmin },
-                     SecurityAuthorization.Read);
+				// Workspace Home
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceHome },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						 SecurityAuthorization.Read);
 
-            // Workspace Admin Permissions
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceAdminPermissions },
-                     new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                     SecurityAuthorization.CreateReadUpdateDelete);
+				// Workspace Home
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceHome },
+						 new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working },
+						 new Role[] { Role.WorkspaceAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
 
-            // Edit BOE (header - description) [WS Admin has read/write to this field]
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.EditBOEHeaderDescription },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                     SecurityAuthorization.Read);
+				// Manage CLINs, Manage WBS, Manage BOEs
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs },
+						 new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working },
+						 new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
 
-            InitializeMatrix(new SecurityPage[] { SecurityPage.EditBOEHeaderDescription },
-                     new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },
-                     new BOEState[] { BOEState.Draft },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceAdmin },
-                     SecurityAuthorization.ReadUpdate);
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs },
+						 new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed },
+						 new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+						 SecurityAuthorization.Read);
 
-            // Edit BOE (header - all besides description) [difference is WSAdmin only has readonly for these fields (WI 3479)]
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.EditBOEHeader },
-                    new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+				InitializeMatrix(new SecurityPage[] { SecurityPage.ManageBOEs },
+						 new WorkspaceState[] { WorkspaceState.Locked },
+						 new BOEState[] { BOEState.None },  // to allow updates from the Manage BOE summary grid
+						 new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceRecalculateActuals },
+						 new WorkspaceState[] { WorkspaceState.Working },
+						 new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Manage INL Forms
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageBOEForms },
+						new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
+						new Role[] { Role.SubcontractAdmin, Role.SystemAdmin, Role.WorkspaceAdmin },
+						SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageBOEForms },
+						 new WorkspaceState[] { WorkspaceState.Complete, WorkspaceState.Closed },
+						 new Role[] { Role.SubcontractAdmin, Role.SystemAdmin, Role.WorkspaceAdmin },
+						 SecurityAuthorization.Read);
+
+				// Workspace Admin Permissions
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceAdminPermissions },
+						 new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Edit BOE (header - description) [WS Admin has read/write to this field]
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.EditBOEHeaderDescription },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						 SecurityAuthorization.Read);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.EditBOEHeaderDescription },
+						 new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },
+						 new BOEState[] { BOEState.Draft },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceAdmin },
+						 SecurityAuthorization.ReadUpdate);
+
+				// Edit BOE (header - all besides description) [difference is WSAdmin only has readonly for these fields (WI 3479)]
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.EditBOEHeader },
+						new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						SecurityAuthorization.Read);
+
+				// exclude the About Tools menu option from Subcontractors
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.AboutToolsMenu },
+						new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						SecurityAuthorization.Read);
+
+				// exclude the Help menu option from Subcontractors
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.HelpMenu },
+						new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						SecurityAuthorization.Read);
+
+				// exclude the Contact menu option from Subcontractors
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.ContactMenu },
+						new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						SecurityAuthorization.Read);
+
+				// exclude the generation Home menu option from Subcontractors
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.GenerationHome },
+						new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						SecurityAuthorization.Read);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.EditBOEHeader },
+						 new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },
+						 new BOEState[] { BOEState.Draft },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor },
+						 SecurityAuthorization.ReadUpdate);
+
+				// Task Elements
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.TaskElements, SecurityPage.MOQEquationField, SecurityPage.TaskElementsMissionTask },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						 SecurityAuthorization.Read);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.TaskElements, SecurityPage.MOQEquationField, SecurityPage.TaskElementsMissionTask },
+						 new WorkspaceState[] { WorkspaceState.Working },
+						 new BOEState[] { BOEState.Draft },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.TaskElements },
+						 new WorkspaceState[] { WorkspaceState.Locked },
+						 new BOEState[] { BOEState.Draft },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Boe and Task dates
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BoeTaskDates },
+					new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+					SecurityAuthorization.Read);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BoeTaskDates },
+						 new WorkspaceState[] { WorkspaceState.Working },
+						 new BOEState[] { BOEState.Draft },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Travel, Material, and ODC Grids (no subcontractorAuthor access WI 18262)
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BOETravelGrid, SecurityPage.BoeODCGrid, SecurityPage.BoeMaterialsGrid, SecurityPage.BOEZoneTravelGrid },
+						 new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						 SecurityAuthorization.Read);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BOETravelGrid, SecurityPage.BoeODCGrid, SecurityPage.BoeMaterialsGrid, SecurityPage.BOEZoneTravelGrid },
+						new WorkspaceState[] { WorkspaceState.Working },
+						new BOEState[] { BOEState.Draft },
+						new Role[] { Role.Author, Role.WorkspaceAdmin },
+						SecurityAuthorization.CreateReadUpdateDelete);
+
+				//Labor Grid
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BOELaborGrid },
+						new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractorAuthor, Role.SubcontractAdmin },
+						SecurityAuthorization.Read);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BOELaborGrid },
+						new WorkspaceState[] { WorkspaceState.Working },
+						new BOEState[] { BOEState.Draft },
+						new Role[] { Role.Author, Role.SubcontractorAuthor },
+						SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Labor Types
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BoeLaborTypes },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
+						 SecurityAuthorization.Read);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BoeLaborTypes },
+						 new WorkspaceState[] { WorkspaceState.Working },
+						 new BOEState[] { BOEState.Draft },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Materials (no subcontractorAuthor access WI 18262)
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BOEMaterialsTypes },
+						 new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin },
+						 SecurityAuthorization.Read);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BOEMaterialsTypes },
+						 new WorkspaceState[] { WorkspaceState.Working },
+						 new BOEState[] { BOEState.Draft },
+						 new Role[] { Role.Author },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// BOE Approvals
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BOEApproval },
+						 new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Approvers can still approve/reject when the workspace is Locked
+						 new BOEState[] { BOEState.AwaitingApproval },
+						 new Role[] { Role.Approver },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// BOE Comments
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BOEComment },
+						 new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Reviewers can still comment when the workspace is Locked
+						 new BOEState[] { BOEState.Draft },
+						 new Role[] { Role.WorkspaceReviewer },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BOECommentResponse },
+						 new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Authors can still respond to approver or reviewer comments when the workspace is locked
+						 new BOEState[] { BOEState.Draft },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Edit BOE Buttons
+				InitializeMatrix(new SecurityPage[] { SecurityPage.SubmitForReview, SecurityPage.SubmitForApproval },
+						 new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Authors can still submit for review/approval when the workspace is locked
+						 new BOEState[] { BOEState.Draft, BOEState.DraftLocked },
+						 new Role[] { Role.Author, Role.SubcontractorAuthor },
+						 SecurityAuthorization.ReadUpdate);
+
+				// BOE Bulk Submit
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BulkSubmit },
+						 new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Authors and Admins can still submit for review/approval when the workspace is locked
+						 new Role[] { Role.Author, Role.SubcontractorAuthor },
+						 SecurityAuthorization.ReadUpdate);
+
+				// Workspace RTE Templates
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.RTETemplates },
+						 new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin },
+						 SecurityAuthorization.Read);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.RTETemplates },
+					new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Initialization, WorkspaceState.Locked },
+						 new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Workspace Delete
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceDelete },
+						new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin }, SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Workspace Restore
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceRestore },
+						new Role[] { Role.SystemAdmin }, SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.ValidateBOE },
+					   new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Need to be able to validate the BOE as part of Submit-for-Approval
+					   new BOEState[] { BOEState.Draft },
+					   new Role[] { Role.Author, Role.SubcontractorAuthor, Role.Approver, Role.MetricsAdmin, Role.SystemAdmin, Role.WorkspaceReviewer, Role.WorkspaceAdmin, Role.SubcontractAdmin },
+					   SecurityAuthorization.ReadUpdate);
+
+				// Metrics Admin
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.MetricsAdmin },
+						 new Role[] { Role.MetricsAdmin, Role.SystemAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Create Workspace Permissions
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.CreateWorkspacePermissions },
+						 new Role[] { Role.CreateWorkspacePermissions, Role.SystemAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Global Config Pages
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.GlobalConfig },
+						 new Role[] { Role.SystemAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Workspace Resource Page
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceResource },
+					new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Workspace Performing Org Page
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspacePerfOrg },
+					new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Workspace Settings & Save Workspace Version
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettings, SecurityPage.WorkspaceSettingsStatus, SecurityPage.WorkspaceLaborCost, SecurityPage.BoeCustomFieldResource, SecurityPage.SaveVersion },
+					new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettings },
+					new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.Read);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettingsStatus, SecurityPage.WorkspaceLaborCost, SecurityPage.SaveVersion },
+					new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// BOEJ-2890 - Allow workspace admin to change output format template while workspace is locked (as well as in Initialization or Working states).
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettingsOutputFormatTemplate },
+					new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettingsOutputFormatTemplate },
+					new WorkspaceState[] { WorkspaceState.Complete, WorkspaceState.Closed },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.Read);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettingsShareAndAllowSearch },
+					new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Save Workspace Version - Author privileges
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.SaveVersion },
+					new WorkspaceState[] { WorkspaceState.Working },
+					new Role[] { Role.Author },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Reports
+				// Reports (no subcontractorAuthor access WI 18262)
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Reports },
+					new Role[] { Role.Approver, Role.Author, Role.SystemAdmin, Role.WorkspaceAdmin, Role.WorkspaceReviewer, Role.WorkspaceUser, Role.SubcontractAdmin },
+					SecurityAuthorization.Read);
+
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Reports },
+					new Role[] { Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// RMS SSRS Reports
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.SSRSReports },
+					new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin },
+					SecurityAuthorization.Read);
+
+				// Admin
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Admin },
+					new Role[] { Role.SystemAdmin, Role.MetricsAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.SystemAdmin },
+					new Role[] { Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Find and Replace
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.FindReplace },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.ReadUpdate);
+
+				// ExportToProPricer
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.ExportToProPricer },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.ExportToProPricerSystemAdmin },
+					new Role[] { Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Help
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Help, SecurityPage.GenBOEHelp },
+						 new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceUser, Role.SubcontractAdmin },
+						 SecurityAuthorization.Read);
+
+				// Historical Metric Search Results
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.HistoricalMetricSearch },
+					new Role[] { Role.WorkspaceAdmin, Role.WorkspaceUser },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				//BOE Search
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BoeSearch },
+					new WorkspaceState[] { WorkspaceState.Working },
+					new BOEState[] { BOEState.Draft },
+					new Role[] { Role.Author, Role.SubcontractorAuthor },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				//ProjectMap BOE Search
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ProjectMapBoeSearch },
+					new WorkspaceState[] { WorkspaceState.Working },
+					new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				//Copy BOE Conflicts
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BoeCopyConflicts },
+					new Role[] { Role.Author, Role.SubcontractorAuthor },
+					SecurityAuthorization.Read);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.UpdateLockedResourceRatesMenuOption },
+					new WorkspaceState[] { WorkspaceState.Locked },
+					new Role[] { Role.WorkspaceAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateZoneTravelRatesMenuOption },
+					new Role[] { Role.WorkspaceAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateOffloadRatesMenuOption },
+					new Role[] { Role.WorkspaceAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateLockedResourceRates },
+					new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.WorkspaceReviewer, Role.SubcontractorAuthor, Role.SubcontractAdmin },
+					SecurityAuthorization.Read);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.UpdateLockedResourceRates },
+					new WorkspaceState[] { WorkspaceState.Locked },
+					new Role[] { Role.WorkspaceAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// Workspace BOE Custom Field Resource
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFieldResource },
+					new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Closed },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFieldResource },
+					new WorkspaceState[] { WorkspaceState.Complete },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.Read);
+
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BoeCustomFieldResource },
+					new Role[] { Role.SubcontractAdmin },
+					SecurityAuthorization.Read);
+
+				//Workspace BOE Custom Fields (not Resource or Perf Orgs)
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFields },
+					new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked, WorkspaceState.Closed },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFields },
+					new WorkspaceState[] { WorkspaceState.Complete },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.Read);
+
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.EditBoeLockedState },
+					new WorkspaceState[] { WorkspaceState.Locked },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.GettingStartedMenuOption },
+					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+			} 
+            else
+            {
+				Role[] allRoles = new Role[] { Role.None, Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.MetricsAdmin, Role.SystemAdmin, Role.WorkspaceUser, Role.CreateWorkspacePermissions, Role.SubcontractorAuthor, Role.SubcontractAdmin };
+
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.Home },
+					allRoles,
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				// SelectWorkspace
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.SelectWorkspace },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Workspace Home
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.WorkspaceHome },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Edit BOE (header - description) [WS Admin has read/write to this field]
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.EditBOEHeaderDescription },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Edit BOE (header - all besides description) [difference is WSAdmin only has readonly for these fields (WI 3479)]
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.EditBOEHeader },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// exclude the About Tools menu option from Subcontractors
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.AboutToolsMenu },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// exclude the Help menu option from Subcontractors
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.HelpMenu },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// exclude the Contact menu option from Subcontractors
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.ContactMenu },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// exclude the generation Home menu option from Subcontractors
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.GenerationHome },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Task Elements
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.TaskElements, SecurityPage.MOQEquationField, SecurityPage.TaskElementsMissionTask },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Boe and Task dates
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.BoeTaskDates },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Travel, Material, and ODC Grids (no subcontractorAuthor access WI 18262)
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
+                    new SecurityPage[] { SecurityPage.BOETravelGrid, SecurityPage.BoeODCGrid, SecurityPage.BoeMaterialsGrid, SecurityPage.BOEZoneTravelGrid },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				//Labor Grid
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BOELaborGrid },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Labor Types
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BoeLaborTypes },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Materials (no subcontractorAuthor access WI 18262)
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BOEMaterialsTypes }, 
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// BOE Comments
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BOEComment },
+					new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Reviewers can still comment when the workspace is Locked
+					new BOEState[] { BOEState.Draft },
+					allRoles,
+					SecurityAuthorization.CreateReadUpdateDelete);
+
+				InitializeMatrix(new SecurityPage[] { SecurityPage.ValidateBOE }, 
+					new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Need to be able to validate the BOE as part of Submit-for-Approval
+					new BOEState[] { BOEState.Draft },
+					allRoles, 
+					SecurityAuthorization.ReadUpdate);
+
+				// Reports
+				// Reports (no subcontractorAuthor access WI 18262)
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Reports },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Help
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Help, SecurityPage.GenBOEHelp },
+                    allRoles, 
                     SecurityAuthorization.Read);
 
-            // exclude the About Tools menu option from Subcontractors
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.AboutToolsMenu },
-                    new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                    SecurityAuthorization.Read);
-
-            // exclude the Help menu option from Subcontractors
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.HelpMenu },
-                    new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                    SecurityAuthorization.Read);
-
-            // exclude the Contact menu option from Subcontractors
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.ContactMenu },
-                    new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                    SecurityAuthorization.Read);
-
-            // exclude the generation Home menu option from Subcontractors
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.GenerationHome },
-                    new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                    SecurityAuthorization.Read);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.EditBOEHeader },
-                     new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },
-                     new BOEState[] { BOEState.Draft },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor },
-                     SecurityAuthorization.ReadUpdate);
-
-            // Task Elements
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.TaskElements, SecurityPage.MOQEquationField, SecurityPage.TaskElementsMissionTask },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                     SecurityAuthorization.Read);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.TaskElements, SecurityPage.MOQEquationField, SecurityPage.TaskElementsMissionTask },
-                     new WorkspaceState[] { WorkspaceState.Working },
-                     new BOEState[] { BOEState.Draft },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.TaskElements },
-                     new WorkspaceState[] { WorkspaceState.Locked },
-                     new BOEState[] { BOEState.Draft },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Boe and Task dates
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BoeTaskDates },
-                new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                SecurityAuthorization.Read);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.BoeTaskDates },
-                     new WorkspaceState[] { WorkspaceState.Working },
-                     new BOEState[] { BOEState.Draft },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Travel, Material, and ODC Grids (no subcontractorAuthor access WI 18262)
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BOETravelGrid, SecurityPage.BoeODCGrid, SecurityPage.BoeMaterialsGrid, SecurityPage.BOEZoneTravelGrid },
-                     new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                     SecurityAuthorization.Read);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.BOETravelGrid, SecurityPage.BoeODCGrid, SecurityPage.BoeMaterialsGrid, SecurityPage.BOEZoneTravelGrid },
-                    new WorkspaceState[] { WorkspaceState.Working },
-                    new BOEState[] { BOEState.Draft },
-                    new Role[] { Role.Author, Role.WorkspaceAdmin },
-                    SecurityAuthorization.CreateReadUpdateDelete);
-
-            //Labor Grid
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BOELaborGrid},
-                    new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractorAuthor, Role.SubcontractAdmin },
-                    SecurityAuthorization.Read);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.BOELaborGrid},
-                    new WorkspaceState[] { WorkspaceState.Working },
-                    new BOEState[] { BOEState.Draft },
-                    new Role[] { Role.Author,Role.SubcontractorAuthor },
-                    SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Labor Types
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BoeLaborTypes },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin, Role.SubcontractAdmin },
-                     SecurityAuthorization.Read);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.BoeLaborTypes },
-                     new WorkspaceState[] { WorkspaceState.Working },
-                     new BOEState[] { BOEState.Draft },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Materials (no subcontractorAuthor access WI 18262)
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BOEMaterialsTypes },
-                     new Role[] { Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.SystemAdmin },
-                     SecurityAuthorization.Read);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.BOEMaterialsTypes },
-                     new WorkspaceState[] { WorkspaceState.Working },
-                     new BOEState[] { BOEState.Draft },
-                     new Role[] { Role.Author },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // BOE Approvals
-            InitializeMatrix(new SecurityPage[] { SecurityPage.BOEApproval },
-                     new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Approvers can still approve/reject when the workspace is Locked
-                     new BOEState[] { BOEState.AwaitingApproval },
-                     new Role[] { Role.Approver },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // BOE Comments
-            InitializeMatrix(new SecurityPage[] { SecurityPage.BOEComment },
-                     new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Reviewers can still comment when the workspace is Locked
-                     new BOEState[] { BOEState.Draft },
-                     new Role[] { Role.WorkspaceReviewer },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.BOECommentResponse },
-                     new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Authors can still respond to approver or reviewer comments when the workspace is locked
-                     new BOEState[] { BOEState.Draft },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Edit BOE Buttons
-            InitializeMatrix(new SecurityPage[] { SecurityPage.SubmitForReview, SecurityPage.SubmitForApproval },
-                     new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Authors can still submit for review/approval when the workspace is locked
-                     new BOEState[] { BOEState.Draft, BOEState.DraftLocked },
-                     new Role[] { Role.Author, Role.SubcontractorAuthor },
-                     SecurityAuthorization.ReadUpdate);
-
-            // BOE Bulk Submit
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BulkSubmit },
-                     new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Authors and Admins can still submit for review/approval when the workspace is locked
-                     new Role[] { Role.Author, Role.SubcontractorAuthor },
-                     SecurityAuthorization.ReadUpdate);
-
-            // Workspace RTE Templates
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.RTETemplates },
-                     new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin },
-                     SecurityAuthorization.Read);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.RTETemplates },
-                new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Initialization, WorkspaceState.Locked }, 
-                     new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Workspace Delete
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceDelete },
-                    new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin }, SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Workspace Restore
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceRestore },
-                    new Role[] { Role.SystemAdmin }, SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitializeMatrix(new SecurityPage[] { SecurityPage.ValidateBOE },
-                   new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Need to be able to validate the BOE as part of Submit-for-Approval
-                   new BOEState[] { BOEState.Draft },
-                   new Role[] { Role.Author, Role.SubcontractorAuthor, Role.Approver, Role.MetricsAdmin, Role.SystemAdmin, Role.WorkspaceReviewer, Role.WorkspaceAdmin, Role.SubcontractAdmin },
-                   SecurityAuthorization.ReadUpdate);
-
-            // Metrics Admin
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.MetricsAdmin },
-                     new Role[] { Role.MetricsAdmin, Role.SystemAdmin },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Create Workspace Permissions
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.CreateWorkspacePermissions },
-                     new Role[] { Role.CreateWorkspacePermissions, Role.SystemAdmin },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Global Config Pages
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.GlobalConfig },
-                     new Role[] { Role.SystemAdmin },
-                     SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Workspace Resource Page
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceResource },
-                new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Workspace Performing Org Page
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspacePerfOrg },
-                new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Workspace Settings & Save Workspace Version
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettings, SecurityPage.WorkspaceSettingsStatus, SecurityPage.WorkspaceLaborCost, SecurityPage.BoeCustomFieldResource, SecurityPage.SaveVersion },
-                new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettings },
-                new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.Read);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettingsStatus, SecurityPage.WorkspaceLaborCost, SecurityPage.SaveVersion },
-                new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            // BOEJ-2890 - Allow workspace admin to change output format template while workspace is locked (as well as in Initialization or Working states).
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettingsOutputFormatTemplate },
-                new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettingsOutputFormatTemplate },
-                new WorkspaceState[] { WorkspaceState.Complete, WorkspaceState.Closed },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.Read);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceSettingsShareAndAllowSearch },
-                new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Save Workspace Version - Author privileges
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.SaveVersion },
-                new WorkspaceState[] { WorkspaceState.Working },
-                new Role[] { Role.Author },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Reports
-            // Reports (no subcontractorAuthor access WI 18262)
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Reports },
-                new Role[] { Role.Approver, Role.Author, Role.SystemAdmin, Role.WorkspaceAdmin, Role.WorkspaceReviewer, Role.WorkspaceUser, Role.SubcontractAdmin },
-                SecurityAuthorization.Read);
-
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Reports },
-                new Role[] { Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            // RMS SSRS Reports
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.SSRSReports },
-                new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin },
-                SecurityAuthorization.Read);
-
-            // Admin
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Admin },
-                new Role[] { Role.SystemAdmin, Role.MetricsAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.SystemAdmin },
-                new Role[] { Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Find and Replace
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.FindReplace },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.ReadUpdate);
-
-            // ExportToProPricer
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.ExportToProPricer },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.ExportToProPricerSystemAdmin },
-                new Role[] { Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Help
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Help, SecurityPage.GenBOEHelp },
-                     new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceUser, Role.SubcontractAdmin },
-                     SecurityAuthorization.Read);
-
-            // Historical Metric Search Results
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.HistoricalMetricSearch },
-                new Role[] { Role.WorkspaceAdmin, Role.WorkspaceUser },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            //BOE Search
-            InitializeMatrix(new SecurityPage[] { SecurityPage.BoeSearch },
-                new WorkspaceState[] { WorkspaceState.Working },
-                new BOEState[] { BOEState.Draft },
-                new Role[] { Role.Author, Role.SubcontractorAuthor },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            //ProjectMap BOE Search
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ProjectMapBoeSearch },
-                new WorkspaceState[] { WorkspaceState.Working },
-                new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            //Copy BOE Conflicts
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BoeCopyConflicts },
-                new Role[] { Role.Author, Role.SubcontractorAuthor },
-                SecurityAuthorization.Read);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.UpdateLockedResourceRatesMenuOption },
-                new WorkspaceState[] { WorkspaceState.Locked },
-                new Role[] { Role.WorkspaceAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateZoneTravelRatesMenuOption },
-                new Role[] { Role.WorkspaceAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateOffloadRatesMenuOption },
-                new Role[] { Role.WorkspaceAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateLockedResourceRates },
-                new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.WorkspaceReviewer, Role.SubcontractorAuthor, Role.SubcontractAdmin },
-                SecurityAuthorization.Read);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.UpdateLockedResourceRates },
-                new WorkspaceState[] { WorkspaceState.Locked },
-                new Role[] { Role.WorkspaceAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            // Workspace BOE Custom Field Resource
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFieldResource },
-                new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Closed },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFieldResource },
-                new WorkspaceState[] { WorkspaceState.Complete },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.Read);
-
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BoeCustomFieldResource },
-                new Role[] { Role.SubcontractAdmin },
-                SecurityAuthorization.Read);
-            
-            //Workspace BOE Custom Fields (not Resource or Perf Orgs)
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFields },
-                new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked, WorkspaceState.Closed },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFields },
-                new WorkspaceState[] { WorkspaceState.Complete },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.Read);
-
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.EditBoeLockedState },
-                new WorkspaceState[] { WorkspaceState.Locked },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.GettingStartedMenuOption },
-                new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
-                SecurityAuthorization.CreateReadUpdateDelete);
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateLockedResourceRates },
+					allRoles,
+					SecurityAuthorization.Read);
+			}
 
             #endregion
         }

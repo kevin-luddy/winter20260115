@@ -11,7 +11,8 @@ namespace GenBOE.Web.Controllers
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Linq;
-    using System.Transactions;
+	using System.Runtime.CompilerServices;
+	using System.Transactions;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.Common;
@@ -90,6 +91,8 @@ namespace GenBOE.Web.Controllers
             UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
             bool userIsSubcontractor = _SecInfo.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor);
             GenBOEHomepageModelView theModelView = new GenBOEHomepageModelView();
+
+            theModelView.isReadOnly = SiteMasterUtilities.IsReadOnly();
 
             if (!userIsSubcontractor)
             {

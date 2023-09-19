@@ -5,6 +5,7 @@
     $scope.showFavoritesOnly = false;
     $scope.hideTracking = HomePageModel.hideTracking;
     $scope.isPtmIntegrated = HomePageModel.isPtmIntegrated;
+    $scope.isReadOnly = false;
 
     $scope.columns = {
         name: 'WorkspaceName',
@@ -557,6 +558,10 @@
             }
 
             $scope.canCreateWS = response.data.canCreateWS;
+
+            console.log(response.data);
+            $scope.isReadOnly = response.data.isReadOnly;
+
             $scope.updateWorkspaces();
 
             response.data.workspaceGridRows.forEach(function (item) {
