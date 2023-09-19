@@ -2643,8 +2643,10 @@ namespace GenBOE.Web.Controllers
             // get all data
             HomeWorkspaceGridModelView theModelView = _GetHomeWorkspaceGridData(ws);
 
-            // Action Finalize
-            FinalizeAction(_log, "GetWorkspaceHomeModel", sw);
+            theModelView.isReadOnly = SiteMasterUtilities.IsReadOnly();
+
+			// Action Finalize
+			FinalizeAction(_log, "GetWorkspaceHomeModel", sw);
 
             return Json(theModelView);
         }

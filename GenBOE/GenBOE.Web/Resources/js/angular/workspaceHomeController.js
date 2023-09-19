@@ -37,6 +37,7 @@
 
     $scope.data = [];
     $scope.isLoading = true;
+    $scope.isReadOnly = false;
     $scope.isWorkingState = WorkspaceHomeModel.workspaceState === 'Working';
     $scope.isWorkspaceLocked = WorkspaceHomeModel.workspaceState === 'Locked';
 
@@ -717,6 +718,9 @@
             url: CreatePostURL(WorkspaceHomeModel.workspace, WorkspaceHomeModel.controller, WorkspaceHomeModel.action, '')
         }).then(function (response) {
             currentUserName = response.data.CurrentUserDisplayName;
+
+            console.log(response.data);
+            $scope.isReadOnly = response.data.isReadOnly;
             response.data.items.forEach(function (item) {
                 item.url = CreatePostURL(WorkspaceHomeModel.workspace, WorkspaceHomeModel.boeController, WorkspaceHomeModel.editAction, 'boe/') + item.BOEID;
 

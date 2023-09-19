@@ -559,7 +559,6 @@
 
             $scope.canCreateWS = response.data.canCreateWS;
 
-            console.log(response.data);
             $scope.isReadOnly = response.data.isReadOnly;
 
             $scope.updateWorkspaces();
