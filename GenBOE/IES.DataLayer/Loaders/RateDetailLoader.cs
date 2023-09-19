@@ -786,13 +786,14 @@ namespace IES.DataBridge.Loaders
 				dtoToUpsert.ProPricerMappings = this.proPricerXrefLoader.GetByRateCodeId(dtoToUpsert.Id);
 			}
 
-            string[] descs = { dtoToUpsert.RateDescription, dtoToUpsert.RateDescription1, dtoToUpsert.RateDescription2, dtoToUpsert.RateDescription3, dtoToUpsert.RateDescription4, dtoToUpsert.RateDescription5, dtoToUpsert.RateDescription6, dtoToUpsert.RateDescription7, dtoToUpsert.RateDescription8, dtoToUpsert.RateDescription9 };
-            int?[] resourceClassIds = { dtoToUpsert.ResourceClassId, dtoToUpsert.ResourceClassId1, dtoToUpsert.ResourceClassId2, dtoToUpsert.ResourceClassId3, dtoToUpsert.ResourceClassId4, dtoToUpsert.ResourceClassId5, dtoToUpsert.ResourceClassId6, dtoToUpsert.ResourceClassId7, dtoToUpsert.ResourceClassId8, dtoToUpsert.ResourceClassId9 };
-            var numbersAndDescs = this.numbers.Zip(descs, (first, second) => new Tuple<int?, string>(first, second));
+            string[] descs = GetRateDescriptions(dtoToUpsert);
+            int?[] resourceClassIds = GetResourceIds(dtoToUpsert);
 
-			foreach (Tuple<int?, string> numberAndDesc in numbersAndDescs)
+			for (int i = 0; i < this.numbers.Length; i++)
 			{
-				int index = numberAndDesc.Item1.HasValue ? numberAndDesc.Item1.Value : 0;
+				string desc = descs[i];
+				int? number = this.numbers[i];
+				//bool isOneLMX = number.HasValue && number.Value > 10;
 				string newDescription = string.Empty;
 				int? newResourceClassId = 0;
 				ProPricerRateCodeXrefModelView previousXref = null;
@@ -800,20 +801,20 @@ namespace IES.DataBridge.Loaders
 				// Get previous and new descriptions for this Xref.
 				if (dtoToUpsert.ProPricerMappings != null)
 				{
-					previousXref = dtoToUpsert.ProPricerMappings.FirstOrDefault(x => x.RateCodeExtensionId == numberAndDesc.Item1);
+					previousXref = dtoToUpsert.ProPricerMappings.FirstOrDefault(x => x.RateCodeExtensionId == number);
 				}
 
-				if (numberAndDesc.Item2 != null)
+				if (desc != null)
 				{
-					newDescription = numberAndDesc.Item2.ToString().Trim(' ');
+					newDescription = desc.Trim(' ');
 					// only set resource class if corresponding description is populated
-					newResourceClassId = resourceClassIds[index];
+					newResourceClassId = resourceClassIds[i];
 				}
 
 				// The first part of this if statement deals with the rates we are keeping based on the GenerateAdditionalDirectLaborRates flag.
 				// Everything else is deleted.
-				if ((dtoToUpsert.GenerateAdditionalDirectLaborRates != true && !numberAndDesc.Item1.HasValue) ||
-					(dtoToUpsert.GenerateAdditionalDirectLaborRates && numberAndDesc.Item1.HasValue && numberAndDesc.Item1.Value > 0))
+				if ((dtoToUpsert.GenerateAdditionalDirectLaborRates != true && !number.HasValue) ||
+					(dtoToUpsert.GenerateAdditionalDirectLaborRates && number.HasValue && number.Value > 0))
 				{
 					// There has been a change to an existing xref.
 					if (previousXref != null &&
@@ -843,7 +844,7 @@ namespace IES.DataBridge.Loaders
 							RateCodeId = (int)newRateCode,
 							Description = newDescription,
 							ResourceClassId = newResourceClassId,
-							RateCodeExtensionId = numberAndDesc.Item1
+							RateCodeExtensionId = number
 						};
 
 						// Add the new xref to the dto.
@@ -1099,6 +1100,46 @@ namespace IES.DataBridge.Loaders
 			// Using Bulk Save
 			this.BulkSave(dirtyRateDetails);
 		}
+		#endregion
+
+		#region Private Functions
+
+		private string[] GetRateDescriptions(RateDetailModelView dtoToUpsert)
+		{
+			return new string [] { 
+				dtoToUpsert.RateDescription, dtoToUpsert.RateDescription1, dtoToUpsert.RateDescription2, dtoToUpsert.RateDescription3, dtoToUpsert.RateDescription4, dtoToUpsert.RateDescription5, 
+				dtoToUpsert.RateDescription6, dtoToUpsert.RateDescription7, dtoToUpsert.RateDescription8, dtoToUpsert.RateDescription9,
+
+				dtoToUpsert.RateDescription11, dtoToUpsert.RateDescription12, dtoToUpsert.RateDescription13, dtoToUpsert.RateDescription14, dtoToUpsert.RateDescription15,
+				dtoToUpsert.RateDescription21, dtoToUpsert.RateDescription22, dtoToUpsert.RateDescription23, dtoToUpsert.RateDescription24, dtoToUpsert.RateDescription25,
+				dtoToUpsert.RateDescription31, dtoToUpsert.RateDescription32, dtoToUpsert.RateDescription33, dtoToUpsert.RateDescription34, dtoToUpsert.RateDescription35,
+				dtoToUpsert.RateDescription41, dtoToUpsert.RateDescription42, dtoToUpsert.RateDescription43, dtoToUpsert.RateDescription44, dtoToUpsert.RateDescription45,
+				dtoToUpsert.RateDescription51, dtoToUpsert.RateDescription52, dtoToUpsert.RateDescription53, dtoToUpsert.RateDescription54, dtoToUpsert.RateDescription55,
+				dtoToUpsert.RateDescription61, dtoToUpsert.RateDescription62, dtoToUpsert.RateDescription63, dtoToUpsert.RateDescription64, dtoToUpsert.RateDescription65,
+				dtoToUpsert.RateDescription71, dtoToUpsert.RateDescription72, dtoToUpsert.RateDescription73, dtoToUpsert.RateDescription74, dtoToUpsert.RateDescription75,
+				dtoToUpsert.RateDescription81, dtoToUpsert.RateDescription82, dtoToUpsert.RateDescription83, dtoToUpsert.RateDescription84, dtoToUpsert.RateDescription85,
+				dtoToUpsert.RateDescription91, dtoToUpsert.RateDescription92, dtoToUpsert.RateDescription93, dtoToUpsert.RateDescription94, dtoToUpsert.RateDescription95,
+			};
+		}
+
+		private int?[] GetResourceIds(RateDetailModelView dtoToUpsert)
+		{
+			return new int?[] {
+				dtoToUpsert.ResourceClassId, dtoToUpsert.ResourceClassId1, dtoToUpsert.ResourceClassId2, dtoToUpsert.ResourceClassId3, dtoToUpsert.ResourceClassId4, dtoToUpsert.ResourceClassId5,
+				dtoToUpsert.ResourceClassId6, dtoToUpsert.ResourceClassId7, dtoToUpsert.ResourceClassId8, dtoToUpsert.ResourceClassId9,
+
+				dtoToUpsert.ResourceClassId11, dtoToUpsert.ResourceClassId12, dtoToUpsert.ResourceClassId13, dtoToUpsert.ResourceClassId14, dtoToUpsert.ResourceClassId15,
+				dtoToUpsert.ResourceClassId21, dtoToUpsert.ResourceClassId22, dtoToUpsert.ResourceClassId23, dtoToUpsert.ResourceClassId24, dtoToUpsert.ResourceClassId25,
+				dtoToUpsert.ResourceClassId31, dtoToUpsert.ResourceClassId32, dtoToUpsert.ResourceClassId33, dtoToUpsert.ResourceClassId34, dtoToUpsert.ResourceClassId35,
+				dtoToUpsert.ResourceClassId41, dtoToUpsert.ResourceClassId42, dtoToUpsert.ResourceClassId43, dtoToUpsert.ResourceClassId44, dtoToUpsert.ResourceClassId45,
+				dtoToUpsert.ResourceClassId51, dtoToUpsert.ResourceClassId52, dtoToUpsert.ResourceClassId53, dtoToUpsert.ResourceClassId54, dtoToUpsert.ResourceClassId55,
+				dtoToUpsert.ResourceClassId61, dtoToUpsert.ResourceClassId62, dtoToUpsert.ResourceClassId63, dtoToUpsert.ResourceClassId64, dtoToUpsert.ResourceClassId65,
+				dtoToUpsert.ResourceClassId71, dtoToUpsert.ResourceClassId72, dtoToUpsert.ResourceClassId73, dtoToUpsert.ResourceClassId74, dtoToUpsert.ResourceClassId75,
+				dtoToUpsert.ResourceClassId81, dtoToUpsert.ResourceClassId82, dtoToUpsert.ResourceClassId83, dtoToUpsert.ResourceClassId84, dtoToUpsert.ResourceClassId85,
+				dtoToUpsert.ResourceClassId91, dtoToUpsert.ResourceClassId92, dtoToUpsert.ResourceClassId93, dtoToUpsert.ResourceClassId94, dtoToUpsert.ResourceClassId95
+			};
+		} 
+
 		#endregion
 	}
 }

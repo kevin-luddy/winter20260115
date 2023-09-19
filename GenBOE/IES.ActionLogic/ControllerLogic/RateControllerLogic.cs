@@ -1070,15 +1070,60 @@ namespace IES.ActionLogic.ControllerLogic
                 (int)existingRateCode.RateCategory != (int)importedRateCode.RateCategory ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription, importedRateCode.RateDescription) ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription1, importedRateCode.RateDescription1) ||
-                !this.IsStringPropertyEquivalent(existingRateCode.RateDescription2, importedRateCode.RateDescription2) ||
-                !this.IsStringPropertyEquivalent(existingRateCode.RateDescription3, importedRateCode.RateDescription3) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription2, importedRateCode.RateDescription2) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription3, importedRateCode.RateDescription3) ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription4, importedRateCode.RateDescription4) ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription5, importedRateCode.RateDescription5) ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription6, importedRateCode.RateDescription6) ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription7, importedRateCode.RateDescription7) ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription8, importedRateCode.RateDescription8) ||
                 !this.IsStringPropertyEquivalent(existingRateCode.RateDescription9, importedRateCode.RateDescription9) ||
-                !this.IsNullableIdPropertyEquivalent((int?)existingRateCode.RateType, (int?)importedRateCode.RateType) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription11, importedRateCode.RateDescription11) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription12, importedRateCode.RateDescription12) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription13, importedRateCode.RateDescription13) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription14, importedRateCode.RateDescription14) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription15, importedRateCode.RateDescription15) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription21, importedRateCode.RateDescription21) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription22, importedRateCode.RateDescription22) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription23, importedRateCode.RateDescription23) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription24, importedRateCode.RateDescription24) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription25, importedRateCode.RateDescription25) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription31, importedRateCode.RateDescription31) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription32, importedRateCode.RateDescription32) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription33, importedRateCode.RateDescription33) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription34, importedRateCode.RateDescription34) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription35, importedRateCode.RateDescription35) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription41, importedRateCode.RateDescription41) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription42, importedRateCode.RateDescription42) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription43, importedRateCode.RateDescription43) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription44, importedRateCode.RateDescription44) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription45, importedRateCode.RateDescription45) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription51, importedRateCode.RateDescription51) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription52, importedRateCode.RateDescription52) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription53, importedRateCode.RateDescription53) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription54, importedRateCode.RateDescription54) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription55, importedRateCode.RateDescription55) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription61, importedRateCode.RateDescription61) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription62, importedRateCode.RateDescription62) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription63, importedRateCode.RateDescription63) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription64, importedRateCode.RateDescription64) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription65, importedRateCode.RateDescription65) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription71, importedRateCode.RateDescription71) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription72, importedRateCode.RateDescription72) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription73, importedRateCode.RateDescription73) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription74, importedRateCode.RateDescription74) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription75, importedRateCode.RateDescription75) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription81, importedRateCode.RateDescription81) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription82, importedRateCode.RateDescription82) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription83, importedRateCode.RateDescription83) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription84, importedRateCode.RateDescription84) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription85, importedRateCode.RateDescription85) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription91, importedRateCode.RateDescription91) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription92, importedRateCode.RateDescription92) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription93, importedRateCode.RateDescription93) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription94, importedRateCode.RateDescription94) ||
+				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription95, importedRateCode.RateDescription95) ||
+				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.RateType, (int?)importedRateCode.RateType) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId, importedRateCode.ResourceClassId) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId1, importedRateCode.ResourceClassId1) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId2, importedRateCode.ResourceClassId2) ||
@@ -1089,7 +1134,53 @@ namespace IES.ActionLogic.ControllerLogic
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId7, importedRateCode.ResourceClassId7) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId8, importedRateCode.ResourceClassId8) ||
                 !this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId9, importedRateCode.ResourceClassId9) ||
-                !this.IsNullableIdPropertyEquivalent((int?)existingRateCode.ResourceType, (int?)importedRateCode.ResourceType) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId11, importedRateCode.ResourceClassId11) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId12, importedRateCode.ResourceClassId12) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId13, importedRateCode.ResourceClassId13) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId14, importedRateCode.ResourceClassId14) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId15, importedRateCode.ResourceClassId15) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId21, importedRateCode.ResourceClassId21) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId22, importedRateCode.ResourceClassId22) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId23, importedRateCode.ResourceClassId23) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId24, importedRateCode.ResourceClassId24) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId25, importedRateCode.ResourceClassId25) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId31, importedRateCode.ResourceClassId31) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId32, importedRateCode.ResourceClassId32) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId33, importedRateCode.ResourceClassId33) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId34, importedRateCode.ResourceClassId34) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId35, importedRateCode.ResourceClassId35) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId41, importedRateCode.ResourceClassId41) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId42, importedRateCode.ResourceClassId42) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId43, importedRateCode.ResourceClassId43) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId44, importedRateCode.ResourceClassId44) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId45, importedRateCode.ResourceClassId45) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId51, importedRateCode.ResourceClassId51) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId52, importedRateCode.ResourceClassId52) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId53, importedRateCode.ResourceClassId53) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId54, importedRateCode.ResourceClassId54) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId55, importedRateCode.ResourceClassId55) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId61, importedRateCode.ResourceClassId61) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId62, importedRateCode.ResourceClassId62) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId63, importedRateCode.ResourceClassId63) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId64, importedRateCode.ResourceClassId64) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId65, importedRateCode.ResourceClassId65) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId71, importedRateCode.ResourceClassId71) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId72, importedRateCode.ResourceClassId72) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId73, importedRateCode.ResourceClassId73) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId74, importedRateCode.ResourceClassId74) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId75, importedRateCode.ResourceClassId75) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId81, importedRateCode.ResourceClassId81) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId82, importedRateCode.ResourceClassId82) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId83, importedRateCode.ResourceClassId83) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId84, importedRateCode.ResourceClassId84) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId85, importedRateCode.ResourceClassId85) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId91, importedRateCode.ResourceClassId91) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId92, importedRateCode.ResourceClassId92) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId93, importedRateCode.ResourceClassId93) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId94, importedRateCode.ResourceClassId94) ||
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId95, importedRateCode.ResourceClassId95) ||
+
+				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.ResourceType, (int?)importedRateCode.ResourceType) ||
                 existingRateCode.RevisionId != importedRateCode.RevisionId ||
                 !this.IsNullableIdPropertyEquivalent((int?)existingRateCode.Section, (int?)importedRateCode.Section);
         }
