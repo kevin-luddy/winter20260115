@@ -47,7 +47,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				if (settingsData.ShowYears == true)
 				{
-					settingsData.GroupingField = "CalendarYear"; 
+					settingsData.GroupingField = Constants.COLUMN_FIELD_CALENDAR_YEAR; 
 				}
             }
 			boeDataGroup.ChildData = ExportTraceTableDataGroup(workspace, settingsData);
@@ -133,25 +133,27 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					switch (groupingField)
 					{
-						case "CalendarYear":
+						case Constants.COLUMN_FIELD_CALENDAR_YEAR:
 							for (int year = workspace.StartDate.Value.Year; year <= workspace.EndDate.Value.Year; year++)
 							{
 								parent.SpreadValuesForGroup.Add(year.ToString(), spreads.Where(x => x.LaborSpreadDate.Year == year).Sum(x => x.LaborSpreadValue));
 							}
 							break;
-						case "CLIN":
+						case Constants.COLUMN_FIELD_CLIN:
 							foreach (var clin in workspace.Clins)
 							{
 								parent.SpreadValuesForGroup.Add(clin.ClinString, resourceTypes.Where(r => r.CLINID == clin.Id).SelectMany(s => s.LaborSpreads).Sum(x => x.LaborSpreadValue)); 
 							}
 							break;
-						case "WBS":
+						case Constants.COLUMN_FIELD_WBS:
 							foreach (var wbs in workspace.WbsElements)
 							{
                                 parent.SpreadValuesForGroup.Add(wbs.WbsString, resourceTypes.Where(r => r.WBSID == wbs.Id).SelectMany(s => s.LaborSpreads).Sum(x => x.LaborSpreadValue));
                             }
                             break;
-                        case "Blank":
+                        case Constants.COLUMN_FIELD_BLANK:
+                            break;
+						case "":
                             break;
                         default:
                             break;

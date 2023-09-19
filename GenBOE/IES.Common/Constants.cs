@@ -893,5 +893,25 @@ namespace IES.Common
         /// Divisor for Formula of PoP Months Calculation
         /// </summary>
         public const decimal POP_MONTHS_DIVISOR = 30.42m;
+
+        /// <summary>
+        /// Calendar Year Column Field for Trace Tables.
+        /// </summary>
+        public const string COLUMN_FIELD_CALENDAR_YEAR = "Calendar Year";
+
+        /// <summary>
+        /// WBS # Column Field for Trace Tables.
+        /// </summary>
+        public const string COLUMN_FIELD_WBS = "WBS #";
+
+        /// <summary>
+        /// CLIN # Column Field for Trace Tables.
+        /// </summary>
+        public const string COLUMN_FIELD_CLIN = "CLIN #";
+
+        /// <summary>
+        /// Blank Column Field for Trace Tables.
+        /// </summary>
+        public const string COLUMN_FIELD_BLANK = "Blank";
     }
 }
