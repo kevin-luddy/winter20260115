@@ -781,6 +781,15 @@ namespace IES.DataBridge.Loaders
 				throw new ArgumentNullException(nameof(dtoToUpsert));
 			}
 
+			if (dtoToUpsert.DisclosureType == DisclosureType.OneLMX)
+			{
+				NullOutNonOneLMXRates(dtoToUpsert);
+			}
+			else
+			{
+				NullOutOneLMXRates(dtoToUpsert);
+			}
+
 			if (dtoToUpsert.ProPricerMappings == null)
 			{
 				dtoToUpsert.ProPricerMappings = this.proPricerXrefLoader.GetByRateCodeId(dtoToUpsert.Id);
@@ -793,7 +802,6 @@ namespace IES.DataBridge.Loaders
 			{
 				string desc = descs[i];
 				int? number = this.numbers[i];
-				//bool isOneLMX = number.HasValue && number.Value > 10;
 				string newDescription = string.Empty;
 				int? newResourceClassId = 0;
 				ProPricerRateCodeXrefModelView previousXref = null;
@@ -1104,6 +1112,11 @@ namespace IES.DataBridge.Loaders
 
 		#region Private Functions
 
+		/// <summary>
+		/// Get array of RateDescriptions for given RateDetailModelView
+		/// </summary>
+		/// <param name="dtoToUpsert">Model to get Descriptions from</param>
+		/// <returns>Array of Rate Descriptions</returns>
 		private string[] GetRateDescriptions(RateDetailModelView dtoToUpsert)
 		{
 			return new string [] { 
@@ -1122,6 +1135,11 @@ namespace IES.DataBridge.Loaders
 			};
 		}
 
+		/// <summary>
+		/// Gets Array of ResourceClassId's for given RateDetailModelView
+		/// </summary>
+		/// <param name="dtoToUpsert">Model to reference</param>
+		/// <returns>Array of ResourceClassId's</returns>
 		private int?[] GetResourceIds(RateDetailModelView dtoToUpsert)
 		{
 			return new int?[] {
@@ -1138,7 +1156,63 @@ namespace IES.DataBridge.Loaders
 				dtoToUpsert.ResourceClassId81, dtoToUpsert.ResourceClassId82, dtoToUpsert.ResourceClassId83, dtoToUpsert.ResourceClassId84, dtoToUpsert.ResourceClassId85,
 				dtoToUpsert.ResourceClassId91, dtoToUpsert.ResourceClassId92, dtoToUpsert.ResourceClassId93, dtoToUpsert.ResourceClassId94, dtoToUpsert.ResourceClassId95
 			};
-		} 
+		}
+
+		/// <summary>
+		/// Null out Non 1LMX Rates
+		/// </summary>
+		/// <param name="dtoToUpsert">Model to modify</param>
+		private void NullOutNonOneLMXRates(RateDetailModelView dtoToUpsert)
+		{
+			dtoToUpsert.ResourceClassId = null;
+			dtoToUpsert.ResourceClassId1 = null;
+			dtoToUpsert.ResourceClassId2 = null;
+			dtoToUpsert.ResourceClassId3 = null;
+			dtoToUpsert.ResourceClassId4 = null;
+			dtoToUpsert.ResourceClassId5 = null;
+			dtoToUpsert.ResourceClassId6 = null;
+			dtoToUpsert.ResourceClassId7 = null;
+			dtoToUpsert.ResourceClassId8 = null;
+			dtoToUpsert.ResourceClassId9 = null;
+
+			dtoToUpsert.RateDescription = string.Empty;
+			dtoToUpsert.RateDescription1 = string.Empty;
+			dtoToUpsert.RateDescription2 = string.Empty;
+			dtoToUpsert.RateDescription3 = string.Empty;
+			dtoToUpsert.RateDescription4 = string.Empty; 
+			dtoToUpsert.RateDescription5 = string.Empty;
+			dtoToUpsert.RateDescription6 = string.Empty;
+			dtoToUpsert.RateDescription7 = string.Empty; 
+			dtoToUpsert.RateDescription8 = string.Empty; 
+			dtoToUpsert.RateDescription9 = string.Empty;
+		}
+
+		/// <summary>
+		/// Null out 1LMX Rates
+		/// </summary>
+		/// <param name="dtoToUpsert">Model to Modify</param>
+		private void NullOutOneLMXRates(RateDetailModelView dtoToUpsert)
+		{
+			dtoToUpsert.RateDescription11 = string.Empty; dtoToUpsert.RateDescription12 = string.Empty; dtoToUpsert.RateDescription13 = string.Empty; dtoToUpsert.RateDescription14 = string.Empty; dtoToUpsert.RateDescription15 = string.Empty;
+			dtoToUpsert.RateDescription21 = string.Empty; dtoToUpsert.RateDescription22 = string.Empty; dtoToUpsert.RateDescription23 = string.Empty; dtoToUpsert.RateDescription24 = string.Empty; dtoToUpsert.RateDescription25 = string.Empty;
+			dtoToUpsert.RateDescription31 = string.Empty; dtoToUpsert.RateDescription32 = string.Empty; dtoToUpsert.RateDescription33 = string.Empty; dtoToUpsert.RateDescription34 = string.Empty; dtoToUpsert.RateDescription35 = string.Empty;
+			dtoToUpsert.RateDescription41 = string.Empty; dtoToUpsert.RateDescription42 = string.Empty; dtoToUpsert.RateDescription43 = string.Empty; dtoToUpsert.RateDescription44 = string.Empty; dtoToUpsert.RateDescription45 = string.Empty;
+			dtoToUpsert.RateDescription51 = string.Empty; dtoToUpsert.RateDescription52 = string.Empty; dtoToUpsert.RateDescription53 = string.Empty; dtoToUpsert.RateDescription54 = string.Empty; dtoToUpsert.RateDescription55 = string.Empty;
+			dtoToUpsert.RateDescription61 = string.Empty; dtoToUpsert.RateDescription62 = string.Empty; dtoToUpsert.RateDescription63 = string.Empty; dtoToUpsert.RateDescription64 = string.Empty; dtoToUpsert.RateDescription65 = string.Empty;
+			dtoToUpsert.RateDescription71 = string.Empty; dtoToUpsert.RateDescription72 = string.Empty; dtoToUpsert.RateDescription73 = string.Empty; dtoToUpsert.RateDescription74 = string.Empty; dtoToUpsert.RateDescription75 = string.Empty;
+			dtoToUpsert.RateDescription81 = string.Empty; dtoToUpsert.RateDescription82 = string.Empty; dtoToUpsert.RateDescription83 = string.Empty; dtoToUpsert.RateDescription84 = string.Empty; dtoToUpsert.RateDescription85 = string.Empty;
+			dtoToUpsert.RateDescription91 = string.Empty; dtoToUpsert.RateDescription92 = string.Empty; dtoToUpsert.RateDescription93 = string.Empty; dtoToUpsert.RateDescription94 = string.Empty; dtoToUpsert.RateDescription95 = string.Empty;
+
+			dtoToUpsert.ResourceClassId11 = null; dtoToUpsert.ResourceClassId12 = null; dtoToUpsert.ResourceClassId13 = null; dtoToUpsert.ResourceClassId14 = null; dtoToUpsert.ResourceClassId15 = null;
+			dtoToUpsert.ResourceClassId21 = null; dtoToUpsert.ResourceClassId22 = null; dtoToUpsert.ResourceClassId23 = null; dtoToUpsert.ResourceClassId24 = null; dtoToUpsert.ResourceClassId25 = null;
+			dtoToUpsert.ResourceClassId31 = null; dtoToUpsert.ResourceClassId32 = null; dtoToUpsert.ResourceClassId33 = null; dtoToUpsert.ResourceClassId34 = null; dtoToUpsert.ResourceClassId35 = null;
+			dtoToUpsert.ResourceClassId41 = null; dtoToUpsert.ResourceClassId42 = null; dtoToUpsert.ResourceClassId43 = null; dtoToUpsert.ResourceClassId44 = null; dtoToUpsert.ResourceClassId45 = null;
+			dtoToUpsert.ResourceClassId51 = null; dtoToUpsert.ResourceClassId52 = null; dtoToUpsert.ResourceClassId53 = null; dtoToUpsert.ResourceClassId54 = null; dtoToUpsert.ResourceClassId55 = null;
+			dtoToUpsert.ResourceClassId61 = null; dtoToUpsert.ResourceClassId62 = null; dtoToUpsert.ResourceClassId63 = null; dtoToUpsert.ResourceClassId64 = null; dtoToUpsert.ResourceClassId65 = null;
+			dtoToUpsert.ResourceClassId71 = null; dtoToUpsert.ResourceClassId72 = null; dtoToUpsert.ResourceClassId73 = null; dtoToUpsert.ResourceClassId74 = null; dtoToUpsert.ResourceClassId75 = null;
+			dtoToUpsert.ResourceClassId81 = null; dtoToUpsert.ResourceClassId82 = null; dtoToUpsert.ResourceClassId83 = null; dtoToUpsert.ResourceClassId84 = null; dtoToUpsert.ResourceClassId85 = null;
+			dtoToUpsert.ResourceClassId91 = null; dtoToUpsert.ResourceClassId92 = null; dtoToUpsert.ResourceClassId93 = null; dtoToUpsert.ResourceClassId94 = null; dtoToUpsert.ResourceClassId95 = null;
+		}
 
 		#endregion
 	}
