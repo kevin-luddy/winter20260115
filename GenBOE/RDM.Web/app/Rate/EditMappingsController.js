@@ -139,7 +139,52 @@ angular.module("RDM").controller("EditMappingsController",
                 content.RD6 ||
                 content.RD7 ||
                 content.RD8 ||
-                content.RD9;
+				content.RD9 ||
+				content.RD11 ||
+				content.RD12 ||
+				content.RD13 ||
+				content.RD14 ||
+				content.RD15 ||
+				content.RD21 ||
+				content.RD22 ||
+				content.RD23 ||
+				content.RD24 ||
+				content.RD25 ||
+				content.RD31 ||
+				content.RD32 ||
+				content.RD33 ||
+				content.RD34 ||
+				content.RD35 ||
+				content.RD41 ||
+				content.RD42 ||
+				content.RD43 ||
+				content.RD44 ||
+				content.RD45 ||
+				content.RD51 ||
+				content.RD52 ||
+				content.RD53 ||
+				content.RD54 ||
+				content.RD55 ||
+				content.RD61 ||
+				content.RD62 ||
+				content.RD63 ||
+				content.RD64 ||
+				content.RD65 ||
+				content.RD71 ||
+				content.RD72 ||
+				content.RD73 ||
+				content.RD74 ||
+				content.RD75 ||
+				content.RD81 ||
+				content.RD82 ||
+				content.RD83 ||
+				content.RD84 ||
+				content.RD85 ||
+				content.RD91 ||
+				content.RD92 ||
+				content.RD93 ||
+				content.RD94 ||
+				content.RD95;
             return result;
         };
 
