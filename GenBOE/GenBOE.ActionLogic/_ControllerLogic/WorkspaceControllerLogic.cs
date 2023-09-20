@@ -66,7 +66,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Permission Loader
 		/// </summary>
-		private IPermissionsDTODataLoader PermissionLoader { get; }
+		protected IPermissionsDTODataLoader PermissionLoader { get; }
 
 		/// <summary>
 		/// Full WS Recalculation
@@ -1491,6 +1491,21 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (ws.UsingTemplateBOE && !workspaceDetails.UsingTemplateBoe)
 			{
 				validationErrors.Add(new ValidationMessage("Using Template BOEs cannot be changed from 'Yes' to 'No'. The only allowed changed to this field is from 'No' to 'Yes'."));
+			}
+
+			// Validate the estimating lead/pricer's permissions
+			// Edge case - if the selected user is already a lead/pricer for the WS and had create WS permissions removed afterwards, and they were not unselected during this step,
+			// leave them as is
+			WorkspaceDTO wsInDatabase = WorkspaceLoader.GetById(ws.Id);
+			if (wsInDatabase.CostVolumeLeadPricerUserID != ws.CostVolumeLeadPricerUserID)
+			{
+				UserDTO costVolumeLeadDTO = this.UserLoader.GetUserByID(ws.CostVolumeLeadPricerUserID);
+				ICollection<KeyValuePair<string, string>> createWSUsers = this.PermissionLoader.GetCreateWorkspaceRolesForPtm(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
+				KeyValuePair<string, string> estimatingLeadPricerKVP = new KeyValuePair<string, string>(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
+				if (!createWSUsers.Contains(estimatingLeadPricerKVP))
+				{
+					validationErrors.Add(new ValidationMessage("CostVolumeLeadPricerDisplayName", "Cannot add a user as the Estimating Lead/Pricer when they do not have the correct permissions"));
+				}
 			}
 
 			return validationErrors;
