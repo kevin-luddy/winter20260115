@@ -20,10 +20,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         public ICollection<HomeWorkspaceModelView> items { get; set; }
         public String CurrentUserDisplayName { get; set; }
 
-		    /// <summary>
-		    /// Checks if genBOE is in Read Only mode
-		    /// </summary>
-		    public bool isReadOnly { get; set; }
+		  /// <summary>
+		  /// Checks if genBOE is in Read Only mode
+		  /// </summary>
+		  public bool isReadOnly { get; set; }
 	}
 }
 
