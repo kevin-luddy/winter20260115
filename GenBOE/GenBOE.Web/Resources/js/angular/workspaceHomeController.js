@@ -719,7 +719,6 @@
         }).then(function (response) {
             currentUserName = response.data.CurrentUserDisplayName;
 
-            console.log(response.data);
             $scope.isReadOnly = response.data.isReadOnly;
             response.data.items.forEach(function (item) {
                 item.url = CreatePostURL(WorkspaceHomeModel.workspace, WorkspaceHomeModel.boeController, WorkspaceHomeModel.editAction, 'boe/') + item.BOEID;
