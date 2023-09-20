@@ -2645,6 +2645,11 @@ namespace GenBOE.Web.Controllers
 
             theModelView.isReadOnly = SiteMasterUtilities.IsReadOnly();
 
+            if (CheckPermissions(SecurityPage.SystemAdmin, null, null) == SecurityAuthorization.CreateReadUpdateDelete) 
+            {
+                theModelView.isReadOnly = false;
+            };
+
 			// Action Finalize
 			FinalizeAction(_log, "GetWorkspaceHomeModel", sw);
 

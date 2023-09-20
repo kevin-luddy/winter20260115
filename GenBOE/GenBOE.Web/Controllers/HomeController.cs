@@ -98,6 +98,10 @@ namespace GenBOE.Web.Controllers
             {
                 //Initialize metrics
                 theModelView.isSysAdmin = CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.None;
+                if (theModelView.isSysAdmin)
+                {
+                    theModelView.isReadOnly = false;
+                }
                 theModelView.canCreateWS = CheckPermissions(SecurityPage.CreateWorkspacePermissions, null, null) == SecurityAuthorization.CreateReadUpdateDelete;
                 
                 // Populate Metrics Grid
