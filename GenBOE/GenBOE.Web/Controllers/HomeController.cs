@@ -11,7 +11,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Linq;
-    using System.Transactions;
+	using System.Transactions;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.Common;
@@ -91,10 +91,16 @@ namespace GenBOE.Web.Controllers
             bool userIsSubcontractor = _SecInfo.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor);
             GenBOEHomepageModelView theModelView = new GenBOEHomepageModelView();
 
+            theModelView.isReadOnly = SiteMasterUtilities.IsReadOnly();
+
             if (!userIsSubcontractor)
             {
                 //Initialize metrics
                 theModelView.isSysAdmin = CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.None;
+                if (theModelView.isSysAdmin)
+                {
+                    theModelView.isReadOnly = false;
+                }
                 theModelView.canCreateWS = CheckPermissions(SecurityPage.CreateWorkspacePermissions, null, null) == SecurityAuthorization.CreateReadUpdateDelete;
                 
                 // Populate Metrics Grid
