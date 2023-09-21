@@ -21,7 +21,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.Reference;
 	using GenBOE.Dtos;
-	using GenBOE.Models;
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.Exceptions;

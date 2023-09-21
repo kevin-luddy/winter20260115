@@ -66,7 +66,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Permission Loader
 		/// </summary>
-		protected IPermissionsDTODataLoader PermissionLoader { get; }
+		private IPermissionsDTODataLoader PermissionLoader { get; }
 
 		/// <summary>
 		/// Full WS Recalculation
