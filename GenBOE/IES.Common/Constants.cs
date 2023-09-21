@@ -913,5 +913,15 @@ namespace IES.Common
         /// Blank Column Field for Trace Tables.
         /// </summary>
         public const string COLUMN_FIELD_BLANK = "Blank";
+
+        /// <summary>
+        /// Key value for Column Field where there is NO CLIN.
+        /// </summary>
+        public const string COLUMN_FIELD_KEY_NO_CLIN = "NO CLIN";
+
+        /// <summary>
+        /// Key value for Column Field where there is NO WBS.
+        /// </summary>
+        public const string COLUMN_FIELD_KEY_NO_WBS = "NO WBS";
     }
 }
