@@ -454,6 +454,11 @@ namespace IES.ActionLogic.ControllerLogic
 				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_ADDITIONAL_DESCRIPTIONS_REQUIRED));
 			}
 
+			if (rateDetailModelView.GenerateAdditionalDirectLaborRates && rateDetailModelView.DisclosureType != DisclosureType.OneLMX && !this.IsAnyExtendedLegacyRateDescriptionPopulated(rateDetailModelView))
+			{
+				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_ADDITIONAL_DESCRIPTIONS_REQUIRED));
+			}
+
 			// if additional labor rates not selected, need single description 
 			if (rateDetailModelView.GenerateAdditionalDirectLaborRates == false && string.IsNullOrEmpty(rateDetailModelView.RateDescription))
 			{
@@ -610,10 +615,10 @@ namespace IES.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Helper method to determine if any of the extended Rate Descriptions (i.e. 1-9) are populated.
+		/// Helper method to determine if any of the extended Rate Descriptions (i.e. 1-9 & [1-9][1-5]) are populated.
 		/// </summary>
 		/// <param name="rateDetailModelView">The rate detail mv</param>
-		/// <returns>True if any of the extended Rate Descriptions (i.e. 1-9) are populated; False otherwise.</returns>
+		/// <returns>True if any of the extended Rate Descriptions (i.e. 1-9 & [1-9][1-5]) are populated; False otherwise.</returns>
 		private bool IsAnyExtendedRateDescriptionPopulated(RateDetailModelView rateDetailModelView)
 		{
 			return !string.IsNullOrEmpty(rateDetailModelView.RateDescription1) ||
@@ -670,6 +675,24 @@ namespace IES.ActionLogic.ControllerLogic
 				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription93) ||
 				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription94) ||
 				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription95);
+		}
+
+		/// <summary>
+		/// Helper method to determine if any of the extended Legacy Rate Descriptions (i.e. 1-9) are populated.
+		/// </summary>
+		/// <param name="rateDetailModelView">The rate detail mv</param>
+		/// <returns>True if any of the extended Rate Descriptions (i.e. 1-9) are populated; False otherwise.</returns>
+		private bool IsAnyExtendedLegacyRateDescriptionPopulated(RateDetailModelView rateDetailModelView)
+		{
+			return !string.IsNullOrEmpty(rateDetailModelView.RateDescription1) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription2) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription3) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription4) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription5) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription6) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription7) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription8) ||
+				   !string.IsNullOrEmpty(rateDetailModelView.RateDescription9);
 		}
 
 		/// <summary>
