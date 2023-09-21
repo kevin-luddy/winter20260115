@@ -540,11 +540,12 @@ namespace GenBOE.DataBridge.Common
             else
             {
 				Role[] allRoles = new Role[] { Role.None, Role.Author, Role.WorkspaceReviewer, Role.Approver, Role.WorkspaceAdmin, Role.MetricsAdmin, Role.SystemAdmin, Role.WorkspaceUser, Role.CreateWorkspacePermissions, Role.SubcontractorAuthor, Role.SubcontractAdmin };
+				Role[] allButSubcontractor = new Role[] { Role.None, Role.SubcontractAdmin, Role.SubcontractorAuthor };
 
                 // Home
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
                     new SecurityPage[] { SecurityPage.Home },
-					allRoles,
+					new Role[] { Role.None },
 					SecurityAuthorization.CreateReadUpdateDelete);
 
 				// SelectWorkspace
@@ -612,7 +613,7 @@ namespace GenBOE.DataBridge.Common
 				// exclude the About Tools menu option from Subcontractors
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
                     new SecurityPage[] { SecurityPage.AboutToolsMenu },
-					allRoles,
+					allButSubcontractor,
 					SecurityAuthorization.Read);
 
 				// exclude the Help menu option from Subcontractors
@@ -648,7 +649,7 @@ namespace GenBOE.DataBridge.Common
 				// Travel, Material, and ODC Grids (no subcontractorAuthor access WI 18262)
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(
                     new SecurityPage[] { SecurityPage.BOETravelGrid, SecurityPage.BoeODCGrid, SecurityPage.BoeMaterialsGrid, SecurityPage.BOEZoneTravelGrid },
-					allRoles,
+					allButSubcontractor,
 					SecurityAuthorization.Read);
 
 				//Labor Grid
@@ -663,7 +664,7 @@ namespace GenBOE.DataBridge.Common
 
 				// Materials (no subcontractorAuthor access WI 18262)
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BOEMaterialsTypes }, 
-					allRoles,
+					allButSubcontractor,
 					SecurityAuthorization.Read);
 
 				// BOE Comments
@@ -699,11 +700,6 @@ namespace GenBOE.DataBridge.Common
 
 				// Metrics Admin
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.MetricsAdmin },
-					new Role[] { Role.SystemAdmin },
-					SecurityAuthorization.CreateReadUpdateDelete);
-
-				// Create Workspace Permissions
-				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.CreateWorkspacePermissions },
 					new Role[] { Role.SystemAdmin },
 					SecurityAuthorization.CreateReadUpdateDelete);
 
@@ -759,7 +755,7 @@ namespace GenBOE.DataBridge.Common
 				// Reports
 				// Reports (no subcontractorAuthor access WI 18262)
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Reports },
-					allRoles,
+					allButSubcontractor,
 					SecurityAuthorization.Read);
 
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Reports },
