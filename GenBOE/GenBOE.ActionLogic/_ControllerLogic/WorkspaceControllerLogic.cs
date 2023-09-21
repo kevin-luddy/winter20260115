@@ -1500,7 +1500,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (wsInDatabase.CostVolumeLeadPricerUserID != ws.CostVolumeLeadPricerUserID)
 			{
 				UserDTO costVolumeLeadDTO = this.UserLoader.GetUserByID(ws.CostVolumeLeadPricerUserID);
-				ICollection<KeyValuePair<string, string>> createWSUsers = this.PermissionLoader.GetCreateWorkspaceRolesForPtm(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
+				// Need to send in an empty string for NTID and display name
+				// The parameters below are already assuming that someone we select had permissions and then got them revoked, but are still selected; we want to restrict this
+				ICollection<KeyValuePair<string, string>> createWSUsers = this.PermissionLoader.GetCreateWorkspaceRolesForPtm(string.Empty, string.Empty);
 				KeyValuePair<string, string> estimatingLeadPricerKVP = new KeyValuePair<string, string>(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
 				if (!createWSUsers.Contains(estimatingLeadPricerKVP))
 				{
@@ -1549,7 +1551,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 		/// <summary>
 		/// Validate the Cost Volume Lead Pricer ID is an individual and not a group.
-		/// Also, if they are an individual, verify they are not a subcontractor.
+		/// If they are an individual, verify they are not a subcontractor.
+		/// Also need to ensure that the individual has Create WS permissions.
 		/// </summary>
 		/// <param name="inCostVolumeLeadPricerNTID">Cost Volume Lead Pricer NTID</param>
 		/// <returns>Collection of Validation Messages.</returns>
@@ -1583,6 +1586,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					errors.Add(new ValidationMessage("CostVolumeLeadPricerNTID", ve));
 				}
+			}
+
+			// Verify that the user has create WS permissions
+			UserDTO costVolumeLeadDTO = this.UserLoader.GetOrCreateUserByNtid(inCostVolumeLeadPricerNTID);
+			ICollection<KeyValuePair<string, string>> createWSUsers = this.PermissionLoader.GetCreateWorkspaceRolesForPtm(string.Empty, string.Empty);
+			KeyValuePair<string, string> estimatingLeadPricerKVP = new KeyValuePair<string, string>(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
+			if (!createWSUsers.Contains(estimatingLeadPricerKVP))
+			{
+				errors.Add(new ValidationMessage("CostVolumeLeadPricerNTID", "Cannot add a user as the Estimating Lead/Pricer when they do not have the correct permissions"));
 			}
 
 			return errors;
