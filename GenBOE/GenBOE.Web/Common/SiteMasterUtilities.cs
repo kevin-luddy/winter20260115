@@ -244,6 +244,15 @@ namespace GenBOE.Web.Common
 				ProductionUrl() == ServerUrl();
         }
 
+		/// <summary>
+		/// Returns true if this is Read Only
+		/// </summary>
+		/// <returns></returns>
+		public static bool IsReadOnly()
+		{
+			return ConfigurationUtilities.GetAppSetting("IsReadOnly").ToLower().Equals("true");
+		}
+
 		#region A number of settings that were moved into web.config to support classified installations. These methods expose the settings.
 
 		/// <summary>

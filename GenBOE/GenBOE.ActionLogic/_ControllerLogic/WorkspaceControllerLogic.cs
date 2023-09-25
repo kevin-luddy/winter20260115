@@ -1493,6 +1493,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				validationErrors.Add(new ValidationMessage("Using Template BOEs cannot be changed from 'Yes' to 'No'. The only allowed changed to this field is from 'No' to 'Yes'."));
 			}
 
+			// Validate the estimating lead/pricer's permissions
+			// Edge case - if the selected user is already a lead/pricer for the WS and had create WS permissions removed afterwards, and they were not unselected during this step,
+			// leave them as is
+			WorkspaceDTO wsInDatabase = WorkspaceLoader.GetById(ws.Id);
+			if (wsInDatabase.CostVolumeLeadPricerUserID != ws.CostVolumeLeadPricerUserID)
+			{
+				UserDTO costVolumeLeadDTO = this.UserLoader.GetUserByID(ws.CostVolumeLeadPricerUserID);
+				// Need to send in an empty string for NTID and display name
+				// The parameters below are already assuming that someone we select had permissions and then got them revoked, but are still selected; we want to restrict this
+				ICollection<KeyValuePair<string, string>> createWSUsers = this.PermissionLoader.GetCreateWorkspaceRolesForPtm(string.Empty, string.Empty);
+				KeyValuePair<string, string> estimatingLeadPricerKVP = new KeyValuePair<string, string>(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
+				if (!createWSUsers.Contains(estimatingLeadPricerKVP))
+				{
+					validationErrors.Add(new ValidationMessage("CostVolumeLeadPricerDisplayName", "Cannot add a user as the Estimating Lead/Pricer when they do not have the correct permissions"));
+				}
+			}
+
 			return validationErrors;
 		}
 
@@ -1534,7 +1551,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 		/// <summary>
 		/// Validate the Cost Volume Lead Pricer ID is an individual and not a group.
-		/// Also, if they are an individual, verify they are not a subcontractor.
+		/// If they are an individual, verify they are not a subcontractor.
+		/// Also need to ensure that the individual has Create WS permissions.
 		/// </summary>
 		/// <param name="inCostVolumeLeadPricerNTID">Cost Volume Lead Pricer NTID</param>
 		/// <returns>Collection of Validation Messages.</returns>
@@ -1568,6 +1586,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					errors.Add(new ValidationMessage("CostVolumeLeadPricerNTID", ve));
 				}
+			}
+
+			// Verify that the user has create WS permissions
+			UserDTO costVolumeLeadDTO = this.UserLoader.GetOrCreateUserByNtid(inCostVolumeLeadPricerNTID);
+			ICollection<KeyValuePair<string, string>> createWSUsers = this.PermissionLoader.GetCreateWorkspaceRolesForPtm(string.Empty, string.Empty);
+			KeyValuePair<string, string> estimatingLeadPricerKVP = new KeyValuePair<string, string>(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
+			if (!createWSUsers.Contains(estimatingLeadPricerKVP))
+			{
+				errors.Add(new ValidationMessage("CostVolumeLeadPricerNTID", "Cannot add a user as the Estimating Lead/Pricer when they do not have the correct permissions"));
 			}
 
 			return errors;

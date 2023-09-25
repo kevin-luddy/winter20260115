@@ -108,7 +108,7 @@
                                             <th class="reports bootstrap">Reports</th>
                                             <th class="delete" style="white-space:normal">
                                                 <div class="buttons inline css3pie-position-fix">
-                                                    <button class="ies-action css3pie-position-fix" type="button" name="Delete" value="Delete" data-ng-disabled="deleteBOEsDisabled()" data-ng-click="SubmitDelete()">Delete</button>
+                                                    <button class="ies-action css3pie-position-fix" type="button" name="Delete" value="Delete" data-ng-disabled="deleteBOEsDisabled()" data-ng-click="SubmitDelete()" data-ng-show="!isReadOnly">Delete</button>
                                                 </div>
                                             </th>
                                         </tr>
@@ -136,7 +136,7 @@
                                                 <div class="link" id="reportLink{{::ws.WorkspaceId}}" data-ng-click="openReports(this)">Reports</div>
                                             </td>
                                             <td>
-                                                <input type="checkbox" name="workspaceRows[]" value="{{::ws.WorkspaceId}}" data-ng-checked="ws.toBeDeleted" data-ng-model="ws.toBeDeleted" data-ng-disabled="disableDeleteCheckbox(this)" data-ng-show="!workspaceHasBeenDeleted(this)"/>
+                                                <input type="checkbox" name="workspaceRows[]" value="{{::ws.WorkspaceId}}" data-ng-checked="ws.toBeDeleted" data-ng-model="ws.toBeDeleted" data-ng-disabled="disableDeleteCheckbox(this)" data-ng-show="!workspaceHasBeenDeleted(this) && !isReadOnly"/>
                                                 <div class="link" data-ng-click="showRestoreDialog(this)" data-ng-show="showRestore(this)">Restore</div>
                                             </td>
                                         </tr>

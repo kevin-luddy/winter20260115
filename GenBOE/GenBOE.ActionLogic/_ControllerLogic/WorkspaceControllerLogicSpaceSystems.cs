@@ -49,7 +49,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="fullWsRecalc">The full ws recalc.</param>
 		/// <param name="inWorkspaceVariableLoader">The in workspace variable loader.</param>
 		/// <param name="inCustomFieldValueLoader">CF value loader</param>
-		/// <param name="customFieldLoader">The custom field loader.</permission>
+		/// <param name="customFieldLoader">The custom field loader.</param>
 		/// <param name="offloadRatesDTOLoader">Offload Rates Loader</param>
 		/// <param name="projectMapDataLoader">The project map data loader.</param>
 		/// <param name="boePickListMapper">The BOE pick list mapper.</param>
