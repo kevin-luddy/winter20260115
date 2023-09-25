@@ -15,15 +15,15 @@ namespace IES.DataBridge.Loaders
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
 
-    /// <summary>
-    /// Rate Grid Loader
-    /// </summary>
-    public class RateDetailLoader : BulkDataLoader<RateDetailModelView, RateCode>, IRateDetailLoader
-    {
-        /// <summary>
-        /// The Rate Description numbers.
-        /// </summary>
-        private readonly int?[] numbers = { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	/// <summary>
+	/// Rate Grid Loader
+	/// </summary>
+	public class RateDetailLoader : BulkDataLoader<RateDetailModelView, RateCode>, IRateDetailLoader
+	{
+		/// <summary>
+		/// The Rate Description numbers.
+		/// </summary>
+		private readonly int?[] numbers = { null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 21, 22, 23, 24, 25, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 51, 52, 53, 54, 55, 61, 62, 63, 64, 65, 71, 72, 73, 74, 75, 81, 82, 83, 84, 85, 91, 92, 93, 94, 95 };
 
 		/// <summary>
 		/// RateYearLoader.
@@ -214,66 +214,291 @@ namespace IES.DataBridge.Loaders
 				// Get the CategoryDescription.
 				rate.RateCategoryDescription = rate.RateCategory.GetDescription();
 
-                // If we have generated mappings set Description to empty and set Generate to true, otherwise load the description.
-                foreach(ProPricerRateCodeXrefModelView mapping in rate.ProPricerMappings)
-                {
-                    if (mapping.RateCodeExtensionId == null)
-                    {
-                        rate.RateDescription = mapping.Description;
-                        rate.ResourceClass = mapping.ResourceClass;
-                        rate.ResourceClassId = mapping.ResourceClassId;
-                    }
-                    else
-                    {
-                        // Load Description into the property based on Id.
-                        switch (mapping.RateCodeExtensionId)
-                        {
-                            case 1:
-                                rate.RateDescription1 = mapping.Description;
-                                rate.ResourceClass1 = mapping.ResourceClass;
-                                rate.ResourceClassId1 = mapping.ResourceClassId;
-                                break;
-                            case 2:
-                                rate.RateDescription2 = mapping.Description;
-                                rate.ResourceClass2 = mapping.ResourceClass;
-                                rate.ResourceClassId2 = mapping.ResourceClassId;
-                                break;
-                            case 3:
-                                rate.RateDescription3 = mapping.Description;
-                                rate.ResourceClass3 = mapping.ResourceClass;
-                                rate.ResourceClassId3 = mapping.ResourceClassId;
-                                break;
-                            case 4:
-                                rate.RateDescription4 = mapping.Description;
-                                rate.ResourceClass4 = mapping.ResourceClass;
-                                rate.ResourceClassId4 = mapping.ResourceClassId;
-                                break;
-                            case 5:
-                                rate.RateDescription5 = mapping.Description;
-                                rate.ResourceClass5 = mapping.ResourceClass;
-                                rate.ResourceClassId5 = mapping.ResourceClassId;
-                                break;
-                            case 6:
-                                rate.RateDescription6 = mapping.Description;
-                                rate.ResourceClass6 = mapping.ResourceClass;
-                                rate.ResourceClassId6 = mapping.ResourceClassId;
-                                break;
-                            case 7:
-                                rate.RateDescription7 = mapping.Description;
-                                rate.ResourceClass7 = mapping.ResourceClass;
-                                rate.ResourceClassId7 = mapping.ResourceClassId;
-                                break;
-                            case 8:
-                                rate.RateDescription8 = mapping.Description;
-                                rate.ResourceClass8 = mapping.ResourceClass;
-                                rate.ResourceClassId8 = mapping.ResourceClassId;
-                                break;
-                            case 9:
-                                rate.RateDescription9 = mapping.Description;
-                                rate.ResourceClass9 = mapping.ResourceClass;
-                                rate.ResourceClassId9 = mapping.ResourceClassId;
-                                break;
-                        }
+				// If we have generated mappings set Description to empty and set Generate to true, otherwise load the description.
+				foreach (ProPricerRateCodeXrefModelView mapping in rate.ProPricerMappings)
+				{
+					if (mapping.RateCodeExtensionId == null)
+					{
+						rate.RateDescription = mapping.Description;
+						rate.ResourceClass = mapping.ResourceClass;
+						rate.ResourceClassId = mapping.ResourceClassId;
+					}
+					else
+					{
+						// Load Description into the property based on Id.
+						switch (mapping.RateCodeExtensionId)
+						{
+							case 1:
+								rate.RateDescription1 = mapping.Description;
+								rate.ResourceClass1 = mapping.ResourceClass;
+								rate.ResourceClassId1 = mapping.ResourceClassId;
+								break;
+							case 2:
+								rate.RateDescription2 = mapping.Description;
+								rate.ResourceClass2 = mapping.ResourceClass;
+								rate.ResourceClassId2 = mapping.ResourceClassId;
+								break;
+							case 3:
+								rate.RateDescription3 = mapping.Description;
+								rate.ResourceClass3 = mapping.ResourceClass;
+								rate.ResourceClassId3 = mapping.ResourceClassId;
+								break;
+							case 4:
+								rate.RateDescription4 = mapping.Description;
+								rate.ResourceClass4 = mapping.ResourceClass;
+								rate.ResourceClassId4 = mapping.ResourceClassId;
+								break;
+							case 5:
+								rate.RateDescription5 = mapping.Description;
+								rate.ResourceClass5 = mapping.ResourceClass;
+								rate.ResourceClassId5 = mapping.ResourceClassId;
+								break;
+							case 6:
+								rate.RateDescription6 = mapping.Description;
+								rate.ResourceClass6 = mapping.ResourceClass;
+								rate.ResourceClassId6 = mapping.ResourceClassId;
+								break;
+							case 7:
+								rate.RateDescription7 = mapping.Description;
+								rate.ResourceClass7 = mapping.ResourceClass;
+								rate.ResourceClassId7 = mapping.ResourceClassId;
+								break;
+							case 8:
+								rate.RateDescription8 = mapping.Description;
+								rate.ResourceClass8 = mapping.ResourceClass;
+								rate.ResourceClassId8 = mapping.ResourceClassId;
+								break;
+							case 9:
+								rate.RateDescription9 = mapping.Description;
+								rate.ResourceClass9 = mapping.ResourceClass;
+								rate.ResourceClassId9 = mapping.ResourceClassId;
+								break;
+							case 11:
+								rate.RateDescription11 = mapping.Description;
+								rate.ResourceClass11 = mapping.ResourceClass;
+								rate.ResourceClassId11 = mapping.ResourceClassId;
+								break;
+							case 12:
+								rate.RateDescription12 = mapping.Description;
+								rate.ResourceClass12 = mapping.ResourceClass;
+								rate.ResourceClassId12 = mapping.ResourceClassId;
+								break;
+							case 13:
+								rate.RateDescription13 = mapping.Description;
+								rate.ResourceClass13 = mapping.ResourceClass;
+								rate.ResourceClassId13 = mapping.ResourceClassId;
+								break;
+							case 14:
+								rate.RateDescription14 = mapping.Description;
+								rate.ResourceClass14 = mapping.ResourceClass;
+								rate.ResourceClassId14 = mapping.ResourceClassId;
+								break;
+							case 15:
+								rate.RateDescription15 = mapping.Description;
+								rate.ResourceClass15 = mapping.ResourceClass;
+								rate.ResourceClassId15 = mapping.ResourceClassId;
+								break;
+							case 21:
+								rate.RateDescription21 = mapping.Description;
+								rate.ResourceClass21 = mapping.ResourceClass;
+								rate.ResourceClassId21 = mapping.ResourceClassId;
+								break;
+							case 22:
+								rate.RateDescription22 = mapping.Description;
+								rate.ResourceClass22 = mapping.ResourceClass;
+								rate.ResourceClassId22 = mapping.ResourceClassId;
+								break;
+							case 23:
+								rate.RateDescription23 = mapping.Description;
+								rate.ResourceClass23 = mapping.ResourceClass;
+								rate.ResourceClassId23 = mapping.ResourceClassId;
+								break;
+							case 24:
+								rate.RateDescription24 = mapping.Description;
+								rate.ResourceClass24 = mapping.ResourceClass;
+								rate.ResourceClassId24 = mapping.ResourceClassId;
+								break;
+							case 25:
+								rate.RateDescription25 = mapping.Description;
+								rate.ResourceClass25 = mapping.ResourceClass;
+								rate.ResourceClassId25 = mapping.ResourceClassId;
+								break;
+							case 31:
+								rate.RateDescription31 = mapping.Description;
+								rate.ResourceClass31 = mapping.ResourceClass;
+								rate.ResourceClassId31 = mapping.ResourceClassId;
+								break;
+							case 32:
+								rate.RateDescription32 = mapping.Description;
+								rate.ResourceClass32 = mapping.ResourceClass;
+								rate.ResourceClassId32 = mapping.ResourceClassId;
+								break;
+							case 33:
+								rate.RateDescription33 = mapping.Description;
+								rate.ResourceClass33 = mapping.ResourceClass;
+								rate.ResourceClassId33 = mapping.ResourceClassId;
+								break;
+							case 34:
+								rate.RateDescription34 = mapping.Description;
+								rate.ResourceClass34 = mapping.ResourceClass;
+								rate.ResourceClassId34 = mapping.ResourceClassId;
+								break;
+							case 35:
+								rate.RateDescription35 = mapping.Description;
+								rate.ResourceClass35 = mapping.ResourceClass;
+								rate.ResourceClassId35 = mapping.ResourceClassId;
+								break;
+							case 41:
+								rate.RateDescription41 = mapping.Description;
+								rate.ResourceClass41 = mapping.ResourceClass;
+								rate.ResourceClassId41 = mapping.ResourceClassId;
+								break;
+							case 42:
+								rate.RateDescription42 = mapping.Description;
+								rate.ResourceClass42 = mapping.ResourceClass;
+								rate.ResourceClassId42 = mapping.ResourceClassId;
+								break;
+							case 43:
+								rate.RateDescription43 = mapping.Description;
+								rate.ResourceClass43 = mapping.ResourceClass;
+								rate.ResourceClassId43 = mapping.ResourceClassId;
+								break;
+							case 44:
+								rate.RateDescription44 = mapping.Description;
+								rate.ResourceClass44 = mapping.ResourceClass;
+								rate.ResourceClassId44 = mapping.ResourceClassId;
+								break;
+							case 45:
+								rate.RateDescription45 = mapping.Description;
+								rate.ResourceClass45 = mapping.ResourceClass;
+								rate.ResourceClassId45 = mapping.ResourceClassId;
+								break;
+							case 51:
+								rate.RateDescription51 = mapping.Description;
+								rate.ResourceClass51 = mapping.ResourceClass;
+								rate.ResourceClassId51 = mapping.ResourceClassId;
+								break;
+							case 52:
+								rate.RateDescription52 = mapping.Description;
+								rate.ResourceClass52 = mapping.ResourceClass;
+								rate.ResourceClassId52 = mapping.ResourceClassId;
+								break;
+							case 53:
+								rate.RateDescription53 = mapping.Description;
+								rate.ResourceClass53 = mapping.ResourceClass;
+								rate.ResourceClassId53 = mapping.ResourceClassId;
+								break;
+							case 54:
+								rate.RateDescription54 = mapping.Description;
+								rate.ResourceClass54 = mapping.ResourceClass;
+								rate.ResourceClassId54 = mapping.ResourceClassId;
+								break;
+							case 55:
+								rate.RateDescription55 = mapping.Description;
+								rate.ResourceClass55 = mapping.ResourceClass;
+								rate.ResourceClassId55 = mapping.ResourceClassId;
+								break;
+							case 61:
+								rate.RateDescription61 = mapping.Description;
+								rate.ResourceClass61 = mapping.ResourceClass;
+								rate.ResourceClassId61 = mapping.ResourceClassId;
+								break;
+							case 62:
+								rate.RateDescription62 = mapping.Description;
+								rate.ResourceClass62 = mapping.ResourceClass;
+								rate.ResourceClassId62 = mapping.ResourceClassId;
+								break;
+							case 63:
+								rate.RateDescription63 = mapping.Description;
+								rate.ResourceClass63 = mapping.ResourceClass;
+								rate.ResourceClassId63 = mapping.ResourceClassId;
+								break;
+							case 64:
+								rate.RateDescription64 = mapping.Description;
+								rate.ResourceClass64 = mapping.ResourceClass;
+								rate.ResourceClassId64 = mapping.ResourceClassId;
+								break;
+							case 65:
+								rate.RateDescription65 = mapping.Description;
+								rate.ResourceClass65 = mapping.ResourceClass;
+								rate.ResourceClassId65 = mapping.ResourceClassId;
+								break;
+							case 71:
+								rate.RateDescription71 = mapping.Description;
+								rate.ResourceClass71 = mapping.ResourceClass;
+								rate.ResourceClassId71 = mapping.ResourceClassId;
+								break;
+							case 72:
+								rate.RateDescription72 = mapping.Description;
+								rate.ResourceClass72 = mapping.ResourceClass;
+								rate.ResourceClassId72 = mapping.ResourceClassId;
+								break;
+							case 73:
+								rate.RateDescription73 = mapping.Description;
+								rate.ResourceClass73 = mapping.ResourceClass;
+								rate.ResourceClassId73 = mapping.ResourceClassId;
+								break;
+							case 74:
+								rate.RateDescription74 = mapping.Description;
+								rate.ResourceClass74 = mapping.ResourceClass;
+								rate.ResourceClassId74 = mapping.ResourceClassId;
+								break;
+							case 75:
+								rate.RateDescription75 = mapping.Description;
+								rate.ResourceClass75 = mapping.ResourceClass;
+								rate.ResourceClassId75 = mapping.ResourceClassId;
+								break;
+							case 81:
+								rate.RateDescription81 = mapping.Description;
+								rate.ResourceClass81 = mapping.ResourceClass;
+								rate.ResourceClassId81 = mapping.ResourceClassId;
+								break;
+							case 82:
+								rate.RateDescription82 = mapping.Description;
+								rate.ResourceClass82 = mapping.ResourceClass;
+								rate.ResourceClassId82 = mapping.ResourceClassId;
+								break;
+							case 83:
+								rate.RateDescription83 = mapping.Description;
+								rate.ResourceClass83 = mapping.ResourceClass;
+								rate.ResourceClassId83 = mapping.ResourceClassId;
+								break;
+							case 84:
+								rate.RateDescription84 = mapping.Description;
+								rate.ResourceClass84 = mapping.ResourceClass;
+								rate.ResourceClassId84 = mapping.ResourceClassId;
+								break;
+							case 85:
+								rate.RateDescription85 = mapping.Description;
+								rate.ResourceClass85 = mapping.ResourceClass;
+								rate.ResourceClassId85 = mapping.ResourceClassId;
+								break;
+							case 91:
+								rate.RateDescription91 = mapping.Description;
+								rate.ResourceClass91 = mapping.ResourceClass;
+								rate.ResourceClassId91 = mapping.ResourceClassId;
+								break;
+							case 92:
+								rate.RateDescription92 = mapping.Description;
+								rate.ResourceClass92 = mapping.ResourceClass;
+								rate.ResourceClassId92 = mapping.ResourceClassId;
+								break;
+							case 93:
+								rate.RateDescription93 = mapping.Description;
+								rate.ResourceClass93 = mapping.ResourceClass;
+								rate.ResourceClassId93 = mapping.ResourceClassId;
+								break;
+							case 94:
+								rate.RateDescription94 = mapping.Description;
+								rate.ResourceClass94 = mapping.ResourceClass;
+								rate.ResourceClassId94 = mapping.ResourceClassId;
+								break;
+							case 95:
+								rate.RateDescription95 = mapping.Description;
+								rate.ResourceClass95 = mapping.ResourceClass;
+								rate.ResourceClassId95 = mapping.ResourceClassId;
+								break;
+						}
 
 						rate.GenerateAdditionalDirectLaborRates = true;
 					}
@@ -556,18 +781,27 @@ namespace IES.DataBridge.Loaders
 				throw new ArgumentNullException(nameof(dtoToUpsert));
 			}
 
+			if (dtoToUpsert.DisclosureType == DisclosureType.OneLMX)
+			{
+				NullOutNonOneLMXRates(dtoToUpsert);
+			}
+			else
+			{
+				NullOutOneLMXRates(dtoToUpsert);
+			}
+
 			if (dtoToUpsert.ProPricerMappings == null)
 			{
 				dtoToUpsert.ProPricerMappings = this.proPricerXrefLoader.GetByRateCodeId(dtoToUpsert.Id);
 			}
 
-            string[] descs = { dtoToUpsert.RateDescription, dtoToUpsert.RateDescription1, dtoToUpsert.RateDescription2, dtoToUpsert.RateDescription3, dtoToUpsert.RateDescription4, dtoToUpsert.RateDescription5, dtoToUpsert.RateDescription6, dtoToUpsert.RateDescription7, dtoToUpsert.RateDescription8, dtoToUpsert.RateDescription9 };
-            int?[] resourceClassIds = { dtoToUpsert.ResourceClassId, dtoToUpsert.ResourceClassId1, dtoToUpsert.ResourceClassId2, dtoToUpsert.ResourceClassId3, dtoToUpsert.ResourceClassId4, dtoToUpsert.ResourceClassId5, dtoToUpsert.ResourceClassId6, dtoToUpsert.ResourceClassId7, dtoToUpsert.ResourceClassId8, dtoToUpsert.ResourceClassId9 };
-            var numbersAndDescs = this.numbers.Zip(descs, (first, second) => new Tuple<int?, string>(first, second));
+			string[] descs = GetRateDescriptions(dtoToUpsert);
+			int?[] resourceClassIds = GetResourceIds(dtoToUpsert);
 
-			foreach (Tuple<int?, string> numberAndDesc in numbersAndDescs)
+			for (int i = 0; i < this.numbers.Length; i++)
 			{
-				int index = numberAndDesc.Item1.HasValue ? numberAndDesc.Item1.Value : 0;
+				string desc = descs[i];
+				int? number = this.numbers[i];
 				string newDescription = string.Empty;
 				int? newResourceClassId = 0;
 				ProPricerRateCodeXrefModelView previousXref = null;
@@ -575,20 +809,20 @@ namespace IES.DataBridge.Loaders
 				// Get previous and new descriptions for this Xref.
 				if (dtoToUpsert.ProPricerMappings != null)
 				{
-					previousXref = dtoToUpsert.ProPricerMappings.FirstOrDefault(x => x.RateCodeExtensionId == numberAndDesc.Item1);
+					previousXref = dtoToUpsert.ProPricerMappings.FirstOrDefault(x => x.RateCodeExtensionId == number);
 				}
 
-				if (numberAndDesc.Item2 != null)
+				if (desc != null)
 				{
-					newDescription = numberAndDesc.Item2.ToString().Trim(' ');
+					newDescription = desc.Trim(' ');
 					// only set resource class if corresponding description is populated
-					newResourceClassId = resourceClassIds[index];
+					newResourceClassId = resourceClassIds[i];
 				}
 
 				// The first part of this if statement deals with the rates we are keeping based on the GenerateAdditionalDirectLaborRates flag.
 				// Everything else is deleted.
-				if ((dtoToUpsert.GenerateAdditionalDirectLaborRates != true && !numberAndDesc.Item1.HasValue) ||
-					(dtoToUpsert.GenerateAdditionalDirectLaborRates && numberAndDesc.Item1.HasValue && numberAndDesc.Item1.Value > 0))
+				if ((dtoToUpsert.GenerateAdditionalDirectLaborRates != true && !number.HasValue) ||
+					(dtoToUpsert.GenerateAdditionalDirectLaborRates && number.HasValue && number.Value > 0))
 				{
 					// There has been a change to an existing xref.
 					if (previousXref != null &&
@@ -618,7 +852,7 @@ namespace IES.DataBridge.Loaders
 							RateCodeId = (int)newRateCode,
 							Description = newDescription,
 							ResourceClassId = newResourceClassId,
-							RateCodeExtensionId = numberAndDesc.Item1
+							RateCodeExtensionId = number
 						};
 
 						// Add the new xref to the dto.
@@ -874,6 +1108,112 @@ namespace IES.DataBridge.Loaders
 			// Using Bulk Save
 			this.BulkSave(dirtyRateDetails);
 		}
+		#endregion
+
+		#region Private Functions
+
+		/// <summary>
+		/// Get array of RateDescriptions for given RateDetailModelView
+		/// </summary>
+		/// <param name="dtoToUpsert">Model to get Descriptions from</param>
+		/// <returns>Array of Rate Descriptions</returns>
+		private string[] GetRateDescriptions(RateDetailModelView dtoToUpsert)
+		{
+			return new string[] {
+				dtoToUpsert.RateDescription, dtoToUpsert.RateDescription1, dtoToUpsert.RateDescription2, dtoToUpsert.RateDescription3, dtoToUpsert.RateDescription4, dtoToUpsert.RateDescription5,
+				dtoToUpsert.RateDescription6, dtoToUpsert.RateDescription7, dtoToUpsert.RateDescription8, dtoToUpsert.RateDescription9,
+
+				dtoToUpsert.RateDescription11, dtoToUpsert.RateDescription12, dtoToUpsert.RateDescription13, dtoToUpsert.RateDescription14, dtoToUpsert.RateDescription15,
+				dtoToUpsert.RateDescription21, dtoToUpsert.RateDescription22, dtoToUpsert.RateDescription23, dtoToUpsert.RateDescription24, dtoToUpsert.RateDescription25,
+				dtoToUpsert.RateDescription31, dtoToUpsert.RateDescription32, dtoToUpsert.RateDescription33, dtoToUpsert.RateDescription34, dtoToUpsert.RateDescription35,
+				dtoToUpsert.RateDescription41, dtoToUpsert.RateDescription42, dtoToUpsert.RateDescription43, dtoToUpsert.RateDescription44, dtoToUpsert.RateDescription45,
+				dtoToUpsert.RateDescription51, dtoToUpsert.RateDescription52, dtoToUpsert.RateDescription53, dtoToUpsert.RateDescription54, dtoToUpsert.RateDescription55,
+				dtoToUpsert.RateDescription61, dtoToUpsert.RateDescription62, dtoToUpsert.RateDescription63, dtoToUpsert.RateDescription64, dtoToUpsert.RateDescription65,
+				dtoToUpsert.RateDescription71, dtoToUpsert.RateDescription72, dtoToUpsert.RateDescription73, dtoToUpsert.RateDescription74, dtoToUpsert.RateDescription75,
+				dtoToUpsert.RateDescription81, dtoToUpsert.RateDescription82, dtoToUpsert.RateDescription83, dtoToUpsert.RateDescription84, dtoToUpsert.RateDescription85,
+				dtoToUpsert.RateDescription91, dtoToUpsert.RateDescription92, dtoToUpsert.RateDescription93, dtoToUpsert.RateDescription94, dtoToUpsert.RateDescription95,
+			};
+		}
+
+		/// <summary>
+		/// Gets Array of ResourceClassId's for given RateDetailModelView
+		/// </summary>
+		/// <param name="dtoToUpsert">Model to reference</param>
+		/// <returns>Array of ResourceClassId's</returns>
+		private int?[] GetResourceIds(RateDetailModelView dtoToUpsert)
+		{
+			return new int?[] {
+				dtoToUpsert.ResourceClassId, dtoToUpsert.ResourceClassId1, dtoToUpsert.ResourceClassId2, dtoToUpsert.ResourceClassId3, dtoToUpsert.ResourceClassId4, dtoToUpsert.ResourceClassId5,
+				dtoToUpsert.ResourceClassId6, dtoToUpsert.ResourceClassId7, dtoToUpsert.ResourceClassId8, dtoToUpsert.ResourceClassId9,
+
+				dtoToUpsert.ResourceClassId11, dtoToUpsert.ResourceClassId12, dtoToUpsert.ResourceClassId13, dtoToUpsert.ResourceClassId14, dtoToUpsert.ResourceClassId15,
+				dtoToUpsert.ResourceClassId21, dtoToUpsert.ResourceClassId22, dtoToUpsert.ResourceClassId23, dtoToUpsert.ResourceClassId24, dtoToUpsert.ResourceClassId25,
+				dtoToUpsert.ResourceClassId31, dtoToUpsert.ResourceClassId32, dtoToUpsert.ResourceClassId33, dtoToUpsert.ResourceClassId34, dtoToUpsert.ResourceClassId35,
+				dtoToUpsert.ResourceClassId41, dtoToUpsert.ResourceClassId42, dtoToUpsert.ResourceClassId43, dtoToUpsert.ResourceClassId44, dtoToUpsert.ResourceClassId45,
+				dtoToUpsert.ResourceClassId51, dtoToUpsert.ResourceClassId52, dtoToUpsert.ResourceClassId53, dtoToUpsert.ResourceClassId54, dtoToUpsert.ResourceClassId55,
+				dtoToUpsert.ResourceClassId61, dtoToUpsert.ResourceClassId62, dtoToUpsert.ResourceClassId63, dtoToUpsert.ResourceClassId64, dtoToUpsert.ResourceClassId65,
+				dtoToUpsert.ResourceClassId71, dtoToUpsert.ResourceClassId72, dtoToUpsert.ResourceClassId73, dtoToUpsert.ResourceClassId74, dtoToUpsert.ResourceClassId75,
+				dtoToUpsert.ResourceClassId81, dtoToUpsert.ResourceClassId82, dtoToUpsert.ResourceClassId83, dtoToUpsert.ResourceClassId84, dtoToUpsert.ResourceClassId85,
+				dtoToUpsert.ResourceClassId91, dtoToUpsert.ResourceClassId92, dtoToUpsert.ResourceClassId93, dtoToUpsert.ResourceClassId94, dtoToUpsert.ResourceClassId95
+			};
+		}
+
+		/// <summary>
+		/// Null out Non 1LMX Rates
+		/// </summary>
+		/// <param name="dtoToUpsert">Model to modify</param>
+		private void NullOutNonOneLMXRates(RateDetailModelView dtoToUpsert)
+		{
+			dtoToUpsert.ResourceClassId = null;
+			dtoToUpsert.ResourceClassId1 = null;
+			dtoToUpsert.ResourceClassId2 = null;
+			dtoToUpsert.ResourceClassId3 = null;
+			dtoToUpsert.ResourceClassId4 = null;
+			dtoToUpsert.ResourceClassId5 = null;
+			dtoToUpsert.ResourceClassId6 = null;
+			dtoToUpsert.ResourceClassId7 = null;
+			dtoToUpsert.ResourceClassId8 = null;
+			dtoToUpsert.ResourceClassId9 = null;
+
+			dtoToUpsert.RateDescription = string.Empty;
+			dtoToUpsert.RateDescription1 = string.Empty;
+			dtoToUpsert.RateDescription2 = string.Empty;
+			dtoToUpsert.RateDescription3 = string.Empty;
+			dtoToUpsert.RateDescription4 = string.Empty;
+			dtoToUpsert.RateDescription5 = string.Empty;
+			dtoToUpsert.RateDescription6 = string.Empty;
+			dtoToUpsert.RateDescription7 = string.Empty;
+			dtoToUpsert.RateDescription8 = string.Empty;
+			dtoToUpsert.RateDescription9 = string.Empty;
+		}
+
+		/// <summary>
+		/// Null out 1LMX Rates
+		/// </summary>
+		/// <param name="dtoToUpsert">Model to Modify</param>
+		private void NullOutOneLMXRates(RateDetailModelView dtoToUpsert)
+		{
+			dtoToUpsert.RateDescription11 = string.Empty; dtoToUpsert.RateDescription12 = string.Empty; dtoToUpsert.RateDescription13 = string.Empty; dtoToUpsert.RateDescription14 = string.Empty; dtoToUpsert.RateDescription15 = string.Empty;
+			dtoToUpsert.RateDescription21 = string.Empty; dtoToUpsert.RateDescription22 = string.Empty; dtoToUpsert.RateDescription23 = string.Empty; dtoToUpsert.RateDescription24 = string.Empty; dtoToUpsert.RateDescription25 = string.Empty;
+			dtoToUpsert.RateDescription31 = string.Empty; dtoToUpsert.RateDescription32 = string.Empty; dtoToUpsert.RateDescription33 = string.Empty; dtoToUpsert.RateDescription34 = string.Empty; dtoToUpsert.RateDescription35 = string.Empty;
+			dtoToUpsert.RateDescription41 = string.Empty; dtoToUpsert.RateDescription42 = string.Empty; dtoToUpsert.RateDescription43 = string.Empty; dtoToUpsert.RateDescription44 = string.Empty; dtoToUpsert.RateDescription45 = string.Empty;
+			dtoToUpsert.RateDescription51 = string.Empty; dtoToUpsert.RateDescription52 = string.Empty; dtoToUpsert.RateDescription53 = string.Empty; dtoToUpsert.RateDescription54 = string.Empty; dtoToUpsert.RateDescription55 = string.Empty;
+			dtoToUpsert.RateDescription61 = string.Empty; dtoToUpsert.RateDescription62 = string.Empty; dtoToUpsert.RateDescription63 = string.Empty; dtoToUpsert.RateDescription64 = string.Empty; dtoToUpsert.RateDescription65 = string.Empty;
+			dtoToUpsert.RateDescription71 = string.Empty; dtoToUpsert.RateDescription72 = string.Empty; dtoToUpsert.RateDescription73 = string.Empty; dtoToUpsert.RateDescription74 = string.Empty; dtoToUpsert.RateDescription75 = string.Empty;
+			dtoToUpsert.RateDescription81 = string.Empty; dtoToUpsert.RateDescription82 = string.Empty; dtoToUpsert.RateDescription83 = string.Empty; dtoToUpsert.RateDescription84 = string.Empty; dtoToUpsert.RateDescription85 = string.Empty;
+			dtoToUpsert.RateDescription91 = string.Empty; dtoToUpsert.RateDescription92 = string.Empty; dtoToUpsert.RateDescription93 = string.Empty; dtoToUpsert.RateDescription94 = string.Empty; dtoToUpsert.RateDescription95 = string.Empty;
+
+			dtoToUpsert.ResourceClassId11 = null; dtoToUpsert.ResourceClassId12 = null; dtoToUpsert.ResourceClassId13 = null; dtoToUpsert.ResourceClassId14 = null; dtoToUpsert.ResourceClassId15 = null;
+			dtoToUpsert.ResourceClassId21 = null; dtoToUpsert.ResourceClassId22 = null; dtoToUpsert.ResourceClassId23 = null; dtoToUpsert.ResourceClassId24 = null; dtoToUpsert.ResourceClassId25 = null;
+			dtoToUpsert.ResourceClassId31 = null; dtoToUpsert.ResourceClassId32 = null; dtoToUpsert.ResourceClassId33 = null; dtoToUpsert.ResourceClassId34 = null; dtoToUpsert.ResourceClassId35 = null;
+			dtoToUpsert.ResourceClassId41 = null; dtoToUpsert.ResourceClassId42 = null; dtoToUpsert.ResourceClassId43 = null; dtoToUpsert.ResourceClassId44 = null; dtoToUpsert.ResourceClassId45 = null;
+			dtoToUpsert.ResourceClassId51 = null; dtoToUpsert.ResourceClassId52 = null; dtoToUpsert.ResourceClassId53 = null; dtoToUpsert.ResourceClassId54 = null; dtoToUpsert.ResourceClassId55 = null;
+			dtoToUpsert.ResourceClassId61 = null; dtoToUpsert.ResourceClassId62 = null; dtoToUpsert.ResourceClassId63 = null; dtoToUpsert.ResourceClassId64 = null; dtoToUpsert.ResourceClassId65 = null;
+			dtoToUpsert.ResourceClassId71 = null; dtoToUpsert.ResourceClassId72 = null; dtoToUpsert.ResourceClassId73 = null; dtoToUpsert.ResourceClassId74 = null; dtoToUpsert.ResourceClassId75 = null;
+			dtoToUpsert.ResourceClassId81 = null; dtoToUpsert.ResourceClassId82 = null; dtoToUpsert.ResourceClassId83 = null; dtoToUpsert.ResourceClassId84 = null; dtoToUpsert.ResourceClassId85 = null;
+			dtoToUpsert.ResourceClassId91 = null; dtoToUpsert.ResourceClassId92 = null; dtoToUpsert.ResourceClassId93 = null; dtoToUpsert.ResourceClassId94 = null; dtoToUpsert.ResourceClassId95 = null;
+		}
+
 		#endregion
 	}
 }
