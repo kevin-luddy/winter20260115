@@ -42,6 +42,11 @@ namespace GenBOE.ActionLogic.ModelView
         public bool canCreateWS { get; set; }
 
         /// <summary>
+        /// Checks if genBOE is in Read Only mode
+        /// </summary>
+        public bool isReadOnly { get; set; }
+
+        /// <summary>
         /// Gets or sets the workspace grid rows.
         /// </summary>
         public ICollection<GenBOEHomepageWorkspaceRowModelView> workspaceGridRows { get; set; }
