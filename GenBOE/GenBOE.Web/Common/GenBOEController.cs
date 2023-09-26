@@ -278,7 +278,16 @@ namespace GenBOE.Web.Common
             }
 
             ViewData["DisplayProjectMapOnly"] = ws.IsProjectMapWorkspace;
-        }
+
+            ViewData["ReadOnlyMode"] = false;
+			if (SiteMasterUtilities.IsReadOnly())
+			{
+				if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+                    ViewData["ReadOnlyMode"] = true;
+				}
+			}
+		}
 
         /// <summary>
         /// Decides whether the Zone Travel Update Link should be displayed
