@@ -482,7 +482,16 @@ namespace GenBOE.Web.Common
                 ViewData["ContainsOCI"] = ws.ContainsOCI.ToString().ToLower();
             }
 
-            ViewData["READONLY"] = readOnly ? "true" : "false";
+			ViewData["ReadOnlyMode"] = false;
+			if (SiteMasterUtilities.IsReadOnly())
+			{
+				if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+					ViewData["ReadOnlyMode"] = true;
+				}
+			}
+
+			ViewData["READONLY"] = readOnly ? "true" : "false";
 
             return sw;
         }
