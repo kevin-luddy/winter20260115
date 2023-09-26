@@ -674,8 +674,7 @@ namespace GenBOE.Web.Controllers
             {
                 if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
                 {
-                    ViewData["SubmitForReview_ReadOnly"] = true;
-
+                    ViewData["SubmitForReview_ReadOnly"] = "true";
 				}
             }
 

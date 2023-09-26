@@ -11,7 +11,7 @@
 
     $(function () {
         $('#BOESubmitForReview-Button').click(BOESubmitForReview.ValidateClicked);
-        if(<%=ViewData["SubmitForReview_ReadOnly"]%>)
+        if(<%= (String)ViewData["SubmitForReview_ReadOnly"] == "true" %>)
         {
             $('#BOESubmitForReview-Button').hide();
         }
@@ -19,6 +19,9 @@
 
 </script>
 
-    <button id="BOESubmitForReview-Button" class="ies" type="button">Submit for Review</button>
-    <div id="BOESubmitForReview-Loader" class="loader display-none"></div>
+<% if ((String)ViewData["SubmitForReview_ReadOnly"] != "true")
+    { %>
+<button id="BOESubmitForReview-Button" class="ies" type="button">Submit for Review</button>
+<% } %>
+<div id="BOESubmitForReview-Loader" class="loader display-none"></div>
 
