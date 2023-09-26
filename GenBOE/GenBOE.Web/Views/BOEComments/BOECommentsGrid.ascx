@@ -128,7 +128,7 @@
         </table>
         <br />
         <div id="OCINote" class="oci-note"></div> 
-        <% if ((!CommentsReadOnly || !ApprovalsReadOnly || !ResponsesReadOnly) && !(bool)SiteMasterUtilities.IsReadOnly())
+        <% if (!CommentsReadOnly || !ApprovalsReadOnly || !ResponsesReadOnly)
            { %>
         <div class="buttons">
             <button id="BOECommentsSave" class="ies-action disabled" name="save-button" type="button">Save</button>
