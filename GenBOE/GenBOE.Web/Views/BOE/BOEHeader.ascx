@@ -26,6 +26,7 @@
     var DataSourceAnswers = Model.HeaderRteTemplateAnswers.Where(a => a.SourceId == (int)RteTemplateSource.BoeSources).ToList();
     bool showCustomQuestions = DataSourceAnswers.Any();
     int numberQuestions = showCustomQuestions ? DataSourceAnswers.Count : 1;
+    bool readOnlyMode = Html.GetViewDataValue<bool>("IsReadOnlyMode", false);
 %>
 
 <script type="text/javascript">
@@ -137,9 +138,12 @@
                 <div class="nonPrintableLabel" title="This field is not printed in any reports">Non-Printable</div>
                 <%} %>
             </div>
-            <div class="form-element" id="sources-element">
-                <% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(DataSourceAnswers, "DataSource", Model.DataSource));  %>
-            </div>
+            <% if (readOnlyMode)
+                { %>
+                <div class="form-element" id="sources-element">
+                    <% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(DataSourceAnswers, "DataSource", Model.DataSource));  %>
+                </div>
+            <% } %>
         </div>
         <div class="form-row<% if (!Model.ShowHistoricMetricCheck)
                                { %> display-none<% } %>">

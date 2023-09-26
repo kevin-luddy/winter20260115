@@ -601,8 +601,18 @@ namespace GenBOE.Web.Controllers
 
             ViewResult toReturn = View(WebConstants.VIEW_BOE_SUMMARY, results);
 
-            // Finalize Action
-            FinalizeAction(_log, "DisplayBOESummary", sw);
+            // Checks Web.Config Read Only Mode
+			this.ViewData["IsReadOnlyMode"] = false;
+			if (SiteMasterUtilities.IsReadOnly())
+			{
+				if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+					this.ViewData["IsReadOnlyMode"] = true;
+				}
+			}
+
+			// Finalize Action
+			FinalizeAction(_log, "DisplayBOESummary", sw);
             return toReturn;
         }
 
