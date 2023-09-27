@@ -24,8 +24,11 @@
             });
 
         </script>
-
-        <button id="CopyFromExistingBOE-Button" class="ies" type="button">Copy from existing BOE</button>
+        
+        <% if (!Html.GetViewDataValue<bool>("ReadOnlyMode", false))
+            { %>
+            <button id="CopyFromExistingBOE-Button" class="ies" type="button">Copy from existing BOE</button>
+        <% } %>
 
         <div id="BOESearch" style="display:none; width: auto; min-height: 107px; height: auto;" class="ui-dialog-content ui-widget-content boe-search">
             <%: Html.Hidden("IsCopyFromBoeContext", true) %>

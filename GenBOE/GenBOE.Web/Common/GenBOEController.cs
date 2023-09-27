@@ -278,7 +278,16 @@ namespace GenBOE.Web.Common
             }
 
             ViewData["DisplayProjectMapOnly"] = ws.IsProjectMapWorkspace;
-        }
+
+            ViewData["ReadOnlyMode"] = false;
+			if (SiteMasterUtilities.IsReadOnly())
+			{
+				if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+                    ViewData["ReadOnlyMode"] = true;
+				}
+			}
+		}
 
         /// <summary>
         /// Decides whether the Zone Travel Update Link should be displayed
@@ -482,7 +491,16 @@ namespace GenBOE.Web.Common
                 ViewData["ContainsOCI"] = ws.ContainsOCI.ToString().ToLower();
             }
 
-            ViewData["READONLY"] = readOnly ? "true" : "false";
+			ViewData["ReadOnlyMode"] = false;
+			if (SiteMasterUtilities.IsReadOnly())
+			{
+				if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+					ViewData["ReadOnlyMode"] = true;
+				}
+			}
+
+			ViewData["READONLY"] = readOnly ? "true" : "false";
 
             return sw;
         }

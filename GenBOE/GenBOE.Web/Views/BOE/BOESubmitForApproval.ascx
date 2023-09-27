@@ -18,6 +18,8 @@
     });
 </script>
 
-
-<button id="BOESubmitForApproval-Button" class="ies-action submit-for-approval-button" type="button">Submit for Approval</button>
+<% if (!Html.GetViewDataValue<bool>("ReadOnlyMode", false))
+    { %>
+    <button id="BOESubmitForApproval-Button" class="ies-action submit-for-approval-button" type="button">Submit for Approval</button>
+<% } %>
 <div id="BOESubmitForApproval-Loader" class="loader display-none float-right"></div>
