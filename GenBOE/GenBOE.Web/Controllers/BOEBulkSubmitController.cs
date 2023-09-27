@@ -65,7 +65,6 @@ namespace GenBOE.Web.Controllers
 
             // Perform Action
             ViewResult toReturn = GetMasterView(WebConstants.VIEW_BOE_BULK_SUBMIT, workspace);
-            toReturn = null;
 
             // Finalize Action
             FinalizeAction(_log, "DisplayBoeBulkSubmit", sw);

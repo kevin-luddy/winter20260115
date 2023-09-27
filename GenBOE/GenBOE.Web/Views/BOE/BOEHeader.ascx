@@ -138,7 +138,7 @@
                 <div class="nonPrintableLabel" title="This field is not printed in any reports">Non-Printable</div>
                 <%} %>
             </div>
-            <% if (readOnlyMode)
+            <% if (!readOnlyMode)
                 { %>
                 <div class="form-element" id="sources-element">
                     <% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(DataSourceAnswers, "DataSource", Model.DataSource));  %>
