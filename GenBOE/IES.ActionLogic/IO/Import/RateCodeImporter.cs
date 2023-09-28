@@ -38,6 +38,7 @@ namespace IES.ActionLogic.IO.Import
             ImportExportConstants.LINKED_SECTION_COLUMN_HEADER,
             ImportExportConstants.RESOURCE_TYPE_COLUMN_HEADER,
             ImportExportConstants.RATE_TYPE_COLUMN_HEADER,
+			ImportExportConstants.DISCLOSURE_TYPE_COLUMN_HEADER,
             ImportExportConstants.PRO_PRICER_DESCRIPTION_COLUMN_HEADER,
             ImportExportConstants.PRO_PRICER_RESOURCE_CLASS_COLUMN_HEADER,
             ImportExportConstants.PRO_PRICER_DESCRIPTION1_COLUMN_HEADER,
@@ -69,7 +70,8 @@ namespace IES.ActionLogic.IO.Import
         {
             ImportExportConstants.RATE_CATEGORY_COLUMN_HEADER,
             ImportExportConstants.RATE_DESCRIPTION_COLUMN_HEADER,
-            ImportExportConstants.RATE_CODE_COLUMN_HEADER
+            ImportExportConstants.RATE_CODE_COLUMN_HEADER,
+			ImportExportConstants.DISCLOSURE_TYPE_COLUMN_HEADER
         };
 
         /// <summary>
@@ -194,6 +196,12 @@ namespace IES.ActionLogic.IO.Import
                 {
                     rateCodeMapRow.RateType = (RateType)id;
                 }
+
+				id = GetNullableIdFromCell(row, ImportExportConstants.DISCLOSURE_TYPE_COLUMN_HEADER, rates.DisclosureTypes);
+				if (id.HasValue)
+				{
+					rateCodeMapRow.DisclosureType = (DisclosureType)id;
+				}
 
                 rateCodeMapRow.RateDescription = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION_COLUMN_HEADER] : string.Empty;
                 rateCodeMapRow.ResourceClassId = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS_COLUMN_HEADER, rates.ResourceClasses);

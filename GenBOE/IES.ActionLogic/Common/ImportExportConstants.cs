@@ -51,65 +51,70 @@ namespace IES.ActionLogic.Common
         /// </summary>
         public const int RATE_TYPE_CELL_COLUMN_OFFSET = 5;
 
+		/// <summary>
+		/// Disclosure Type Column Offset
+		/// </summary>
+		public const int DISCLOSURE_TYPE_CELL_COLUMN_OFFSET = 6;
+
         /// <summary>
         /// ProPricer Resource Class Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS_CELL_COLUMN_OFFSET = 7;
+        public const int RESOURCE_CLASS_CELL_COLUMN_OFFSET = 8;
 
         /// <summary>
         /// ProPricer Resource Class1 Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS1_CELL_COLUMN_OFFSET = 9;
+        public const int RESOURCE_CLASS1_CELL_COLUMN_OFFSET = 10;
 
         /// <summary>
         /// ProPricer Resource Class2 Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS2_CELL_COLUMN_OFFSET = 11;
+        public const int RESOURCE_CLASS2_CELL_COLUMN_OFFSET = 12;
 
         /// <summary>
         /// ProPricer Resource Class3 Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS3_CELL_COLUMN_OFFSET = 13;
+        public const int RESOURCE_CLASS3_CELL_COLUMN_OFFSET = 14;
 
         /// <summary>
         /// ProPricer Resource Class4 Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS4_CELL_COLUMN_OFFSET = 15;
+        public const int RESOURCE_CLASS4_CELL_COLUMN_OFFSET = 16;
 
         /// <summary>
         /// ProPricer Resource Class5 Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS5_CELL_COLUMN_OFFSET = 17;
+        public const int RESOURCE_CLASS5_CELL_COLUMN_OFFSET = 18;
 
         /// <summary>
         /// ProPricer Resource Class6 Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS6_CELL_COLUMN_OFFSET = 19;
+        public const int RESOURCE_CLASS6_CELL_COLUMN_OFFSET = 20;
 
         /// <summary>
         /// ProPricer Resource Class7 Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS7_CELL_COLUMN_OFFSET = 21;
+        public const int RESOURCE_CLASS7_CELL_COLUMN_OFFSET = 22;
 
         /// <summary>
         /// ProPricer Resource Class8 Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS8_CELL_COLUMN_OFFSET = 23;
+        public const int RESOURCE_CLASS8_CELL_COLUMN_OFFSET = 24;
 
         /// <summary>
         /// ProPricer Resource Class9 Column Offset
         /// </summary>
-        public const int RESOURCE_CLASS9_CELL_COLUMN_OFFSET = 25;
+        public const int RESOURCE_CLASS9_CELL_COLUMN_OFFSET = 26;
 
         /// <summary>
         /// Government Burden Pool Column Offset
         /// </summary>
-        public const int GOVT_BURDEN_POOL_CELL_COLUMN_OFFSET = 26;
+        public const int GOVT_BURDEN_POOL_CELL_COLUMN_OFFSET = 27;
 
         /// <summary>
         /// Commercial Burden Pool Column Offset
         /// </summary>
-        public const int COMM_BURDEN_POOL_CELL_COLUMN_OFFSET = 27;
+        public const int COMM_BURDEN_POOL_CELL_COLUMN_OFFSET = 28;
         /// <summary>
         /// Worksheets to be hidden on export, and excluded from import
         /// </summary>
@@ -147,6 +152,11 @@ namespace IES.ActionLogic.Common
         /// Rate Type Column Header
         /// </summary>
         public static readonly string RATE_TYPE_COLUMN_HEADER = "Rate Type";
+
+		/// <summary>
+		/// Disclosure Type Column Header
+		/// </summary>
+		public static readonly string DISCLOSURE_TYPE_COLUMN_HEADER = "Disclosure Type";
 
         /// <summary>
         /// Resource Class Column Header
@@ -304,6 +314,11 @@ namespace IES.ActionLogic.Common
         /// Rate Types data validation
         /// </summary>
         public static readonly string RATE_TYPES = "RateTypes";
+
+		/// <summary>
+		/// Disclosure Types data validation
+		/// </summary>
+		public static readonly string DISCLOSURE_TYPES = "DisclosureTypes";
 
         /// <summary>
         /// Resource Classes data validation

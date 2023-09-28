@@ -66,14 +66,15 @@ namespace IES.ActionLogic.IO.Export
             // Create collections of strings for each row in the export file
             var worksheet = new ExcelExportWorksheet();
 
-            Collection<string> headers = new Collection<string>()
-            {
-                ImportExportConstants.RATE_CATEGORY_COLUMN_HEADER,
-                ImportExportConstants.RATE_CODE_COLUMN_HEADER,
-                ImportExportConstants.RATE_DESCRIPTION_COLUMN_HEADER,
-                ImportExportConstants.LINKED_SECTION_COLUMN_HEADER,
-                ImportExportConstants.RESOURCE_TYPE_COLUMN_HEADER,
-                ImportExportConstants.RATE_TYPE_COLUMN_HEADER,
+			Collection<string> headers = new Collection<string>()
+			{
+				ImportExportConstants.RATE_CATEGORY_COLUMN_HEADER,
+				ImportExportConstants.RATE_CODE_COLUMN_HEADER,
+				ImportExportConstants.RATE_DESCRIPTION_COLUMN_HEADER,
+				ImportExportConstants.LINKED_SECTION_COLUMN_HEADER,
+				ImportExportConstants.RESOURCE_TYPE_COLUMN_HEADER,
+				ImportExportConstants.RATE_TYPE_COLUMN_HEADER,
+				ImportExportConstants.DISCLOSURE_TYPE_COLUMN_HEADER,
                 ImportExportConstants.PRO_PRICER_DESCRIPTION_COLUMN_HEADER,
                 ImportExportConstants.PRO_PRICER_RESOURCE_CLASS_COLUMN_HEADER,
                 ImportExportConstants.PRO_PRICER_DESCRIPTION1_COLUMN_HEADER,
@@ -104,14 +105,15 @@ namespace IES.ActionLogic.IO.Export
             {
                 foreach (RateDetailModelView data in rates.Rates)
                 {
-                    Collection<string> row = new Collection<string>
-                    {
-                        data.RateCategory.GetDescription(),
-                        data.RateCode,
-                        data.Description,
-                        data.Section.HasValue ? rates.Sections.Single(x => x.Id == data.Section).Label : string.Empty,
-                        data.ResourceType.GetDescription(),
-                        data.RateType.GetDescription(),
+					Collection<string> row = new Collection<string>
+					{
+						data.RateCategory.GetDescription(),
+						data.RateCode,
+						data.Description,
+						data.Section.HasValue ? rates.Sections.Single(x => x.Id == data.Section).Label : string.Empty,
+						data.ResourceType.GetDescription(),
+						data.RateType.GetDescription(),
+						data.DisclosureType.GetDescription(),
                         data.RateDescription,
                         data.ResourceClassId.HasValue ? rates.ResourceClasses.Single(x => x.Id == data.ResourceClassId).Label : string.Empty,
                         data.RateDescription1,
@@ -138,20 +140,20 @@ namespace IES.ActionLogic.IO.Export
 
                     worksheet.Add(row);
                 }
-            }
+			}
 
-            // Export the data to the worksheet
-            WorksheetPart worksheetPart = ExcelUtilities.GetSpecifiedWorksheetPart(spreadsheet, ImportExportConstants.RATE_CODES);
-            ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, worksheet, 1);
+			// Export the data to the worksheet
+			WorksheetPart worksheetPart = ExcelUtilities.GetSpecifiedWorksheetPart(spreadsheet, ImportExportConstants.RATE_CODES);
+			ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, worksheet, 1);
 
-            AddDataValidation(worksheetPart, rates.Rates.Count);
+			//AddDataValidation(worksheetPart, rates.Rates.Count);
 
-            string sheetRange = ExcelUtilities.RedefineSheetDimensions(worksheetPart, ((uint)rates.Rates.Count) + 1U, 0);
-            ExcelUtilities.SetIgnoredErrors(worksheetPart.Worksheet, sheetRange);
+			string sheetRange = ExcelUtilities.RedefineSheetDimensions(worksheetPart, ((uint)rates.Rates.Count) + 1U, 0);
+			ExcelUtilities.SetIgnoredErrors(worksheetPart.Worksheet, sheetRange);
 
-            // save the worksheet
-            worksheetPart.Worksheet.Save();
-        }
+			// save the worksheet
+			worksheetPart.Worksheet.Save();
+		}
 
         /// <summary>
         /// Populates the options list worksheet.
@@ -170,9 +172,11 @@ namespace IES.ActionLogic.IO.Export
             string[] resourceClassOptions = rates.ResourceClasses.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
             string[] govtBurdenPoolOptions = rates.GovernmentBurdenPools.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
             string[] commBurdenPoolOptions = rates.CommercialBurdenPools.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
+			string[] disclosureTypeOptions = rates.DisclosureTypes.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
 
-            // Options List Column Headers
-            List<string> headerValues = new List<string>
+			// Options List Column Headers
+			// Really the Defined Names for the dropdown lists
+			List<string> headerValues = new List<string>
             {
                 ImportExportConstants.CATEGORIES,
                 ImportExportConstants.SECTIONS,
@@ -180,10 +184,11 @@ namespace IES.ActionLogic.IO.Export
                 ImportExportConstants.RATE_TYPES,
                 ImportExportConstants.RESOURCE_CLASSES,
                 ImportExportConstants.GOVERNMENT_BURDEN_POOLS,
-                ImportExportConstants.COMMERCIAL_BURDEN_POOLS
-            };
+                ImportExportConstants.COMMERCIAL_BURDEN_POOLS,
+				ImportExportConstants.DISCLOSURE_TYPES
+			};
 
-            int maxRows = Math.Max(rateCategoryOptions.Length, Math.Max(sectionOptions.Length, Math.Max(resourceTypeOptions.Length, Math.Max(rateTypeOptions.Length, Math.Max(resourceClassOptions.Length, Math.Max(govtBurdenPoolOptions.Length, commBurdenPoolOptions.Length))))));
+            int maxRows = Math.Max(rateCategoryOptions.Length, Math.Max(sectionOptions.Length, Math.Max(resourceTypeOptions.Length, Math.Max(rateTypeOptions.Length, Math.Max(disclosureTypeOptions.Length, Math.Max(resourceClassOptions.Length, Math.Max(govtBurdenPoolOptions.Length, commBurdenPoolOptions.Length)))))));
             optionsListWorksheet.Add(headerValues);   // Add option list header row
 
             // Add option value rows
@@ -197,8 +202,9 @@ namespace IES.ActionLogic.IO.Export
                     rateTypeOptions.Length > i ? rateTypeOptions[i] : string.Empty,
                     resourceClassOptions.Length > i ? resourceClassOptions[i] : string.Empty,
                     govtBurdenPoolOptions.Length > i ? govtBurdenPoolOptions[i] : string.Empty,
-                    commBurdenPoolOptions.Length > i ? commBurdenPoolOptions[i] : string.Empty
-                };
+                    commBurdenPoolOptions.Length > i ? commBurdenPoolOptions[i] : string.Empty,
+					disclosureTypeOptions.Length > i ? disclosureTypeOptions[i] : string.Empty
+				};
 
                 optionsListWorksheet.Add(optionValues);
             }
@@ -216,62 +222,65 @@ namespace IES.ActionLogic.IO.Export
                 { ImportExportConstants.RATE_TYPES, rateTypeOptions.Length },
                 { ImportExportConstants.RESOURCE_CLASSES, resourceClassOptions.Length },
                 { ImportExportConstants.GOVERNMENT_BURDEN_POOLS, govtBurdenPoolOptions.Length },
-                { ImportExportConstants.COMMERCIAL_BURDEN_POOLS, commBurdenPoolOptions.Length }
-            };
+                { ImportExportConstants.COMMERCIAL_BURDEN_POOLS, commBurdenPoolOptions.Length },
+				{ ImportExportConstants.DISCLOSURE_TYPES, disclosureTypeOptions.Length },
+			};
 
             ExcelExporter.AdjustDefinedNames(spreadsheet, lengths);
         }
 
-        /// <summary>
-        /// Adds the data validation dropdowns to the excel spreadsheet.
-        /// </summary>
-        /// <param name="worksheetPart">The worksheet part.</param>
-        /// <param name="rateCodeResourcesCount">The Rate Code resources count.</param>
-        private static void AddDataValidation(WorksheetPart worksheetPart, int rateCodeResourcesCount)
-        {
-            // Create the data validation dropdowns for custom fields
-            uint startDataRowIndex = 2;
-            int startDataColIndex = 0;
-            uint endDataRowIndex = (uint)(rateCodeResourcesCount + 11); // all of the data rows and ten extra
+		/// <summary>
+		/// Adds the data validation dropdowns to the excel spreadsheet.
+		/// </summary>
+		/// <param name="worksheetPart">The worksheet part.</param>
+		/// <param name="rateCodeResourcesCount">The Rate Code resources count.</param>
+		private static void AddDataValidation(WorksheetPart worksheetPart, int rateCodeResourcesCount)
+		{
+			// Create the data validation dropdowns for custom fields
+			uint startDataRowIndex = 2;
+			int startDataColIndex = 0;
+			uint endDataRowIndex = (uint)(rateCodeResourcesCount + 11); // all of the data rows and ten extra
 
-            // Adjust the spread offset by the custom fields and multi columns 
-            Dictionary<string, string> dataValidationReferences = new Dictionary<string, string>();
+			// Adjust the spread offset by the custom fields and multi columns 
+			Dictionary<string, string> dataValidationReferences = new Dictionary<string, string>();
 
-            // Add data validation references for Lookup columns
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.CATEGORIES,
-                ImportExportConstants.RATE_CATEGORY_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.SECTIONS,
-                ImportExportConstants.SECTION_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_TYPES,
-                ImportExportConstants.RESOURCE_TYPE_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RATE_TYPES,
-                ImportExportConstants.RATE_TYPE_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS1_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS2_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS3_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS4_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS5_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS6_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS7_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS8_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.RESOURCE_CLASS9_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.GOVERNMENT_BURDEN_POOLS,
-                ImportExportConstants.GOVT_BURDEN_POOL_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
-            ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.COMMERCIAL_BURDEN_POOLS,
-                ImportExportConstants.COMM_BURDEN_POOL_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			// Add data validation references for Lookup columns
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.CATEGORIES,
+				ImportExportConstants.RATE_CATEGORY_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.SECTIONS,
+				ImportExportConstants.SECTION_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_TYPES,
+				ImportExportConstants.RESOURCE_TYPE_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RATE_TYPES,
+				ImportExportConstants.RATE_TYPE_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.DISCLOSURE_TYPES,
+			ImportExportConstants.DISCLOSURE_TYPE_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS1_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS2_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS3_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS4_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS5_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS6_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS7_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS8_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.RESOURCE_CLASS9_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.GOVERNMENT_BURDEN_POOLS,
+				ImportExportConstants.GOVT_BURDEN_POOL_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
+			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.COMMERCIAL_BURDEN_POOLS,
+				ImportExportConstants.COMM_BURDEN_POOL_CELL_COLUMN_OFFSET + startDataColIndex, startDataRowIndex, endDataRowIndex);
 
-            ExcelExporter.AddDataValidations(dataValidationReferences, worksheetPart);
-        }
-    }
+			ExcelExporter.AddDataValidations(dataValidationReferences, worksheetPart);
+		}
+	}
 }
