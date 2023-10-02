@@ -166,6 +166,7 @@ namespace IES.ActionLogic.IO.Import
 		/// <param name="allRows">Collection of Key/Value pair Dictionary objects representing imported rows.</param>
 		/// <param name="rates">The Rate Codes and related data.</param>
 		/// <returns>A collection of DTOs representing the newly imported values</returns>
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private static ICollection<RateDetailModelView> CreateDTOsToReturn(ICollection<Dictionary<string, string>> allRows, RateGridModelView rates)
 		{
 			// Create the collection to return
@@ -223,9 +224,124 @@ namespace IES.ActionLogic.IO.Import
 				rateCodeMapRow.ResourceClassId8 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS8_COLUMN_HEADER, rates.ResourceClasses);
 				rateCodeMapRow.RateDescription9 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION9_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION9_COLUMN_HEADER] : string.Empty;
 				rateCodeMapRow.ResourceClassId9 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS9_COLUMN_HEADER, rates.ResourceClasses);
+
+				#region 1LMX Rows
+
+				// Level 1
+				rateCodeMapRow.RateDescription11 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION11_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION11_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId11 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS11_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription12 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION12_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION12_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId12 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS12_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription13 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION13_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION13_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId13 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS13_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription14 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION14_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION14_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId14 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS14_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription15 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION15_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION15_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId15 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS15_COLUMN_HEADER, rates.ResourceClasses);
+
+				// Level 2
+				rateCodeMapRow.RateDescription21 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION21_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION21_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId21 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS21_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription22 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION22_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION22_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId22 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS22_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription23 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION23_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION23_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId23 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS23_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription24 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION24_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION24_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId24 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS24_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription25 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION25_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION25_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId25 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS25_COLUMN_HEADER, rates.ResourceClasses);
+
+				// Level 3
+				rateCodeMapRow.RateDescription31 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION31_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION31_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId31 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS31_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription32 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION32_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION32_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId32 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS32_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription33 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION33_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION33_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId33 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS33_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription34 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION34_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION34_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId34 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS34_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription35 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION35_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION35_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId35 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS35_COLUMN_HEADER, rates.ResourceClasses);
+
+				// Level 4
+				rateCodeMapRow.RateDescription41 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION41_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION41_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId41 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS41_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription42 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION42_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION42_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId42 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS42_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription43 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION43_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION43_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId43 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS43_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription44 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION44_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION44_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId44 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS44_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription45 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION45_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION45_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId45 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS45_COLUMN_HEADER, rates.ResourceClasses);
+
+				// Level 5
+				rateCodeMapRow.RateDescription51 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION51_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION51_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId51 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS51_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription52 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION52_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION52_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId52 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS52_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription53 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION53_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION53_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId53 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS53_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription54 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION54_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION54_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId54 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS54_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription55 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION55_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION55_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId55 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS55_COLUMN_HEADER, rates.ResourceClasses);
+
+				// Level 6
+				rateCodeMapRow.RateDescription61 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION61_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION61_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId61 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS61_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription62 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION62_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION62_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId62 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS62_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription63 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION63_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION63_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId63 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS63_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription64 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION64_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION64_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId64 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS64_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription65 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION65_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION65_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId65 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS65_COLUMN_HEADER, rates.ResourceClasses);
+
+				// Level 7
+				rateCodeMapRow.RateDescription71 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION71_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION71_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId71 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS71_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription72 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION72_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION72_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId72 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS72_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription73 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION73_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION73_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId73 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS73_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription74 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION74_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION74_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId74 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS74_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription75 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION75_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION75_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId75 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS75_COLUMN_HEADER, rates.ResourceClasses);
+
+				// Level 8
+				rateCodeMapRow.RateDescription81 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION81_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION81_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId81 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS81_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription82 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION82_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION82_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId82 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS82_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription83 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION83_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION83_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId83 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS83_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription84 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION84_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION84_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId84 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS84_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription85 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION85_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION85_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId85 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS85_COLUMN_HEADER, rates.ResourceClasses);
+
+				// Level 9
+				rateCodeMapRow.RateDescription91 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION91_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION91_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId91 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS91_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription92 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION92_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION92_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId92 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS92_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription93 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION93_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION93_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId93 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS93_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription94 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION94_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION94_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId94 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS94_COLUMN_HEADER, rates.ResourceClasses);
+				rateCodeMapRow.RateDescription95 = row.ContainsKey(ImportExportConstants.PRO_PRICER_DESCRIPTION95_COLUMN_HEADER) ? row[ImportExportConstants.PRO_PRICER_DESCRIPTION95_COLUMN_HEADER] : string.Empty;
+				rateCodeMapRow.ResourceClassId95 = GetNullableIdFromCell(row, ImportExportConstants.PRO_PRICER_RESOURCE_CLASS95_COLUMN_HEADER, rates.ResourceClasses);
+
+				#endregion
+
 				rateCodeMapRow.GovernmentBurdenPoolId = GetNullableIdFromCell(row, ImportExportConstants.GOVERNMENT_BURDEN_POOL_COLUMN_HEADER, rates.GovernmentBurdenPools);
 				rateCodeMapRow.CommercialBurdenPoolId = GetNullableIdFromCell(row, ImportExportConstants.COMMERCIAL_BURDEN_POOL_COLUMN_HEADER, rates.CommercialBurdenPools);
+
 				rateCodeMapRow.Values = new Collection<RateYearModelView>();
+
 				rateCodeMapRow.GenerateAdditionalDirectLaborRates =
 					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription1) ||
 					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription2) ||
@@ -235,7 +351,52 @@ namespace IES.ActionLogic.IO.Import
 					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription6) ||
 					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription7) ||
 					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription8) ||
-					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription9);
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription9) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription11) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription12) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription13) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription14) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription15) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription21) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription22) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription23) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription24) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription25) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription31) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription32) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription33) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription34) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription35) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription41) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription42) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription43) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription44) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription45) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription51) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription52) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription53) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription54) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription55) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription61) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription62) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription63) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription64) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription65) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription71) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription72) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription73) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription74) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription75) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription81) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription82) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription83) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription84) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription85) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription91) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription92) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription93) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription94) ||
+					!string.IsNullOrWhiteSpace(rateCodeMapRow.RateDescription95);
 			}
 
 			// Return the collection of new DTOs
