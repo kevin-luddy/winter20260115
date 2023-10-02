@@ -6,78 +6,78 @@
 
 namespace IES.ActionLogic.IO.Export
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using Common;
-    using DataBridge.ModelViews;
-    using DocumentFormat.OpenXml.Packaging;
-    using IES.Common;
-    using IES.Common.OfficeUtilities;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
+	using Common;
+	using DataBridge.ModelViews;
+	using DocumentFormat.OpenXml.Packaging;
+	using IES.Common;
+	using IES.Common.OfficeUtilities;
 
-    /// <summary>
-    /// Responsible for Rate Code Excel export.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    public static class RateCodeExporter
-    {
-        /// <summary>
-        /// Exports Rate Codes to an Excel file.
-        /// </summary>
-        /// <param name="templateFileLocation">The location of the Rate Code Excel file template</param>
-        /// <param name="rates">The Rate Codes and related data.</param>
-        /// <returns>Path to the exported Rate Code file</returns>
-        public static string ExportToExcelFile(string templateFileLocation, RateGridModelView rates)
-        {
-            // Check inputs
-            if (templateFileLocation == null)
-            {
-                throw new ArgumentNullException(nameof(templateFileLocation));
-            }
+	/// <summary>
+	/// Responsible for Rate Code Excel export.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public static class RateCodeExporter
+	{
+		/// <summary>
+		/// Exports Rate Codes to an Excel file.
+		/// </summary>
+		/// <param name="templateFileLocation">The location of the Rate Code Excel file template</param>
+		/// <param name="rates">The Rate Codes and related data.</param>
+		/// <returns>Path to the exported Rate Code file</returns>
+		public static string ExportToExcelFile(string templateFileLocation, RateGridModelView rates)
+		{
+			// Check inputs
+			if (templateFileLocation == null)
+			{
+				throw new ArgumentNullException(nameof(templateFileLocation));
+			}
 
-            if (rates == null)
-            {
-                throw new ArgumentNullException(nameof(rates));
-            }
+			if (rates == null)
+			{
+				throw new ArgumentNullException(nameof(rates));
+			}
 
-            // Create a new random file name in the specified directory
-            string toReturn = ExcelUtilities.CopyExcelTemplateFile(templateFileLocation);
+			// Create a new random file name in the specified directory
+			string toReturn = ExcelUtilities.CopyExcelTemplateFile(templateFileLocation);
 
-            // Create the document object in memory
-            using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(toReturn, true))
-            {
-                PopulateOptionsList(spreadsheet, rates);
-                PopulateRateCodes(rates, spreadsheet);
-            }
+			// Create the document object in memory
+			using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(toReturn, true))
+			{
+				PopulateOptionsList(spreadsheet, rates);
+				PopulateRateCodes(rates, spreadsheet);
+			}
 
-            // Return the file path
-            return toReturn;
-        }
+			// Return the file path
+			return toReturn;
+		}
 
-        /// <summary>
-        /// Populates the Rate Codes.
-        /// </summary>
-        /// <param name="rates">The Rate Codes and related data.</param>
-        /// <param name="spreadsheet">The spreadsheet.</param>
-        private static void PopulateRateCodes(RateGridModelView rates, SpreadsheetDocument spreadsheet)
-        {
-            // Create collections of strings for each row in the export file
-            var worksheet = new ExcelExportWorksheet();
+		/// <summary>
+		/// Populates the Rate Codes.
+		/// </summary>
+		/// <param name="rates">The Rate Codes and related data.</param>
+		/// <param name="spreadsheet">The spreadsheet.</param>
+		private static void PopulateRateCodes(RateGridModelView rates, SpreadsheetDocument spreadsheet)
+		{
+			// Create collections of strings for each row in the export file
+			var worksheet = new ExcelExportWorksheet();
 
 			Collection<string> headers = GetHeaders();
 
-            worksheet.Add(headers);
+			worksheet.Add(headers);
 
-            if (rates.Rates.Any())
-            {
-                foreach (RateDetailModelView data in rates.Rates)
-                {
+			if (rates.Rates.Any())
+			{
+				foreach (RateDetailModelView data in rates.Rates)
+				{
 					Collection<string> row = GetRowAsStringCollection(data, rates);
 
-                    worksheet.Add(row);
-                }
+					worksheet.Add(row);
+				}
 			}
 
 			// Export the data to the worksheet
@@ -93,79 +93,79 @@ namespace IES.ActionLogic.IO.Export
 			worksheetPart.Worksheet.Save();
 		}
 
-        /// <summary>
-        /// Populates the options list worksheet.
-        /// </summary>
-        /// <param name="spreadsheet">The spreadsheet.</param>
-        /// <param name="rates">The Rate Codes and related data.</param>
-        private static void PopulateOptionsList(SpreadsheetDocument spreadsheet, RateGridModelView rates)
-        {
-            // Create collections of strings for each row in the export file
-            ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet(ImportExportConstants.OPTIONS_LISTS);
+		/// <summary>
+		/// Populates the options list worksheet.
+		/// </summary>
+		/// <param name="spreadsheet">The spreadsheet.</param>
+		/// <param name="rates">The Rate Codes and related data.</param>
+		private static void PopulateOptionsList(SpreadsheetDocument spreadsheet, RateGridModelView rates)
+		{
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet(ImportExportConstants.OPTIONS_LISTS);
 
-            string[] rateCategoryOptions = rates.RateCategories.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
-            string[] sectionOptions = rates.Sections.Where(x => x.Id > 0).Select(x => x.Label).ToArray();
-            string[] resourceTypeOptions = rates.ResourceTypes.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
-            string[] rateTypeOptions = rates.RateTypes.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
-            string[] resourceClassOptions = rates.ResourceClasses.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
-            string[] govtBurdenPoolOptions = rates.GovernmentBurdenPools.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
-            string[] commBurdenPoolOptions = rates.CommercialBurdenPools.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
+			string[] rateCategoryOptions = rates.RateCategories.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
+			string[] sectionOptions = rates.Sections.Where(x => x.Id > 0).Select(x => x.Label).ToArray();
+			string[] resourceTypeOptions = rates.ResourceTypes.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
+			string[] rateTypeOptions = rates.RateTypes.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
+			string[] resourceClassOptions = rates.ResourceClasses.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
+			string[] govtBurdenPoolOptions = rates.GovernmentBurdenPools.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
+			string[] commBurdenPoolOptions = rates.CommercialBurdenPools.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
 			string[] disclosureTypeOptions = rates.DisclosureTypes.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
 
 			// Options List Column Headers
 			// Really the Defined Names for the dropdown lists
 			List<string> headerValues = new List<string>
-            {
-                ImportExportConstants.CATEGORIES,
-                ImportExportConstants.SECTIONS,
-                ImportExportConstants.RESOURCE_TYPES,
-                ImportExportConstants.RATE_TYPES,
-                ImportExportConstants.RESOURCE_CLASSES,
-                ImportExportConstants.GOVERNMENT_BURDEN_POOLS,
-                ImportExportConstants.COMMERCIAL_BURDEN_POOLS,
+			{
+				ImportExportConstants.CATEGORIES,
+				ImportExportConstants.SECTIONS,
+				ImportExportConstants.RESOURCE_TYPES,
+				ImportExportConstants.RATE_TYPES,
+				ImportExportConstants.RESOURCE_CLASSES,
+				ImportExportConstants.GOVERNMENT_BURDEN_POOLS,
+				ImportExportConstants.COMMERCIAL_BURDEN_POOLS,
 				ImportExportConstants.DISCLOSURE_TYPES
 			};
 
-            int maxRows = Math.Max(rateCategoryOptions.Length, Math.Max(sectionOptions.Length, Math.Max(resourceTypeOptions.Length, Math.Max(rateTypeOptions.Length, Math.Max(disclosureTypeOptions.Length, Math.Max(resourceClassOptions.Length, Math.Max(govtBurdenPoolOptions.Length, commBurdenPoolOptions.Length)))))));
-            optionsListWorksheet.Add(headerValues);   // Add option list header row
+			int maxRows = Math.Max(rateCategoryOptions.Length, Math.Max(sectionOptions.Length, Math.Max(resourceTypeOptions.Length, Math.Max(rateTypeOptions.Length, Math.Max(disclosureTypeOptions.Length, Math.Max(resourceClassOptions.Length, Math.Max(govtBurdenPoolOptions.Length, commBurdenPoolOptions.Length)))))));
+			optionsListWorksheet.Add(headerValues);   // Add option list header row
 
-            // Add option value rows
-            for (int i = 0; i < maxRows; i++)
-            {
-                List<string> optionValues = new List<string>
-                {
-                    rateCategoryOptions.Length > i ? rateCategoryOptions[i] : string.Empty,
-                    sectionOptions.Length > i ? sectionOptions[i] : string.Empty,
-                    resourceTypeOptions.Length > i ? resourceTypeOptions[i] : string.Empty,
-                    rateTypeOptions.Length > i ? rateTypeOptions[i] : string.Empty,
-                    resourceClassOptions.Length > i ? resourceClassOptions[i] : string.Empty,
-                    govtBurdenPoolOptions.Length > i ? govtBurdenPoolOptions[i] : string.Empty,
-                    commBurdenPoolOptions.Length > i ? commBurdenPoolOptions[i] : string.Empty,
+			// Add option value rows
+			for (int i = 0; i < maxRows; i++)
+			{
+				List<string> optionValues = new List<string>
+				{
+					rateCategoryOptions.Length > i ? rateCategoryOptions[i] : string.Empty,
+					sectionOptions.Length > i ? sectionOptions[i] : string.Empty,
+					resourceTypeOptions.Length > i ? resourceTypeOptions[i] : string.Empty,
+					rateTypeOptions.Length > i ? rateTypeOptions[i] : string.Empty,
+					resourceClassOptions.Length > i ? resourceClassOptions[i] : string.Empty,
+					govtBurdenPoolOptions.Length > i ? govtBurdenPoolOptions[i] : string.Empty,
+					commBurdenPoolOptions.Length > i ? commBurdenPoolOptions[i] : string.Empty,
 					disclosureTypeOptions.Length > i ? disclosureTypeOptions[i] : string.Empty
 				};
 
-                optionsListWorksheet.Add(optionValues);
-            }
+				optionsListWorksheet.Add(optionValues);
+			}
 
-            // Export the Options List headers and data to row 1 of the "Options List" worksheet
-            WorksheetPart worksheetPart = ExcelUtilities.GetSpecifiedWorksheetPart(spreadsheet, optionsListWorksheet.WorksheetName);
-            ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, optionsListWorksheet, 1);
+			// Export the Options List headers and data to row 1 of the "Options List" worksheet
+			WorksheetPart worksheetPart = ExcelUtilities.GetSpecifiedWorksheetPart(spreadsheet, optionsListWorksheet.WorksheetName);
+			ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, optionsListWorksheet, 1);
 
-            // Adjust existing Defined Names
-            Dictionary<string, int> lengths = new Dictionary<string, int>()
-            {
-                { ImportExportConstants.CATEGORIES, rateCategoryOptions.Length },
-                { ImportExportConstants.SECTIONS, sectionOptions.Length },
-                { ImportExportConstants.RESOURCE_TYPES, resourceTypeOptions.Length },
-                { ImportExportConstants.RATE_TYPES, rateTypeOptions.Length },
-                { ImportExportConstants.RESOURCE_CLASSES, resourceClassOptions.Length },
-                { ImportExportConstants.GOVERNMENT_BURDEN_POOLS, govtBurdenPoolOptions.Length },
-                { ImportExportConstants.COMMERCIAL_BURDEN_POOLS, commBurdenPoolOptions.Length },
+			// Adjust existing Defined Names
+			Dictionary<string, int> lengths = new Dictionary<string, int>()
+			{
+				{ ImportExportConstants.CATEGORIES, rateCategoryOptions.Length },
+				{ ImportExportConstants.SECTIONS, sectionOptions.Length },
+				{ ImportExportConstants.RESOURCE_TYPES, resourceTypeOptions.Length },
+				{ ImportExportConstants.RATE_TYPES, rateTypeOptions.Length },
+				{ ImportExportConstants.RESOURCE_CLASSES, resourceClassOptions.Length },
+				{ ImportExportConstants.GOVERNMENT_BURDEN_POOLS, govtBurdenPoolOptions.Length },
+				{ ImportExportConstants.COMMERCIAL_BURDEN_POOLS, commBurdenPoolOptions.Length },
 				{ ImportExportConstants.DISCLOSURE_TYPES, disclosureTypeOptions.Length },
 			};
 
-            ExcelExporter.AdjustDefinedNames(spreadsheet, lengths);
-        }
+			ExcelExporter.AdjustDefinedNames(spreadsheet, lengths);
+		}
 
 		/// <summary>
 		/// Adds the data validation dropdowns to the excel spreadsheet.
