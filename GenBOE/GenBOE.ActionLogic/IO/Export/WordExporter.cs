@@ -686,7 +686,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					// populate/remove Additional Query filters based on selected components
                     bool isSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
-					IDictionary<string, IList<string>> EmployeeIdFilters = GetEmployeeIds(table.AdditionalQueryFilters);
+                    ICollection<Tuple<string, IList<string>>> EmployeeIdFilters = GetEmployeeIds(table.AdditionalQueryFilters).Select(x => new Tuple<string, IList<string>>(x.Key, x.Value)).ToCollection();
 					bool containsTaskMOQEmployeeIDFilters = selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEmployeeIDFilters);
 
 					if (isSpace)
@@ -834,21 +834,21 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="employeeIdFilters">dictionary of of employee id filters and the employee ids in them</param>
 		/// <param name="additionalQueryFilters">Full Additional Query Filters string</param>
 		/// <returns>filters with employee ids masked</returns>
-		internal string MaskSpaceEmployeeIds(IDictionary<string, IList<string>> employeeIdFilters, string additionalQueryFilters)
+		internal string MaskSpaceEmployeeIds(ICollection<Tuple<string, IList<string>>> employeeIdFilters, string additionalQueryFilters)
 		{
 			if (employeeIdFilters.Any())
 			{
-				foreach (KeyValuePair<string, IList<string>> employeeIdFilter in employeeIdFilters)
+				foreach (Tuple<string, IList<string>> employeeIdFilter in employeeIdFilters)
 				{
-					string maskedFilter = employeeIdFilter.Key;
-					foreach (string employeeId in employeeIdFilter.Value)
+					string maskedFilter = employeeIdFilter.Item1;
+					foreach (string employeeId in employeeIdFilter.Item2)
 					{
 						// use ReplaceFirst so a smaller id doesn't risk replacing a portion of a later one
 						// ex. a filter of "Starts with 1, 4321" using regular string replace would result in "Starts with *, 432*". ReplaceFirst results in "Starts with *, ***1"
 						maskedFilter = maskedFilter.ReplaceFirst(employeeId, BOEExporterConstants.EMPLOYEE_ID_FILTERS_REPLACEMENT_TEXT);
 					}
 
-					additionalQueryFilters = additionalQueryFilters.Replace(employeeIdFilter.Key, maskedFilter);
+					additionalQueryFilters = additionalQueryFilters.Replace(employeeIdFilter.Item1, maskedFilter);
 				}
 
 				additionalQueryFilters += "\n\n*" + BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT; 
