@@ -25,6 +25,10 @@
             $('a[name=BOEBulkSubmitMenuLink]').parent().parent().parent().addClass('display-none');
         }
 
+        if ('<%: ViewData["ReadOnlyMode"] %>' == 'True') {
+			$('a[name=BOEBulkSubmitMenuLink]').parent().parent().parent().addClass('display-none');
+        }
+
         if ('<%: ViewBag.DisplayZoneTravelUpdateRates %>' == 'False') {
             $('a[name=UpdateZoneTravelRatesLink]').parent().addClass('display-none');
         }

@@ -562,7 +562,7 @@ namespace GenBOE.DataBridge.Common
 
 				// Manage CLINs, Manage WBS, Manage BOEs
 				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs },
-                    new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working },
+					new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working },
 					new Role[] { Role.SystemAdmin },
 					SecurityAuthorization.CreateReadUpdateDelete);
 
@@ -584,9 +584,9 @@ namespace GenBOE.DataBridge.Common
 
 				// Manage INL Forms
 				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageBOEForms },
-                    new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
-                    new Role[] { Role.SystemAdmin },
-                    SecurityAuthorization.CreateReadUpdateDelete);
+					new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
+					new Role[] { Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
 
 				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageBOEForms },
 					 new WorkspaceState[] { WorkspaceState.Complete, WorkspaceState.Closed },
@@ -595,7 +595,7 @@ namespace GenBOE.DataBridge.Common
 
 				// Workspace Admin Permissions
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceAdminPermissions },
-                    new Role[] { Role.SystemAdmin },
+					new Role[] { Role.SystemAdmin },
 					SecurityAuthorization.CreateReadUpdateDelete);
 
 				// Edit BOE (header - description) [WS Admin has read/write to this field]
@@ -674,6 +674,22 @@ namespace GenBOE.DataBridge.Common
 					allRoles,
 					SecurityAuthorization.Read);
 
+				InitializeMatrix(new SecurityPage[] { SecurityPage.BOECommentResponse },
+					new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Authors can still respond to approver or reviewer comments when the workspace is locked
+					new BOEState[] { BOEState.Draft },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// Edit BOE Buttons
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.SubmitForReview, SecurityPage.SubmitForApproval },
+					allRoles,
+					SecurityAuthorization.Read);
+
+				// BOE Bulk Submit
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.BulkSubmit },
+					allRoles,
+					SecurityAuthorization.Read);
+
 				// Workspace RTE Templates
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.RTETemplates },
 					new Role[] { Role.SystemAdmin },
@@ -696,7 +712,7 @@ namespace GenBOE.DataBridge.Common
 	                new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Need to be able to validate the BOE as part of Submit-for-Approval
 	                new BOEState[] { BOEState.Draft },
 	                allRoles,
-	                SecurityAuthorization.ReadUpdate);
+	                SecurityAuthorization.Read);
 
 				// Metrics Admin
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.MetricsAdmin },
@@ -711,7 +727,7 @@ namespace GenBOE.DataBridge.Common
 				// Workspace Resource Page
 				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceResource },
 					new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
-					new Role[] {  Role.SystemAdmin },
+					new Role[] { Role.SystemAdmin },
 					SecurityAuthorization.CreateReadUpdateDelete);
 
 				// Workspace Performing Org Page
@@ -759,8 +775,8 @@ namespace GenBOE.DataBridge.Common
 					SecurityAuthorization.Read);
 
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Reports },
-				    new Role[] { Role.SystemAdmin },
-				    SecurityAuthorization.CreateReadUpdateDelete);
+					new Role[] { Role.SystemAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
 
 				// RMS SSRS Reports
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.SSRSReports },
@@ -783,7 +799,7 @@ namespace GenBOE.DataBridge.Common
 
 				// ExportToProPricer
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.ExportToProPricer },
-					new Role[] {  Role.SystemAdmin },
+					new Role[] { Role.SystemAdmin },
 					SecurityAuthorization.CreateReadUpdateDelete);
 
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.ExportToProPricerSystemAdmin },
@@ -794,7 +810,7 @@ namespace GenBOE.DataBridge.Common
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.Help, SecurityPage.GenBOEHelp },
                     allRoles, 
                     SecurityAuthorization.Read);
-
+				
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateLockedResourceRates },
 					allRoles,
 					SecurityAuthorization.Read);
@@ -816,8 +832,7 @@ namespace GenBOE.DataBridge.Common
 					new Role[] { Role.SystemAdmin },
 					SecurityAuthorization.CreateReadUpdateDelete);
 
-				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFields },
-					new WorkspaceState[] { WorkspaceState.Complete },
+				InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.BoeCustomFields }, new WorkspaceState[] { WorkspaceState.Complete },
 					new Role[] { Role.SystemAdmin },
 					SecurityAuthorization.Read);
 

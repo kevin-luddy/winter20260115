@@ -601,8 +601,18 @@ namespace GenBOE.Web.Controllers
 
             ViewResult toReturn = View(WebConstants.VIEW_BOE_SUMMARY, results);
 
-            // Finalize Action
-            FinalizeAction(_log, "DisplayBOESummary", sw);
+            // Checks Web.Config Read Only Mode
+			this.ViewData["IsReadOnlyMode"] = false;
+			if (SiteMasterUtilities.IsReadOnly())
+			{
+				if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+					this.ViewData["IsReadOnlyMode"] = true;
+				}
+			}
+
+			// Finalize Action
+			FinalizeAction(_log, "DisplayBOESummary", sw);
             return toReturn;
         }
 
@@ -660,8 +670,16 @@ namespace GenBOE.Web.Controllers
 
             ViewData["SubmitForReview_ReadOnly"] = GetReadOnlyAttribute(CheckPermissions(SecurityPage.SubmitForReview, ws, boeID));
 
-            // Pass the BOE ID to the Validate BOE partial
-            ViewData["BOEID"] = boeID;
+            if (SiteMasterUtilities.IsReadOnly())
+            {
+                if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+                {
+                    ViewData["SubmitForReview_ReadOnly"] = "true";
+				}
+            }
+
+			// Pass the BOE ID to the Validate BOE partial
+			ViewData["BOEID"] = boeID;
 
             // Return the Validate BOE partial view
             ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_SUBMIT_FOR_REVIEW);
