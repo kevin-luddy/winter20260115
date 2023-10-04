@@ -464,7 +464,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 		{
 			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null);
 			string filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456";
-			IDictionary<string, IList<string>> employeeIdFilters = wordExporter.GetEmployeeIds(filters);
+			ICollection<Tuple<string, IList<string>>> employeeIdFilters = wordExporter.GetEmployeeIds(filters);
 			string output = wordExporter.MaskSpaceEmployeeIds(employeeIdFilters, filters);
 
 			Assert.IsTrue(output.Contains(BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT));
@@ -492,7 +492,7 @@ namespace GenBOE.Tests.ActionLogic.Export
             // Test for single ID
 			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null);
 			string filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456";
-			IDictionary<string, IList<string>> employeeIdFilters = wordExporter.GetEmployeeIds(filters);
+			ICollection<Tuple<string, IList<string>>> employeeIdFilters = wordExporter.GetEmployeeIds(filters);
 			string output = wordExporter.MaskRmsEmployeeIds(employeeIdFilters, filters);
 
 			Assert.IsFalse(output.Contains("123456"));
