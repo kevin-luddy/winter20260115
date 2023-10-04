@@ -9,6 +9,7 @@
     
     var BOESubmitForReview = InitializeSubmitForReviewWidget(boeId, boeSubmitForReviewUrl);
     var True = true;
+    var False = false;
 
     $(function () {
         $('#BOESubmitForReview-Button').click(BOESubmitForReview.ValidateClicked);
