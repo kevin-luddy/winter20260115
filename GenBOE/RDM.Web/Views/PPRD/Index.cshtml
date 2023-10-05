@@ -24,6 +24,7 @@
         SectionContentTypeSection: @((int)IES.Common.SectionContentType.Section),
         SectionContentTypeText: @((int)IES.Common.SectionContentType.Text),
         SectionContentTypeRateTable: @((int)IES.Common.SectionContentType.RateTable),
+        SectionContentTypeAddress: @((int)IES.Common.SectionContentType.Address),
         SectionContentTypeNone: @((int)IES.Common.SectionContentType.None),
         SectionContentTypeOptions: @Html.Raw(JsonConvert.SerializeObject(Model.SectionContentTypeOptions, microsoftDateFormatSettings))
     });
@@ -56,7 +57,8 @@
             <span data-ng-if="!IsSectionContent(node)">{{node.ReferenceNumber}}</span>
             <span class="glyphicon" data-ng-if="IsSectionContent(node)" data-ng-class="{
                       'glyphicon-edit':node.ContentType == @((int)IES.Common.SectionContentType.Text),
-                      'glyphicon-list-alt':node.ContentType == @((int)IES.Common.SectionContentType.RateTable)
+                      'glyphicon-list-alt':node.ContentType == @((int)IES.Common.SectionContentType.RateTable),
+                      'glyphicon-list-alt':node.ContentType == @((int)IES.Common.SectionContentType.Address)
                       }" title="Move">
             </span>
             {{node.Title}}
@@ -79,8 +81,88 @@
                 <span class="glyphicon glyphicon-plus">Section</span>
             </a>
             <!-- Render content -->
-            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.Text)" class="section-content" data-ng-bind-html="trustedHtml(node.TextContent)"></span>
-            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.RateTable)" class="section-content"><br />Display Resource Code = {{node.DisplayRateCode}}<br /></span>
+            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.Text)" class="section-content" data-ng-bind-html=trustedHtml(node.TextContent)></span>
+            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.RateTable)" class="section-content" ><br />Display Resource Code = {{node.DisplayRateCode}}<br /></span>
+            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.Address)" class="section-content">
+                <p>Address</p>
+                <table style="border-collapse: collapse;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 67.4pt; border: solid black 1.0pt; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">Office</p>
+                            </td>
+                            <td style="border: solid black 1.0pt; border-left: none; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">{{node.Office}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 67.4pt; border: solid black 1.0pt; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">Agency</p>
+                            </td>
+                            <td style="border: solid black 1.0pt; border-left: none; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">{{node.Agency}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 67.4pt; border: solid black 1.0pt; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">LM BA</p>
+                            </td>
+                            <td style="border: solid black 1.0pt; border-left: none; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">{{node.LMBA}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 67.4pt; border: solid black 1.0pt; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">Name</p>
+                            </td>
+                            <td style="border: solid black 1.0pt; border-left: none; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">{{node.Name}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 67.4pt; border: solid black 1.0pt; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">Street/Bldg</p>
+                            </td>
+                            <td style="border: solid black 1.0pt; border-left: none; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">{{node.Street}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 67.4pt; border: solid black 1.0pt; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">City, St</p>
+                            </td>
+                            <td style="border: solid black 1.0pt; border-left: none; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">{{node.CityST}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 67.4pt; border: solid black 1.0pt; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">Phone</p>
+                            </td>
+                            <td style="border: solid black 1.0pt; border-left: none; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">{{node.Phone}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 67.4pt; border: solid black 1.0pt; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">Email</p>
+                            </td>
+                            <td style="border: solid black 1.0pt; border-left: none; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">{{node.Email}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 67.4pt; border: solid black 1.0pt; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">Other</p>
+                            </td>
+                            <td style="border: solid black 1.0pt; border-left: none; padding: 0in 5.4pt 0in 5.4pt;">
+                                <p style="margin-bottom: .0001pt;">{{node.Other}}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+            </span>
         </div>
         <ol ui-tree-nodes="" data-ng-model="node.ChildNodes" data-ng-class="{hidden: collapsed}">
             <li data-ng-repeat="node in node.ChildNodes" ui-tree-node data-ng-include="'nodes_renderer.html'">

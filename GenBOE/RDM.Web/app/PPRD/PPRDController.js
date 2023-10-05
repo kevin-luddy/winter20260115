@@ -63,6 +63,15 @@
             }
         };
 
+        /* Helper method - returns true if node is address; false otherwise. */
+        $scope.IsSectionAddressContent = function (node) {
+            if (node.ContentType === PPRDModel.SectionContentTypeAddress) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
         /* Helper method to count the table nodes in the section */
         $scope.countTablesInSection = function (targetNode) {
             var numTablesInSection = 0;
@@ -345,6 +354,15 @@
                 "TextContent": "",
                 "IsInternalSection": false,
                 "DisplayRateCode": false,
+                "Office": "",
+                "Agency": "",
+                "LMBA": "",
+                "Name": "",
+                "Street": "",
+                "CityST": "",
+                "Phone": "",
+                "Email": "",
+                "Other": "",
                 "NumTablesInSection": $scope.countTablesInSection(targetNode)
             };
             $scope.openEditContentModal(targetNode, content, true);
