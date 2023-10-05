@@ -8,6 +8,8 @@
             'boe/<%: ViewData["BOEID"] %>');
     
     var BOESubmitForReview = InitializeSubmitForReviewWidget(boeId, boeSubmitForReviewUrl);
+    var True = true;
+    var False = false;
 
     $(function () {
         $('#BOESubmitForReview-Button').click(BOESubmitForReview.ValidateClicked);
@@ -19,7 +21,7 @@
 
 </script>
 
-<% if ((String)ViewData["SubmitForReview_ReadOnly"] != "true")
+<% if (ViewData["SubmitForReview_ReadOnly"].ToString().ToLower() != "true")
     { %>
 <button id="BOESubmitForReview-Button" class="ies" type="button">Submit for Review</button>
 <% } %>

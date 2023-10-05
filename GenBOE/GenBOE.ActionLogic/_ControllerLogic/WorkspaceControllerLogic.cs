@@ -1594,7 +1594,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			KeyValuePair<string, string> estimatingLeadPricerKVP = new KeyValuePair<string, string>(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
 			if (!createWSUsers.Contains(estimatingLeadPricerKVP))
 			{
-				errors.Add(new ValidationMessage("CostVolumeLeadPricerNTID", "Cannot add a user as the Estimating Lead/Pricer when they do not have the correct permissions"));
+				errors.Add(new ValidationMessage("CostVolumeLeadPricerNTID", "Cannot add a user as the Estimating Lead/Pricer if they are not also a Workspace Creator."));
 			}
 
 			return errors;
