@@ -34,6 +34,15 @@ namespace IES.DataBridge.ModelViews
             this.IsRdsbRequired = false;
             this.SectionContainsCasbDisclosure = false;
             this.SectionContainsNonCompliance = false;
+            this.Office = string.Empty;
+            this.Agency = string.Empty;
+            this.LMBA = string.Empty;
+            this.Name = string.Empty;
+            this.Street = string.Empty;
+            this.CityST = string.Empty;
+            this.Phone = string.Empty;
+            this.Email = string.Empty;
+            this.Other = string.Empty;
         }
 
         /// <summary>
@@ -51,7 +60,8 @@ namespace IES.DataBridge.ModelViews
         /// <param name="sectionContainsCasbDisclosure">Section contains CASB Disclosure Statements</param>
         /// <param name="sectionContainsNonCompliance">Section contains Non Compliance issues</param>
         public SectionModelView(int revisionId, int displayOrder, bool? isInternalSection, string title,
-            string textContent, bool? displayRateCode, SectionContentType contentType, string referenceNumber, int revisionUniqueSectionId, bool sectionContainsCasbDisclosure, bool sectionContainsNonCompliance)
+            string textContent, bool? displayRateCode, SectionContentType contentType, string referenceNumber, int revisionUniqueSectionId, bool sectionContainsCasbDisclosure, bool sectionContainsNonCompliance,
+            string office, string agency, string LMBA, string name, string street, string cityST, string phone, string email, string other)
         {
             this.RevisionId = revisionId;
             this.DisplayOrder = displayOrder;
@@ -67,6 +77,15 @@ namespace IES.DataBridge.ModelViews
             this.OldUpdateDate = null;
             this.SectionContainsCasbDisclosure = sectionContainsCasbDisclosure;
             this.SectionContainsNonCompliance = sectionContainsNonCompliance;
+            this.Office = office;
+            this.Agency = agency;
+            this.LMBA = LMBA;
+            this.Name = name;
+            this.Street = street;
+            this.CityST = cityST;
+            this.Phone = phone;
+            this.Email = email;
+            this.Other = other;
         }
 
         #endregion
@@ -122,7 +141,7 @@ namespace IES.DataBridge.ModelViews
         public bool IsSectionContent()
         {
             return this.ContentType == SectionContentType.Text ||
-                   this.ContentType == SectionContentType.RateTable;
+                   this.ContentType == SectionContentType.RateTable || this.ContentType == SectionContentType.Address;
         }
 
         /// <summary>
@@ -166,5 +185,44 @@ namespace IES.DataBridge.ModelViews
         /// Does Section contain Non Compliance Issues?
         /// </summary>
         public bool SectionContainsNonCompliance { get; set; }
+
+        /// <summary>
+        /// Address Office
+        /// </summary>
+        public string Office { get; set; }
+
+        /// <summary>
+        /// Address Agency
+        /// </summary>
+        public string Agency { get; set; }
+        /// <summary>
+        /// Address LMBA
+        /// </summary>
+        public string LMBA { get; set; }
+        /// <summary>
+        /// Address Name
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// Address Street
+        /// </summary>
+        public string Street { get; set; }
+        /// <summary>
+        /// Address CityST
+        /// </summary>
+        public string CityST { get; set; }
+        /// <summary>
+        /// Address Phone
+        /// </summary>
+        public string Phone { get; set; }
+        /// <summary>
+        /// Address Email
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Address Other
+        /// </summary>
+        public string Other { get; set; }
     }
 }

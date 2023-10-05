@@ -21,7 +21,7 @@ namespace IES.Models
             : base("name=IESEntities")
         {
         }
-    
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             throw new UnintentionalCodeFirstException();
@@ -284,7 +284,7 @@ namespace IES.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteSection", idParameter, updateDateParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertSection(Nullable<int> id, Nullable<System.DateTime> updateDate, Nullable<int> revisionID, Nullable<int> parentID, Nullable<int> displayOrder, string title, string textContent, Nullable<int> sectionContentTypeID, Nullable<bool> isInternalSection, Nullable<bool> displayRateCode, Nullable<int> revisionUniqueSectionId, Nullable<bool> isRdsbRequired, Nullable<bool> sectionContainsCasbDisclosure, Nullable<bool> sectionContainsNonCompliance)
+        public virtual ObjectResult<Nullable<int>> upsertSection(Nullable<int> id, Nullable<System.DateTime> updateDate, Nullable<int> revisionID, Nullable<int> parentID, Nullable<int> displayOrder, string title, string textContent, Nullable<int> sectionContentTypeID, Nullable<bool> isInternalSection, Nullable<bool> displayRateCode, Nullable<int> revisionUniqueSectionId, Nullable<bool> isRdsbRequired, Nullable<bool> sectionContainsCasbDisclosure, Nullable<bool> sectionContainsNonCompliance, string office, string agency, string lMBA, string name, string street, string cityST, string phone, string email, string other)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -342,7 +342,43 @@ namespace IES.Models
                 new ObjectParameter("SectionContainsNonCompliance", sectionContainsNonCompliance) :
                 new ObjectParameter("SectionContainsNonCompliance", typeof(bool));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertSection", idParameter, updateDateParameter, revisionIDParameter, parentIDParameter, displayOrderParameter, titleParameter, textContentParameter, sectionContentTypeIDParameter, isInternalSectionParameter, displayRateCodeParameter, revisionUniqueSectionIdParameter, isRdsbRequiredParameter, sectionContainsCasbDisclosureParameter, sectionContainsNonComplianceParameter);
+            var officeParameter = office != null ?
+                new ObjectParameter("Office", office) :
+                new ObjectParameter("Office", typeof(string));
+    
+            var agencyParameter = agency != null ?
+                new ObjectParameter("Agency", agency) :
+                new ObjectParameter("Agency", typeof(string));
+    
+            var lMBAParameter = lMBA != null ?
+                new ObjectParameter("LMBA", lMBA) :
+                new ObjectParameter("LMBA", typeof(string));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var streetParameter = street != null ?
+                new ObjectParameter("Street", street) :
+                new ObjectParameter("Street", typeof(string));
+    
+            var citySTParameter = cityST != null ?
+                new ObjectParameter("CityST", cityST) :
+                new ObjectParameter("CityST", typeof(string));
+    
+            var phoneParameter = phone != null ?
+                new ObjectParameter("Phone", phone) :
+                new ObjectParameter("Phone", typeof(string));
+    
+            var emailParameter = email != null ?
+                new ObjectParameter("Email", email) :
+                new ObjectParameter("Email", typeof(string));
+    
+            var otherParameter = other != null ?
+                new ObjectParameter("Other", other) :
+                new ObjectParameter("Other", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertSection", idParameter, updateDateParameter, revisionIDParameter, parentIDParameter, displayOrderParameter, titleParameter, textContentParameter, sectionContentTypeIDParameter, isInternalSectionParameter, displayRateCodeParameter, revisionUniqueSectionIdParameter, isRdsbRequiredParameter, sectionContainsCasbDisclosureParameter, sectionContainsNonComplianceParameter, officeParameter, agencyParameter, lMBAParameter, nameParameter, streetParameter, citySTParameter, phoneParameter, emailParameter, otherParameter);
         }
     
         public virtual ObjectResult<copyRevision_Result> copyRevision(Nullable<int> id, string newRevision, string newHistory, string newCreatedBy, string newReleaseNotes)

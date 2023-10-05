@@ -247,6 +247,15 @@
           <Property Name="IsRdsbRequired" Type="bit" Nullable="false" />
           <Property Name="SectionContainsCasbDisclosure" Type="bit" Nullable="false" />
           <Property Name="SectionContainsNonCompliance" Type="bit" Nullable="false" />
+          <Property Name="Office" Type="varchar" MaxLength="100" />
+          <Property Name="Agency" Type="varchar" MaxLength="100" />
+          <Property Name="LMBA" Type="varchar" MaxLength="100" />
+          <Property Name="Name" Type="varchar" MaxLength="100" />
+          <Property Name="Street" Type="varchar" MaxLength="100" />
+          <Property Name="CityST" Type="varchar" MaxLength="100" />
+          <Property Name="Phone" Type="varchar" MaxLength="100" />
+          <Property Name="Email" Type="varchar" MaxLength="100" />
+          <Property Name="Other" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -764,6 +773,15 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Parameter Name="IsRdsbRequired" Type="bit" Mode="In" />
           <Parameter Name="SectionContainsCasbDisclosure" Type="bit" Mode="In" />
           <Parameter Name="SectionContainsNonCompliance" Type="bit" Mode="In" />
+          <Parameter Name="Office" Type="varchar" Mode="In" />
+          <Parameter Name="Agency" Type="varchar" Mode="In" />
+          <Parameter Name="LMBA" Type="varchar" Mode="In" />
+          <Parameter Name="Name" Type="varchar" Mode="In" />
+          <Parameter Name="Street" Type="varchar" Mode="In" />
+          <Parameter Name="CityST" Type="varchar" Mode="In" />
+          <Parameter Name="Phone" Type="varchar" Mode="In" />
+          <Parameter Name="Email" Type="varchar" Mode="In" />
+          <Parameter Name="Other" Type="varchar" Mode="In" />
         </Function>
         <Function Name="upsertUserLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="NTID" Type="varchar" Mode="In" />
@@ -1004,6 +1022,15 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             <Parameter Name="IsRdsbRequired" Mode="In" Type="Boolean" />
             <Parameter Name="SectionContainsCasbDisclosure" Mode="In" Type="Boolean" />
             <Parameter Name="SectionContainsNonCompliance" Mode="In" Type="Boolean" />
+            <Parameter Name="Office" Mode="In" Type="String" />
+            <Parameter Name="Agency" Mode="In" Type="String" />
+            <Parameter Name="LMBA" Mode="In" Type="String" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Street" Mode="In" Type="String" />
+            <Parameter Name="CityST" Mode="In" Type="String" />
+            <Parameter Name="Phone" Mode="In" Type="String" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+            <Parameter Name="Other" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="copyRevision" ReturnType="Collection(IESModel.copyRevision_Result)">
             <Parameter Name="Id" Mode="In" Type="Int32" />
@@ -1557,6 +1584,15 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Property Name="IsRdsbRequired" Type="Boolean" Nullable="false" />
           <Property Name="SectionContainsCasbDisclosure" Type="Boolean" Nullable="false" />
           <Property Name="SectionContainsNonCompliance" Type="Boolean" Nullable="false" />
+          <Property Name="Office" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Agency" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LMBA" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Street" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CityST" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Phone" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Other" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -2315,6 +2351,15 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <EntitySetMapping Name="Sections">
             <EntityTypeMapping TypeName="IESModel.Section">
               <MappingFragment StoreEntitySet="Section">
+                <ScalarProperty Name="Other" ColumnName="Other" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="CityST" ColumnName="CityST" />
+                <ScalarProperty Name="Street" ColumnName="Street" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="LMBA" ColumnName="LMBA" />
+                <ScalarProperty Name="Agency" ColumnName="Agency" />
+                <ScalarProperty Name="Office" ColumnName="Office" />
                 <ScalarProperty Name="SectionContainsNonCompliance" ColumnName="SectionContainsNonCompliance" />
                 <ScalarProperty Name="SectionContainsCasbDisclosure" ColumnName="SectionContainsCasbDisclosure" />
                 <ScalarProperty Name="IsRdsbRequired" ColumnName="IsRdsbRequired" />
