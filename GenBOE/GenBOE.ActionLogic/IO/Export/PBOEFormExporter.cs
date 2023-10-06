@@ -217,7 +217,11 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD_REVIEW, boeForm.GovtPricingReceived == null ? ScheduleEvent.NA : (ScheduleEvent)boeForm.GovtPricingReceived, boeForm.GovtPricingReceivedDate, boeForm?.GovtPricingReceivedText);
             this.SetScheduleEventDateField(document, COST_ANALYSIS_UNQUALIFIED, boeForm.CostAnalysisUnqual == null ? ScheduleEvent.NA : (ScheduleEvent)boeForm.CostAnalysisUnqual, boeForm.CostAnalysisUnqualDate, boeForm?.CostAnalysisUnqualText);
             this.SetDateField(document, PLANNED_DATE_A, boeForm.PlannedDate_WrittenApproval);
-            this.SetDateField(document, PLANNED_DATE_B, boeForm.PlannedDate_ApprovedSubmission);
+            //if (boeForm.BOEFormType != BOEFormType.PBOE || boeForm.Revision < 2)
+            //{
+            //    // This field was removed for PBOE revision 2
+                this.SetDateField(document, PLANNED_DATE_B, boeForm.PlannedDate_ApprovedSubmission);
+            //}
 
             // IES-1017: New RTE Fields
             this.SetHtmlField(document, PROPOSED_COMMERCIALITY, boeForm.CommercialityDescription, ref counters);
