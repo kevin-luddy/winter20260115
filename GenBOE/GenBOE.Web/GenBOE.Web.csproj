@@ -851,6 +851,7 @@
     <Content Include="Views\Admin\MyInfo.aspx" />
     <Content Include="Views\BOEBulkSubmit\BOEBulkSubmit.aspx" />
     <Content Include="Views\BOEForm\Forms\IBOE_1.ascx" />
+    <Content Include="Views\BOEForm\Forms\PBOE_2.ascx" />
     <Content Include="Views\BOEForm\Forms\PBOE_1.ascx" />
     <Content Include="Views\BOEForm\UpdateForm.aspx" />
     <Content Include="Views\BOEForm\CreateForm.aspx" />
