@@ -381,25 +381,41 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// <summary>
         /// Date of customer written approval for submission after initial prime proposal.
         /// </summary>
-        [RequiredIf("IsPlannedDatesRequired", true, ErrorMessage = "Date of Customer Written Approval for Submission after Initial Prime Proposal is required.")]
+        [RequiredIf("IsPlannedWrittenRequired", true, ErrorMessage = "Date of Customer Written Approval for Submission after Initial Prime Proposal is required.")]
         public DateTime? PlannedDate_WrittenApproval { get; set; }
         
         /// <summary>
         /// Approved date for submission to customer.
         /// </summary>
-        [RequiredIf("IsPlannedDatesRequired", true, ErrorMessage = "Approved Date for Submission to Customer is required.")]
+        [RequiredIf("IsPlannedApprovedRequired", true, ErrorMessage = "Approved Date for Submission to Customer is required.")]
         public DateTime? PlannedDate_ApprovedSubmission { get; set; }
 
         /// <summary>
-        /// Field is used to determine if these 2 fields are required:
+        /// Field is used to determine if this field is required:
         /// - PlannedDate_ApprovedSubmission
+        /// </summary>
+        /// <remarks>
+        /// This is public, but it needs to be to work w/the validation.
+        /// Validation is the only thing this property is used for.
+        /// </remarks>
+        public bool IsPlannedApprovedRequired
+        {
+            get
+            {
+                return (this.CostAnalysis == ScheduleEvent.Planned || this.CID == ScheduleEvent.Planned) &&
+                    this.Version < 2;
+            }
+        }
+
+        /// <summary>
+        /// Field is used to determine if this field is required:
         /// - PlannedDate_WrittenApproval
         /// </summary>
         /// <remarks>
         /// This is public, but it needs to be to work w/the validation.
         /// Validation is the only thing this property is used for.
         /// </remarks>
-        public bool IsPlannedDatesRequired
+        public bool IsPlannedWrittenRequired
         {
             get
             {

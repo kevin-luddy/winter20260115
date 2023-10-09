@@ -148,7 +148,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <returns>Latest version number of the form.</returns>
 		public int GetCurrentFormVersion()
 		{
-			return 1;
+			return 2;
 		}
 
 		/// <summary>

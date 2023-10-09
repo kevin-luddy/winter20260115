@@ -459,16 +459,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.MOU = modelview.MOU;
             dto.MOUDate = modelview.MOUDate;
             dto.OtherText = modelview.OtherText;
-            if (modelview.IsPlannedDatesRequired)
-            {
-                dto.PlannedDate_WrittenApproval = modelview.PlannedDate_WrittenApproval;
-                dto.PlannedDate_ApprovedSubmission = modelview.PlannedDate_ApprovedSubmission;
-            }
-            else
-            {
-                dto.PlannedDate_WrittenApproval = null;
-                dto.PlannedDate_ApprovedSubmission = null;
-            }
+            dto.PlannedDate_WrittenApproval = modelview.IsPlannedWrittenRequired ? modelview.PlannedDate_WrittenApproval : null;
+            dto.PlannedDate_ApprovedSubmission = modelview.IsPlannedApprovedRequired ? modelview.PlannedDate_ApprovedSubmission : null;
             dto.Poc = modelview.Poc;
             dto.PocPhone = modelview.PocPhone;
             dto.PriceAnalysis = modelview.PriceAnalysis;

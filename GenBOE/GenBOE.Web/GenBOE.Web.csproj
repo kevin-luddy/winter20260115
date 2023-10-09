@@ -851,6 +851,7 @@
     <Content Include="Views\Admin\MyInfo.aspx" />
     <Content Include="Views\BOEBulkSubmit\BOEBulkSubmit.aspx" />
     <Content Include="Views\BOEForm\Forms\IBOE_1.ascx" />
+    <Content Include="Views\BOEForm\Forms\PBOE_2.ascx" />
     <Content Include="Views\BOEForm\Forms\PBOE_1.ascx" />
     <Content Include="Views\BOEForm\UpdateForm.aspx" />
     <Content Include="Views\BOEForm\CreateForm.aspx" />
@@ -1080,6 +1081,8 @@
     <Content Include="Templates\Export\WbsBoeReport.xlsx" />
     <Content Include="Templates\Export\MOQTableRMS.xlsx" />
     <Content Include="Templates\Export\MOQTableSSC.xlsx" />
+    <Content Include="Templates\Export\PBOE_2.docx" />
+    <Content Include="Templates\Export\PBOE_withPortionMarkings_2.docx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
