@@ -44,7 +44,8 @@
         SAPWorkspaceBeforeCutoff: '<%:(bool)ViewData["SAPWorkspaceBeforeCutoff"]%>'.isTrue(),
         SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
 		RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
-		RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>'
+        RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
+        ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
