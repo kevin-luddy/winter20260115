@@ -6,7 +6,7 @@ IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[delet
 
 GO
 
-SET ANSI_NULLS ONC:\repos\IES\GenBOE.Database\IES\_Other Scripts
+SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
