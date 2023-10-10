@@ -20,8 +20,9 @@ namespace IES.Models
         public IESEntities()
             : base("name=IESEntities")
         {
+            this.Database.CommandTimeout = 300; //manually put in time out limit
         }
-
+    
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             throw new UnintentionalCodeFirstException();
@@ -284,7 +285,7 @@ namespace IES.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteSection", idParameter, updateDateParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertSection(Nullable<int> id, Nullable<System.DateTime> updateDate, Nullable<int> revisionID, Nullable<int> parentID, Nullable<int> displayOrder, string title, string textContent, Nullable<int> sectionContentTypeID, Nullable<bool> isInternalSection, Nullable<bool> displayRateCode, Nullable<int> revisionUniqueSectionId, Nullable<bool> isRdsbRequired, Nullable<bool> sectionContainsCasbDisclosure, Nullable<bool> sectionContainsNonCompliance, string office, string agency, string lMBA, string name, string street, string cityST, string phone, string email, string other)
+        public virtual ObjectResult<Nullable<int>> upsertSection(Nullable<int> id, Nullable<System.DateTime> updateDate, Nullable<int> revisionID, Nullable<int> parentID, Nullable<int> displayOrder, string title, string textContent, Nullable<int> sectionContentTypeID, Nullable<bool> isInternalSection, Nullable<bool> displayRateCode, Nullable<int> revisionUniqueSectionId, Nullable<bool> isRdsbRequired, Nullable<bool> sectionContainsCasbDisclosure, Nullable<bool> sectionContainsNonCompliance, string office, string agency, string lMBA, string name, string street, string cityST, string phone, string email, string other, Nullable<bool> includeInCoversheet)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -378,7 +379,11 @@ namespace IES.Models
                 new ObjectParameter("Other", other) :
                 new ObjectParameter("Other", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertSection", idParameter, updateDateParameter, revisionIDParameter, parentIDParameter, displayOrderParameter, titleParameter, textContentParameter, sectionContentTypeIDParameter, isInternalSectionParameter, displayRateCodeParameter, revisionUniqueSectionIdParameter, isRdsbRequiredParameter, sectionContainsCasbDisclosureParameter, sectionContainsNonComplianceParameter, officeParameter, agencyParameter, lMBAParameter, nameParameter, streetParameter, citySTParameter, phoneParameter, emailParameter, otherParameter);
+            var includeInCoversheetParameter = includeInCoversheet.HasValue ?
+                new ObjectParameter("IncludeInCoversheet", includeInCoversheet) :
+                new ObjectParameter("IncludeInCoversheet", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertSection", idParameter, updateDateParameter, revisionIDParameter, parentIDParameter, displayOrderParameter, titleParameter, textContentParameter, sectionContentTypeIDParameter, isInternalSectionParameter, displayRateCodeParameter, revisionUniqueSectionIdParameter, isRdsbRequiredParameter, sectionContainsCasbDisclosureParameter, sectionContainsNonComplianceParameter, officeParameter, agencyParameter, lMBAParameter, nameParameter, streetParameter, citySTParameter, phoneParameter, emailParameter, otherParameter, includeInCoversheetParameter);
         }
     
         public virtual ObjectResult<copyRevision_Result> copyRevision(Nullable<int> id, string newRevision, string newHistory, string newCreatedBy, string newReleaseNotes)

@@ -60,6 +60,12 @@
                         <div gen-validation data-errors="$root.modalErrors"></div>
                     </div>
                     <div class="form-row">
+                        <div class="form-label">Include in cover sheet selection</div>
+                        <div class="form-element">
+                            <input data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.IncludeInCoversheet" />
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-label">Office</div>
                         <div class="form-element">
                             <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.Office" class="sectionTitle input-full" maxlength="100" autofocus />

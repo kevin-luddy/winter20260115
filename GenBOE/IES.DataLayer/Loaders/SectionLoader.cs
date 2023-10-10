@@ -97,6 +97,7 @@ namespace IES.DataBridge.Loaders
                     Phone = r.Phone,
                     Email   = r.Email,
                     Other = r.Other,
+                    IncludeInCoversheet = r.IncludeInCoversheet,
                 }).ToList();
             }
 
@@ -336,7 +337,7 @@ namespace IES.DataBridge.Loaders
                         dtoToUpsert.TextContent, (int)dtoToUpsert.ContentType, dtoToUpsert.IsInternalSection,
                         dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired, 
                         dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.SectionContainsNonCompliance, 
-                        dtoToUpsert.Office, dtoToUpsert.Agency, dtoToUpsert.LMBA, dtoToUpsert.Name, dtoToUpsert.Street, dtoToUpsert.CityST, dtoToUpsert.Phone, dtoToUpsert.Email, dtoToUpsert.Other
+                        dtoToUpsert.Office, dtoToUpsert.Agency, dtoToUpsert.LMBA, dtoToUpsert.Name, dtoToUpsert.Street, dtoToUpsert.CityST, dtoToUpsert.Phone, dtoToUpsert.Email, dtoToUpsert.Other, dtoToUpsert.IncludeInCoversheet
                         ).First();
                 }
             }
@@ -480,6 +481,7 @@ namespace IES.DataBridge.Loaders
                 s.Phone = section.Phone;
                 s.Email = section.Email;
                 s.Other = section.Other;
+                s.IncludeInCoversheet = section.IncludeInCoversheet;
 
                 this.UpdateSectionsAndContent(s, section.ChildNodes, sectionsToDelete);
             }
@@ -490,7 +492,7 @@ namespace IES.DataBridge.Loaders
                 SectionModelView s = new SectionModelView(section.RevisionId, section.DisplayOrder, section.IsInternalSection,
                     section.Title, section.TextContent, section.DisplayRateCode, section.ContentType, section.ReferenceNumber,
                     section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosure, section.SectionContainsNonCompliance,
-                    section.Office, section.Agency, section.LMBA, section.Name, section.Street, section.CityST, section.Phone, section.Email, section.Other);
+                    section.Office, section.Agency, section.LMBA, section.Name, section.Street, section.CityST, section.Phone, section.Email, section.Other, section.IncludeInCoversheet);
                 s.Id = -1; // Force upsert to insert new row
                 parent.ChildNodes.Add(s);
                 this.UpdateSectionsAndContent(s, section.ChildNodes, sectionsToDelete);

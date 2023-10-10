@@ -43,6 +43,7 @@ namespace IES.DataBridge.ModelViews
             this.Phone = string.Empty;
             this.Email = string.Empty;
             this.Other = string.Empty;
+            this.IncludeInCoversheet = false;
         }
 
         /// <summary>
@@ -59,9 +60,19 @@ namespace IES.DataBridge.ModelViews
         /// <param name="revisionUniqueSectionId">Section Identifier unique to the version</param>
         /// <param name="sectionContainsCasbDisclosure">Section contains CASB Disclosure Statements</param>
         /// <param name="sectionContainsNonCompliance">Section contains Non Compliance issues</param>
+        /// <param name="office">Office address</param>
+        /// <param name="agency">agency address</param>
+        /// <param name="LMBA">LMBA address content type</param>
+        /// <param name="name">Name address content type</param>
+        /// <param name="street">Street address content type</param>
+        /// <param name="cityST">city state address content type</param>
+        /// <param name="phone">Phone address content type</param>
+        /// <param name="email">email address content type</param>
+        /// <param name="other">other address content type</param>
+        /// <param name="includeInCoversheet">includeInCoversheet address content type</param>
         public SectionModelView(int revisionId, int displayOrder, bool? isInternalSection, string title,
             string textContent, bool? displayRateCode, SectionContentType contentType, string referenceNumber, int revisionUniqueSectionId, bool sectionContainsCasbDisclosure, bool sectionContainsNonCompliance,
-            string office, string agency, string LMBA, string name, string street, string cityST, string phone, string email, string other)
+            string office, string agency, string LMBA, string name, string street, string cityST, string phone, string email, string other, bool? includeInCoversheet)
         {
             this.RevisionId = revisionId;
             this.DisplayOrder = displayOrder;
@@ -86,6 +97,7 @@ namespace IES.DataBridge.ModelViews
             this.Phone = phone;
             this.Email = email;
             this.Other = other;
+            this.IncludeInCoversheet = includeInCoversheet;
         }
 
         #endregion
@@ -224,5 +236,10 @@ namespace IES.DataBridge.ModelViews
         /// Address Other
         /// </summary>
         public string Other { get; set; }
+
+        /// <summary>
+        /// address includeinCoversheet section
+        /// </summary>
+        public bool? IncludeInCoversheet { get; set; }
     }
 }
