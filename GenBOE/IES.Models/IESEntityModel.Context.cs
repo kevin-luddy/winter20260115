@@ -20,7 +20,6 @@ namespace IES.Models
         public IESEntities()
             : base("name=IESEntities")
         {
-            this.Database.CommandTimeout = 300; //manually put in time out limit
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
