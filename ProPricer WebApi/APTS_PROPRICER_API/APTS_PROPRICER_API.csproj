@@ -274,6 +274,7 @@
     <Compile Include="Common\CompanyConfigurationSection.cs" />
     <Compile Include="Common\ConfigurationUtilities.cs" />
     <Compile Include="Common\Constants.cs" />
+    <Compile Include="Common\DetailedCell.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="Common\ExtensionMethods.cs" />
     <Compile Include="Common\HandleErrorAttribute.cs" />
