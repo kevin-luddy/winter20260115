@@ -60,6 +60,51 @@ namespace IES.DataBridge.ModelViews
         public bool SectionContainsNonCompliance { get; set; }
 
         /// <summary>
+        /// Gets or sets the Address Office
+        /// </summary>
+        public string Office { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Address Agency
+        /// </summary>
+        public string Agency { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Address LMBA
+        /// </summary>
+        public string LMBA { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Address Name
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Address Street
+        /// </summary>
+        public string Street { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Address Office
+        /// </summary>
+        public string CityST { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Address Phone
+        /// </summary>
+        public string Phone { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Address Email
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Address Other
+        /// </summary>
+        public string Other { get; set; }
+
+        /// <summary>
         /// Gets or sets the child nodes.
         /// </summary>
         public ICollection<SectionDetailModelView> ChildNodes { get; set; }
