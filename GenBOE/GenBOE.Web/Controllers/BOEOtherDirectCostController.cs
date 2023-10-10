@@ -10,6 +10,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Web.Mvc;
     using System.Web.Script.Serialization;
@@ -399,6 +400,7 @@ namespace GenBOE.Web.Controllers
             return View(WebConstants.VIEW_ODC_SPREAD_GRID, returnData);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         virtual public ActionResult ExportODCSpread(string workspace, int boeID, int odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -407,25 +409,32 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = InitializeAction(_log, "ExportODCSpread", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
             OtherDirectCostDTO taskElement = this.Factory.CreateOtherDirectCost(odcElementID);
-            string fileName = string.Empty;
+            string exportedFileName = string.Empty;
 
             if (taskElement != null)
             {
                 DataRelationshipVerifier.VerifyDataRelation(taskElement, boeID);
-                fileName = ODCSpreadExporter.ExportToExcelFile(Server.MapPath("~/Templates/Export/ODCSpread.xlsx"), taskElement.ODCTypes, _ResourceDTODataLoader, this.perfOrgLoader);
+                exportedFileName = ODCSpreadExporter.ExportToExcelFile(Server.MapPath("~/Templates/Export/ODCSpread.xlsx"), taskElement.ODCTypes, _ResourceDTODataLoader, this.perfOrgLoader);
             }
             else
             {
-                fileName = ODCSpreadExporter.ExportToExcelFile(Server.MapPath("~/Templates/Export/ODCSpread.xlsx"), new Collection<OtherDirectCostType>(), _ResourceDTODataLoader, this.perfOrgLoader);
+                exportedFileName = ODCSpreadExporter.ExportToExcelFile(Server.MapPath("~/Templates/Export/ODCSpread.xlsx"), new Collection<OtherDirectCostType>(), _ResourceDTODataLoader, this.perfOrgLoader);
             }
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(fileName, ws.WorkspaceName + "_BOE-" + boeID + "_ODCSpreads.xlsx");
+            string fileName = ws.WorkspaceName + "_BOE-" + boeID + "_ODCSpreads.xlsx";
+            // Generate an custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportODCSpread", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         virtual public ActionResult ExportODCType(string workspace, int boeID, int odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -441,13 +450,19 @@ namespace GenBOE.Web.Controllers
                 DataRelationshipVerifier.VerifyDataRelation(thisTaskElement, boeID);
             }
 
-            string fileName = ODCTypeExporter.ExportToExcelFile(Server.MapPath("~/Templates/Export/ODCTypes.xlsx"), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement);
+            string exportedFileName = ODCTypeExporter.ExportToExcelFile(Server.MapPath("~/Templates/Export/ODCTypes.xlsx"), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(fileName, ws.WorkspaceName + "_BOE-" + boeID + "_ODC-" + odcElementID + "_ODCTypes.xlsx");
+            string fileName = ws.WorkspaceName + "_BOE-" + boeID + "_ODC-" + odcElementID + "_ODCTypes.xlsx";
+            // Generate an custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportODCType", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>

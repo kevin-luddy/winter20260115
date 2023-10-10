@@ -8,6 +8,7 @@ namespace IES.ActionLogic.ControllerLogic
 {
     using System.Collections.Generic;
     using System.Web;
+    using System.Web.Mvc;
     using IES.Common.OfficeUtilities;
     using IES.DataBridge.ModelViews;
 
@@ -25,7 +26,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="burdenPools">PPR&amp;D ProPricer burden pools</param>
         /// <param name="burdenElements">PPR&amp;D ProPricer burden elements</param>
         /// <returns>The ExportFileDownloadResult.</returns>
-        ExportFileDownloadResult ExportProPricerData(string zipPathFile, string versionNumber,
+        ActionResult ExportProPricerData(string zipPathFile, string versionNumber,
             ICollection<RateDetailModelView> rates, ICollection<BurdenPoolDetailModelView> burdenPools, 
             ICollection<BurdenElementModelView> burdenElements);
 
@@ -43,6 +44,6 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="id">Revision Id to export</param>
         /// <param name="jsonFilePath">The server path where the JSON file will be created</param>
         /// <returns>Revision data as JSON.</returns>
-        ExportFileDownloadResult ExportRevisionAsJson(string id, string jsonFilePath);
+        ActionResult ExportRevisionAsJson(string id, string jsonFilePath);
     }
 }

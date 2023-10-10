@@ -40,6 +40,7 @@ namespace GenBOE.Web.Controllers
     using IES.Common.OfficeUtilities;
     using IES.Common.PickList;
     using Microsoft.VisualBasic.FileIO;
+    using Microsoft.VisualBasic.Logging;
 
     public class ReportsController : GenBOEController
     {
@@ -540,14 +541,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.WBSNumPadded descending
-                                                                              select x).ToList());
+	                                  orderby x.WBSNumPadded descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_WBS_TITLE)
@@ -555,14 +556,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.WBSTitle, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.WBSTitle, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.WBSTitle descending
-                                                                              select x).ToList());
+	                                  orderby x.WBSTitle descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_BOE_TITLE)
@@ -570,14 +571,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.BOETitle, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.BOETitle, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.BOETitle descending
-                                                                              select x).ToList());
+	                                  orderby x.BOETitle descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_CLIN_NUM)
@@ -585,14 +586,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.CLINNum, x.WBSNumPadded
-                                                                              select x).ToList());
+	                                  orderby x.CLINNum, x.WBSNumPadded
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.CLINNum descending
-                                                                              select x).ToList());
+	                                  orderby x.CLINNum descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_CLIN_TITLE)
@@ -600,14 +601,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.CLINTitle, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.CLINTitle, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.CLINTitle descending
-                                                                              select x).ToList());
+	                                  orderby x.CLINTitle descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_AUTHOR)
@@ -615,14 +616,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.Authors, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.Authors, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.Authors descending
-                                                                              select x).ToList());
+	                                  orderby x.Authors descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_STATUS)
@@ -630,14 +631,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.Status, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.Status, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.Status descending
-                                                                              select x).ToList());
+	                                  orderby x.Status descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_DAYS_UNASSIGNED)
@@ -645,14 +646,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysInUnassigned, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.DaysInUnassigned, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysInUnassigned descending
-                                                                              select x).ToList());
+	                                  orderby x.DaysInUnassigned descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_DAYS_DRAFT)
@@ -660,14 +661,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysInDraft, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.DaysInDraft, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysInDraft descending
-                                                                              select x).ToList());
+	                                  orderby x.DaysInDraft descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_DAYS_WAITING)
@@ -675,14 +676,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysInAwaitingApproval, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.DaysInAwaitingApproval, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysInAwaitingApproval descending
-                                                                              select x).ToList());
+	                                  orderby x.DaysInAwaitingApproval descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_DAYS_CREATE_APPROVE)
@@ -690,14 +691,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysFromCreatedToApproved, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.DaysFromCreatedToApproved, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysFromCreatedToApproved descending
-                                                                              select x).ToList());
+	                                  orderby x.DaysFromCreatedToApproved descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_DAYS_DRAFT_APPROVE)
@@ -705,14 +706,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysFromDraftToApproved, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.DaysFromDraftToApproved, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.DaysFromDraftToApproved descending
-                                                                              select x).ToList());
+	                                  orderby x.DaysFromDraftToApproved descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_TIMES_DRAFT)
@@ -720,14 +721,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.NumTimesInDraft, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.NumTimesInDraft, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.NumTimesInDraft descending
-                                                                              select x).ToList());
+	                                  orderby x.NumTimesInDraft descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_TIMES_WAITING)
@@ -735,14 +736,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.NumTimesInAwaitingApproval, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.NumTimesInAwaitingApproval, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.NumTimesInAwaitingApproval descending
-                                                                              select x).ToList());
+	                                  orderby x.NumTimesInAwaitingApproval descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_TIMES_APPROVED)
@@ -750,14 +751,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.NumTimesInApproved, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.NumTimesInApproved, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.NumTimesInApproved descending
-                                                                              select x).ToList());
+	                                  orderby x.NumTimesInApproved descending
+	                                  select x).ToList());
                 }
             }
             else if (sortField == SORT_TIMES_AUTHOR_REASSIGNED)
@@ -765,14 +766,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(sortDirection) || sortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.NumTimesAuthorReassigned, x.WBSNumPadded, x.CLINNum
-                                                                              select x).ToList());
+	                                  orderby x.NumTimesAuthorReassigned, x.WBSNumPadded, x.CLINNum
+	                                  select x).ToList());
                 }
                 else if (sortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.Rows = new Collection<BOEActivityReportRow>((from x in theModelView.Rows
-                                                                              orderby x.NumTimesAuthorReassigned descending
-                                                                              select x).ToList());
+	                                  orderby x.NumTimesAuthorReassigned descending
+	                                  select x).ToList());
                 }
             }
             else
@@ -1433,8 +1434,8 @@ namespace GenBOE.Web.Controllers
 
                             // Check if the user is a subcontractor
                             bool isSubcontractor = (from p in this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(workspaceObject.Id)
-                                                    where p.Role == Role.SubcontractorAuthor && p.ETIUserId == author.UserID
-                                                    select p).Any();
+	        where p.Role == Role.SubcontractorAuthor && p.ETIUserId == author.UserID
+	        select p).Any();
 
                             boeAuthors.Add(new BoeCustomReportAuthorData
                             {
@@ -1552,6 +1553,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="reportID">The report ID</param>
         /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
         /// <returns>Report</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "reportModelView")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
         public ActionResult Export(string workspace, int reportID, string summarizeByCustomField)
@@ -1598,10 +1600,17 @@ namespace GenBOE.Web.Controllers
                         }
 
                         // Generate an export file from the data
-                        string exportFileName = this._BOEStatusReport.SendBOEStatusReportToFile(templateFileName, theModelViews, reportID, exportInputs);
+                        string exportedFileName = this._BOEStatusReport.SendBOEStatusReportToFile(templateFileName, theModelViews, reportID, exportInputs);
 
                         // Pass the file to the user
-                        toReturn = new ExportFileDownloadResult(exportFileName, string.Format("BOEStatusExport_{0}.xlsx", ws.WorkspaceName));
+                        string fileName = string.Format("BOEStatusExport_{0}.xlsx", ws.WorkspaceName);
+                        // Generate an custom ActionResult to cause a file download to the client
+                        FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                        toReturn = File(
+                            fileStream: fs,
+                            contentType: ExportFileDownloadBase.GetContentType(fileName),
+                            fileDownloadName: fileName);
                     }
                 }
                 else if (reportID == (int)Reports.BOEActivity)
@@ -1613,10 +1622,17 @@ namespace GenBOE.Web.Controllers
                     string templateFileName = Server.MapPath("~/Templates/Export/BOEActivityReport.xlsx");
 
                     // Generate an export file from the data
-                    string exportFileName = this._BOEActivityReport.SendBOEActivityReportToFile(templateFileName, theModelView);
+                    string exportedFileName = this._BOEActivityReport.SendBOEActivityReportToFile(templateFileName, theModelView);
 
                     // Pass the file to the user
-                    toReturn = new ExportFileDownloadResult(exportFileName, string.Format("BOEActivityReport_{0}.xlsx", ws.WorkspaceName));
+                    string fileName = string.Format("BOEActivityReport_{0}.xlsx", ws.WorkspaceName);
+                    // Generate an custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    toReturn = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileName),
+                        fileDownloadName: fileName);
                 }
                 //add 
                 //
@@ -1669,7 +1685,14 @@ namespace GenBOE.Web.Controllers
                     string exportedFileName = this.workspaceExporter.ExportToExcelFile(Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH), exportInputs, metricTaskElementMappings, contractTypes);
 
                     // Generate a custom ActionResult to cause a file download to the client
-                    toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_WorkspaceData.xlsx", ws.WorkspaceName));
+                    string fileName = string.Format("{0}_WorkspaceData.xlsx", ws.WorkspaceName);
+                    // Generate an custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    toReturn = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileName),
+                        fileDownloadName: fileName);
                 }
                 else if (reportID == (int)Reports.TravelUnitCost)
                 {
@@ -1677,7 +1700,14 @@ namespace GenBOE.Web.Controllers
                     string exportedFileName = this.travelUnitCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
 
                     // Generate a custom ActionResult to cause a file download to the client
-                    toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_TravelUnitCost.xlsx", ws.WorkspaceName));
+                    fileName = string.Format("{0}_TravelUnitCost.xlsx", ws.WorkspaceName);
+                    // Generate an custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    toReturn = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileName),
+                        fileDownloadName: fileName);
                 }
                 else if (reportID == (int)Reports.TravelExtendedCost)
                 {
@@ -1685,7 +1715,14 @@ namespace GenBOE.Web.Controllers
                     string exportedFileName = this.travelExtendedCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
 
                     // Generate a custom ActionResult to cause a file download to the client
-                    toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_TravelExtendedCost.xlsx", ws.WorkspaceName));
+                    fileName = string.Format("{0}_TravelExtendedCost.xlsx", ws.WorkspaceName);
+                    // Generate an custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    toReturn = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileName),
+                        fileDownloadName: fileName);
                 }
                 else if (reportID == (int)Reports.WbsBoeReport)
                 {
@@ -1694,7 +1731,14 @@ namespace GenBOE.Web.Controllers
 
                     string exportedFileName = this.reportsControllerLogic.ExportWbsBoeReport(ws, Server.MapPath("~/Templates/Export/WbsBoeReport.xlsx"), reportModelView, exportInputs);
 
-                    toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_WbsSummaryReport.xlsx", ws.WorkspaceName));
+                    string fileName = string.Format("{0}_WbsSummaryReport.xlsx", ws.WorkspaceName);
+                    // Generate an custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    toReturn = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileName),
+                        fileDownloadName: fileName);
                 }
                 else
                 {
@@ -1822,6 +1866,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="inFormatID">The ID of the format to Export</param>
         /// <param name="workspace">The workspace</param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2002:DoNotLockOnObjectsWithWeakIdentity")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [ProPricerExportAccess]
@@ -1885,7 +1930,14 @@ namespace GenBOE.Web.Controllers
                             if (filePath.Length > 0)
                             {
                                 // Return the file to the user
-                                toReturn = new ExportFileDownloadResult(filePath, "ProPricerExport_" + ws.WorkspaceName + ".zip");
+                                string fileName = "ProPricerExport_" + ws.WorkspaceName + ".zip";
+                                // Generate an custom ActionResult to cause a file download to the client
+                                FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                                toReturn = File(
+                                    fileStream: fs,
+                                    contentType: ExportFileDownloadBase.GetContentType(fileName),
+                                    fileDownloadName: fileName);
                             }
                         }
                     }
@@ -1942,6 +1994,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="downloadReports">The download reports.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">downloadReports</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public ActionResult BulkDownloadReports(string workspace, ICollection<DownloadReportModelView> downloadReports)
         {
@@ -1965,7 +2018,14 @@ namespace GenBOE.Web.Controllers
                 if (filePath.Length > 0)
                 {
                     // Return the file to the user
-                    toReturn = new ExportFileDownloadResult(filePath, "BulkReportExport_" + ws.WorkspaceName + ".zip");
+                    string fileName = "BulkReportExport_" + ws.WorkspaceName + ".zip";
+                    // Generate an custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    toReturn = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileName),
+                        fileDownloadName: fileName);
                 }
             }
             catch (Exception e)

@@ -10,6 +10,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Transactions;
     using System.Web.Mvc;
@@ -422,7 +423,8 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        public ExportFileDownloadResult ExportWBS(string workspace)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportWBS(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -449,15 +451,21 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = _WbsExporter.ExportToExcelFile(templateFileName, WbsDTOs.ToCollection<WbsDTO>(), clinStrings);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("GenBOE-{0}-WBSs.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("GenBOE-{0}-WBSs.xlsx", ws.WorkspaceName);
+            // Generate an custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportWBS", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
-        public ExportFileDownloadResult ExportWBSTemplate(string workspace)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportWBSTemplate(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -477,12 +485,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = _WbsExporter.ExportToExcelFile(templateFileName, WbsDTOs, clinStrings);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("GenBOE-{0}-WBSs.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("GenBOE-{0}-WBSs.xlsx", ws.WorkspaceName);
+            // Generate an custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportWBSTemplate", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]

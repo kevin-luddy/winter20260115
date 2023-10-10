@@ -272,6 +272,7 @@ namespace RDM.Web.Controllers
         /// </summary>
         /// <param name="id">Revision Id</param>
         /// <returns>File contents</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult DownloadRateCodesImportExample(int? id)
         {
             try
@@ -284,7 +285,14 @@ namespace RDM.Web.Controllers
                 string exportedFileName = RateCodeExporter.ExportToExcelFile(serverFileName, rates);
 
                 // Generate an custom ActionResult to cause a file download to the client
-                return new ExportFileDownloadResult(exportedFileName, "RateCodesImportExample.xlsx");
+                string fileName = "RateCodesImportExample.xlsx";
+                // Generate an custom ActionResult to cause a file download to the client
+                FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                return this.File(
+                    fileStream: fs,
+                    contentType: ExportFileDownloadBase.GetContentType(fileName),
+                    fileDownloadName: fileName);
             }
             catch (GeneralAppException e)
             {
@@ -298,6 +306,7 @@ namespace RDM.Web.Controllers
         /// </summary>
         /// <param name="id">Revision Id</param>
         /// <returns>File contents</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult ExportRateCodes(int? id)
         {
             try
@@ -309,7 +318,14 @@ namespace RDM.Web.Controllers
                 string exportedFileName = RateCodeExporter.ExportToExcelFile(serverFileName, rates);
 
                 // Generate an custom ActionResult to cause a file download to the client
-                return new ExportFileDownloadResult(exportedFileName, "RateCodesExport.xlsx");
+                string fileName = "RateCodesExport.xlsx";
+                // Generate an custom ActionResult to cause a file download to the client
+                FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                return this.File(
+                    fileStream: fs,
+                    contentType: ExportFileDownloadBase.GetContentType(fileName),
+                    fileDownloadName: fileName);
             }
             catch (GeneralAppException e)
             {

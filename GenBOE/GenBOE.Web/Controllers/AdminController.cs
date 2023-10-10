@@ -34,6 +34,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.DataBridge.DTO;
     using GenBOE.DataBridge.Reference;
     using GenBOE.Dtos;
+    using GenBOE.Models;
     using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
@@ -517,7 +518,7 @@ namespace GenBOE.Web.Controllers
             // Return the template as a download for the user
             using (MemoryStream mem = _PackageUtilities.UpdateDocumentVersion(template.FileData, template.PhysicalFilePathCache, template.ExportFormat))
             {
-                toReturn = new FileContentResult(mem.ToArray(), ExportFileDownloadResult.ContentType_DOCX);
+                toReturn = new FileContentResult(mem.ToArray(), ExportFileDownloadBase.ContentType_DOCX);
                 toReturn.FileDownloadName = template.ExportFormatName + ".docx";
             }
 
@@ -586,14 +587,14 @@ namespace GenBOE.Web.Controllers
                 UserDTO user = this.UserLoader.GetUserByID(distinctUser);
                 modelViewToAdd.isGroup = user.NTID.Contains(".");
                 modelViewToAdd.Users = new Collection<PermissionUserModelView>{
-                                            (from u in allPerms
-                                            where u.ETIUserId == distinctUser
-                                            orderby u.ETIUserId
-                                            select new PermissionUserModelView
-                                            {
-                                                DisplayName = user.DisplayName,
-                                                UserID = distinctUser
-                                            }).FirstOrDefault()};
+	(from u in allPerms
+	where u.ETIUserId == distinctUser
+	orderby u.ETIUserId
+	select new PermissionUserModelView
+	{
+	    DisplayName = user.DisplayName,
+	    UserID = distinctUser
+	}).FirstOrDefault()};
 
                 // convert the  role into the proper modelview class
                 Collection<PermissionRoleModelView> rolesToAdd = new Collection<PermissionRoleModelView>();
@@ -674,8 +675,8 @@ namespace GenBOE.Web.Controllers
             if (ratesForMV != null)
             {
                 Collection<MiscTravelRateDTO> SortedRatesForMV = new Collection<MiscTravelRateDTO>((from r in ratesForMV
-                                                                                                    orderby r.SortCode
-                                                                                                    select r).ToArray());
+		            orderby r.SortCode
+		            select r).ToArray());
 
 
                 // Create the modelview all the rates
@@ -797,14 +798,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.TripID
-                                                                                                    select x).ToArray());
+		            orderby x.TripID
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.TripID descending
-                                                                                                    select x).ToArray());
+		            orderby x.TripID descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -816,14 +817,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.DepartureLocationName
-                                                                                                    select x).ToArray());
+		            orderby x.DepartureLocationName
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.DepartureLocationName descending
-                                                                                                    select x).ToArray());
+		            orderby x.DepartureLocationName descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -835,14 +836,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.DestinationLocationName
-                                                                                                    select x).ToArray());
+		            orderby x.DestinationLocationName
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.DestinationLocationName descending
-                                                                                                    select x).ToArray());
+		            orderby x.DestinationLocationName descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -854,14 +855,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.PerDiemDestination
-                                                                                                    select x).ToArray());
+		            orderby x.PerDiemDestination
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.PerDiemDestination descending
-                                                                                                    select x).ToArray());
+		            orderby x.PerDiemDestination descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -873,14 +874,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.Mode
-                                                                                                    select x).ToArray());
+		            orderby x.Mode
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.Mode descending
-                                                                                                    select x).ToArray());
+		            orderby x.Mode descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -892,14 +893,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.Qualification
-                                                                                                    select x).ToArray());
+		            orderby x.Qualification
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.Qualification descending
-                                                                                                    select x).ToArray());
+		            orderby x.Qualification descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -911,14 +912,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.Fare
-                                                                                                    select x).ToArray());
+		            orderby x.Fare
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.Fare descending
-                                                                                                    select x).ToArray());
+		            orderby x.Fare descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -930,14 +931,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.HotelRate
-                                                                                                    select x).ToArray());
+		            orderby x.HotelRate
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.HotelRate descending
-                                                                                                    select x).ToArray());
+		            orderby x.HotelRate descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -949,14 +950,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.MIERate
-                                                                                                    select x).ToArray());
+		            orderby x.MIERate
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.MIERate descending
-                                                                                                    select x).ToArray());
+		            orderby x.MIERate descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -968,14 +969,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.RentalCar
-                                                                                                    select x).ToArray());
+		            orderby x.RentalCar
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.RentalCar descending
-                                                                                                    select x).ToArray());
+		            orderby x.RentalCar descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -987,14 +988,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.MiscRate
-                                                                                                    select x).ToArray());
+		            orderby x.MiscRate
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.MiscRate descending
-                                                                                                    select x).ToArray());
+		            orderby x.MiscRate descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -1006,14 +1007,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.DepartureLocationCode
-                                                                                                    select x).ToArray());
+		            orderby x.DepartureLocationCode
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.DepartureLocationCode descending
-                                                                                                    select x).ToArray());
+		            orderby x.DepartureLocationCode descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -1025,14 +1026,14 @@ namespace GenBOE.Web.Controllers
                 if (string.IsNullOrEmpty(inSortDirection) || inSortDirection == DIRECTION_ASCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.DestinationLocationCode
-                                                                                                    select x).ToArray());
+		            orderby x.DestinationLocationCode
+		            select x).ToArray());
                 }
                 else if (inSortDirection == DIRECTION_DESCENDING)
                 {
                     theModelView.TripsForTravelCollection = new Collection<TripForTravelModelView>((from x in theModelView.TripsForTravelCollection
-                                                                                                    orderby x.DestinationLocationCode descending
-                                                                                                    select x).ToArray());
+		            orderby x.DestinationLocationCode descending
+		            select x).ToArray());
                 }
                 else
                 {
@@ -1101,20 +1102,20 @@ namespace GenBOE.Web.Controllers
                                     {
                                         if (string.IsNullOrEmpty(inModeSearchText) || !string.IsNullOrEmpty(mode) && mode.ToLower().Contains(inModeSearchText.ToLower().Trim()))
                                         {
-                                            if (string.IsNullOrEmpty(inQualificationSearchText) || !string.IsNullOrEmpty(qualification) && qualification.ToLower().Contains(inQualificationSearchText.ToLower().Trim()))
-                                            {
-                                                if (string.IsNullOrEmpty(inDepartureCodeSearchText) || !string.IsNullOrEmpty(dto.DepartureLocationCode) && dto.DepartureLocationCode.ToLower().Contains(inDepartureCodeSearchText.ToLower().Trim()))
-                                                {
-                                                    if (string.IsNullOrEmpty(inDestinationCodeSearchText) || !string.IsNullOrEmpty(dto.DestinationLocationCode) && dto.DestinationLocationCode.ToLower().Contains(inDestinationCodeSearchText.ToLower().Trim()))
-                                                    {
-                                                        theModelView.PagedIndexes.Add(dto.TripID);
+	if (string.IsNullOrEmpty(inQualificationSearchText) || !string.IsNullOrEmpty(qualification) && qualification.ToLower().Contains(inQualificationSearchText.ToLower().Trim()))
+	{
+	    if (string.IsNullOrEmpty(inDepartureCodeSearchText) || !string.IsNullOrEmpty(dto.DepartureLocationCode) && dto.DepartureLocationCode.ToLower().Contains(inDepartureCodeSearchText.ToLower().Trim()))
+	    {
+	        if (string.IsNullOrEmpty(inDestinationCodeSearchText) || !string.IsNullOrEmpty(dto.DestinationLocationCode) && dto.DestinationLocationCode.ToLower().Contains(inDestinationCodeSearchText.ToLower().Trim()))
+	        {
+	            theModelView.PagedIndexes.Add(dto.TripID);
 
-                                                        TripForTravelModelView result = new TripForTravelModelView(dto,
-                                                            miscDTO, fareUpdatedByUser, perDiemDTO, departure, destination);
-                                                        theModelView.TripsForTravelCollection.Add(result);
-                                                    }
-                                                }
-                                            }
+	            TripForTravelModelView result = new TripForTravelModelView(dto,
+	                miscDTO, fareUpdatedByUser, perDiemDTO, departure, destination);
+	            theModelView.TripsForTravelCollection.Add(result);
+	        }
+	    }
+	}
                                         }
                                     }
                                 }
@@ -1275,8 +1276,8 @@ namespace GenBOE.Web.Controllers
             {
 
                 Collection<EscalationRatesDTO> SortedRatesForMV = new Collection<EscalationRatesDTO>((from r in ratesForMV
-                                                                                                      orderby r.Year
-                                                                                                      select r).ToArray());
+		              orderby r.Year
+		              select r).ToArray());
                 // Create the modelview all the rates
                 foreach (EscalationRatesDTO rateDTO in SortedRatesForMV)
                 {
@@ -1356,7 +1357,7 @@ namespace GenBOE.Web.Controllers
             if (theModelView.PagedIndexes.None())
             {
                 theModelView.PagedIndexes = new Collection<int>((from dto in allDTOs
-                                                                 select dto.Id).ToList<int>());
+	                     select dto.Id).ToList<int>());
             }
 
             theModelView.Results.Clear();
@@ -1982,8 +1983,8 @@ namespace GenBOE.Web.Controllers
             }
 
             wsInfos = new Collection<WorkspaceInfoForTemplateId>((from w in wsInfos
-                                                                  orderby w.ElVal
-                                                                  select w).ToArray());
+	                      orderby w.ElVal
+	                      select w).ToArray());
 
             FinalizeAction(_log, "GetWorkspacesAssignedForExportTemplateId", sw);
 
@@ -2014,8 +2015,8 @@ namespace GenBOE.Web.Controllers
             }
 
             wsInfos = new Collection<WorkspaceInfoForTemplateId>((from w in wsInfos
-                                                                  orderby w.ElVal
-                                                                  select w).ToArray());
+	                      orderby w.ElVal
+	                      select w).ToArray());
 
             FinalizeAction(_log, "GetAvailableWorkspaceIdsForExportFormatId", sw);
 
@@ -2446,8 +2447,8 @@ namespace GenBOE.Web.Controllers
 
                 //find and mark the user to delete.
                 PermissionsDTO permissionForUser = Admins
-                                            .Where(x => x.ETIUserId == inUserID && x.Role == inRole)
-                                            .FirstOrDefault();
+	.Where(x => x.ETIUserId == inUserID && x.Role == inRole)
+	.FirstOrDefault();
 
                 // adjust updateable field and then add to our save list if permission exists
                 if (permissionForUser != null)
@@ -2696,12 +2697,12 @@ namespace GenBOE.Web.Controllers
                 }
 
                 bool exists = allCurrentTravelRates.Any(x => x.MiscTravelRateMode.IsEquivalentTo(miscRateToSave.MiscTravelRateMode)
-                                                   && x.Id != miscRateToSave.MiscTravelRateID)? true:false;
+	       && x.Id != miscRateToSave.MiscTravelRateID)? true:false;
 
                 if (exists)
                 {
                     ValidationErrors.Add(new ValidationMessage("UniqueMiscMode", string.Format("There is already a Travel Miscellaneous Rate with Transportation Mode: {0}", 
-                                                                                 miscRateToSave.MiscTravelRateMode)));
+	                                     miscRateToSave.MiscTravelRateMode)));
                 }
             }
 
@@ -3148,9 +3149,9 @@ namespace GenBOE.Web.Controllers
 
                         // get list of deleted resources. This query only pulls back rows that are in the database but not in the excel file
                         allDeletedResources = (from a in allDeletedResources
-                                            where !(from n in newResources
-                                                    select n.Id).Contains(a.Id)
-                                            select a).ToList();
+	where !(from n in newResources
+	        select n.Id).Contains(a.Id)
+	select a).ToList();
 
                         // in use resources cannot be deleted so remove them from the final list
                         HashSet<int> resourceIDsInUse = _InUseDataLoader.GetSystemResourceIDsInUse();
@@ -3342,7 +3343,8 @@ namespace GenBOE.Web.Controllers
         /// Exports the zone travel origins.
         /// </summary>
         /// <returns>Download Result for the Zone Travel Origins.</returns>
-        public ExportFileDownloadResult ExportZoneTravelOrigins()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportZoneTravelOrigins()
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "ExportZoneTravelOrigins", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -3355,12 +3357,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = ZoneTravelOriginExporter.ExportToExcelFile(templateFileName, origins);
 
+            string fileName = "ZoneTravel_Origins.xlsx";
             // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, "ZoneTravel_Origins.xlsx");
-
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+            
             // Finalize Action
             FinalizeAction(_log, "ExportZoneTravelOrigins", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -3456,7 +3463,8 @@ namespace GenBOE.Web.Controllers
         /// Note:  This is RMS-specific, will need to be reworked to support Space
         /// </summary>
         /// <returns>Download Result for the Escalation Rates.</returns>
-        public ExportFileDownloadResult ExportEscalationRates()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportEscalationRates()
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "ExportEscalationRates", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -3470,12 +3478,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = SystemEscalationRatesExporterRMS.ExportToExcelFile(templateFileName, ratesForMV);
 
+            string fileName = "Admin_EscalationRates.xlsx";
             // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, "Admin_EscalationRates.xlsx");
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportEscalationRates", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -3585,7 +3598,8 @@ namespace GenBOE.Web.Controllers
         /// Note:  This is RMS-specific, will need to be reworked to support Space
         /// </summary>
         /// <returns>Download Result for the Offload Rates.</returns>
-        public ExportFileDownloadResult ExportOffloadRates()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportOffloadRates()
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_OFFLOAD_RATES, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -3601,13 +3615,18 @@ namespace GenBOE.Web.Controllers
 
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = SystemOffloadRatesExporterRMS.ExportToExcelFile(templateFileName, ratesForMV, systemPerformingOrgs, systemResources);
-
+            
+            string fileName = "Admin_OffloadRates.xlsx";
             // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, "Admin_OffloadRates.xlsx");
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, WebConstants.ACTION_EXPORT_OFFLOAD_RATES, sw);
-            return toReturn;
+            FinalizeAction(_log, "WebConstants.ACTION_EXPORT_OFFLOAD_RATES", sw);
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -3719,7 +3738,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
-        public ExportFileDownloadResult ExportResources(bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials, string searchText)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportResources(bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials, string searchText)
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "ExportResources", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -3744,12 +3764,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = ResourcesExporter.ExportToExcelFile(templateFileName, resources, _CommonDataMapper);
 
+            string fileName = string.Format("GenBOEResources-{0}.xlsx", resourceList.ResourceListName);
             // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("GenBOEResources-{0}.xlsx", resourceList.ResourceListName));
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportResources", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -3763,7 +3788,8 @@ namespace GenBOE.Web.Controllers
         /// <param name="showTravel"></param>
         /// <param name="showMaterials"></param>
         /// <returns></returns>
-        public ExportFileDownloadResult ExportDefaultResourcesTemplate(string searchText)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportDefaultResourcesTemplate(string searchText)
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "ExportDefaultResourcesTemplate", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -3784,12 +3810,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = ResourcesExporter.ExportTemplate(templateFileName, _CommonDataMapper);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("GenBOEResources-{0}.xlsx", resourceList.ResourceListName));
+            string fileName = string.Format("GenBOEResources-{0}.xlsx", resourceList.ResourceListName);
+            // Generate an custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportDefaultResourcesTemplate", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
         
         /// <summary>
@@ -3917,10 +3948,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
-        public ExportFileDownloadResult ExportPerformingOrgs()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportPerformingOrgs()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportResources", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, "ExportPerformingOrgs", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Perform Action
             Collection<PerformingOrgDTO> performingOrgs = this.perfOrgLoader.GetGlobalPerformingOrgs();
@@ -3932,12 +3964,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = PerformingOrgsExporter.ExportToExcelFile(templateFileName, performingOrgs);
 
+            string fileName = string.Format("GenBOEPerformingOrgs-{0}.xlsx", performingOrgList.PerformingOrgListName);
             // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("GenBOEPerformingOrgs-{0}.xlsx", performingOrgList.PerformingOrgListName));
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportResources", sw);
-            return toReturn;
+            FinalizeAction(_log, "ExportPerformingOrgs", sw);
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -4637,7 +4674,8 @@ namespace GenBOE.Web.Controllers
         /// Export all Trips
         /// </summary>
         /// <returns></returns>
-        public ExportFileDownloadResult ExportTrips()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportTrips()
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "ExportTrips", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -4648,22 +4686,28 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = _TripsExporter.ExportToExcelFile(templateFileName);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, "GenBOE-Trips.xlsx");
+            string fileName = "GenBOE-Trips.xlsx";
+            // Generate an custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportTrips", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
         /// Export the Trips template
         /// </summary>
         /// <returns></returns>
-        public ExportFileDownloadResult ExportTripsTemplate()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportTripsTemplate()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportTrips", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, "ExportTripsTemplate", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Get Performing Orgs template file name
             string templateFileName = Server.MapPath("~/Templates/Export/Trips.xlsx");
@@ -4671,12 +4715,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = _TripsExporter.ExportTemplate(templateFileName);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, "GenBOE-Trips.xlsx");
+            string fileName = "GenBOE-Trips.xlsx";
+            // Generate an custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportTrips", sw);
+            FinalizeAction(_log, "ExportTripsTemplate", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName); 
         }
 
         /// <summary>
@@ -4771,24 +4820,24 @@ namespace GenBOE.Web.Controllers
                              where m.ImportType == (int)TripImportResult.AddNewTrip || m.ImportType == (int)TripImportResult.UpdateExistingTrip
                              select m;
             ViewData["SERIALIZED_DATA"] = serializer.Serialize(from x in dataToSave
-                                                               select new
-                                                               {
-                                                                   Mode = x.Mode,
-                                                                   MiscTravelRateID = x.MiscTravelRateID,
-                                                                   DepartureID = x.DepartureID,
-                                                                   DepartureCode = x.DepartureCode,
-                                                                   DestinationID = x.DestinationID,
-                                                                   DestinationCode = x.DestinationCode,
-                                                                   PerDiemID = x.PerDiemID,
-                                                                   Fare = x.Fare.ToString(),
-                                                                   RTMiles = x.RTMiles.ToString(),
-                                                                   RentalCarRate = x.RentalCarRate.ToString(),
-                                                                   MissingFields = x.MissingFields,
-                                                                   InvalidField = x.InvalidField,
-                                                                   InvalidValue = x.InvalidValue,
-                                                                   TripID = x.TripID,
-                                                                   ImportType = x.ImportType
-                                                               });
+	                   select new
+	                   {
+	                       Mode = x.Mode,
+	                       MiscTravelRateID = x.MiscTravelRateID,
+	                       DepartureID = x.DepartureID,
+	                       DepartureCode = x.DepartureCode,
+	                       DestinationID = x.DestinationID,
+	                       DestinationCode = x.DestinationCode,
+	                       PerDiemID = x.PerDiemID,
+	                       Fare = x.Fare.ToString(),
+	                       RTMiles = x.RTMiles.ToString(),
+	                       RentalCarRate = x.RentalCarRate.ToString(),
+	                       MissingFields = x.MissingFields,
+	                       InvalidField = x.InvalidField,
+	                       InvalidValue = x.InvalidValue,
+	                       TripID = x.TripID,
+	                       ImportType = x.ImportType
+	                   });
             ViewData["DOCUMENT_DOMAIN"] = Request["documentDomain"];
 
             toReturn = View(WebConstants.VIEW_MANAGE_TRIPS_IMPORT_VERIFICATION, theModelView);
@@ -5124,9 +5173,9 @@ namespace GenBOE.Web.Controllers
                 {
                     ICollection<PerDiemDTO> perDiems = _PerDiemDTODataLoader.GetAllPerDiem();
                     PerDiemDTO perDiemExists = (from p in perDiems
-                                                where p.PerDiemDestination.ToLower().Equals(perDiemDTO.PerDiemDestination.ToLower()) &&
-                                                    p.Qualification.IsEquivalentTo(perDiemDTO.Qualification)
-                                                select p).FirstOrDefault();
+	    where p.PerDiemDestination.ToLower().Equals(perDiemDTO.PerDiemDestination.ToLower()) &&
+	        p.Qualification.IsEquivalentTo(perDiemDTO.Qualification)
+	    select p).FirstOrDefault();
 
                     if (perDiemExists != null)
                     {

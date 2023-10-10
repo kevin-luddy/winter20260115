@@ -10,6 +10,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Transactions;
     using System.Web.Mvc;
@@ -314,10 +315,10 @@ namespace GenBOE.Web.Controllers
                    
                     //find any boes that have resources using the clin
                     Collection<FullBoe> boesUsingClin = (from b in MultiBOEs
-                                                from l in b.TaskElements
-                                                from x in l.taskElementLabors
-                                                where x.CLINID.HasValue && x.CLINID == updatedClin.Id
-                                                select b).ToCollection<FullBoe>();
+	    from l in b.TaskElements
+	    from x in l.taskElementLabors
+	    where x.CLINID.HasValue && x.CLINID == updatedClin.Id
+	    select b).ToCollection<FullBoe>();
                     //if there are duplicates lets filter those out.
                     boesUsingClin = boesUsingClin.Distinct().ToCollection<FullBoe>();
 
@@ -728,11 +729,12 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace"></param>
         /// <returns>A ExportFileDownloadResult for the file being exported</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult ExportCLINs(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = this.InitializeAction(this._log, "PageManageCLIN", SecurityPage.ManageCLINs, SecurityAuthorization.Read, ws, null);
+            Stopwatch sw = this.InitializeAction(this._log, "ExportCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.Read, ws, null);
 
             ActionResult toReturn = null;
 
@@ -755,7 +757,17 @@ namespace GenBOE.Web.Controllers
 
                 if (exportFile.Length > 0)
                 {
-                    toReturn = new ExportFileDownloadResult(exportFile, string.Format("GenBOE-{0}-CLINs.xlsx", ws.WorkspaceName));
+                    string fileName = string.Format("GenBOE-{0}-CLINs.xlsx", ws.WorkspaceName);
+                    // Generate an custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    // Finalize Action
+                    FinalizeAction(_log, "ExportCLINs", sw);
+
+                    toReturn = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileName),
+                        fileDownloadName: fileName);
                 }
 
             }

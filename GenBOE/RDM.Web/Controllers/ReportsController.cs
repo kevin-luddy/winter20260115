@@ -107,6 +107,7 @@ namespace RDM.Web.Controllers
         /// </summary>
         /// <param name="id">Revision Id</param>
         /// <returns>The ExportFileDownloadResult.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult ExportCobraData(int id)
         {
             try
@@ -128,7 +129,14 @@ namespace RDM.Web.Controllers
                 string fileDownloadName =
                     $"Cobra_RDM-Rev{revision.Revision}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.xlsx";
 
-                return new ExportFileDownloadResult(exportedFileName, fileDownloadName);
+                // Generate an custom ActionResult to cause a file download to the client
+                
+                FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                return File(
+                    fileStream: fs,
+                    contentType: ExportFileDownloadBase.GetContentType(fileDownloadName),
+                    fileDownloadName: fileDownloadName);
             }
             catch (GeneralAppException ex)
             {
