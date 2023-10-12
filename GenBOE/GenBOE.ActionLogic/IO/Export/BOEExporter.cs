@@ -7218,8 +7218,6 @@ namespace GenBOE.ActionLogic.IO.Export
     internal class GSMOLaborRollupByDate : LaborRollupByDate
     {
         public string LaborType { get; set; }
-        public string Company { get; set; }
-        public string PerfOrg { get; set; }
     }
 
     /// <summary>

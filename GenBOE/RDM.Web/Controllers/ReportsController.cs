@@ -106,7 +106,8 @@ namespace RDM.Web.Controllers
         /// Exports the Cobra Data.
         /// </summary>
         /// <param name="id">Revision Id</param>
-        /// <returns>The ExportFileDownloadResult.</returns>
+        /// <returns>An ActionResult.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult ExportCobraData(int id)
         {
             try
@@ -128,7 +129,14 @@ namespace RDM.Web.Controllers
                 string fileDownloadName =
                     $"Cobra_RDM-Rev{revision.Revision}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.xlsx";
 
-                return new ExportFileDownloadResult(exportedFileName, fileDownloadName);
+                // Generate a custom ActionResult to cause a file download to the client
+                
+                FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                return File(
+                    fileStream: fs,
+                    contentType: ExportFileDownloadBase.GetContentType(fileDownloadName),
+                    fileDownloadName: fileDownloadName);
             }
             catch (GeneralAppException ex)
             {
@@ -141,7 +149,7 @@ namespace RDM.Web.Controllers
         /// Exports the ProPricer Data.
         /// </summary>
         /// <param name="id">Revision Id</param>
-        /// <returns>The ExportFileDownloadResult.</returns>
+        /// <returns>An ActionResult.</returns>
         public ActionResult ExportProPricerData(string id)
         {
             try
@@ -190,7 +198,7 @@ namespace RDM.Web.Controllers
         /// Exports a zip file containing the Revision data as XML.
         /// </summary>
         /// <param name="id">Revision Id</param>
-        /// <returns>The ExportFileDownloadResult.</returns>
+        /// <returns>An ActionResult.</returns>
         public ActionResult ExportRevisionAsJson(string id)
         {
             try
