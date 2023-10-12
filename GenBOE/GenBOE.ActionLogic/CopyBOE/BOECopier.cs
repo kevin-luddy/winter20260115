@@ -679,12 +679,12 @@ namespace GenBOE.ActionLogic.CopyBOE
                         laborType.Updateable = UpdateType.Upsert;
                         laborType.BoeID = inDestinationBOE.Id;
 
-                        if (inResourceIDMapping.ContainsKey(laborType.ResourceID.Value))
+                        if (laborType.ResourceID.HasValue && inResourceIDMapping.ContainsKey(laborType.ResourceID.Value))
                         {
                             laborType.ResourceID = (laborType.ResourceID.HasValue && inResourceIDMapping[laborType.ResourceID.Value] != -1) ? inResourceIDMapping[laborType.ResourceID.Value] : (int?)null;
                         }
 
-                        if (inPerformingOrgIDMapping.ContainsKey(laborType.PerformingOrgID.Value))
+                        if (laborType.PerformingOrgID.HasValue && inPerformingOrgIDMapping.ContainsKey(laborType.PerformingOrgID.Value))
                         {
                             laborType.PerformingOrgID = (laborType.PerformingOrgID.HasValue && inPerformingOrgIDMapping[laborType.PerformingOrgID.Value] != -1) ? inPerformingOrgIDMapping[laborType.PerformingOrgID.Value] : (int?)null;
                         }
