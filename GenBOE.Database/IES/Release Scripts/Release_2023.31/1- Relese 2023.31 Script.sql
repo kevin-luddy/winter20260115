@@ -12,10 +12,12 @@ GO
 /* 1. New row inside SectionContentTypeLU for new content type "Address"*/
 IF NOT EXISTS (SELECT [Description] FROM [dbo].[SectionContentTypeLU] WHERE [Description] = N'Address' )
 BEGIN
+SET IDENTITY_INSERT [dbo].[SectionContentTypeLU] ON
 INSERT INTO [dbo].[SectionContentTypeLU]
-           ([Description])
+           ([ID],[Description])
      VALUES
-           ('Address')
+           (5, 'Address')
+SET IDENTITY_INSERT [dbo].[SectionContentTypeLU] OFF
 END
 
 
@@ -73,10 +75,16 @@ BEGIN
 	ALTER TABLE [dbo].[Section]
 	ADD [Other] VARCHAR(100) NULL;
 END
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE Name = N'IncludeInCoversheet' AND Object_ID = Object_ID(N'[dbo].[Section]'))
+BEGIN
+	ALTER TABLE [dbo].[Section]
+	ADD [IncludeInCoversheet] BIT NULL;
+END
 GO
 
 /* 3. Update upsertSection stored procedure to take in new properties*/
-/****** Object:  StoredProcedure [dbo].[upsertSection]    Script Date: 7/18/2023 2:58:44 PM ******/
+/****** Object:  StoredProcedure [dbo].[upsertSection]    Script Date: 10/9/2023 2:58:44 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -106,7 +114,8 @@ ALTER PROCEDURE [dbo].[upsertSection]
 	@CityST					varchar(100),
 	@Phone					varchar(100),
 	@Email					varchar(100),
-	@Other					varchar(100)
+	@Other					varchar(100),
+	@IncludeInCoversheet		BIT = 0
 )
 AS
 	/******************************************************************************
@@ -132,6 +141,7 @@ AS
 	**		05/15/2018	ranzalon			Added IsRdsbRequired
 	**		07/07/2022	Dusan				Added SectionContainsCasbDisclosure and SectionContainsNonCompliance
 	**		07/18/2023	May				    PROPH-925 Added address fields into section table
+	**		10/9/2023	May				    PROPH-931 Added IncludeInCoversheet field into section table
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500)
@@ -172,6 +182,7 @@ AS
 					   ,[Phone]
 					   ,[Email]
 					   ,[Other]
+					   ,[IncludeInCoversheet]
 					   )
 				 OUTPUT inserted.ID INTO @Inserted
 				 VALUES
@@ -196,7 +207,8 @@ AS
 					   ,@CityST
 					   ,@Phone
 					   ,@Email
-					   ,@Other)
+					   ,@Other
+					   ,@IncludeInCoversheet)
 			SELECT @Id = Id FROM @Inserted
 		END
 	ELSE
@@ -228,6 +240,7 @@ AS
 						   ,Phone = @Phone
 						   ,Email = @Email
 						   ,Other = @Other
+						   ,IncludeInCoversheet=@IncludeInCoversheet
 						WHERE 
 							ID = @Id
 				END
@@ -254,5 +267,6 @@ GO
 
 /*
 		7/18/23		May SLMX_POLM_PROPH-925 Update Database for Address
+		10/9/2023	May PROPH-931 Added IncludeInCoversheet field into section table
        ## END ##
 */

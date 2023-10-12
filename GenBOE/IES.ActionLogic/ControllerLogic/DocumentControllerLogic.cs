@@ -703,7 +703,16 @@ namespace IES.ActionLogic.ControllerLogic
 						HasTable = section.ChildNodes.Any(s => (!s.IsInternalSection.HasValue || !s.IsInternalSection.Value) && s.ContentType == SectionContentType.RateTable),
 						IsRdsbRequired = section.IsRdsbRequired,
 						SectionContainsCasbDisclosure = section.SectionContainsCasbDisclosure,
-						SectionContainsNonCompliance = section.SectionContainsNonCompliance
+						SectionContainsNonCompliance = section.SectionContainsNonCompliance,
+						Office = section.Office,
+						Agency = section.Agency,
+						LMBA = section.LMBA,
+						Name = section.Name,
+						Street = section.Street,
+						CityST = section.CityST,
+						Phone	= section.Phone,
+						Email	= section.Email,
+						Other = section.Other
 					};
 
 					details.Add(detail);
