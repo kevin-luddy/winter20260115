@@ -15,15 +15,20 @@
                     <div data-ng-if="newNode !== true">
                         <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'{{model.ContentType}}'}" data-ng-model="model.ContentType"></select>
                     </div>
-
                     <div data-ng-if="newNode === true">
-                        <div data-ng-if="model.NumTablesInSection <= 0">
-                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'}" data-ng-model="model.ContentType"></select>
+                        <div data-ng-if="(model.NumTablesInSection >= 1) && (model.NumAddressInSection >= 1)">
+                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'!{{PPRDModel.SectionContentTypeAddress}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeRateTable}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'}" data-ng-model="model.ContentType"></select>
                         </div>
-                        <div data-ng-if="model.NumTablesInSection >= 1">
+                        <div data-ng-if="(model.NumTablesInSection <= 0) && (model.NumAddressInSection <= 0)">
+                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions |  filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'}" data-ng-model="model.ContentType"></select>
+                        </div>
+                        <div data-ng-if="(model.NumTablesInSection >= 1) && (model.NumAddressInSection <= 0) ">
                             <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'!{{PPRDModel.SectionContentTypeRateTable}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'} " data-ng-model="model.ContentType"></select>
                         </div>
-                    </div>
+                        <div data-ng-if="(model.NumTablesInSection <= 0) && (model.NumAddressInSection >= 1)">
+                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions |filter:{Id:'!{{PPRDModel.SectionContentTypeAddress}}'}| filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'} " data-ng-model="model.ContentType"></select>
+                        </div>                 
+                    </div>               
                 </div>
             </div>
             <div data-ng-if="model.ContentType === PPRDModel.SectionContentTypeText">

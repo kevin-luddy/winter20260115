@@ -86,6 +86,20 @@
             return numTablesInSection;
         };
 
+        /* Helper method to count the address content in the section */
+        $scope.countAddressInSection = function (targetNode) {
+            var numAddressInSection = 0;
+            if (!$scope.IsSectionContent(targetNode)) { // make sure this is a section node
+                for (var i = 0; i < targetNode.ChildNodes.length; i++) {
+                    var node = targetNode.ChildNodes[i];
+                    if ($scope.IsSectionAddressContent(node)) {
+                        numAddressInSection++;
+                    }
+                }
+            }
+            return numAddressInSection;
+        };
+
         /* sanitize html */
         $scope.trustedHtml = function (html) {
             return $sce.trustAsHtml(html);
@@ -363,7 +377,9 @@
                 "Phone": "",
                 "Email": "",
                 "Other": "",
-                "NumTablesInSection": $scope.countTablesInSection(targetNode)
+                "IncludeInCoversheet": false,
+                "NumTablesInSection": $scope.countTablesInSection(targetNode),
+                "NumAddressInSection": $scope.countAddressInSection(targetNode)
             };
             $scope.openEditContentModal(targetNode, content, true);
         };
