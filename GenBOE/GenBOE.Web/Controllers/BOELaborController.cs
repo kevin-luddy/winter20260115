@@ -1180,7 +1180,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = LaborTypeAndSpreadExporter.ExportToExcelFile(Server.MapPath(templateName), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement, boeID, isTemplate);
 
             string fileName = ws.WorkspaceName + "_BOE-" + boeID + "_Task-" + taskElementID + "_ResourceTypes.xlsx";
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -1218,7 +1218,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = SystemOffloadRatesExporterRMS.ExportToExcelFile(templateFileName, ratesForMV, performingOrgs, resources);
 
             string fileName = "Workspace_OffloadRates.xlsx";
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -1443,7 +1443,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = this._BoeLaborControllerLogic.ExportMoqTables(moqTypeId, ws, Server.MapPath(TEMPLATE_FOLDER + this.moqTableExporter.MOQ_TABLE_EXCEL_MAP_PATH));
 
             string fileName = string.Format("Task-{0}_{1}_MoqTableData.xlsx", taskElement.Id, taskElement.TaskTitle);
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action

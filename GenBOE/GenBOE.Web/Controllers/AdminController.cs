@@ -3358,7 +3358,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = ZoneTravelOriginExporter.ExportToExcelFile(templateFileName, origins);
 
             string fileName = "ZoneTravel_Origins.xlsx";
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
             
             // Finalize Action
@@ -3479,7 +3479,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = SystemEscalationRatesExporterRMS.ExportToExcelFile(templateFileName, ratesForMV);
 
             string fileName = "Admin_EscalationRates.xlsx";
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -3617,7 +3617,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = SystemOffloadRatesExporterRMS.ExportToExcelFile(templateFileName, ratesForMV, systemPerformingOrgs, systemResources);
             
             string fileName = "Admin_OffloadRates.xlsx";
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -3765,7 +3765,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = ResourcesExporter.ExportToExcelFile(templateFileName, resources, _CommonDataMapper);
 
             string fileName = string.Format("GenBOEResources-{0}.xlsx", resourceList.ResourceListName);
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -3811,7 +3811,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = ResourcesExporter.ExportTemplate(templateFileName, _CommonDataMapper);
 
             string fileName = string.Format("GenBOEResources-{0}.xlsx", resourceList.ResourceListName);
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -3965,7 +3965,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = PerformingOrgsExporter.ExportToExcelFile(templateFileName, performingOrgs);
 
             string fileName = string.Format("GenBOEPerformingOrgs-{0}.xlsx", performingOrgList.PerformingOrgListName);
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -4687,7 +4687,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = _TripsExporter.ExportToExcelFile(templateFileName);
 
             string fileName = "GenBOE-Trips.xlsx";
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -4716,7 +4716,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = _TripsExporter.ExportTemplate(templateFileName);
 
             string fileName = "GenBOE-Trips.xlsx";
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action

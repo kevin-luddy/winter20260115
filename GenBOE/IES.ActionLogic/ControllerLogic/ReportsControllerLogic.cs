@@ -93,7 +93,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="rates">PPR&amp;D rates</param>
         /// <param name="burdenPools">PPR&amp;D ProPricer burden pools</param>
         /// <param name="burdenElements">PPR&amp;D ProPricer burden elements</param>
-        /// <returns>The ExportFileDownloadResult.</returns>
+        /// <returns>An ActionResult.</returns>
         public ActionResult ExportProPricerData(string zipPathFile, string versionNumber,
             ICollection<RateDetailModelView> rates, ICollection<BurdenPoolDetailModelView> burdenPools, 
             ICollection<BurdenElementModelView> burdenElements)

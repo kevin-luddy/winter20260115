@@ -452,7 +452,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = _WbsExporter.ExportToExcelFile(templateFileName, WbsDTOs.ToCollection<WbsDTO>(), clinStrings);
 
             string fileName = string.Format("GenBOE-{0}-WBSs.xlsx", ws.WorkspaceName);
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -486,7 +486,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = _WbsExporter.ExportToExcelFile(templateFileName, WbsDTOs, clinStrings);
 
             string fileName = string.Format("GenBOE-{0}-WBSs.xlsx", ws.WorkspaceName);
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action

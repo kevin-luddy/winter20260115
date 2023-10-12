@@ -106,7 +106,7 @@ namespace RDM.Web.Controllers
         /// Exports the Cobra Data.
         /// </summary>
         /// <param name="id">Revision Id</param>
-        /// <returns>The ExportFileDownloadResult.</returns>
+        /// <returns>An ActionResult.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult ExportCobraData(int id)
         {
@@ -129,7 +129,7 @@ namespace RDM.Web.Controllers
                 string fileDownloadName =
                     $"Cobra_RDM-Rev{revision.Revision}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.xlsx";
 
-                // Generate an custom ActionResult to cause a file download to the client
+                // Generate a custom ActionResult to cause a file download to the client
                 
                 FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
@@ -149,7 +149,7 @@ namespace RDM.Web.Controllers
         /// Exports the ProPricer Data.
         /// </summary>
         /// <param name="id">Revision Id</param>
-        /// <returns>The ExportFileDownloadResult.</returns>
+        /// <returns>An ActionResult.</returns>
         public ActionResult ExportProPricerData(string id)
         {
             try
@@ -198,7 +198,7 @@ namespace RDM.Web.Controllers
         /// Exports a zip file containing the Revision data as XML.
         /// </summary>
         /// <param name="id">Revision Id</param>
-        /// <returns>The ExportFileDownloadResult.</returns>
+        /// <returns>An ActionResult.</returns>
         public ActionResult ExportRevisionAsJson(string id)
         {
             try

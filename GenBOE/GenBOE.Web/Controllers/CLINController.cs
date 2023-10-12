@@ -728,7 +728,7 @@ namespace GenBOE.Web.Controllers
         /// Exports all CLINs for the workspace
         /// </summary>
         /// <param name="workspace"></param>
-        /// <returns>A ExportFileDownloadResult for the file being exported</returns>
+        /// <returns>An ActionResult for the file being exported</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult ExportCLINs(string workspace)
         {
@@ -758,7 +758,7 @@ namespace GenBOE.Web.Controllers
                 if (exportFile.Length > 0)
                 {
                     string fileName = string.Format("GenBOE-{0}-CLINs.xlsx", ws.WorkspaceName);
-                    // Generate an custom ActionResult to cause a file download to the client
+                    // Generate a custom ActionResult to cause a file download to the client
                     FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                     // Finalize Action

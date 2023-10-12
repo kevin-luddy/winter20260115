@@ -422,7 +422,7 @@ namespace GenBOE.Web.Controllers
             }
 
             string fileName = ws.WorkspaceName + "_BOE-" + boeID + "_ODCSpreads.xlsx";
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -453,7 +453,7 @@ namespace GenBOE.Web.Controllers
             string exportedFileName = ODCTypeExporter.ExportToExcelFile(Server.MapPath("~/Templates/Export/ODCTypes.xlsx"), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement);
 
             string fileName = ws.WorkspaceName + "_BOE-" + boeID + "_ODC-" + odcElementID + "_ODCTypes.xlsx";
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action

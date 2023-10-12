@@ -1604,7 +1604,7 @@ namespace GenBOE.Web.Controllers
 
                         // Pass the file to the user
                         string fileName = string.Format("BOEStatusExport_{0}.xlsx", ws.WorkspaceName);
-                        // Generate an custom ActionResult to cause a file download to the client
+                        // Generate a custom ActionResult to cause a file download to the client
                         FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                         toReturn = File(
@@ -1626,7 +1626,7 @@ namespace GenBOE.Web.Controllers
 
                     // Pass the file to the user
                     string fileName = string.Format("BOEActivityReport_{0}.xlsx", ws.WorkspaceName);
-                    // Generate an custom ActionResult to cause a file download to the client
+                    // Generate a custom ActionResult to cause a file download to the client
                     FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                     toReturn = File(
@@ -1686,7 +1686,7 @@ namespace GenBOE.Web.Controllers
 
                     // Generate a custom ActionResult to cause a file download to the client
                     string fileName = string.Format("{0}_WorkspaceData.xlsx", ws.WorkspaceName);
-                    // Generate an custom ActionResult to cause a file download to the client
+                    // Generate a custom ActionResult to cause a file download to the client
                     FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                     toReturn = File(
@@ -1701,7 +1701,7 @@ namespace GenBOE.Web.Controllers
 
                     // Generate a custom ActionResult to cause a file download to the client
                     fileName = string.Format("{0}_TravelUnitCost.xlsx", ws.WorkspaceName);
-                    // Generate an custom ActionResult to cause a file download to the client
+                    // Generate a custom ActionResult to cause a file download to the client
                     FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                     toReturn = File(
@@ -1716,7 +1716,7 @@ namespace GenBOE.Web.Controllers
 
                     // Generate a custom ActionResult to cause a file download to the client
                     fileName = string.Format("{0}_TravelExtendedCost.xlsx", ws.WorkspaceName);
-                    // Generate an custom ActionResult to cause a file download to the client
+                    // Generate a custom ActionResult to cause a file download to the client
                     FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                     toReturn = File(
@@ -1732,7 +1732,7 @@ namespace GenBOE.Web.Controllers
                     string exportedFileName = this.reportsControllerLogic.ExportWbsBoeReport(ws, Server.MapPath("~/Templates/Export/WbsBoeReport.xlsx"), reportModelView, exportInputs);
 
                     string fileName = string.Format("{0}_WbsSummaryReport.xlsx", ws.WorkspaceName);
-                    // Generate an custom ActionResult to cause a file download to the client
+                    // Generate a custom ActionResult to cause a file download to the client
                     FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                     toReturn = File(
@@ -1931,7 +1931,7 @@ namespace GenBOE.Web.Controllers
                             {
                                 // Return the file to the user
                                 string fileName = "ProPricerExport_" + ws.WorkspaceName + ".zip";
-                                // Generate an custom ActionResult to cause a file download to the client
+                                // Generate a custom ActionResult to cause a file download to the client
                                 FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                                 toReturn = File(
@@ -2019,7 +2019,7 @@ namespace GenBOE.Web.Controllers
                 {
                     // Return the file to the user
                     string fileName = "BulkReportExport_" + ws.WorkspaceName + ".zip";
-                    // Generate an custom ActionResult to cause a file download to the client
+                    // Generate a custom ActionResult to cause a file download to the client
                     FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                     toReturn = File(

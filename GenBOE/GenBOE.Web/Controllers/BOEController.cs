@@ -2376,7 +2376,7 @@ namespace GenBOE.Web.Controllers
 
             string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, false);
 
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
@@ -2407,7 +2407,7 @@ namespace GenBOE.Web.Controllers
             //code used was the same as ExportManageBOE, so can use the same method
             string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, true);
 
-            // Generate an custom ActionResult to cause a file download to the client
+            // Generate a custom ActionResult to cause a file download to the client
             FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action

@@ -138,7 +138,7 @@ namespace GenBOE.Web.Controllers
                     // only exporting one PBOE, just return the form itself
                     fileNames = this.boeFormControllerLogic.ExportBOEFormReport(ws, p.First(), BOEFormType.PBOE, isPortionMarkingEnabled, contractTypes);
                     
-                    // Generate an custom ActionResult to cause a file download to the client
+                    // Generate a custom ActionResult to cause a file download to the client
                     FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                     result = File(
@@ -150,7 +150,7 @@ namespace GenBOE.Web.Controllers
                 {
                     // only exporting one IBOE, just return the form itself
                     fileNames = this.boeFormControllerLogic.ExportBOEFormReport(ws, i.First(), BOEFormType.IBOE, isPortionMarkingEnabled, contractTypes);
-                    // Generate an custom ActionResult to cause a file download to the client
+                    // Generate a custom ActionResult to cause a file download to the client
                     FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                     result = File(
