@@ -941,6 +941,8 @@ namespace IES.ActionLogic.ControllerLogic
 			updatedRateCode.Section = importedRateCode.Section;
 			updatedRateCode.ResourceType = importedRateCode.ResourceType;
 			updatedRateCode.RateType = importedRateCode.RateType;
+			updatedRateCode.DisclosureType = importedRateCode.DisclosureType;
+			updatedRateCode.GenerateAdditionalDirectLaborRates = importedRateCode.GenerateAdditionalDirectLaborRates;
 			updatedRateCode.RateDescription = importedRateCode.RateDescription;
 			updatedRateCode.RateDescription1 = importedRateCode.RateDescription1;
 			updatedRateCode.RateDescription2 = importedRateCode.RateDescription2;
@@ -1147,6 +1149,7 @@ namespace IES.ActionLogic.ControllerLogic
 				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription94, importedRateCode.RateDescription94) ||
 				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription95, importedRateCode.RateDescription95) ||
 				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.RateType, (int?)importedRateCode.RateType) ||
+				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.DisclosureType, (int?)importedRateCode.DisclosureType) ||
 				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId, importedRateCode.ResourceClassId) ||
 				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId1, importedRateCode.ResourceClassId1) ||
 				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId2, importedRateCode.ResourceClassId2) ||
