@@ -34,6 +34,7 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
+    using Microsoft.VisualBasic.Logging;
 
 	public class BOEFormController : GenBOEController
     {
@@ -92,6 +93,7 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Word template.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public ActionResult ExportBOEForm(string workspace, Collection<int> i, Collection<int> p)
@@ -135,13 +137,26 @@ namespace GenBOE.Web.Controllers
                 {
                     // only exporting one PBOE, just return the form itself
                     fileNames = this.boeFormControllerLogic.ExportBOEFormReport(ws, p.First(), BOEFormType.PBOE, isPortionMarkingEnabled, contractTypes);
-                    result = new ExportFileDownloadResult(fileNames[0], fileNames[1]);
+                    
+                    // Generate a custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    result = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+                        fileDownloadName: fileNames[1]);
                 }
                 else if (!p.Any() && i.Count == 1)
                 {
                     // only exporting one IBOE, just return the form itself
                     fileNames = this.boeFormControllerLogic.ExportBOEFormReport(ws, i.First(), BOEFormType.IBOE, isPortionMarkingEnabled, contractTypes);
-                    result = new ExportFileDownloadResult(fileNames[0], fileNames[1]);
+                    // Generate a custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    result = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+                        fileDownloadName: fileNames[1]);
                 }
                 else
                 {

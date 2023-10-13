@@ -10,6 +10,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
 	using System.Threading.Tasks;
 	using System.Transactions;
@@ -2362,7 +2363,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace">Workspace containing BOEs</param>
         /// <returns></returns>
-        public ExportFileDownloadResult ExportManageBOE(string workspace)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportManageBOE(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -2374,12 +2376,16 @@ namespace GenBOE.Web.Controllers
 
             string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, false);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(fileNames[0], fileNames[1]);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportManageBOE", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+                fileDownloadName: fileNames[1]);
         }
 
         /// <summary>
@@ -2387,7 +2393,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace">Workspace containing BOEs</param>
         /// <returns></returns>
-        public ExportFileDownloadResult ExportManageBOETemplate(string workspace)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportManageBOETemplate(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -2400,12 +2407,16 @@ namespace GenBOE.Web.Controllers
             //code used was the same as ExportManageBOE, so can use the same method
             string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, true);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(fileNames[0], fileNames[1]);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportManageBOETemplate", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+                fileDownloadName: fileNames[1]);
         }
 
         /// <summary>
