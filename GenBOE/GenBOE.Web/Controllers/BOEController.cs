@@ -10,6 +10,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
 	using System.Threading.Tasks;
 	using System.Transactions;
@@ -601,8 +602,18 @@ namespace GenBOE.Web.Controllers
 
             ViewResult toReturn = View(WebConstants.VIEW_BOE_SUMMARY, results);
 
-            // Finalize Action
-            FinalizeAction(_log, "DisplayBOESummary", sw);
+            // Checks Web.Config Read Only Mode
+			this.ViewData["IsReadOnlyMode"] = false;
+			if (SiteMasterUtilities.IsReadOnly())
+			{
+				if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+					this.ViewData["IsReadOnlyMode"] = true;
+				}
+			}
+
+			// Finalize Action
+			FinalizeAction(_log, "DisplayBOESummary", sw);
             return toReturn;
         }
 
@@ -660,8 +671,16 @@ namespace GenBOE.Web.Controllers
 
             ViewData["SubmitForReview_ReadOnly"] = GetReadOnlyAttribute(CheckPermissions(SecurityPage.SubmitForReview, ws, boeID));
 
-            // Pass the BOE ID to the Validate BOE partial
-            ViewData["BOEID"] = boeID;
+            if (SiteMasterUtilities.IsReadOnly())
+            {
+                if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+                {
+                    ViewData["SubmitForReview_ReadOnly"] = "true";
+				}
+            }
+
+			// Pass the BOE ID to the Validate BOE partial
+			ViewData["BOEID"] = boeID;
 
             // Return the Validate BOE partial view
             ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_SUBMIT_FOR_REVIEW);
@@ -2344,7 +2363,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace">Workspace containing BOEs</param>
         /// <returns></returns>
-        public ExportFileDownloadResult ExportManageBOE(string workspace)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportManageBOE(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -2356,12 +2376,16 @@ namespace GenBOE.Web.Controllers
 
             string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, false);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(fileNames[0], fileNames[1]);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportManageBOE", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+                fileDownloadName: fileNames[1]);
         }
 
         /// <summary>
@@ -2369,7 +2393,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace">Workspace containing BOEs</param>
         /// <returns></returns>
-        public ExportFileDownloadResult ExportManageBOETemplate(string workspace)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportManageBOETemplate(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -2382,12 +2407,16 @@ namespace GenBOE.Web.Controllers
             //code used was the same as ExportManageBOE, so can use the same method
             string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, true);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(fileNames[0], fileNames[1]);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportManageBOETemplate", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+                fileDownloadName: fileNames[1]);
         }
 
         /// <summary>

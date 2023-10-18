@@ -1792,3 +1792,18 @@ import-verification .container
 .section-checkbox {
     min-width: 280px;
 }
+
+.content-table-column1 {
+    width: 67.4pt;
+    border: 1px solid black !important;
+    padding: 0in 5.4pt 0in 5.4pt;
+}
+
+.content-table-column2 {
+    border: 1px solid black !important;
+    padding: 0in 5.4pt 0in 5.4pt;
+}
+
+.content-table-text {
+    margin-bottom: .0001pt;
+}

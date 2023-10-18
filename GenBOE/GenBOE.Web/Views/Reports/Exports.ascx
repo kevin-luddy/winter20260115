@@ -193,7 +193,11 @@
                 '<%: WebConstants.ACTION_EXPORT_PROJECT_MAP %>',
                 '?offload=' + offloadType);
 
-            GenWidget.prototype.performExport(reportGenerationUrl );
+            GenSession.confirmDialog("Export Report", "The export is a long running process. <br/>Please do not leave this page until the file is available to open/save. <br/>Continue with this export? <br/><br/>Please refrain from clicking the export link multiple times until the download is complete.",
+                function () {
+                    GenWidget.prototype.performExport(reportGenerationUrl);
+                }
+                , null);
         });
 
         $('#Exports a[name=Reports-CustomExportButton]').click(function () {

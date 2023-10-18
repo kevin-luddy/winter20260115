@@ -218,7 +218,7 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetScheduleEventDateField(document, COST_ANALYSIS_UNQUALIFIED, boeForm.CostAnalysisUnqual == null ? ScheduleEvent.NA : (ScheduleEvent)boeForm.CostAnalysisUnqual, boeForm.CostAnalysisUnqualDate, boeForm?.CostAnalysisUnqualText);
             this.SetDateField(document, PLANNED_DATE_A, boeForm.PlannedDate_WrittenApproval);
             this.SetDateField(document, PLANNED_DATE_B, boeForm.PlannedDate_ApprovedSubmission);
-
+            
             // IES-1017: New RTE Fields
             this.SetHtmlField(document, PROPOSED_COMMERCIALITY, boeForm.CommercialityDescription, ref counters);
             this.SetHtmlField(document, PROPOSED_SOURCE_SELECTION, boeForm.SourceSelectionDescription, ref counters);

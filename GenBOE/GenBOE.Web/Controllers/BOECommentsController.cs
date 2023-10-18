@@ -95,6 +95,16 @@ namespace GenBOE.Web.Controllers
                 this.ViewData["Responses_ReadOnly"] = this.GetReadOnlyAttribute(permission);
             }
 
+            if (SiteMasterUtilities.IsReadOnly())
+            {
+                if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+                {
+					this.ViewData["Approvals_ReadOnly"] = true;
+					this.ViewData["Comments_ReadOnly"] = true;
+					this.ViewData["Responses_ReadOnly"] = true;
+				}
+			}
+
             ViewData["WorkspaceState"] = (int)ws.WorkspaceState;
 
             BOECommentsModelView theModelView = new BOECommentsModelView(currentUserID, boe.ApproverResponses);

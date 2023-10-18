@@ -124,37 +124,49 @@ namespace IES.Common.OfficeUtilities
                 throw new ArgumentNullException(nameof(response));
             }
 
+            string contentType = GetContentType(this.FileDownloadName);
+
+            response.ContentType = contentType;
+
+            return contentType;
+        }
+
+        /// <summary>
+        /// Gets the content type based on the filename
+        /// </summary>
+        /// <param name="fileName">File to get content type against</param>
+        /// <returns>Content Type of the file</returns>
+        public static string GetContentType(string fileName)
+        {
             string contentType = "text/plain";
 
-            if (!string.IsNullOrEmpty(this.FileDownloadName))
+            if (!string.IsNullOrEmpty(fileName))
             {
-                if (this.FileDownloadName.EndsWith(".docx", StringComparison.CurrentCultureIgnoreCase))
+                if (fileName.EndsWith(".docx", StringComparison.CurrentCultureIgnoreCase))
                 {
                     contentType = ContentType_DOCX;
                 }
-                else if (this.FileDownloadName.EndsWith(".xlsx", StringComparison.CurrentCultureIgnoreCase))
+                else if (fileName.EndsWith(".xlsx", StringComparison.CurrentCultureIgnoreCase))
                 {
                     contentType = ContentType_XLSX;
                 }
-                else if (this.FileDownloadName.EndsWith(".xlsm", StringComparison.CurrentCultureIgnoreCase))
+                else if (fileName.EndsWith(".xlsm", StringComparison.CurrentCultureIgnoreCase))
                 {
                     contentType = ContentType_XLSM;
                 }
-                else if (this.FileDownloadName.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
+                else if (fileName.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
                 {
                     contentType = ContentType_CSV;
                 }
-                else if (this.FileDownloadName.EndsWith(".zip", StringComparison.CurrentCultureIgnoreCase))
+                else if (fileName.EndsWith(".zip", StringComparison.CurrentCultureIgnoreCase))
                 {
                     contentType = ContentType_ZIP;
                 }
-                else if (this.FileDownloadName.EndsWith(".json", StringComparison.CurrentCultureIgnoreCase))
+                else if (fileName.EndsWith(".json", StringComparison.CurrentCultureIgnoreCase))
                 {
                     contentType = ContentType_JSON;
                 }
             }
-
-            response.ContentType = contentType;
 
             return contentType;
         }

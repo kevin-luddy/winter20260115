@@ -9,16 +9,19 @@
 
 namespace APTSPropricerApi.Common
 {
-	using System.Collections.Generic;
-
 	/// <summary>
-	/// A row inside of a Table
+	/// Detailed Cell
 	/// </summary>
-	public class Row
+	public class DetailedCell
 	{
 		/// <summary>
-		/// Gets or sets the Cells of a Row
+		/// Value of the cell.
 		/// </summary>
-		public ICollection<DetailedCell> Cells { get; set; } = new List<DetailedCell>();
+		public string Value { get; set; }
+
+		/// <summary>
+		/// Column and Row value (A1, B4, C2, D6, etc.).
+		/// </summary>
+		public string ColumnRowValue { get; set; }
 	}
 }

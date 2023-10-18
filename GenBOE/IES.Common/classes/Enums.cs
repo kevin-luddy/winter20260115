@@ -1359,8 +1359,10 @@ namespace IES.Common
 		[Description("Text Content")]
 		Text = 2,
 		[Description("Rate Table by Year")]
-		RateTable = 3
-	}
+		RateTable = 3,
+		[Description("Address")]
+		Address = 5,
+    }
 
 	/// <summary>
 	/// Project Map Validation Offsets

@@ -86,6 +86,7 @@
     <Folder Include="Release Scripts\Older\Release 2019.5" />
     <Folder Include="Release Scripts\Release 2022.x" />
     <Folder Include="Release Scripts\Release 2023.24" />
+    <Folder Include="Release Scripts\Release_2023.31" />
     <Folder Include="Release Scripts\ToDo" />
     <Folder Include="Release Scripts\Release 2023.28" />
     <Folder Include="Release Scripts\Release 2023.29" />
@@ -165,6 +166,7 @@
     <Build Include="_Full Script Files For Specific Versions\Sql Script For Release 2022.x Generated On 6_14_2023.sql" />
     <Build Include="_Full Script Files For Specific Versions\Sql Script For Release 2023.24 Generated On 7_12_2023.sql" />
     <Build Include="Release Scripts\Release 2023.24\1 - Release 2022.24 Script.sql" />
+    <Build Include="Release Scripts\Release_2023.31\1- Relese 2023.31 Script.sql" />
     <Build Include="Release Scripts\ToDo\Update_db_for address Script.sql" />
     <Build Include="Release Scripts\Release 2023.28\Release 2023.28 Script.sql" />
     <Build Include="Release Scripts\Release 2023.29\1 - Release 2023.29 Script.sql" />
