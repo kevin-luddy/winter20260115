@@ -133,24 +133,25 @@ namespace GenBOE.ActionLogic.CopyBOE
             sourceBoe.LoadBOEsRTEData();
             sourceBoe.LoadTaskElementRTEData();
 
-            if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-            {
-                // Call to the business layer to validate the BOE
-                ValidationBOEModelView validatedBOE = this.validateBOE.ValidateBOE_OnValidateBtnClick(sourceBoe, sourceBoe.Workspace);
+            // RMS decided not to do validation -- for now
+            //if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+            //{
+            //    // Call to the business layer to validate the BOE
+            //    ValidationBOEModelView validatedBOE = this.validateBOE.ValidateBOE_OnValidateBtnClick(sourceBoe, sourceBoe.Workspace);
 
-                if (validatedBOE.isValid)
-                {
-                    this.CopyBOE(sourceBoe, destinationBoe, taskElementsToCopy);
-                }
-                else
-                {
-                    throw new GenValidationException("Validation issues with Source BOE");
-                }
-            }
-            else
-            {
+            //    if (validatedBOE.isValid)
+            //    {
+            //        this.CopyBOE(sourceBoe, destinationBoe, taskElementsToCopy);
+            //    }
+            //    else
+            //    {
+            //        throw new GenValidationException("Validation issues with Source BOE");
+            //    }
+            //}
+            //else
+            //{
 				this.CopyBOE(sourceBoe, destinationBoe, taskElementsToCopy);
-			}
+			//}
         }
 
         /// <summary>
