@@ -40,8 +40,9 @@ namespace GenBOE.ActionLogic.CopyBOE
         private IPerformingOrgDTODataLoader perfOrgLoader;
         private IWorkspaceVariableDTODataLoader _workspaceVariableLoader;
         private IBoeTaskElementRecalculation _boeTaskElementRecalculation;
-        private IMoqTypeDataLoader moqTypeLoader; 
-        private IValidateBOE validateBOE = null;
+        private IMoqTypeDataLoader moqTypeLoader;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+		private IValidateBOE validateBOE = null;
 
         /// <summary>
         /// RTE Template Data Loader
@@ -150,8 +151,8 @@ namespace GenBOE.ActionLogic.CopyBOE
             //}
             //else
             //{
-				this.CopyBOE(sourceBoe, destinationBoe, taskElementsToCopy);
-			//}
+                  this.CopyBOE(sourceBoe, destinationBoe, taskElementsToCopy);
+            //}
         }
 
         /// <summary>
