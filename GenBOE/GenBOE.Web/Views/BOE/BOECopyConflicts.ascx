@@ -28,21 +28,23 @@
         data.travelElementsToCopy = [<%:Model.TravelElementsToCopy != null && Model.TravelElementsToCopy.Any() ? String.Join(",", Model.TravelElementsToCopy) : ""%>];
           var dataToSend = JSON.stringify(data);
 
-            $.ajax({
-            type: 'POST',
-            url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+		  BOECopyConflictsWidget.ajaxRequest({
+			  type: 'POST',
+			  url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                 '<%: WebConstants.CONTROLLER_BOE%>',
                 '<%: WebConstants.ACTION_SAVE_COPY_OF_BOE%>',
-                'boe/<%:Model.BoeId%>'),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            data: dataToSend,            
-            success: function(response) {
-                BOECopyConflictsWidget.CloseCopyConflicts();
-                location.reload();
-            }
-        });
-
+				  'boe/<%:Model.BoeId%>'),
+			  contentType: 'application/json; charset=utf-8',
+			  dataType: 'json',
+			  data: dataToSend,
+			  success: function (response) {
+				  BOECopyConflictsWidget.CloseCopyConflicts();
+				  location.reload();
+			  },
+			  error: function () {
+				  $('#Loader-BOECopyConflicts').addClass('display-none');
+			  }
+          });
     });
 
      $(function () {
@@ -60,7 +62,7 @@
 </script>
 
 <div id="BOECopyConflicts" class="boe-copy-conflicts">
-    
+    <ul class="validation-box"></ul>
     <div class="boe-copy-conflicts-scrollspace">
         <div> The following conflicts exist between the BOE to be copied and your BOE. Click Continue with copy to copy the BOE. 
         Click Cancel to not copy the BOE. </div><br />
