@@ -40,6 +40,7 @@ AS
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 **		11/18/2021  e405721				IES-528: Process Soft Delete is Failing
 **		12/6/2021	Dusan				IES-666: Issue w/ order of deletions, failing due to FK constraints w/ MoqTypeTableCustomFieldValueXREF
+**		10/04/2023	hrafiqzadah			PROPH-1031: Update to delete from ProjectMapSpread
 *******************************************************************************/
 SET NOCOUNT ON 
 	IF @WorkspaceID IS NULL
@@ -466,6 +467,11 @@ INNER JOIN  @MockWorkspace W ON F.WorkspaceID = W.WorkspaceID
 			FROM dbo.ResourceList RL
 				INNER JOIN dbo.Workspace W ON RL.ResourceListID = W.ResourceListID
 				INNER JOIN @MockWorkspace MW ON W.WorkspaceID = MW.WorkspaceID
+
+/** PROPH-1031 - Delete from ProjectMapSpread **/
+DELETE FROM ProjectMapSpread WHERE WorkspaceId = @WorkspaceID;
+DELETE FROM ProjectMap WHERE WorkspaceId = @WorkspaceID;
+
 IF @@ERROR = 0
 	COMMIT TRANSACTION
 ELSE
