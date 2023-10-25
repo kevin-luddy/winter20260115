@@ -7,7 +7,15 @@
         will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
   
   <!--appSettings-->
-  
+
+  <parameter name="UnclassifiedBannerText" description="doesn't matter" defaultvalue="__UnclassifiedBannerText__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UnclassifiedBannerText']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="ShutOffExternalLinksForClassifiedInstall" description="doesn't matter" defaultvalue="__ShutOffExternalLinksForClassifiedInstall__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShutOffExternalLinksForClassifiedInstall']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="SAPSpaceStartDate" description="doesn't matter" defaultvalue="__SAPSpaceStartDate__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SAPSpaceStartDate']/@value">
     </parameterentry>

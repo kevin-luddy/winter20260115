@@ -155,11 +155,17 @@ namespace IES.ActionLogic.ControllerLogic
 				}
 
                 int numTablesInSection = 0;
+                int numAddressInSection = 0;
                 foreach (SectionModelView child in section.ChildNodes)
                 {
                     if (child.ContentType == SectionContentType.RateTable)
                     {
                         numTablesInSection++;
+                    }
+
+                    if (child.ContentType == SectionContentType.Address)
+                    {
+                        numAddressInSection++;
                     }
 
                     this.ValidateSection(child, validationErrors, casbSections, nonComplianceSections);  // recursively validate children
@@ -169,6 +175,12 @@ namespace IES.ActionLogic.ControllerLogic
                 {
                     validationErrors.Add(new ValidationMessage($"Section {section.ReferenceNumber} - Only 1 table is allowed per section."));
                 }
+
+                if (numAddressInSection > 1)
+                {
+                    validationErrors.Add(new ValidationMessage($"Section {section.ReferenceNumber} - Only 1 Address is allowed per section."));
+                }
+                
             }
             else if (section.IsSectionContent())
             {
