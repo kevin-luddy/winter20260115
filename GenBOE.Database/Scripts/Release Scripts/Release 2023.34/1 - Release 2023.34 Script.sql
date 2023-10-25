@@ -1,13 +1,16 @@
-﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteFullWorkspace]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[deleteFullWorkspace];
+﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2023.34';
+
 GO
 
+/****** Object:  StoredProcedure [dbo].[deleteFullWorkspace]    Script Date: 10/4/2023 4:53:24 PM ******/
 SET ANSI_NULLS OFF
 GO
+
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE PROCEDURE [dbo].[deleteFullWorkspace]
+
+ALTER PROCEDURE [dbo].[deleteFullWorkspace]
 (
 @WorkspaceID int 
 )
