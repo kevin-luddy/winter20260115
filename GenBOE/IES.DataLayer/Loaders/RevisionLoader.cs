@@ -265,6 +265,8 @@ namespace IES.DataBridge.Loaders
                                                                     && (x.SectionContentTypeID ==
                                                                         (int) SectionContentType.Text ||
                                                                         x.SectionContentTypeID ==
+                                                                        (int)SectionContentType.Address ||
+                                                                        x.SectionContentTypeID ==
                                                                         (int) SectionContentType.Section))
                         .Join(context.Sections.Where(x => x.RevisionID == newID),
                             oldSection => oldSection.RevisionUniqueSectionId,
@@ -276,14 +278,16 @@ namespace IES.DataBridge.Loaders
                         {
                             oldTitle = x.oldSection.Title,
                             newTitle = x.newSection.Title,
-                            oldContent = x.oldSection.TextContent,
-                            newContent = x.newSection.TextContent,
+                            oldContent = (x.oldSection.TextContent == "")? "updated Address Content" : x.oldSection.TextContent,
+                            newContent = (x.newSection.TextContent == "")? "Updated Address Content" : x.newSection.TextContent,
                             revisionUniqueSectionId = x.oldSection.RevisionUniqueSectionId
                         });
 
                     var deletedItems = context.Sections.Where(oldSection => oldSection.RevisionID == oldID
                                                                             && (oldSection.SectionContentTypeID ==
                                                                                 (int)SectionContentType.Text ||
+                                                                                oldSection.SectionContentTypeID ==
+                                                                                (int)SectionContentType.Address ||
                                                                                 oldSection.SectionContentTypeID ==
                                                                                 (int)SectionContentType.Section))
                         .Where(x => !context.Sections.Where(newSection => newSection.RevisionID == newID)
@@ -297,6 +301,8 @@ namespace IES.DataBridge.Loaders
                     var addedItems = context.Sections.Where(newSection => newSection.RevisionID == newID
                                                                           && (newSection.SectionContentTypeID ==
                                                                               (int)SectionContentType.Text ||
+                                                                              newSection.SectionContentTypeID ==
+                                                                              (int)SectionContentType.Address ||
                                                                               newSection.SectionContentTypeID ==
                                                                               (int)SectionContentType.Section))
                         .Where(x => !context.Sections.Where(oldSection => oldSection.RevisionID == oldID)
@@ -331,7 +337,7 @@ namespace IES.DataBridge.Loaders
                                 RevisionUniqueSectionId = deleted.revisionUniqueSectionId,
                                 FieldChanged = "Section",
                                 ChangeType = RDMChangeType.Delete,
-                                OldValue = deleted.oldContent,
+                                OldValue = deleted.oldContent == "" ? "deleted Address Content" : deleted.oldContent,
                                 NewValue = string.Empty
                             })).Union(
                             addedItems.Select(added => new VersionComparisonGridRowModelView()
@@ -340,9 +346,10 @@ namespace IES.DataBridge.Loaders
                                 FieldChanged = "Section",
                                 ChangeType = RDMChangeType.Add,
                                 OldValue = string.Empty,
-                                NewValue = added.newContent
+                                NewValue = added.newContent == "" ? "Added Address Content" : added.newContent,
                             })).ToCollection();
                 }
+                           
             }
 
             return rows;
