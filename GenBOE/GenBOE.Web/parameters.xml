@@ -8,6 +8,10 @@
   
   <!--appSettings-->
 
+  <parameter name="IsReadOnly" description="doesn't matter" defaultvalue="__IsReadOnly__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsReadOnly']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="UnclassifiedBannerText" description="doesn't matter" defaultvalue="__UnclassifiedBannerText__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UnclassifiedBannerText']/@value">
     </parameterentry>
