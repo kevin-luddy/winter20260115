@@ -375,6 +375,9 @@
     <Content Include="Scripts\angular-aria.min.js.map" />
     <Content Include="Scripts\angular-animate.min.js.map" />
     <Content Include="app\Version\Web.config" />
+	<Content Include="..\PPRDTemplate.docx">	
+      <Link>Templates\Export\PPRDTemplate.docx</Link>
+    </Content>
     <Content Include="Content\ui-grid.woff" />
     <Content Include="Content\ui-grid.ttf" />
     <Content Include="Content\ui-grid.eot" />
