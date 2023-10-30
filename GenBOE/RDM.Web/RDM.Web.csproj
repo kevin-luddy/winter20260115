@@ -1336,7 +1336,6 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Admin\RateCodeReplication.cshtml" />
     <Content Include="Templates\Export\RateCodesImportExample.xlsx" />
-    <Content Include="Templates\Export\PPRDTemplate.docx" />
     <None Include="Views\Shared\SecurityError.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
