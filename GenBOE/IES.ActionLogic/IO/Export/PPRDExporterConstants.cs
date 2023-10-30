@@ -122,6 +122,44 @@ namespace IES.ActionLogic.IO.Export
         /// </summary>
         internal const string FIELDNAME_RELEASENOTES = "ReleaseNotes";
 
+        /// <summary>
+        /// Address Office tag
+        /// </summary>
+        internal const string FIELDNAME_ADDRESSOFFICE = "AddressOffice";
+
+        /// <summary>
+        /// Address Agency tag
+        /// </summary>
+        internal const string FIELDNAME_ADDRESSAGENCY = "AddressAgency";
+        /// <summary>
+        /// Address LM BA tag
+        /// </summary>
+        internal const string FIELDNAME_ADDRESSLMBA = "AddressLMBA";
+        /// <summary>
+        /// Address Name tag
+        /// </summary>
+        internal const string FIELDNAME_ADDRESSNAME = "AddressName";
+        /// <summary>
+        /// Address Street tag
+        /// </summary>
+        internal const string FIELDNAME_ADDRESSSTREET = "AddressStreet";
+        /// <summary>
+        /// Address City tag
+        /// </summary>
+        internal const string FIELDNAME_ADDRESSCITY = "AddressCity";
+        /// <summary>
+        /// Address Phone tag
+        /// </summary>
+        internal const string FIELDNAME_ADDRESSPHONE = "AddressPhone";
+        /// <summary>
+        /// Address Email tag
+        /// </summary>
+        internal const string FIELDNAME_ADDRESSEMAIL = "AddressEmail";
+        /// <summary>
+        /// Address Other tag
+        /// </summary>
+        internal const string FIELDNAME_ADDRESSOTHER = "AddressOther";
+
         #endregion
 
         #region Tables
@@ -130,6 +168,11 @@ namespace IES.ActionLogic.IO.Export
         /// Rates table tag
         /// </summary>
         internal const string TABLE_RATES = "RatesTable";
+
+        /// <summary>
+        /// Address table tag
+        /// </summary>
+        internal const string TABLE_ADDRESS = "AddressTable";
 
         #endregion
 
