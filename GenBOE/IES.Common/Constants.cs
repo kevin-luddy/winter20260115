@@ -848,11 +848,6 @@ namespace IES.Common
         public static class ProPricerCFConstants
         {
             /// <summary>
-            /// Function Custom Field Name
-            /// </summary>
-            public const string PROPRICER_CF_FUNCTION = "Function";
-
-            /// <summary>
             /// SOW Custom Field Name
             /// </summary>
             public const string PROPRICER_CF_SOW = "SOW";
@@ -876,11 +871,6 @@ namespace IES.Common
             /// Field-A Custom Field Name
             /// </summary>
             public const string PROPRICER_CF_FIELDA = "Field-A";
-
-            /// <summary>
-            /// Field-B Custom Field Name
-            /// </summary>
-            public const string PROPRICER_CF_FIELDB = "Field-B";
         }
 
         public const string WORD_SSRS_FORMAT = "WORDOPENXML";
