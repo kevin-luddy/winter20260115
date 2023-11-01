@@ -84,14 +84,14 @@
     <Folder Include="Release Scripts\Older\Release 2018.8" />
     <Folder Include="Release Scripts\Older\Release 2019.1" />
     <Folder Include="Release Scripts\Older\Release 2019.5" />
-    <Folder Include="Release Scripts\Release 2022.x" />
-    <Folder Include="Release Scripts\Release 2023.24" />
-    <Folder Include="Release Scripts\Release_2023.31" />
+    <Folder Include="Release Scripts\Release 2023.31" />
     <Folder Include="Release Scripts\Release 2023.34" />
     <Folder Include="Release Scripts\Release 2023.29" />
     <Folder Include="Release Scripts\Release 2023.32" />
     <Folder Include="Release Scripts\Release 2023.33" />
-    <Folder Include="Release Scripts\release IES.2023.34" />
+    <Folder Include="Release Scripts\Release 2023.34" />
+    <Folder Include="Release Scripts\Older\Release 2022.x" />
+    <Folder Include="Release Scripts\Older\Release 2023.24" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\ExportCobraRates.sql" />
@@ -163,13 +163,15 @@
     <None Include="Release Scripts\Older\Release 2018.8\1 - Release 2018.8 Script.sql" />
     <Build Include="Release Scripts\Older\Release 2019.1\1 - Release 2019.1 Script.sql" />
     <Build Include="Release Scripts\Older\Release 2019.5\1 - Release 2019.5 Script.sql" />
-    <Build Include="Release Scripts\Release 2022.x\1 - Release 2022.x Script.sql" />
     <Build Include="_Full Script Files For Specific Versions\Sql Script For Release 2022.x Generated On 6_14_2023.sql" />
     <Build Include="_Full Script Files For Specific Versions\Sql Script For Release 2023.24 Generated On 7_12_2023.sql" />
-    <Build Include="Release Scripts\Release 2023.24\1 - Release 2022.24 Script.sql" />
-    <Build Include="Release Scripts\Release_2023.31\1- Relese 2023.31 Script.sql" />
+    <Build Include="Release Scripts\Release 2023.31\1- Release 2023.31 Script.sql" />
     <Build Include="Release Scripts\Release 2023.34\Release 2023.34 Script.sql" />
     <Build Include="Release Scripts\Release 2023.29\1 - Release 2023.29 Script.sql" />
+    <Build Include="Release Scripts\Release 2023.32\Release 2023.32 Script.sql" />
+    <Build Include="Release Scripts\Release 2023.33\1 - Release 2023.33 Script.sql" />
+    <Build Include="Release Scripts\Older\Release 2022.x\1 - Release 2022.x Script.sql" />
+    <Build Include="Release Scripts\Older\Release 2023.24\1 - Release 2022.24 Script.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Object Scripts\Stored Procedures\ELMAH_LogError.sql" />
