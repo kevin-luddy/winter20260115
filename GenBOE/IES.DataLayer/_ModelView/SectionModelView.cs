@@ -33,7 +33,9 @@ namespace IES.DataBridge.ModelViews
             this.RevisionUniqueSectionId = -1;
             this.IsRdsbRequired = false;
             this.SectionContainsCasbDisclosure = false;
+			this.IsDisclosureStatementAdequate = false;
             this.SectionContainsNonCompliance = false;
+			this.NonComplianceNotification = false;
             this.Office = string.Empty;
             this.Agency = string.Empty;
             this.LMBA = string.Empty;
@@ -71,8 +73,8 @@ namespace IES.DataBridge.ModelViews
         /// <param name="other">other address content type</param>
         /// <param name="includeInCoversheet">includeInCoversheet address content type</param>
         public SectionModelView(int revisionId, int displayOrder, bool? isInternalSection, string title,
-            string textContent, bool? displayRateCode, SectionContentType contentType, string referenceNumber, int revisionUniqueSectionId, bool sectionContainsCasbDisclosure, bool sectionContainsNonCompliance,
-            string office, string agency, string LMBA, string name, string street, string cityST, string phone, string email, string other, bool? includeInCoversheet)
+            string textContent, bool? displayRateCode, SectionContentType contentType, string referenceNumber, int revisionUniqueSectionId, bool sectionContainsCasbDisclosure, bool isDisclosureStatementAdequate, bool sectionContainsNonCompliance, 
+            bool nonComplianceNotification,string office, string agency, string LMBA, string name, string street, string cityST, string phone, string email, string other, bool? includeInCoversheet)
         {
             this.RevisionId = revisionId;
             this.DisplayOrder = displayOrder;
@@ -87,7 +89,9 @@ namespace IES.DataBridge.ModelViews
             this.OldId = null;
             this.OldUpdateDate = null;
             this.SectionContainsCasbDisclosure = sectionContainsCasbDisclosure;
+			this.IsDisclosureStatementAdequate = isDisclosureStatementAdequate;
             this.SectionContainsNonCompliance = sectionContainsNonCompliance;
+			this.NonComplianceNotification = nonComplianceNotification;
             this.Office = office;
             this.Agency = agency;
             this.LMBA = LMBA;
@@ -193,10 +197,20 @@ namespace IES.DataBridge.ModelViews
         /// </summary>
         public bool SectionContainsCasbDisclosure { get; set; }
 
+		/// <summary>
+		/// Is Disclosure Statement determined to be adequate
+		/// </summary>
+		public bool IsDisclosureStatementAdequate { get; set; }
+
         /// <summary>
         /// Does Section contain Non Compliance Issues?
         /// </summary>
         public bool SectionContainsNonCompliance { get; set; }
+
+		/// <summary>
+		/// Asks if the user was notified of possible non-compliance with the Disclosure Statement or Cost Account Standards 
+		/// </summary>
+		public bool NonComplianceNotification { get; set; }
 
         /// <summary>
         /// Address Office

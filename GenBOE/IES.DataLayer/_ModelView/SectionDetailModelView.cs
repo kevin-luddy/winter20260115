@@ -54,15 +54,25 @@ namespace IES.DataBridge.ModelViews
         /// </summary>
         public bool SectionContainsCasbDisclosure { get; set; }
 
+		/// <summary>
+		/// Is Disclosure Statement determined to be adequate
+		/// </summary>
+		public bool IsDisclosureStatementAdequate { get; set; }
+
         /// <summary>
         /// Does Section contain Non Compliance Issues?
         /// </summary>
         public bool SectionContainsNonCompliance { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Address Office
-        /// </summary>
-        public string Office { get; set; }
+		/// <summary>
+		/// Asks if the user was notified of possible non-compliance with the Disclosure Statement or Cost Account Standards 
+		/// </summary>
+		public bool NonComplianceNotification { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Address Office
+		/// </summary>
+		public string Office { get; set; }
 
         /// <summary>
         /// Gets or sets the Address Agency

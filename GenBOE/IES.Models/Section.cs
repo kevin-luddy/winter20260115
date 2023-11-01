@@ -36,7 +36,9 @@ namespace IES.Models
         public int RevisionUniqueSectionId { get; set; }
         public bool IsRdsbRequired { get; set; }
         public bool SectionContainsCasbDisclosure { get; set; }
+		public bool IsDisclosureStatementAdequate { get; set; }
         public bool SectionContainsNonCompliance { get; set; }
+		public bool NonComplianceNotification { get; set; }
         public string Office { get; set; }
         public string Agency { get; set; }
         public string LMBA { get; set; }

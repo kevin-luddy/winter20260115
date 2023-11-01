@@ -87,7 +87,9 @@ namespace IES.DataBridge.Loaders
                     RevisionUniqueSectionId = r.RevisionUniqueSectionId,
                     IsRdsbRequired = r.IsRdsbRequired,
                     SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
+					IsDisclosureStatementAdequate = r.IsDisclosureStatementAdequate,
                     SectionContainsNonCompliance = r.SectionContainsNonCompliance,
+					NonComplianceNotification = r.NonComplianceNotification,
                     Office = r.Office,
                     Agency = r.Agency,
                     LMBA = r.LMBA,
@@ -336,7 +338,7 @@ namespace IES.DataBridge.Loaders
                         dtoToUpsert.ParentId, dtoToUpsert.DisplayOrder, dtoToUpsert.Title,
                         dtoToUpsert.TextContent, (int)dtoToUpsert.ContentType, dtoToUpsert.IsInternalSection,
                         dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired, 
-                        dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.SectionContainsNonCompliance, 
+                        dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.IsDisclosureStatementAdequate, dtoToUpsert.SectionContainsNonCompliance, dtoToUpsert.NonComplianceNotification, 
                         dtoToUpsert.Office, dtoToUpsert.Agency, dtoToUpsert.LMBA, dtoToUpsert.Name, dtoToUpsert.Street, dtoToUpsert.CityST, dtoToUpsert.Phone, dtoToUpsert.Email, dtoToUpsert.Other, dtoToUpsert.IncludeInCoversheet
                         ).First();
                 }
@@ -470,7 +472,9 @@ namespace IES.DataBridge.Loaders
                 s.RevisionUniqueSectionId = section.RevisionUniqueSectionId;
                 s.IsRdsbRequired = section.IsRdsbRequired;
                 s.SectionContainsCasbDisclosure = section.SectionContainsCasbDisclosure;
+				s.IsDisclosureStatementAdequate = section.IsDisclosureStatementAdequate;
                 s.SectionContainsNonCompliance = section.SectionContainsNonCompliance;
+				s.NonComplianceNotification = section.NonComplianceNotification;
 
                 s.Office = section.Office;
                 s.Agency = section.Agency;
@@ -491,7 +495,7 @@ namespace IES.DataBridge.Loaders
             {
                 SectionModelView s = new SectionModelView(section.RevisionId, section.DisplayOrder, section.IsInternalSection,
                     section.Title, section.TextContent, section.DisplayRateCode, section.ContentType, section.ReferenceNumber,
-                    section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosure, section.SectionContainsNonCompliance,
+                    section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosure, section.IsDisclosureStatementAdequate, section.SectionContainsNonCompliance, section.NonComplianceNotification,
                     section.Office, section.Agency, section.LMBA, section.Name, section.Street, section.CityST, section.Phone, section.Email, section.Other, section.IncludeInCoversheet);
                 s.Id = -1; // Force upsert to insert new row
                 parent.ChildNodes.Add(s);
