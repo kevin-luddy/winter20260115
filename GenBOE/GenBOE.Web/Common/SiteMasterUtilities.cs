@@ -314,6 +314,19 @@ namespace GenBOE.Web.Common
 		}
 
 		/// <summary>
+		/// Indicates whether to show the IES Header iframe
+		/// </summary>
+		public static bool ShowIesHeader
+		{
+			get
+			{
+				bool value = false;
+				bool.TryParse(ConfigurationUtilities.GetAppSetting("ShowIesHeader"), out value);
+				return value;
+			}
+		}
+
+		/// <summary>
 		/// Gets the text for the Unclassified Banner
 		/// </summary>
 		public static string UnclassifiedBannerText

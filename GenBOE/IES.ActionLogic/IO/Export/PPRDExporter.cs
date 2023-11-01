@@ -275,7 +275,7 @@ namespace IES.ActionLogic.IO.Export
 				// Separate out the child node elements
 				ICollection<SectionModelView> textAndTableMVs =
 					section.ChildNodes.Where(x => x.ContentType == SectionContentType.Text ||
-												  x.ContentType == SectionContentType.RateTable)
+												  x.ContentType == SectionContentType.RateTable || x.ContentType == SectionContentType.Address)
 						.OrderBy(o => o.DisplayOrder).ToCollection();
 				ICollection<SectionModelView> subsectionMVs =
 					section.ChildNodes.Where(x => x.ContentType == SectionContentType.Section).ToCollection();
@@ -299,14 +299,17 @@ namespace IES.ActionLogic.IO.Export
 							PPRDExporterConstants.FIELDNAME_TEXTELEMENT);
 						SdtElement rateTableElement =
 							WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_RATES);
+                        SdtElement addressTableElement =
+                            WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_ADDRESS);
 
-						if (modelView.ContentType == SectionContentType.Text && textElement != null)
+                        if (modelView.ContentType == SectionContentType.Text && textElement != null)
 						{
 							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, ref counters, false, modelView.IsInternalSection ?? false);
 
 							// Remove table elements
 							this.RemoveElement(rateTableElement);
-						}
+                            this.RemoveElement(addressTableElement);
+                        }
 						else if (modelView.ContentType == SectionContentType.RateTable && rateTableElement != null)
 						{
 							// Get rates for section
@@ -369,15 +372,56 @@ namespace IES.ActionLogic.IO.Export
 								templateTableElement.Remove();
 							}
 
-							// Remove the text element
+							// Remove the text address element
 							this.RemoveElement(textElement);
-						}
-						else
+                            this.RemoveElement(addressTableElement);
+                        }
+                        else if (modelView.ContentType == SectionContentType.Address && addressTableElement != null)  //new address table code here
+                        {
+                            // Populate Address Table
+                            SdtElement addressOffice = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOFFICE);
+                            WordUtilities.SetElementText(addressOffice, modelView.Office);
+
+                            SdtElement addressAgency = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSAGENCY);
+                            WordUtilities.SetElementText(addressAgency, modelView.Agency);
+
+                            SdtElement addressLMBA = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSLMBA);
+                            WordUtilities.SetElementText(addressLMBA, modelView.LMBA);
+
+                            SdtElement addressName = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSNAME);
+                            WordUtilities.SetElementText(addressName, modelView.Name);
+
+                            SdtElement addressStreet = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSSTREET);
+                            WordUtilities.SetElementText(addressStreet, modelView.Street);
+
+                            SdtElement addressCity = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSCITY);
+                            WordUtilities.SetElementText(addressCity, modelView.CityST);
+
+                            SdtElement addressPhone = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSPHONE);
+                            WordUtilities.SetElementText(addressPhone, modelView.Phone);
+
+                            SdtElement addressEmail = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSEMAIL);
+                            WordUtilities.SetElementText(addressEmail, modelView.Email);
+
+                            SdtElement addressOther = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOTHER);
+                            WordUtilities.SetElementText(addressOther, modelView.Other);
+
+
+                            // Adjust bottom border thickness
+                            Table addressTable = addressTableElement.Descendants<Table>().FirstOrDefault();
+                            this.AdjustTableBorders(addressTable);
+
+                            // Remove the text element
+                            this.RemoveElement(textElement);
+                            this.RemoveElement(rateTableElement);
+                        }
+                        else
 						{
 							// Remove all elements
 							this.RemoveElement(textElement);
 							this.RemoveElement(rateTableElement);
-						}
+                            this.RemoveElement(addressTableElement);
+                        }
 					}
 				}
 

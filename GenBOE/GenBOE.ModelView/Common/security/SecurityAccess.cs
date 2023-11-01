@@ -719,6 +719,11 @@ namespace GenBOE.DataBridge.Common
 					new Role[] { Role.SystemAdmin },
 					SecurityAuthorization.CreateReadUpdateDelete);
 
+				// Create Workspace Permissions
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.CreateWorkspacePermissions },
+						 new Role[] { Role.SystemAdmin },
+						 SecurityAuthorization.CreateReadUpdateDelete);
+
 				// Global Config Pages
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.GlobalConfig },
 					new Role[] { Role.SystemAdmin },
