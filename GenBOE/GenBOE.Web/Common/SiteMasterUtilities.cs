@@ -323,5 +323,16 @@ namespace GenBOE.Web.Common
 				return ConfigurationUtilities.GetAppSetting("UnclassifiedBannerText");
 			}
 		}
+
+		/// <summary>
+		/// Gets the IES Banner App name
+		/// </summary>
+		public static string IESBannerApp
+		{
+			get
+			{
+				return ConfigurationUtilities.GetAppSetting("IESBannerApp");
+			}
+		}
 	}
 }

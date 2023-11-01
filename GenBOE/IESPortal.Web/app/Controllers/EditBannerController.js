@@ -17,6 +17,10 @@ angular.module('portal').controller('editBannerController', ['$scope', '$http', 
             Value: 'BOESSC'
         },
         {
+            Text: 'BOE SSC International',
+            Value: 'BOESSC_INTL'
+        },
+        {
             Text: 'PTM',
             Value: 'PTM'
         },
