@@ -61,6 +61,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
 		private const string FORMAT = "000000";
 
+		/// <summary>
+		/// 1LMX custom field name
+		/// </summary>
+		private const string ONE_LMX_CUSTOM_FIELD = "BRC";
+
 		#endregion
 
 		#region Properties & Constructor
@@ -246,6 +251,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			Collection<int> travelResourceIDs = travelResources.Select(r => r.Id).ToCollection();
 			bool isUsingEP = FullObjectHelper.ShowEquivalentPersonsOption && workspace.IsUsingEquivalentPerson;
 			bool offloading = workspace.ProjectMapType != ProjectMapType.StandardWithoutOffload;
+			CustomFieldDTO oneLmxCF = workspace.CustomFields.FirstOrDefault(c => c.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay && c.CustomFieldName == ONE_LMX_CUSTOM_FIELD);
+			Collection<int> oneLMXResourceIDs = GetOneLMXResourceIds(workspace, oneLmxCF);
 
 			WsLevelInputsForExport wsDataForExport = new WsLevelInputsForExport()
 			{
@@ -261,7 +268,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				TaskElements = workspace.TaskElements.ToCollection(),
 				IsProjectMapWorkspace = workspace.IsProjectMapWorkspace,
 				IsUsingTemplateBOE = workspace.UsingTemplateBOE,
-				MoqTypes = workspace.MoqTypeSelections.ToCollection()
+				MoqTypes = workspace.MoqTypeSelections.ToCollection(),
+				OneLmxCustomField = oneLmxCF
 			};
 
 			if (offloading)
@@ -281,13 +289,43 @@ namespace GenBOE.ActionLogic.IO.Export
 				wsDataForExport.Resources = this.retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
 			}
 
+			bool has1LMXResources = oneLMXResourceIDs.Any();
+
+			if (has1LMXResources)
+			{
+				ICollection<ResourceDTO> resourceDTOs = this.retriever.GetResourcesByIds(oneLMXResourceIDs);
+				wsDataForExport.Resources = resourceDTOs.Union(wsDataForExport.Resources).ToList().AsReadOnly();
+			}
+
 			foreach (BoeDTO boe in boes)
 			{
 				this.ProcessBoe(workspace, boe, wsDataForExport, laborResourceIDs, iwtaResourceIDs, subContractorResourceIDs, materialResourceIDs,
-					odcResourceIDs, travelResourceIDs, isUsingEP, travelResources, offloading);
+					odcResourceIDs, travelResourceIDs, isUsingEP, travelResources, offloading, has1LMXResources);
 			}
 
 			return wsDataForExport.PpDataToBeExported;
+		}
+
+		/// <summary>
+		/// Retrieve a list of 1LMX Resource Ids used in the 1LMX Custom Field on a Labor Type.
+		/// </summary>
+		/// <param name="workspace">The workspace to pull data from.</param>
+		/// <param name="oneLmxCF">1LMX Custom Field</param>
+		/// <returns>List of 1LMX Resource Ids.</returns>
+		private Collection<int> GetOneLMXResourceIds(FullWorkspace workspace, CustomFieldDTO oneLmxCF)
+		{
+			Collection<int> oneLmxResourceIds = new Collection<int>();
+
+			if (oneLmxCF != null)
+			{
+				// need to get IDs from this custom field into the list of Ids used
+				List<string> resourceNames = workspace.CustomFieldValues.Where(c => c.CustomFieldID == oneLmxCF.Id).Select(f => f.CustomFieldValueName).ToList();
+				IReadOnlyCollection<ResourceDTO> resources = workspace.ResourcesForWsResourceListId;
+
+				oneLmxResourceIds = resources.Where(r => resourceNames.Contains(r.ResourceName)).Select(e => e.Id).ToCollection();
+			}
+
+			return oneLmxResourceIds;
 		}
 
 		#region Data Processing Helpers
@@ -307,10 +345,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="isUsingEP">if set to <c>true</c> [is using ep].</param>
 		/// <param name="travelResources">The travel resources.</param>
 		/// <param name="offloading">True if this export is offloading.</param>
+		/// <param name="has1LMXResources">True if this export has 1LMX Resources that need split</param>
 		private void ProcessBoe(FullWorkspace workspace, BoeDTO boe, WsLevelInputsForExport wsDataForExport,
 			Collection<int> laborResourceIDs, Collection<int> iwtaResourceIDs, Collection<int> subContractorResourceIDs,
 			Collection<int> materialResourceIDs, Collection<int> odcResourceIDs, Collection<int> travelResourceIDs, bool isUsingEP,
-			ICollection<ResourceDTO> travelResources, bool offloading)
+			ICollection<ResourceDTO> travelResources, bool offloading, bool has1LMXResources)
 		{
 			BoeLevelExportData boeLevelExportData = new BoeLevelExportData()
 			{
@@ -340,17 +379,17 @@ namespace GenBOE.ActionLogic.IO.Export
 			DetermineStartAndEndDates(boeLevelExportData, taskElements, materialElements, travelElements, odcElements);
 
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.LaborElements,
-				ElementOfCostType.LMLabor, laborResourceIDs, isUsingEP, offloading);
+				ElementOfCostType.LMLabor, laborResourceIDs, isUsingEP, offloading, has1LMXResources);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.IWTAElements,
-				ElementOfCostType.IWTA, iwtaResourceIDs, isUsingEP, offloading);
+				ElementOfCostType.IWTA, iwtaResourceIDs, isUsingEP, offloading, has1LMXResources);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.SubcontractorElements,
-				ElementOfCostType.Sub, subContractorResourceIDs, isUsingEP, offloading);
+				ElementOfCostType.Sub, subContractorResourceIDs, isUsingEP, offloading, has1LMXResources);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.MaterialLaborElements,
-				ElementOfCostType.Materials, materialResourceIDs, isUsingEP, offloading);
+				ElementOfCostType.Materials, materialResourceIDs, isUsingEP, offloading, has1LMXResources);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.TravelLaborElements,
-				ElementOfCostType.Travel, travelResourceIDs, isUsingEP, offloading);
+				ElementOfCostType.Travel, travelResourceIDs, isUsingEP, offloading, has1LMXResources);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.ODCLaborElements,
-				ElementOfCostType.ODC, odcResourceIDs, isUsingEP, offloading);
+				ElementOfCostType.ODC, odcResourceIDs, isUsingEP, offloading, has1LMXResources);
 			this.ProcessOdcElements(wsDataForExport, boeLevelExportData, odcElements, odcResourceIDs);
 			this.ProcessTravelElements(workspace, wsDataForExport, boeLevelExportData, travelElements, travelResources);
 			this.ProcessRMSTravelElements(wsDataForExport, boeLevelExportData, travelElements, workspace);
@@ -366,8 +405,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="resourceIDs">The resource ids.</param>
 		/// <param name="isUsingEquivalentPerson">if set to <c>true</c> [is using equivalent person].</param>
 		/// <param name="offloading">if set to <c>true</c> [offloading].</param>
+		/// <param name="has1LMXResources">if set to <c>true</c>, we need to account for splitting labor type for 1LMX</param>
 		private void ProcessTaskElements(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, Collection<BoeTaskElementDTO> taskElements,
-			ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading)
+			ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading, bool has1LMXResources)
 		{
 			if (!taskElements.Any()) { return; }
 
@@ -380,6 +420,11 @@ namespace GenBOE.ActionLogic.IO.Export
 					if (boeTask.TotalHours != 0 || boeTask.TotalCost != 0 || offloading || boeTask.taskElementLabors.Any(l => l.ValueSpread != 0))
 					{
 						List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value)).ToList();
+
+						if (has1LMXResources)
+						{
+							taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
+						}
 
 						IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
 							elementOfCost, taskResourcesEntriesForElementOfCost, boeTask, taskResourcesEntriesForElementOfCost.Any(x => x.IsOffloaded));
@@ -398,6 +443,11 @@ namespace GenBOE.ActionLogic.IO.Export
 				foreach (BoeTaskElementDTO boeTask in taskElements)
 				{
 					List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value)).ToList();
+					if (has1LMXResources)
+					{
+						taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
+					}
+
 					foreach (ResourceTypeDto labor in taskResourcesEntriesForElementOfCost)
 					{
 						// do not export to ProPricer if task doesn't have any total hours or cost or if there no offsets
@@ -415,6 +465,64 @@ namespace GenBOE.ActionLogic.IO.Export
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Splits the task labor resources into multiple if crossing 1LMX boundary
+		/// </summary>
+		/// <param name="taskResources">Task Resources to split</param>
+		/// <param name="resourceIds">Running list of Resource Ids</param>
+		/// <returns>Modified list of Task Resources</returns>
+		private List<ResourceTypeDto> SplitTaskResourcesFor1LMX(List<ResourceTypeDto> taskResources, Collection<int> resourceIds, WsLevelInputsForExport wsLevelData)
+		{
+			List<ResourceTypeDto> splitResources = new List<ResourceTypeDto>();
+			foreach (ResourceTypeDto taskResource in taskResources)
+			{
+				
+				if (wsLevelData.OneLmxCustomField != null && taskResource.StartDateValue < Utilities.OneLmxStartDate && taskResource.EndDate > Utilities.OneLmxStartDate)
+				{
+					// Find the 1LMX Custom Field linkage
+					CustomFieldValueContainer container = taskResource.CustomFieldValueContainers.FirstOrDefault(cf => cf.CustomFieldID == wsLevelData.OneLmxCustomField.Id);
+					if (container != null)
+					{
+						CustomFieldValueDTO customFieldValue = wsLevelData.WsCustomFieldValues.FirstOrDefault(v => v.CustomFieldValueID == container.CustomFieldValueID);
+						if (customFieldValue != null)
+						{
+							// need to match the field value against the Name of a Resource
+							ResourceDTO oneLmxResource = wsLevelData.Resources.FirstOrDefault(r => r.ResourceName == customFieldValue.CustomFieldValueName);
+							if (oneLmxResource != null)
+							{
+								// need to split the task Resource
+								ResourceTypeDto split = new ResourceTypeDto(taskResource);
+								split.LegacyID = taskResource.LegacyID;
+								split.ProjectMapId = taskResource.ProjectMapId;
+								split.IsOffloaded = taskResource.IsOffloaded;
+
+								// Update Date Ranges
+								split.StartDate = Utilities.OneLmxStartDate;
+								taskResource.EndDate = Utilities.OneLmxStartDate;
+
+								// fix labor spreads
+								split.LaborSpreads = split.LaborSpreads.Where(s => s.LaborSpreadDate >= Utilities.OneLmxStartDate).ToCollection();
+								taskResource.LaborSpreads = taskResource.LaborSpreads.Where(s => s.LaborSpreadDate < Utilities.OneLmxStartDate).ToCollection();
+
+								// fix resource id
+								split.ResourceID = oneLmxResource.Id;
+								if (!resourceIds.Contains(oneLmxResource.Id))
+								{
+									resourceIds.Add(oneLmxResource.Id);
+								}
+
+								splitResources.Add(split);
+							}
+						}
+					}
+				}
+				
+				splitResources.Add(taskResource);
+			}
+
+			return splitResources;
 		}
 
 		/// <summary>
@@ -2451,6 +2559,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// Moq Types
 		/// </summary>
 		public ICollection<MoqTypeSelection> MoqTypes { get; set; }
+
+		/// <summary>
+		/// 1LMX Custom Field
+		/// </summary>
+		public CustomFieldDTO OneLmxCustomField { get; set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WsLevelInputsForExport"/> class.
