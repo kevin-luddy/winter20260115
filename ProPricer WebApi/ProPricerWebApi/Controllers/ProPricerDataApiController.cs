@@ -61,7 +61,7 @@ namespace APTSPropricerApi.Controllers
 			{
 				using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
 				{
-					response.Data = Utility.GetAllProposals(ppc, logger);
+					response.Data = Utility.GetAllProposals(ppc, logger).Take(500).ToList();
 					response.IsSuccessful = true;
 				}
 			}
