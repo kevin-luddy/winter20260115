@@ -287,7 +287,7 @@ namespace IES.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteSection", idParameter, updateDateParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertSection(Nullable<int> id, Nullable<System.DateTime> updateDate, Nullable<int> revisionID, Nullable<int> parentID, Nullable<int> displayOrder, string title, string textContent, Nullable<int> sectionContentTypeID, Nullable<bool> isInternalSection, Nullable<bool> displayRateCode, Nullable<int> revisionUniqueSectionId, Nullable<bool> isRdsbRequired, Nullable<bool> sectionContainsCasbDisclosure, Nullable<bool> sectionContainsNonCompliance, string office, string agency, string lMBA, string name, string street, string cityST, string phone, string email, string other, Nullable<bool> includeInCoversheet)
+        public virtual ObjectResult<Nullable<int>> upsertSection(Nullable<int> id, Nullable<System.DateTime> updateDate, Nullable<int> revisionID, Nullable<int> parentID, Nullable<int> displayOrder, string title, string textContent, Nullable<int> sectionContentTypeID, Nullable<bool> isInternalSection, Nullable<bool> displayRateCode, Nullable<int> revisionUniqueSectionId, Nullable<bool> isRdsbRequired, Nullable<bool> sectionContainsCasbDisclosure, Nullable<bool> isDisclosureStatementAdequate, Nullable<bool> sectionContainsNonCompliance, Nullable<bool> nonComplianceNotification, string office, string agency, string lMBA, string name, string street, string cityST, string phone, string email, string other, Nullable<bool> includeInCoversheet)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -340,12 +340,20 @@ namespace IES.Models
             var sectionContainsCasbDisclosureParameter = sectionContainsCasbDisclosure.HasValue ?
                 new ObjectParameter("SectionContainsCasbDisclosure", sectionContainsCasbDisclosure) :
                 new ObjectParameter("SectionContainsCasbDisclosure", typeof(bool));
+
+			var isDisclosureStatementAdequateParameter = isDisclosureStatementAdequate.HasValue ?
+				new ObjectParameter("IsDisclosureStatementAdequate", isDisclosureStatementAdequate) :
+				new ObjectParameter("IsDisclosureStatementAdequate", typeof(bool));
     
             var sectionContainsNonComplianceParameter = sectionContainsNonCompliance.HasValue ?
                 new ObjectParameter("SectionContainsNonCompliance", sectionContainsNonCompliance) :
                 new ObjectParameter("SectionContainsNonCompliance", typeof(bool));
-    
-            var officeParameter = office != null ?
+
+			var nonComplianceNotificationParameter = nonComplianceNotification.HasValue ?
+				new ObjectParameter("NonComplianceNotification", nonComplianceNotification) :
+				new ObjectParameter("NonComplianceNotification", typeof(bool));
+
+			var officeParameter = office != null ?
                 new ObjectParameter("Office", office) :
                 new ObjectParameter("Office", typeof(string));
     
@@ -385,7 +393,7 @@ namespace IES.Models
                 new ObjectParameter("IncludeInCoversheet", includeInCoversheet) :
                 new ObjectParameter("IncludeInCoversheet", typeof(bool));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertSection", idParameter, updateDateParameter, revisionIDParameter, parentIDParameter, displayOrderParameter, titleParameter, textContentParameter, sectionContentTypeIDParameter, isInternalSectionParameter, displayRateCodeParameter, revisionUniqueSectionIdParameter, isRdsbRequiredParameter, sectionContainsCasbDisclosureParameter, sectionContainsNonComplianceParameter, officeParameter, agencyParameter, lMBAParameter, nameParameter, streetParameter, citySTParameter, phoneParameter, emailParameter, otherParameter, includeInCoversheetParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertSection", idParameter, updateDateParameter, revisionIDParameter, parentIDParameter, displayOrderParameter, titleParameter, textContentParameter, sectionContentTypeIDParameter, isInternalSectionParameter, displayRateCodeParameter, revisionUniqueSectionIdParameter, isRdsbRequiredParameter, sectionContainsCasbDisclosureParameter, isDisclosureStatementAdequateParameter, sectionContainsNonComplianceParameter, nonComplianceNotificationParameter, officeParameter, agencyParameter, lMBAParameter, nameParameter, streetParameter, citySTParameter, phoneParameter, emailParameter, otherParameter, includeInCoversheetParameter);
         }
     
         public virtual ObjectResult<copyRevision_Result> copyRevision(Nullable<int> id, string newRevision, string newHistory, string newCreatedBy, string newReleaseNotes)
