@@ -1266,6 +1266,18 @@ namespace IES.Common
 		CostAnalysis8YearsFlat = 5
 	}
 
+	/// <summary>
+	/// Enumeration for Disclosure Types
+	/// </summary>
+	public enum DisclosureType
+	{
+		[Description("")]
+		None = 0,
+		[Description("Legacy Space")]
+		LegacySpace = 1,
+		[Description("1LMX")]
+		OneLMX = 2
+	}
 
 	/// <summary>
 	/// DirectRateMappingResourceType enumeration.

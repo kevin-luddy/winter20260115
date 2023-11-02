@@ -55,6 +55,10 @@
         <AssociationConnector Association="IESModel.FK_RateCode_CommBurdenPoolLU" />
         <AssociationConnector Association="IESModel.FK_RateCode_GovtBurdenPoolLU" />
         <AssociationConnector Association="IESModel.FK_BurdenPoolLU_Revision" />
+        <EntityTypeShape EntityType="IESModel.BoeDatabaseVersion" Width="1.5" PointX="14.375" PointY="7.75" />
+        <EntityTypeShape EntityType="IESModel.DisclosureTypeLU" Width="1.5" PointX="3.375" PointY="14.875" />
+        <EntityTypeShape EntityType="IESModel.ELMAH_Error" Width="1.5" PointX="14.375" PointY="10.75" />
+        <AssociationConnector Association="IESModel.FK_RateCode_DisclosureTypeLU" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

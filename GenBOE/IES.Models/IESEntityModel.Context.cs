@@ -52,6 +52,9 @@ namespace IES.Models
         public virtual DbSet<Banner> Banners { get; set; }
         public virtual DbSet<RateCodeReplication> RateCodeReplications { get; set; }
         public virtual DbSet<OfflineApplication> OfflineApplications { get; set; }
+        public virtual DbSet<BoeDatabaseVersion> BoeDatabaseVersions { get; set; }
+        public virtual DbSet<DisclosureTypeLU> DisclosureTypeLUs { get; set; }
+        public virtual DbSet<ELMAH_Error> ELMAH_Error { get; set; }
     
         public virtual int deleteCobraFiscalYear(Nullable<int> id, Nullable<System.DateTime> updateDate)
         {
@@ -830,6 +833,149 @@ namespace IES.Models
                 new ObjectParameter("UpdateDate", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateOfflineApplication", applicationNameParameter, isOfflineParameter, updateDateParameter);
+        }
+    
+        public virtual int deleteProPricerRateCodeXrefviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteProPricerRateCodeXrefviaTableParameter");
+        }
+    
+        public virtual int deleteRateCodeviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteRateCodeviaTableParameter");
+        }
+    
+        public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
+        {
+            var applicationParameter = application != null ?
+                new ObjectParameter("Application", application) :
+                new ObjectParameter("Application", typeof(string));
+    
+            var pageIndexParameter = pageIndex.HasValue ?
+                new ObjectParameter("PageIndex", pageIndex) :
+                new ObjectParameter("PageIndex", typeof(int));
+    
+            var pageSizeParameter = pageSize.HasValue ?
+                new ObjectParameter("PageSize", pageSize) :
+                new ObjectParameter("PageSize", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("ELMAH_GetErrorsXml", applicationParameter, pageIndexParameter, pageSizeParameter, totalCount);
+        }
+    
+        public virtual ObjectResult<string> ELMAH_GetErrorXml(string application, Nullable<System.Guid> errorId)
+        {
+            var applicationParameter = application != null ?
+                new ObjectParameter("Application", application) :
+                new ObjectParameter("Application", typeof(string));
+    
+            var errorIdParameter = errorId.HasValue ?
+                new ObjectParameter("ErrorId", errorId) :
+                new ObjectParameter("ErrorId", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("ELMAH_GetErrorXml", applicationParameter, errorIdParameter);
+        }
+    
+        public virtual int ELMAH_LogError(Nullable<System.Guid> errorId, string application, string host, string type, string source, string message, string user, string allXml, Nullable<int> statusCode, Nullable<System.DateTime> timeUtc)
+        {
+            var errorIdParameter = errorId.HasValue ?
+                new ObjectParameter("ErrorId", errorId) :
+                new ObjectParameter("ErrorId", typeof(System.Guid));
+    
+            var applicationParameter = application != null ?
+                new ObjectParameter("Application", application) :
+                new ObjectParameter("Application", typeof(string));
+    
+            var hostParameter = host != null ?
+                new ObjectParameter("Host", host) :
+                new ObjectParameter("Host", typeof(string));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("Type", type) :
+                new ObjectParameter("Type", typeof(string));
+    
+            var sourceParameter = source != null ?
+                new ObjectParameter("Source", source) :
+                new ObjectParameter("Source", typeof(string));
+    
+            var messageParameter = message != null ?
+                new ObjectParameter("Message", message) :
+                new ObjectParameter("Message", typeof(string));
+    
+            var userParameter = user != null ?
+                new ObjectParameter("User", user) :
+                new ObjectParameter("User", typeof(string));
+    
+            var allXmlParameter = allXml != null ?
+                new ObjectParameter("AllXml", allXml) :
+                new ObjectParameter("AllXml", typeof(string));
+    
+            var statusCodeParameter = statusCode.HasValue ?
+                new ObjectParameter("StatusCode", statusCode) :
+                new ObjectParameter("StatusCode", typeof(int));
+    
+            var timeUtcParameter = timeUtc.HasValue ?
+                new ObjectParameter("TimeUtc", timeUtc) :
+                new ObjectParameter("TimeUtc", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ELMAH_LogError", errorIdParameter, applicationParameter, hostParameter, typeParameter, sourceParameter, messageParameter, userParameter, allXmlParameter, statusCodeParameter, timeUtcParameter);
+        }
+    
+        public virtual int insertProPricerRateCodeXrefviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertProPricerRateCodeXrefviaTableParameter");
+        }
+    
+        public virtual int insertRateCodeviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertRateCodeviaTableParameter");
+        }
+    
+        public virtual int insertRateCodeYearviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertRateCodeYearviaTableParameter");
+        }
+    
+        public virtual int insertRDSBRateCodeXrefviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertRDSBRateCodeXrefviaTableParameter");
+        }
+    
+        public virtual int insertRDSBSectionXrefviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertRDSBSectionXrefviaTableParameter");
+        }
+    
+        public virtual int updateCobraDetailviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateCobraDetailviaTableParameter");
+        }
+    
+        public virtual int UpdateDbVersion(string dbVersion, string appVersion)
+        {
+            var dbVersionParameter = dbVersion != null ?
+                new ObjectParameter("DbVersion", dbVersion) :
+                new ObjectParameter("DbVersion", typeof(string));
+    
+            var appVersionParameter = appVersion != null ?
+                new ObjectParameter("AppVersion", appVersion) :
+                new ObjectParameter("AppVersion", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdateDbVersion", dbVersionParameter, appVersionParameter);
+        }
+    
+        public virtual int updateProPricerRateCodeXrefviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateProPricerRateCodeXrefviaTableParameter");
+        }
+    
+        public virtual int updateRateCodeviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateRateCodeviaTableParameter");
+        }
+    
+        public virtual int updateRateCodeYearviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateRateCodeYearviaTableParameter");
         }
     }
 }
