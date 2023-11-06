@@ -290,6 +290,8 @@
           <Property Name="Email" Type="varchar" MaxLength="100" />
           <Property Name="Other" Type="varchar" MaxLength="100" />
           <Property Name="IncludeInCoversheet" Type="bit" />
+          <Property Name="IsDisclosureStatementAdequate" Type="bit" />
+          <Property Name="NonComplianceNotification" Type="bit" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -1732,6 +1734,8 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Other" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="IncludeInCoversheet" Type="Boolean" />
+          <Property Name="IsDisclosureStatementAdequate" Type="Boolean" />
+          <Property Name="NonComplianceNotification" Type="Boolean" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -2536,6 +2540,8 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <EntitySetMapping Name="Sections">
             <EntityTypeMapping TypeName="IESModel.Section">
               <MappingFragment StoreEntitySet="Section">
+                <ScalarProperty Name="NonComplianceNotification" ColumnName="NonComplianceNotification" />
+                <ScalarProperty Name="IsDisclosureStatementAdequate" ColumnName="IsDisclosureStatementAdequate" />
                 <ScalarProperty Name="IncludeInCoversheet" ColumnName="IncludeInCoversheet" />
                 <ScalarProperty Name="Other" ColumnName="Other" />
                 <ScalarProperty Name="Email" ColumnName="Email" />

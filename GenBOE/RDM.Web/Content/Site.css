@@ -1793,6 +1793,10 @@ import-verification .container
     min-width: 280px;
 }
 
+.sub-form-row {
+	margin-left: 20px !important;
+}
+
 .content-table-column1 {
     width: 67.4pt;
     border: 1px solid black !important;

@@ -89,6 +89,8 @@
     <Folder Include="Release Scripts\Release 2023.29" />
     <Folder Include="Release Scripts\Release 2023.32" />
     <Folder Include="Release Scripts\Release 2023.33" />
+    <Folder Include="Release Scripts\release IES.2023.34" />
+    <Folder Include="Release Scripts\Release 2023.36" />
     <Folder Include="Release Scripts\Release 2023.34" />
     <Folder Include="Release Scripts\Older\Release 2022.x" />
     <Folder Include="Release Scripts\Older\Release 2023.24" />
@@ -172,6 +174,7 @@
     <Build Include="Release Scripts\Release 2023.33\1 - Release 2023.33 Script.sql" />
     <Build Include="Release Scripts\Older\Release 2022.x\1 - Release 2022.x Script.sql" />
     <Build Include="Release Scripts\Older\Release 2023.24\1 - Release 2022.24 Script.sql" />
+    <Build Include="Release Scripts\Release 2023.36\Release 2023.36 Script.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Object Scripts\Stored Procedures\ELMAH_LogError.sql" />

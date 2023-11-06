@@ -7,5 +7,20 @@ angular.module('RDM').controller('EditSectionController', ['$scope', '$uibModalI
         if (model.IsInternalSection) {
             model.IsRdsbRequired = false;
         }
-    };
+	};
+
+	$scope.uncheckIsDisclosureStatementAdequate = function () {
+		if (document.getElementById("SectionContainsCasbDisclosureCheckbox").checked == false) {
+			model.IsDisclosureStatementAdequate = false;
+			document.getElementById("IsDisclosureStatementAdequateCheckbox").checked = false;
+			
+		}
+	};
+
+	$scope.uncheckNonComplianceNotification = function () {
+		if (document.getElementById("SectionContainsNonComplianceCheckbox").checked == false) {
+			model.NonComplianceNotification = false;
+			document.getElementById("NonComplianceNotificationCheckbox").checked = false;
+		}
+	};
 }]);

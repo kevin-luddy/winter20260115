@@ -22,7 +22,19 @@ CREATE PROCEDURE [dbo].[upsertSection]
 	@RevisionUniqueSectionId INT,
 	@IsRdsbRequired			BIT = 0,
 	@SectionContainsCasbDisclosure BIT,
-	@SectionContainsNonCompliance BIT
+	@IsDisclosureStatementAdequate BIT,
+	@SectionContainsNonCompliance BIT,
+	@NonComplianceNotification BIT,
+	@Office					varchar(100),
+	@Agency				    varchar(100),
+	@LMBA					varchar(100),
+	@Name					varchar(100),
+	@Street				    varchar(100),
+	@CityST					varchar(100),
+	@Phone					varchar(100),
+	@Email					varchar(100),
+	@Other					varchar(100),
+	@IncludeInCoversheet		BIT = 0
 )
 AS
 	/******************************************************************************
@@ -47,6 +59,9 @@ AS
 	**		10/10/2017	Dusan				Added RevisionUniqueSectionId
 	**		05/15/2018	ranzalon			Added IsRdsbRequired
 	**		07/07/2022	Dusan				Added SectionContainsCasbDisclosure and SectionContainsNonCompliance
+	**		07/18/2023	May				    PROPH-925 Added address fields into section table
+	**		10/9/2023	May				    PROPH-931 Added IncludeInCoversheet field into section table
+	**		11/06/2023  Hazrat				PROPH-56 and 57 Added two Questions IsDisclosureStatementAdequate and NonComplianceNotification
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500)
@@ -77,7 +92,19 @@ AS
 					   ,[RevisionUniqueSectionId]
 					   ,[IsRdsbRequired]
 					   ,[SectionContainsCasbDisclosure]
-					   ,[SectionContainsNonCompliance])
+					   ,[IsDisclosureStatementAdequate]
+					   ,[SectionContainsNonCompliance]
+					   ,[NonComplianceNotification]
+					   ,[Office]
+					   ,[Agency]
+					   ,[LMBA]
+					   ,[Name]
+					   ,[Street]
+					   ,[CityST]
+					   ,[Phone]
+					   ,[Email]
+					   ,[Other]
+					   ,[IncludeInCoversheet])
 				 OUTPUT inserted.ID INTO @Inserted
 				 VALUES
 					   (@UpdateDate
@@ -92,7 +119,19 @@ AS
 					   ,@RevisionUniqueSectionId
 					   ,@IsRdsbRequired
 					   ,@SectionContainsCasbDisclosure
-					   ,@SectionContainsNonCompliance)
+					   ,@IsDisclosureStatementAdequate
+					   ,@SectionContainsNonCompliance
+					   ,@NonComplianceNotification
+					   ,@Office
+					   ,@Agency
+					   ,@LMBA
+					   ,@Name
+					   ,@Street
+					   ,@CityST
+					   ,@Phone
+					   ,@Email
+					   ,@Other
+					   ,@IncludeInCoversheet)
 
 			SELECT @Id = Id FROM @Inserted
 		END
@@ -115,7 +154,19 @@ AS
 						   ,RevisionUniqueSectionId = @RevisionUniqueSectionId
 						   ,IsRdsbRequired = @IsRdsbRequired
 						   ,SectionContainsCasbDisclosure = @SectionContainsCasbDisclosure
+						   ,IsDisclosureStatementAdequate = @IsDisclosureStatementAdequate
 						   ,SectionContainsNonCompliance = @SectionContainsNonCompliance
+						   ,NonComplianceNotification = @NonComplianceNotification
+						   ,Office = @Office
+					       ,Agency =@Agency
+					       ,LMBA =@LMBA
+					       ,[Name] = @Name
+						   ,Street =@Street
+						   ,CityST =@CityST
+						   ,Phone = @Phone
+						   ,Email = @Email
+						   ,Other = @Other
+						   ,IncludeInCoversheet=@IncludeInCoversheet
 						WHERE 
 							ID = @Id
 				END
