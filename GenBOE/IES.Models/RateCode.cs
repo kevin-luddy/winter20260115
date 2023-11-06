@@ -36,6 +36,7 @@ namespace IES.Models
         public Nullable<int> RateTypeID { get; set; }
         public string CobraRateSet { get; set; }
         public Nullable<int> CobraCode1ID { get; set; }
+        public Nullable<int> DisclosureTypeId { get; set; }
     
         public virtual BurdenPoolLU CommercialBurdenPoolLU { get; set; }
         public virtual BurdenPoolLU GovernmentBurdenPoolLU { get; set; }
@@ -55,5 +56,6 @@ namespace IES.Models
         public virtual Revision Revision { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RDSBRateCodeXref> RDSBRateCodeXrefs { get; set; }
+        public virtual DisclosureTypeLU DisclosureTypeLU { get; set; }
     }
 }

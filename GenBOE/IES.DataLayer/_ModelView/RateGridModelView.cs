@@ -56,6 +56,11 @@ namespace IES.DataBridge.ModelViews
         /// </summary>
         public ICollection<OptionModelView> RateTypes { get; set; }
 
+		/// <summary>
+		/// Gets or sets DisclosureTypes to use in dropdowns on front-end for ProPricer DisclosureType mapping select.
+		/// </summary>
+		public ICollection<OptionModelView> DisclosureTypes { get; set; }
+
         /// <summary>
         /// Gets or sets the propricer Resource Types to use in dropdowns on front-end for propricer ResourceTypes select.
         /// </summary>

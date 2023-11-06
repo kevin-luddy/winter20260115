@@ -17,6 +17,15 @@
           <Property Name="BannerText" Type="varchar" MaxLength="500" />
           <Property Name="TurnOffTicker" Type="bit" />
         </EntityType>
+        <EntityType Name="BoeDatabaseVersion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DBVersion" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="AppVersion" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="BurdenElementLU">
           <Key>
             <PropertyRef Name="ID" />
@@ -62,6 +71,29 @@
           <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Year" Type="int" Nullable="false" />
           <Property Name="FiscalYearStartDate" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DisclosureTypeLU">
+          <Key>
+            <PropertyRef Name="DisclosureTypeID" />
+          </Key>
+          <Property Name="DisclosureTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DisclosureType" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ELMAH_Error">
+          <Key>
+            <PropertyRef Name="ErrorId" />
+          </Key>
+          <Property Name="ErrorId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Application" Type="nvarchar" MaxLength="60" Nullable="false" />
+          <Property Name="Host" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Source" Type="nvarchar" MaxLength="60" Nullable="false" />
+          <Property Name="Message" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="User" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="StatusCode" Type="int" Nullable="false" />
+          <Property Name="TimeUtc" Type="datetime" Nullable="false" />
+          <Property Name="Sequence" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AllXml" Type="ntext" Nullable="false" />
         </EntityType>
         <EntityType Name="FileAttachment">
           <Key>
@@ -120,6 +152,7 @@
           <Property Name="RateTypeID" Type="int" />
           <Property Name="CobraRateSet" Type="varchar" MaxLength="50" />
           <Property Name="CobraCode1ID" Type="int" />
+          <Property Name="DisclosureTypeId" Type="int" />
         </EntityType>
         <EntityType Name="RateCodeExtensionLU">
           <Key>
@@ -422,6 +455,18 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RateCode_DisclosureTypeLU">
+          <End Role="DisclosureTypeLU" Type="Self.DisclosureTypeLU" Multiplicity="0..1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DisclosureTypeLU">
+              <PropertyRef Name="DisclosureTypeID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="DisclosureTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RateCode_GovtBurdenPoolLU">
           <End Role="BurdenPoolLU" Type="Self.BurdenPoolLU" Multiplicity="0..1" />
           <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
@@ -633,6 +678,8 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Parameter Name="Id" Type="int" Mode="In" />
           <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
         </Function>
+        <Function Name="deleteProPricerRateCodeXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="deleteRateCodeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteRDSBDocumentInformation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
           <Parameter Name="LastUpdateDT" Type="datetime2" Mode="In" />
@@ -648,6 +695,28 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
         <Function Name="deleteSection" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
           <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="ELMAH_GetErrorsXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Application" Type="nvarchar" Mode="In" />
+          <Parameter Name="PageIndex" Type="int" Mode="In" />
+          <Parameter Name="PageSize" Type="int" Mode="In" />
+          <Parameter Name="TotalCount" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="ELMAH_GetErrorXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Application" Type="nvarchar" Mode="In" />
+          <Parameter Name="ErrorId" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="ELMAH_LogError" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ErrorId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Application" Type="nvarchar" Mode="In" />
+          <Parameter Name="Host" Type="nvarchar" Mode="In" />
+          <Parameter Name="Type" Type="nvarchar" Mode="In" />
+          <Parameter Name="Source" Type="nvarchar" Mode="In" />
+          <Parameter Name="Message" Type="nvarchar" Mode="In" />
+          <Parameter Name="User" Type="nvarchar" Mode="In" />
+          <Parameter Name="AllXml" Type="ntext" Mode="In" />
+          <Parameter Name="StatusCode" Type="int" Mode="In" />
+          <Parameter Name="TimeUtc" Type="datetime" Mode="In" />
         </Function>
         <Function Name="ExportCobraRates" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="RevisionID" Type="int" Mode="In" />
@@ -666,6 +735,11 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Parameter Name="StartYear" Type="varchar" Mode="In" />
           <Parameter Name="EndYear" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="insertProPricerRateCodeXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="insertRateCodeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="insertRateCodeYearviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="insertRDSBRateCodeXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="insertRDSBSectionXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="publishRevision" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
           <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
@@ -679,11 +753,19 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
           <Parameter Name="NewId" Type="int" Mode="In" />
         </Function>
+        <Function Name="updateCobraDetailviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UpdateDbVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="DbVersion" Type="varchar" Mode="In" />
+          <Parameter Name="AppVersion" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="updateOfflineApplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ApplicationName" Type="varchar" Mode="In" />
           <Parameter Name="IsOffline" Type="bit" Mode="In" />
           <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
         </Function>
+        <Function Name="updateProPricerRateCodeXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="updateRateCodeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="updateRateCodeYearviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="upsertBanner" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
           <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
@@ -795,11 +877,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
         </Function>
         <EntityContainer Name="IESModelStoreContainer">
           <EntitySet Name="Banner" EntityType="Self.Banner" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BoeDatabaseVersion" EntityType="Self.BoeDatabaseVersion" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BurdenElementLU" EntityType="Self.BurdenElementLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BurdenPoolLU" EntityType="Self.BurdenPoolLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CategoryLU" EntityType="Self.CategoryLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CobraCode1LU" EntityType="Self.CobraCode1LU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CobraFiscalYearLU" EntityType="Self.CobraFiscalYearLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DisclosureTypeLU" EntityType="Self.DisclosureTypeLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ELMAH_Error" EntityType="Self.ELMAH_Error" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FileAttachment" EntityType="Self.FileAttachment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OfflineApplication" EntityType="Self.OfflineApplication" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProPricerBurdenRateMap" EntityType="Self.ProPricerBurdenRateMap" Schema="dbo" store:Type="Tables" />
@@ -872,6 +957,10 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           </AssociationSet>
           <AssociationSet Name="FK_RateCode_CommBurdenPoolLU" Association="Self.FK_RateCode_CommBurdenPoolLU">
             <End Role="BurdenPoolLU" EntitySet="BurdenPoolLU" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_DisclosureTypeLU" Association="Self.FK_RateCode_DisclosureTypeLU">
+            <End Role="DisclosureTypeLU" EntitySet="DisclosureTypeLU" />
             <End Role="RateCode" EntitySet="RateCode" />
           </AssociationSet>
           <AssociationSet Name="FK_RateCode_GovtBurdenPoolLU" Association="Self.FK_RateCode_GovtBurdenPoolLU">
@@ -1294,6 +1383,50 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             <Parameter Name="IsOffline" Mode="In" Type="Boolean" />
             <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
           </FunctionImport>
+          <EntitySet Name="BoeDatabaseVersions" EntityType="IESModel.BoeDatabaseVersion" />
+          <EntitySet Name="DisclosureTypeLUs" EntityType="IESModel.DisclosureTypeLU" />
+          <EntitySet Name="ELMAH_Error" EntityType="IESModel.ELMAH_Error" />
+          <AssociationSet Name="FK_RateCode_DisclosureTypeLU" Association="IESModel.FK_RateCode_DisclosureTypeLU">
+            <End Role="DisclosureTypeLU" EntitySet="DisclosureTypeLUs" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <FunctionImport Name="deleteProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImport Name="deleteRateCodeviaTableParameter" />
+          <FunctionImport Name="ELMAH_GetErrorsXml" ReturnType="Collection(String)">
+            <Parameter Name="Application" Mode="In" Type="String" />
+            <Parameter Name="PageIndex" Mode="In" Type="Int32" />
+            <Parameter Name="PageSize" Mode="In" Type="Int32" />
+            <Parameter Name="TotalCount" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ELMAH_GetErrorXml" ReturnType="Collection(String)">
+            <Parameter Name="Application" Mode="In" Type="String" />
+            <Parameter Name="ErrorId" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="ELMAH_LogError">
+            <Parameter Name="ErrorId" Mode="In" Type="Guid" />
+            <Parameter Name="Application" Mode="In" Type="String" />
+            <Parameter Name="Host" Mode="In" Type="String" />
+            <Parameter Name="Type" Mode="In" Type="String" />
+            <Parameter Name="Source" Mode="In" Type="String" />
+            <Parameter Name="Message" Mode="In" Type="String" />
+            <Parameter Name="User" Mode="In" Type="String" />
+            <Parameter Name="AllXml" Mode="In" Type="String" />
+            <Parameter Name="StatusCode" Mode="In" Type="Int32" />
+            <Parameter Name="TimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="insertProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImport Name="insertRateCodeviaTableParameter" />
+          <FunctionImport Name="insertRateCodeYearviaTableParameter" />
+          <FunctionImport Name="insertRDSBRateCodeXrefviaTableParameter" />
+          <FunctionImport Name="insertRDSBSectionXrefviaTableParameter" />
+          <FunctionImport Name="updateCobraDetailviaTableParameter" />
+          <FunctionImport Name="UpdateDbVersion">
+            <Parameter Name="DbVersion" Mode="In" Type="String" />
+            <Parameter Name="AppVersion" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="updateProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImport Name="updateRateCodeviaTableParameter" />
+          <FunctionImport Name="updateRateCodeYearviaTableParameter" />
         </EntityContainer>
         <ComplexType Name="ExportCobraRates_Result">
           <Property Type="String" Name="CobraRateSet" Nullable="true" MaxLength="50" />
@@ -1525,6 +1658,8 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <NavigationProperty Name="RateCodeYears" Relationship="IESModel.FK_RateCodeYear_RateCode" FromRole="RateCode" ToRole="RateCodeYear" />
           <NavigationProperty Name="Revision" Relationship="IESModel.FK_RateCode_Revision" FromRole="RateCode" ToRole="Revision" />
           <NavigationProperty Name="RDSBRateCodeXrefs" Relationship="IESModel.FK_RDSBRateCodeXref_RateCode" FromRole="RateCode" ToRole="RDSBRateCodeXref" />
+          <Property Name="DisclosureTypeId" Type="Int32" />
+          <NavigationProperty Name="DisclosureTypeLU" Relationship="IESModel.FK_RateCode_DisclosureTypeLU" FromRole="RateCode" ToRole="DisclosureTypeLU" />
         </EntityType>
         <EntityType Name="RateCodeExtensionLU">
           <Key>
@@ -2079,6 +2214,51 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Property Name="IsOffline" Type="Boolean" Nullable="false" />
           <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
         </EntityType>
+        <EntityType Name="BoeDatabaseVersion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DBVersion" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="AppVersion" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="DisclosureTypeLU">
+          <Key>
+            <PropertyRef Name="DisclosureTypeID" />
+          </Key>
+          <Property Name="DisclosureTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DisclosureType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RateCodes" Relationship="IESModel.FK_RateCode_DisclosureTypeLU" FromRole="DisclosureTypeLU" ToRole="RateCode" />
+        </EntityType>
+        <EntityType Name="ELMAH_Error">
+          <Key>
+            <PropertyRef Name="ErrorId" />
+          </Key>
+          <Property Name="ErrorId" Type="Guid" Nullable="false" />
+          <Property Name="Application" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="Host" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Source" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="Message" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="User" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="StatusCode" Type="Int32" Nullable="false" />
+          <Property Name="TimeUtc" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Sequence" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AllXml" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="FK_RateCode_DisclosureTypeLU">
+          <End Type="IESModel.DisclosureTypeLU" Role="DisclosureTypeLU" Multiplicity="0..1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DisclosureTypeLU">
+              <PropertyRef Name="DisclosureTypeID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="DisclosureTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2300,6 +2480,7 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <EntitySetMapping Name="RateCodes">
             <EntityTypeMapping TypeName="IESModel.RateCode">
               <MappingFragment StoreEntitySet="RateCode">
+                <ScalarProperty Name="DisclosureTypeId" ColumnName="DisclosureTypeId" />
                 <ScalarProperty Name="CobraCode1ID" ColumnName="CobraCode1ID" />
                 <ScalarProperty Name="CobraRateSet" ColumnName="CobraRateSet" />
                 <ScalarProperty Name="RateTypeID" ColumnName="RateTypeID" />
@@ -2555,6 +2736,56 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="updateOfflineApplication" FunctionName="IESModel.Store.updateOfflineApplication" />
+          <EntitySetMapping Name="BoeDatabaseVersions">
+            <EntityTypeMapping TypeName="IESModel.BoeDatabaseVersion">
+              <MappingFragment StoreEntitySet="BoeDatabaseVersion">
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="AppVersion" ColumnName="AppVersion" />
+                <ScalarProperty Name="DBVersion" ColumnName="DBVersion" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DisclosureTypeLUs">
+            <EntityTypeMapping TypeName="IESModel.DisclosureTypeLU">
+              <MappingFragment StoreEntitySet="DisclosureTypeLU">
+                <ScalarProperty Name="DisclosureType" ColumnName="DisclosureType" />
+                <ScalarProperty Name="DisclosureTypeID" ColumnName="DisclosureTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ELMAH_Error">
+            <EntityTypeMapping TypeName="IESModel.ELMAH_Error">
+              <MappingFragment StoreEntitySet="ELMAH_Error">
+                <ScalarProperty Name="AllXml" ColumnName="AllXml" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="TimeUtc" ColumnName="TimeUtc" />
+                <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+                <ScalarProperty Name="User" ColumnName="User" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="Source" ColumnName="Source" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Host" ColumnName="Host" />
+                <ScalarProperty Name="Application" ColumnName="Application" />
+                <ScalarProperty Name="ErrorId" ColumnName="ErrorId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteProPricerRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.deleteProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="deleteRateCodeviaTableParameter" FunctionName="IESModel.Store.deleteRateCodeviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="ELMAH_GetErrorsXml" FunctionName="IESModel.Store.ELMAH_GetErrorsXml" />
+          <FunctionImportMapping FunctionImportName="ELMAH_GetErrorXml" FunctionName="IESModel.Store.ELMAH_GetErrorXml" />
+          <FunctionImportMapping FunctionImportName="ELMAH_LogError" FunctionName="IESModel.Store.ELMAH_LogError" />
+          <FunctionImportMapping FunctionImportName="insertProPricerRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.insertProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="insertRateCodeviaTableParameter" FunctionName="IESModel.Store.insertRateCodeviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="insertRateCodeYearviaTableParameter" FunctionName="IESModel.Store.insertRateCodeYearviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="insertRDSBRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.insertRDSBRateCodeXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="insertRDSBSectionXrefviaTableParameter" FunctionName="IESModel.Store.insertRDSBSectionXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="updateCobraDetailviaTableParameter" FunctionName="IESModel.Store.updateCobraDetailviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="UpdateDbVersion" FunctionName="IESModel.Store.UpdateDbVersion" />
+          <FunctionImportMapping FunctionImportName="updateProPricerRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.updateProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="updateRateCodeviaTableParameter" FunctionName="IESModel.Store.updateRateCodeviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="updateRateCodeYearviaTableParameter" FunctionName="IESModel.Store.updateRateCodeYearviaTableParameter" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
