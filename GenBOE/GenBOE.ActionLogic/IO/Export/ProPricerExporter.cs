@@ -494,6 +494,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							{
 								// need to split the task Resource
 								ResourceTypeDto split = new ResourceTypeDto(taskResource);
+								split.TaskElementId = taskResource.TaskElementId;
 								split.LegacyID = taskResource.LegacyID;
 								split.ProjectMapId = taskResource.ProjectMapId;
 								split.IsOffloaded = taskResource.IsOffloaded;
@@ -522,7 +523,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				splitResources.Add(taskResource);
 			}
 
-			return splitResources;
+			return splitResources.OrderBy(r => r.TaskElementId).ThenBy(t => t.Id).ThenBy(b => b.StartDate).ToList();
 		}
 
 		/// <summary>
@@ -969,6 +970,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			string proPricerId = null;
 			bool firstResourceTypeEntry = true;
+			int previousResourceTypeId = 0;
 			/*
              * Loop over the list of resource type entries (for the current task) that correspond to the designated Element of Cost (input parameter).
              * 
@@ -976,7 +978,15 @@ namespace GenBOE.ActionLogic.IO.Export
 			foreach (ResourceTypeDto resourceTypeEntry in taskResourcesEntriesForElementOfCost)
 			{
 				// ProjectMap only wants the task exported once whereas everyone else wants it 1:1 with the number of ResourceTypes inside it
-				if (firstResourceTypeEntry || !wsLevelData.IsProjectMapWorkspace)
+				bool generateNewTask = firstResourceTypeEntry || !wsLevelData.IsProjectMapWorkspace;
+
+				// Not generating new Task if this is a split resource for 1LMX
+				if (generateNewTask && previousResourceTypeId == resourceTypeEntry.Id)
+				{
+					generateNewTask = false;
+				}
+
+				if (generateNewTask)
 				{
 					// Pro Pricer Task ID. This may or may not be selected, but we may need to keep track of it for Resources too
 					string taskIDString = string.Empty;
@@ -1018,7 +1028,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				laborTypeIdToProPricerIdMappings[resourceTypeEntry.Id] = proPricerId;
 
-				if (firstResourceTypeEntry || !wsLevelData.IsProjectMapWorkspace)
+				if (generateNewTask)
 				{
 					firstResourceTypeEntry = false;
 					StringBuilder newTaskRow = new StringBuilder();
@@ -1206,6 +1216,8 @@ namespace GenBOE.ActionLogic.IO.Export
 						wsLevelData.PpDataToBeExported.TaskData.Add(newTaskRow.ToString());
 					}
 				}
+
+				previousResourceTypeId = resourceTypeEntry.Id;
 			}
 
 			return laborTypeIdToProPricerIdMappings;
