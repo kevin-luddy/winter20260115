@@ -22,7 +22,9 @@ CREATE PROCEDURE [dbo].[upsertSection]
 	@RevisionUniqueSectionId INT,
 	@IsRdsbRequired			BIT = 0,
 	@SectionContainsCasbDisclosure BIT,
+	@IsDisclosureStatementAdequate BIT,
 	@SectionContainsNonCompliance BIT,
+	@NonComplianceNotification BIT,
 	@Office					varchar(100),
 	@Agency				    varchar(100),
 	@LMBA					varchar(100),
@@ -59,6 +61,7 @@ AS
 	**		07/07/2022	Dusan				Added SectionContainsCasbDisclosure and SectionContainsNonCompliance
 	**		07/18/2023	May				    PROPH-925 Added address fields into section table
 	**		10/9/2023	May				    PROPH-931 Added IncludeInCoversheet field into section table
+	**		11/06/2023  Hazrat				PROPH-56 and 57 Added two Questions IsDisclosureStatementAdequate and NonComplianceNotification
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500)
@@ -89,7 +92,9 @@ AS
 					   ,[RevisionUniqueSectionId]
 					   ,[IsRdsbRequired]
 					   ,[SectionContainsCasbDisclosure]
+					   ,[IsDisclosureStatementAdequate]
 					   ,[SectionContainsNonCompliance]
+					   ,[NonComplianceNotification]
 					   ,[Office]
 					   ,[Agency]
 					   ,[LMBA]
@@ -114,7 +119,9 @@ AS
 					   ,@RevisionUniqueSectionId
 					   ,@IsRdsbRequired
 					   ,@SectionContainsCasbDisclosure
+					   ,@IsDisclosureStatementAdequate
 					   ,@SectionContainsNonCompliance
+					   ,@NonComplianceNotification
 					   ,@Office
 					   ,@Agency
 					   ,@LMBA
@@ -147,7 +154,9 @@ AS
 						   ,RevisionUniqueSectionId = @RevisionUniqueSectionId
 						   ,IsRdsbRequired = @IsRdsbRequired
 						   ,SectionContainsCasbDisclosure = @SectionContainsCasbDisclosure
+						   ,IsDisclosureStatementAdequate = @IsDisclosureStatementAdequate
 						   ,SectionContainsNonCompliance = @SectionContainsNonCompliance
+						   ,NonComplianceNotification = @NonComplianceNotification
 						   ,Office = @Office
 					       ,Agency =@Agency
 					       ,LMBA =@LMBA
