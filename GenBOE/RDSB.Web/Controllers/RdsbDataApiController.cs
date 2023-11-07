@@ -251,15 +251,15 @@ namespace RDSB.Web.Controllers
 		/// <returns>A collection of addresses</returns>
 		[HttpGet]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<SectionModelView> GetAddresses(int revision)
+		public IESResponse<SectionAddressModelView> GetAddresses(int revision)
 		{
-			IESResponse<SectionModelView> addresses = new IESResponse<SectionModelView>();
+			IESResponse<SectionAddressModelView> addresses = new IESResponse<SectionAddressModelView>();
 
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				addresses.Data = this.documentControllerLogic.GetAllAddresses(revision);
+				addresses.Data = this.documentControllerLogic.GetAddresses(revision);
 				addresses.IsSuccessful = true;
 			}
 			catch (Exception ex)

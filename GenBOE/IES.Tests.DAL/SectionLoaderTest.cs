@@ -512,14 +512,5 @@ namespace IES.Tests
             Assert.AreEqual("1.3", result.CasbSection);
             Assert.AreEqual("1.4", result.NonComplianceSection);
         }
-
-        /// <summary>
-        /// Tests GetAddresses
-        /// </summary>
-        [TestMethod]
-        public void TestGetAddresses()
-        {
-
-        }
     }
 }

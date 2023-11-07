@@ -63,7 +63,7 @@ namespace IES.DataBridge.Loaders
                 {
                     // Filter out Sections that don't have a Content Type of Section
                     sectionsForRevision = sectionsForRevision
-                        .Where(x => x.SectionContentTypeID == (int) SectionContentType.Section).ToCollection();
+                        .Where(x => x.SectionContentTypeID == (int)SectionContentType.Section).ToCollection();
                 }
 
                 if (sectionIds != null)
@@ -81,7 +81,7 @@ namespace IES.DataBridge.Loaders
                     DisplayOrder = r.DisplayOrder,
                     Title = r.Title,
                     TextContent = r.TextContent,
-                    ContentType = (SectionContentType) r.SectionContentTypeID,
+                    ContentType = (SectionContentType)r.SectionContentTypeID,
                     IsInternalSection = r.IsInternalSection,
                     DisplayRateCode = r.DisplayRateCode,
                     RevisionUniqueSectionId = r.RevisionUniqueSectionId,
@@ -95,7 +95,7 @@ namespace IES.DataBridge.Loaders
                     Street = r.Street,
                     CityST = r.CityST,
                     Phone = r.Phone,
-                    Email   = r.Email,
+                    Email = r.Email,
                     Other = r.Other,
                     IncludeInCoversheet = r.IncludeInCoversheet,
                 }).ToList();
@@ -335,8 +335,8 @@ namespace IES.DataBridge.Loaders
                     result = iesEntities.upsertSection(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.RevisionId,
                         dtoToUpsert.ParentId, dtoToUpsert.DisplayOrder, dtoToUpsert.Title,
                         dtoToUpsert.TextContent, (int)dtoToUpsert.ContentType, dtoToUpsert.IsInternalSection,
-                        dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired, 
-                        dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.SectionContainsNonCompliance, 
+                        dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired,
+                        dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.SectionContainsNonCompliance,
                         dtoToUpsert.Office, dtoToUpsert.Agency, dtoToUpsert.LMBA, dtoToUpsert.Name, dtoToUpsert.Street, dtoToUpsert.CityST, dtoToUpsert.Phone, dtoToUpsert.Email, dtoToUpsert.Other, dtoToUpsert.IncludeInCoversheet
                         ).First();
                 }
@@ -499,6 +499,78 @@ namespace IES.DataBridge.Loaders
             }
         }
         #endregion
+
+        /// <summary>
+        /// Get all addresses, regardless if a section is a parent or not
+        /// </summary>
+        public ICollection<SectionAddressModelView> GetAddresses(int revision)
+        {
+            ICollection<SectionAddressModelView> result = new List<SectionAddressModelView>();
+            IList<SectionAddressParentModelView> allSections = new List<SectionAddressParentModelView>();
+            IList<Section> addresses = new List<Section>();
+
+			using (IESEntities context = new IESEntities())
+            {
+                SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
+                allSections = context.Sections.Select(x =>
+                new SectionAddressParentModelView
+				{
+                    Id = x.ID,
+                    Title = x.Title,
+                    ParentID = x.ParentID
+                }).ToList();
+                addresses = context.Sections
+                    .Where(x => x.SectionContentTypeID == addressType.ID && x.RevisionID == revision && x.IncludeInCoversheet.Value).ToList();
+                allSections = allSections.ToList();
+            }
+
+            // Get section titles
+            foreach (var addressIterator in addresses)
+            {
+                SectionAddressParentModelView address = new SectionAddressParentModelView
+                {
+					Id = addressIterator.ID,
+					Title = addressIterator.Title,
+					ParentID = addressIterator.ParentID
+				};
+                string title = GetSectionTitle(address, allSections);
+                addressIterator.Title = title;
+            }
+
+            result = addresses.Select(x =>
+                new SectionAddressModelView
+                {
+                    Id = x.ID,
+                    Title = x.Title,
+                    Office = x.Office,
+                    Agency = x.Agency,
+                    LMBA = x.LMBA,
+                    Name = x.Name,
+                    Street = x.Street,
+                    CityST = x.CityST,
+                    Phone = x.Phone,
+                    Email = x.Email,
+                    Other = x.Other
+                }).ToList();
+
+			return result;
+        }
+
+        private string GetSectionTitle(SectionAddressParentModelView address, IList<SectionAddressParentModelView> allSections)
+        {
+            string title = string.Empty;
+            SectionAddressParentModelView parentSection = allSections.Where(x => x.Id == address.ParentID).FirstOrDefault();
+            if (parentSection.ParentID == null)
+            {
+                title = parentSection.Title;
+            }
+            else
+            {
+                title += GetSectionTitle(parentSection, allSections) + "; " + parentSection.Title;
+            }
+
+            return title;
+        }
 
         /// <summary>
         /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Disclosure data
