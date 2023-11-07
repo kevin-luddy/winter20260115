@@ -16,6 +16,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using System.Web;
 	using DataBridge.Loaders;
+	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenTRAC.DataBridge.Common.Security;
 	using GenTRAC.DataBridge.DTO;
 	using IES.Common;
@@ -892,6 +893,25 @@ namespace IES.ActionLogic.ControllerLogic
 
 			return rateSections;
 		}
+
+		/// <summary>
+		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
+		/// </summary>
+		/// <param name="revision">The specific version of PPR&D</param>
+		/// <returns>A collection of addresses</returns>
+		public ICollection<SectionModelView> GetAllAddresses(int revision)
+		{
+			ICollection<SectionModelView> sections =
+				this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revision })
+				.Where(x => (x.IncludeInCoversheet.HasValue && x.IncludeInCoversheet.Value) && x.RevisionId == revision).ToList();
+
+			var test = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revision });
+			test = test.ToList();
+
+			return sections;
+		}
+
+
 
 		private static void AddSectionsToDictionary(ICollection<SectionModelView> sections, Dictionary<int, string> sectionIdToParentSection)
 		{
