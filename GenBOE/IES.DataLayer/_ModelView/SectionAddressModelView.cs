@@ -66,10 +66,5 @@ namespace IES.DataBridge.ModelViews
 		/// The email
 		/// </summary>
 		public string Email { get; set; }
-
-		/// <summary>
-		/// Other info
-		/// </summary>
-		public string Other { get; set; }
 	}
 }

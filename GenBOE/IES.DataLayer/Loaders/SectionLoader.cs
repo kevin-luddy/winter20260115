@@ -555,7 +555,6 @@ namespace IES.DataBridge.Loaders
                     CityST = x.CityST,
                     Phone = x.Phone,
                     Email = x.Email,
-                    Other = x.Other
                 }).ToList();
 
 			return result;
