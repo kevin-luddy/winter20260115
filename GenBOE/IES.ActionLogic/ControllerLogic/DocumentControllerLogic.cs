@@ -16,7 +16,6 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using System.Web;
 	using DataBridge.Loaders;
-	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenTRAC.DataBridge.Common.Security;
 	using GenTRAC.DataBridge.DTO;
 	using IES.Common;
@@ -908,8 +907,6 @@ namespace IES.ActionLogic.ControllerLogic
 
 			return sections;
 		}
-
-
 
 		private static void AddSectionsToDictionary(ICollection<SectionModelView> sections, Dictionary<int, string> sectionIdToParentSection)
 		{

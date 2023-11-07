@@ -515,12 +515,12 @@ namespace IES.DataBridge.Loaders
             IList<SectionAddressParentModelView> allSections = new List<SectionAddressParentModelView>();
             IList<Section> addresses = new List<Section>();
 
-			using (IESEntities context = new IESEntities())
+            using (IESEntities context = new IESEntities())
             {
                 SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
                 allSections = context.Sections.Select(x =>
                     new SectionAddressParentModelView
-				    {
+                    {
                         Id = x.ID,
                         Title = x.Title,
                         ParentID = x.ParentID
@@ -534,10 +534,10 @@ namespace IES.DataBridge.Loaders
             {
                 SectionAddressParentModelView address = new SectionAddressParentModelView
                 {
-					Id = addressIterator.ID,
-					Title = addressIterator.Title,
-					ParentID = addressIterator.ParentID
-				};
+                    Id = addressIterator.ID,
+                    Title = addressIterator.Title,
+                    ParentID = addressIterator.ParentID
+                };
                 string title = GetSectionTitle(address, allSections);
                 addressIterator.Title = title;
             }
@@ -557,7 +557,7 @@ namespace IES.DataBridge.Loaders
                     Email = x.Email,
                 }).ToList();
 
-			return result;
+            return result;
         }
 
         /// <summary>
