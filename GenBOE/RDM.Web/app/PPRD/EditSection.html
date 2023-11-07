@@ -37,7 +37,7 @@
 			<div class="form-row sub-form-row">
 				<div class="form-label section-checkbox md-long-text">Has the Disclosure Statement been determined adequate</div>
 				<div class="form-element">
-					<input id="IsDisclosureStatementAdequateCheckbox" data-ng-disabled="isReadOnly || model.SectionContainsCasbDisclosure == false" type="checkbox" data-ng-model="model.IsDisclosureStatementAdequate" />
+					<input id="IsDisclosureStatementAdequateCheckbox" data-ng-disabled="isReadOnly || model.SectionContainsCasbDisclosure == false" type="checkbox" data-ng-model="model.IsDisclosureStatementAdequate" data-ng-change="showPublishErrors()" />
 				</div>
 			</div>
 			<div class="form-row">
@@ -49,7 +49,7 @@
 			<div class="form-row sub-form-row">
 				<div class="form-label section-checkbox md-long-text">Have you been notified that you may be in noncompliance with your Disclosure Statement or Cost Account Standards</div>
 				<div class="form-element">
-					<input id="NonComplianceNotificationCheckbox" data-ng-disabled="isReadOnly || model.SectionContainsNonCompliance == false" type="checkbox" data-ng-model="model.NonComplianceNotification" />
+					<input id="NonComplianceNotificationCheckbox" data-ng-disabled="isReadOnly || model.SectionContainsNonCompliance == false" type="checkbox" data-ng-model="model.NonComplianceNotification" data-ng-change="showPublishErrors()" />
 				</div>
 			</div>
 			<div class="modal-footer">
