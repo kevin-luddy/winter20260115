@@ -507,6 +507,8 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// Get all addresses, regardless if a section is a parent or not
         /// </summary>
+        /// <param name="revision">The PPR&D revision ID</param>
+        /// <returns>A collection of addresses, complete with a section title</returns>
         public ICollection<SectionAddressModelView> GetAddresses(int revision)
         {
             ICollection<SectionAddressModelView> result = new List<SectionAddressModelView>();
@@ -517,15 +519,14 @@ namespace IES.DataBridge.Loaders
             {
                 SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
                 allSections = context.Sections.Select(x =>
-                new SectionAddressParentModelView
-				{
-                    Id = x.ID,
-                    Title = x.Title,
-                    ParentID = x.ParentID
-                }).ToList();
+                    new SectionAddressParentModelView
+				    {
+                        Id = x.ID,
+                        Title = x.Title,
+                        ParentID = x.ParentID
+                    }).ToList();
                 addresses = context.Sections
                     .Where(x => x.SectionContentTypeID == addressType.ID && x.RevisionID == revision && x.IncludeInCoversheet.Value).ToList();
-                allSections = allSections.ToList();
             }
 
             // Get section titles
@@ -560,6 +561,12 @@ namespace IES.DataBridge.Loaders
 			return result;
         }
 
+        /// <summary>
+        /// Recursively gets the section title for an address, EX: "Introduction; Section 2B; Part 4"
+        /// </summary>
+        /// <param name="address">The section info for the address</param>
+        /// <param name="allSections">All the sections</param>
+        /// <returns>The complete section title for an address, including children section titles</returns>
         private string GetSectionTitle(SectionAddressParentModelView address, IList<SectionAddressParentModelView> allSections)
         {
             string title = string.Empty;

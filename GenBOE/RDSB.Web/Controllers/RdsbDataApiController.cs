@@ -247,7 +247,7 @@ namespace RDSB.Web.Controllers
 		/// <summary>
 		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
 		/// </summary>
-		/// <param name="revision">The specific version of PPR&D</param>
+		/// <param name="revision">The specific version ID of PPR&D</param>
 		/// <returns>A collection of addresses</returns>
 		[HttpGet]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
