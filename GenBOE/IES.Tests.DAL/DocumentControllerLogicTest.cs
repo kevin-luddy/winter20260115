@@ -836,5 +836,31 @@ namespace IES.Tests
 			Assert.IsNotNull(results.FirstOrDefault(r => r.rateDescription == "Titusville Development Lvl 1"));
 			Assert.AreEqual("3", results.FirstOrDefault(r => r.rateDescription == "Titusville Development Lvl 1").parentSectionNumber);
 		}
+
+		/// <summary>
+		/// Tests GetAddresses
+		/// </summary>
+		[TestMethod]
+		public void TestGetAddresses()
+		{
+            IDocumentControllerLogic sut = CreateSut();
+			int existingRevisionId;
+
+			using (IESEntities context = new IESEntities())
+			{
+                Revision existingRevision = context.Revisions.LastOrDefault();
+                existingRevisionId = existingRevision.ID;
+			}
+
+			ICollection<SectionModelView> result = sut.GetAllAddresses(existingRevisionId);
+
+            Assert.IsNotNull(result);
+            if (result.Any())
+            {
+                SectionModelView oneAddress = result.FirstOrDefault();
+                Assert.IsTrue(oneAddress.IncludeInCoversheet.HasValue);
+                Assert.IsTrue(oneAddress.IncludeInCoversheet.Value);
+            }
+        }
 	}
 }

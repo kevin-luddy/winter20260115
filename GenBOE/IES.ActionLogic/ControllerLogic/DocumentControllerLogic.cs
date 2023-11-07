@@ -901,14 +901,10 @@ namespace IES.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="revision">The specific version of PPR&D</param>
 		/// <returns>A collection of addresses</returns>
-		public ICollection<SectionModelView> GetAllAddresses(int revision)
+		public ICollection<SectionAddressModelView> GetAddresses(int revision)
 		{
-			ICollection<SectionModelView> sections =
-				this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revision })
-				.Where(x => (x.IncludeInCoversheet.HasValue && x.IncludeInCoversheet.Value) && x.RevisionId == revision).ToList();
-
-			var test = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revision });
-			test = test.ToList();
+			ICollection<SectionAddressModelView> sections = new List<SectionAddressModelView>();
+			sections = this.sectionLoader.GetAddresses(revision);
 
 			return sections;
 		}

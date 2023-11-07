@@ -504,15 +504,87 @@ namespace IES.DataBridge.Loaders
 		}
 		#endregion
 
-		/// <summary>
-		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Disclosure data
-		/// </summary>
-		/// <param name="proposalId">PTM Proposal ID</param>
-		/// <returns>Data to support a Cover Sheet creation</returns>
-		public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
-		{
-			string casbSection = null;
-			string nonCompliance = null;
+        /// <summary>
+        /// Get all addresses, regardless if a section is a parent or not
+        /// </summary>
+        public ICollection<SectionAddressModelView> GetAddresses(int revision)
+        {
+            ICollection<SectionAddressModelView> result = new List<SectionAddressModelView>();
+            IList<SectionAddressParentModelView> allSections = new List<SectionAddressParentModelView>();
+            IList<Section> addresses = new List<Section>();
+
+			using (IESEntities context = new IESEntities())
+            {
+                SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
+                allSections = context.Sections.Select(x =>
+                new SectionAddressParentModelView
+				{
+                    Id = x.ID,
+                    Title = x.Title,
+                    ParentID = x.ParentID
+                }).ToList();
+                addresses = context.Sections
+                    .Where(x => x.SectionContentTypeID == addressType.ID && x.RevisionID == revision && x.IncludeInCoversheet.Value).ToList();
+                allSections = allSections.ToList();
+            }
+
+            // Get section titles
+            foreach (var addressIterator in addresses)
+            {
+                SectionAddressParentModelView address = new SectionAddressParentModelView
+                {
+					Id = addressIterator.ID,
+					Title = addressIterator.Title,
+					ParentID = addressIterator.ParentID
+				};
+                string title = GetSectionTitle(address, allSections);
+                addressIterator.Title = title;
+            }
+
+            result = addresses.Select(x =>
+                new SectionAddressModelView
+                {
+                    Id = x.ID,
+                    Title = x.Title,
+                    Office = x.Office,
+                    Agency = x.Agency,
+                    LMBA = x.LMBA,
+                    Name = x.Name,
+                    Street = x.Street,
+                    CityST = x.CityST,
+                    Phone = x.Phone,
+                    Email = x.Email,
+                    Other = x.Other
+                }).ToList();
+
+			return result;
+        }
+
+        private string GetSectionTitle(SectionAddressParentModelView address, IList<SectionAddressParentModelView> allSections)
+        {
+            string title = string.Empty;
+            SectionAddressParentModelView parentSection = allSections.Where(x => x.Id == address.ParentID).FirstOrDefault();
+            if (parentSection.ParentID == null)
+            {
+                title = parentSection.Title;
+            }
+            else
+            {
+                title += GetSectionTitle(parentSection, allSections) + "; " + parentSection.Title;
+            }
+
+            return title;
+        }
+
+        /// <summary>
+        /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Disclosure data
+        /// </summary>
+        /// <param name="proposalId">PTM Proposal ID</param>
+        /// <returns>Data to support a Cover Sheet creation</returns>
+        public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+        {
+            string casbSection = null;
+            string nonCompliance = null;
 
 			using (IESEntities context = new IESEntities())
 			{

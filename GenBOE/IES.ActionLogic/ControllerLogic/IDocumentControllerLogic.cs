@@ -141,6 +141,6 @@ namespace IES.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="revision">The specific version of PPR&D</param>
 		/// <returns>A collection of addresses</returns>
-		ICollection<SectionModelView> GetAllAddresses(int revision);
+		ICollection<SectionAddressModelView> GetAddresses(int revision);
 	}
 }
