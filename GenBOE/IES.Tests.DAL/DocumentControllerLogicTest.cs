@@ -848,18 +848,17 @@ namespace IES.Tests
 
 			using (IESEntities context = new IESEntities())
 			{
-                Revision existingRevision = context.Revisions.LastOrDefault();
+                Revision existingRevision = context.Revisions.ToList().LastOrDefault();
                 existingRevisionId = existingRevision.ID;
 			}
 
-			ICollection<SectionModelView> result = sut.GetAllAddresses(existingRevisionId);
+			ICollection<SectionAddressModelView> result = sut.GetAddresses(existingRevisionId);
 
             Assert.IsNotNull(result);
             if (result.Any())
             {
-                SectionModelView oneAddress = result.FirstOrDefault();
-                Assert.IsTrue(oneAddress.IncludeInCoversheet.HasValue);
-                Assert.IsTrue(oneAddress.IncludeInCoversheet.Value);
+                SectionAddressModelView oneAddress = result.FirstOrDefault();
+                Assert.IsTrue(oneAddress.Id != 0);
             }
         }
 	}
