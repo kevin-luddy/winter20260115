@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2023 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -11,6 +11,10 @@ namespace IES.DataBridge.ModelViews
 	using System.Linq;
 	using System.Text;
 	using System.Threading.Tasks;
+
+	/// <summary>
+	/// A truncated model of the Section object, used for recursively traversing through sections to get the Title
+	/// </summary>
 	public class SectionAddressParentModelView
 	{
 		/// <summary>
