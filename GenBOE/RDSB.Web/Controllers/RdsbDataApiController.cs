@@ -21,6 +21,7 @@ namespace RDSB.Web.Controllers
 	using IES.ActionLogic.ControllerLogic;
 	using IES.Common;
 	using IES.Common.OfficeUtilities;
+	using IES.DataBridge.ModelViews;
 
 	/// <summary>
 	/// RDSB Data API Controller - used to serve up RDSB data for ACV (or other applications as needed)
@@ -241,6 +242,33 @@ namespace RDSB.Web.Controllers
 			}
 
 			return toReturn;
+		}
+
+		/// <summary>
+		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
+		/// </summary>
+		/// <param name="revision">The specific version ID of PPR&D</param>
+		/// <returns>A collection of addresses</returns>
+		[HttpGet]
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<SectionAddressModelView> GetAddresses(int revision)
+		{
+			IESResponse<SectionAddressModelView> addresses = new IESResponse<SectionAddressModelView>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				addresses.Data = this.documentControllerLogic.GetAddresses(revision);
+				addresses.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				addresses.Messages.Add($"Error occurred while retrieving address data from RDSB");
+			}
+
+			return addresses;
 		}
 	}
 }

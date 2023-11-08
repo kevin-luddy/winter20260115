@@ -895,6 +895,19 @@ namespace IES.ActionLogic.ControllerLogic
 			return rateSections;
 		}
 
+		/// <summary>
+		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
+		/// </summary>
+		/// <param name="revision">The specific version ID of PPR&D</param>
+		/// <returns>A collection of addresses</returns>
+		public ICollection<SectionAddressModelView> GetAddresses(int revision)
+		{
+			ICollection<SectionAddressModelView> sections = new List<SectionAddressModelView>();
+			sections = this.sectionLoader.GetAddresses(revision);
+
+			return sections;
+		}
+
 		private static void AddSectionsToDictionary(ICollection<SectionModelView> sections, Dictionary<int, string> sectionIdToParentSection)
 		{
 			foreach (SectionModelView section in sections)

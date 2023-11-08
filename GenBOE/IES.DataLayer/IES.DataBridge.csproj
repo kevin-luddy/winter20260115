@@ -181,6 +181,8 @@
     <Compile Include="_ModelView\IESUpdateableModelView.cs" />
     <Compile Include="_ModelView\ReportsModelView.cs" />
     <Compile Include="_ModelView\RevisionOptionModelView.cs" />
+    <Compile Include="_ModelView\SectionAddressModelView.cs" />
+    <Compile Include="_ModelView\SectionAddressParentModelView.cs" />
     <Compile Include="_ModelView\SectionDetailModelView.cs" />
     <Compile Include="_ModelView\SectionModelView.cs" />
     <Compile Include="_ModelView\VersionComparisonGridRowModelView.cs" />
