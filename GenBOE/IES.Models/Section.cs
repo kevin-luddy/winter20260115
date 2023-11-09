@@ -47,6 +47,8 @@ namespace IES.Models
         public string Email { get; set; }
         public string Other { get; set; }
         public Nullable<bool> IncludeInCoversheet { get; set; }
+        public Nullable<bool> IsDisclosureStatementAdequate { get; set; }
+        public Nullable<bool> NonComplianceNotification { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RateCode> RateCodes { get; set; }

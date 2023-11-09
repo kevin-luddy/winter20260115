@@ -325,7 +325,7 @@
             });
             
             modalInstance.rendered.then(function () {
-                utilityService.makeModalDraggableAndResizable('#editSectionModal', 160, 500);
+                utilityService.makeModalDraggableAndResizable('#editSectionModal', 160, 700);
             });
 
             modalInstance.result.then(function (section) {

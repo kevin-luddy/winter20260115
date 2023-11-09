@@ -135,7 +135,7 @@
                 </div>
             <%}%>
 
-            <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) { %>
+            <% if (SiteMasterUtilities.ShowIesHeader) { %>
             <iframe class="iframe" src="<%:ConfigurationUtilities.IESHeaderUrl("BOE")%>"></iframe>
             <% } %>
             <div class="title">

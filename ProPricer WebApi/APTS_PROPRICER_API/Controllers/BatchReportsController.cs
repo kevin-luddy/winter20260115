@@ -200,7 +200,11 @@ namespace APTSPropricerApi.Controllers
 						{
 							Cell cell = rowEnumerator.Current as Aspose.Cells.Cell;
 
-							if (cell.Value != null)
+							if (cell.DisplayStringValue != null)
+							{
+								convertedRow.Cells.Add(new DetailedCell() { Value = cell.DisplayStringValue, ColumnRowValue = cell.Name });
+							}
+							else if (cell.Value != null)
 							{
 								convertedRow.Cells.Add(new DetailedCell() { Value = cell.Value.ToString(), ColumnRowValue = cell.Name });
 							}

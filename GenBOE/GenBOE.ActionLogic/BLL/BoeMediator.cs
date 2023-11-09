@@ -96,7 +96,7 @@ namespace GenBOE.ActionLogic.BLL
                 }
 
                 Collection<PermissionsDTO> boePermissions = this.permissionLoader.GetBOEPermissions(boeIds);
-                Collection<PermissionsDTO> wsPermissions = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(wsId);
+                Collection<PermissionsDTO> wsPermissions = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(wsId).ToCollection();
 
                 foreach (PermissionsDTO permission in boePermissions)
                 {
@@ -117,7 +117,10 @@ namespace GenBOE.ActionLogic.BLL
                         permission.PermissionId = -1;
 
                         this.permissionLoader.SavePermission(permission);
-                    }
+
+                        // Now, we need to add the saved permission into the "running list" so we don't mistakenly try to add the same user multiple times
+                        wsPermissions.Add(permission);
+					}
                 }
             }
 

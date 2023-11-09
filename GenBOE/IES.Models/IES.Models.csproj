@@ -66,6 +66,9 @@
     <Compile Include="Banner.cs">
       <DependentUpon>IESEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="BoeDatabaseVersion.cs">
+      <DependentUpon>IESEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="BurdenElementLU.cs">
       <DependentUpon>IESEntityModel.tt</DependentUpon>
     </Compile>
@@ -82,6 +85,12 @@
       <DependentUpon>IESEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="copyRevision_Result.cs">
+      <DependentUpon>IESEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DisclosureTypeLU.cs">
+      <DependentUpon>IESEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ELMAH_Error.cs">
       <DependentUpon>IESEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ExportCobraRates_Result.cs">

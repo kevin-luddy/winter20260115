@@ -35,6 +35,11 @@ namespace IES.ActionLogic.Validation
         /// </summary>
         public const string RATEMAPPING_RATETYPE_REQUIRED = "Rate Type Required for ProPricer Direct Rate Mapping.";
 
+		/// <summary>
+		/// No Disclosure Type Selected
+		/// </summary>
+		public const string RATEMAPPING_DISCLOSURETYPE_REQUIRED = "Disclosure Type Required for ProPricer Direct Rate Mapping.";
+
         /// <summary>
         /// No Resource Type Selected
         /// </summary>
