@@ -9,6 +9,7 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.ObjectModel;
     using System.Collections.Generic;
     using GenBOE.Dtos;
+	using IES.Common;
 
     public interface IUserDTODataLoader
     {
@@ -80,5 +81,19 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="outUserId">if the group exists, return the id</param>
         /// <returns>true/false user exists</returns>
         bool UserExists(string inUserNTID, out int outUserId);
-    }
+
+        /// <summary>
+        /// Save Message Confirmation for a User
+        /// </summary>
+        /// <param name="userID">The User's ID</param>
+        /// <param name="message">The Confirmation Message</param>
+		void SaveMessageConfirmation(int userID, ConfirmationMessage message);
+
+        /// <summary>
+        /// Returns list of Message Confirmations for the User
+        /// </summary>
+        /// <param name="userID">ETI User ID</param>
+        /// <returns>List of Message Confirmations for the User</returns>
+        ICollection<ConfirmationMessage> GetMessageConfirmations(int userID);
+	}
 }

@@ -306,9 +306,49 @@
                   'This is not a supported browser.  Please use Internet Explorer 8.0, Firefox 3.6, '
                   + 'or higher versions of these recommended browsers for the best experience. '
                   + 'Select OK to continue with your current browser.  <br/><br/>');
-            }
+			}
+
+			var displayEciMessage = '<%: (bool)ViewData["DisplayECIMessage"] %>';
+			if (displayEciMessage == "True") {
+				GenSession.commonDialog('ECI Forbidden',
+					'<p>You have chosen to access the International genBOE Environment. This genBOE environment is accessible to international users throughout LM as well as within the United States. Export Controlled Information (ECI) is <strong>Forbidden</strong> on this site.</p>' +
+					'<br/><p>By pressing "Ok" you agree / acknowledge that you will <strong>NOT</strong> record any <strong>Export Controlled Information(ECI)</strong> into any field on this site. Upon pressing "Ok" you will be permitted access to the site and your acknowledgment will be documented in the genBOE database.To learn more about Export Controlled Information(ECI), please click HERE.</p>',
+					[{
+						buttonClass: "ies",
+						ButtonText: 'Ok',
+						ButtonName: 'yes-button',
+						callbackMethod: function () {
+							// call the server to do update the confirmation for the user
+							var data = '{ "message" : "<%: (int)ConfirmationMessage.ECI_FORBIDDEN%>" }';
+				            $.ajax({
+					            type: 'POST',
+					            async: false, // call MUST be synchronous so args.content will be set before the function exits
+					            url: '/default/GenBOE/ConfirmMessage',
+					            contentType: 'application/json; charset=utf-8',
+					            data: data,
+					            dataType: 'json',
+					            success: function (response) {
+					            },
+					            error: function (response) {
+					            },
+					            complete: function (response) {
+					            }
+				            });
+			            }
+		            }, {
+				            buttonClass: "ies",
+				            ButtonText: 'Exit',
+				            ButtonName: 'no-button',
+						callbackMethod: function () { window.location.replace('https://www.lockheedmartin.com') }
+			            }],
+		            600,
+		            // close button clicked
+					function () { window.location.replace('https://www.lockheedmartin.com') },
+		            undefined,
+	            );
+			}
         });
-    </script>
+	</script>
 
     <% 
         if (ViewData["IsAdmin"] != null && (bool)ViewData["IsAdmin"] == true)

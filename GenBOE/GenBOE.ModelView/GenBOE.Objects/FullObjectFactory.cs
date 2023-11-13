@@ -540,5 +540,16 @@ namespace GenBOE.Objects
         {
             return this.customFieldLoader.GetByIds(customFieldIds);
         }
+
+        /// <summary>
+        /// Returns whether a User has confirmed a message
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool GetUserConfirmedMessages(ConfirmationMessage message)
+        {
+			UserDTO currentUser = this.userLoader.GetUserForActiveUser();
+			return this.userLoader.GetMessageConfirmations(currentUser.UserID).Contains(message);
+		}
     }
 }

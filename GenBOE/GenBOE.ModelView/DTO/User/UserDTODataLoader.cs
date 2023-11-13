@@ -103,12 +103,48 @@ namespace GenBOE.DataBridge.DTO
         }
 
         /// <summary>
-        /// See if a user exists in the database.
+        /// Save Message Confirmation for a User
         /// </summary>
-        /// <param name="inUserNTID">user ntid to check for</param>
-        /// <param name="outUserId">if the group exists, return the id</param>
-        /// <returns>true/false user exists</returns>
+        /// <param name="userID">The User's ID</param>
+        /// <param name="message">The Confirmation Message</param>
         [DbQuery]
+        public virtual void SaveMessageConfirmation(int userID, ConfirmationMessage message)
+        {
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+                gbe.insertMessageConfirmation(userID, (int)message);
+			}
+		}
+
+		/// <summary>
+		/// Returns list of Message Confirmations for the User
+		/// </summary>
+		/// <param name="userID">ETI User ID</param>
+		/// <returns>List of Message Confirmations for the User</returns>
+		[DbQuery]
+		public virtual ICollection<ConfirmationMessage> GetMessageConfirmations(int userID)
+        {
+            ICollection<ConfirmationMessage> toReturn = new List<ConfirmationMessage>();
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				var resultsLinq = from c in gbe.MessageConfirmations
+								  where c.ETIUserId == userID
+								  select c.MessageId;
+
+				toReturn = resultsLinq.Select(r => (ConfirmationMessage)r).ToList();
+			}
+
+			return toReturn;
+        }
+
+		/// <summary>
+		/// See if a user exists in the database.
+		/// </summary>
+		/// <param name="inUserNTID">user ntid to check for</param>
+		/// <param name="outUserId">if the group exists, return the id</param>
+		/// <returns>true/false user exists</returns>
+		[DbQuery]
         virtual public bool UserExists(string inUserNTID, out int outUserId)
         {
             using (GenBoeEntities gbe = new GenBoeEntities())
