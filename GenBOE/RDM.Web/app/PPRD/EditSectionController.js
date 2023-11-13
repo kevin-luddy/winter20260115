@@ -2,6 +2,7 @@
 angular.module('RDM').controller('EditSectionController', ['$scope', '$uibModalInstance', '$rootScope', 'model', function ($scope, $uibModalInstance, $rootScope, model) {
     $scope.model = model;
 	$rootScope.modalErrors = [];
+	$scope.showWarnings = false;
 
 	if (model.Id == -1) {
 		model.SectionContainsCasbDisclosure = false;
@@ -29,6 +30,6 @@ angular.module('RDM').controller('EditSectionController', ['$scope', '$uibModalI
 	};
 
 	$scope.showPublishErrors = function () {
-		$rootScope.modalErrors = [{ ValidationIssue: "Setting change will not become active until the PPR&D is published" }];
+		$scope.showWarnings = true;
 	}
 }]);
