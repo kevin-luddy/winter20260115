@@ -5,6 +5,11 @@
 			<div class="form-row css3pie-position-fix">
 				<div gen-validation data-errors="$root.modalErrors"></div>
 			</div>
+			<div class="form-row css3pie-position-fix warnings" ng-show="showWarnings">
+				<ul>
+					<li>Setting change will not become active until the PPR&D is published</li>
+				</ul>
+			</div>
 			<div class="form-row">
 				<div class="form-label">Title *</div>
 				<div class="form-element">
