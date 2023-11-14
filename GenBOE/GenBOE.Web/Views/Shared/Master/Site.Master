@@ -312,7 +312,7 @@
 			if (displayEciMessage == "True") {
 				GenSession.commonDialog('ECI Forbidden',
 					'<p>You have chosen to access the International genBOE Environment. This genBOE environment is accessible to international users throughout LM as well as within the United States. Export Controlled Information (ECI) is <strong>Forbidden</strong> on this site.</p>' +
-					'<br/><p>By pressing "Ok" you agree / acknowledge that you will <strong>NOT</strong> record any <strong>Export Controlled Information(ECI)</strong> into any field on this site. Upon pressing "Ok" you will be permitted access to the site and your acknowledgment will be documented in the genBOE database.To learn more about Export Controlled Information(ECI), please click HERE.</p>',
+					'<br/><p>By pressing "Ok" you agree / acknowledge that you will <strong>NOT</strong> record any <strong>Export Controlled Information(ECI)</strong> into any field on this site. Upon pressing "Ok" you will be permitted access to the site and your acknowledgment will be documented in the genBOE database.To learn more about Export Controlled Information(ECI), please click <a href="https://lockheed.plateau.com/learning/user/common/viewItemDetails.do?componentTypeID=COURSE&componentID=000027WPL00&revisionDate=157784401000&catalogCurrencyCode=USD&returnLink=%2Flearning%2Fuser%2Fcatalogsearch%2FcatalogSearchDispatchAction.do%3FsearchType%3DfilteredSearch%26keywords%3D&backto=%2Flearning%2Fuser%2Fcatalogsearch%2FcatalogSearchDispatchAction.do%3FsearchType%3DfilteredSearch%26keywords%3D#/968AEC5CFF86D8DEE10000000A6CA48D" target="_blank">HERE</a>.</p>',
 					[{
 						buttonClass: "ies",
 						ButtonText: 'Ok',
