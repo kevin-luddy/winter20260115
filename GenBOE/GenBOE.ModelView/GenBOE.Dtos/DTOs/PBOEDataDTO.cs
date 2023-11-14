@@ -43,6 +43,10 @@ namespace GenBOE.Dtos
 			this.IsCompetitionException = null;
 			this.IsCCoPDOtherException = null;
 			this.IsCCoPDThresholdException = null;
+			this.TechnicalEvaluation = null;
+			this.TechnicalEvaluationDate = null;
+			this.RFPReleaseToSupplierDate = null;
+			this.SupplierNegotiationsDate = null;
 	}
 
 		/// <summary>
@@ -139,6 +143,25 @@ namespace GenBOE.Dtos
 		/// Cost Analysis Unqualified Date
 		/// </summary>
 		public DateTime? CostAnalysisUnqualifiedDate { get; set; }
-	}
 
+		/// <summary>
+		/// Technical Evaluation
+		/// </summary>
+		public ScheduleEvent? TechnicalEvaluation { get; set; }
+
+		/// <summary>
+		/// Technical Evaluation Date
+		/// </summary>
+		public DateTime? TechnicalEvaluationDate { get; set; }
+
+		/// <summary>
+		/// RFP Release to Supplier Date
+		/// </summary>
+		public DateTime? RFPReleaseToSupplierDate { get; set; }
+
+		/// <summary>
+		/// Supplier Negotiations Date
+		/// </summary>
+		public DateTime? SupplierNegotiationsDate { get; set; }
+	}
 }

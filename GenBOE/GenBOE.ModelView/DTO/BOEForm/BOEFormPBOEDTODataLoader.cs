@@ -306,7 +306,11 @@ namespace GenBOE.DataBridge.DTO
 									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
 									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
 									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
-									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -366,7 +370,11 @@ namespace GenBOE.DataBridge.DTO
 									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
 									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
 									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
-									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate
 								}).ToList();
 
 					// Post processing for sub resources and total cost

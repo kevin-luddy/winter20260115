@@ -824,7 +824,11 @@ namespace GenBOE.Web.Controllers
 						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
 						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
 						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
-						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault()
+						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
+						TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
+						TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
+						RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
+						SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
 					}).ToList();
 
 					result.IsSuccessful = true;
@@ -889,7 +893,11 @@ namespace GenBOE.Web.Controllers
 						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
 						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
 						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
-						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault()
+						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
+						TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
+						TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
+						RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
+						SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault()
 					}).ToList();
 
 					result.IsSuccessful = true;

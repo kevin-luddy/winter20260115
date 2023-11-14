@@ -114,5 +114,26 @@ namespace GenBOE.Web.ModelView
 		/// </summary>
 		[RequiredIf("CostAnalysisUnqualified", ScheduleEvent.Actual, ErrorMessage = "Cost Analysis Unqualified Date, is required if Cost Analysis is actual.")]
 		public DateTime? CostAnalysisUnqualifiedDate { get; set; }
+
+		/// <summary>
+		/// Technical Evaluation
+		/// </summary>
+		public ScheduleEvent TechnicalEvaluation { get; set; }
+
+		/// <summary>
+		/// Technical Evaluation Date
+		/// </summary>
+		[RequiredIf("TechnicalEvaluation", ScheduleEvent.Actual, ErrorMessage = "Technical Evaluation Date, is required if Technical Evaluation is actual.")]
+		public DateTime? TechnicalEvaluationDate { get; set; }
+
+		/// <summary>
+		/// RFP Release to Supplier Date
+		/// </summary>
+		public DateTime? RFPReleaseToSupplierDate { get; set; }
+
+		/// <summary>
+		/// Supplier Negotiations Date
+		/// </summary>
+		public DateTime? SupplierNegotiationsDate { get; set; }
 	}
 }
