@@ -353,6 +353,9 @@ namespace GenBOE.Web.Controllers
 
             UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
 
+            ViewData["DisplayECIMessage"] = SiteMasterUtilities.ShowEciForbiddenMessage() &&
+                !this.UserLoader.GetMessageConfirmations(currentUser.UserID).Contains(ConfirmationMessage.ECI_FORBIDDEN);
+
             // Check for Subcontractor users
             if (_SecInfo.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor))
             {

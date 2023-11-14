@@ -174,6 +174,7 @@ namespace GenBOE.Models
         public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
         public virtual DbSet<MoqTypeTableCustomFieldValueXREF> MoqTypeTableCustomFieldValueXREFs { get; set; }
         public virtual DbSet<BOEFormPBOE> BOEFormPBOEs { get; set; }
+        public virtual DbSet<MessageConfirmation> MessageConfirmations { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -5478,6 +5479,19 @@ namespace GenBOE.Models
                 new ObjectParameter("IsOpenEnded", typeof(bool));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMoqTypeTableCustomFieldValue", idParameter, moqTypeTableDataIdParameter, customFieldIdParameter, customFieldValueIdParameter, customFieldValueParameter, updateDTParameter, isOpenEndedParameter);
+        }
+    
+        public virtual int insertMessageConfirmation(Nullable<int> eTIUserID, Nullable<int> messageID)
+        {
+            var eTIUserIDParameter = eTIUserID.HasValue ?
+                new ObjectParameter("ETIUserID", eTIUserID) :
+                new ObjectParameter("ETIUserID", typeof(int));
+    
+            var messageIDParameter = messageID.HasValue ?
+                new ObjectParameter("MessageID", messageID) :
+                new ObjectParameter("MessageID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertMessageConfirmation", eTIUserIDParameter, messageIDParameter);
         }
     }
 }
