@@ -102,7 +102,8 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="modelView">document detail modelview (if available)</param>
         /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
         /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-        void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true);
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false);
 
         /// <summary>
         /// Check if RDSB Record exists for the given PTM Proposal ID

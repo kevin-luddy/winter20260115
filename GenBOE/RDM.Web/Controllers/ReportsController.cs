@@ -175,15 +175,16 @@ namespace RDM.Web.Controllers
         /// Generates the Full PPRD and returns a Word document.
         /// </summary>
         /// <param name="id">Revision Id</param>
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
         /// <returns>The Word file representing full PPRD.</returns>
-        public ActionResult GenerateFullPPRD(string id)
+        public ActionResult GenerateFullPPRD(string id, bool? portionMarkingRequired)
         {
             ActionResult result = new EmptyResult();
             try
             {
                 string serverFileName = this.Server.MapPath("~/Templates/Export/PPRDTemplate.docx");
 
-                this.reportsControllerLogic.GenerateFullPPRD(id, serverFileName, this.Response);
+                this.reportsControllerLogic.GenerateFullPPRD(id, serverFileName, this.Response, portionMarkingRequired);
             }
             catch (GeneralAppException e)
             {
