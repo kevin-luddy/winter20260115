@@ -289,6 +289,11 @@ input[type="checkbox"] {
     cursor: pointer;
 }
 
+.lmx-container {
+	max-height: 260px;
+	overflow: auto;
+}
+
 /* Paging */
 .paging a.current-page,
 .paging a.page {
@@ -1786,4 +1791,27 @@ import-verification .container
 
 .section-checkbox {
     min-width: 280px;
+}
+
+.sub-form-row {
+	margin-left: 20px !important;
+}
+
+.warnings {
+	border: 3px solid red;
+}
+
+.content-table-column1 {
+    width: 67.4pt;
+    border: 1px solid black !important;
+    padding: 0in 5.4pt 0in 5.4pt;
+}
+
+.content-table-column2 {
+    border: 1px solid black !important;
+    padding: 0in 5.4pt 0in 5.4pt;
+}
+
+.content-table-text {
+    margin-bottom: .0001pt;
 }

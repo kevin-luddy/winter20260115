@@ -35,6 +35,10 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='AuthorizeViewWhosOnlineGroups']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="HideNonPortionMarking" description="doesn't matter" defaultvalue="__HideNonPortionMarking__" tags="">
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='HideNonPortionMarking']/@value">
+	</parameterentry>
+  </parameter>
   <parameter name="PTMURL" description="doesn't matter" defaultvalue="__PTMURL__" tags="">
     <parameterValidation kind="AllowEmpty" />
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PTMURL']/@value">

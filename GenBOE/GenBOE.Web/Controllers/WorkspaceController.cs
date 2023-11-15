@@ -388,6 +388,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">Workspace Short Name</param>
         /// <param name="offload">An indication whether we should try to offload first</param>
         /// <returns>Download Result for the Project Map Data.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
         public ActionResult ExportProjectMapData(string workspace, bool offload)
         {
@@ -421,8 +422,14 @@ namespace GenBOE.Web.Controllers
                 // Call the export function in the business layer and get back the file name of the populated template.
                 string exportedFileName = ProjectMapExporter.ExportToExcelFile(templateName, modelViews, ws, offload);
 
-                // Generate an custom ActionResult to cause a file download to the client
-                result = new ExportFileDownloadResult(exportedFileName, string.Format("ProjectMap_{0}.xlsx", ws.WorkspaceName));
+                // Generate a custom ActionResult to cause a file download to the client
+                string fileName = string.Format("ProjectMap_{0}.xlsx", ws.WorkspaceName);
+                FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                result = File(
+                    fileStream: fs,
+                    contentType: ExportFileDownloadBase.GetContentType(fileName),
+                    fileDownloadName: fileName);
             }
             catch (GenValidationException ex)
             {
@@ -1666,7 +1673,7 @@ namespace GenBOE.Web.Controllers
             // Return the template as a download for the user
             using (MemoryStream mem = _PackageUtilities.UpdateDocumentVersion(template.FileData, template.PhysicalFilePathCache, template.ExportFormat))
             {
-                toReturn = new FileContentResult(mem.ToArray(), ExportFileDownloadResult.ContentType_DOCX);
+                toReturn = new FileContentResult(mem.ToArray(), ExportFileDownloadBase.ContentType_DOCX);
                 toReturn.FileDownloadName = template.ExportFormatName + ".docx";
             }
 
@@ -4443,6 +4450,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="exportAllBoes">Bool noting if all BOEs to be exported or just selected ones</param>
         /// <param name="boesToExport">BOEs to be exported if not exporting all</param>
         /// <returns>Report</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public ActionResult ExportWorkspaceVersion(string workspace, int versionId, bool exportAllBoes, ICollection<int> boesToExport)
         {
@@ -4469,7 +4477,7 @@ namespace GenBOE.Web.Controllers
             
             try
             {
-                using (FileStream workspaceDataStream = new FileStream(workspaceDataReportLocation, FileMode.Open))
+                using (FileStream workspaceDataStream = new FileStream(workspaceDataReportLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose))
                 {
                     workspaceDataStream.Position = 0;
                     zipContents.Add(Utilities.CleanFileName(string.Format("WorkspaceData-{0}-{1}.xlsx", ws.Shortname, versionName)), workspaceDataStream);
@@ -4502,18 +4510,21 @@ namespace GenBOE.Web.Controllers
                         zipContents.Add(Utilities.CleanFileName(string.Format("AllBOEs-{0}-{1}.docx", ws.Shortname, versionName)), allBoesStream);
 
                         string zipFileName = Zip.ZipFiles(zipContents, Server.MapPath("~/Templates/Export"));
-                        toReturn = new ExportFileDownloadResult(zipFileName, Utilities.CleanFileName(string.Format("BackupExport_{0}_{1}.zip", ws.Shortname, versionName)));
+
+                        string fileName = Utilities.CleanFileName(string.Format("BackupExport_{0}_{1}.zip", ws.Shortname, versionName));
+                        // Generate a custom ActionResult to cause a file download to the client
+                        FileStream fs = new FileStream(zipFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                        toReturn = File(
+                            fileStream: fs,
+                            contentType: ExportFileDownloadBase.GetContentType(fileName),
+                            fileDownloadName: fileName);
                     }
                 }
             }
             catch (Exception e)
             {
                 _log.Error(e);
-            }
-            finally
-            {
-                // Delete temporary Workspace Data report file - All BOEs already deleted
-                System.IO.File.Delete(workspaceDataReportLocation);
             }
 
             return toReturn;
@@ -6241,7 +6252,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
-        public ExportFileDownloadResult ExportBOECustomFieldResource(string workspace, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials, string searchText)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportBOECustomFieldResource(string workspace, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials, string searchText)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -6264,12 +6276,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = ResourcesExporter.ExportToExcelFile(templateFileName, resources, _CommonDataMapper);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_Resources.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("{0}_Resources.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBOECustomFieldResource", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -6283,7 +6300,8 @@ namespace GenBOE.Web.Controllers
         /// <param name="showMaterials"></param>
         /// <param name="searchText"></param>
         /// <returns></returns>
-        public ExportFileDownloadResult ExportBOECustomFieldResourceTemplate(string workspace, string searchText)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportBOECustomFieldResourceTemplate(string workspace, string searchText)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -6300,26 +6318,28 @@ namespace GenBOE.Web.Controllers
 
 
             // Get Resources template file name
-            string templateFileName = Server.MapPath("~/Templates/Export/PerformingOrgs.xlsx");
+            string templateFileName = Server.MapPath("~/Templates/Export/Resources.xlsx");
 
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = ResourcesExporter.ExportTemplate(templateFileName, _CommonDataMapper);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_Resources.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("{0}_Resources.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBOECustomFieldResourceTemplate", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
-        public ExportFileDownloadResult ExportWorkspaceResourceRatesTM(string workspace)
+        public ActionResult ExportWorkspaceResourceRatesTM(string workspace)
         {
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult();
-
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
@@ -6342,20 +6362,23 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = TMResourceRatesExporter.ExportToExcelFile(templateFileName, Rates.ToList<ResourceRateDTO>(), workspaceResources, otherWorkspaceResources);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("TM_{0}_ResourceRates.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("TM_{0}_ResourceRates.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportWorkspaceResourceRatesTM", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
-        public ExportFileDownloadResult ExportBlankWorkspaceResourceRatesTM(string workspace)
+        public ActionResult ExportBlankWorkspaceResourceRatesTM(string workspace)
         {
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult();
-
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
@@ -6374,12 +6397,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = TMResourceRatesExporter.ExportToExcelFile(templateFileName, new List<ResourceRateDTO>(), workspaceResources, new List<ResourceDTO>());
 
-            // Generate an custom ActionResult to cause a file download to the client
-            toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("TM_{0}_ResourceRates.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("TM_{0}_ResourceRates.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBlankWorkspaceResourceRatesTM", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -6586,7 +6614,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
-        public ExportFileDownloadResult ExportBOECustomFieldPerfOrg(string workspace)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportBOECustomFieldPerfOrg(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -6604,12 +6633,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = PerformingOrgsExporter.ExportToExcelFile(templateFileName, performingOrgs);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_PerformingOrgs.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("{0}_PerformingOrgs.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBOECustomFieldPerfOrg", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -6757,7 +6791,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
-        public ExportFileDownloadResult ExportBOECustomField(string workspace, int customFieldID)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportBOECustomField(string workspace, int customFieldID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -6785,12 +6820,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = CustomFieldExporter.ExportToExcelFile(templateFileName, customFieldValues);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_{1}.xlsx", ws.WorkspaceName, customFieldName));
+            string fileName = string.Format("{0}_{1}.xlsx", ws.WorkspaceName, customFieldName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBOECustomField", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
 

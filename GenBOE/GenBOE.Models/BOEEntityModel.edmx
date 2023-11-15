@@ -601,6 +601,15 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="MaterialMOQText" Type="varchar(max)" />
           <Property Name="BOEID" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="MessageConfirmation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ETIUserId" Type="int" Nullable="false" />
+          <Property Name="MessageId" Type="int" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
         <EntityType Name="MetricDetail">
           <Key>
             <PropertyRef Name="MetricDetailID" />
@@ -2699,6 +2708,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_MessageConfirmation_UserId">
+          <End Role="ETIuser" Type="Self.ETIuser" Multiplicity="1" />
+          <End Role="MessageConfirmation" Type="Self.MessageConfirmation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ETIuser">
+              <PropertyRef Name="ETIUserID" />
+            </Principal>
+            <Dependent Role="MessageConfirmation">
+              <PropertyRef Name="ETIUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_MSTTravelTrip_Clins">
           <End Role="CLIN" Type="Self.CLIN" Multiplicity="0..1" />
           <End Role="MSTTravelTrip" Type="Self.MSTTravelTrip" Multiplicity="*" />
@@ -4739,6 +4760,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="LocationName" Type="varchar" Mode="In" />
           <Parameter Name="UpdatedByETIUserID" Type="int" Mode="In" />
         </Function>
+        <Function Name="insertMessageConfirmation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ETIUserID" Type="int" Mode="In" />
+          <Parameter Name="MessageID" Type="int" Mode="In" />
+        </Function>
         <Function Name="insertMetricDetail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MetricDetailID" Type="int" Mode="In" />
           <Parameter Name="SourceSystemID" Type="int" Mode="In" />
@@ -5707,6 +5732,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySet Name="LineOfBusiness" EntityType="Self.LineOfBusiness" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Location" EntityType="Self.Location" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaterialTaskElement" EntityType="Self.MaterialTaskElement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MessageConfirmation" EntityType="Self.MessageConfirmation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MetricDetail" EntityType="Self.MetricDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MileageReimbursementRate" EntityType="Self.MileageReimbursementRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MOQTypeLU" EntityType="Self.MOQTypeLU" Schema="dbo" store:Type="Tables" />
@@ -6249,6 +6275,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <AssociationSet Name="FK_MaterialTaskElement_BOE" Association="Self.FK_MaterialTaskElement_BOE">
             <End Role="BOE" EntitySet="BOE" />
             <End Role="MaterialTaskElement" EntitySet="MaterialTaskElement" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MessageConfirmation_UserId" Association="Self.FK_MessageConfirmation_UserId">
+            <End Role="ETIuser" EntitySet="ETIuser" />
+            <End Role="MessageConfirmation" EntitySet="MessageConfirmation" />
           </AssociationSet>
           <AssociationSet Name="FK_MSTTravelTrip_Clins" Association="Self.FK_MSTTravelTrip_Clins">
             <End Role="CLIN" EntitySet="CLIN" />
@@ -7211,6 +7241,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="IsUsPerson" Type="Boolean" />
           <Property Name="IsSubcontractor" Type="Boolean" />
           <NavigationProperty Name="RteTemplates" Relationship="GenBOE.Models.FK_RteTemplate_ETIuser" FromRole="ETIuser" ToRole="RteTemplate" />
+          <NavigationProperty Name="MessageConfirmations" Relationship="GenBOE.Models.FK_MessageConfirmation_UserId" FromRole="ETIuser" ToRole="MessageConfirmation" />
         </EntityType>
         <EntityType Name="FieldLU">
           <Key>
@@ -12347,6 +12378,15 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="IsOpenEnded" Mode="In" Type="Boolean" />
           </FunctionImport>
           <EntitySet Name="BOEFormPBOEs" EntityType="GenBOE.Models.BOEFormPBOE" />
+          <EntitySet Name="MessageConfirmations" EntityType="GenBOE.Models.MessageConfirmation" />
+          <AssociationSet Name="FK_MessageConfirmation_UserId" Association="GenBOE.Models.FK_MessageConfirmation_UserId">
+            <End Role="ETIuser" EntitySet="ETIusers" />
+            <End Role="MessageConfirmation" EntitySet="MessageConfirmations" />
+          </AssociationSet>
+          <FunctionImport Name="insertMessageConfirmation">
+            <Parameter Name="ETIUserID" Mode="In" Type="Int32" />
+            <Parameter Name="MessageID" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="getBOEForFindReplace_Result">
           <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -13913,6 +13953,28 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="VendorId" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="SupplierProposedValue" Type="Decimal" Precision="13" Scale="2" />
         </EntityType>
+        <EntityType Name="MessageConfirmation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ETIUserId" Type="Int32" Nullable="false" />
+          <Property Name="MessageId" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="ETIuser" Relationship="GenBOE.Models.FK_MessageConfirmation_UserId" FromRole="MessageConfirmation" ToRole="ETIuser" />
+        </EntityType>
+        <Association Name="FK_MessageConfirmation_UserId">
+          <End Type="GenBOE.Models.ETIuser" Role="ETIuser" Multiplicity="1" />
+          <End Type="GenBOE.Models.MessageConfirmation" Role="MessageConfirmation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ETIuser">
+              <PropertyRef Name="ETIUserID" />
+            </Principal>
+            <Dependent Role="MessageConfirmation">
+              <PropertyRef Name="ETIUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -16144,6 +16206,17 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="MessageConfirmations">
+            <EntityTypeMapping TypeName="GenBOE.Models.MessageConfirmation">
+              <MappingFragment StoreEntitySet="MessageConfirmation">
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="ETIUserId" ColumnName="ETIUserId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="insertMessageConfirmation" FunctionName="GenBOE.Models.Store.insertMessageConfirmation" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

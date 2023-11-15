@@ -1266,6 +1266,18 @@ namespace IES.Common
 		CostAnalysis8YearsFlat = 5
 	}
 
+	/// <summary>
+	/// Enumeration for Disclosure Types
+	/// </summary>
+	public enum DisclosureType
+	{
+		[Description("")]
+		None = 0,
+		[Description("Legacy Space")]
+		LegacySpace = 1,
+		[Description("1LMX")]
+		OneLMX = 2
+	}
 
 	/// <summary>
 	/// DirectRateMappingResourceType enumeration.
@@ -1347,8 +1359,10 @@ namespace IES.Common
 		[Description("Text Content")]
 		Text = 2,
 		[Description("Rate Table by Year")]
-		RateTable = 3
-	}
+		RateTable = 3,
+		[Description("Address")]
+		Address = 5,
+    }
 
 	/// <summary>
 	/// Project Map Validation Offsets

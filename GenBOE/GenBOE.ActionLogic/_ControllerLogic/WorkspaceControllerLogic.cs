@@ -2033,42 +2033,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public void CreateProPricerCustomFields(int wsId)
 		{
 			// Custom fields(all regular custom fields, none are open ended, none are required):
-			// Function -> default: FI
 			// SOW -> default: SOW1
 			// Location -> default: Moorestown
 			// Class Of Cost-> defaults: REC, NRE
 			// Project -> default: USER1
 			// FIELD-A -> default: USER2
-			// FIELD-B -> default: USER3
-
+			
 			ICollection<CustomFieldDTO> existingCustomFields = this.customFieldLoader.GetByWorkspaceId(wsId);
 			ICollection<CustomFieldValueDTO> customFieldValues = new Collection<CustomFieldValueDTO>();
-
-			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FUNCTION, existingCustomFields))
-			{
-				CustomFieldDTO function = new CustomFieldDTO
-				{
-					Id = -1,
-					WorkspaceID = wsId,
-					CustomFieldName = ProPricerCFConstants.PROPRICER_CF_FUNCTION,
-					CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay,
-					CustomFieldRequired = false,
-					IsOpenEnded = false,
-					Updateable = UpdateType.Upsert
-				};
-
-				int? functionId = this.customFieldLoader.Save(function);
-
-				customFieldValues.Add(new CustomFieldValueDTO
-				{
-					Updateable = UpdateType.Upsert,
-					CustomFieldID = functionId.Value,
-					CustomFieldValueName = "FI",
-					CustomFieldValueDescription = "Finance",
-					Id = -1,
-					CustomFieldValueID = -1
-				});
-			}
 
 			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_SOW, existingCustomFields))
 			{
@@ -2207,32 +2179,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					CustomFieldValueDescription = "User Defined 2",
 					Id = -7,
 					CustomFieldValueID = -7
-				});
-			}
-
-			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FIELDB, existingCustomFields))
-			{
-				CustomFieldDTO fieldB = new CustomFieldDTO
-				{
-					Id = -7,
-					WorkspaceID = wsId,
-					CustomFieldName = ProPricerCFConstants.PROPRICER_CF_FIELDB,
-					CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay,
-					CustomFieldRequired = false,
-					IsOpenEnded = false,
-					Updateable = UpdateType.Upsert
-				};
-
-				int? fieldBId = this.customFieldLoader.Save(fieldB);
-
-				customFieldValues.Add(new CustomFieldValueDTO
-				{
-					Updateable = UpdateType.Upsert,
-					CustomFieldID = fieldBId.Value,
-					CustomFieldValueName = "USER3",
-					CustomFieldValueDescription = "Resource User Defined",
-					Id = -8,
-					CustomFieldValueID = -8
 				});
 			}
 

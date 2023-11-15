@@ -63,6 +63,15 @@
             }
         };
 
+        /* Helper method - returns true if node is address; false otherwise. */
+        $scope.IsSectionAddressContent = function (node) {
+            if (node.ContentType === PPRDModel.SectionContentTypeAddress) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
         /* Helper method to count the table nodes in the section */
         $scope.countTablesInSection = function (targetNode) {
             var numTablesInSection = 0;
@@ -75,6 +84,20 @@
                 }
             }
             return numTablesInSection;
+        };
+
+        /* Helper method to count the address content in the section */
+        $scope.countAddressInSection = function (targetNode) {
+            var numAddressInSection = 0;
+            if (!$scope.IsSectionContent(targetNode)) { // make sure this is a section node
+                for (var i = 0; i < targetNode.ChildNodes.length; i++) {
+                    var node = targetNode.ChildNodes[i];
+                    if ($scope.IsSectionAddressContent(node)) {
+                        numAddressInSection++;
+                    }
+                }
+            }
+            return numAddressInSection;
         };
 
         /* sanitize html */
@@ -302,7 +325,7 @@
             });
             
             modalInstance.rendered.then(function () {
-                utilityService.makeModalDraggableAndResizable('#editSectionModal', 160, 500);
+                utilityService.makeModalDraggableAndResizable('#editSectionModal', 160, 700);
             });
 
             modalInstance.result.then(function (section) {
@@ -345,7 +368,18 @@
                 "TextContent": "",
                 "IsInternalSection": false,
                 "DisplayRateCode": false,
-                "NumTablesInSection": $scope.countTablesInSection(targetNode)
+                "Office": "",
+                "Agency": "",
+                "LMBA": "",
+                "Name": "",
+                "Street": "",
+                "CityST": "",
+                "Phone": "",
+                "Email": "",
+                "Other": "",
+                "IncludeInCoversheet": false,
+                "NumTablesInSection": $scope.countTablesInSection(targetNode),
+                "NumAddressInSection": $scope.countAddressInSection(targetNode)
             };
             $scope.openEditContentModal(targetNode, content, true);
         };

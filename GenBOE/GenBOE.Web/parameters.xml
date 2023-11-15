@@ -7,8 +7,32 @@
         will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
   
   <!--appSettings-->
-  
-  <parameter name="SAPSpaceStartDate" description="doesn't matter" defaultvalue="__SAPSpaceStartDate__" tags="">
+
+  <parameter name="ShowIesHeader" description="doesn't matter" defaultvalue="__ShowIesHeader__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowIesHeader']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="IsReadOnly" description="doesn't matter" defaultvalue="__IsReadOnly__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsReadOnly']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="UnclassifiedBannerText" description="doesn't matter" defaultvalue="__UnclassifiedBannerText__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UnclassifiedBannerText']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="IESBannerApp" description="doesn't matter" defaultvalue="__IESBannerApp__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESBannerApp']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="ShutOffExternalLinksForClassifiedInstall" description="doesn't matter" defaultvalue="__ShutOffExternalLinksForClassifiedInstall__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShutOffExternalLinksForClassifiedInstall']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="OverrideSubNonUs" description="doesn't matter" defaultvalue="__OverrideSubNonUs__" tags="">
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='OverrideSubNonUs']/@value">
+	</parameterentry>
+</parameter>
+<parameter name="SAPSpaceStartDate" description="doesn't matter" defaultvalue="__SAPSpaceStartDate__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SAPSpaceStartDate']/@value">
     </parameterentry>
   </parameter>

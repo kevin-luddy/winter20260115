@@ -134,9 +134,12 @@ namespace GenBOE.Web.Common
             if (ReferenceEquals(ws, null))
             {
                 throw new ArgumentNullException(nameof(ws));
-            }
+			}
 
-            if (ws.Id == 0)
+            // default to false
+			ViewData["DisplayECIMessage"] = false;
+
+			if (ws.Id == 0)
             {
                 // if the workspace doesn't exist .. for example if we are running a system job
                 model.ProposalName = "No Workspace";
@@ -144,7 +147,7 @@ namespace GenBOE.Web.Common
                 model.WorkspaceState = _CommonDataMapper.getWorkspaceStateName(WorkspaceState.None);
 
                 model.HeaderFooter = "Lockheed Martin Proprietary Information";
-            }
+			}
             else
             {
                 model.ProposalName = ws.WorkspaceName;
@@ -154,7 +157,16 @@ namespace GenBOE.Web.Common
                 model.HeaderFooter = ws.ContainsOCI ?
                     "Organizational Conflict of Interest - Lockheed Martin Proprietary Information" :
                     "Lockheed Martin Proprietary Information";
-            }
+
+                if (SiteMasterUtilities.ShowEciForbiddenMessage())
+                {
+                    UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+                    if (currentUser != null)
+                    {
+                        ViewData["DisplayECIMessage"] = !this.UserLoader.GetMessageConfirmations(currentUser.UserID).Contains(ConfirmationMessage.ECI_FORBIDDEN);
+                    }
+                }
+			}
         }
 
         /// <summary>
@@ -973,6 +985,25 @@ namespace GenBOE.Web.Common
                 ContentType = "text/plain",
                 ContentEncoding = System.Text.Encoding.UTF8
             };
+        }
+
+        /// <summary>
+        /// Confirms a message by a User
+        /// </summary>
+        /// <param name="messageId">The message Id to confirm</param>
+        public void ConfirmMessage(ConfirmationMessage message)
+        {
+            if (message == ConfirmationMessage.NOT_APPLICABLE)
+            {
+                _log.Error("Unknown Confirmation Message");
+            }
+            else
+            {
+                UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+
+				// save to Database
+				this.UserLoader.SaveMessageConfirmation(currentUser.UserID, message);
+			}
         }
 
         /// <summary>

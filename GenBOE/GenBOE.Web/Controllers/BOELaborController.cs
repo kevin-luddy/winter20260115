@@ -10,6 +10,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Transactions;
@@ -1158,6 +1159,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="taskElementID">The task element identifier.</param>
         /// <param name="isTemplate">Whether the export is for just the template or includes the data.</param>
         /// <returns>An Excel export containing the Labor Type and Labor Spread data.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         virtual public ActionResult ExportLaborTypeAndSpread(string workspace, int boeID, int taskElementID, bool isTemplate)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1175,13 +1177,19 @@ namespace GenBOE.Web.Controllers
 
             string templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread.xlsx";
 
-            string fileName = LaborTypeAndSpreadExporter.ExportToExcelFile(Server.MapPath(templateName), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement, boeID, isTemplate);
+            string exportedFileName = LaborTypeAndSpreadExporter.ExportToExcelFile(Server.MapPath(templateName), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement, boeID, isTemplate);
 
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(fileName, ws.WorkspaceName + "_BOE-" + boeID + "_Task-" + taskElementID + "_ResourceTypes.xlsx");
+            string fileName = ws.WorkspaceName + "_BOE-" + boeID + "_Task-" + taskElementID + "_ResourceTypes.xlsx";
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportLaborTypeAndSpread", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -1189,7 +1197,8 @@ namespace GenBOE.Web.Controllers
         /// Note:  This is RMS-specific, will need to be reworked to support Space
         /// </summary>
         /// <returns>Download Result for the Offload Rates.</returns>
-        public ExportFileDownloadResult ExportOffloadRates(string workspace, int boeID)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportOffloadRates(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -1208,12 +1217,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = SystemOffloadRatesExporterRMS.ExportToExcelFile(templateFileName, ratesForMV, performingOrgs, resources);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, "Workspace_OffloadRates.xlsx");
+            string fileName = "Workspace_OffloadRates.xlsx";
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, WebConstants.ACTION_EXPORT_OFFLOAD_RATES, sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -1417,6 +1431,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">Workspace name</param>
         /// <param name="taskElementID">Task ID</param>
         /// <returns>Export</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult ExportMoqTables(int moqTypeId, string workspace, int taskElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1425,12 +1440,19 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, taskElement.BoeID);
 
-            string exportFileName = this._BoeLaborControllerLogic.ExportMoqTables(moqTypeId, ws, Server.MapPath(TEMPLATE_FOLDER + this.moqTableExporter.MOQ_TABLE_EXCEL_MAP_PATH));
-            ActionResult toReturn = new ExportFileDownloadResult(exportFileName, string.Format("Task-{0}_{1}_MoqTableData.xlsx", taskElement.Id, taskElement.TaskTitle));
+            string exportedFileName = this._BoeLaborControllerLogic.ExportMoqTables(moqTypeId, ws, Server.MapPath(TEMPLATE_FOLDER + this.moqTableExporter.MOQ_TABLE_EXCEL_MAP_PATH));
+
+            string fileName = string.Format("Task-{0}_{1}_MoqTableData.xlsx", taskElement.Id, taskElement.TaskTitle);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
 		/// <summary>
@@ -1681,8 +1703,8 @@ namespace GenBOE.Web.Controllers
 
                 // update all updated ones
                 ICollection<ImportLaborTypeModelView> laborTypesToUpdate = (from i in importResults
-                                                                            where i.ImportTypes.Contains((int)LaborTypeImportResult.UpdateLaborType)
-                                                                            select i).ToList();
+	                                where i.ImportTypes.Contains((int)LaborTypeImportResult.UpdateLaborType)
+	                                select i).ToList();
 
                 foreach (ImportLaborTypeModelView laborTypeToUpdate in laborTypesToUpdate)
                 {
@@ -1754,8 +1776,8 @@ namespace GenBOE.Web.Controllers
 
                 // add all added ones
                 ICollection<ImportLaborTypeModelView> laborTypesToAdd = (from i in importResults
-                                                                         where i.ImportTypes.Contains((int)LaborTypeImportResult.AddLaborType)
-                                                                         select i).ToList();
+	                             where i.ImportTypes.Contains((int)LaborTypeImportResult.AddLaborType)
+	                             select i).ToList();
 
                 foreach (ImportLaborTypeModelView laborTypeToAdd in laborTypesToAdd)
                 {
@@ -1936,9 +1958,9 @@ namespace GenBOE.Web.Controllers
 
                         // Get the WBS row that these BOEs will be nested under
                         var modelViewToAppend = (from m in toReturn
-                                                 where m.WBSLevel < WBS.Level &&
-                                                       WBS.WbsNumber.StartsWith(m.WBSNumber + ".", StringComparison.CurrentCultureIgnoreCase)
-                                                 select m).LastOrDefault();
+	     where m.WBSLevel < WBS.Level &&
+	           WBS.WbsNumber.StartsWith(m.WBSNumber + ".", StringComparison.CurrentCultureIgnoreCase)
+	     select m).LastOrDefault();
 
                         // Iterate over each BOE for the current WBS
                         foreach (var boeForWBS in boesForWBS)
@@ -2048,10 +2070,10 @@ namespace GenBOE.Web.Controllers
                             WBSID = WBS.Id,
 
                             WBSTotal = _VariableSelectBOEtoSumCalculation.GetTotalBasedOnWBSID(
-                                            WBS.Id,
-                                            new Collection<int>(resourceTypes
-                                                                    .Select(r => (int)r)
-                                                                    .ToArray()), data),
+	WBS.Id,
+	new Collection<int>(resourceTypes
+	                        .Select(r => (int)r)
+	                        .ToArray()), data),
                             WorkspaceDecimalPrecision = ws.DecimalPrecision
                         };
 
@@ -2066,9 +2088,9 @@ namespace GenBOE.Web.Controllers
 
                         // Get the WBS row that these BOEs will be nested under
                         var modelViewToAppend = (from m in toReturn
-                                                 where m.WBSLevel < WBS.Level &&
-                                                       WBS.WbsNumber.StartsWith(m.WBSNumber + ".", StringComparison.CurrentCultureIgnoreCase)
-                                                 select m).LastOrDefault();
+	     where m.WBSLevel < WBS.Level &&
+	           WBS.WbsNumber.StartsWith(m.WBSNumber + ".", StringComparison.CurrentCultureIgnoreCase)
+	     select m).LastOrDefault();
 
                         // Iterate over each BOE for the current WBS
                         foreach (var boeForWBS in boesForWBS)
@@ -2262,9 +2284,9 @@ namespace GenBOE.Web.Controllers
                 SetMOQEquationViewData(ws, boe.Id, taskElement.MOQType);
                 DataRelationshipVerifier.VerifyDataRelation(taskElement, boe.Id);
                 var inUseWorkspaceVariables = (from wID in taskElement.WorkspaceVariableIDs
-                                               from workspaceVariable in ws.WorkspaceVariables
-                                               where workspaceVariable.Id == wID
-                                               select workspaceVariable).ToList();
+	   from workspaceVariable in ws.WorkspaceVariables
+	   where workspaceVariable.Id == wID
+	   select workspaceVariable).ToList();
 
                 taskElement.MOQHoursEquation = Parser.UntagVariables(taskElement.MOQHoursEquation, inUseWorkspaceVariables);
 

@@ -27,6 +27,7 @@ CREATE TYPE [dbo].[TT_RateCode] AS TABLE(
 	[GovernmentBurdenPoolID] [int] NULL,
 	[CommercialBurdenPoolID] [int] NULL,
 	[RateTypeID] [int] NULL,
+	[DisclosureTypeId] [int] NULL,
 	/* OrderID is automatically added in the code, so it HAS to be last */
 	[OrderID] [int] NOT NULL
 );
@@ -57,6 +58,7 @@ AS
 **		--------	--------			-------------------------------------------
 **		8/10/2017	dray				Created.
 **		2/21/2018	brunworg			Removed CobraRateSet and CobraCode1ID.
+**		9/05/2023	hrafiqzadah			Added DisclosureTypeId
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -76,7 +78,8 @@ UPDATE [dbo].[RateCode]
 		[ResourceTypeID] = TT.[ResourceTypeID],
 		[GovernmentBurdenPoolID] = TT.[GovernmentBurdenPoolID],
 		[CommercialBurdenPoolID] = TT.[CommercialBurdenPoolID],
-		[RateTypeID] = TT.[RateTypeID]
+		[RateTypeID] = TT.[RateTypeID],
+		[DisclosureTypeId] = TT.[DisclosureTypeId]
 FROM [dbo].[RateCode] RC
 	INNER JOIN @RateCodeParam TT ON 
 		RC.ID = TT.ID 
@@ -108,6 +111,7 @@ AS
 **		--------	--------			-------------------------------------------
 **		8/10/2017	dray				Created.
 **		11/9/2017	ranzalon			Remove ProPricer Burden Rate mappings
+**		9/05/2023	hrafiqzadah			Added DisclosureTypeId
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -167,6 +171,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
 **		8/10/2017	dray				Created.
+**	    9/05/2023	hrafiqzadah			Updated table to include DisclosureType
 *******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @UpdateDate datetime2 = GETDATE()
@@ -186,6 +191,7 @@ DECLARE @TT_RateCode TABLE
 	[GovernmentBurdenPoolID] [int] NULL,
 	[CommercialBurdenPoolID] [int] NULL,
 	[RateTypeID] [int] NULL,
+	[DisclosureTypeId] [int] NULL,
 	/* OrderID is automatically added in the code, so it HAS to be last */
 	[OrderID] [int] NOT NULL
 )
@@ -203,6 +209,7 @@ DECLARE @ID [int],
 		@GovernmentBurdenPoolID [int],
 		@CommercialBurdenPoolID [int],
 		@RateTypeID [int],
+		@DisclosureTypeId [int],
 		@OrderID [int]
 
 DECLARE @InsertedRateCode AS Table (ID int)
@@ -220,6 +227,7 @@ BEGIN
 		@GovernmentBurdenPoolID = GovernmentBurdenPoolID,
 		@CommercialBurdenPoolID = CommercialBurdenPoolID,
 		@RateTypeID = RateTypeID,
+		@DisclosureTypeID = DisclosureTypeId,
 		@OrderID =  OrderID
 	FROM @TT_RateCode
 	WHERE ID < 0
@@ -235,6 +243,7 @@ BEGIN
            ,[GovernmentBurdenPoolID]
            ,[CommercialBurdenPoolID]
            ,[RateTypeID]
+		   ,[DisclosureTypeId]
 		   )
      OUTPUT inserted.ID INTO @InsertedRateCode
      VALUES
@@ -248,6 +257,7 @@ BEGIN
            ,@GovernmentBurdenPoolID
            ,@CommercialBurdenPoolID
            ,@RateTypeID
+		   ,@DisclosureTypeId
             ) 
             
 	SELECT @ID = ID FROM @InsertedRateCode

@@ -21,6 +21,7 @@ namespace RDSB.Web.Controllers
 	using IES.ActionLogic.ControllerLogic;
 	using IES.Common;
 	using IES.Common.OfficeUtilities;
+	using IES.DataBridge.ModelViews;
 
 	/// <summary>
 	/// RDSB Data API Controller - used to serve up RDSB data for ACV (or other applications as needed)
@@ -92,15 +93,16 @@ namespace RDSB.Web.Controllers
 			return toReturn;
 		}
 
-		/// <summary>
-		/// Export the RDSB Document
-		/// </summary>
-		/// <param name="proposalId">PTM Proposal ID</param>
-		/// <param name="parentSectionNumber">Parent Section Number</param>
-		/// <returns>RDSB Document in HTTP Response Message</returns>
-		[HttpGet]
+        /// <summary>
+        /// Export the RDSB Document
+        /// </summary>
+        /// <param name="proposalId">PTM Proposal ID</param>
+        /// <param name="parentSectionNumber">Parent Section Number</param>
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        /// <returns>RDSB Document in HTTP Response Message</returns>
+        [HttpGet]
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public HttpResponseMessage ExportRdsbDocument(int proposalId, string parentSectionNumber)
+		public HttpResponseMessage ExportRdsbDocument(int proposalId, string parentSectionNumber, bool portionMarkingRequired = false)
 		{
 			HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
 
@@ -118,7 +120,7 @@ namespace RDSB.Web.Controllers
 				// perform export
 				string serverFileName = HttpContext.Current.Server.MapPath("~/Templates/Export/PPRDTemplate.docx");
 				MemoryStream stream = new MemoryStream();
-				this.documentControllerLogic.GenerateRDD(proposalId, serverFileName, stream, null, parentSectionNumber, false);
+				this.documentControllerLogic.GenerateRDD(proposalId, serverFileName, stream, null, parentSectionNumber, false, portionMarkingRequired);
 
 				stream.Position = 0;
 				responseMessage.Content = new StreamContent(stream);
@@ -241,6 +243,33 @@ namespace RDSB.Web.Controllers
 			}
 
 			return toReturn;
+		}
+
+		/// <summary>
+		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
+		/// </summary>
+		/// <param name="revision">The specific version ID of PPR&D</param>
+		/// <returns>A collection of addresses</returns>
+		[HttpGet]
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<SectionAddressModelView> GetAddresses(int revision)
+		{
+			IESResponse<SectionAddressModelView> addresses = new IESResponse<SectionAddressModelView>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				addresses.Data = this.documentControllerLogic.GetAddresses(revision);
+				addresses.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				addresses.Messages.Add($"Error occurred while retrieving address data from RDSB");
+			}
+
+			return addresses;
 		}
 	}
 }

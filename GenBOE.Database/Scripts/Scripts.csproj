@@ -197,6 +197,7 @@
     <Content Include="Object Scripts\Stored Procedures\restoreOutputFormatTemplate.sql" />
     <Content Include="Object Scripts\Stored Procedures\restoreWorkspaceRate.sql" />
     <Content Include="Object Scripts\Stored Procedures\restoreWorkspaceVersion.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertMessageConfirmation.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateBOEApproval.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateBOETaskElementLaborTypeWarningFlag.sql" />
     <Content Include="Object Scripts\Stored Procedures\UpdateDbVersion.sql" />
@@ -334,6 +335,8 @@
     <Content Include="Release Scripts\Release 2023.26\1 - Release 2022.26 Script.sql" />
     <Content Include="Release Scripts\Release 2023.05\Release 2023.5.sql" />
     <Content Include="Release Scripts\Release 2023.30\1 - Release 2023.30 Script.sql" />
+    <Content Include="Release Scripts\Release 2023.34\1 - Release 2023.34 Script.sql" />
+    <Content Include="Release Scripts\Release 2023.35\1 - Release 2023.35 Script.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2023.11 Generated On 4_11_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.5 Generated On 3_8_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2022.15 Generated On 5_16_2022.sql" />
