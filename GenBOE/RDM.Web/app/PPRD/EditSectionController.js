@@ -1,7 +1,13 @@
 ﻿// The controller for the Edit Section modal.
 angular.module('RDM').controller('EditSectionController', ['$scope', '$uibModalInstance', '$rootScope', 'model', function ($scope, $uibModalInstance, $rootScope, model) {
     $scope.model = model;
-    $rootScope.modalErrors = [];
+	$rootScope.modalErrors = [];
+	$scope.showWarnings = false;
+
+	if (model.Id == -1) {
+		model.SectionContainsCasbDisclosure = false;
+		model.SectionContainsNonCompliance = false;
+	}
 
     $scope.uncheckRequiredIfInternal = function () {
         if (model.IsInternalSection) {
@@ -13,7 +19,6 @@ angular.module('RDM').controller('EditSectionController', ['$scope', '$uibModalI
 		if (document.getElementById("SectionContainsCasbDisclosureCheckbox").checked == false) {
 			model.IsDisclosureStatementAdequate = false;
 			document.getElementById("IsDisclosureStatementAdequateCheckbox").checked = false;
-			
 		}
 	};
 
@@ -23,4 +28,8 @@ angular.module('RDM').controller('EditSectionController', ['$scope', '$uibModalI
 			document.getElementById("NonComplianceNotificationCheckbox").checked = false;
 		}
 	};
+
+	$scope.showPublishErrors = function () {
+		$scope.showWarnings = true;
+	}
 }]);

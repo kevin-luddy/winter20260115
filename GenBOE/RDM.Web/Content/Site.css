@@ -1797,6 +1797,10 @@ import-verification .container
 	margin-left: 20px !important;
 }
 
+.warnings {
+	border: 3px solid red;
+}
+
 .content-table-column1 {
     width: 67.4pt;
     border: 1px solid black !important;

@@ -400,6 +400,11 @@ namespace IES.Common
 
         public const string SHARED_BOE_WRITING_COURSE = "076896WPL00";
 
+        /// <summary>
+        /// BOE Space International app name
+        /// </summary>
+        public const string BOE_SPACE_INTERNATIONAL_APP_NAME = "BOESSC_INTL";
+
         #region MOQ Type Text Field Lengths
 
         /// <summary>

@@ -606,16 +606,17 @@ namespace IES.ActionLogic.ControllerLogic
 			this.GenerateRDD(proposalId, serverFileName, httpResponse.OutputStream, modelView);
 		}
 
-		/// <summary>
-		/// Generates the RDD document for the Proposal Id passed in.
-		/// </summary>
-		/// <param name="proposalId">Proposal ID</param>
-		/// <param name="serverFileName">Server File Name</param>
-		/// <param name="stream">stream to write the file back to for download</param>
-		/// <param name="modelView">document detail modelview (if available)</param>
-		/// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
-		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-		public void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true)
+        /// <summary>
+        /// Generates the RDD document for the Proposal Id passed in.
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <param name="serverFileName">Server File Name</param>
+        /// <param name="stream">stream to write the file back to for download</param>
+        /// <param name="modelView">document detail modelview (if available)</param>
+        /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
+        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        public void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
 		{
 			if (serverFileName == null)
 			{
@@ -893,6 +894,19 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			return rateSections;
+		}
+
+		/// <summary>
+		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
+		/// </summary>
+		/// <param name="revision">The specific version ID of PPR&D</param>
+		/// <returns>A collection of addresses</returns>
+		public ICollection<SectionAddressModelView> GetAddresses(int revision)
+		{
+			ICollection<SectionAddressModelView> sections = new List<SectionAddressModelView>();
+			sections = this.sectionLoader.GetAddresses(revision);
+
+			return sections;
 		}
 
 		private static void AddSectionsToDictionary(ICollection<SectionModelView> sections, Dictionary<int, string> sectionIdToParentSection)

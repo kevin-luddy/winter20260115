@@ -36,7 +36,8 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="id">Revision ID</param>
         /// <param name="serverFileName">Server File Name</param>
         /// <param name="httpResponse">HTTP response object</param>
-        void GenerateFullPPRD(string id, string serverFileName, HttpResponseBase httpResponse);
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        void GenerateFullPPRD(string id, string serverFileName, HttpResponseBase httpResponse, bool? portionMarkingRequired);
 
         /// <summary>
         /// Generates a file containing revision data as JSON.

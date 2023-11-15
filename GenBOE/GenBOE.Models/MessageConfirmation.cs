@@ -12,14 +12,13 @@ namespace GenBOE.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class MoqTypeTableCustomFieldValueXREF
+    public partial class MessageConfirmation
     {
-        public int Id { get; set; }
+        public int ID { get; set; }
+        public int ETIUserId { get; set; }
+        public int MessageId { get; set; }
         public System.DateTime UpdateDT { get; set; }
-        public int MoqTypeTableDataId { get; set; }
-        public int CustomFieldValueId { get; set; }
     
-        public virtual CustomFieldValue CustomFieldValue { get; set; }
-        public virtual MOQTypeSelectionTableData MOQTypeSelectionTableData { get; set; }
+        public virtual ETIuser ETIuser { get; set; }
     }
 }

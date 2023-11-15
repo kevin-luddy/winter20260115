@@ -38,6 +38,30 @@ namespace IES.Common
         private static string versionAndUpdatedDate = null;
         private static object lockObject = new object();
         private static DateTime? sapSpaceStartDate;
+        private static DateTime? oneLmxStartDate;
+
+		/// <summary>
+		/// 1LMX boundary time
+		/// </summary>
+		public static DateTime OneLmxStartDate
+		{
+			get
+			{
+				if (!oneLmxStartDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("OneLmxStartDate"), out DateTime sapTime))
+					{
+						oneLmxStartDate = DateTime.MaxValue;
+					}
+					else
+					{
+						oneLmxStartDate = sapTime.Normalize();
+					}
+				}
+
+				return oneLmxStartDate.Value;
+			}
+		}
 
 		/// <summary>
 		/// Space cutoff time for workspaces

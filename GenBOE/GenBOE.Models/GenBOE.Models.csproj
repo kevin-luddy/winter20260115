@@ -269,6 +269,9 @@
     <Compile Include="MaterialTaskElement.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="MessageConfirmation.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="MetricDetail.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>

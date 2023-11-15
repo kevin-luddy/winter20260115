@@ -96,6 +96,15 @@ namespace GenBOE.Web.Common
 		}
 
 		/// <summary>
+		/// Whether to show the ECI Forbidden Message
+		/// </summary>
+		/// <returns>True to show, otherwise false.</returns>
+		public static bool ShowEciForbiddenMessage()
+		{
+			return IESBannerApp == Constants.BOE_SPACE_INTERNATIONAL_APP_NAME;
+		}
+
+		/// <summary>
 		/// This method returns the browser reminder from the cookie.  If the cookie is present
 		/// the user should not see the prompt again since we've prompted them already
 		/// </summary>
@@ -334,6 +343,17 @@ namespace GenBOE.Web.Common
 			get
 			{
 				return ConfigurationUtilities.GetAppSetting("UnclassifiedBannerText");
+			}
+		}
+
+		/// <summary>
+		/// Gets the IES Banner App name
+		/// </summary>
+		public static string IESBannerApp
+		{
+			get
+			{
+				return ConfigurationUtilities.GetAppSetting("IESBannerApp");
 			}
 		}
 	}

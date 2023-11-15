@@ -288,6 +288,7 @@
     <Compile Include="Enums\ApplicationName.cs" />
     <Compile Include="Enums\BoeCustomReportSortBy.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Enums\ConfirmationMessage.cs" />
     <Compile Include="Enums\MOQType.cs" />
     <Compile Include="Enums\RDMChangeType.cs" />
     <Compile Include="Enums\RichTextDbColumn.cs" />
