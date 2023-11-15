@@ -200,6 +200,7 @@
     <Compile Include="IO\Export\BOE\BOEExportConverter.cs" />
     <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverterRMS.cs" />
+    <Compile Include="IO\Export\CommentsAndResponsesExporter.cs" />
     <Compile Include="IO\Export\IMoqTableExporter.cs" />
     <Compile Include="IO\Export\ITraceTableExporter.cs" />
     <Compile Include="IO\Export\MoqTableExporter.cs" />

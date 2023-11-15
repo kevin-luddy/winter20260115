@@ -32,6 +32,7 @@ namespace GenBOE.ActionLogic
         private IBoeApproverResponseDTODataLoader boeApproverResponseLoader;
         private IBoeMediator boeMediator;
         private IBOEStateMachine boeStateMachine;
+        private IPermissionsDTODataLoader permissionsDTOLoader;
 
         public BOECommentsControllerLogic(
             IBOECommentDTODataLoader boeCommentDTOLoader,
@@ -40,7 +41,8 @@ namespace GenBOE.ActionLogic
             IBoeEmailer inEmailer,
             IBoeApproverResponseDTODataLoader inBoeApproverResponseLoader,
             IBoeMediator inBoeMediator,
-            IBOEStateMachine inBoeStateMachine)
+            IBOEStateMachine inBoeStateMachine,
+            IPermissionsDTODataLoader permissionsDTOLoader)
         {
             this.boeCommentDTOLoader = boeCommentDTOLoader;
             this.userDTOLoader = userDTOLoader;
@@ -49,6 +51,7 @@ namespace GenBOE.ActionLogic
             this.boeApproverResponseLoader = inBoeApproverResponseLoader;
             this.boeMediator = inBoeMediator;
             this.boeStateMachine = inBoeStateMachine;
+            this.permissionsDTOLoader = permissionsDTOLoader;
         }
 
         public Collection<BOEComment> GetCommentsByBOEId(int boeID)
@@ -111,6 +114,51 @@ namespace GenBOE.ActionLogic
 
                 // Add a new model view with all of the retrieved data for this reviewer comment
                 toReturn.Add(new BOEComment(reviewerComment, reviewer, responderComment, responder));
+            }
+
+            return toReturn;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        public IDictionary<int, ICollection<BOEComment>> GetAllCommentsInWorkspace(IReadOnlyCollection<FullBoe> boes)
+        {
+            Dictionary<int, ICollection<BOEComment>> toReturn = new Dictionary<int, ICollection<BOEComment>>();
+
+            if (boes is null)
+            {
+                throw new ArgumentNullException(nameof(boes));
+            }
+
+            if (boes != null)
+            {
+                List<int> boeIds = new List<int>();
+                foreach (FullBoe boe in boes)
+                {
+                    boeIds.Add(boe.Id);
+                }
+                Collection<PermissionsDTO> permissions = permissionsDTOLoader.GetBOEPermissions(boeIds);
+                foreach (FullBoe boe in boes)
+                {
+                    ICollection<UserDTO> boeAuthors = userDTOLoader.GetByIds(boe.AuthorIDs);
+                    ICollection<BOEComment> boeComments = GetCommentsByBOEId(boe.Id);
+                    PermissionsDTO boePermissions = permissions.Where(x => x.BOEId == boe.Id).FirstOrDefault();
+
+                    foreach (BOEComment comment in boeComments)
+                    {
+                        comment.BOETitle = boe.Title;
+                        comment.ClinString = boe.Clin.ClinString == null ? null : boe.Clin.ClinString;
+                        comment.WbsString = boe.Wbs.WbsString == null ? null : boe.Wbs.WbsString;
+                        comment.BOEAuthors = string.Join("; ", boeAuthors.Select(x => x.DisplayName));
+                        comment.CommenterRole = boePermissions.Role.ToString();
+                        if (DateTime.Compare(comment.AuthorResponseUpdateDT.GetValueOrDefault(), DateTime.MinValue) == 0)
+                        {
+                            comment.AuthorResponseUpdateDT = null;
+                        }
+
+                    }
+
+                    toReturn.Add(boe.Id, boeComments);
+                } 
             }
 
             return toReturn;

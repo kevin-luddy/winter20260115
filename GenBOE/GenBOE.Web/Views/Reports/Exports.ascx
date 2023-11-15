@@ -213,6 +213,16 @@
             DiscrepancyValidator.ValidateDiscrepancies(proceedWithExportFunction);
         });
 
+        // Exports all workspace author, reviewer and approver comments and responses into an excel download
+        $('#Exports a[name="CommentsAndResponses-ViewButton"]').click(function (e) {
+            e.stopPropagation();
+            var reportGenerationUrl = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+                '<%: WebConstants.CONTROLLER_WORKSPACE %>',
+                '<%: WebConstants.ACTION_EXPORT_WORKSPACE_COMMENTS_AND_RESPONSES %>');
+
+            GenWidget.prototype.performExport(reportGenerationUrl);
+        });
+
         // Decrease width of Action column for Project Map
         // No need for Custom Export, make more room for Standard Reports Description
         <% if (ViewBag.IsProjectMapWs)
@@ -311,6 +321,12 @@
                     <td><span>Project Map Export with Offloading</span></td>
                     <td><span>Exports all BOEs after Offloading to Project Map format.</span></td>
                     <td style="text-align: right"><span><a name="ProjectMap-ViewButton">Export...</a></span>
+                    </td>
+                </tr>
+                <tr offloadtype="false">
+                    <td><span>All Comments and Responses</span></td>
+                    <td><span>Exports all Author, Reviewer and Approver comments and responses.</span></td>
+                    <td style="text-align: right"><span><a name="CommentsAndResponses-ViewButton">Export...</a></span>
                     </td>
                 </tr>
                 <% } %>
