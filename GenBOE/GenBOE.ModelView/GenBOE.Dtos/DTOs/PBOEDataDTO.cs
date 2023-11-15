@@ -8,7 +8,6 @@ namespace GenBOE.Dtos
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using IES.Common;
 
@@ -47,6 +46,8 @@ namespace GenBOE.Dtos
 			this.TechnicalEvaluationDate = null;
 			this.RFPReleaseToSupplierDate = null;
 			this.SupplierNegotiationsDate = null;
+			this.ProposalDate = null;
+			this.ValidityDate = null;
 	}
 
 		/// <summary>
@@ -163,5 +164,15 @@ namespace GenBOE.Dtos
 		/// Supplier Negotiations Date
 		/// </summary>
 		public DateTime? SupplierNegotiationsDate { get; set; }
+
+		/// <summary>
+		/// Supplier Proposal Date
+		/// </summary>
+		public DateTime? ProposalDate { get; set; }
+
+		/// <summary>
+		/// Supplier Proposal Validity Date
+		/// </summary>
+		public DateTime? ValidityDate { get; set; }
 	}
 }

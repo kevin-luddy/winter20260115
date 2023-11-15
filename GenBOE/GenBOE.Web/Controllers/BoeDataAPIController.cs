@@ -829,6 +829,8 @@ namespace GenBOE.Web.Controllers
 						TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
 						RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
 						SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
+						ProposalDate = x.ProposalDate.GetValueOrDefault(),
+						ValidityDate = x.ValidityDate.GetValueOrDefault()
 					}).ToList();
 
 					result.IsSuccessful = true;
@@ -897,7 +899,9 @@ namespace GenBOE.Web.Controllers
 						TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
 						TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
 						RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
-						SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault()
+						SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
+						ProposalDate = x.ProposalDate.GetValueOrDefault(),
+						ValidityDate = x.ValidityDate.GetValueOrDefault()
 					}).ToList();
 
 					result.IsSuccessful = true;

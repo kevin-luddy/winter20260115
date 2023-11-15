@@ -135,5 +135,15 @@ namespace GenBOE.Web.ModelView
 		/// Supplier Negotiations Date
 		/// </summary>
 		public DateTime? SupplierNegotiationsDate { get; set; }
+
+		/// <summary>
+		/// Supplier Proposal Date
+		/// </summary>
+		public DateTime? ProposalDate { get; set; }
+
+		/// <summary>
+		/// Supplier Proposal Validity Date
+		/// </summary>
+		public DateTime? ValidityDate { get; set; }
 	}
 }

@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
 	using IES.Common;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
+	using System;
 
 	/// <summary>
 	/// The PBOE INL Form Data Loader Class.
@@ -310,7 +311,9 @@ namespace GenBOE.DataBridge.DTO
 									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
 									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
 									RFPReleaseToSupplierDate = b.RFPReleaseDate,
-									SupplierNegotiationsDate = b.SupplierNegotiationsDate
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = string.IsNullOrEmpty(b.ProposalDate) ? DateTime.MinValue : DateTime.Parse(b.ProposalDate),
+									ValidityDate = string.IsNullOrEmpty(b.ValidityDate) ? DateTime.MinValue : DateTime.Parse(b.ValidityDate)
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -374,7 +377,9 @@ namespace GenBOE.DataBridge.DTO
 									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
 									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
 									RFPReleaseToSupplierDate = b.RFPReleaseDate,
-									SupplierNegotiationsDate = b.SupplierNegotiationsDate
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = string.IsNullOrEmpty(b.ProposalDate) ? DateTime.MinValue : DateTime.Parse(b.ProposalDate),
+									ValidityDate = string.IsNullOrEmpty(b.ValidityDate) ? DateTime.MinValue : DateTime.Parse(b.ValidityDate)
 								}).ToList();
 
 					// Post processing for sub resources and total cost
