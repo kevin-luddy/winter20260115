@@ -141,20 +141,19 @@ namespace GenBOE.ActionLogic
                 {
                     ICollection<UserDTO> boeAuthors = userDTOLoader.GetByIds(boe.AuthorIDs);
                     ICollection<BOEComment> boeComments = GetCommentsByBOEId(boe.Id);
-                    PermissionsDTO boePermissions = permissions.Where(x => x.BOEId == boe.Id).FirstOrDefault();
+                    PermissionsDTO boePermission = permissions.Where(x => x.BOEId == boe.Id).FirstOrDefault();
 
                     foreach (BOEComment comment in boeComments)
                     {
                         comment.BOETitle = boe.Title;
-                        comment.ClinString = boe.Clin.ClinString == null ? null : boe.Clin.ClinString;
-                        comment.WbsString = boe.Wbs.WbsString == null ? null : boe.Wbs.WbsString;
+                        comment.ClinString = boe.Clin == null ? null : boe.Clin.ClinString;
+                        comment.WbsString = boe.Wbs == null ? null : boe.Wbs.WbsString;
                         comment.BOEAuthors = string.Join("; ", boeAuthors.Select(x => x.DisplayName));
-                        comment.CommenterRole = boePermissions.Role.ToString();
+                        comment.CommenterRole = boePermission.Role.ToString();
                         if (DateTime.Compare(comment.AuthorResponseUpdateDT.GetValueOrDefault(), DateTime.MinValue) == 0)
                         {
                             comment.AuthorResponseUpdateDT = null;
                         }
-
                     }
 
                     toReturn.Add(boe.Id, boeComments);
