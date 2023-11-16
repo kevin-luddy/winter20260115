@@ -146,8 +146,8 @@ namespace GenBOE.ActionLogic
                     foreach (BOEComment comment in boeComments)
                     {
                         comment.BOETitle = boe.Title;
-                        comment.ClinString = boe.Clin == null ? null : boe.Clin.ClinString;
-                        comment.WbsString = boe.Wbs == null ? null : boe.Wbs.WbsString;
+                        comment.ClinString = boe.Clin == null ? string.Empty : boe.Clin.ClinString;
+                        comment.WbsString = boe.Wbs == null ? string.Empty : boe.Wbs.WbsString;
                         comment.BOEAuthors = string.Join("; ", boeAuthors.Select(x => x.DisplayName));
                         comment.CommenterRole = boePermission.Role.ToString();
                         if (DateTime.Compare(comment.AuthorResponseUpdateDT.GetValueOrDefault(), DateTime.MinValue) == 0)
