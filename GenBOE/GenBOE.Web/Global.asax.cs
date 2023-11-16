@@ -771,7 +771,8 @@ namespace GenBOE
                                                                                                                           new ResolvedParameter(typeof(BoeEmailer)),
                                                                                                                           new ResolvedParameter(typeof(BoeApproverResponseDTODataLoader)),
                                                                                                                           new ResolvedParameter(typeof(BoeMediator)),
-                                                                                                                          new ResolvedParameter(typeof(BOEStateMachine))
+                                                                                                                          new ResolvedParameter(typeof(BOEStateMachine)),
+                                                                                                                          new ResolvedParameter(typeof(IPermissionsDTODataLoader))
                                                                                                                          ));
 
             GenBOEUnityContainer.Container.RegisterType(typeof(BOEZoneTravelControllerLogic), typeof(BOEZoneTravelControllerLogic), GetLifetimeManager(), new InjectionConstructor(

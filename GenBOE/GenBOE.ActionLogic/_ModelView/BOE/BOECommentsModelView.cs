@@ -90,6 +90,12 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.AuthorName = string.Empty;
             this.AuthorResponseUpdateDT = DateTime.MinValue;
             this.CommentType = BOECommentType.Comment;
+            this.BOEId = -1;
+            this.BOETitle = string.Empty;
+            this.ClinString = string.Empty;
+            this.WbsString = string.Empty;
+            this.BOEAuthors = string.Empty;
+            this.CommenterRole = string.Empty;
         }
 
         public BOEComment(BOECommentDTO inComment, UserDTO inCommenter)
@@ -168,13 +174,13 @@ namespace GenBOE.ActionLogic.ModelView.BOE
 
         // Display date as MM/DD/YYYY HH:MM AM/PM
         [DisplayFormat(DataFormatString = "{0:g}")]
-        public DateTime AuthorResponseUpdateDT { get; set; }
+        public DateTime? AuthorResponseUpdateDT { get; set; }
 
         public long AuthorResponseUpdateDTLong
         {
             get
             {
-                return this.AuthorResponseUpdateDT.Ticks;
+                return this.AuthorResponseUpdateDT.GetValueOrDefault().Ticks;
             }
             set
             {
@@ -183,6 +189,18 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         }
         
         public BOECommentType CommentType { get; set; }
+
+        public int BOEId { get; set; }
+
+        public string BOETitle { get; set;}
+
+        public string ClinString { get; set;}
+
+        public string WbsString { get; set; }
+
+        public string BOEAuthors { get; set; }
+
+        public string CommenterRole { get; set; }
     }
 
     public enum BOECommentType
