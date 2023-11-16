@@ -11,7 +11,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using IES.Common;
 using GenBOE.Dtos;
-using Microsoft.SqlServer.Server;
 
 namespace GenBOE.ActionLogic.ModelView.BOE
 {

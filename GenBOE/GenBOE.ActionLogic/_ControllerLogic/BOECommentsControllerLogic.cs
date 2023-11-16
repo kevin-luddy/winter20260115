@@ -119,6 +119,12 @@ namespace GenBOE.ActionLogic
             return toReturn;
         }
 
+        /// <summary>
+        /// Gets all comments from every BOE within a workspace
+        /// </summary>
+        /// <param name="boes"></param>
+        /// <returns>A dictionary of BOEComment collections keyed by BOE ID</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public IDictionary<int, ICollection<BOEComment>> GetAllCommentsInWorkspace(IReadOnlyCollection<FullBoe> boes)
         {
@@ -129,36 +135,41 @@ namespace GenBOE.ActionLogic
                 throw new ArgumentNullException(nameof(boes));
             }
 
-            if (boes != null)
+            List<int> boeIds = new List<int>();
+            foreach (FullBoe boe in boes)
             {
-                List<int> boeIds = new List<int>();
-                foreach (FullBoe boe in boes)
-                {
-                    boeIds.Add(boe.Id);
-                }
-                Collection<PermissionsDTO> permissions = permissionsDTOLoader.GetBOEPermissions(boeIds);
-                foreach (FullBoe boe in boes)
-                {
-                    ICollection<UserDTO> boeAuthors = userDTOLoader.GetByIds(boe.AuthorIDs);
-                    ICollection<BOEComment> boeComments = GetCommentsByBOEId(boe.Id);
-                    PermissionsDTO boePermission = permissions.Where(x => x.BOEId == boe.Id).FirstOrDefault();
-
-                    foreach (BOEComment comment in boeComments)
-                    {
-                        comment.BOETitle = boe.Title;
-                        comment.ClinString = boe.Clin == null ? string.Empty : boe.Clin.ClinString;
-                        comment.WbsString = boe.Wbs == null ? string.Empty : boe.Wbs.WbsString;
-                        comment.BOEAuthors = string.Join("; ", boeAuthors.Select(x => x.DisplayName));
-                        comment.CommenterRole = boePermission.Role.ToString();
-                        if (DateTime.Compare(comment.AuthorResponseUpdateDT.GetValueOrDefault(), DateTime.MinValue) == 0)
-                        {
-                            comment.AuthorResponseUpdateDT = null;
-                        }
-                    }
-
-                    toReturn.Add(boe.Id, boeComments);
-                } 
+                boeIds.Add(boe.Id);
             }
+
+            Collection<PermissionsDTO> permissions = permissionsDTOLoader.GetBOEPermissions(boeIds);
+            ICollection<UserDTO> allBoeAuthors = userDTOLoader.GetByIds(boes.SelectMany(x => x.AuthorIDs).ToList());
+
+            foreach (FullBoe boe in boes)
+            {
+                ICollection<UserDTO> boeAuthors = allBoeAuthors.Where(a => boe.AuthorIDs.Contains(a.UserID)).ToList();
+                ICollection<BOEComment> boeComments = GetCommentsByBOEId(boe.Id);
+                PermissionsDTO boePermission = permissions.Where(x => x.BOEId == boe.Id).FirstOrDefault();
+
+                foreach (BOEComment comment in boeComments)
+                {
+                    comment.BOETitle = boe.Title;
+                    comment.ClinString = boe.Clin == null ? string.Empty : boe.Clin.ClinString;
+                    comment.WbsString = boe.Wbs == null ? string.Empty : boe.Wbs.WbsString;
+                    comment.BOEAuthors = string.Join("; ", boeAuthors.Select(x => x.DisplayName));
+                    comment.CommenterRole = boePermission.Role.ToString();
+                    comment.ReviewerCommentUpdateDT = ((DateTime)comment.ReviewerCommentUpdateDT).AddHours(Convert.ToInt32(ConfigurationUtilities.GetAppSetting("DatabaseESTOffset")));
+                    if (DateTime.Compare(comment.AuthorResponseUpdateDT.GetValueOrDefault(), DateTime.MinValue) == 0)
+                    {
+                        comment.AuthorResponseUpdateDT = null;
+                    }
+                    else
+                    {
+                        comment.AuthorResponseUpdateDT = ((DateTime)comment.AuthorResponseUpdateDT).AddHours(Convert.ToInt32(ConfigurationUtilities.GetAppSetting("DatabaseESTOffset")));
+                    }
+                }
+
+                toReturn.Add(boe.Id, boeComments);
+            } 
 
             return toReturn;
         }

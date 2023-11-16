@@ -83,55 +83,6 @@ namespace GenBOE.DataBridge.DTO
                 return toReturn;
             }
         }
-
-        /// <summary>
-        /// Gets a list of comments associated with a Workspace.
-        /// </summary>
-        /// <param name="workspaceId">The Workspace.</param>
-        /// <returns>Dictionary of Comments keyed by their BoeID's within a workspace.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        [DbQuery]
-        public IDictionary<int, ICollection<BOECommentDTO>> GetByWorkspaceId(int workspaceId)
-        {
-            Dictionary<int, ICollection<BOECommentDTO>> toReturn = new Dictionary<int, ICollection<BOECommentDTO>>();
-
-            // retrieve all comments by the workspace
-            ICollection<BOECommentDTO> CommentsList = new Collection<BOECommentDTO>();
-            using (StopwatchTimer sw = new StopwatchTimer(Log))
-            {
-                using (GenBoeEntities gbe = new GenBoeEntities())
-                {
-                    CommentsList = (from c in gbe.BOEComments
-                                    where c.BOE.WorkspaceID == workspaceId
-                                    select new BOECommentDTO
-                                    {
-                                        Id = c.BOECommentID,
-                                        FieldID = c.FieldID,
-                                        BOEComment = c.BOEComments,
-                                        BOEResponseToCommentID = c.BOEResponseToCommentID,
-                                        BOECommentETIUserID = c.BOECommentETIUserID,
-                                        BoeID = c.BOEID,
-                                        UpdateDate = c.UpdateDT
-                                    }).ToCollection();
-                } 
-            }
-
-            // shove the comments into a dictionary keyed by the BOE Id
-            foreach (BOECommentDTO response in CommentsList)
-            {
-                ICollection<BOECommentDTO> boeList;
-                if (!toReturn.TryGetValue(response.BoeID, out boeList))
-                {
-                    boeList = new List<BOECommentDTO>();
-                    toReturn.Add(response.BoeID, boeList);
-                }
-
-                boeList.Add(response);
-            }
-
-            return toReturn;
-        }
-
         #endregion
 
         #region Commits

@@ -76,10 +76,10 @@ namespace GenBOE.ActionLogic.IO.Export
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.ReviewerName,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.CommenterRole,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.ReviewerComment,
-                            CommonConstants.FORCE_AS_STRING_VALUE + comment.ReviewerCommentUpdateDT + " MST",
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.ReviewerCommentUpdateDT + " ET",
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.AuthorName,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.AuthorResponse,
-                            comment.AuthorResponseUpdateDT == null ? null : CommonConstants.FORCE_AS_STRING_VALUE + comment.AuthorResponseUpdateDT + " MST"
+                            comment.AuthorResponseUpdateDT == null ? null : CommonConstants.FORCE_AS_STRING_VALUE + comment.AuthorResponseUpdateDT + " ET"
                             ); 
                     }
                 }
