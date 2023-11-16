@@ -48,6 +48,11 @@ namespace GenBOE.Dtos
 			this.SupplierNegotiationsDate = null;
 			this.ProposalDate = null;
 			this.ValidityDate = null;
+			this.Approver = null;
+			this.SupplierProposalManagerDisplayName = null;
+			this.SupplierProposalManagerEmail = null;
+			this.ProposalTitle = null;
+			this.ProposalSubmittalDate = null;
 	}
 
 		/// <summary>
@@ -174,5 +179,30 @@ namespace GenBOE.Dtos
 		/// Supplier Proposal Validity Date
 		/// </summary>
 		public DateTime? ValidityDate { get; set; }
+
+		/// <summary>
+		/// Approver => Supplier Proposal Manager
+		/// </summary>
+		public string Approver { get; set; }
+
+		/// <summary>
+		/// Approver Display Name (Supplier Proposal Manager)
+		/// </summary>
+		public string SupplierProposalManagerDisplayName { get; set; }
+
+		/// <summary>
+		/// Approver Email (Supplier Proposal Manager)
+		/// </summary>
+		public string SupplierProposalManagerEmail { get; set; }
+
+		/// <summary>
+		/// Proposal Title / Name
+		/// </summary>
+		public string ProposalTitle { get; set; }
+
+		/// <summary>
+		/// Proposal Submittal Date
+		/// </summary>
+		public DateTime? ProposalSubmittalDate { get; set;}
 	}
 }

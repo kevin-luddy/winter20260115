@@ -10,14 +10,18 @@ namespace GenTRAC.Web.Controllers
     using System.Collections.Generic;
     using System.Linq;
     using System.Web.Http;
-    using GenTRAC.DataBridge.Common.Security;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
-    using IES.Common;
+	using GenTRAC.Objects;
+	using GenTRAC.Objects.FullObject;
+	using IES.Common;
 
-    /// <summary>
-    /// PTM Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up PTM data, hence the name.
-    /// </summary>
-    [AllowAnonymous]
+	/// <summary>
+	/// PTM Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up PTM data, hence the name.
+	/// </summary>
+	[AllowAnonymous]
     public class PtmDataAPIController : ApiController
     {
         #region Properties & Ctor
@@ -42,10 +46,40 @@ namespace GenTRAC.Web.Controllers
         /// </summary>
         private ICoverSheetDataLoader coverSheetLoader;
 
-        /// <summary>
-        /// Token Handling
-        /// </summary>
-        private TokenHandling tokenHandler;
+		/// <summary>
+		/// Proposal Checklist Loader
+		/// </summary>
+		private IProposalChecklistLoader proposalChecklistLoader;
+
+		/// <summary>
+		/// Proposal Loader
+		/// </summary>
+		private IProposalLoader proposalLoader;
+
+		/// <summary>
+		/// The user mapper
+		/// </summary>
+		private IUserMapper userMapper { get; set; }
+
+		/// <summary>
+		/// Object Factory
+		/// </summary>
+		private IFullObjectFactory objectFactory { get; set; }
+
+		/// <summary>
+		/// Workspace Data Loader
+		/// </summary>
+		private IWorkspaceDTODataLoader workspaceDataLoader { get; set; }
+
+		/// <summary>
+		/// User Data Loader
+		/// </summary>
+		private IUserDTODataLoader userDataLoader { get; set; }
+
+		/// <summary>
+		/// Token Handling
+		/// </summary>
+		private TokenHandling tokenHandler;
 
         /// <summary>
         /// Logger
@@ -55,13 +89,21 @@ namespace GenTRAC.Web.Controllers
         /// <summary>
         /// Ctor
         /// </summary>
-        public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler, ICoverSheetDataLoader coverSheetLoader)
+        public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler, ICoverSheetDataLoader coverSheetLoader, 
+			IProposalChecklistLoader proposalChecklistLoader, IProposalLoader proposalLoader, IFullObjectFactory objectFactory, IUserMapper userMapper, IWorkspaceDTODataLoader workspaceDataLoader,
+			IUserDTODataLoader userDataLoader)
         {
             this.security = security;
             this.loader = loader;
             this.coverSheetLoader = coverSheetLoader;
             this.securityAccess = securityAccess;
             this.tokenHandler = tokenHandler;
+			this.proposalChecklistLoader = proposalChecklistLoader;
+			this.proposalLoader = proposalLoader;
+			this.objectFactory = objectFactory;
+			this.userMapper = userMapper;
+			this.workspaceDataLoader = workspaceDataLoader;
+			this.userDataLoader = userDataLoader;
         }
 
         #endregion
@@ -148,6 +190,64 @@ namespace GenTRAC.Web.Controllers
 
             return result;
         }
+
+		[HttpGet]
+		public IESResponse<PBOEDataDTO> GetProposalDataForNlfExport(string ptmTrackingNumber)
+		{
+			IESResponse<PBOEDataDTO> result = new IESResponse<PBOEDataDTO>();
+
+			try
+			{
+				ICollection<int> proposalId = new List<int> { this.proposalLoader.GetIdByTrackingNumber(ptmTrackingNumber) };
+
+                // POC's
+                DataBridge.DTO.UserDTO contractsPocDto = new DataBridge.DTO.UserDTO();
+				GenBOE.Dtos.UserDTO leadEstimatorPocDto = new GenBOE.Dtos.UserDTO();
+
+				// Proposal Variables
+				ProposalDto proposal = this.proposalLoader.GetByIds(proposalId).FirstOrDefault();
+				PBOEDataDTO pBOEDataDTO = new PBOEDataDTO();
+				FullProposal fullProposalDto = this.objectFactory.CreateFullProposal(proposal);
+
+				// Workspace DTO
+				WorkspaceDTO workspaceDto = new WorkspaceDTO();
+
+				pBOEDataDTO.ProposalTitle = proposal.ProposalTitle;
+				pBOEDataDTO.ProposalSubmittalDate = proposalChecklistLoader.GetProposalSubmittalDate(proposalId).FirstOrDefault().Value;
+
+				// Get Contracts POC
+				ProposalPermissionDto permissionsContractsPOC = fullProposalDto.Permissions.FirstOrDefault(x => x.Role == PtmRole.ContractsPOC);
+
+				if (permissionsContractsPOC != null)
+				{
+					contractsPocDto = this.userMapper.GetById(permissionsContractsPOC.Id);
+				}
+				else
+				{
+					contractsPocDto.DisplayName = "User not found";
+					contractsPocDto.EmailAddress = string.Empty;
+				}
+
+				// Get Lead Estimator POC
+				workspaceDto = this.workspaceDataLoader.GetAllWsNamesAndTrackingNumberInfo().Where(x => x.TrackingNumber == ptmTrackingNumber).FirstOrDefault();
+
+				if (workspaceDto != null)
+				{
+					leadEstimatorPocDto = this.userDataLoader.GetUserByID(workspaceDto.CostVolumeLeadPricerUserID);
+
+					if (leadEstimatorPocDto != null)
+					{
+
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured returning PBOEDataDTO data: {ex.Message}");
+			}
+			return result;
+		}
 
         /// <summary>
         /// Is Service Alive?

@@ -313,7 +313,8 @@ namespace GenBOE.DataBridge.DTO
 									RFPReleaseToSupplierDate = b.RFPReleaseDate,
 									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
 									ProposalDate = string.IsNullOrEmpty(b.ProposalDate) ? DateTime.MinValue : DateTime.Parse(b.ProposalDate),
-									ValidityDate = string.IsNullOrEmpty(b.ValidityDate) ? DateTime.MinValue : DateTime.Parse(b.ValidityDate)
+									ValidityDate = string.IsNullOrEmpty(b.ValidityDate) ? DateTime.MinValue : DateTime.Parse(b.ValidityDate),
+									Approver = b.Approver
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -379,7 +380,8 @@ namespace GenBOE.DataBridge.DTO
 									RFPReleaseToSupplierDate = b.RFPReleaseDate,
 									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
 									ProposalDate = string.IsNullOrEmpty(b.ProposalDate) ? DateTime.MinValue : DateTime.Parse(b.ProposalDate),
-									ValidityDate = string.IsNullOrEmpty(b.ValidityDate) ? DateTime.MinValue : DateTime.Parse(b.ValidityDate)
+									ValidityDate = string.IsNullOrEmpty(b.ValidityDate) ? DateTime.MinValue : DateTime.Parse(b.ValidityDate),
+									Approver = b.Approver
 								}).ToList();
 
 					// Post processing for sub resources and total cost
