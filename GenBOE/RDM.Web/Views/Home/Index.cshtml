@@ -46,7 +46,8 @@
                             <td class="columnLines"><div style="max-height: 200px; overflow: auto" data-ng-bind-html="revision.ReleaseNotes"></div></td>
                             <td class="columnLines">
                                 <div>
-                                    <div title="Export PPR&amp;D" class="word-button" data-ng-click="generatePPRDClick(revision.Id);" data-ng-disabled="isExportingPPRD" data-ng-show="isRdmAdminUser || isRdmCobraAdminUser || !revision.IsWipRevision"></div>
+                                    <div title="Export PPR&amp;D" class="word-button" data-ng-click="generatePPRDClick(revision.Id, false);" data-ng-disabled="isExportingPPRD" data-ng-show="isRdmAdminUser || isRdmCobraAdminUser || !revision.IsWipRevision"></div>
+                                    <div title="Export Portion Marked PPR&amp;D" class="word-button-portion-marked" data-ng-click="generatePPRDClick(revision.Id, true);" data-ng-disabled="isExportingPortionMarkedPPRD" data-ng-show="@IES.Common.ConfigurationUtilities.GetAppSetting("HideNonPortionMarking") && (isRdmAdminUser || isRdmCobraAdminUser || !revision.IsWipRevision)"></div>
                                     <div title="Export Rates" class="excel-button" data-ng-click="generateRateDocClick(revision.Id, revision.Revision);" data-ng-disabled="isExportingRateDoc" data-ng-show="isRdmAdminUser || isRdmCobraAdminUser || !revision.IsWipRevision"></div>
                                     <div data-ng-show="managePprdUrl && isRdmAdminUser && revision.IsWipRevision" class="action-link">
                                         <a href="{{managePprdUrl}}" title="Manage PPR&amp;D">PPR&amp;D</a>

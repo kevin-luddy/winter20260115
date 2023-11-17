@@ -13,6 +13,7 @@
     $rootScope.errors = [];
     $scope.isExportingRateDoc = false;
     $scope.isExportingPPRD = false;
+    $scope.isExportingPortionMarkedPPRD = false;
     $scope.timeoutTime = 3000;
 
     initialize = function () {
@@ -63,10 +64,14 @@
     };
 
     // Generates Full PPR&D.  Call controller to redirect to export page w/version selector
-    $scope.generatePPRDClick = function (id) {
-        $scope.isExportingPPRD = true;
+    $scope.generatePPRDClick = function (id, portionMarkingRequired) {
+        if (portionMarkingRequired) {
+            $scope.isExportingPortionMarkedPPRD = true;
+        } else {
+            $scope.isExportingPPRD = true;
+        }
         setTimeout(function () { $scope.timeoutFuncPPRD(); }, $scope.timeoutTime);
-        DownloadFile('GeneratePPRD', RevisionModel.wcReportsController, RevisionModel.wcActionGenerateFullPPRD, id);
+        DownloadFile('GeneratePPRD', RevisionModel.wcReportsController, RevisionModel.wcActionGenerateFullPPRD, id, portionMarkingRequired);
     }
 
     // Generates Rates file.
@@ -87,7 +92,7 @@
     }
 
     $scope.timeoutFuncRateDoc = function () { $scope.$apply(function () { $scope.isExportingRateDoc = false; }); }
-    $scope.timeoutFuncPPRD = function () { $scope.$apply(function () { $scope.isExportingPPRD = false; }); }
+    $scope.timeoutFuncPPRD = function () { $scope.$apply(function () { $scope.isExportingPPRD = false; $scope.isExportingPortionMarkedPPRD = false; }); }
 
     initialize();
 }]);

@@ -62,10 +62,26 @@
                                             id="Export-PPRD"
                                             type="button"
                                             data-ng-disabled="isExportingPPRD"
-                                            data-ng-click="generatePPRDClick()"
-                                            style="min-width: 190px">
+                                            data-ng-click="generatePPRDClick(false)"
+                                            style="min-width: 280px ">
                                         <div data-ng-hide="isExportingPPRD">Generate Full PPR&amp;D</div>
                                         <div data-ng-show="isExportingPPRD" class="loader button-loader"></div>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-if="@IES.Common.ConfigurationUtilities.GetAppSetting("HideNonPortionMarking")">
+                            <td>
+                                <div class="row">
+                                    Generate a full, portion marked PPR&amp;D document for selected revision.
+                                    <button class="ies-action floatRight"
+                                            id="Export-PPRD"
+                                            type="button"
+                                            data-ng-disabled="isExportingPortionMarkedPPRD"
+                                            data-ng-click="generatePPRDClick(true)"
+                                            style="min-width: 280px">
+                                        <div data-ng-hide="isExportingPortionMarkedPPRD">Generate, Full Portion Marked PPR&amp;D</div>
+                                        <div data-ng-show="isExportingPortionMarkedPPRD" class="loader button-loader"></div>
                                     </button>
                                 </div>
                             </td>
@@ -89,7 +105,7 @@
                                             type="button"
                                             data-ng-disabled="isExportingRateDoc"
                                             data-ng-click="generateRateDocClick(false)"
-                                            style="min-width: 190px">
+                                            style="min-width: 280px ">
                                         <div data-ng-hide="isExportingRateDoc">Export Rates</div>
                                         <div data-ng-show="isExportingRateDoc" class="loader button-loader"></div>
                                     </button>
@@ -105,7 +121,7 @@
                                                 type="button"
                                                 data-ng-disabled="isExportingExpandedRateDoc"
                                                 data-ng-click="generateRateDocClick(true)"
-                                                style="min-width: 190px">
+                                                style="min-width: 280px ">
                                             <div data-ng-hide="isExportingExpandedRateDoc">Export Expanded Rates</div>
                                             <div data-ng-show="isExportingExpandedRateDoc" class="loader button-loader"></div>
                                         </button>
@@ -121,7 +137,7 @@
                                             type="button"
                                             data-ng-disabled="isExportingProPricer"
                                             data-ng-click="exportProPricerClick()"
-                                            style="min-width: 190px">
+                                            style="min-width: 280px ">
                                         <div id="Export-ProPricerText" data-ng-hide="isExportingProPricer">Export ProPricer Rates</div>
                                         <div id="Export-ProPricer" data-ng-show="isExportingProPricer" class="loader button-loader"></div>
                                     </button>
@@ -137,7 +153,7 @@
                                             type="button"
                                             data-ng-disabled="isExportingRevisionAsJson"
                                             data-ng-click="exportRevisionAsJsonClick()"
-                                            style="min-width: 190px">
+                                            style="min-width: 280px">
                                         <div id="Export-RevisionAsJsonText" data-ng-hide="isExportingRevisionAsJson">Export Revision</div>
                                         <div id="Export-RevisionAsJson" data-ng-show="isExportingRevisionAsJson" class="loader button-loader"></div>
                                     </button>

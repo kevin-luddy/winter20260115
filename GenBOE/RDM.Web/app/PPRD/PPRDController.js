@@ -7,6 +7,7 @@
         $rootScope.errors = [];
         $scope.showEditLockTimeoutExpiration = false;
         $scope.isGeneratingPPRD = false;
+        $scope.isGeneratingPortionMarkedPPRD = false;
         $scope.timeoutTime = 4000;
         $scope.PageIsDirty = false;
         $scope.canEdit = function () { return $scope.pprd && $scope.pprd.LockInfo && !$scope.pprd.LockInfo.IsReadOnly; };
@@ -177,13 +178,17 @@
             $scope.$broadcast('angular-ui-tree:expand-all');
         };
 
-        $scope.generatePPRDClick = function () {
-            $scope.isGeneratingPPRD = true;
+        $scope.generatePPRDClick = function (portionMarkingRequired) {
+            if (portionMarkingRequired) {
+                $scope.isGeneratingPortionMarkedPPRD = true;
+            } else {
+                $scope.isGeneratingPPRD = true;
+            }
             setTimeout(function () { $scope.timeoutFuncPPRD(); }, $scope.timeoutTime);
-            DownloadFile('GeneratePPRD', PPRDModel.reportsController, PPRDModel.generateFullPPRDAction, 'WIP');
+            DownloadFile('GeneratePPRD', PPRDModel.reportsController, PPRDModel.generateFullPPRDAction, 'WIP', portionMarkingRequired);
         };
 
-        $scope.timeoutFuncPPRD = function () { $scope.$apply(function () { $scope.isGeneratingPPRD = false; }); }
+        $scope.timeoutFuncPPRD = function () { $scope.$apply(function () { $scope.isGeneratingPPRD = false; $scope.isGeneratingPortionMarkedPPRD = false; }); }
 
         $scope.showConfirmDelete = function (scope, $event) {
             // Clear error messages.
