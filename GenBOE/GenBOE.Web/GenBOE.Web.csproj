@@ -362,7 +362,6 @@
     <Content Include="Content\images\dateshift\ShiftRightToPOP.png" />
     <Content Include="Content\images\dateshift\ShiftRightToStart.png" />
     <Content Include="Resources\css\images\homepage\LM-logo-White.png" />
-    <Content Include="Resources\css\images\wordPortionMarked.png" />
     <Content Include="Resources\DateShiftStep5.html" />
     <Content Include="Resources\DateShiftStep3.html" />
     <Content Include="Resources\DateShiftStep4.html" />
