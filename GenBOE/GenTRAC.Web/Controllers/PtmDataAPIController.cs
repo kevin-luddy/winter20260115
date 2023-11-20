@@ -12,6 +12,7 @@ namespace GenTRAC.Web.Controllers
     using System.Web.Http;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
+	using GenBOE.Web.ModelView;
 	using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
 	using GenTRAC.Objects;
@@ -192,9 +193,10 @@ namespace GenTRAC.Web.Controllers
         }
 
 		[HttpGet]
-		public IESResponse<PBOEDataDTO> GetProposalDataForNlfExport(string ptmTrackingNumber)
+		public IESResponse<PBOEData> GetProposalDataForNlfExport(string ptmTrackingNumber)
 		{
-			IESResponse<PBOEDataDTO> result = new IESResponse<PBOEDataDTO>();
+			IESResponse<PBOEData> result = new IESResponse<PBOEData>();
+			PBOEData pboeData = new PBOEData();
 
 			try
 			{
@@ -206,14 +208,13 @@ namespace GenTRAC.Web.Controllers
 
 				// Proposal Variables
 				ProposalDto proposal = this.proposalLoader.GetByIds(proposalId).FirstOrDefault();
-				PBOEDataDTO pBOEDataDTO = new PBOEDataDTO();
 				FullProposal fullProposalDto = this.objectFactory.CreateFullProposal(proposal);
 
 				// Workspace DTO
 				WorkspaceDTO workspaceDto = new WorkspaceDTO();
 
-				pBOEDataDTO.ProposalTitle = proposal.ProposalTitle;
-				pBOEDataDTO.ProposalSubmittalDate = proposalChecklistLoader.GetProposalSubmittalDate(proposalId).FirstOrDefault().Value;
+				pboeData.ProposalTitle = proposal.ProposalTitle;
+				pboeData.ProposalSubmittalDate = proposalChecklistLoader.GetProposalSubmittalDate(proposalId).FirstOrDefault().Value;
 
 				// Get Contracts POC
 				ProposalPermissionDto permissionsContractsPOC = fullProposalDto.Permissions.FirstOrDefault(x => x.Role == PtmRole.ContractsPOC);
@@ -229,8 +230,8 @@ namespace GenTRAC.Web.Controllers
 				}
 
 				// Set Contracts Lead on PBOE Data DTO
-				pBOEDataDTO.ContractsLeadDisplayName = contractsPocDto.DisplayName;
-				pBOEDataDTO.ContractsLeadEmail = contractsPocDto.EmailAddress;
+				pboeData.ContractsLeadDisplayName = contractsPocDto.DisplayName;
+				pboeData.ContractsLeadEmail = contractsPocDto.EmailAddress;
 
 				// Get Lead Estimator POC
 				workspaceDto = this.workspaceDataLoader.GetAllWsNamesAndTrackingNumberInfo().Where(x => x.TrackingNumber == ptmTrackingNumber).FirstOrDefault();
@@ -241,16 +242,21 @@ namespace GenTRAC.Web.Controllers
 
 					if (leadEstimatorPocDto != null)
 					{
-						pBOEDataDTO.LeadEstimatorDisplayName = leadEstimatorPocDto.DisplayName;
-						pBOEDataDTO.LeadEstimatorEmail = leadEstimatorPocDto.EmailAddress;
+						pboeData.LeadEstimatorDisplayName = leadEstimatorPocDto.DisplayName;
+						pboeData.LeadEstimatorEmail = leadEstimatorPocDto.EmailAddress;
 					}
 				}
+
+				result.Data.Add(pboeData);
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occured returning PBOEDataDTO data: {ex.Message}");
+				result.IsSuccessful = false;
 			}
+
 			return result;
 		}
 
