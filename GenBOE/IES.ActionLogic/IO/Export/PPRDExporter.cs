@@ -466,6 +466,8 @@ namespace IES.ActionLogic.IO.Export
 						PPRDExporterConstants.FIELDNAME_TEXTELEMENT);
 					SdtElement rateTableElement =
 						WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_RATES);
+					SdtElement addressTableElement =
+							WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_ADDRESS);
 
 					// Create the hyperlink text
 					string hyperlink = string.Format("<a href=\"{1}\">{0}</a>", attachment.Name, attachment.Link);
@@ -475,6 +477,7 @@ namespace IES.ActionLogic.IO.Export
 
 					// Remove table elements
 					this.RemoveElement(rateTableElement);
+					this.RemoveElement(addressTableElement);
 				}
 			}
 		}
