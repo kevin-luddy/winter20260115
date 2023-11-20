@@ -572,15 +572,16 @@ namespace IES.ActionLogic.ControllerLogic
 			return details;
 		}
 
-		/// <summary>
-		/// Generates the RDD document for the Proposal Id passed in.
-		/// </summary>
-		/// <param name="proposalId">Proposal ID</param>
-		/// <param name="serverFileName">Server File Name</param>
-		/// <param name="httpResponse">HTTP response object</param>
-		public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse)
+        /// <summary>
+        /// Generates the RDD document for the Proposal Id passed in.
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <param name="serverFileName">Server File Name</param>
+        /// <param name="httpResponse">HTTP response object</param>
+		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired)
 		{
-			if (serverFileName == null)
+            if (serverFileName == null)
 			{
 				throw new ArgumentNullException(nameof(serverFileName));
 			}
@@ -603,7 +604,7 @@ namespace IES.ActionLogic.ControllerLogic
 			httpResponse.Clear();
 			httpResponse.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
 
-			this.GenerateRDD(proposalId, serverFileName, httpResponse.OutputStream, modelView);
+			this.GenerateRDD(proposalId, serverFileName, httpResponse.OutputStream, modelView, null, true, portionMarkingRequired);
 		}
 
         /// <summary>
@@ -618,7 +619,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
         public void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
 		{
-			if (serverFileName == null)
+            if (serverFileName == null)
 			{
 				throw new ArgumentNullException(nameof(serverFileName));
 			}

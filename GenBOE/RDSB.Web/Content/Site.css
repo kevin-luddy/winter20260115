@@ -1172,7 +1172,9 @@ ui-widget {
 }
 
 #SaveButton-Document,
-#CancelButton-Document {
+#CancelButton-Document,
+#DownloadButton-Document,
+#DownloadPortionMarkedButton-Document {
     vertical-align: super;
 }
 
