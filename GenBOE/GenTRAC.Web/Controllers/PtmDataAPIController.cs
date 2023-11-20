@@ -228,6 +228,10 @@ namespace GenTRAC.Web.Controllers
 					contractsPocDto.EmailAddress = string.Empty;
 				}
 
+				// Set Contracts Lead on PBOE Data DTO
+				pBOEDataDTO.ContractsLeadDisplayName = contractsPocDto.DisplayName;
+				pBOEDataDTO.ContractsLeadEmail = contractsPocDto.EmailAddress;
+
 				// Get Lead Estimator POC
 				workspaceDto = this.workspaceDataLoader.GetAllWsNamesAndTrackingNumberInfo().Where(x => x.TrackingNumber == ptmTrackingNumber).FirstOrDefault();
 
@@ -237,7 +241,8 @@ namespace GenTRAC.Web.Controllers
 
 					if (leadEstimatorPocDto != null)
 					{
-
+						pBOEDataDTO.LeadEstimatorDisplayName = leadEstimatorPocDto.DisplayName;
+						pBOEDataDTO.LeadEstimatorEmail = leadEstimatorPocDto.EmailAddress;
 					}
 				}
 			}

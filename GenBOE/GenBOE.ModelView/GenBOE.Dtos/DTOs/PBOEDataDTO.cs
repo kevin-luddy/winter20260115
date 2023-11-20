@@ -53,6 +53,10 @@ namespace GenBOE.Dtos
 			this.SupplierProposalManagerEmail = null;
 			this.ProposalTitle = null;
 			this.ProposalSubmittalDate = null;
+			this.ContractsLeadDisplayName = null;
+			this.ContractsLeadEmail = null;
+			this.LeadEstimatorDisplayName = null;
+			this.LeadEstimatorEmail = null;
 	}
 
 		/// <summary>
@@ -204,5 +208,25 @@ namespace GenBOE.Dtos
 		/// Proposal Submittal Date
 		/// </summary>
 		public DateTime? ProposalSubmittalDate { get; set;}
+
+		/// <summary>
+		/// Contracts Lead Display Name
+		/// </summary>
+		public string ContractsLeadDisplayName { get; set; }
+
+		/// <summary>
+		/// Contracts Lead Email
+		/// </summary>
+		public string ContractsLeadEmail { get; set; }
+
+		/// <summary>
+		/// Lead Estimator Display Name
+		/// </summary>
+		public string LeadEstimatorDisplayName { get; set; }
+
+		/// <summary>
+		/// Lead Estimator Email
+		/// </summary>
+		public string LeadEstimatorEmail { get; set; }
 	}
 }

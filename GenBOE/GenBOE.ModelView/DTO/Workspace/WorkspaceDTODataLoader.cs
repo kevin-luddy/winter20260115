@@ -584,7 +584,7 @@ namespace GenBOE.DataBridge.DTO
 							  { 
 								  WorkspaceId = w.WorkspaceID, 
 								  WorkspaceUrl = w.WorkspaceShortName, 
-								  WorkspaceName = w.WorkspaceName 
+								  WorkspaceName = w.WorkspaceName
 							  }).ToList();
 				}
 			}
