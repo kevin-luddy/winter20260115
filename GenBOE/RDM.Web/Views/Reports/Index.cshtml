@@ -54,7 +54,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr ng-if="!@IES.Common.ConfigurationUtilities.GetAppSetting("HideNonPortionMarking")">
                             <td>
                                 <div class="row">
                                     Generate a full PPR&amp;D document for selected revision.
@@ -70,7 +70,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr ng-if="@IES.Common.ConfigurationUtilities.GetAppSetting("HideNonPortionMarking")">
+                        <tr ng-if="!@IES.Common.ConfigurationUtilities.GetAppSetting("HidePortionMarking")">
                             <td>
                                 <div class="row">
                                     Generate a full, portion marked PPR&amp;D document for selected revision.

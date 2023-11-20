@@ -188,7 +188,8 @@
                             <div class="inline css3pie-position-fix" style="line-height: 32px;" data-ng-cloak>
                                 <button id="ExpandAllButton-PPRD" data-ng-click="expandAll()" data-ng-disabled="isDataLoading" type="button" class="ies">Expand All</button>
                                 <button id="CollapseAllButton-PPRD" data-ng-click="collapseAll()" data-ng-disabled="isDataLoading" type="button" class="ies">Collapse All</button>
-                                <button class="ies-action"
+                                <button ng-if="!@IES.Common.ConfigurationUtilities.GetAppSetting("HideNonPortionMarking")"
+                                        class="ies-action"
                                         id="GeneratePPRDButton-PPRD"
                                         type="button"
                                         data-ng-disabled="isDataLoading || isGeneratingPPRD"
@@ -197,7 +198,7 @@
                                     <div id="Generate-PPRDText" data-ng-hide="isGeneratingPPRD">Preview Full PPR&amp;D</div>
                                     <div id="Generate-PPRD" style="min-width: 116px" data-ng-show="isGeneratingPPRD" class="loader"></div>
                                 </button>
-                                <button ng-if="@IES.Common.ConfigurationUtilities.GetAppSetting("HideNonPortionMarking")"
+                                <button ng-if="!@IES.Common.ConfigurationUtilities.GetAppSetting("HidePortionMarking")"
                                         class="ies-action"
                                         id="GeneratePortionMarkedPPRDButton-PPRD"
                                         type="button"
