@@ -308,7 +308,7 @@
                   + 'Select OK to continue with your current browser.  <br/><br/>');
 			}
 
-			var displayEciMessage = '<%: (bool)ViewData["DisplayECIMessage"] %>';
+			var displayEciMessage = '<%: ViewData["DisplayECIMessage"] != null && (bool)ViewData["DisplayECIMessage"] %>';
 			if (displayEciMessage == "True") {
 				GenSession.commonDialog('ECI Forbidden',
 					'<p>You have chosen to access the International genBOE Environment. This genBOE environment is accessible to international users throughout LM as well as within the United States. Export Controlled Information (ECI) is <strong>Forbidden</strong> on this site.</p>' +
