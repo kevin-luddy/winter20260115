@@ -371,7 +371,12 @@
     <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.17 Generated On 9_11_2017.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.18 Generated On 10_19_2017.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.19 Generated On 12_19_2017.sql" />
+    <Content Include="_Other Scripts\Classified Helpers\genBOE - Scrub database data.sql" />
+    <Content Include="_Other Scripts\Classified Helpers\genTrac - Insert Application Administrator.sql" />
+    <Content Include="_Other Scripts\Classified Helpers\genTrac - Scrub database data.sql" />
+    <Content Include="_Other Scripts\Classified Helpers\IES - Scrub database data.sql" />
     <Content Include="_Other Scripts\Create Default WS.sql" />
+    <Content Include="_Other Scripts\Classified Helpers\genBOE - Insert Application Administrator.sql" />
     <Content Include="_Other Scripts\Custom Field Stuff\Abandoned Open Ended CF Values.sql" />
     <Content Include="_Other Scripts\Custom Field Stuff\Duplicated CF XREF Values.sql" />
     <Content Include="_Other Scripts\Custom Field Stuff\Duplicated Open Ended CF Values.sql" />
@@ -398,7 +403,6 @@
     <Content Include="_Other Scripts\From Transition\quick collation fix 20150416 - Started to Add Support to remove deprecated commands from SPs.sql" />
     <Content Include="_Other Scripts\From Transition\quick collation fix 20150417 - Added Support to remove deprecated commands from SPs.sql" />
     <Content Include="_Other Scripts\From Transition\sp_helptext_custom.sql" />
-    <Content Include="_Other Scripts\GenBOE - Insert Application Administrator.sql" />
     <Content Include="_Other Scripts\Realignment and DB Copy Scripts.sql" />
     <Content Include="_Other Scripts\RemoveNonDiscreteLaborSpreads.sql" />
     <Content Include="_Other Scripts\Sql To Move Templates for Hotfix 2.9.5.sql" />
@@ -406,6 +410,8 @@
   <ItemGroup>
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2020.3.11 8_26_2020.sql" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="_Other Scripts\AddLobWorkspaceAdmins.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
