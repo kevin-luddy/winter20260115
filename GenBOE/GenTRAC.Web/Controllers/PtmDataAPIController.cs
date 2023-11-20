@@ -192,6 +192,12 @@ namespace GenTRAC.Web.Controllers
             return result;
         }
 
+		/// <summary>
+		/// Get Additional Proposal Data for NLF Export
+		/// </summary>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
+		/// <returns>PBOE Data</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<PBOEData> GetProposalDataForNlfExport(string ptmTrackingNumber)
 		{
