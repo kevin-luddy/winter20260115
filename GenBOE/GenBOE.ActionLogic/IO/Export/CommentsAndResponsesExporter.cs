@@ -69,7 +69,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     foreach (BOEComment comment in entry.Value)
                     {
                         toReturn.Add(
-                            CommonConstants.FORCE_AS_STRING_VALUE + entry.Key,
+                            CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + entry.Key,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.BOETitle,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.WbsNumber,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.WbsTitle,
