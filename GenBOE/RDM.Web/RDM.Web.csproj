@@ -271,6 +271,7 @@
     <Content Include="Content\images\Undo-PageBreak.png" />
     <Content Include="Content\images\warning_small.png" />
     <Content Include="Content\images\word.png" />
+    <Content Include="Content\images\wordPortionMarked.png" />
     <Content Include="Content\pie\PIE.htc" />
     <Content Include="Content\pie\PIE_IE678.js" />
     <Content Include="Content\pie\PIE_IE678_uncompressed.js" />

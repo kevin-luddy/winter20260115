@@ -1,13 +1,17 @@
 ﻿/* Create a POST url via parameters */
-function createPostURL(controllerName, actionName, id) {
+function createPostURL(controllerName, actionName, id, portionMarkingRequired) {
     var postURL = window.location.protocol + '//' + window.location.host + '/' +
         controllerName + '/';
 
     if (actionName != undefined) {
-        postURL += actionName + '/';
+        postURL += actionName;
 
         if (id != undefined) {
-            postURL += id;
+            postURL += '/' + id;
+        }
+
+        if (portionMarkingRequired != undefined) {
+            postURL += '/?portionMarkingRequired=' + portionMarkingRequired.toString();
         }
 
     }
@@ -188,8 +192,10 @@ DisplayUnderConstruction = function () {
     *            (Optional) The action for the URL.
     * @param id
     *            (Optional) The id for the URL.
+    * @param portionMarkingRequired
+    *            (Optional) The boolean option for portion marking for the URL.
 */
-function DownloadFile(targetIFrameName, controller, action, id) {
+function DownloadFile(targetIFrameName, controller, action, id, portionMarkingRequired) {
     // If an IFrame already exists, remove it so we don't clog-up the DOM by creating duplicates.
     if ($("iframe#DownloadFileTarget-" + targetIFrameName).length > 0) {
         $("iframe#DownloadFileTarget-" + targetIFrameName).remove();
@@ -199,7 +205,7 @@ function DownloadFile(targetIFrameName, controller, action, id) {
     var targetIFrame = $('<iframe />', {
         'id': 'DownloadFileTarget-' + targetIFrameName,
         'class': 'display-none',
-        'src': createPostURL(controller, action, id)
+        'src': createPostURL(controller, action, id, portionMarkingRequired)
     });
 
     // Append the IFrame to the body, causing the file download to occur within the IFrame.
