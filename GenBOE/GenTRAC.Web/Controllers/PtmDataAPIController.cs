@@ -10,13 +10,11 @@ namespace GenTRAC.Web.Controllers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web.Http;
-	using GenBOE.DataBridge.DTO;
-	using GenBOE.Dtos;
-	using GenBOE.Web.ModelView;
 	using GenTRAC.DataBridge.Common.Security;
 	using GenTRAC.DataBridge.DTO;
 	using GenTRAC.Objects;
 	using GenTRAC.Objects.FullObject;
+	using GenTRAC.Web.ModelView;
 	using IES.Common;
 
 	/// <summary>
@@ -40,7 +38,7 @@ namespace GenTRAC.Web.Controllers
 		/// <summary>
 		/// Proposal Loader
 		/// </summary>
-		private IProposalLoader loader;
+		private IProposalLoader proposalLoader;
 
 		/// <summary>
 		/// Cover Sheet Loader
@@ -53,11 +51,6 @@ namespace GenTRAC.Web.Controllers
 		private IProposalChecklistLoader proposalChecklistLoader;
 
 		/// <summary>
-		/// Proposal Loader
-		/// </summary>
-		private IProposalLoader proposalLoader;
-
-		/// <summary>
 		/// The user mapper
 		/// </summary>
 		private IUserMapper userMapper { get; set; }
@@ -66,16 +59,6 @@ namespace GenTRAC.Web.Controllers
 		/// Object Factory
 		/// </summary>
 		private IFullObjectFactory objectFactory { get; set; }
-
-		/// <summary>
-		/// Workspace Data Loader
-		/// </summary>
-		private IWorkspaceDTODataLoader workspaceDataLoader { get; set; }
-
-		/// <summary>
-		/// User Data Loader
-		/// </summary>
-		private IUserDTODataLoader userDataLoader { get; set; }
 
 		/// <summary>
 		/// Token Handling
@@ -91,20 +74,16 @@ namespace GenTRAC.Web.Controllers
 		/// Ctor
 		/// </summary>
 		public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler, ICoverSheetDataLoader coverSheetLoader,
-			IProposalChecklistLoader proposalChecklistLoader, IProposalLoader proposalLoader, IFullObjectFactory objectFactory, IUserMapper userMapper, IWorkspaceDTODataLoader workspaceDataLoader,
-			IUserDTODataLoader userDataLoader)
+			IProposalChecklistLoader proposalChecklistLoader, IFullObjectFactory objectFactory, IUserMapper userMapper)
 		{
 			this.security = security;
-			this.loader = loader;
+			this.proposalLoader = loader;
 			this.coverSheetLoader = coverSheetLoader;
 			this.securityAccess = securityAccess;
 			this.tokenHandler = tokenHandler;
 			this.proposalChecklistLoader = proposalChecklistLoader;
-			this.proposalLoader = proposalLoader;
 			this.objectFactory = objectFactory;
 			this.userMapper = userMapper;
-			this.workspaceDataLoader = workspaceDataLoader;
-			this.userDataLoader = userDataLoader;
 		}
 
 		#endregion
@@ -125,7 +104,7 @@ namespace GenTRAC.Web.Controllers
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
 				bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
-				ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> data = this.loader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
+				ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> data = this.proposalLoader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
 				result.Data = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle, ProposalId = x.ProposalId }).ToList();
 				result.IsSuccessful = true;
 			}
@@ -180,7 +159,7 @@ namespace GenTRAC.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				result.Data.Add(loader.GetAcvHeaderDataByProposalId(proposalId));
+				result.Data.Add(proposalLoader.GetAcvHeaderDataByProposalId(proposalId));
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
@@ -206,58 +185,50 @@ namespace GenTRAC.Web.Controllers
 
 			try
 			{
-				ICollection<int> proposalId = new List<int> { this.proposalLoader.GetIdByTrackingNumber(ptmTrackingNumber) };
+				int proposalId = this.proposalLoader.GetIdByTrackingNumber(ptmTrackingNumber);
 
-				// POC's
-				DataBridge.DTO.UserDTO contractsPocDto = new DataBridge.DTO.UserDTO();
-				GenBOE.Dtos.UserDTO leadEstimatorPocDto = new GenBOE.Dtos.UserDTO();
-
-				// Proposal Variables
-				ProposalDto proposal = this.proposalLoader.GetByIds(proposalId).FirstOrDefault();
-				FullProposal fullProposalDto = this.objectFactory.CreateFullProposal(proposal);
-
-				// Workspace DTO
-				WorkspaceDTO workspaceDto = new WorkspaceDTO();
-
-				pboeData.ProposalTitle = proposal.ProposalTitle;
-				pboeData.ProposalSubmittalDate = proposalChecklistLoader.GetProposalSubmittalDate(proposalId).FirstOrDefault().Value;
-				pboeData.AgreementDate = proposal.AgreementDate;
-
-				// Get Contracts POC
-				ProposalPermissionDto permissionsContractsPOC = fullProposalDto.Permissions.FirstOrDefault(x => x.Role == PtmRole.ContractsPOC);
-
-				if (permissionsContractsPOC != null)
+				if (proposalId > 0) 
 				{
-					contractsPocDto = this.userMapper.GetById(permissionsContractsPOC.Id);
-				}
-				else
-				{
-					contractsPocDto.DisplayName = "User not found";
-					contractsPocDto.EmailAddress = string.Empty;
-				}
+					// POC's
+					DataBridge.DTO.UserDTO contractsPocDto = new DataBridge.DTO.UserDTO();
 
-				// Set Contracts Lead on PBOE Data DTO
-				pboeData.ContractsLeadDisplayName = contractsPocDto.DisplayName;
-				pboeData.ContractsLeadEmail = contractsPocDto.EmailAddress;
+					// Proposal Variables
+					ProposalDto proposal = this.proposalLoader.GetByIds(new List<int>(proposalId)).FirstOrDefault();
+					FullProposal fullProposalDto = null;
 
-				// Get Lead Estimator POC
-				workspaceDto = this.workspaceDataLoader.GetAllWsNamesAndTrackingNumberInfo().Where(x => x.TrackingNumber == ptmTrackingNumber).FirstOrDefault();
-
-				if (workspaceDto != null)
-				{
-					leadEstimatorPocDto = this.userDataLoader.GetUserByID(workspaceDto.CostVolumeLeadPricerUserID);
-
-					if (leadEstimatorPocDto != null)
+					if (proposal != null)
 					{
-						pboeData.LeadEstimatorDisplayName = leadEstimatorPocDto.DisplayName;
-						pboeData.LeadEstimatorEmail = leadEstimatorPocDto.EmailAddress;
-					}
-					else
-					{
-						pboeData.LeadEstimatorDisplayName = "User not found";
-						pboeData.LeadEstimatorEmail = string.Empty;
+						fullProposalDto = this.objectFactory.CreateFullProposal(proposal);
+
+						pboeData.ProposalTitle = proposal.ProposalTitle;
+						pboeData.AgreementDate = proposal.AgreementDate;
+
+						KeyValuePair<int, DateTime?> submittalDatePair = proposalChecklistLoader.GetProposalSubmittalDate(new List<int>(proposalId)).FirstOrDefault();
+
+						if (submittalDatePair.Value != null || submittalDatePair.Value != DateTime.MinValue)
+						{
+							pboeData.ProposalSubmittalDate = submittalDatePair.Value;
+						}
+
+						// Get Contracts POC
+						ProposalPermissionDto permissionsContractsPOC = fullProposalDto.Permissions.FirstOrDefault(x => x.Role == PtmRole.ContractsPOC);
+
+						if (permissionsContractsPOC != null)
+						{
+							contractsPocDto = this.userMapper.GetById(permissionsContractsPOC.Id);
+						}
+						else
+						{
+							contractsPocDto.DisplayName = "User not found";
+							contractsPocDto.EmailAddress = string.Empty;
+						}
+
+						// Set Contracts Lead on PBOE Data DTO
+						pboeData.ContractsLeadDisplayName = contractsPocDto.DisplayName;
+						pboeData.ContractsLeadEmail = contractsPocDto.EmailAddress;
 					}
 				}
+				
 
 				result.Data.Add(pboeData);
 				result.IsSuccessful = true;

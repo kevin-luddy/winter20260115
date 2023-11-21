@@ -292,6 +292,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					toReturn = (from b in gbe.BOEFormPBOEs
 								where workspaceId.Equals(b.WorkspaceID)
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
 								orderby b.PBOEFormID
 								select new PBOEDataDTO
 								{
@@ -314,7 +315,8 @@ namespace GenBOE.DataBridge.DTO
 									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
 									ProposalDate = b.ProposalDate,
 									ValidityDate = b.ValidityDate,
-									Approver = b.Approver
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -356,6 +358,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					toReturn = (from b in gbe.BOEFormPBOEs
 								where workspaceId.Equals(b.WorkspaceID) && pboeId.Equals(b.PBOEFormID)
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
 								select new PBOEDataDTO
 								{
 									PBoeID = b.PBOEFormID,
@@ -381,7 +384,8 @@ namespace GenBOE.DataBridge.DTO
 									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
 									ProposalDate = b.ProposalDate,
 									ValidityDate = b.ValidityDate,
-									Approver = b.Approver
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID
 								}).ToList();
 
 					// Post processing for sub resources and total cost

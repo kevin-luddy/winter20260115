@@ -55,6 +55,7 @@ namespace GenBOE.Dtos
 			this.ProposalSubmittalDate = null;
 			this.ContractsLeadDisplayName = null;
 			this.ContractsLeadEmail = null;
+			this.LeadEstimatorId = 0;
 			this.LeadEstimatorDisplayName = null;
 			this.LeadEstimatorEmail = null;
 	}
@@ -223,6 +224,11 @@ namespace GenBOE.Dtos
 		/// Contracts Lead Email
 		/// </summary>
 		public string ContractsLeadEmail { get; set; }
+
+		/// <summary>
+		/// Lead Estimator Id
+		/// </summary>
+		public int LeadEstimatorId { get; set; }
 
 		/// <summary>
 		/// Lead Estimator Display Name

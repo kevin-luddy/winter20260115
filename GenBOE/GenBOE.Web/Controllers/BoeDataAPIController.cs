@@ -91,6 +91,11 @@ namespace GenBOE.Web.Controllers
 		private readonly IActiveDirectoryUtilities activeDirectoryUtilities;
 
 		/// <summary>
+		/// User Data Loader
+		/// </summary>
+		private IUserDTODataLoader userDataLoader { get; set; }
+
+		/// <summary>
 		/// Contract Type loader
 		/// </summary>
 		private readonly ContractTypeLoader contractTypeLoader;
@@ -116,7 +121,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, ContractTypeLoader contractTypeLoader)
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -129,6 +134,7 @@ namespace GenBOE.Web.Controllers
 			this.boeFormControllerLogic = boeFormControllerLogic;
 			this.boeFormPBOEDTODataLoader = boeFormPBOEDTODataLoader;
 			this.activeDirectoryUtilities = activeDirectoryUtilities;
+			this.userDataLoader = userDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
 		}
 		#endregion
@@ -838,6 +844,7 @@ namespace GenBOE.Web.Controllers
 						ProposalDate = x.ProposalDate,
 						ValidityDate = x.ValidityDate,
 						Approver = x.Approver,
+						LeadEstimatorId = x.LeadEstimatorId,
 						SupplierProposalManagerDisplayName = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault().DisplayName,
 						SupplierProposalManagerEmail = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault().Email,
 					}).ToList();
@@ -884,36 +891,45 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					result.Data = boeFormPBOEDTODataLoader.GetPBOEByIDs(workspaceID, pboeID).Select<PBOEDataDTO, PBOEData>(x => new PBOEData()
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEByIDs(workspaceID, pboeID).Select<PBOEDataDTO, PBOEData>(x => 
 					{
-						PBoeID = x.PBoeID,
-						SupplierName = x.SupplierName,
-						VendorId = x.VendorId,
-						SubResources = x.SubResources,
-						TotalCost = x.TotalCost.GetValueOrDefault(),
-						SupplierProposedValue = x.SupplierProposedValue,
-						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
-						IsCommercialItemException = x.IsCommercialItemException.GetValueOrDefault(),
-						IsCompetitionException = x.IsCompetitionException.GetValueOrDefault(),
-						IsCCoPDOtherException = x.IsCCoPDOtherException.GetValueOrDefault(),
-						IsCCoPDThresholdException = x.IsCCoPDThresholdException.GetValueOrDefault(),
-						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
-						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
-						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
-						CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
-						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
-						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
-						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
-						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
-						TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
-						TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
-						RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
-						SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
-						ProposalDate = x.ProposalDate,
-						ValidityDate = x.ValidityDate,
-						Approver = x.Approver,
-						SupplierProposalManagerDisplayName = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault().DisplayName,
-						SupplierProposalManagerEmail = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault().Email,
+						UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
+						UserDTO leadEstimator = userDataLoader.GetUserByID(x.LeadEstimatorId);
+
+						return new PBOEData()
+						{
+							PBoeID = x.PBoeID,
+							SupplierName = x.SupplierName,
+							VendorId = x.VendorId,
+							SubResources = x.SubResources,
+							TotalCost = x.TotalCost.GetValueOrDefault(),
+							SupplierProposedValue = x.SupplierProposedValue,
+							IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+							IsCommercialItemException = x.IsCommercialItemException.GetValueOrDefault(),
+							IsCompetitionException = x.IsCompetitionException.GetValueOrDefault(),
+							IsCCoPDOtherException = x.IsCCoPDOtherException.GetValueOrDefault(),
+							IsCCoPDThresholdException = x.IsCCoPDThresholdException.GetValueOrDefault(),
+							PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
+							PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
+							CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
+							CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
+							GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
+							GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
+							CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
+							CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
+							TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
+							TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
+							RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
+							SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
+							ProposalDate = x.ProposalDate,
+							ValidityDate = x.ValidityDate,
+							Approver = x.Approver,
+							LeadEstimatorId = x.LeadEstimatorId,
+							LeadEstimatorDisplayName = leadEstimator != null ? leadEstimator.DisplayName : string.Empty,
+							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
+							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
+							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty
+						};
 					}).ToList();
 
 					result.IsSuccessful = true;
