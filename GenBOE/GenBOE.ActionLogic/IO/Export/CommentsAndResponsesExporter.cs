@@ -69,9 +69,12 @@ namespace GenBOE.ActionLogic.IO.Export
                     foreach (BOEComment comment in entry.Value)
                     {
                         toReturn.Add(
-                            string.Format($"{entry.Key} {comment.BOETitle}"),
-                            CommonConstants.FORCE_AS_STRING_VALUE + comment.ClinString,
-                            CommonConstants.FORCE_AS_STRING_VALUE + comment.WbsString,
+                            CommonConstants.FORCE_AS_STRING_VALUE + entry.Key,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.BOETitle,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.WbsNumber,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.WbsTitle,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.ClinNumber,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.ClinTitle,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.BOEAuthors,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.ReviewerName,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.CommenterRole,

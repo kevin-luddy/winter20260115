@@ -153,8 +153,10 @@ namespace GenBOE.ActionLogic
                 foreach (BOEComment comment in boeComments)
                 {
                     comment.BOETitle = boe.Title;
-                    comment.ClinString = boe.Clin == null ? string.Empty : boe.Clin.ClinString;
-                    comment.WbsString = boe.Wbs == null ? string.Empty : boe.Wbs.WbsString;
+                    comment.ClinNumber = boe.Clin == null ? string.Empty : boe.Clin.ClinNumber;
+                    comment.ClinTitle = boe.Clin == null ? string.Empty : boe.Clin.ClinTitle;
+                    comment.WbsNumber = boe.Wbs == null ? string.Empty : boe.Wbs.WbsNumber;
+                    comment.WbsTitle = boe.Wbs == null ? string.Empty : boe.Wbs.WbsTitle;
                     comment.BOEAuthors = string.Join("; ", boeAuthors.Select(x => x.DisplayName));
                     comment.CommenterRole = boePermission.Role.ToString();
                     comment.ReviewerCommentUpdateDT = ((DateTime)comment.ReviewerCommentUpdateDT).AddHours(Convert.ToInt32(ConfigurationUtilities.GetAppSetting("DatabaseESTOffset")));
