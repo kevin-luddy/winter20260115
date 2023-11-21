@@ -86,11 +86,6 @@ namespace GenBOE.Web.Controllers
 		private readonly IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader;
 
 		/// <summary>
-		/// Active Directory Utilities
-		/// </summary>
-		private readonly IActiveDirectoryUtilities activeDirectoryUtilities;
-
-		/// <summary>
 		/// Contract Type loader
 		/// </summary>
 		private readonly ContractTypeLoader contractTypeLoader;
@@ -116,7 +111,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, ContractTypeLoader contractTypeLoader)
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, ContractTypeLoader contractTypeLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -128,7 +123,6 @@ namespace GenBOE.Web.Controllers
 			this.traceTableExporter = traceTableExporter;
 			this.boeFormControllerLogic = boeFormControllerLogic;
 			this.boeFormPBOEDTODataLoader = boeFormPBOEDTODataLoader;
-			this.activeDirectoryUtilities = activeDirectoryUtilities;
 			this.contractTypeLoader = contractTypeLoader;
 		}
 		#endregion
