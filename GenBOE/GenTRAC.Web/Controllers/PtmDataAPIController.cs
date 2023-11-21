@@ -265,7 +265,7 @@ namespace GenTRAC.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured returning PBOEDataDTO data: {ex.Message}");
+				result.Messages.Add($"Unknown error occured returning PBOE data: {ex.Message}");
 				result.IsSuccessful = false;
 			}
 
