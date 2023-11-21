@@ -177,12 +177,17 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Supplier Proposal Date
 		/// </summary>
-		public DateTime? ProposalDate { get; set; }
+		public string ProposalDate { get; set; }
 
 		/// <summary>
 		/// Supplier Proposal Validity Date
 		/// </summary>
-		public DateTime? ValidityDate { get; set; }
+		public string ValidityDate { get; set; }
+
+		/// <summary>
+		/// Date of Agreement on Final Price (Handshake)
+		/// </summary>
+		public DateTime? AgreementDate { get; set; }
 
 		/// <summary>
 		/// Approver => Supplier Proposal Manager

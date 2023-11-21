@@ -221,6 +221,7 @@ namespace GenTRAC.Web.Controllers
 
 				pboeData.ProposalTitle = proposal.ProposalTitle;
 				pboeData.ProposalSubmittalDate = proposalChecklistLoader.GetProposalSubmittalDate(proposalId).FirstOrDefault().Value;
+				pboeData.AgreementDate = proposal.AgreementDate;
 
 				// Get Contracts POC
 				ProposalPermissionDto permissionsContractsPOC = fullProposalDto.Permissions.FirstOrDefault(x => x.Role == PtmRole.ContractsPOC);
@@ -250,6 +251,11 @@ namespace GenTRAC.Web.Controllers
 					{
 						pboeData.LeadEstimatorDisplayName = leadEstimatorPocDto.DisplayName;
 						pboeData.LeadEstimatorEmail = leadEstimatorPocDto.EmailAddress;
+					}
+					else
+					{
+						pboeData.LeadEstimatorDisplayName = "User not found";
+						pboeData.LeadEstimatorEmail = string.Empty;
 					}
 				}
 

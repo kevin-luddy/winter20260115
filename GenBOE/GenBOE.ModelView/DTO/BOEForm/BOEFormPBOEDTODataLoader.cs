@@ -312,8 +312,8 @@ namespace GenBOE.DataBridge.DTO
 									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
 									RFPReleaseToSupplierDate = b.RFPReleaseDate,
 									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
-									ProposalDate = string.IsNullOrEmpty(b.ProposalDate) ? DateTime.MinValue : DateTime.Parse(b.ProposalDate),
-									ValidityDate = string.IsNullOrEmpty(b.ValidityDate) ? DateTime.MinValue : DateTime.Parse(b.ValidityDate),
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
 									Approver = b.Approver
 								}).ToList();
 
@@ -379,8 +379,8 @@ namespace GenBOE.DataBridge.DTO
 									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
 									RFPReleaseToSupplierDate = b.RFPReleaseDate,
 									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
-									ProposalDate = string.IsNullOrEmpty(b.ProposalDate) ? DateTime.MinValue : DateTime.Parse(b.ProposalDate),
-									ValidityDate = string.IsNullOrEmpty(b.ValidityDate) ? DateTime.MinValue : DateTime.Parse(b.ValidityDate),
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
 									Approver = b.Approver
 								}).ToList();
 
