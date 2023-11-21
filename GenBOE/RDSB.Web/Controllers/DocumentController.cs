@@ -160,15 +160,16 @@ namespace RDSB.Web.Controllers
         /// GET: Document/Publish/5
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
         /// <returns>Export document.</returns>
-        public ActionResult Publish(int id)
+        public ActionResult Publish(int id, bool portionMarkingRequired)
         {
             ActionResult result = new EmptyResult();
             try
             {
                 string serverFileName = this.Server.MapPath("~/Templates/Export/PPRDTemplate.docx");
 
-                this.documentControllerLogic.GenerateRDD(id, serverFileName, this.Response);
+                this.documentControllerLogic.GenerateRDD(id, serverFileName, this.Response, portionMarkingRequired);
             }
             catch (GeneralAppException e)
             {
