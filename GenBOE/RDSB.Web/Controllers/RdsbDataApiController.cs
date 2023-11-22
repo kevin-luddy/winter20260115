@@ -195,19 +195,26 @@ namespace RDSB.Web.Controllers
         /// </summary>
         /// <param name="requestData">Request data for RDSB API.</param>
         /// <returns>Data to support a CPS Report</returns>
-        [HttpGet]
+        [HttpPost]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<(string rateCode, string parentSectionNumber)> GetSectionsForRateCodes(RDSBRateCodesRequest requestData)
+		public IESResponse<string> GetSectionsForRateCodes(RDSBRateCodesRequest requestData)
 		{
-			IESResponse<(string rateCode, string parentSectionNumber)> toReturn = new IESResponse<(string rateCode, string parentSectionNumber)>();
+			IESResponse<string> toReturn = new IESResponse<string>();
 
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateCodes(requestData.RateCodes, requestData.PtmProposalId);
-				toReturn.IsSuccessful = true;
-			}
+				if (requestData != null)
+				{
+                    toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateCodes(requestData.RateCodes, requestData.PtmProposalId);
+                    toReturn.IsSuccessful = true;
+                }
+				else
+				{
+                    toReturn.IsSuccessful = false;
+                }
+            }
 			catch (Exception ex)
 			{
 				logger.Error(ex);
@@ -222,19 +229,26 @@ namespace RDSB.Web.Controllers
         /// </summary>
         /// <param name="requestData">Request data for RDSB API.</param>
         /// <returns>Data to support a CPS Report</returns>
-        [HttpGet]
+        [HttpPost]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<(string rateDescription, string parentSectionNumber)> GetSectionsForRateDescriptions(RDSBRateDescriptionsRequest requestData)
+		public IESResponse<string> GetSectionsForRateDescriptions(RDSBRateDescriptionsRequest requestData)
 		{
-			IESResponse<(string rateDescription, string parentSectionNumber)> toReturn = new IESResponse<(string rateDescription, string parentSectionNumber)>();
+			IESResponse<string> toReturn = new IESResponse<string>();
 
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateDescriptions(requestData.RateDescriptions, requestData.PtmProposalId);
-				toReturn.IsSuccessful = true;
-			}
+				if (requestData != null)
+				{
+					toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateDescriptions(requestData.RateDescriptions, requestData.PtmProposalId);
+                    toReturn.IsSuccessful = true;
+                }
+				else
+				{
+					toReturn.IsSuccessful = false;
+                }
+            }
 			catch (Exception ex)
 			{
 				logger.Error(ex);
