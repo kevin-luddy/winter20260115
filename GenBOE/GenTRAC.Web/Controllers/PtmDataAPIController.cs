@@ -189,11 +189,12 @@ namespace GenTRAC.Web.Controllers
 
 				if (proposalId > 0) 
 				{
+					ICollection<int> ids = new List<int> { proposalId };
 					// POC's
 					DataBridge.DTO.UserDTO contractsPocDto = new DataBridge.DTO.UserDTO();
 
 					// Proposal Variables
-					ProposalDto proposal = this.proposalLoader.GetByIds(new List<int>(proposalId)).FirstOrDefault();
+					ProposalDto proposal = this.proposalLoader.GetByIds(ids).FirstOrDefault();
 					FullProposal fullProposalDto = null;
 
 					if (proposal != null)
@@ -203,9 +204,9 @@ namespace GenTRAC.Web.Controllers
 						pboeData.ProposalTitle = proposal.ProposalTitle;
 						pboeData.AgreementDate = proposal.AgreementDate;
 
-						KeyValuePair<int, DateTime?> submittalDatePair = proposalChecklistLoader.GetProposalSubmittalDate(new List<int>(proposalId)).FirstOrDefault();
+						KeyValuePair<int, DateTime?> submittalDatePair = proposalChecklistLoader.GetProposalSubmittalDate(ids).FirstOrDefault();
 
-						if (submittalDatePair.Value != null || submittalDatePair.Value != DateTime.MinValue)
+						if (submittalDatePair.Value != null && submittalDatePair.Value != DateTime.MinValue)
 						{
 							pboeData.ProposalSubmittalDate = submittalDatePair.Value;
 						}
@@ -215,7 +216,7 @@ namespace GenTRAC.Web.Controllers
 
 						if (permissionsContractsPOC != null)
 						{
-							contractsPocDto = this.userMapper.GetById(permissionsContractsPOC.Id);
+							contractsPocDto = this.userMapper.GetById(permissionsContractsPOC.UserId);
 						}
 						else
 						{

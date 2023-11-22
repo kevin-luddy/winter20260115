@@ -706,12 +706,12 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Get workspaces inner data for user (id via token) for use in NLF
+		/// Get workspace inner data for user (id via token) for use in NLF using Workspace Id
 		/// </summary>
-		/// <returns>List of Workspace Inner Data for user for use in NLF</returns>
+		/// <returns>Workspace Inner Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<NlfWorkspaceInnerData> GetNlfWorkspacesInnerDataByWorkspaceIdForUser(int workspaceId)
+		public IESResponse<NlfWorkspaceInnerData> GetNlfWorkspaceInnerDataByWorkspaceIdForUser(int workspaceId)
 		{
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
 
