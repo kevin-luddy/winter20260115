@@ -83,7 +83,6 @@ namespace GenBOE.DataBridge.DTO
                 return toReturn;
             }
         }
-
         #endregion
 
         #region Commits

@@ -19,6 +19,7 @@ namespace GenBOE.Web.Controllers
     using System.Web;
     using System.Web.Mvc;
     using System.Web.Script.Serialization;
+    using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
@@ -31,6 +32,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
+    using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.ModelView.Workspace;
     using GenBOE.ActionLogic.NewValidation;
     using GenBOE.ActionLogic.Validation;
@@ -102,6 +104,8 @@ namespace GenBOE.Web.Controllers
         private GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
         private GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper;
         private BoePickListMapper boePickListMapper;
+        private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
+        private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
 
         /// <summary>
         /// Workspace Exporter
@@ -197,7 +201,9 @@ namespace GenBOE.Web.Controllers
             WorkspaceExporter workspaceExporter,
             IReportsControllerLogic reportsControllerLogic,
             IBOEExporter boeExporter,
-            IBOECustomExporter boeCustomExporter)
+            IBOECustomExporter boeCustomExporter,
+            CommentsAndResponsesExporter commentsAndResponsesExporter,
+            BOECommentsControllerLogic boeCommentsControllerLogic)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsDTOLoader, inControllerLogic)
         {
             _WorkspaceStateMachine = inWorkspaceStateMachine;
@@ -250,6 +256,8 @@ namespace GenBOE.Web.Controllers
             this.reportsControllerLogic = reportsControllerLogic;
             this.boeExporter = boeExporter;
             this.boeCustomExporter = boeCustomExporter;
+            _commentsAndResponsesExporter = commentsAndResponsesExporter;
+            _boeCommentsControllerLogic = boeCommentsControllerLogic;
         }
 
         #region Public Methods
@@ -439,6 +447,45 @@ namespace GenBOE.Web.Controllers
             FinalizeAction(_log, "ExportProjectMapData", sw);
             return result;
         }
+
+        /// <summary>
+        /// Exports all workspace author, reviewer and approver comments and responses into an excel download
+        /// </summary>
+        /// <param name="workspace">Workspace Short Name</param>
+        /// <returns>Download Result for the excel sheet.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+        public ActionResult ExportWorkspaceCommentsAndResponses(string workspace)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            // Action Initialize
+            Stopwatch sw = InitializeAction(_log, "ExportWorkspaceCommentsAndResponses", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+
+            ActionResult result = new EmptyResult();
+            try
+            {
+                IDictionary<int, ICollection<BOEComment>> commentDTOs = _boeCommentsControllerLogic.GetAllCommentsInWorkspace(ws.Boes);
+
+                string templateName = Server.MapPath("~/Templates/Export/CommentsAndResponses.xlsx");
+                // Call the export function in the business layer and get back the file name of the populated template.
+                string exportedFileName = _commentsAndResponsesExporter.ExportToExcelFile(templateName, commentDTOs);
+
+                // Generate an custom ActionResult to cause a file download to the client
+                result = new ExportFileDownloadResult(exportedFileName, string.Format("WorkspaceCommentsAndResponses_{0}.xlsx", ws.WorkspaceName));
+            }
+            catch (Exception e)
+            {
+                _log.Error(e);
+                string supportLink = Utilities.ServiceCentralLink();
+
+                result = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", supportLink));
+            }
+
+            // Finalize Action
+            FinalizeAction(_log, "ExportWorkspaceCommentsAndResponses", sw);
+            return result;
+        }
+
 
         /// <summary>
         /// Imports the project map data.

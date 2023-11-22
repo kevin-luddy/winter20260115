@@ -531,21 +531,21 @@ angular.module('rdsb').controller('editDocumentController', ['$scope', '$http', 
           });
     }
 
-    $scope.publishDocument = function (Document) {
+    $scope.publishDocument = function (Document, portionMarkingRequired) {
         if ($scope.model.SelectedRevisionId == $scope.model.AvailableRevisions[0].Id) {
-            $scope.export(Document);
+            $scope.export(Document, portionMarkingRequired);
         } else {
             // Only show the confirm dialog if user is not using latest
             ConfirmDialog("Old PPR&D Revision", "This document is using an older PPR&D Revision. Are you sure you want to continue publishing?", function () {
-                $scope.export(Document);
+                $scope.export(Document, portionMarkingRequired);
             });
         }
     };
 
-    $scope.export = function (Document) {
+    $scope.export = function (Document, portionMarkingRequired) {
         $(document).trigger("SHOW_LOADING_BOX");
         setTimeout(function () { $scope.timeoutFuncRDD(); }, $scope.timeoutTime);
-        DownloadFile('GenerateRDD', DocumentDetailModelView.controller, DocumentDetailModelView.publishAction, $scope.model.ProposalId);
+        DownloadFile('GenerateRDD', DocumentDetailModelView.controller, DocumentDetailModelView.publishAction, $scope.model.ProposalId, portionMarkingRequired);
     }
 
     $scope.timeoutFuncRDD = function () { $(document).trigger("HIDE_LOADING_BOX"); };

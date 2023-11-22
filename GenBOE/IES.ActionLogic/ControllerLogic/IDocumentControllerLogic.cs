@@ -91,7 +91,8 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">Proposal ID</param>
 		/// <param name="serverFileName">Server File Name</param>
 		/// <param name="httpResponse">HTTP response object</param>
-		void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse);
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired);
 
         /// <summary>
         /// Generates the RDD document for the Proposal Id passed in.

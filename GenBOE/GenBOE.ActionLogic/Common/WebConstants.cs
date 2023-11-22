@@ -620,6 +620,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_EXPORT_ALL_BOES_WORKOFFLINE = "ExportAllBOEsWorkoffline";
         public static readonly string ACTION_EXPORT_BOES_WORKOFFLINE = "ExportBOEsWorkoffline";
         public static readonly string ACTION_EXPORT_PROJECT_MAP = "ExportProjectMapData";
+        public static readonly string ACTION_EXPORT_WORKSPACE_COMMENTS_AND_RESPONSES = "ExportWorkspaceCommentsAndResponses";
         public static readonly string ACTION_FIND_VALID_BOES_FOR_WORKSPACE_VARIABLE = "FindValidBOEsForWorkspaceVariable";
         public static readonly string ACTION_FIND_VALID_BOES_FOR_NOT_IN_USE_WORKSPACE_VARIABLE = "FindValidBOEsForNotInUseWorkspaceVariable";
         public static readonly string ACTION_IMPORT_ARTEMIS_IMS = "ImportIMSArtemis";

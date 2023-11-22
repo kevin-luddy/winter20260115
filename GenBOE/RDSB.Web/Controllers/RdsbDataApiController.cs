@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2023 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -22,11 +22,12 @@ namespace RDSB.Web.Controllers
 	using IES.Common;
 	using IES.Common.OfficeUtilities;
 	using IES.DataBridge.ModelViews;
+	using RDSB.Web.Models;
 
-	/// <summary>
-	/// RDSB Data API Controller - used to serve up RDSB data for ACV (or other applications as needed)
-	/// </summary>
-	[AllowAnonymous]
+    /// <summary>
+    /// RDSB Data API Controller - used to serve up RDSB data for ACV (or other applications as needed)
+    /// </summary>
+    [AllowAnonymous]
 	public class RdsbDataApiController : ApiController
 	{
 		#region Properties & Ctor
@@ -189,15 +190,14 @@ namespace RDSB.Web.Controllers
 			return toReturn;
 		}
 
-		/// <summary>
-		/// Gets data necessary for CPS Reports
-		/// </summary>
-		/// <param name="rateCodes">List of rate codes</param>
-		/// <param name="proposalId">PTM Proposal ID</param>
-		/// <returns>Data to support a CPS Report</returns>
-		[HttpGet]
+        /// <summary>
+        /// Gets data necessary for CPS Reports
+        /// </summary>
+        /// <param name="requestData">Request data for RDSB API.</param>
+        /// <returns>Data to support a CPS Report</returns>
+        [HttpGet]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<(string rateCode, string parentSectionNumber)> GetSectionsForRateCodes(ICollection<string> rateCodes, int proposalId)
+		public IESResponse<(string rateCode, string parentSectionNumber)> GetSectionsForRateCodes(RDSBRateCodesRequest requestData)
 		{
 			IESResponse<(string rateCode, string parentSectionNumber)> toReturn = new IESResponse<(string rateCode, string parentSectionNumber)>();
 
@@ -205,7 +205,7 @@ namespace RDSB.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateCodes(rateCodes, proposalId);
+				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateCodes(requestData.RateCodes, requestData.PtmProposalId);
 				toReturn.IsSuccessful = true;
 			}
 			catch (Exception ex)
@@ -217,15 +217,14 @@ namespace RDSB.Web.Controllers
 			return toReturn;
 		}
 
-		/// <summary>
-		/// Gets data necessary for CPS Reports
-		/// </summary>
-		/// <param name="rateDescriptions">List of rate descriptions</param>
-		/// <param name="proposalId">PTM Proposal ID</param>
-		/// <returns>Data to support a CPS Report</returns>
-		[HttpGet]
+        /// <summary>
+        /// Gets data necessary for CPS Reports
+        /// </summary>
+        /// <param name="requestData">Request data for RDSB API.</param>
+        /// <returns>Data to support a CPS Report</returns>
+        [HttpGet]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<(string rateDescription, string parentSectionNumber)> GetSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId)
+		public IESResponse<(string rateDescription, string parentSectionNumber)> GetSectionsForRateDescriptions(RDSBRateDescriptionsRequest requestData)
 		{
 			IESResponse<(string rateDescription, string parentSectionNumber)> toReturn = new IESResponse<(string rateDescription, string parentSectionNumber)>();
 
@@ -233,7 +232,7 @@ namespace RDSB.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateDescriptions(rateDescriptions, proposalId);
+				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateDescriptions(requestData.RateDescriptions, requestData.PtmProposalId);
 				toReturn.IsSuccessful = true;
 			}
 			catch (Exception ex)
