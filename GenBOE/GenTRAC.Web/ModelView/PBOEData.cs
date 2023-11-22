@@ -78,7 +78,7 @@ namespace GenTRAC.Web.ModelView
 		/// <summary>
 		/// Price Analysis Date
 		/// </summary>
-		//[RequiredIf("PriceAnalysis", ScheduleEvent.Actual, ErrorMessage = "Price Analysis Date is required if Schedule Event is actual.")]
+		[RequiredIf("PriceAnalysis", ScheduleEvent.Actual, ErrorMessage = "Price Analysis Date is required if Schedule Event is actual.")]
 		public DateTime? PriceAnalysisDate { get; set; }
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace GenTRAC.Web.ModelView
 		/// <summary>
 		/// Cost Analysis Date
 		/// </summary>
-		//[RequiredIf("CostAnalysis", ScheduleEvent.Actual, ErrorMessage = "Cost Analysis Date is required if Schedule Event is actual.")]
+		[RequiredIf("CostAnalysis", ScheduleEvent.Actual, ErrorMessage = "Cost Analysis Date is required if Schedule Event is actual.")]
 		public DateTime? CostAnalysisDate { get; set; }
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace GenTRAC.Web.ModelView
 		/// <summary>
 		/// Govt. Pricing Assistance for CCoPD Review - Receipt Planned Date
 		/// </summary>
-		//[RequiredIf("GovtPricingReceived", ScheduleEvent.Actual, ErrorMessage = "Govt Pricing Received Date is required if Govt Pricing Received is actual.")]
+		[RequiredIf("GovtPricingReceived", ScheduleEvent.Actual, ErrorMessage = "Govt Pricing Received Date is required if Govt Pricing Received is actual.")]
 		public DateTime? GovtPricingReceivedDate { get; set; }
 
 		/// <summary>
@@ -111,7 +111,7 @@ namespace GenTRAC.Web.ModelView
 		/// <summary>
 		/// Cost Analysis Unqualified Date
 		/// </summary>
-		//[RequiredIf("CostAnalysisUnqualified", ScheduleEvent.Actual, ErrorMessage = "Cost Analysis Unqualified Date, is required if Cost Analysis is actual.")]
+		[RequiredIf("CostAnalysisUnqualified", ScheduleEvent.Actual, ErrorMessage = "Cost Analysis Unqualified Date, is required if Cost Analysis is actual.")]
 		public DateTime? CostAnalysisUnqualifiedDate { get; set; }
 
 		/// <summary>
@@ -122,7 +122,7 @@ namespace GenTRAC.Web.ModelView
 		/// <summary>
 		/// Technical Evaluation Date
 		/// </summary>
-		//[RequiredIf("TechnicalEvaluation", ScheduleEvent.Actual, ErrorMessage = "Technical Evaluation Date, is required if Technical Evaluation is actual.")]
+		[RequiredIf("TechnicalEvaluation", ScheduleEvent.Actual, ErrorMessage = "Technical Evaluation Date, is required if Technical Evaluation is actual.")]
 		public DateTime? TechnicalEvaluationDate { get; set; }
 
 		/// <summary>
