@@ -820,33 +820,41 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForWorkspace(workspaceID).Select<PBOEDataDTO, PBOEData>(x => new PBOEData()
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForWorkspace(workspaceID).Select<PBOEDataDTO, PBOEData>(x => 
 					{
-						PBoeID = x.PBoeID,
-						SupplierName = x.SupplierName,
-						VendorId = x.VendorId,
-						SubResources = x.SubResources,
-						TotalCost = x.TotalCost.GetValueOrDefault(),
-						SupplierProposedValue = x.SupplierProposedValue,
-						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
-						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
-						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
-						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
-						CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
-						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
-						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
-						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
-						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
-						TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
-						TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
-						RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
-						SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
-						ProposalDate = x.ProposalDate,
-						ValidityDate = x.ValidityDate,
-						Approver = x.Approver,
-						LeadEstimatorId = x.LeadEstimatorId,
-						SupplierProposalManagerDisplayName = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault().DisplayName,
-						SupplierProposalManagerEmail = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault().Email,
+						UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
+						UserDTO leadEstimator = userDataLoader.GetUserByID(x.LeadEstimatorId);
+
+						return new PBOEData()
+						{
+							PBoeID = x.PBoeID,
+							SupplierName = x.SupplierName,
+							VendorId = x.VendorId,
+							SubResources = x.SubResources,
+							TotalCost = x.TotalCost.GetValueOrDefault(),
+							SupplierProposedValue = x.SupplierProposedValue,
+							IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+							PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
+							PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
+							CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
+							CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
+							GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
+							GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
+							CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
+							CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
+							TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
+							TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
+							RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
+							SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
+							ProposalDate = x.ProposalDate,
+							ValidityDate = x.ValidityDate,
+							Approver = x.Approver,
+							LeadEstimatorId = x.LeadEstimatorId,
+							LeadEstimatorDisplayName = leadEstimator != null ? leadEstimator.DisplayName : string.Empty,
+							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
+							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
+							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty
+						};
 					}).ToList();
 
 					result.IsSuccessful = true;
