@@ -270,6 +270,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ModelView\PBOEData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\WebApiConfig.cs" />
     <Content Include="app_offlineX.htm" />
@@ -460,6 +461,10 @@
       <Project>{f909cd46-e2d7-4d57-b647-6d93f9dd9618}</Project>
       <Name>GenBOE.DataBridge</Name>
     </ProjectReference>
+    <!--<ProjectReference Include="..\GenBOE.Web\GenBOE.Web.csproj">
+      <Project>{AD87CC58-CFBC-4901-9AE3-418473E78590}</Project>
+      <Name>GenBOE.Web</Name>
+    </ProjectReference>-->
     <ProjectReference Include="..\GenTRAC.ActionLogic\GenTRAC.ActionLogic.csproj">
       <Project>{43e225dd-557f-45eb-8317-23284a61ec79}</Project>
       <Name>GenTRAC.ActionLogic</Name>

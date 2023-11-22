@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
 //     Copyright (c) 2011 - 2023 Lockheed Martin Corporation
 // </copyright>
@@ -6,10 +6,9 @@
 
 using System;
 using System.Collections.Generic;
-using GenBOE.Dtos;
 using IES.Common;
 
-namespace GenBOE.Web.ModelView
+namespace GenTRAC.Web.ModelView
 {
 	/// <summary>
 	/// PBOE Data.
@@ -90,7 +89,7 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// Cost Analysis Date
 		/// </summary>
-		//[RequiredIf("CostAnalysis", ScheduleEvent.Actual, ErrorMessage = "Cost Analysis Date is required if Schedule Event is actual.")]
+		[RequiredIf("CostAnalysis", ScheduleEvent.Actual, ErrorMessage = "Cost Analysis Date is required if Schedule Event is actual.")]
 		public DateTime? CostAnalysisDate { get; set; }
 
 		/// <summary>
@@ -108,7 +107,7 @@ namespace GenBOE.Web.ModelView
 		/// Schedule of Events Cost Analysis Unqualified
 		/// </summary>
 		public ScheduleEvent CostAnalysisUnqualified { get; set; }
-		
+
 		/// <summary>
 		/// Cost Analysis Unqualified Date
 		/// </summary>
@@ -185,11 +184,6 @@ namespace GenBOE.Web.ModelView
 		/// Contracts Lead Email
 		/// </summary>
 		public string ContractsLeadEmail { get; set; }
-
-		/// <summary>
-		/// Lead Estimator Id
-		/// </summary>
-		public int LeadEstimatorId { get; set; }
 
 		/// <summary>
 		/// Lead Estimator Display Name
