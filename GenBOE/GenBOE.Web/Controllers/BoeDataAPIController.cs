@@ -706,6 +706,54 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Get workspaces inner data for user (id via token) for use in NLF
+		/// </summary>
+		/// <returns>List of Workspace Inner Data for user for use in NLF</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<NlfWorkspaceInnerData> GetNlfWorkspacesInnerDataByWorkspaceIdForUser(int workspaceId)
+		{
+			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// check if user is system admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
+
+				ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
+
+				if (isSystemAdmin && workspaceId > 0)
+				{
+					// get all workspaces
+					boes = loader.GetWorkspaceInnerDataForNlf(workspaceId);
+				}
+
+				result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
+				{
+					WorkspaceId = x.WorkspaceId,
+					WorkspaceUrl = x.WorkspaceUrl,
+					WorkspaceName = x.WorkspaceName,
+					WorkspaceCreationDate = x.WorkspaceCreationDate,
+					PTMTrackingNumber = x.PTMTrackingNumber,
+					EstimatingLead = x.EstimatingLead,
+					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
+					LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
+				}).ToCollection();
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning NLF Workspace inner data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Get Material PBoe Data for given Workspace
 		/// </summary>
 		/// <param name="workspaceID">Workspace ID</param>

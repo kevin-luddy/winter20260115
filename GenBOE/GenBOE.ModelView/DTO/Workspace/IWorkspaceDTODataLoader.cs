@@ -113,6 +113,14 @@ namespace GenBOE.DataBridge.DTO
 		ICollection<NlfWorkspaceInnerDataDTO> GetAllWorkspaceInnerDataForNlf();
 
 		/// <summary>
+		/// Get Workspace Inner Data for a System Admin
+		/// </summary>
+		/// <param name="workspaceId">Workspace Id to search</param>
+		/// <returns>Collection of Workspace Inner Data</returns>
+		[DbQuery]
+		ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataForNlf(int workspaceId);
+
+		/// <summary>
 		/// Get Material PBoe Data for a given Workspace
 		/// </summary>
 		/// <param name="workspaceID"></param>
