@@ -504,30 +504,36 @@ namespace IES.DataBridge.Loaders
 		}
 		#endregion
 
-        /// <summary>
-        /// Get all addresses, regardless if a section is a parent or not
-        /// </summary>
-        /// <param name="revision">The PPR&D revision ID</param>
-        /// <returns>A collection of addresses, complete with a section title</returns>
-        public ICollection<SectionAddressModelView> GetAddresses(int revision)
+		/// <summary>
+		/// Get all addresses, regardless if a section is a parent or not
+		/// </summary>
+		/// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
+		/// <returns>A collection of addresses, complete with a section title</returns>
+		public ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId)
         {
             ICollection<SectionAddressModelView> result = new List<SectionAddressModelView>();
             IList<SectionAddressParentModelView> allSections = new List<SectionAddressParentModelView>();
             IList<Section> addresses = new List<Section>();
 
-            using (IESEntities context = new IESEntities())
-            {
-                SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
-                allSections = context.Sections.Select(x =>
-                    new SectionAddressParentModelView
-                    {
-                        Id = x.ID,
-                        Title = x.Title,
-                        ParentID = x.ParentID
-                    }).ToList();
-                addresses = context.Sections
-                    .Where(x => x.SectionContentTypeID == addressType.ID && x.RevisionID == revision && x.IncludeInCoversheet.Value).ToList();
-            }
+			using (IESEntities context = new IESEntities())
+			{
+				// Get the revision ID for the PTM Tracking ID
+				int? rdmRevision = context.RDSBDocumentInformations.FirstOrDefault(x => x.PTMProposalID == ptmTrackingId)?.RDMRevisionID;
+
+				if (rdmRevision.HasValue)
+				{
+					SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
+					allSections = context.Sections.Select(x =>
+						new SectionAddressParentModelView
+						{
+							Id = x.ID,
+							Title = x.Title,
+							ParentID = x.ParentID
+						}).ToList();
+					addresses = context.Sections
+						.Where(x => x.SectionContentTypeID == addressType.ID && x.RevisionID == rdmRevision.Value && x.IncludeInCoversheet.Value).ToList();
+				}
+			}
 
             // Get section titles
             foreach (var addressIterator in addresses)

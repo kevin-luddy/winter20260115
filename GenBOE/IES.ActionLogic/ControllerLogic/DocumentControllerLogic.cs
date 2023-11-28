@@ -900,12 +900,12 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
 		/// </summary>
-		/// <param name="revision">The specific version ID of PPR&D</param>
+		/// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
 		/// <returns>A collection of addresses</returns>
-		public ICollection<SectionAddressModelView> GetAddresses(int revision)
+		public ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId)
 		{
 			ICollection<SectionAddressModelView> sections = new List<SectionAddressModelView>();
-			sections = this.sectionLoader.GetAddresses(revision);
+			sections = this.sectionLoader.GetAddresses(ptmTrackingId);
 
 			return sections;
 		}
