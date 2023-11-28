@@ -6,169 +6,264 @@
 
 namespace GenTRAC.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Web.Http;
-    using GenTRAC.DataBridge.Common.Security;
-    using GenTRAC.DataBridge.DTO;
-    using IES.Common;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Web.Http;
+	using GenTRAC.DataBridge.Common.Security;
+	using GenTRAC.DataBridge.DTO;
+	using GenTRAC.Objects;
+	using GenTRAC.Objects.FullObject;
+	using GenTRAC.Web.ModelView;
+	using IES.Common;
 
-    /// <summary>
-    /// PTM Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up PTM data, hence the name.
-    /// </summary>
-    [AllowAnonymous]
-    public class PtmDataAPIController : ApiController
-    {
-        #region Properties & Ctor
+	/// <summary>
+	/// PTM Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up PTM data, hence the name.
+	/// </summary>
+	[AllowAnonymous]
+	public class PtmDataAPIController : ApiController
+	{
+		#region Properties & Ctor
 
-        /// <summary>
-        /// Security Information
-        /// </summary>
-        private ISecurityInformation security;
+		/// <summary>
+		/// Security Information
+		/// </summary>
+		private ISecurityInformation security;
 
-        /// <summary>
-        /// Security Access
-        /// </summary>
-        private ISecurityAccess securityAccess;
+		/// <summary>
+		/// Security Access
+		/// </summary>
+		private ISecurityAccess securityAccess;
 
-        /// <summary>
-        /// Proposal Loader
-        /// </summary>
-        private IProposalLoader loader;
+		/// <summary>
+		/// Proposal Loader
+		/// </summary>
+		private IProposalLoader proposalLoader;
 
-        /// <summary>
-        /// Cover Sheet Loader
-        /// </summary>
-        private ICoverSheetDataLoader coverSheetLoader;
+		/// <summary>
+		/// Cover Sheet Loader
+		/// </summary>
+		private ICoverSheetDataLoader coverSheetLoader;
 
-        /// <summary>
-        /// Token Handling
-        /// </summary>
-        private TokenHandling tokenHandler;
+		/// <summary>
+		/// Proposal Checklist Loader
+		/// </summary>
+		private IProposalChecklistLoader proposalChecklistLoader;
 
-        /// <summary>
-        /// Logger
-        /// </summary>
-        private Logger logger = new Logger("PtmDataAPIController");
+		/// <summary>
+		/// The user mapper
+		/// </summary>
+		private IUserMapper userMapper { get; set; }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler, ICoverSheetDataLoader coverSheetLoader)
-        {
-            this.security = security;
-            this.loader = loader;
-            this.coverSheetLoader = coverSheetLoader;
-            this.securityAccess = securityAccess;
-            this.tokenHandler = tokenHandler;
-        }
+		/// <summary>
+		/// Object Factory
+		/// </summary>
+		private IFullObjectFactory objectFactory { get; set; }
 
-        #endregion
+		/// <summary>
+		/// Token Handling
+		/// </summary>
+		private TokenHandling tokenHandler;
 
-        /// <summary>
-        /// Get Proposal data for ACV. Limits the number of records returned to 100.
-        /// </summary>
-        /// <param name="searchString">Search String</param>
-        /// <returns>Proposal Data</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [HttpGet]
-        public IESResponse<AcvProposalData> GetProposalDataForCostVolume(string searchString)
-        {
-            IESResponse<AcvProposalData> result = new IESResponse<AcvProposalData>();
+		/// <summary>
+		/// Logger
+		/// </summary>
+		private Logger logger = new Logger("PtmDataAPIController");
 
-            try
-            {
-                tokenHandler.AuthenticateUserFromAuthorizationToken();
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler, ICoverSheetDataLoader coverSheetLoader,
+			IProposalChecklistLoader proposalChecklistLoader, IFullObjectFactory objectFactory, IUserMapper userMapper)
+		{
+			this.security = security;
+			this.proposalLoader = loader;
+			this.coverSheetLoader = coverSheetLoader;
+			this.securityAccess = securityAccess;
+			this.tokenHandler = tokenHandler;
+			this.proposalChecklistLoader = proposalChecklistLoader;
+			this.objectFactory = objectFactory;
+			this.userMapper = userMapper;
+		}
 
-                bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
-                ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> data = this.loader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
-                result.Data = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle, ProposalId = x.ProposalId }).ToList();
-                result.IsSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex);
-                result.Messages.Add($"Unknown error occurred returning Proposal data: {ex.Message}");
-            }
+		#endregion
 
-            return result;
-        }
+		/// <summary>
+		/// Get Proposal data for ACV. Limits the number of records returned to 100.
+		/// </summary>
+		/// <param name="searchString">Search String</param>
+		/// <returns>Proposal Data</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<AcvProposalData> GetProposalDataForCostVolume(string searchString)
+		{
+			IESResponse<AcvProposalData> result = new IESResponse<AcvProposalData>();
 
-        /// <summary>
-        /// Get Cover Sheet data.
-        /// </summary>
-        /// <param name="proposalId">Proposal Id</param>
-        /// <returns>Cover Sheet Data</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [HttpGet]
-        public IESResponse<CoverSheetDataDto> GetCoverSheetData(int proposalId)
-        {
-            IESResponse<CoverSheetDataDto> result = new IESResponse<CoverSheetDataDto>();
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-            try
-            {
-                tokenHandler.AuthenticateUserFromAuthorizationToken();
+				bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
+				ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> data = this.proposalLoader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
+				result.Data = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle, ProposalId = x.ProposalId }).ToList();
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning Proposal data: {ex.Message}");
+			}
 
-                result.Data.Add(coverSheetLoader.GetCoverSheetDataById(proposalId));
-                result.IsSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex);
-                result.Messages.Add($"Unknown error occurred returning Cover Sheet data: {ex.Message}");
-            }
+			return result;
+		}
 
-            return result;
-        }
+		/// <summary>
+		/// Get Cover Sheet data.
+		/// </summary>
+		/// <param name="proposalId">Proposal Id</param>
+		/// <returns>Cover Sheet Data</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<CoverSheetDataDto> GetCoverSheetData(int proposalId)
+		{
+			IESResponse<CoverSheetDataDto> result = new IESResponse<CoverSheetDataDto>();
 
-        /// <summary>
-        /// Get header data for ACV
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <returns>Header data</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [HttpGet]
-        public IESResponse<AcvHeaderDataDto> GetHeaderData(int proposalId)
-        {
-            IESResponse<AcvHeaderDataDto> result = new IESResponse<AcvHeaderDataDto>();
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-            try
-            {
-                tokenHandler.AuthenticateUserFromAuthorizationToken();
+				result.Data.Add(coverSheetLoader.GetCoverSheetDataById(proposalId));
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning Cover Sheet data: {ex.Message}");
+			}
 
-                result.Data.Add(loader.GetAcvHeaderDataByProposalId(proposalId));
-                result.IsSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex);
-                result.Messages.Add($"Unknown error occurred returning Header data: {ex.Message}");
-            }
+			return result;
+		}
 
-            return result;
-        }
+		/// <summary>
+		/// Get header data for ACV
+		/// </summary>
+		/// <param name="proposalId">Proposal ID</param>
+		/// <returns>Header data</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<AcvHeaderDataDto> GetHeaderData(int proposalId)
+		{
+			IESResponse<AcvHeaderDataDto> result = new IESResponse<AcvHeaderDataDto>();
 
-        /// <summary>
-        /// Is Service Alive?
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [HttpGet]
-        public bool IsAlive()
-        {
-            bool result;
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-            try
-            {
-                // ToDo: add a DB grab, just to see if the DB is working.. To make the check more meaningful
-                result = true;
-            }
-            catch
-            {
-                result = false;
-            }
+				result.Data.Add(proposalLoader.GetAcvHeaderDataByProposalId(proposalId));
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning Header data: {ex.Message}");
+			}
 
-            return result;
-        }
-    }
+			return result;
+		}
+
+		/// <summary>
+		/// Get Additional Proposal Data for NLF Export
+		/// </summary>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
+		/// <returns>PBOE Data</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<PBOEData> GetProposalDataForNlfExport(string ptmTrackingNumber)
+		{
+			IESResponse<PBOEData> result = new IESResponse<PBOEData>();
+			PBOEData pboeData = new PBOEData();
+
+			try
+			{
+				int proposalId = this.proposalLoader.GetIdByTrackingNumber(ptmTrackingNumber);
+
+				if (proposalId > 0) 
+				{
+					ICollection<int> ids = new List<int> { proposalId };
+					// POC's
+					DataBridge.DTO.UserDTO contractsPocDto = new DataBridge.DTO.UserDTO();
+
+					// Proposal Variables
+					ProposalDto proposal = this.proposalLoader.GetByIds(ids).FirstOrDefault();
+					FullProposal fullProposalDto = null;
+
+					if (proposal != null)
+					{
+						fullProposalDto = this.objectFactory.CreateFullProposal(proposal);
+
+						pboeData.ProposalTitle = proposal.ProposalTitle;
+						pboeData.AgreementDate = proposal.AgreementDate;
+
+						KeyValuePair<int, DateTime?> submittalDatePair = proposalChecklistLoader.GetProposalSubmittalDate(ids).FirstOrDefault();
+
+						if (submittalDatePair.Value != null && submittalDatePair.Value != DateTime.MinValue)
+						{
+							pboeData.ProposalSubmittalDate = submittalDatePair.Value;
+						}
+
+						// Get Contracts POC
+						ProposalPermissionDto permissionsContractsPOC = fullProposalDto.Permissions.FirstOrDefault(x => x.Role == PtmRole.ContractsPOC);
+
+						if (permissionsContractsPOC != null)
+						{
+							contractsPocDto = this.userMapper.GetById(permissionsContractsPOC.UserId);
+						}
+						else
+						{
+							contractsPocDto.DisplayName = "User not found";
+							contractsPocDto.EmailAddress = string.Empty;
+						}
+
+						// Set Contracts Lead on PBOE Data DTO
+						pboeData.ContractsLeadDisplayName = contractsPocDto.DisplayName;
+						pboeData.ContractsLeadEmail = contractsPocDto.EmailAddress;
+					}
+				}
+				
+
+				result.Data.Add(pboeData);
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured returning PBOE data: {ex.Message}");
+				result.IsSuccessful = false;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Is Service Alive?
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public bool IsAlive()
+		{
+			bool result;
+
+			try
+			{
+				// ToDo: add a DB grab, just to see if the DB is working.. To make the check more meaningful
+				result = true;
+			}
+			catch
+			{
+				result = false;
+			}
+
+			return result;
+		}
+	}
 }

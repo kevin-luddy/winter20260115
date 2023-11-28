@@ -774,14 +774,14 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a CPS Report</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public ICollection<(string rateCode, string parentSectionNumber)> GetTopLevelSectionsForRateCodes(ICollection<string> rateCodes, int proposalId)
+		public ICollection<string> GetTopLevelSectionsForRateCodes(ICollection<string> rateCodes, int proposalId)
 		{
 			if (rateCodes == null)
 			{
 				throw new ArgumentNullException(nameof(rateCodes));
 			}
 
-			List<(string rateCode, string parentSectionNumber)> rateSections = new List<(string rateCode, string parentSectionNumber)>();
+			List<string> rateSections = new List<string>();
 			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
 			if (modelView == null)
 			{
@@ -815,19 +815,19 @@ namespace IES.ActionLogic.ControllerLogic
 				{
 					// logg
 					logger.Warn("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode);
-					rateSections.Add((rateCode, string.Empty));
+					rateSections.Add(string.Empty);
 				}
 				else
 				{
 					// now try to find section
 					if (sectionIdToParentSection.TryGetValue(rate.Section, out string parentRefCode))
 					{
-						rateSections.Add((rateCode, parentRefCode));
+						rateSections.Add(parentRefCode);
 					}
 					else
 					{
 						logger.Warn("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode + " using Rate " + rate.RateCode + " for searching");
-						rateSections.Add((rateCode, string.Empty));
+						rateSections.Add(string.Empty);
 					}
 				}
 			}
@@ -842,14 +842,14 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a CPS Report</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public ICollection<(string rateDescription, string parentSectionNumber)> GetTopLevelSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId)
+		public ICollection<string> GetTopLevelSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId)
 		{
 			if (rateDescriptions == null)
 			{
 				throw new ArgumentNullException(nameof(rateDescriptions));
 			}
 
-			List<(string rateCode, string parentSectionNumber)> rateSections = new List<(string rateCode, string parentSectionNumber)>();
+			List<string> rateSections = new List<string>();
 			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
 			if (modelView == null)
 			{
@@ -877,19 +877,19 @@ namespace IES.ActionLogic.ControllerLogic
 				{
 					// logg
 					logger.Warn("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription);
-					rateSections.Add((rateDescription, string.Empty));
+					rateSections.Add(string.Empty);
 				}
 				else
 				{
 					// now try to find section
 					if (sectionIdToParentSection.TryGetValue(rate.Section, out string parentRefCode))
 					{
-						rateSections.Add((rateDescription, parentRefCode));
+						rateSections.Add(parentRefCode);
 					}
 					else
 					{
 						logger.Warn("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription + " using Rate " + rate.RateCode + " for searching");
-						rateSections.Add((rateDescription, string.Empty));
+						rateSections.Add(string.Empty);
 					}
 				}
 			}

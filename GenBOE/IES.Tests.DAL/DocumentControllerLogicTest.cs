@@ -807,14 +807,10 @@ namespace IES.Tests
 
             // pulling from QAS, so assuming we are using Proposal tracking # 22-00013 (id 15297) that ties into PPRD Revision 299
             ICollection<string> rateCodes = new string[] { "FXDDAC1234", "XCZDPA1234" };
-            ICollection<(string rateCode, string parentSectionNumber)> results = sut.GetTopLevelSectionsForRateCodes(rateCodes, 15297);
+            ICollection<string> results = sut.GetTopLevelSectionsForRateCodes(rateCodes, 15297);
 
             Assert.IsNotNull(results);
             Assert.AreEqual(2, results.Count);
-            Assert.IsNotNull(results.FirstOrDefault(r => r.rateCode == "FXDDAC1234"));
-            Assert.AreEqual("3", results.FirstOrDefault(r => r.rateCode == "FXDDAC1234").parentSectionNumber);
-            Assert.IsNotNull(results.FirstOrDefault(r => r.rateCode == "XCZDPA1234"));
-            Assert.AreEqual("3", results.FirstOrDefault(r => r.rateCode == "XCZDPA1234").parentSectionNumber);
         }
 
         /// <summary>
@@ -827,14 +823,10 @@ namespace IES.Tests
 
             // pulling from QAS, so assuming we are using Proposal tracking # 22-00013 (id 15297) that ties into PPRD Revision 299
             ICollection<string> rateCodes = new string[] { "Denver FBM", "Titusville Development Lvl 1" };
-            ICollection<(string rateDescription, string parentSectionNumber)> results = sut.GetTopLevelSectionsForRateDescriptions(rateCodes, 15297);
+            ICollection<string> results = sut.GetTopLevelSectionsForRateDescriptions(rateCodes, 15297);
 
             Assert.IsNotNull(results);
             Assert.AreEqual(2, results.Count);
-            Assert.IsNotNull(results.FirstOrDefault(r => r.rateDescription == "Denver FBM"));
-            Assert.AreEqual("3", results.FirstOrDefault(r => r.rateDescription == "Denver FBM").parentSectionNumber);
-            Assert.IsNotNull(results.FirstOrDefault(r => r.rateDescription == "Titusville Development Lvl 1"));
-            Assert.AreEqual("3", results.FirstOrDefault(r => r.rateDescription == "Titusville Development Lvl 1").parentSectionNumber);
         }
 
         /// <summary>

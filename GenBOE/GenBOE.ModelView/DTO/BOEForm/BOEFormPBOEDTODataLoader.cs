@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
 	using IES.Common;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
+	using System;
 
 	/// <summary>
 	/// The PBOE INL Form Data Loader Class.
@@ -291,6 +292,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					toReturn = (from b in gbe.BOEFormPBOEs
 								where workspaceId.Equals(b.WorkspaceID)
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
 								orderby b.PBOEFormID
 								select new PBOEDataDTO
 								{
@@ -306,7 +308,15 @@ namespace GenBOE.DataBridge.DTO
 									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
 									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
 									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
-									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -348,6 +358,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					toReturn = (from b in gbe.BOEFormPBOEs
 								where workspaceId.Equals(b.WorkspaceID) && pboeId.Equals(b.PBOEFormID)
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
 								select new PBOEDataDTO
 								{
 									PBoeID = b.PBOEFormID,
@@ -366,7 +377,15 @@ namespace GenBOE.DataBridge.DTO
 									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
 									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
 									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
-									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID
 								}).ToList();
 
 					// Post processing for sub resources and total cost

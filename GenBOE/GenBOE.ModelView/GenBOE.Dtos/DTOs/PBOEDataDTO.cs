@@ -8,7 +8,6 @@ namespace GenBOE.Dtos
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using IES.Common;
 
@@ -43,6 +42,22 @@ namespace GenBOE.Dtos
 			this.IsCompetitionException = null;
 			this.IsCCoPDOtherException = null;
 			this.IsCCoPDThresholdException = null;
+			this.TechnicalEvaluation = null;
+			this.TechnicalEvaluationDate = null;
+			this.RFPReleaseToSupplierDate = null;
+			this.SupplierNegotiationsDate = null;
+			this.ProposalDate = null;
+			this.ValidityDate = null;
+			this.Approver = null;
+			this.SupplierProposalManagerDisplayName = null;
+			this.SupplierProposalManagerEmail = null;
+			this.ProposalTitle = null;
+			this.ProposalSubmittalDate = null;
+			this.ContractsLeadDisplayName = null;
+			this.ContractsLeadEmail = null;
+			this.LeadEstimatorId = 0;
+			this.LeadEstimatorDisplayName = null;
+			this.LeadEstimatorEmail = null;
 	}
 
 		/// <summary>
@@ -139,6 +154,90 @@ namespace GenBOE.Dtos
 		/// Cost Analysis Unqualified Date
 		/// </summary>
 		public DateTime? CostAnalysisUnqualifiedDate { get; set; }
-	}
 
+		/// <summary>
+		/// Technical Evaluation
+		/// </summary>
+		public ScheduleEvent? TechnicalEvaluation { get; set; }
+
+		/// <summary>
+		/// Technical Evaluation Date
+		/// </summary>
+		public DateTime? TechnicalEvaluationDate { get; set; }
+
+		/// <summary>
+		/// RFP Release to Supplier Date
+		/// </summary>
+		public DateTime? RFPReleaseToSupplierDate { get; set; }
+
+		/// <summary>
+		/// Supplier Negotiations Date
+		/// </summary>
+		public DateTime? SupplierNegotiationsDate { get; set; }
+
+		/// <summary>
+		/// Supplier Proposal Date
+		/// </summary>
+		public string ProposalDate { get; set; }
+
+		/// <summary>
+		/// Supplier Proposal Validity Date
+		/// </summary>
+		public string ValidityDate { get; set; }
+
+		/// <summary>
+		/// Date of Agreement on Final Price (Handshake)
+		/// </summary>
+		public DateTime? AgreementDate { get; set; }
+
+		/// <summary>
+		/// Approver => Supplier Proposal Manager
+		/// </summary>
+		public string Approver { get; set; }
+
+		/// <summary>
+		/// Approver Display Name (Supplier Proposal Manager)
+		/// </summary>
+		public string SupplierProposalManagerDisplayName { get; set; }
+
+		/// <summary>
+		/// Approver Email (Supplier Proposal Manager)
+		/// </summary>
+		public string SupplierProposalManagerEmail { get; set; }
+
+		/// <summary>
+		/// Proposal Title / Name
+		/// </summary>
+		public string ProposalTitle { get; set; }
+
+		/// <summary>
+		/// Proposal Submittal Date
+		/// </summary>
+		public DateTime? ProposalSubmittalDate { get; set;}
+
+		/// <summary>
+		/// Contracts Lead Display Name
+		/// </summary>
+		public string ContractsLeadDisplayName { get; set; }
+
+		/// <summary>
+		/// Contracts Lead Email
+		/// </summary>
+		public string ContractsLeadEmail { get; set; }
+
+		/// <summary>
+		/// Lead Estimator Id
+		/// </summary>
+		public int LeadEstimatorId { get; set; }
+
+		/// <summary>
+		/// Lead Estimator Display Name
+		/// </summary>
+		public string LeadEstimatorDisplayName { get; set; }
+
+		/// <summary>
+		/// Lead Estimator Email
+		/// </summary>
+		public string LeadEstimatorEmail { get; set; }
+	}
 }

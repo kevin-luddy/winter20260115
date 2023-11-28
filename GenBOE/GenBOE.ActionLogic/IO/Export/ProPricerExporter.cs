@@ -479,7 +479,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			foreach (ResourceTypeDto taskResource in taskResources)
 			{
 				
-				if (wsLevelData.OneLmxCustomField != null && taskResource.StartDateValue < Utilities.OneLmxStartDate && taskResource.EndDate > Utilities.OneLmxStartDate)
+				if (wsLevelData.OneLmxCustomField != null && taskResource.EndDate > Utilities.OneLmxStartDate)
 				{
 					// Find the 1LMX Custom Field linkage
 					CustomFieldValueContainer container = taskResource.CustomFieldValueContainers.FirstOrDefault(cf => cf.CustomFieldID == wsLevelData.OneLmxCustomField.Id);
@@ -519,8 +519,11 @@ namespace GenBOE.ActionLogic.IO.Export
 						}
 					}
 				}
-				
-				splitResources.Add(taskResource);
+
+				if (taskResource.LaborSpreads.Any())
+				{
+					splitResources.Add(taskResource);
+				}
 			}
 
 			return splitResources.OrderBy(r => r.TaskElementId).ThenBy(t => t.Id).ThenBy(b => b.StartDate).ToList();
