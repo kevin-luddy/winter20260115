@@ -57,9 +57,9 @@ namespace IES.DataBridge.Loaders
 		/// <summary>
 		/// Get all addresses, regardless if a section is a parent or not
 		/// </summary>
-		/// <param name="revision">The PPR&D revision ID</param>
+		/// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
 		/// <returns>A collection of addresses, complete with a section title</returns>
-		ICollection<SectionAddressModelView> GetAddresses(int revision);
+		ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId);
 
 	}
 }

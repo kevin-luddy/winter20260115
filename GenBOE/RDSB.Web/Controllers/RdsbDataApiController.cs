@@ -261,11 +261,11 @@ namespace RDSB.Web.Controllers
 		/// <summary>
 		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
 		/// </summary>
-		/// <param name="revision">The specific version ID of PPR&D</param>
+		/// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
 		/// <returns>A collection of addresses</returns>
 		[HttpGet]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<SectionAddressModelView> GetAddresses(int revision)
+		public IESResponse<SectionAddressModelView> GetAddresses(int ptmTrackingId)
 		{
 			IESResponse<SectionAddressModelView> addresses = new IESResponse<SectionAddressModelView>();
 
@@ -273,7 +273,7 @@ namespace RDSB.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				addresses.Data = this.documentControllerLogic.GetAddresses(revision);
+				addresses.Data = this.documentControllerLogic.GetAddresses(ptmTrackingId);
 				addresses.IsSuccessful = true;
 			}
 			catch (Exception ex)
