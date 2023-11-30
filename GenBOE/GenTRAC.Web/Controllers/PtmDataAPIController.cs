@@ -46,11 +46,6 @@ namespace GenTRAC.Web.Controllers
 		private ICoverSheetDataLoader coverSheetLoader;
 
 		/// <summary>
-		/// Proposal Checklist Loader
-		/// </summary>
-		private IProposalChecklistLoader proposalChecklistLoader;
-
-		/// <summary>
 		/// The user mapper
 		/// </summary>
 		private IUserMapper userMapper { get; set; }
@@ -79,14 +74,13 @@ namespace GenTRAC.Web.Controllers
 		/// Ctor
 		/// </summary>
 		public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler, ICoverSheetDataLoader coverSheetLoader,
-			IProposalChecklistLoader proposalChecklistLoader, IFullObjectFactory objectFactory, IUserMapper userMapper, IContractsLoader contractsLoader)
+			IFullObjectFactory objectFactory, IUserMapper userMapper, IContractsLoader contractsLoader)
 		{
 			this.security = security;
 			this.proposalLoader = loader;
 			this.coverSheetLoader = coverSheetLoader;
 			this.securityAccess = securityAccess;
 			this.tokenHandler = tokenHandler;
-			this.proposalChecklistLoader = proposalChecklistLoader;
 			this.objectFactory = objectFactory;
 			this.userMapper = userMapper;
 			this.contractsLoader = contractsLoader;
