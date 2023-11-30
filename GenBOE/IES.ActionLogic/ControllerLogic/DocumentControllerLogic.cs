@@ -794,7 +794,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);
 
-			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetAllRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
 
 			foreach (string rateCode in rateCodes)
 			{
@@ -862,7 +862,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);
 
-			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetAllRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
 
 			foreach (string rateDescription in rateDescriptions)
 			{

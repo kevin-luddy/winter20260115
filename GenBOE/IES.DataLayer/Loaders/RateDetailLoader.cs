@@ -742,14 +742,43 @@ namespace IES.DataBridge.Loaders
 			return toReturn;
 		}
 
-		/// <summary>
-		/// Gets all objects based on the IDs that were passed in
-		/// </summary>
-		/// <param name="ids">IDs</param>
-		/// <returns>
-		/// Corresponding Data
-		/// </returns>
-		public override ICollection<RateDetailModelView> GetByIds(ICollection<int> ids)
+        /// <summary>
+        /// Gets the necessary details of Rate Codes attached to Sections for a given Revision for the RDSB Edit Document dropdowns.
+        /// Only retrieve rates for Direct Labor.
+        /// </summary>
+        /// <param name="revisionId">Revision ID</param>
+        /// <returns>necessary details of Rate Codes for the RDSB Edit Document dropdown</returns>
+        public ICollection<RdsbRateDetailModelView> GetAllRatesForRdsbDocument(int revisionId)
+        {
+            ICollection<RdsbRateDetailModelView> toReturn;
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (IESEntities context = new IESEntities())
+                {
+                    toReturn = context.RateCodes.Where(x => x.RevisionID == revisionId && x.SectionID.HasValue)
+                        .OrderBy(y => y.CategoryID)
+                        .Select(r => new RdsbRateDetailModelView()
+                        {
+                            Id = r.ID,
+                            RateCode = r.RateCode1,
+                            Description = r.Description,
+                            Section = r.SectionID.Value
+                        }).OrderBy(x => x.RateCode).ToCollection();
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Gets all objects based on the IDs that were passed in
+        /// </summary>
+        /// <param name="ids">IDs</param>
+        /// <returns>
+        /// Corresponding Data
+        /// </returns>
+        public override ICollection<RateDetailModelView> GetByIds(ICollection<int> ids)
 		{
 			throw new NotImplementedException();
 		}
