@@ -59,7 +59,7 @@ namespace GenBOE.Dtos
 			this.LeadEstimatorId = 0;
 			this.LeadEstimatorDisplayName = null;
 			this.LeadEstimatorEmail = null;
-	}
+		}
 
 		/// <summary>
 		/// Gets or sets the PBoe ID.
@@ -219,7 +219,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Proposal Submittal Date
 		/// </summary>
-		public DateTime? ProposalSubmittalDate { get; set;}
+		public DateTime? ProposalSubmittalDate { get; set; }
 
 		/// <summary>
 		/// Contracts Lead Display Name
