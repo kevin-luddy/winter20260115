@@ -316,7 +316,7 @@ namespace GenTRAC.ActionLogic
 				}
 
 				// return control and send email async
-				this.SendContractsStatusChangeEmails(proposalId);
+				await this.SendContractsStatusChangeEmails(proposalId);
 			}
 		}
 

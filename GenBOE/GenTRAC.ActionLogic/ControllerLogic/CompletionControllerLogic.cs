@@ -111,7 +111,7 @@ namespace GenTRAC.ActionLogic.ControllerLogic
             if (result != null)
             {
                 // send email
-                this.contractsLogic.SendContractsStatusChangeEmails(proposalId);
+                await this.contractsLogic.SendContractsStatusChangeEmails(proposalId);
             }
             else
             {
