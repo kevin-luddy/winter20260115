@@ -112,7 +112,7 @@ namespace GenBOE.Web.ModelView
 		/// Schedule of Events Cost Analysis Unqualified
 		/// </summary>
 		public ScheduleEvent CostAnalysisUnqualified { get; set; }
-		
+
 		/// <summary>
 		/// Cost Analysis Unqualified Date
 		/// </summary>
