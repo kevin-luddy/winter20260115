@@ -589,14 +589,16 @@ namespace IES.DataBridge.Loaders
         }
 
         /// <summary>
-        /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Disclosure data
+        /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Disclosure data, and 3) Disclosure Statements
         /// </summary>
         /// <param name="proposalId">PTM Proposal ID</param>
         /// <returns>Data to support a Cover Sheet creation</returns>
-        public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+        public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
         {
             string casbSection = null;
             string nonCompliance = null;
+			bool adequateDisclosure = false;
+			bool noncomplianceNotification = false;
 
 			using (IESEntities context = new IESEntities())
 			{
@@ -608,10 +610,14 @@ namespace IES.DataBridge.Loaders
 
 					casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
 					nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
+					// TO-DO: Double check if these are right
+					//adequateDisclosure = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.IsDisclosureStatementAdequate.HasValue ?
+					//	flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.IsDisclosureStatementAdequate.Value : false;
+					noncomplianceNotification = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance).NonComplianceNotification.Value;
 				}
 			}
 
-			return (casbSection, nonCompliance);
+			return (casbSection, nonCompliance, adequateDisclosure, noncomplianceNotification);
 		}
 
 		/// <summary>
