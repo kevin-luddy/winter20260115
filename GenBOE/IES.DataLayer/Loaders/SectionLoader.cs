@@ -593,12 +593,12 @@ namespace IES.DataBridge.Loaders
         /// </summary>
         /// <param name="proposalId">PTM Proposal ID</param>
         /// <returns>Data to support a Cover Sheet creation</returns>
-        public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
+        public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification) GetCoverSheetData(int proposalId)
         {
             string casbSection = null;
             string nonCompliance = null;
 			bool adequateDisclosure = false;
-			bool noncomplianceNotification = false;
+			string noncomplianceNotification = null;
 
 			using (IESEntities context = new IESEntities())
 			{
@@ -610,10 +610,8 @@ namespace IES.DataBridge.Loaders
 
 					casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
 					nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
-					// TO-DO: Double check if these are right
-					//adequateDisclosure = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.IsDisclosureStatementAdequate.HasValue ?
-					//	flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.IsDisclosureStatementAdequate.Value : false;
-					noncomplianceNotification = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance).NonComplianceNotification.Value;
+					adequateDisclosure = flatSections.FirstOrDefault(x => x.IsDisclosureStatementAdequate.HasValue) != null ? true : false;
+					noncomplianceNotification = flatSections.FirstOrDefault(x => x.NonComplianceNotification.Value == true)?.ReferenceNumber;
 				}
 			}
 
