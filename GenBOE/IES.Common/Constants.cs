@@ -720,13 +720,57 @@ namespace IES.Common
         /// </summary>
 		public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Lost.";
 
-		#endregion
+        #endregion
 
+        #region Default Address
+
+        /// <summary>
+        /// Default Office
+        /// </summary>
+        public const string DEFAULT_ADDRESS_OFFICE = "Contract Administration Office";
+
+        /// <summary>
+        /// Default Agency
+        /// </summary>
+        public const string DEFAULT_ADDRESS_AGENCY = "Defense Contract Management Agency (DCMA)";
 
 		/// <summary>
-		/// SSRS Report Names
+		/// Default LM BA
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		public const string DEFAULT_ADDRESS_LM_BA = "Lockheed Martin Space";
+
+		/// <summary>
+		/// Default Name
+		/// </summary>
+		public const string DEFAULT_ADDRESS_NAME = "DACO, Austin Stone";
+
+		/// <summary>
+		/// Default Street/Building
+		/// </summary>
+		public const string DEFAULT_ADDRESS_STREET = "244 Terminal Road, Building 1040";
+
+		/// <summary>
+		/// Default City, ST
+		/// </summary>
+		public const string DEFAULT_ADDRESS_CITY_ST = "Greenville, SC 29605";
+
+		/// <summary>
+		/// Default Phone
+		/// </summary>
+		public const string DEFAULT_ADDRESS_PHONE = "(864) 934-3579";
+
+		/// <summary>
+		/// Default Email
+		/// </summary>
+		public const string DEFAULT_ADDRESS_EMAIL = "austin.w.stone.civ@mail.mil";
+
+        #endregion
+
+
+        /// <summary>
+        /// SSRS Report Names
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         public static class SSRSReportName
         {
             /// <summary>
