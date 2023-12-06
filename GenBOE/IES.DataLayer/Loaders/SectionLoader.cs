@@ -568,7 +568,7 @@ namespace IES.DataBridge.Loaders
             else // Use default address
             {
                 SectionAddressModelView defaultAddress = new SectionAddressModelView
-				{
+                {
                     Id = 0,
                     Title = "Default Address",
                     Office = Constants.DEFAULT_ADDRESS_OFFICE,
