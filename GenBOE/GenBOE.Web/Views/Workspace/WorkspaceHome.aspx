@@ -220,7 +220,7 @@
                 <div class="step one">
                     <div class="title">Step 1: Select an option.</div>
                     <div>
-                        <input id="Radio-Button-Export" type="radio" class="radio" data-ng-model="dialog.importExport" data-ng-value="dialog.exportValue" data-ng-disaled="dialog.validBOEs.length === 0"/>
+                        <input id="Radio-Button-Export" type="radio" class="radio" data-ng-model="dialog.importExport" data-ng-value="dialog.exportValue" data-ng-disabled="dialog.validBOEs.length === 0"/>
                         <label for="Radio-Button-Export">Export BOEs</label>
                     </div>
                     <div>

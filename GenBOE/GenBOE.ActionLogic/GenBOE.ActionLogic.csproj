@@ -232,6 +232,7 @@
     <Compile Include="IO\Export\ITraceTableExporter.cs" />
     <Compile Include="IO\Export\MoqTableExporter.cs" />
     <Compile Include="IO\Export\MoqTableExporterRMS.cs" />
+    <Compile Include="IO\Export\PermissionsExporter.cs" />
     <Compile Include="IO\Export\TMResourceRatesExporter.cs" />
     <Compile Include="IO\Export\TraceTableExporter.cs" />
     <Compile Include="IO\Import\IMoqTableImporter.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="IO\Import\MoqTableImporterRMS.cs" />
     <Compile Include="IO\Import\TMResourceRatesImporter.cs" />
     <Compile Include="IO\Import\TrainingImporter.cs" />
+    <Compile Include="IO\PermissionsImporter.cs" />
     <Compile Include="_ModelView\Task\ImportMoqTableResultDataModelView.cs" />
     <Compile Include="_ModelView\Task\MoqTableDataModelView.cs" />
     <Compile Include="Validation\SystemExportToProPricerFormatValidator.cs" />

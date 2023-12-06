@@ -15,12 +15,24 @@
         }
     </script>
 
+     <script type="text/javascript">
+		 app.value('WorkspacePermissionModel', {
+			 workspace: '<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+		     controller: '<%:WebConstants.CONTROLLER_PERMISSIONS %>',
+		     action: '<%:WebConstants.ACTION_GET_WORKSPACE_PERMISSION_MODEL %>',
+		     exportAction: '<%: WebConstants.ACTION_EXPORT_PERMISSIONS %>',
+		     importAction: '<%:WebConstants.ACTION_IMPORT_PERMISSIONS %>',
+             workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>'
+	     });
+	 </script>
+
     <div class="permissions module permissions-module" data-ng-controller="permissionCtrl" data-ng-cloak="">
         <div class="module-header-data">Manage Permissions</div>
         <div class="module-content-data">
             <gen-validation data-errors="errors"></gen-validation>
             <div class="buttons">
                 <button class="ies-action" type="button" data-ng-disabled ="isLoading" data-ng-class="{disabled: isLoading}" data-ng-click="openNewDialog(<%:ViewBag.IsProjectMapWs ? ((int)Role.WorkspaceAdmin).ToString() : "false" %>)">+ Add user/group</button>
+                <button class="ies-action" data-ng-disabled ="isLoading" data-ng-class="{disabled: isLoading}" data-ng-click="toggleImportExport()"type="button">Import/Export Permissions</button>
             </div>
             <table id="ManagePermissions" class="grid readonly" style="width: 1366px;">
                 <colgroup>
@@ -93,6 +105,75 @@
             </table>
         </div>
         
+        <gen-dialog id="ImportExportPermissionsDialog" class="dialog form" data-width="700" data-title="{{ importExportDialog.title }}" data-open="importExportDialog.open" data-focus-on-open="false">
+            <gen-validation data-errors="importExportDialog.errors"></gen-validation>
+            <div>
+                <div id="Instructions">
+                    <span>Select an option below to import or export Permissions.</span> 
+                    <br />
+                </div>
+                <div class="step one">
+                    <div class="title">Step 1: Select an option.</div>
+                    <div>
+                        <input id="Radio-Button-Export" type="radio" class="radio" data-ng-model="importExportDialog.importExport" data-ng-value="importExportDialog.exportValue"/>
+                        <label for="Radio-Button-Export">Export Permissions</label>
+                    </div>
+                    <div>
+                        <input id="Radio-Button-Import" type="radio" class="radio" data-ng-model="importExportDialog.importExport" data-ng-value="importExportDialog.importValue" />
+                        <label for="Radio-Button-Import">Import Permissions</label>
+                    </div>
+                </div>
+                <div class="step two" data-ng-show="importExportDialog.importExport === importExportDialog.exportValue">
+                    <div class="important">IMPORTANT: Do not change the column headings or options in the file. </div>
+                    <br />
+                    <hr />
+                    <br />
+                    <div class="buttons css3pie-position-fix">
+                        <button id="ImportExportPermissionsDialog-ExportButton" data-ng-click="exportPermissions()" type="button" class="ies" data-ng-hide="importExportDialog.importWorking">Export</button>
+                        <button id="ImportExportPermissionsDialog-ExportCancelButton" data-ng-click="toggleImportExport()" type="button" class="ies" name="cancel-button">Cancel</button>
+                    </div>
+
+                </div>
+                <div class="step two" data-ng-show="importExportDialog.importExport === importExportDialog.importValue">
+                    <% Html.BeginRouteForm(WebConstants.ROUTE_DEFAULT, new { 
+                                            controller = WebConstants.CONTROLLER_PERMISSIONS, 
+                                            action = WebConstants.ACTION_IMPORT_PERMISSIONS, 
+                                            workspace = SiteMasterUtilities.GetCurrentWorkspace()}, 
+                                            FormMethod.Post,
+                                            new { enctype = "multipart/form-data", id = "ImportExportPermissionsDialog-Form", target = "ImportExportPermissionsDialog-UploadTarget" }); %>
+                    <div class="title">Step 2: Import Permissions</div>
+                    <div>
+                        Choose a file to import. The file you import must be an Excel file that ends in .xlsx.<br />
+                        All data will be appended to current Permissiond data.
+                        <br /><u>Required Fields:</u>
+                        <ul>
+                            <li>NtId</li>
+                            <li>Role</li>
+                        </ul>
+                            <span class="title">File location: </span>
+                            <span>
+                                <input type="hidden" id="importExportPermissionsDialog-Project-DocumentDomain" name="documentDomain" />
+                                <input type="hidden" name="importExportPermissionsDialog" />
+                                <input type="file" id="ImportExportPermissionsDialog-File" name="ImportExportPermissionsDialog-File" size="60" onchange="angular.element(this).scope().fileUploadChange(this)"/>
+                            </span>
+                            <br />   
+                            <span>File must contain the same headers and columns as exported prior to importing and be in .xlsx format.</span>
+                            <br />
+                            <hr />
+                            <br />
+                            <div class="important">IMPORTANT: Do not change the column headings or options in the file. </div>
+                            <br /><hr /><br />
+                            <div class="buttons">
+                                <button id="ImportExportPermissionsDialog-ImportButton" type="button" class="ies-action" data-ng-hide="importExportDialog.importWorking" data-ng-disabled="importExportDialog.disableImport" data-ng-click="importPermissions()" name="import-button">Import</button>
+                                <div id="ImportExportPermissionsDialog-ImportLoader" class="loader" data-ng-show="importExportDialog.importWorking"></div>
+                                <button id="ImportExportPermissionsDialog-ImportCancelButton" type="button" class="ies" data-ng-click="toggleImportExport()">Cancel</button>
+                            </div>
+                    </div>
+                    <% Html.EndForm(); %>
+                </div>
+            </div>
+        </gen-dialog>
+
         <gen-dialog id="AddEditPermissionsDialog" data-width="700" data-title="{{ dialog.title }}" data-open="dialog.open" data-focus-on-open="false">
             <div class="dialog-text">
                 <gen-validation data-errors="dialog.errors"></gen-validation>
