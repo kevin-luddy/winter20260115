@@ -164,21 +164,23 @@ namespace RDSB.Web.Controllers
 		}
 
 		/// <summary>
-		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Compliance data, and 3) Disclosure Statements
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
 		[HttpGet]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<(string CasbSection, string NonComplianceSection)> GetCoverSheetData(int proposalId)
+		public IESResponse<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification)> GetCoverSheetData(int proposalId)
 		{
-			IESResponse<(string CasbSection, string NonComplianceSection)> toReturn = new IESResponse<(string CasbSection, string NonComplianceSection)>();
+			IESResponse<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification)> toReturn = new IESResponse<(string CasbSection,
+				string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification)>();
 
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = new List<(string CasbSection, string NonComplianceSection)>() { documentControllerLogic.GetCoverSheetData(proposalId) };
+				toReturn.Data = new List<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification)>() {
+					documentControllerLogic.GetCoverSheetData(proposalId) };
 				toReturn.IsSuccessful = true;
 			}
 			catch (Exception ex)
