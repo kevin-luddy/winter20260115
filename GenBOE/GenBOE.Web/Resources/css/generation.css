@@ -8733,3 +8733,7 @@ span.blue-link a{
     color: #5297AD !important;
     text-decoration: none;
 }
+
+#ImportExportPermissionsDialog {
+    display: block;
+}

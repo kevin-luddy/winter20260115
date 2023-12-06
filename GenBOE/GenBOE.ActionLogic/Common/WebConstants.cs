@@ -881,12 +881,15 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_EDIT_PERMISSIONS = "EditPermissions";
         public static readonly string ACTION_DELETE_USER_PERMISSIONS = "DeleteUserPermissions";
         public static readonly string ACTION_DELETE_GROUP_PERMISSIONS = "DeleteGroupPermissions";
+		public static readonly string ACTION_GET_WORKSPACE_PERMISSION_MODEL = "GetManagePermissionsModel";
+        public static readonly string ACTION_IMPORT_PERMISSIONS = "ImportPermissions";
+        public static readonly string ACTION_EXPORT_PERMISSIONS = "ExportPermissions";
 
-        #endregion PERMISSIONS
+		#endregion PERMISSIONS
 
-        #region REPORTS
+		#region REPORTS
 
-        public static readonly string VIEW_EXPORTS = "Exports";
+		public static readonly string VIEW_EXPORTS = "Exports";
         public static readonly string VIEW_GENERAL_REPORTS = "GeneralReports";
         public static readonly string VIEW_SUMMARY_REPORTS = "SummaryReports";
         public static readonly string VIEW_CUSTOMER_REPORTS = "CustomerReports";

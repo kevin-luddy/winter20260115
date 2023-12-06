@@ -1116,6 +1116,7 @@
     <Content Include="Templates\Export\PBOE_2.docx" />
     <Content Include="Templates\Export\PBOE_withPortionMarkings_2.docx" />
     <Content Include="Templates\Export\CommentsAndResponses.xlsx" />
+    <Content Include="Templates\Export\Permissions.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
