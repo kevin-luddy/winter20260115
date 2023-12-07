@@ -52,7 +52,7 @@ namespace IES.DataBridge.Loaders
         /// </summary>
         /// <param name="proposalId">PTM Proposal ID</param>
         /// <returns>Data to support a Cover Sheet creation</returns>
-        (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification) GetCoverSheetData(int proposalId);
+        (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId);
 
 		/// <summary>
 		/// Get all addresses, regardless if a section is a parent or not

@@ -494,12 +494,12 @@ namespace IES.Tests
         public void TestGetCoverSheetData_BlankData()
 		{
 			SectionLoader sut = this.testData.SectionLoader;
-			(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification) result = sut.GetCoverSheetData(15204);
+			(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) result = sut.GetCoverSheetData(15204);
 
             Assert.AreEqual(null, result.CasbSection);
             Assert.AreEqual(null, result.NonComplianceSection);
             Assert.AreEqual(false, result.AdequateDisclosure);
-            Assert.AreEqual(null, result.NoncomplianceNotification);
+            Assert.AreEqual(false, result.NoncomplianceNotification);
         }
 
         /// <summary>
@@ -509,12 +509,12 @@ namespace IES.Tests
         public void TestGetCoverSheetData_Data()
         {
             SectionLoader sut = this.testData.SectionLoader;
-            (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification) result = sut.GetCoverSheetData(17718);
+            (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) result = sut.GetCoverSheetData(17718);
 
             Assert.IsNotNull(result.CasbSection);
             Assert.IsNotNull(result.NonComplianceSection);
             Assert.AreEqual(true, result.AdequateDisclosure);
-            Assert.IsNotNull(result.NoncomplianceNotification);
+            Assert.AreEqual(true, result.NoncomplianceNotification);
         }
     }
 }
