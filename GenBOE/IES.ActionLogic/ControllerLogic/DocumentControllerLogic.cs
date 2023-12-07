@@ -762,7 +762,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification) GetCoverSheetData(int proposalId)
+		public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
 		{
 			return sectionLoader.GetCoverSheetData(proposalId);
 		}

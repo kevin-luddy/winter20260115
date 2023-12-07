@@ -170,16 +170,16 @@ namespace RDSB.Web.Controllers
 		/// <returns>Data to support a Cover Sheet creation</returns>
 		[HttpGet]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification)> GetCoverSheetData(int proposalId)
+		public IESResponse<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)> GetCoverSheetData(int proposalId)
 		{
-			IESResponse<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification)> toReturn = new IESResponse<(string CasbSection,
-				string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification)>();
+			IESResponse<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)> toReturn = new IESResponse<(string CasbSection,
+				string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)>();
 
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = new List<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, string NoncomplianceNotification)>() {
+				toReturn.Data = new List<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)>() {
 					documentControllerLogic.GetCoverSheetData(proposalId) };
 				toReturn.IsSuccessful = true;
 			}
