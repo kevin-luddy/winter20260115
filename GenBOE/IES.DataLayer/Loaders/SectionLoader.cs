@@ -536,32 +536,53 @@ namespace IES.DataBridge.Loaders
             }
 
             // Get section titles
-            foreach (var addressIterator in addresses)
+            if (addresses.Any())
             {
-                SectionAddressParentModelView address = new SectionAddressParentModelView
+                foreach (var addressIterator in addresses)
                 {
-                    Id = addressIterator.ID,
-                    Title = addressIterator.Title,
-                    ParentID = addressIterator.ParentID
-                };
-                string title = GetSectionTitle(address, allSections);
-                addressIterator.Title = title;
-            }
+                    SectionAddressParentModelView address = new SectionAddressParentModelView
+                    {
+                        Id = addressIterator.ID,
+                        Title = addressIterator.Title,
+                        ParentID = addressIterator.ParentID
+                    };
+                    string title = GetSectionTitle(address, allSections);
+                    addressIterator.Title = title;
+                }
 
-            result = addresses.Select(x =>
-                new SectionAddressModelView
+                result = addresses.Select(x =>
+                    new SectionAddressModelView
+                    {
+                        Id = x.ID,
+                        Title = x.Title,
+                        Office = x.Office,
+                        Agency = x.Agency,
+                        LMBA = x.LMBA,
+                        Name = x.Name,
+                        Street = x.Street,
+                        CityST = x.CityST,
+                        Phone = x.Phone,
+                        Email = x.Email,
+                    }).ToList();
+            }
+            else // Use default address
+            {
+                SectionAddressModelView defaultAddress = new SectionAddressModelView
                 {
-                    Id = x.ID,
-                    Title = x.Title,
-                    Office = x.Office,
-                    Agency = x.Agency,
-                    LMBA = x.LMBA,
-                    Name = x.Name,
-                    Street = x.Street,
-                    CityST = x.CityST,
-                    Phone = x.Phone,
-                    Email = x.Email,
-                }).ToList();
+                    Id = 0,
+                    Title = "Default Address",
+                    Office = Constants.DEFAULT_ADDRESS_OFFICE,
+                    Agency = Constants.DEFAULT_ADDRESS_AGENCY,
+                    LMBA = Constants.DEFAULT_ADDRESS_LM_BA,
+                    Name = Constants.DEFAULT_ADDRESS_NAME,
+                    Street = Constants.DEFAULT_ADDRESS_STREET,
+                    CityST = Constants.DEFAULT_ADDRESS_CITY_ST,
+                    Phone = Constants.DEFAULT_ADDRESS_PHONE,
+                    Email = Constants.DEFAULT_ADDRESS_EMAIL
+                };
+
+                result.Add(defaultAddress);
+            }
 
             return result;
         }
