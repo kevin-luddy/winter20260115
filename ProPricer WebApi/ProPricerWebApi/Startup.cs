@@ -15,6 +15,7 @@ namespace APTSPropricerApi
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.OpenApi.Models;
+	using Newtonsoft.Json.Serialization;
 	using System;
 	using System.Security.Principal;
 
@@ -58,7 +59,14 @@ namespace APTSPropricerApi
 			services.AddControllers(options =>
 			{
 				options.Filters.Add<HttpResponseExceptionFilter>();
-			}).AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+			}).AddJsonOptions(options =>
+			{
+				options.JsonSerializerOptions.PropertyNamingPolicy = null;
+			}).AddNewtonsoftJson(x =>
+			{
+				x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+				x.SerializerSettings.ContractResolver = new DefaultContractResolver();
+			});
 
 			services.AddSwaggerGen(opt =>
 			{
