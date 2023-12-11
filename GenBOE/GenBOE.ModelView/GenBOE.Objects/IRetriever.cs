@@ -589,5 +589,12 @@ namespace GenBOE.Objects
         /// <param name="boeId">Boe Id</param>
         /// <returns>Selected MOQ Types with data</returns>
         ICollection<MoqTypeSelection> GetMoqTypeSelectionsByBoeId(int boeId);
-    }
+		
+        /// <summary>
+        /// Get the WS Export Format's Name 
+        /// </summary>
+        /// <param name="templateID">The template ID of the workspace export format.</param>
+        /// <returns>The name of the WS Export Format</returns>
+        string GetWorkspaceExportFormatNameByTemplateId(int templateID);
+	}
 }

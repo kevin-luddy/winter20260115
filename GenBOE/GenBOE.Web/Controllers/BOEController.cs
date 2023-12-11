@@ -835,8 +835,8 @@ namespace GenBOE.Web.Controllers
             ViewData["IsUsingSummarizeByCustomFieldTemplate"] = false;
             ViewData["SummarizeByCustomFieldOptions"] = null;
 
-            WorkspaceExportFormatDTO exportFormat = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == ws.TemplateID);
-            if (this.reportsControllerLogic.IsUsingSummarizeByCustomFieldTemplate(exportFormat.ExportFormatName))
+            string exportFormatName = ws.SelectedWorkspaceExportFormatName;
+            if (this.reportsControllerLogic.IsUsingSummarizeByCustomFieldTemplate(exportFormatName))
             {
                 this.ViewData["IsUsingSummarizeByCustomFieldTemplate"] = true;
                 this.ViewData["SummarizeByCustomFieldOptions"] = this.reportsControllerLogic.SummarizeByCustomFieldOptions(ws.CustomFields);

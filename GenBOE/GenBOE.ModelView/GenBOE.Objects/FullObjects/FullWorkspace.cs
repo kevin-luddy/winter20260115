@@ -60,7 +60,8 @@ namespace GenBOE.Objects
         private ReadOnlyCollection<CustomFieldValueDTO> customFieldValues;
         private ReadOnlyCollection<TMResourceRateDTO> tmResourceRates;
         private ReadOnlyCollection<WorkspaceExportFormatDTO> workspaceExportFormats;
-        private ReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersionMetaData;
+        private string selectedWorkspaceExportFormatName;
+		private ReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersionMetaData;
         private ReadOnlyCollection<ProPricerDTO> proPricerExports;
         private ReadOnlyCollection<PerformingOrgDTO> performingOrgsForWorkspaceList;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
@@ -682,9 +683,34 @@ namespace GenBOE.Objects
         }
 
         /// <summary>
-        /// Workspace Export Format
+        /// Get Selected Workspace Export Format Name
         /// </summary>
-        public IReadOnlyCollection<WorkspaceExportFormatDTO> WorkspaceExportFormats
+        public string SelectedWorkspaceExportFormatName
+        {
+            get
+            {
+                if (this.selectedWorkspaceExportFormatName == null)
+                {
+                    if (this.workspaceExportFormats == null)
+                    {
+                        // retrieve from the database directly
+                        this.selectedWorkspaceExportFormatName = this.retriever.GetWorkspaceExportFormatNameByTemplateId(this.TemplateID);
+                    }
+                    else
+                    {
+                        // retrieve from the property
+                        this.selectedWorkspaceExportFormatName = this.WorkspaceExportFormats.FirstOrDefault(f => f.Id == this.TemplateID)?.ExportFormatName;
+                    }
+				}
+
+                return this.selectedWorkspaceExportFormatName;
+            }
+        }
+
+		/// <summary>
+		/// Workspace Export Format
+		/// </summary>
+		public IReadOnlyCollection<WorkspaceExportFormatDTO> WorkspaceExportFormats
         {
             get
             {
@@ -1251,5 +1277,5 @@ namespace GenBOE.Objects
                 return this.moqTypeSelections;
             }
         }
-    }
+	}
 }

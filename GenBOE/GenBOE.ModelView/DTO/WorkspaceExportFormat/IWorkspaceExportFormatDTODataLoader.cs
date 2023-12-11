@@ -31,5 +31,12 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="templateDto">Template to restore</param>
         void RestoreTemplate(WorkspaceExportFormatDTO templateDto);
-    }
+
+		/// <summary>
+		/// Get the WS Export Format's Name 
+		/// </summary>
+		/// <param name="templateID">The template ID of the workspace export format.</param>
+		/// <returns>The name of the WS Export Format</returns>
+		string GetNameById(int templateID);
+	}
 }

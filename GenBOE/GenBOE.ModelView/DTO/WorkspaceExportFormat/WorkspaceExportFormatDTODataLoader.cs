@@ -116,13 +116,37 @@ namespace GenBOE.DataBridge.DTO
 
             return toReturn;
         }
-       
+
         /// <summary>
-        /// Get the export format DTO for a given DTO Id
+        /// Get the WS Export Format's Name 
         /// </summary>
-        /// <param name="inExportFormatId">The Id of the export format</param>
-        /// <returns>The DTO of interest that correponds to the Id</returns>
+        /// <param name="templateID">The template ID of the workspace export format.</param>
+        /// <returns>The name of the WS Export Format</returns>
         [DbQuery]
+        public string GetNameById(int templateID)
+        {
+            string exportName;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+                    exportName = (from t in gbe.OutputFormatTemplates
+                                  where t.TemplateID == templateID
+                                  select t.Template
+                                ).FirstOrDefault();
+				}
+			}
+
+			return exportName;
+        }
+
+		/// <summary>
+		/// Get the export format DTO for a given DTO Id
+		/// </summary>
+		/// <param name="inExportFormatId">The Id of the export format</param>
+		/// <returns>The DTO of interest that correponds to the Id</returns>
+		[DbQuery]
         public override ICollection<WorkspaceExportFormatDTO> GetByIds(ICollection<int> ids)
         {
             ICollection<WorkspaceExportFormatDTO> toReturn = null;

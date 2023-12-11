@@ -471,7 +471,17 @@ namespace GenBOE.Objects
             return this.workspaceExportFormatLoader.GetById(id);
         }
 
-        public ICollection<WorkspaceVersionMetaDataDTO> GetWorkspaceVersionMetaDataByWorkspaceId(int wsId)
+        /// <summary>
+		/// Get the WS Export Format's Name 
+		/// </summary>
+		/// <param name="templateID">The template ID of the workspace export format.</param>
+		/// <returns>The name of the WS Export Format</returns>
+		public string GetWorkspaceExportFormatNameByTemplateId(int templateID)
+        {
+            return this.workspaceExportFormatLoader.GetNameById(templateID);
+        }
+
+		public ICollection<WorkspaceVersionMetaDataDTO> GetWorkspaceVersionMetaDataByWorkspaceId(int wsId)
         {
             return this.workspaceVersionMetaDataLoader.GetByWorkspaceID(wsId);
         }
