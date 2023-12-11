@@ -53,6 +53,7 @@ namespace APTSPropricerApi
 				provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
 			services.AddSingleton<PoolManagerList>();
+			services.AddSingleton<ProPricerProposalExporter>();
 
 			configurationService.AddMultiAuthentication(services);
 
