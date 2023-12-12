@@ -395,13 +395,11 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             //Value Declarations
             FullWorkspace workspace = null;
-            bool isSubContractorUser = true;
             List<int> selectBOEs = new List<int>();
             ICollection<BoeCustomReportComponent> selectedComponents = new Collection<BoeCustomReportComponent>();
             ViewDataDictionary viewDataDictionary = new ViewDataDictionary();
             Mock<HttpResponseBase> httpResponse = new Mock<HttpResponseBase>();
-            bool custom = false;
-
+            
             ReportsControllerLogic sut = CreateSut();
 
             //Act

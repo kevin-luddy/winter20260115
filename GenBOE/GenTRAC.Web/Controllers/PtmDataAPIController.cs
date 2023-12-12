@@ -46,11 +46,6 @@ namespace GenTRAC.Web.Controllers
 		private ICoverSheetDataLoader coverSheetLoader;
 
 		/// <summary>
-		/// Proposal Checklist Loader
-		/// </summary>
-		private IProposalChecklistLoader proposalChecklistLoader;
-
-		/// <summary>
 		/// The user mapper
 		/// </summary>
 		private IUserMapper userMapper { get; set; }
@@ -59,6 +54,11 @@ namespace GenTRAC.Web.Controllers
 		/// Object Factory
 		/// </summary>
 		private IFullObjectFactory objectFactory { get; set; }
+
+		/// <summary>
+		/// Contracts Loader
+		/// </summary>
+		private IContractsLoader contractsLoader { get; set; }
 
 		/// <summary>
 		/// Token Handling
@@ -74,16 +74,16 @@ namespace GenTRAC.Web.Controllers
 		/// Ctor
 		/// </summary>
 		public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler, ICoverSheetDataLoader coverSheetLoader,
-			IProposalChecklistLoader proposalChecklistLoader, IFullObjectFactory objectFactory, IUserMapper userMapper)
+			IFullObjectFactory objectFactory, IUserMapper userMapper, IContractsLoader contractsLoader)
 		{
 			this.security = security;
 			this.proposalLoader = loader;
 			this.coverSheetLoader = coverSheetLoader;
 			this.securityAccess = securityAccess;
 			this.tokenHandler = tokenHandler;
-			this.proposalChecklistLoader = proposalChecklistLoader;
 			this.objectFactory = objectFactory;
 			this.userMapper = userMapper;
+			this.contractsLoader = contractsLoader;
 		}
 
 		#endregion
@@ -204,11 +204,11 @@ namespace GenTRAC.Web.Controllers
 						pboeData.ProposalTitle = proposal.ProposalTitle;
 						pboeData.AgreementDate = proposal.AgreementDate;
 
-						KeyValuePair<int, DateTime?> submittalDatePair = proposalChecklistLoader.GetProposalSubmittalDate(ids).FirstOrDefault();
+						ContractsDto contract = contractsLoader.GetContractForProposal(proposalId);
 
-						if (submittalDatePair.Value != null && submittalDatePair.Value != DateTime.MinValue)
+						if (contract != null)
 						{
-							pboeData.ProposalSubmittalDate = submittalDatePair.Value;
+							pboeData.ProposalSubmittalDate = contract.CustomerSubmittalDate;
 						}
 
 						// Get Contracts POC

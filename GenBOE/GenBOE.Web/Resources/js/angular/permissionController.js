@@ -1,18 +1,7 @@
-﻿angular.module('genboe').controller('permissionCtrl', ['$scope', '$http', function ($scope, $http) {
+﻿angular.module('genboe').controller('permissionCtrl', ['$scope', '$http', 'WorkspacePermissionModel', function ($scope, $http, WorkspacePermissionModel) {
     // Get Data
     $scope.isLoading = true;
-    $http({
-        method: 'POST',
-        url: 'GetManagePermissionsModel'
-    }).then(function (response) {
-        var data = response.data;
-        $scope.permissions = data.Permissions;
-        $scope.currentUserId = data.CurrentUserId;
-        $scope.currentUserName = data.CurrentUserDisplayName
-        $scope.adminPermissions = getAdminPermissions(data.Permissions, data.CurrentUserDisplayName, data.CurrentUserId);
-        $scope.isLoading = false;
-    });
-
+    
     // Initialize Models
     $scope.filter = {};
     $scope.filter.Users = '';
@@ -26,6 +15,22 @@
     $scope.dialog.title = 'Add/Edit Permissions';
     $scope.dialog.open = false;
     $scope.dialog.errors = [];
+
+    $scope.importExportDialog = {
+        title: 'Import/Export Permissions',
+        open: false,
+        validBOEs: [],
+        file: null,
+        importWorking: false,
+        disableImport: true,
+        invalidData: false,
+        importResults: [],
+        importExport: '',
+        exportValue: 'Export',
+        importValue: 'Import',
+        exportSelect: '',
+    };
+
 
     // Perform filter
     $scope.filterPermissions = function (permission) {
@@ -68,6 +73,83 @@
 
         return found;
     }
+
+    // Open a dialog for import/export
+    $scope.toggleImportExport = function () {
+        $scope.importExportDialog.importExport = '';
+        $scope.importExportDialog.exportSelect = '';
+        $scope.importExportDialog.disableImport = true;
+        $scope.importExportDialog.importWorking = false;
+        $scope.importExportDialog.open = !$scope.importExportDialog.open;
+
+        // clear file input field
+        resetUploadForm();
+    };
+
+    $scope.exportPermissions = function () {
+        // remove old iframe
+        $('#DownloadTarget-ExportPermission').remove();
+
+        // Create a new hidden iFrame and set it's source to the chosen report's URL
+        var targetIFrame = $('<iframe />', {
+            'id': 'DownloadTarget-ExportPermission',
+            'class': 'display-none',
+            'src': CreatePostURL(WorkspacePermissionModel.workspace, WorkspacePermissionModel.controller, WorkspacePermissionModel.exportAction, '')
+        });
+        // Append the iFrame to the body, causing the controller action to fire and
+        // the download to occur inside the iFrame
+        targetIFrame.appendTo('body');
+        
+
+        $scope.toggleImportExport();
+    };
+
+    $scope.importPermissions = function () {
+        if (!$scope.importExportDialog.disableImport) {
+            // create form data
+            var fd = new FormData();
+            fd.append("file", $scope.importExportDialog.file);
+
+            // get url from form
+            var url = $('#ImportExportPermissionsDialog-Form').attr('action');
+            $scope.importExportDialog.importWorking = true;
+
+            $http.post(url, fd, {
+                headers: {
+                    'Content-Type': undefined
+                }
+            }).then(function (response) {
+                $scope.permissions = response.data.Permissions;
+                $scope.importExportDialog.importWorking = false;
+                $scope.importExportDialog.open = false;
+                RaiseNotification('Import Successful');
+            })
+            .catch(function (response) {
+                $scope.importExportDialog.errors = response.data.MessageList;
+                $scope.importExportDialog.importWorking = false;
+            });                ;
+        }
+    };
+
+    $scope.fileUploadChange = function (element) {
+        $scope.$apply(function ($scope) {
+            $scope.importExportDialog.disableImport = element.value.endsWith('.xlsx') ? false : true;
+            $scope.importExportDialog.file = $scope.importExportDialog.disableImport ? null : element.files[0];
+        });
+    };
+
+
+    /*
+     * **************************** NOTE *****************************
+     * Functions below relate to the logic of the dialog import/export
+     * ***************************************************************
+     */
+    
+    var resetUploadForm = function () {
+        $("#ImportExportPermissionsDialog-Form")[0].reset();
+        $scope.importExportDialog.disableImport = true;
+        $scope.importExportDialog.file = null;
+    };
 
     // Open a blank dialog
     $scope.openNewDialog = function (isProjectMapWs) {
@@ -289,4 +371,20 @@
         }
     }
 
+    var loadPermissions = function () {
+        $scope.isLoading = true;
+        $http({
+            method: 'POST',
+            url: WorkspacePermissionModel.action
+        }).then(function (response) {
+            var data = response.data;
+            $scope.permissions = data.Permissions;
+            $scope.currentUserId = data.CurrentUserId;
+            $scope.currentUserName = data.CurrentUserDisplayName
+            $scope.adminPermissions = getAdminPermissions(data.Permissions, data.CurrentUserDisplayName, data.CurrentUserId);
+            $scope.isLoading = false;
+        });
+    };
+
+    loadPermissions();
 }]);

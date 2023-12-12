@@ -114,11 +114,11 @@ namespace IES.ActionLogic.ControllerLogic
         bool DoesRdsbRecordExistForProposalId(int proposalId);
 
         /// <summary>
-		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Compliance data, and 3) Disclosure Statements
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		(string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId);
+		(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId);
 
 		/// <summary>
 		/// Gets data necessary for CPS Reports
@@ -141,8 +141,8 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
 		/// </summary>
-		/// <param name="revision">The specific version ID of PPR&D</param>
+		/// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
 		/// <returns>A collection of addresses</returns>
-		ICollection<SectionAddressModelView> GetAddresses(int revision);
+		ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId);
 	}
 }

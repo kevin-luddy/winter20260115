@@ -29,6 +29,7 @@ namespace GenBOE.Dtos
 			this.SubResources = null;
 			this.TotalCost = null;
 			this.SupplierProposedValue = null;
+			this.ExpectedCCoPDApplicability = 0;
 			this.IsCCoPD = null;
 			this.PriceAnalysis = null;
 			this.PriceAnalysisDate = null;
@@ -58,7 +59,7 @@ namespace GenBOE.Dtos
 			this.LeadEstimatorId = 0;
 			this.LeadEstimatorDisplayName = null;
 			this.LeadEstimatorEmail = null;
-	}
+		}
 
 		/// <summary>
 		/// Gets or sets the PBoe ID.
@@ -89,6 +90,11 @@ namespace GenBOE.Dtos
 		/// Value of Supplier proposal
 		/// </summary>
 		public decimal? SupplierProposedValue { get; set; }
+
+		/// <summary>
+		/// CCoPD Value Description
+		/// </summary>
+		public Ccopd ExpectedCCoPDApplicability { get; set; }
 
 		/// <summary>
 		/// Expected Certified Cost or Pricing Data (CCoPD) Applicability
@@ -213,7 +219,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Proposal Submittal Date
 		/// </summary>
-		public DateTime? ProposalSubmittalDate { get; set;}
+		public DateTime? ProposalSubmittalDate { get; set; }
 
 		/// <summary>
 		/// Contracts Lead Display Name

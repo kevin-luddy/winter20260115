@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using GenBOE.Dtos;
 using IES.Common;
 
 namespace GenBOE.Web.ModelView
@@ -45,6 +44,11 @@ namespace GenBOE.Web.ModelView
 		/// Value of Supplier proposal
 		/// </summary>
 		public decimal? SupplierProposedValue { get; set; }
+
+		/// <summary>
+		/// CCoPD Description
+		/// </summary>
+		public string ExpectedCCoPDApplicability { get; set; }
 
 		/// <summary>
 		/// Expected Certified Cost or Pricing Data (CCoPD) Applicability
@@ -108,7 +112,7 @@ namespace GenBOE.Web.ModelView
 		/// Schedule of Events Cost Analysis Unqualified
 		/// </summary>
 		public ScheduleEvent CostAnalysisUnqualified { get; set; }
-		
+
 		/// <summary>
 		/// Cost Analysis Unqualified Date
 		/// </summary>

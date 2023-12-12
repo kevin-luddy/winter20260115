@@ -758,11 +758,11 @@ namespace IES.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Compliance data, and 3) Disclosure Statements
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+		public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
 		{
 			return sectionLoader.GetCoverSheetData(proposalId);
 		}
@@ -794,7 +794,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);
 
-			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetAllRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
 
 			foreach (string rateCode in rateCodes)
 			{
@@ -862,7 +862,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);
 
-			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetAllRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
 
 			foreach (string rateDescription in rateDescriptions)
 			{
@@ -900,12 +900,12 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
 		/// </summary>
-		/// <param name="revision">The specific version ID of PPR&D</param>
+		/// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
 		/// <returns>A collection of addresses</returns>
-		public ICollection<SectionAddressModelView> GetAddresses(int revision)
+		public ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId)
 		{
 			ICollection<SectionAddressModelView> sections = new List<SectionAddressModelView>();
-			sections = this.sectionLoader.GetAddresses(revision);
+			sections = this.sectionLoader.GetAddresses(ptmTrackingId);
 
 			return sections;
 		}

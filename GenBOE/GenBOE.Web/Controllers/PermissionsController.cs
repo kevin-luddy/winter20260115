@@ -9,25 +9,30 @@ namespace GenBOE.Web.Controllers
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
-    using System.Linq;
+	using System.Data.Entity.Core;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
     using System.Transactions;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.Metrics;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Permissions;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
-    using GenBOE.Objects;
+	using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
     using IES.Common;
     using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
 
     public class PermissionsController : GenBOEController
     {
@@ -124,7 +129,7 @@ namespace GenBOE.Web.Controllers
             if (ModelState.IsValid)
             {
                 SavePermissionModelView nonWebPermissionModelView = new SavePermissionModelView() { EntityIds = inPermission.EntityIds, Roles = inPermission.Roles, WorkspaceId = inPermission.WorkspaceId };
-                _permissionControllerLogic.SaveNewPermission(workspace, nonWebPermissionModelView);
+                _permissionControllerLogic.SaveNewPermissions(workspace, new SavePermissionModelView[] { nonWebPermissionModelView });
             }
             else
             {
@@ -561,8 +566,7 @@ namespace GenBOE.Web.Controllers
         /// Edit permissions
         /// </summary>
         /// <param name="inRoles">The roles selected from the UI</param>
-        /// <param name="inEntityId">the entity id (groupId or userId)</param>
-        /// <param name="workspaceID">workspace id</param>
+        /// <param name="ws">The workspace</param>
         /// <param name="usersToAdjust">the users to check permissions for and adjust</param>
         /// <returns>string.empty if no errors, otherwise errors returned in the string</returns>
         private void _EditPermissions(Collection<Role> inRoles, FullWorkspace ws, Collection<UserDTO> usersToAdjust)
@@ -670,5 +674,132 @@ namespace GenBOE.Web.Controllers
 
             return Json(memberList);
         }
-    }
+
+        /// <summary>
+        /// Export Permissions
+        /// </summary>
+        /// <param name="workspace">The workspace</param>
+        /// <returns>The permissions export</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		public ActionResult ExportPermissions(string workspace)
+        {
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+			// Perform Action
+
+			// Get data to export for this Workspace
+			Collection<PermissionsDTO> allPerms = this.PermissionsLoader.GetPermissionsForGridData(ws.Id).Where(p => p.Role != Role.WorkspaceUser).ToCollection();
+
+			// Get export template file name
+			string templateFileName = Server.MapPath("~/Templates/Export/Permissions.xlsx");
+
+			// Call the export function in the business layer and get back the file name of the populated template.
+			string exportedFileName = PermissionsExporter.ExportToExcelFile(templateFileName, allPerms);
+
+			string fileName = string.Format("{0}_Permissions.xlsx", ws.WorkspaceName);
+			// Generate a custom ActionResult to cause a file download to the client
+			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_PERMISSIONS, sw);
+
+			return File(
+				fileStream: fs,
+				contentType: ExportFileDownloadBase.GetContentType(fileName),
+				fileDownloadName: fileName);
+		}
+
+		/// <summary>
+		/// Import Permissions from File
+		/// </summary>
+		/// <param name="workspace">The workspace</param>
+		/// <returns>Import Permission results</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public JsonResult ImportPermissions(string workspace)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+            // Perform Action
+            string errorMessage = string.Empty;
+
+			// If a file was uploaded successfully
+			if (Request.Files.Count > 0 && Request.Files[0].FileName.Length > 0)
+			{
+                try
+                {
+                    // Call the business layer to parse the uploaded file
+                    // If the file was successfully parsed, add the results to the genBOE database
+                    ICollection<SavePermissionModelView> permissionsFromImportFile = PermissionsImporter.ImportFromExcelFile(Request.Files[0].InputStream);
+
+                    if (permissionsFromImportFile.Any())
+                    {
+
+                        _permissionControllerLogic.SaveNewPermissions(workspace, permissionsFromImportFile);
+                    }
+                    else
+                    {
+                        // Return a success message
+                        errorMessage = "No Permissions Were Imported.";
+
+                    }
+                }
+                // Catch custom exceptions from ExcelImporter and ResourcesImporter and generate friendly
+                // exception messages to display for the user
+                catch (NotExcelFileException)
+                {
+                    errorMessage = "File is an invalid format. File must be in a MS Excel format (.xlsx or .xls).";
+                }
+                catch (ColumnMissingException ex2)
+                {
+                    errorMessage = string.Format("File does not contain all of the required columns. File must contain 'NtId', 'Role' columns. The following columns are missing: {0}.", ex2.Message);
+                }
+                catch (CellValueMissingException ex3)
+                {
+                    errorMessage = string.Format("A row in the file does not contain a value for NtId and Role. Every filled row must have a value for each. Check the following column: {0}.", ex3.Message);
+                }
+                catch (DuplicateValuesException ex4)
+                {
+                    errorMessage = string.Format("Values must be unique. The following are not unique: {0}", ex4.Message);
+                }
+                catch (EntityCommandExecutionException)
+                {
+                    errorMessage = "The Permissions were recently updated by another user. Please refresh the page to review these latest changes. Once the page is refreshed, you can try your import operation again.";
+                }
+                catch (GenValidationException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, "Unknown Import Permissions Error.");
+                    errorMessage = "A general error occurred. Please ensure that your import file follows the format of the import template and retry the import.";
+                }
+			}
+			// If no file was uploaded, tell the user about it. Client validation should keep this from being hit.
+			else
+			{
+				errorMessage = "No file selected for upload";
+			}
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                throw new GenValidationException(errorMessage);
+            }
+
+			// if we're here, everything was successful.  Return the new data.
+			PermissionModelView theModelView = _GetPermissionsGrid(ws);
+			JsonResult toReturn = Json(theModelView);
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_IMPORT_PERMISSIONS, sw);
+			return toReturn;
+		}
+
+	}
 }

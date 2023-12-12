@@ -466,7 +466,8 @@ namespace GenBOE.DataBridge.DTO
                                             ETIUserId = role.ETIUserID,
                                             Role = (Role)role.RoleID,
                                             WorkspaceId = role.WorkspaceID,
-                                            UpdateDate = role.UpdateDT
+                                            UpdateDate = role.UpdateDT,
+                                            NTID = role.ETIuser.NTID
                                         }
                                 ).Union(gbe.WorkspaceUserRoles.Where(role => role.WorkspaceID == wsId)
                                     .Select(role => new PermissionsDTO
@@ -475,7 +476,8 @@ namespace GenBOE.DataBridge.DTO
                                         ETIUserId = role.ETIUserID,
                                         Role = (Role)role.RoleID,
                                         WorkspaceId = role.WorkspaceID,
-                                        UpdateDate = role.UpdateDT
+                                        UpdateDate = role.UpdateDT,
+                                        NTID = role.ETIuser.NTID
                                     })
                                 ).Where(role => wsLevelRoles.Contains(role.Role)).ToCollection();
                 }
