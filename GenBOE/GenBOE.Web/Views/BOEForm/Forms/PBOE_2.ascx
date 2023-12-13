@@ -466,7 +466,7 @@
                 </div>
             </div>
             <div class="form-row"> 
-                <div class="form-label">Memorandum of Understanding</div>
+                <div class="form-label">Negotiations Memorandum</div>
                 <div class="form-element"><%: Html.RadioButton("MOU", ScheduleEvent.NA, Model.PBOEModel.MOU == ScheduleEvent.NA, new { id = "MOU" }) %><label>N/A</label><br />
                     <%: Html.RadioButton("MOU", ScheduleEvent.Actual, Model.PBOEModel.MOU == ScheduleEvent.Actual, new { id = "MOU" }) %><label>Actual</label><br />
                     <%: Html.RadioButton("MOU", ScheduleEvent.Planned, Model.PBOEModel.MOU == ScheduleEvent.Planned, new { id = "MOU" }) %><label>Planned</label><br />
