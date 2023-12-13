@@ -2057,7 +2057,6 @@ namespace GenTRAC.DataBridge.DTO
         /// 
         /// The proposals must:
         ///     - not be Forecasted
-        ///     - be In Progress
         ///     - not have been selected by another eEPP record
         ///     
         /// Additionally the user's permissions will limit the allowed proposals.
@@ -2075,7 +2074,6 @@ namespace GenTRAC.DataBridge.DTO
 
             return dbModel.Proposals.Where(
                                 x => x.ProposalClassLU.ProposalClass != Constants.PROPOSAL_CLASS_FORECASTED
-                                && x.ProposalStatusID == (int)ProposalStatus.InProgress
 
                                 // ToDo: Proposal doesn't already have a linked eEPP record (will come later)
                                 && true
