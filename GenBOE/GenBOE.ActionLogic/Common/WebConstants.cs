@@ -104,6 +104,7 @@ namespace GenBOE.ActionLogic.Common
         #endregion URL Routing
 
         public static readonly string BROWSER_REMINDER = "GenBOEBrowserReminder";
+        public static readonly string ECI_FORBIDDEN_BANNER = "EciForbiddenBanner";
         public static readonly string UPDATE_WORKSPACE_TRAVEL_ZONE_RATE = "UpdateWorkspaceTravelZoneRate";
         public static readonly string UPDATE_WORKSPACE_OFFLOAD_RATES = "UpdateWorkspaceOffloadRates";
 
