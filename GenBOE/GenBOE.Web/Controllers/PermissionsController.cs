@@ -31,7 +31,8 @@ namespace GenBOE.Web.Controllers
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
     using IES.Common;
-    using IES.Common.Exceptions;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 
     public class PermissionsController : GenBOEController
@@ -694,7 +695,9 @@ namespace GenBOE.Web.Controllers
 			Collection<PermissionsDTO> allPerms = this.PermissionsLoader.GetPermissionsForGridData(ws.Id).Where(p => p.Role != Role.WorkspaceUser).ToCollection();
 
 			// Get export template file name
-			string templateFileName = Server.MapPath("~/Templates/Export/Permissions.xlsx");
+			string templateFileName = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ?
+				Server.MapPath("~/Templates/Export/PermissionsRMS.xlsx") :
+                Server.MapPath("~/Templates/Export/Permissions.xlsx");
 
 			// Call the export function in the business layer and get back the file name of the populated template.
 			string exportedFileName = PermissionsExporter.ExportToExcelFile(templateFileName, allPerms);
