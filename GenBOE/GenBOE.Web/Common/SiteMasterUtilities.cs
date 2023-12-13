@@ -96,7 +96,7 @@ namespace GenBOE.Web.Common
 		}
 
 		/// <summary>
-		/// 
+		/// Sets the Cookie session on whether this ECI Banner should show up every browser session
 		/// </summary>
 		private static void CreateEciForbiddenCookie()
 		{
@@ -118,7 +118,7 @@ namespace GenBOE.Web.Common
 			{
 				displayBanner = true;
 
-				CreateBrowserReminderCookie();
+				CreateEciForbiddenCookie();
 			}
 
 			return displayBanner;
