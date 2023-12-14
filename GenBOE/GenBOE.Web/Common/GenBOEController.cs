@@ -136,9 +136,6 @@ namespace GenBOE.Web.Common
                 throw new ArgumentNullException(nameof(ws));
 			}
 
-            // default to false
-			ViewData["DisplayECIMessage"] = false;
-
 			if (ws.Id == 0)
             {
                 // if the workspace doesn't exist .. for example if we are running a system job
@@ -157,15 +154,6 @@ namespace GenBOE.Web.Common
                 model.HeaderFooter = ws.ContainsOCI ?
                     "Organizational Conflict of Interest - Lockheed Martin Proprietary Information" :
                     "Lockheed Martin Proprietary Information";
-
-                if (SiteMasterUtilities.ShowEciForbiddenMessage())
-                {
-                    UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
-                    if (currentUser != null)
-                    {
-                        ViewData["DisplayECIMessage"] = !this.UserLoader.GetMessageConfirmations(currentUser.UserID).Contains(ConfirmationMessage.ECI_FORBIDDEN);
-                    }
-                }
 			}
         }
 

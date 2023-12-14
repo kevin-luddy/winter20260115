@@ -293,6 +293,7 @@
     <Content Include="Object Scripts\X_Data Cleanup\Fix Task Level Duplicated CF XREF Values.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\FixMissingRMSEscalationRates.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\WSBackups.sql" />
+    <Content Include="Release Scripts\Release 2023.42\1 - Release 2023.42 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2.09\1 - Release 2.9 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2.09\2 - Release 2.9.1 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2.09\3 - Release 2.9.3 Script.sql" />
