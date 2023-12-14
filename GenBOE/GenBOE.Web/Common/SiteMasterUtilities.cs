@@ -112,13 +112,17 @@ namespace GenBOE.Web.Common
 		public static bool ShowEciForbiddenMessage()
 		{
 			bool displayBanner = false;
-			HttpCookie cookie = HttpContext.Current.Request.Cookies[WebConstants.ECI_FORBIDDEN_BANNER];
 
-			if (cookie == null)
+			if (IESBannerApp == Constants.BOE_SPACE_INTERNATIONAL_APP_NAME)
 			{
-				displayBanner = true;
+				HttpCookie cookie = HttpContext.Current.Request.Cookies[WebConstants.ECI_FORBIDDEN_BANNER];
 
-				CreateEciForbiddenCookie();
+				if (cookie == null)
+				{
+					displayBanner = true;
+
+					CreateEciForbiddenCookie();
+				}
 			}
 
 			return displayBanner;
