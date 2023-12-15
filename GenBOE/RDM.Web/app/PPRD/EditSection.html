@@ -34,25 +34,25 @@
 				</div>
 			</div>
 			<div class="form-row">
-				<div class="form-label section-checkbox">Section contains CASB Disclosure Statement</div>
+				<div class="form-label section-checkbox">Section contains CASB Disclosure Statement (check if Yes)</div>
 				<div class="form-element">
 					<input id="SectionContainsCasbDisclosureCheckbox" data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.SectionContainsCasbDisclosure" data-ng-change="uncheckIsDisclosureStatementAdequate()" />
 				</div>
 			</div>
 			<div class="form-row sub-form-row">
-				<div class="form-label section-checkbox md-long-text">Has the Disclosure Statement been determined adequate</div>
+				<div class="form-label section-checkbox md-long-text">8c Has the Disclosure Statement been determined adequate (check if Yes)</div>
 				<div class="form-element">
 					<input id="IsDisclosureStatementAdequateCheckbox" data-ng-disabled="isReadOnly || model.SectionContainsCasbDisclosure == false" type="checkbox" data-ng-model="model.IsDisclosureStatementAdequate" data-ng-change="showPublishErrors()" />
 				</div>
 			</div>
 			<div class="form-row">
-				<div class="form-label section-checkbox">Section contains Open CAS Non-Compliance Issues</div>
+				<div class="form-label section-checkbox">Section contains Open CAS Non-Compliance Issues (check if Yes)</div>
 				<div class="form-element">
 					<input id="SectionContainsNonComplianceCheckbox" data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.SectionContainsNonCompliance" data-ng-change="uncheckNonComplianceNotification()" />
 				</div>
 			</div>
 			<div class="form-row sub-form-row">
-				<div class="form-label section-checkbox md-long-text">Have you been notified that you may be in noncompliance with your Disclosure Statement or Cost Account Standards</div>
+				<div class="form-label section-checkbox md-long-text">8d Have you been notified that you may be in noncompliance with your Disclosure Statement or Cost Account Standards (check if Yes)</div>
 				<div class="form-element">
 					<input id="NonComplianceNotificationCheckbox" data-ng-disabled="isReadOnly || model.SectionContainsNonCompliance == false" type="checkbox" data-ng-model="model.NonComplianceNotification" data-ng-change="showPublishErrors()" />
 				</div>

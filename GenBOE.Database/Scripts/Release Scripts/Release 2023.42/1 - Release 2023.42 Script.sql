@@ -1,3 +1,5 @@
+﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2023.42';
+
 IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[insertMessageConfirmation]') AND type in (N'P', N'PC'))
 	DROP PROCEDURE [dbo].[insertMessageConfirmation];
 

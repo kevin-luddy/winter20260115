@@ -81,6 +81,7 @@
         $scope.importExportDialog.disableImport = true;
         $scope.importExportDialog.importWorking = false;
         $scope.importExportDialog.open = !$scope.importExportDialog.open;
+        $scope.importExportDialog.errors = [];
 
         // clear file input field
         resetUploadForm();
