@@ -172,7 +172,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 
         /// <summary>
         /// List of allowed proposal classes
-        /// </summary>T
+        /// </summary>
         public ICollection<SelectListItem> ProposalClassesList { get; set; }
 
         /// <summary>
