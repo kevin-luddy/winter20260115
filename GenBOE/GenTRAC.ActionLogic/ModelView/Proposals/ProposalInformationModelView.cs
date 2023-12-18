@@ -134,7 +134,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Gets or sets Contract Type Group
         /// </summary>
         [Required(ErrorMessage = ValidationConstants.ProposalValidationConstants.CONTRACT_TYPE_GROUP_REQUIRED)]
-        public int ContractTypeGroup { get; set; }
+        public int? ContractTypeGroup { get; set; }
 
         /// <summary>
         /// Gets or sets Contract Type
@@ -172,7 +172,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 
         /// <summary>
         /// List of allowed proposal classes
-        /// </summary>
+        /// </summary>T
         public ICollection<SelectListItem> ProposalClassesList { get; set; }
 
         /// <summary>
@@ -228,10 +228,15 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// </summary>
         public string RequestTypeText { get; set; }
 
-        /// <summary>
-        /// Text for Proposal Class (used by read only
-        /// </summary>
-        public string ProposalClassText { get; set; }
+		/// <summary>
+		/// Text for Contract Type Group (used by read only
+		/// </summary>
+		public string ContractTypeGroupText { get; set; }
+
+		/// <summary>
+		/// Text for Proposal Class (used by read only
+		/// </summary>
+		public string ProposalClassText { get; set; }
 
         /// <summary>
         /// Document Id (RDSB)
