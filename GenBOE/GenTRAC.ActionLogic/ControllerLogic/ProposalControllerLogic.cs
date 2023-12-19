@@ -1017,6 +1017,7 @@ namespace GenTRAC.ActionLogic
 		/// </summary>
 		/// <param name="proposalId">Proposal Id.  Can be null.</param>
 		/// <returns>Proposal Information Model View</returns>
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public ProposalInformationModelView GetDataForProposalInformation(int? proposalId)
 		{
 			ProposalInformationModelView model = new ProposalInformationModelView();
@@ -1102,6 +1103,7 @@ namespace GenTRAC.ActionLogic
 				model.ProposalTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalType, fullProposalDto.ProposalType);
 				model.RequestTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.TypeOfRequest, fullProposalDto.Request);
 				model.ProposalClassesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalClass, fullProposalDto.ProposalClass);
+				model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup, fullProposalDto.ContractTypeGroup);
 
 				model.ProposalID = fullProposalDto.Id;
 				model.ProposalTrackingNumber = fullProposalDto.TrackingNumber;
@@ -1143,10 +1145,11 @@ namespace GenTRAC.ActionLogic
 					model.ProposalClassesList.First(x => x.Value == model.ProposalClass.ToString()).Text : "Not Set";
 				model.RequestTypeText = model.RequestTypesList.Any(x => x.Value == model.RequestType.ToString()) ?
 					model.RequestTypesList.First(x => x.Value == model.RequestType.ToString()).Text : "Not Set";
+				model.ContractTypeGroupText = model.ContractTypeGroupsList.Any(x => x.Value == model.ContractTypeGroup.ToString()) ?
+					model.ContractTypeGroupsList.First(x => x.Value == model.ContractTypeGroup.ToString()).Text : "Not Set";
 
 				model.DocumentId = fullProposalDto.DocumentId;
 
-				model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup, fullProposalDto.ContractTypeGroup);
 			}
 			else
 			{
@@ -1252,6 +1255,7 @@ namespace GenTRAC.ActionLogic
 				model.ProposalTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalType, fullProposalDto.ProposalType);
 				model.RequestTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.TypeOfRequest, fullProposalDto.Request);
 				model.ProposalClassesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalClass, fullProposalDto.ProposalClass);
+				model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup, fullProposalDto.ContractTypeGroup);
 
 				string newRevisionSuffix;
 				string newRevisionTrackingNumber = this.GetRevisionTrackingNumber(fullProposalDto.TrackingNumber, out newRevisionSuffix);
@@ -1281,10 +1285,11 @@ namespace GenTRAC.ActionLogic
 					model.ProposalClassesList.First(x => x.Value == model.ProposalClass.ToString()).Text : "Not Set";
 				model.RequestTypeText = model.RequestTypesList.Any(x => x.Value == model.RequestType.ToString()) ?
 					model.RequestTypesList.First(x => x.Value == model.RequestType.ToString()).Text : "Not Set";
+				model.ContractTypeGroupText = model.ContractTypeGroupsList.Any(x => x.Value == model.ContractTypeGroup.ToString()) ?
+					model.ContractTypeGroupsList.First(x => x.Value == model.ContractTypeGroup.ToString()).Text : "Not Set";
 
 				model.DocumentId = fullProposalDto.DocumentId;
 
-				model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup, fullProposalDto.ContractTypeGroup);
 			}
 			else
 			{
