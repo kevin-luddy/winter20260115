@@ -31,11 +31,12 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
 **      12/13/2023  e374897             PROPH-1377 Upsert Message Confirmation
+**      12/15/2023  twilson3            Fix @UpdateDT location
 *******************************************************************************/
 SET NOCOUNT ON 
 
 DECLARE	@ErrorMessage varchar (500)
-
+DECLARE @UpdateDT datetime2 = GETDATE()
 IF EXISTS	(SELECT 1 FROM [dbo].[MessageConfirmation] WHERE	
 					 ETIUserId = @ETIUserID AND
 				 	 MessageId = @MessageID
@@ -52,8 +53,7 @@ IF EXISTS	(SELECT 1 FROM [dbo].[MessageConfirmation] WHERE
 ELSE
 	BEGIN		
 		-- Insert
-		DECLARE @UpdateDT datetime2 = GETDATE()
-			
+		
 		INSERT INTO [dbo].[MessageConfirmation]
 				   ([ETIUserId]
 				   ,[MessageId]
