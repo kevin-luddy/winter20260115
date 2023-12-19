@@ -134,7 +134,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Gets or sets Contract Type Group
         /// </summary>
         [Required(ErrorMessage = ValidationConstants.ProposalValidationConstants.CONTRACT_TYPE_GROUP_REQUIRED)]
-        public int? ContractTypeGroup { get; set; }
+        public int ContractTypeGroup { get; set; }
 
         /// <summary>
         /// Gets or sets Contract Type

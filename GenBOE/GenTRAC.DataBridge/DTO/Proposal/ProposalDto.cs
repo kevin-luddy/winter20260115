@@ -138,7 +138,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Contract Type Group
         /// </summary>
-        public int? ContractTypeGroup { get; set; }
+        public int ContractTypeGroup { get; set; }
 
         /// <summary>
         /// Contract Type Ids

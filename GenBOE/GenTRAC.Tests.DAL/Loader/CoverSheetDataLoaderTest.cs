@@ -95,7 +95,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 ContractsLead = "paliderd",
                 CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
                 OtherContractActionType = prop.ContractActionTypeOtherText,
-                ContractTypeGroup = (int)prop.ContractTypeGroup,
+                ContractTypeGroup = prop.ContractTypeGroup,
                 CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
                 IsCCPDRequired = prop.IsCCPDRequired,
 
@@ -153,7 +153,7 @@ namespace GenTRAC.Tests.DAL.Loader
 				ContractActionType = prop.ContractActionType,
 				CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
 				OtherContractActionType = prop.ContractActionTypeOtherText,
-				ContractTypeGroup = (int)prop.ContractTypeGroup,
+				ContractTypeGroup = prop.ContractTypeGroup,
 				CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
 				IsCCPDRequired = prop.IsCCPDRequired,
 
@@ -236,7 +236,7 @@ namespace GenTRAC.Tests.DAL.Loader
 				ContractsLead = "paliderd",
 				CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
 				OtherContractActionType = prop.ContractActionTypeOtherText,
-				ContractTypeGroup = (int)prop.ContractTypeGroup,
+				ContractTypeGroup = prop.ContractTypeGroup,
 				CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
 				IsCCPDRequired = prop.IsCCPDRequired,
 
@@ -307,7 +307,7 @@ namespace GenTRAC.Tests.DAL.Loader
 				ContractsLead = "paliderd",
 				CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
 				OtherContractActionType = prop.ContractActionTypeOtherText,
-				ContractTypeGroup = (int)prop.ContractTypeGroup,
+				ContractTypeGroup = prop.ContractTypeGroup,
 				IsCCPDRequired = prop.IsCCPDRequired,
 
 				// missing checklist data..

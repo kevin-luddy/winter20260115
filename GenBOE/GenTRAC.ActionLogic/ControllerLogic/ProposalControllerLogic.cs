@@ -1040,7 +1040,7 @@ namespace GenTRAC.ActionLogic
 
 				if (fullProposalDto.ContractTypeGroup >= 0)
 				{
-					foreach (PickListDto contractType in this.pickListMapper.GetChildren(PickListEnum.ContractType, (int)fullProposalDto.ContractTypeGroup))
+					foreach (PickListDto contractType in this.pickListMapper.GetChildren(PickListEnum.ContractType, fullProposalDto.ContractTypeGroup))
 					{
 						if (contractType.Text != Constants.IDIQ_CONTRACT_TYPE || includeIDIQ)
 						{
@@ -1192,7 +1192,7 @@ namespace GenTRAC.ActionLogic
 
 				if (fullProposalDto.ContractTypeGroup >= 0)
 				{
-					foreach (PickListDto contractType in this.pickListMapper.GetChildren(PickListEnum.ContractType, (int)fullProposalDto.ContractTypeGroup))
+					foreach (PickListDto contractType in this.pickListMapper.GetChildren(PickListEnum.ContractType, fullProposalDto.ContractTypeGroup))
 					{
 						if (contractType.Text != Constants.IDIQ_CONTRACT_TYPE || includeIDIQ)
 						{

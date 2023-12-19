@@ -3761,7 +3761,6 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual("Not Set", result.ProposalTypeText);
             Assert.AreEqual("Not Set", result.ProposalClassText);
             Assert.AreEqual("Not Set", result.RequestTypeText);
-            Assert.AreEqual("Not Set", result.ContractTypeGroupText);
             Assert.AreEqual(fullProposal.DocumentId, result.DocumentId);
             Assert.AreEqual(ContractActionType.PriceRevisionRedetermination.GetDescription<ContractActionType>(), result.ContractActionType.Value.GetDescription<ContractActionType>());
             Assert.AreEqual(fullProposal.ContractActionTypeOtherText, result.ContractActionTypeOtherText);
