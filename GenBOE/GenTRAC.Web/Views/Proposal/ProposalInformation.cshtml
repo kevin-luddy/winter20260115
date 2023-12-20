@@ -149,7 +149,7 @@
 
             ProposalInfoWidget.getElement('select[name=CustomerType]').next('.replacedWidgetText').html('@Model.CustomerType.GetDescription()');
             ProposalInfoWidget.getElement('select[name=ISGSRole]').next('.replacedWidgetText').html('@Model.ISGSRole.GetDescription()');
-            ProposalInfoWidget.getElement('select[name=ContractTypeGroup]').next('.replacedWidgetText').html('@Model.ContractTypeGroup.GetDescription()');
+            ProposalInfoWidget.getElement('select[name=ContractTypeGroup]').next('.replacedWidgetText').html('@Model.ContractTypeGroupText');
         }
 
         ProposalInfoWidget.getElement('select[name="ContractTypeGroup"]').change(function () {
