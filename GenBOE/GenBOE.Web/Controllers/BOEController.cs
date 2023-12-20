@@ -1159,9 +1159,9 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Resets boes with the ids below to draft
 		/// </summary>
-		/// <param name="workspace"></param>
-		/// <param name="boeIds"></param>
-		/// <returns></returns>
+		/// <param name="workspace">Workspace name.</param>
+		/// <param name="boes">List of BOEs to be saved.</param>
+		/// <returns>JsonResult of True or GenValidationException</returns>
 		public ActionResult ResetDraftBOE(string workspace, Collection<ManageBOEModelView> boes)
 		{
 			// reuse SaveManageBOE to do state transitions
