@@ -348,6 +348,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_VALIDATE_IBOE_FORM = "ValidateIBOEForm";
         public static readonly string ACTION_VALIDATE_PBOE_FORM = "ValidatePBOEForm";
         public static readonly string ACTION_SAVE_MANAGE_BOE = "SaveManageBOE";
+        public static readonly string ACTION_RESET_DRAFT_BOE = "ResetDraftBOE";
 		public static readonly string ACTION_WORKSPACE_CALCULATE_ACTUALS = "WorkspaceCalculateActuals";
 		public static readonly string ACTION_SAVE_BOE_STATES = "SaveBOEStates";
         public static readonly string ACTION_SUBMIT_FOR_APPROVAL = "SubmitForApproval";

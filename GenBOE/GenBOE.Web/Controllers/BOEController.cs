@@ -1157,6 +1157,39 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Resets boes with the ids below to draft
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <param name="boeIds"></param>
+		/// <returns></returns>
+		public ActionResult ResetDraftBOE(string workspace, Collection<ManageBOEModelView> boes)
+		{
+			// reuse SaveManageBOE to do state transitions
+			// BOEs that should be reset to draft have their IsDeleted set to true
+
+			if (boes == null)
+			{
+				throw new ArgumentNullException(nameof(boes));
+			}
+			
+			boes = boes.Where(b => b.State != BOEState.Draft).ToCollection();
+
+			if (boes.Count == 0)
+			{
+				throw new GenValidationException("There must be at least one BOE that is not already set to Draft");
+			}
+
+			foreach (ManageBOEModelView boe in boes)
+			{
+				// reset to false and set state to draft
+				boe.Deleted = false;
+				boe.State = BOEState.Draft;
+			}
+
+			return this.SaveManageBOE(workspace, boes);
+		}
+
+		/// <summary>
 		/// Saves a BOE(s) from the Manage BOE page.  There are also many side affects that occur with this save.
 		/// </summary>
 		/// <param name="workspace">Workspace name.</param>

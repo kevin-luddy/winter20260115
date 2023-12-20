@@ -741,12 +741,29 @@
                     RaiseNotification('The system automatically backed up this workspace prior to deletion');
                 }
 
-                $scope.checkForHiddenItems(data);
+                $scope.checkForHiddenItems(data, true);
             }, 50);
         });
     };
 
-    $scope.checkForHiddenItems = function (data) {
+    $scope.resetDraft = function () {
+        Session.confirmDialog('Reset BOEs to Draft', 'Are you sure you want to reset these BOEs to Draft? This cannot be undone.', function () {
+            $timeout(function () {
+                var data = {};
+                data.boes = [];
+
+                $scope.data.forEach(function (item) {
+                    if (item.Deleted) { // reusing the checkbox/property for Deleted
+                        data.boes.push(item);
+                    }
+                });
+
+                $scope.checkForHiddenItems(data, false);
+            }, 50);
+        });
+    };
+
+    $scope.checkForHiddenItems = function (data, isDelete) {
         // start and end indexes for items on page
         var start = $scope.currentPage * $scope.pageSize;
         var end = start + $scope.pageSize
@@ -763,12 +780,38 @@
             Session.confirmDialog('Hidden Items',
                 'You have selected BOEs that are currently hidden from view. Would you like to continue? Select No to review these items.',
                 function () {
-                    $scope.continueDelete(data);
+                    if (isDelete) {
+                        $scope.continueDelete(data);
+                    } else {
+                        $scope.continueResetDraft(data);
+                    }
                 });
         } else {
-            $scope.continueDelete(data);
+            if (isDelete) {
+                $scope.continueDelete(data);
+            } else {
+                $scope.continueResetDraft(data);
+            }
         }
     }
+
+    $scope.continueResetDraft = function (data) {
+        $scope.errors = [];
+
+        $('#PageLoading').removeClass('display-none');
+        $http({
+            method: 'POST',
+            url: CreatePostURL(ManageBOEModel.workspace, ManageBOEModel.controller, ManageBOEModel.resetDraftAction, ''),
+            data: data
+        }).then(function successCallback(response) {
+
+            loadBOEs();
+            $('#PageLoading').addClass('display-none');
+        }, function errorCallback(response) {
+            $scope.errors = response.data.MessageList;
+            $('#PageLoading').addClass('display-none');
+        });
+    };
 
     $scope.continueDelete = function (data) {
         $scope.errors = [];
@@ -791,7 +834,7 @@
             $scope.errors = response.data.MessageList;
             $('#PageLoading').addClass('display-none');
         });
-    }
+    };
 
     $scope.removeBOE = function (boe) {
         var index = -1;
