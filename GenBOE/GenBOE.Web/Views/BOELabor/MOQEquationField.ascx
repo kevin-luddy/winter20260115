@@ -211,6 +211,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.WbsElement}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementComparativeSuffix);"></div>
+                                <div data-ng-if="!model.IsRMS"><br /><strong>Note:</strong> genBOE uses the <strong>"Starts With"</strong> condition to pull actuals beginning with the <strong>first 12 characters</strong> of the charge #'s entered. Click the "?" for additional information. </div>
                             </td>
                             <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" placeholder="If entering multiple WBS Elements, please separate them with a comma ',' or a semicolon ';'" required data-ng-model="tableData.WbsElement" data-ng-change="SetTableDirty(tableData)" /></td>
                         </tr>
