@@ -1,0 +1,2818 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="IESModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Banner">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="SelectedApps" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="StartDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="HoursToShow" Type="int" Nullable="false" />
+          <Property Name="BannerText" Type="varchar" MaxLength="500" />
+          <Property Name="TurnOffTicker" Type="bit" />
+        </EntityType>
+        <EntityType Name="BoeDatabaseVersion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DBVersion" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="AppVersion" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BurdenElementLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BurdenElement" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" />
+          <Property Name="DisplayOrder" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BurdenPoolLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="BurdenPool" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" />
+          <Property Name="IsGaT2ApplicableForMissionSolutions" Type="bit" Nullable="false" />
+          <Property Name="RevisionID" Type="int" Nullable="false" />
+          <Property Name="IsCommercial" Type="bit" Nullable="false" />
+          <Property Name="ExcludeFCCOM" Type="bit" Nullable="false" />
+          <Property Name="IncludeGaT2InBurdAndCommBurdTables" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CategoryLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" />
+        </EntityType>
+        <EntityType Name="CobraCode1LU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" />
+        </EntityType>
+        <EntityType Name="CobraFiscalYearLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="FiscalYearStartDate" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DisclosureTypeLU">
+          <Key>
+            <PropertyRef Name="DisclosureTypeID" />
+          </Key>
+          <Property Name="DisclosureTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DisclosureType" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ELMAH_Error">
+          <Key>
+            <PropertyRef Name="ErrorId" />
+          </Key>
+          <Property Name="ErrorId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Application" Type="nvarchar" MaxLength="60" Nullable="false" />
+          <Property Name="Host" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Source" Type="nvarchar" MaxLength="60" Nullable="false" />
+          <Property Name="Message" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="User" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="StatusCode" Type="int" Nullable="false" />
+          <Property Name="TimeUtc" Type="datetime" Nullable="false" />
+          <Property Name="Sequence" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AllXml" Type="ntext" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FileAttachment">
+          <Key>
+            <PropertyRef Name="FileAttachmentId" />
+          </Key>
+          <Property Name="FileAttachmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Link" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="SectionId" Type="int" />
+          <Property Name="RevisionId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OfflineApplication">
+          <Key>
+            <PropertyRef Name="ApplicationName" />
+          </Key>
+          <Property Name="ApplicationName" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="IsOffline" Type="bit" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProPricerBurdenRateMap">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="BurdenPoolID" Type="int" Nullable="false" />
+          <Property Name="BurdenElementID" Type="int" Nullable="false" />
+          <Property Name="RateCodeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProPricerRateCodeXref">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="RateCodeID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="RateCodeExtensionID" Type="int" />
+          <Property Name="ResourceClassID" Type="int" />
+        </EntityType>
+        <EntityType Name="RateCode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="RevisionID" Type="int" Nullable="false" />
+          <Property Name="CategoryID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" Nullable="false" />
+          <Property Name="SectionID" Type="int" />
+          <Property Name="RateCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ResourceTypeID" Type="int" />
+          <Property Name="GovernmentBurdenPoolID" Type="int" />
+          <Property Name="CommercialBurdenPoolID" Type="int" />
+          <Property Name="RateTypeID" Type="int" />
+          <Property Name="CobraRateSet" Type="varchar" MaxLength="50" />
+          <Property Name="CobraCode1ID" Type="int" />
+          <Property Name="DisclosureTypeId" Type="int" />
+        </EntityType>
+        <EntityType Name="RateCodeExtensionLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RateCodeExtension" Type="varchar" MaxLength="50" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" />
+        </EntityType>
+        <EntityType Name="RateCodeReplication">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="From" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="To" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RateCodeYear">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="RateCodeID" Type="int" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="Rate" Type="decimal" Precision="18" Scale="6" />
+        </EntityType>
+        <EntityType Name="RateConfig">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RateTarget" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="CategoryID" Type="int" />
+          <Property Name="Prefix" Type="varchar" MaxLength="50" />
+          <Property Name="Suffix" Type="varchar" MaxLength="50" />
+          <Property Name="Precision" Type="int" Nullable="false" />
+          <Property Name="Multiplier" Type="int" />
+        </EntityType>
+        <EntityType Name="RateTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" />
+        </EntityType>
+        <EntityType Name="RDSBDocumentInformation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PTMProposalID" Type="int" Nullable="false" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="LastUpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="RDMRevisionID" Type="int" Nullable="false" />
+          <Property Name="StartYear" Type="int" />
+          <Property Name="EndYear" Type="int" />
+          <Property Name="ParentSection" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="RDSBRateCodeXref">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="RDSBDocumentInformationID" Type="int" Nullable="false" />
+          <Property Name="RateCodeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RDSBSectionXref">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="RDSBDocumentInformationID" Type="int" Nullable="false" />
+          <Property Name="SectionID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ResourceClassLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" />
+        </EntityType>
+        <EntityType Name="ResourceTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Revision">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Revision" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="History" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="DatePublished" Type="datetime2" Precision="7" />
+          <Property Name="PublishedBy" Type="varchar" MaxLength="1000" />
+          <Property Name="StartYear" Type="int" Nullable="false" />
+          <Property Name="EndYear" Type="int" Nullable="false" />
+          <Property Name="ReleaseNotes" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Section">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="RevisionID" Type="int" Nullable="false" />
+          <Property Name="ParentID" Type="int" />
+          <Property Name="DisplayOrder" Type="int" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="4000" />
+          <Property Name="TextContent" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="SectionContentTypeID" Type="int" Nullable="false" />
+          <Property Name="IsInternalSection" Type="bit" Nullable="false" />
+          <Property Name="DisplayRateCode" Type="bit" Nullable="false" />
+          <Property Name="RevisionUniqueSectionId" Type="int" Nullable="false" />
+          <Property Name="IsRdsbRequired" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsCasbDisclosure" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsNonCompliance" Type="bit" Nullable="false" />
+          <Property Name="Office" Type="varchar" MaxLength="100" />
+          <Property Name="Agency" Type="varchar" MaxLength="100" />
+          <Property Name="LMBA" Type="varchar" MaxLength="100" />
+          <Property Name="Name" Type="varchar" MaxLength="100" />
+          <Property Name="Street" Type="varchar" MaxLength="100" />
+          <Property Name="CityST" Type="varchar" MaxLength="100" />
+          <Property Name="Phone" Type="varchar" MaxLength="100" />
+          <Property Name="Email" Type="varchar" MaxLength="100" />
+          <Property Name="Other" Type="varchar" MaxLength="100" />
+          <Property Name="IncludeInCoversheet" Type="bit" />
+          <Property Name="IsDisclosureStatementAdequate" Type="bit" />
+          <Property Name="NonComplianceNotification" Type="bit" />
+        </EntityType>
+        <EntityType Name="SectionContentTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="4000" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="UserLog">
+          <Key>
+            <PropertyRef Name="LogInUpdateDT" />
+            <PropertyRef Name="NTID" />
+            <PropertyRef Name="DisplayName" />
+          </Key>
+          <Property Name="LogInUpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="NTID" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="DisplayName" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="Application" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <Association Name="FK__RDSBDocum__RDMRe__76619304">
+          <End Role="Revision" Type="Self.Revision" Multiplicity="1" />
+          <End Role="RDSBDocumentInformation" Type="Self.RDSBDocumentInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Revision">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBDocumentInformation">
+              <PropertyRef Name="RDMRevisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BurdenPoolLU_Revision">
+          <End Role="Revision" Type="Self.Revision" Multiplicity="1" />
+          <End Role="BurdenPoolLU" Type="Self.BurdenPoolLU" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Revision">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="BurdenPoolLU">
+              <PropertyRef Name="RevisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FileAttachment_SectionId">
+          <End Role="Section" Type="Self.Section" Multiplicity="0..1" />
+          <End Role="FileAttachment" Type="Self.FileAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Section">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="FileAttachment">
+              <PropertyRef Name="SectionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerBurdenRateMap_BurdenElementLU">
+          <End Role="BurdenElementLU" Type="Self.BurdenElementLU" Multiplicity="1" />
+          <End Role="ProPricerBurdenRateMap" Type="Self.ProPricerBurdenRateMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BurdenElementLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerBurdenRateMap">
+              <PropertyRef Name="BurdenElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerBurdenRateMap_BurdenPoolLU">
+          <End Role="BurdenPoolLU" Type="Self.BurdenPoolLU" Multiplicity="1" />
+          <End Role="ProPricerBurdenRateMap" Type="Self.ProPricerBurdenRateMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BurdenPoolLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerBurdenRateMap">
+              <PropertyRef Name="BurdenPoolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerBurdenRateMap_RateCode">
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="1" />
+          <End Role="ProPricerBurdenRateMap" Type="Self.ProPricerBurdenRateMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerBurdenRateMap">
+              <PropertyRef Name="RateCodeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerRateCodeXref_RateCode">
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="1" />
+          <End Role="ProPricerRateCodeXref" Type="Self.ProPricerRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerRateCodeXref">
+              <PropertyRef Name="RateCodeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerRateCodeXref_RateCodeExtensionLU">
+          <End Role="RateCodeExtensionLU" Type="Self.RateCodeExtensionLU" Multiplicity="0..1" />
+          <End Role="ProPricerRateCodeXref" Type="Self.ProPricerRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCodeExtensionLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerRateCodeXref">
+              <PropertyRef Name="RateCodeExtensionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerRateCodeXref_ResourceClassLU">
+          <End Role="ResourceClassLU" Type="Self.ResourceClassLU" Multiplicity="0..1" />
+          <End Role="ProPricerRateCodeXref" Type="Self.ProPricerRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ResourceClassLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerRateCodeXref">
+              <PropertyRef Name="ResourceClassID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_CategoryLU">
+          <End Role="CategoryLU" Type="Self.CategoryLU" Multiplicity="1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CategoryLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_CobraCode1LU">
+          <End Role="CobraCode1LU" Type="Self.CobraCode1LU" Multiplicity="0..1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CobraCode1LU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="CobraCode1ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_CommBurdenPoolLU">
+          <End Role="BurdenPoolLU" Type="Self.BurdenPoolLU" Multiplicity="0..1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BurdenPoolLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="CommercialBurdenPoolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_DisclosureTypeLU">
+          <End Role="DisclosureTypeLU" Type="Self.DisclosureTypeLU" Multiplicity="0..1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DisclosureTypeLU">
+              <PropertyRef Name="DisclosureTypeID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="DisclosureTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_GovtBurdenPoolLU">
+          <End Role="BurdenPoolLU" Type="Self.BurdenPoolLU" Multiplicity="0..1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BurdenPoolLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="GovernmentBurdenPoolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_RateCode">
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="1" />
+          <End Role="RateCode1" Type="Self.RateCode" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode1">
+              <PropertyRef Name="ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_RateTypeLU">
+          <End Role="RateTypeLU" Type="Self.RateTypeLU" Multiplicity="0..1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="RateTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_ResourceTypeLU">
+          <End Role="ResourceTypeLU" Type="Self.ResourceTypeLU" Multiplicity="0..1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ResourceTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="ResourceTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_Revision">
+          <End Role="Revision" Type="Self.Revision" Multiplicity="1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Revision">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="RevisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_Section">
+          <End Role="Section" Type="Self.Section" Multiplicity="0..1" />
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Section">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="SectionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCodeYear_RateCode">
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="1" />
+          <End Role="RateCodeYear" Type="Self.RateCodeYear" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCodeYear">
+              <PropertyRef Name="RateCodeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateConfig_CategoryLU">
+          <End Role="CategoryLU" Type="Self.CategoryLU" Multiplicity="0..1" />
+          <End Role="RateConfig" Type="Self.RateConfig" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CategoryLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateConfig">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RDSBRateCodeXref_RateCode">
+          <End Role="RateCode" Type="Self.RateCode" Multiplicity="1" />
+          <End Role="RDSBRateCodeXref" Type="Self.RDSBRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBRateCodeXref">
+              <PropertyRef Name="RateCodeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RDSBRateCodeXref_RDSBDocumentInformation">
+          <End Role="RDSBDocumentInformation" Type="Self.RDSBDocumentInformation" Multiplicity="1" />
+          <End Role="RDSBRateCodeXref" Type="Self.RDSBRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RDSBDocumentInformation">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBRateCodeXref">
+              <PropertyRef Name="RDSBDocumentInformationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RDSBSectionXref_RateCode">
+          <End Role="Section" Type="Self.Section" Multiplicity="1" />
+          <End Role="RDSBSectionXref" Type="Self.RDSBSectionXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Section">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBSectionXref">
+              <PropertyRef Name="SectionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RDSBSectionXref_RDSBDocumentInformation">
+          <End Role="RDSBDocumentInformation" Type="Self.RDSBDocumentInformation" Multiplicity="1" />
+          <End Role="RDSBSectionXref" Type="Self.RDSBSectionXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RDSBDocumentInformation">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBSectionXref">
+              <PropertyRef Name="RDSBDocumentInformationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Section_Revision">
+          <End Role="Revision" Type="Self.Revision" Multiplicity="1" />
+          <End Role="Section" Type="Self.Section" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Revision">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Section">
+              <PropertyRef Name="RevisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Section_Section">
+          <End Role="Section" Type="Self.Section" Multiplicity="0..1" />
+          <End Role="Section1" Type="Self.Section" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Section">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Section1">
+              <PropertyRef Name="ParentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Section_SectionContentTypeLU">
+          <End Role="SectionContentTypeLU" Type="Self.SectionContentTypeLU" Multiplicity="1" />
+          <End Role="Section" Type="Self.Section" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SectionContentTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Section">
+              <PropertyRef Name="SectionContentTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="copyRevision" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="NewRevision" Type="varchar" Mode="In" />
+          <Parameter Name="NewHistory" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="NewCreatedBy" Type="varchar" Mode="In" />
+          <Parameter Name="NewReleaseNotes" Type="nvarchar(max)" Mode="In" />
+        </Function>
+        <Function Name="deleteBanner" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteBurdenPoolLU" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteCobraFiscalYear" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteFileAttachment" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteProPricerBurdenRateMap" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteProPricerRateCodeXref" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteProPricerRateCodeXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="deleteRateCodeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="deleteRDSBDocumentInformation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="LastUpdateDT" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteReplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteRevision" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteSection" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="ELMAH_GetErrorsXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Application" Type="nvarchar" Mode="In" />
+          <Parameter Name="PageIndex" Type="int" Mode="In" />
+          <Parameter Name="PageSize" Type="int" Mode="In" />
+          <Parameter Name="TotalCount" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="ELMAH_GetErrorXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Application" Type="nvarchar" Mode="In" />
+          <Parameter Name="ErrorId" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="ELMAH_LogError" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ErrorId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Application" Type="nvarchar" Mode="In" />
+          <Parameter Name="Host" Type="nvarchar" Mode="In" />
+          <Parameter Name="Type" Type="nvarchar" Mode="In" />
+          <Parameter Name="Source" Type="nvarchar" Mode="In" />
+          <Parameter Name="Message" Type="nvarchar" Mode="In" />
+          <Parameter Name="User" Type="nvarchar" Mode="In" />
+          <Parameter Name="AllXml" Type="ntext" Mode="In" />
+          <Parameter Name="StatusCode" Type="int" Mode="In" />
+          <Parameter Name="TimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="ExportCobraRates" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RevisionID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ExportProPricerBurdenRates" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RevisionID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ExportProPricerDirectRates" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RevisionID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetProPricerBurdenRateCodes" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RevisionID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetRateCodeList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RevisionID" Type="int" Mode="In" />
+          <Parameter Name="StartYear" Type="varchar" Mode="In" />
+          <Parameter Name="EndYear" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="insertProPricerRateCodeXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="insertRateCodeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="insertRateCodeYearviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="insertRDSBRateCodeXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="insertRDSBSectionXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="publishRevision" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="PublishedBy" Type="varchar" Mode="In" />
+          <Parameter Name="History" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="ReleaseNotes" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="DatePublished" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="remapSectionReferences" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="NewId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="updateCobraDetailviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UpdateDbVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="DbVersion" Type="varchar" Mode="In" />
+          <Parameter Name="AppVersion" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="updateOfflineApplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="varchar" Mode="In" />
+          <Parameter Name="IsOffline" Type="bit" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="updateProPricerRateCodeXrefviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="updateRateCodeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="updateRateCodeYearviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="upsertBanner" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="SelectedApps" Type="varchar" Mode="In" />
+          <Parameter Name="StartDate" Type="datetime2" Mode="In" />
+          <Parameter Name="HoursToShow" Type="int" Mode="In" />
+          <Parameter Name="BannerText" Type="varchar" Mode="In" />
+          <Parameter Name="TurnOffTicker" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="upsertBurdenPoolLU" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="RevisionID" Type="int" Mode="In" />
+          <Parameter Name="BurdenPool" Type="varchar" Mode="In" />
+          <Parameter Name="Description" Type="varchar" Mode="In" />
+          <Parameter Name="IsGaT2ApplicableForMissionSolutions" Type="bit" Mode="In" />
+          <Parameter Name="IncludeGaT2InBurdAndCommBurdTables" Type="bit" Mode="In" />
+          <Parameter Name="IsCommercial" Type="bit" Mode="In" />
+          <Parameter Name="ExcludeFCCOM" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="upsertCobraFiscalYear" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="Year" Type="int" Mode="In" />
+          <Parameter Name="FiscalYearStartDate" Type="date" Mode="In" />
+        </Function>
+        <Function Name="upsertFileAttachment" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="Name" Type="varchar" Mode="In" />
+          <Parameter Name="Link" Type="varchar" Mode="In" />
+          <Parameter Name="SectionId" Type="int" Mode="In" />
+          <Parameter Name="RevisionId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="upsertProPricerBurdenRateMap" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="BurdenPoolID" Type="int" Mode="In" />
+          <Parameter Name="BurdenElementID" Type="int" Mode="In" />
+          <Parameter Name="RateCodeID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="upsertProPricerRateCodeXref" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="RateCodeID" Type="int" Mode="In" />
+          <Parameter Name="Description" Type="varchar" Mode="In" />
+          <Parameter Name="RateCodeExtensionID" Type="int" Mode="In" />
+          <Parameter Name="ResourceClassID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="upsertRDSBDocumentInformation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="LastUpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="PTMProposalID" Type="int" Mode="In" />
+          <Parameter Name="CreatedBy" Type="varchar" Mode="In" />
+          <Parameter Name="RDMRevisionID" Type="int" Mode="In" />
+          <Parameter Name="StartYear" Type="int" Mode="In" />
+          <Parameter Name="EndYear" Type="int" Mode="In" />
+          <Parameter Name="ParentSection" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="upsertReplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="From" Type="varchar" Mode="In" />
+          <Parameter Name="To" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="upsertRevision" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="Revision" Type="varchar" Mode="In" />
+          <Parameter Name="History" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="CreatedBy" Type="varchar" Mode="In" />
+          <Parameter Name="StartYear" Type="int" Mode="In" />
+          <Parameter Name="EndYear" Type="int" Mode="In" />
+          <Parameter Name="ReleaseNotes" Type="nvarchar(max)" Mode="In" />
+        </Function>
+        <Function Name="upsertSection" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="RevisionID" Type="int" Mode="In" />
+          <Parameter Name="ParentID" Type="int" Mode="In" />
+          <Parameter Name="DisplayOrder" Type="int" Mode="In" />
+          <Parameter Name="Title" Type="varchar" Mode="In" />
+          <Parameter Name="TextContent" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="SectionContentTypeID" Type="int" Mode="In" />
+          <Parameter Name="IsInternalSection" Type="bit" Mode="In" />
+          <Parameter Name="DisplayRateCode" Type="bit" Mode="In" />
+          <Parameter Name="RevisionUniqueSectionId" Type="int" Mode="In" />
+          <Parameter Name="IsRdsbRequired" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsCasbDisclosure" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsNonCompliance" Type="bit" Mode="In" />
+          <Parameter Name="Office" Type="varchar" Mode="In" />
+          <Parameter Name="Agency" Type="varchar" Mode="In" />
+          <Parameter Name="LMBA" Type="varchar" Mode="In" />
+          <Parameter Name="Name" Type="varchar" Mode="In" />
+          <Parameter Name="Street" Type="varchar" Mode="In" />
+          <Parameter Name="CityST" Type="varchar" Mode="In" />
+          <Parameter Name="Phone" Type="varchar" Mode="In" />
+          <Parameter Name="Email" Type="varchar" Mode="In" />
+          <Parameter Name="Other" Type="varchar" Mode="In" />
+          <Parameter Name="IncludeInCoversheet" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="upsertUserLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="NTID" Type="varchar" Mode="In" />
+          <Parameter Name="DisplayName" Type="varchar" Mode="In" />
+          <Parameter Name="Application" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="verifyRateCodeReplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RevisionId" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="IESModelStoreContainer">
+          <EntitySet Name="Banner" EntityType="Self.Banner" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BoeDatabaseVersion" EntityType="Self.BoeDatabaseVersion" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BurdenElementLU" EntityType="Self.BurdenElementLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BurdenPoolLU" EntityType="Self.BurdenPoolLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CategoryLU" EntityType="Self.CategoryLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CobraCode1LU" EntityType="Self.CobraCode1LU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CobraFiscalYearLU" EntityType="Self.CobraFiscalYearLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DisclosureTypeLU" EntityType="Self.DisclosureTypeLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ELMAH_Error" EntityType="Self.ELMAH_Error" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FileAttachment" EntityType="Self.FileAttachment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OfflineApplication" EntityType="Self.OfflineApplication" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProPricerBurdenRateMap" EntityType="Self.ProPricerBurdenRateMap" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProPricerRateCodeXref" EntityType="Self.ProPricerRateCodeXref" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RateCode" EntityType="Self.RateCode" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RateCodeExtensionLU" EntityType="Self.RateCodeExtensionLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RateCodeReplication" EntityType="Self.RateCodeReplication" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RateCodeYear" EntityType="Self.RateCodeYear" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RateConfig" EntityType="Self.RateConfig" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RateTypeLU" EntityType="Self.RateTypeLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RDSBDocumentInformation" EntityType="Self.RDSBDocumentInformation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RDSBRateCodeXref" EntityType="Self.RDSBRateCodeXref" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RDSBSectionXref" EntityType="Self.RDSBSectionXref" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ResourceClassLU" EntityType="Self.ResourceClassLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ResourceTypeLU" EntityType="Self.ResourceTypeLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Revision" EntityType="Self.Revision" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Section" EntityType="Self.Section" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SectionContentTypeLU" EntityType="Self.SectionContentTypeLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserLog" EntityType="Self.UserLog" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [UserLog].[LogInUpdateDT] AS [LogInUpdateDT], 
+    [UserLog].[NTID] AS [NTID], 
+    [UserLog].[DisplayName] AS [DisplayName], 
+    [UserLog].[Application] AS [Application]
+    FROM [dbo].[UserLog] AS [UserLog]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK__RDSBDocum__RDMRe__76619304" Association="Self.FK__RDSBDocum__RDMRe__76619304">
+            <End Role="Revision" EntitySet="Revision" />
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BurdenPoolLU_Revision" Association="Self.FK_BurdenPoolLU_Revision">
+            <End Role="Revision" EntitySet="Revision" />
+            <End Role="BurdenPoolLU" EntitySet="BurdenPoolLU" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FileAttachment_SectionId" Association="Self.FK_FileAttachment_SectionId">
+            <End Role="Section" EntitySet="Section" />
+            <End Role="FileAttachment" EntitySet="FileAttachment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerBurdenRateMap_BurdenElementLU" Association="Self.FK_ProPricerBurdenRateMap_BurdenElementLU">
+            <End Role="BurdenElementLU" EntitySet="BurdenElementLU" />
+            <End Role="ProPricerBurdenRateMap" EntitySet="ProPricerBurdenRateMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerBurdenRateMap_BurdenPoolLU" Association="Self.FK_ProPricerBurdenRateMap_BurdenPoolLU">
+            <End Role="BurdenPoolLU" EntitySet="BurdenPoolLU" />
+            <End Role="ProPricerBurdenRateMap" EntitySet="ProPricerBurdenRateMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerBurdenRateMap_RateCode" Association="Self.FK_ProPricerBurdenRateMap_RateCode">
+            <End Role="RateCode" EntitySet="RateCode" />
+            <End Role="ProPricerBurdenRateMap" EntitySet="ProPricerBurdenRateMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerRateCodeXref_RateCode" Association="Self.FK_ProPricerRateCodeXref_RateCode">
+            <End Role="RateCode" EntitySet="RateCode" />
+            <End Role="ProPricerRateCodeXref" EntitySet="ProPricerRateCodeXref" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerRateCodeXref_RateCodeExtensionLU" Association="Self.FK_ProPricerRateCodeXref_RateCodeExtensionLU">
+            <End Role="RateCodeExtensionLU" EntitySet="RateCodeExtensionLU" />
+            <End Role="ProPricerRateCodeXref" EntitySet="ProPricerRateCodeXref" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerRateCodeXref_ResourceClassLU" Association="Self.FK_ProPricerRateCodeXref_ResourceClassLU">
+            <End Role="ResourceClassLU" EntitySet="ResourceClassLU" />
+            <End Role="ProPricerRateCodeXref" EntitySet="ProPricerRateCodeXref" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_CategoryLU" Association="Self.FK_RateCode_CategoryLU">
+            <End Role="CategoryLU" EntitySet="CategoryLU" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_CobraCode1LU" Association="Self.FK_RateCode_CobraCode1LU">
+            <End Role="CobraCode1LU" EntitySet="CobraCode1LU" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_CommBurdenPoolLU" Association="Self.FK_RateCode_CommBurdenPoolLU">
+            <End Role="BurdenPoolLU" EntitySet="BurdenPoolLU" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_DisclosureTypeLU" Association="Self.FK_RateCode_DisclosureTypeLU">
+            <End Role="DisclosureTypeLU" EntitySet="DisclosureTypeLU" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_GovtBurdenPoolLU" Association="Self.FK_RateCode_GovtBurdenPoolLU">
+            <End Role="BurdenPoolLU" EntitySet="BurdenPoolLU" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_RateCode" Association="Self.FK_RateCode_RateCode">
+            <End Role="RateCode" EntitySet="RateCode" />
+            <End Role="RateCode1" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_RateTypeLU" Association="Self.FK_RateCode_RateTypeLU">
+            <End Role="RateTypeLU" EntitySet="RateTypeLU" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_ResourceTypeLU" Association="Self.FK_RateCode_ResourceTypeLU">
+            <End Role="ResourceTypeLU" EntitySet="ResourceTypeLU" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_Revision" Association="Self.FK_RateCode_Revision">
+            <End Role="Revision" EntitySet="Revision" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_Section" Association="Self.FK_RateCode_Section">
+            <End Role="Section" EntitySet="Section" />
+            <End Role="RateCode" EntitySet="RateCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCodeYear_RateCode" Association="Self.FK_RateCodeYear_RateCode">
+            <End Role="RateCode" EntitySet="RateCode" />
+            <End Role="RateCodeYear" EntitySet="RateCodeYear" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateConfig_CategoryLU" Association="Self.FK_RateConfig_CategoryLU">
+            <End Role="CategoryLU" EntitySet="CategoryLU" />
+            <End Role="RateConfig" EntitySet="RateConfig" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RDSBRateCodeXref_RateCode" Association="Self.FK_RDSBRateCodeXref_RateCode">
+            <End Role="RateCode" EntitySet="RateCode" />
+            <End Role="RDSBRateCodeXref" EntitySet="RDSBRateCodeXref" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RDSBRateCodeXref_RDSBDocumentInformation" Association="Self.FK_RDSBRateCodeXref_RDSBDocumentInformation">
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformation" />
+            <End Role="RDSBRateCodeXref" EntitySet="RDSBRateCodeXref" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RDSBSectionXref_RateCode" Association="Self.FK_RDSBSectionXref_RateCode">
+            <End Role="Section" EntitySet="Section" />
+            <End Role="RDSBSectionXref" EntitySet="RDSBSectionXref" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RDSBSectionXref_RDSBDocumentInformation" Association="Self.FK_RDSBSectionXref_RDSBDocumentInformation">
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformation" />
+            <End Role="RDSBSectionXref" EntitySet="RDSBSectionXref" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Section_Revision" Association="Self.FK_Section_Revision">
+            <End Role="Revision" EntitySet="Revision" />
+            <End Role="Section" EntitySet="Section" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Section_Section" Association="Self.FK_Section_Section">
+            <End Role="Section" EntitySet="Section" />
+            <End Role="Section1" EntitySet="Section" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Section_SectionContentTypeLU" Association="Self.FK_Section_SectionContentTypeLU">
+            <End Role="SectionContentTypeLU" EntitySet="SectionContentTypeLU" />
+            <End Role="Section" EntitySet="Section" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="IESModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="IESEntities" annotation:LazyLoadingEnabled="true">
+          <FunctionImport Name="deleteCobraFiscalYear">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="deleteProPricerBurdenRateMap">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="deleteProPricerRateCodeXref">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="deleteRateCode">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="deleteRateCodeYear">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="deleteRevision">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="ExportCobraRates" ReturnType="Collection(IESModel.ExportCobraRates_Result)">
+          <Parameter Name="RevisionID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ExportProPricerBurdenRates" ReturnType="Collection(IESModel.ExportProPricerBurdenRates_Result)">
+          <Parameter Name="RevisionID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ExportProPricerDirectRates" ReturnType="Collection(IESModel.ExportProPricerDirectRates_Result)">
+          <Parameter Name="RevisionID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetProPricerBurdenRateCodes" ReturnType="Collection(IESModel.GetProPricerBurdenRateCodes_Result)">
+          <Parameter Name="RevisionID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetRateCodeList">
+            <Parameter Name="RevisionID" Mode="In" Type="Int32" />
+            <Parameter Name="StartYear" Mode="In" Type="String" />
+            <Parameter Name="EndYear" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="upsertCobraFiscalYear" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="Year" Mode="In" Type="Int32" />
+            <Parameter Name="FiscalYearStartDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertProPricerRateCodeXref" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="RateCodeID" Mode="In" Type="Int32" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="RateCodeExtensionID" Mode="In" Type="Int32" />
+            <Parameter Name="ResourceClassID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="upsertRevision" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="Revision" Mode="In" Type="String" />
+            <Parameter Name="History" Mode="In" Type="String" />
+            <Parameter Name="CreatedBy" Mode="In" Type="String" />
+            <Parameter Name="StartYear" Mode="In" Type="Int32" />
+            <Parameter Name="EndYear" Mode="In" Type="Int32" />
+            <Parameter Name="ReleaseNotes" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="deleteSection">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertSection" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="RevisionID" Mode="In" Type="Int32" />
+            <Parameter Name="ParentID" Mode="In" Type="Int32" />
+            <Parameter Name="DisplayOrder" Mode="In" Type="Int32" />
+            <Parameter Name="Title" Mode="In" Type="String" />
+            <Parameter Name="TextContent" Mode="In" Type="String" />
+            <Parameter Name="SectionContentTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="IsInternalSection" Mode="In" Type="Boolean" />
+            <Parameter Name="DisplayRateCode" Mode="In" Type="Boolean" />
+            <Parameter Name="RevisionUniqueSectionId" Mode="In" Type="Int32" />
+            <Parameter Name="IsRdsbRequired" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsCasbDisclosure" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsNonCompliance" Mode="In" Type="Boolean" />
+            <Parameter Name="Office" Mode="In" Type="String" />
+            <Parameter Name="Agency" Mode="In" Type="String" />
+            <Parameter Name="LMBA" Mode="In" Type="String" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Street" Mode="In" Type="String" />
+            <Parameter Name="CityST" Mode="In" Type="String" />
+            <Parameter Name="Phone" Mode="In" Type="String" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+            <Parameter Name="Other" Mode="In" Type="String" />
+            <Parameter Name="IncludeInCoversheet" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="copyRevision" ReturnType="Collection(IESModel.copyRevision_Result)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="NewRevision" Mode="In" Type="String" />
+            <Parameter Name="NewHistory" Mode="In" Type="String" />
+            <Parameter Name="NewCreatedBy" Mode="In" Type="String" />
+            <Parameter Name="NewReleaseNotes" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="BurdenPoolLUs" EntityType="IESModel.BurdenPoolLU" />
+          <FunctionImport Name="deleteBurdenPoolLU">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertBurdenPoolLU" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="RevisionID" Mode="In" Type="Int32" />
+            <Parameter Name="BurdenPool" Mode="In" Type="String" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="IsGaT2ApplicableForMissionSolutions" Mode="In" Type="Boolean" />
+            <Parameter Name="IncludeGaT2InBurdAndCommBurdTables" Mode="In" Type="Boolean" />
+            <Parameter Name="IsCommercial" Mode="In" Type="Boolean" />
+            <Parameter Name="ExcludeFCCOM" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="upsertRateCode" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="RevisionID" Mode="In" Type="Int32" />
+            <Parameter Name="CategoryID" Mode="In" Type="Int32" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="SectionID" Mode="In" Type="Int32" />
+            <Parameter Name="RateCode" Mode="In" Type="String" />
+            <Parameter Name="ResourceTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="GovernmentBurdenPoolID" Mode="In" Type="Int32" />
+            <Parameter Name="CommercialBurdenPoolID" Mode="In" Type="Int32" />
+            <Parameter Name="RateTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="CobraRateSet" Mode="In" Type="String" />
+            <Parameter Name="CobraCode1ID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="upsertRateCodeYear" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="RateCodeID" Mode="In" Type="Int32" />
+            <Parameter Name="Year" Mode="In" Type="Int32" />
+            <Parameter Name="Rate" Mode="In" Type="Decimal" />
+          </FunctionImport>
+          <EntitySet Name="BurdenElementLUs" EntityType="IESModel.BurdenElementLU" />
+          <EntitySet Name="CategoryLUs" EntityType="IESModel.CategoryLU" />
+          <EntitySet Name="CobraCode1LU" EntityType="IESModel.CobraCode1LU" />
+          <EntitySet Name="ProPricerBurdenRateMaps" EntityType="IESModel.ProPricerBurdenRateMap" />
+          <EntitySet Name="ProPricerRateCodeXrefs" EntityType="IESModel.ProPricerRateCodeXref" />
+          <EntitySet Name="RateCodes" EntityType="IESModel.RateCode" />
+          <EntitySet Name="RateCodeExtensionLUs" EntityType="IESModel.RateCodeExtensionLU" />
+          <EntitySet Name="RateCodeYears" EntityType="IESModel.RateCodeYear" />
+          <EntitySet Name="RateTypeLUs" EntityType="IESModel.RateTypeLU" />
+          <EntitySet Name="ResourceTypeLUs" EntityType="IESModel.ResourceTypeLU" />
+          <EntitySet Name="Sections" EntityType="IESModel.Section" />
+          <EntitySet Name="SectionContentTypeLUs" EntityType="IESModel.SectionContentTypeLU" />
+          <AssociationSet Name="FK_ProPricerBurdenRateMap_BurdenElementLU" Association="IESModel.FK_ProPricerBurdenRateMap_BurdenElementLU">
+            <End Role="BurdenElementLU" EntitySet="BurdenElementLUs" />
+            <End Role="ProPricerBurdenRateMap" EntitySet="ProPricerBurdenRateMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerBurdenRateMap_BurdenPoolLU" Association="IESModel.FK_ProPricerBurdenRateMap_BurdenPoolLU">
+            <End Role="BurdenPoolLU" EntitySet="BurdenPoolLUs" />
+            <End Role="ProPricerBurdenRateMap" EntitySet="ProPricerBurdenRateMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_CommBurdenPoolLU" Association="IESModel.FK_RateCode_CommBurdenPoolLU">
+            <End Role="BurdenPoolLU" EntitySet="BurdenPoolLUs" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_GovtBurdenPoolLU" Association="IESModel.FK_RateCode_GovtBurdenPoolLU">
+            <End Role="BurdenPoolLU" EntitySet="BurdenPoolLUs" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_CategoryLU" Association="IESModel.FK_RateCode_CategoryLU">
+            <End Role="CategoryLU" EntitySet="CategoryLUs" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_CobraCode1LU" Association="IESModel.FK_RateCode_CobraCode1LU">
+            <End Role="CobraCode1LU" EntitySet="CobraCode1LU" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerBurdenRateMap_RateCode" Association="IESModel.FK_ProPricerBurdenRateMap_RateCode">
+            <End Role="RateCode" EntitySet="RateCodes" />
+            <End Role="ProPricerBurdenRateMap" EntitySet="ProPricerBurdenRateMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerRateCodeXref_RateCode" Association="IESModel.FK_ProPricerRateCodeXref_RateCode">
+            <End Role="RateCode" EntitySet="RateCodes" />
+            <End Role="ProPricerRateCodeXref" EntitySet="ProPricerRateCodeXrefs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProPricerRateCodeXref_RateCodeExtensionLU" Association="IESModel.FK_ProPricerRateCodeXref_RateCodeExtensionLU">
+            <End Role="RateCodeExtensionLU" EntitySet="RateCodeExtensionLUs" />
+            <End Role="ProPricerRateCodeXref" EntitySet="ProPricerRateCodeXrefs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_RateCode" Association="IESModel.FK_RateCode_RateCode">
+            <End Role="RateCode" EntitySet="RateCodes" />
+            <End Role="RateCode1" EntitySet="RateCodes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_RateTypeLU" Association="IESModel.FK_RateCode_RateTypeLU">
+            <End Role="RateTypeLU" EntitySet="RateTypeLUs" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_ResourceTypeLU" Association="IESModel.FK_RateCode_ResourceTypeLU">
+            <End Role="ResourceTypeLU" EntitySet="ResourceTypeLUs" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_Section" Association="IESModel.FK_RateCode_Section">
+            <End Role="Section" EntitySet="Sections" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCodeYear_RateCode" Association="IESModel.FK_RateCodeYear_RateCode">
+            <End Role="RateCode" EntitySet="RateCodes" />
+            <End Role="RateCodeYear" EntitySet="RateCodeYears" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Section_Section" Association="IESModel.FK_Section_Section">
+            <End Role="Section" EntitySet="Sections" />
+            <End Role="Section1" EntitySet="Sections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Section_SectionContentTypeLU" Association="IESModel.FK_Section_SectionContentTypeLU">
+            <End Role="SectionContentTypeLU" EntitySet="SectionContentTypeLUs" />
+            <End Role="Section" EntitySet="Sections" />
+          </AssociationSet>
+          <FunctionImport Name="publishRevision" ReturnType="Collection(IESModel.publishRevision_Result)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PublishedBy" Mode="In" Type="String" />
+            <Parameter Name="History" Mode="In" Type="String" />
+            <Parameter Name="ReleaseNotes" Mode="In" Type="String" />
+            <Parameter Name="DatePublished" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="CobraFiscalYearLUs" EntityType="IESModel.CobraFiscalYearLU" />
+          <FunctionImport Name="upsertProPricerBurdenRateMap" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="BurdenPoolID" Mode="In" Type="Int32" />
+            <Parameter Name="BurdenElementID" Mode="In" Type="Int32" />
+            <Parameter Name="RateCodeID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="Revisions" EntityType="IESModel.Revision" />
+          <AssociationSet Name="FK_BurdenPoolLU_Revision" Association="IESModel.FK_BurdenPoolLU_Revision">
+            <End Role="Revision" EntitySet="Revisions" />
+            <End Role="BurdenPoolLU" EntitySet="BurdenPoolLUs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RateCode_Revision" Association="IESModel.FK_RateCode_Revision">
+            <End Role="Revision" EntitySet="Revisions" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Section_Revision" Association="IESModel.FK_Section_Revision">
+            <End Role="Revision" EntitySet="Revisions" />
+            <End Role="Section" EntitySet="Sections" />
+          </AssociationSet>
+          <FunctionImport Name="upsertUserLog">
+            <Parameter Name="NTID" Mode="In" Type="String" />
+            <Parameter Name="DisplayName" Mode="In" Type="String" />
+            <Parameter Name="Application" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="UserLogs" EntityType="IESModel.UserLog" />
+          <EntitySet Name="ResourceClassLUs" EntityType="IESModel.ResourceClassLU" />
+          <AssociationSet Name="FK_ProPricerRateCodeXref_ResourceClassLU" Association="IESModel.FK_ProPricerRateCodeXref_ResourceClassLU">
+            <End Role="ResourceClassLU" EntitySet="ResourceClassLUs" />
+            <End Role="ProPricerRateCodeXref" EntitySet="ProPricerRateCodeXrefs" />
+          </AssociationSet>
+          <EntitySet Name="FileAttachments" EntityType="IESModel.FileAttachment" />
+          <AssociationSet Name="FK_FileAttachment_SectionId" Association="IESModel.FK_FileAttachment_SectionId">
+            <End Role="Section" EntitySet="Sections" />
+            <End Role="FileAttachment" EntitySet="FileAttachments" />
+          </AssociationSet>
+          <FunctionImport Name="deleteFileAttachment">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertFileAttachment" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Link" Mode="In" Type="String" />
+            <Parameter Name="SectionId" Mode="In" Type="Int32" />
+            <Parameter Name="RevisionId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="remapSectionReferences">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="NewId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="deleteRDSBDocumentInformation">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="LastUpdateDT" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertRDSBDocumentInformation" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="LastUpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="PTMProposalID" Mode="In" Type="Int32" />
+            <Parameter Name="CreatedBy" Mode="In" Type="String" />
+            <Parameter Name="RDMRevisionID" Mode="In" Type="Int32" />
+            <Parameter Name="StartYear" Mode="In" Type="Int32" />
+            <Parameter Name="EndYear" Mode="In" Type="Int32" />
+            <Parameter Name="ParentSection" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="RDSBRateCodeXrefs" EntityType="IESModel.RDSBRateCodeXref" />
+          <EntitySet Name="RDSBSectionXrefs" EntityType="IESModel.RDSBSectionXref" />
+          <AssociationSet Name="FK_RDSBRateCodeXref_RateCode" Association="IESModel.FK_RDSBRateCodeXref_RateCode">
+            <End Role="RateCode" EntitySet="RateCodes" />
+            <End Role="RDSBRateCodeXref" EntitySet="RDSBRateCodeXrefs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RDSBSectionXref_RateCode" Association="IESModel.FK_RDSBSectionXref_RateCode">
+            <End Role="Section" EntitySet="Sections" />
+            <End Role="RDSBSectionXref" EntitySet="RDSBSectionXrefs" />
+          </AssociationSet>
+          <EntitySet Name="RDSBDocumentInformations" EntityType="IESModel.RDSBDocumentInformation" />
+          <AssociationSet Name="FK__RDSBDocum__RDMRe__308E3499" Association="IESModel.FK__RDSBDocum__RDMRe__308E3499">
+            <End Role="Revision" EntitySet="Revisions" />
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RDSBRateCodeXref_RDSBDocumentInformation" Association="IESModel.FK_RDSBRateCodeXref_RDSBDocumentInformation">
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformations" />
+            <End Role="RDSBRateCodeXref" EntitySet="RDSBRateCodeXrefs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RDSBSectionXref_RDSBDocumentInformation" Association="IESModel.FK_RDSBSectionXref_RDSBDocumentInformation">
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformations" />
+            <End Role="RDSBSectionXref" EntitySet="RDSBSectionXrefs" />
+          </AssociationSet>
+          <EntitySet Name="RateConfigs" EntityType="IESModel.RateConfig" />
+          <AssociationSet Name="FK_RateConfig_CategoryLU" Association="IESModel.FK_RateConfig_CategoryLU">
+            <End Role="CategoryLU" EntitySet="CategoryLUs" />
+            <End Role="RateConfig" EntitySet="RateConfigs" />
+          </AssociationSet>
+          <EntitySet Name="Banners" EntityType="IESModel.Banner" />
+          <FunctionImport Name="deleteBanner">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertBanner" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="SelectedApps" Mode="In" Type="String" />
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="HoursToShow" Mode="In" Type="Int32" />
+            <Parameter Name="BannerText" Mode="In" Type="String" />
+            <Parameter Name="TurnOffTicker" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <EntitySet Name="RateCodeReplications" EntityType="IESModel.RateCodeReplication" />
+          <FunctionImport Name="deleteReplication">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertReplication" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="From" Mode="In" Type="String" />
+            <Parameter Name="To" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="verifyRateCodeReplication" ReturnType="Collection(IESModel.verifyRateCodeReplication_Result)">
+          <Parameter Name="RevisionId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="OfflineApplications" EntityType="IESModel.OfflineApplication" />
+          <FunctionImport Name="updateOfflineApplication">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="IsOffline" Mode="In" Type="Boolean" />
+            <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="BoeDatabaseVersions" EntityType="IESModel.BoeDatabaseVersion" />
+          <EntitySet Name="DisclosureTypeLUs" EntityType="IESModel.DisclosureTypeLU" />
+          <EntitySet Name="ELMAH_Error" EntityType="IESModel.ELMAH_Error" />
+          <AssociationSet Name="FK_RateCode_DisclosureTypeLU" Association="IESModel.FK_RateCode_DisclosureTypeLU">
+            <End Role="DisclosureTypeLU" EntitySet="DisclosureTypeLUs" />
+            <End Role="RateCode" EntitySet="RateCodes" />
+          </AssociationSet>
+          <FunctionImport Name="deleteProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImport Name="deleteRateCodeviaTableParameter" />
+          <FunctionImport Name="ELMAH_GetErrorsXml" ReturnType="Collection(String)">
+            <Parameter Name="Application" Mode="In" Type="String" />
+            <Parameter Name="PageIndex" Mode="In" Type="Int32" />
+            <Parameter Name="PageSize" Mode="In" Type="Int32" />
+            <Parameter Name="TotalCount" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ELMAH_GetErrorXml" ReturnType="Collection(String)">
+            <Parameter Name="Application" Mode="In" Type="String" />
+            <Parameter Name="ErrorId" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="ELMAH_LogError">
+            <Parameter Name="ErrorId" Mode="In" Type="Guid" />
+            <Parameter Name="Application" Mode="In" Type="String" />
+            <Parameter Name="Host" Mode="In" Type="String" />
+            <Parameter Name="Type" Mode="In" Type="String" />
+            <Parameter Name="Source" Mode="In" Type="String" />
+            <Parameter Name="Message" Mode="In" Type="String" />
+            <Parameter Name="User" Mode="In" Type="String" />
+            <Parameter Name="AllXml" Mode="In" Type="String" />
+            <Parameter Name="StatusCode" Mode="In" Type="Int32" />
+            <Parameter Name="TimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="insertProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImport Name="insertRateCodeviaTableParameter" />
+          <FunctionImport Name="insertRateCodeYearviaTableParameter" />
+          <FunctionImport Name="insertRDSBRateCodeXrefviaTableParameter" />
+          <FunctionImport Name="insertRDSBSectionXrefviaTableParameter" />
+          <FunctionImport Name="updateCobraDetailviaTableParameter" />
+          <FunctionImport Name="UpdateDbVersion">
+            <Parameter Name="DbVersion" Mode="In" Type="String" />
+            <Parameter Name="AppVersion" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="updateProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImport Name="updateRateCodeviaTableParameter" />
+          <FunctionImport Name="updateRateCodeYearviaTableParameter" />
+        </EntityContainer>
+        <ComplexType Name="ExportCobraRates_Result">
+          <Property Type="String" Name="CobraRateSet" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="CobraCode1" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Description" Nullable="false" MaxLength="4000" />
+          <Property Type="DateTime" Name="Date" Nullable="false" />
+          <Property Type="Decimal" Name="Value" Nullable="false" Precision="18" Scale="6" />
+        </ComplexType>
+        <ComplexType Name="ExportProPricerBurdenRates_Result">
+          <Property Type="String" Name="BurdenPool" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="4000" />
+          <Property Type="String" Name="EffectiveDate" Nullable="false" MaxLength="1" />
+          <Property Type="String" Name="Date" Nullable="false" MaxLength="50" />
+          <Property Type="Decimal" Name="ESCAL" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Dev" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Prod" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_FBM" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_LVS" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Hunts" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Offsite" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Michoud" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Mich_MH" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Prg_Uni" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Pro_DIR" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Pro_MSC" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Pro_Serv" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_On_Serv" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_Off_Serv" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_PH4" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="OH_PH5" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="Fringe" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="Fringe_T2" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FRG_Serv_Corp" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FRG_Serv_LMOS" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="G_A" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="G_A_T2" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_Dev" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_Prod" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_FBM" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_LVS" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_Hunt" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_Ofst" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_Mich" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCM_Prg_Un" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_Proc" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_ProM" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCOM_G_A" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCM_T2_G_A" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCM_IWTA" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCM_PH2" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCM_PH3" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="FCCM_PH4" Nullable="true" Precision="18" Scale="6" />
+          <Property Type="Decimal" Name="Fee_Prft" Nullable="true" Precision="18" Scale="6" />
+        </ComplexType>
+        <ComplexType Name="ExportProPricerDirectRates_Result">
+          <Property Type="String" Name="ResourceType" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="StartDate" Nullable="false" MaxLength="53" />
+          <Property Type="String" Name="EndDate" Nullable="false" MaxLength="53" />
+          <Property Type="String" Name="Resource" Nullable="true" MaxLength="8000" />
+          <Property Type="String" Name="Description" Nullable="false" MaxLength="255" />
+          <Property Type="String" Name="ResourceClass" Nullable="false" MaxLength="1" />
+          <Property Type="String" Name="GovernmentBurdenPool" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="CommercialBurdenPool" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="RateType" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="EffectiveDate" Nullable="false" MaxLength="1" />
+          <Property Type="Decimal" Name="BaseRate" Nullable="false" Precision="18" Scale="6" />
+          <Property Type="Int32" Name="Step" Nullable="false" />
+          <Property Type="Int32" Name="Factor" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetPricingCodeMappings_Result">
+          <Property Type="String" Name="BusinessArea" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="ActivityType" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="ActTypeDescription" Nullable="true" MaxLength="4000" />
+          <Property Type="String" Name="C1_ATLO" Nullable="false" MaxLength="1" />
+          <Property Type="String" Name="C2_ENG" Nullable="false" MaxLength="1" />
+          <Property Type="String" Name="C3_LABS" Nullable="false" MaxLength="1" />
+          <Property Type="String" Name="C4_OTHER" Nullable="false" MaxLength="1" />
+          <Property Type="String" Name="C5_QUAL" Nullable="false" MaxLength="1" />
+          <Property Type="String" Name="C6_TOUCH" Nullable="false" MaxLength="1" />
+        </ComplexType>
+        <ComplexType Name="GetProPricerBurdenRateCodes_Result">
+          <Property Type="String" Name="BurdenPool" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="4000" />
+          <Property Type="String" Name="ESCAL" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Dev" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Prod" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_FBM" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_LVS" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Hunts" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Offsite" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Michoud" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Mich_MH" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Prg_Uni" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Pro_DIR" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Pro_MSC" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Pro_Serv" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_On_Serv" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_Off_Serv" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_PH4" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="OH_PH5" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Fringe" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Fringe_T2" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FRG_Serv_Corp" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FRG_Serv_LMOS" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="G_A" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="G_A_T2" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_Dev" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_Prod" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_FBM" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_LVS" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_Hunt" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_Ofst" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_Mich" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCM_Prg_Un" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_Proc" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_ProM" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCOM_G_A" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCM_T2_G_A" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCM_IWTA" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCM_PH2" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCM_PH3" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FCCM_PH4" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Fee_Prft" Nullable="true" MaxLength="50" />
+        </ComplexType>
+        <ComplexType Name="copyRevision_Result">
+          <Property Type="Int32" Name="Id" Nullable="true" />
+          <Property Type="String" Name="Revision" Nullable="true" MaxLength="1000" />
+        </ComplexType>
+        <EntityType Name="BurdenPoolLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="BurdenPool" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <Property Name="IsGaT2ApplicableForMissionSolutions" Type="Boolean" Nullable="false" />
+          <Property Name="RevisionID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ProPricerBurdenRateMaps" Relationship="IESModel.FK_ProPricerBurdenRateMap_BurdenPoolLU" FromRole="BurdenPoolLU" ToRole="ProPricerBurdenRateMap" />
+          <NavigationProperty Name="RateCodes" Relationship="IESModel.FK_RateCode_CommBurdenPoolLU" FromRole="BurdenPoolLU" ToRole="RateCode" />
+          <NavigationProperty Name="RateCodes1" Relationship="IESModel.FK_RateCode_GovtBurdenPoolLU" FromRole="BurdenPoolLU" ToRole="RateCode" />
+          <NavigationProperty Name="Revision" Relationship="IESModel.FK_BurdenPoolLU_Revision" FromRole="BurdenPoolLU" ToRole="Revision" />
+          <Property Name="IsCommercial" Type="Boolean" Nullable="false" />
+          <Property Name="ExcludeFCCOM" Type="Boolean" Nullable="false" />
+          <Property Name="IncludeGaT2InBurdAndCommBurdTables" Type="Boolean" Nullable="false" />
+          </EntityType>
+        <EntityType Name="BurdenElementLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BurdenElement" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <Property Name="DisplayOrder" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ProPricerBurdenRateMaps" Relationship="IESModel.FK_ProPricerBurdenRateMap_BurdenElementLU" FromRole="BurdenElementLU" ToRole="ProPricerBurdenRateMap" />
+        </EntityType>
+        <EntityType Name="CategoryLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RateCodes" Relationship="IESModel.FK_RateCode_CategoryLU" FromRole="CategoryLU" ToRole="RateCode" />
+          <NavigationProperty Name="RateConfigs" Relationship="IESModel.FK_RateConfig_CategoryLU" FromRole="CategoryLU" ToRole="RateConfig" />
+        </EntityType>
+        <EntityType Name="CobraCode1LU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RateCodes" Relationship="IESModel.FK_RateCode_CobraCode1LU" FromRole="CobraCode1LU" ToRole="RateCode" />
+        </EntityType>
+        <EntityType Name="ProPricerBurdenRateMap">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="BurdenPoolID" Type="Int32" Nullable="false" />
+          <Property Name="BurdenElementID" Type="Int32" Nullable="false" />
+          <Property Name="RateCodeID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BurdenElementLU" Relationship="IESModel.FK_ProPricerBurdenRateMap_BurdenElementLU" FromRole="ProPricerBurdenRateMap" ToRole="BurdenElementLU" />
+          <NavigationProperty Name="BurdenPoolLU" Relationship="IESModel.FK_ProPricerBurdenRateMap_BurdenPoolLU" FromRole="ProPricerBurdenRateMap" ToRole="BurdenPoolLU" />
+          <NavigationProperty Name="RateCode" Relationship="IESModel.FK_ProPricerBurdenRateMap_RateCode" FromRole="ProPricerBurdenRateMap" ToRole="RateCode" />
+        </EntityType>
+        <EntityType Name="ProPricerRateCodeXref">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="RateCodeID" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="RateCodeExtensionID" Type="Int32" />
+          <NavigationProperty Name="RateCode" Relationship="IESModel.FK_ProPricerRateCodeXref_RateCode" FromRole="ProPricerRateCodeXref" ToRole="RateCode" />
+          <NavigationProperty Name="RateCodeExtensionLU" Relationship="IESModel.FK_ProPricerRateCodeXref_RateCodeExtensionLU" FromRole="ProPricerRateCodeXref" ToRole="RateCodeExtensionLU" />
+          <Property Name="ResourceClassID" Type="Int32" />
+          <NavigationProperty Name="ResourceClassLU" Relationship="IESModel.FK_ProPricerRateCodeXref_ResourceClassLU" FromRole="ProPricerRateCodeXref" ToRole="ResourceClassLU" />
+        </EntityType>
+        <EntityType Name="RateCode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="RevisionID" Type="Int32" Nullable="false" />
+          <Property Name="CategoryID" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <Property Name="SectionID" Type="Int32" />
+          <Property Name="RateCode1" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ResourceTypeID" Type="Int32" />
+          <Property Name="GovernmentBurdenPoolID" Type="Int32" />
+          <Property Name="CommercialBurdenPoolID" Type="Int32" />
+          <Property Name="RateTypeID" Type="Int32" />
+          <Property Name="CobraRateSet" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CobraCode1ID" Type="Int32" />
+          <NavigationProperty Name="CommercialBurdenPoolLU" Relationship="IESModel.FK_RateCode_CommBurdenPoolLU" FromRole="RateCode" ToRole="BurdenPoolLU" />
+          <NavigationProperty Name="GovernmentBurdenPoolLU" Relationship="IESModel.FK_RateCode_GovtBurdenPoolLU" FromRole="RateCode" ToRole="BurdenPoolLU" />
+          <NavigationProperty Name="CategoryLU" Relationship="IESModel.FK_RateCode_CategoryLU" FromRole="RateCode" ToRole="CategoryLU" />
+          <NavigationProperty Name="CobraCode1LU" Relationship="IESModel.FK_RateCode_CobraCode1LU" FromRole="RateCode" ToRole="CobraCode1LU" />
+          <NavigationProperty Name="ProPricerBurdenRateMaps" Relationship="IESModel.FK_ProPricerBurdenRateMap_RateCode" FromRole="RateCode" ToRole="ProPricerBurdenRateMap" />
+          <NavigationProperty Name="ProPricerRateCodeXrefs" Relationship="IESModel.FK_ProPricerRateCodeXref_RateCode" FromRole="RateCode" ToRole="ProPricerRateCodeXref" />
+          <NavigationProperty Name="RateCode11" Relationship="IESModel.FK_RateCode_RateCode" FromRole="RateCode" ToRole="RateCode1" />
+          <NavigationProperty Name="RateCode2" Relationship="IESModel.FK_RateCode_RateCode" FromRole="RateCode1" ToRole="RateCode" />
+          <NavigationProperty Name="RateTypeLU" Relationship="IESModel.FK_RateCode_RateTypeLU" FromRole="RateCode" ToRole="RateTypeLU" />
+          <NavigationProperty Name="ResourceTypeLU" Relationship="IESModel.FK_RateCode_ResourceTypeLU" FromRole="RateCode" ToRole="ResourceTypeLU" />
+          <NavigationProperty Name="Section" Relationship="IESModel.FK_RateCode_Section" FromRole="RateCode" ToRole="Section" />
+          <NavigationProperty Name="RateCodeYears" Relationship="IESModel.FK_RateCodeYear_RateCode" FromRole="RateCode" ToRole="RateCodeYear" />
+          <NavigationProperty Name="Revision" Relationship="IESModel.FK_RateCode_Revision" FromRole="RateCode" ToRole="Revision" />
+          <NavigationProperty Name="RDSBRateCodeXrefs" Relationship="IESModel.FK_RDSBRateCodeXref_RateCode" FromRole="RateCode" ToRole="RDSBRateCodeXref" />
+          <Property Name="DisclosureTypeId" Type="Int32" />
+          <NavigationProperty Name="DisclosureTypeLU" Relationship="IESModel.FK_RateCode_DisclosureTypeLU" FromRole="RateCode" ToRole="DisclosureTypeLU" />
+        </EntityType>
+        <EntityType Name="RateCodeExtensionLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RateCodeExtension" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProPricerRateCodeXrefs" Relationship="IESModel.FK_ProPricerRateCodeXref_RateCodeExtensionLU" FromRole="RateCodeExtensionLU" ToRole="ProPricerRateCodeXref" />
+        </EntityType>
+        <EntityType Name="RateCodeYear">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="RateCodeID" Type="Int32" Nullable="false" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+          <Property Name="Rate" Type="Decimal" Precision="18" Scale="6" />
+          <NavigationProperty Name="RateCode" Relationship="IESModel.FK_RateCodeYear_RateCode" FromRole="RateCodeYear" ToRole="RateCode" />
+        </EntityType>
+        <EntityType Name="RateTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RateCodes" Relationship="IESModel.FK_RateCode_RateTypeLU" FromRole="RateTypeLU" ToRole="RateCode" />
+        </EntityType>
+        <EntityType Name="ResourceTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RateCodes" Relationship="IESModel.FK_RateCode_ResourceTypeLU" FromRole="ResourceTypeLU" ToRole="RateCode" />
+        </EntityType>
+        <EntityType Name="Section">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="RevisionID" Type="Int32" Nullable="false" />
+          <Property Name="ParentID" Type="Int32" />
+          <Property Name="DisplayOrder" Type="Int32" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <Property Name="TextContent" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SectionContentTypeID" Type="Int32" Nullable="false" />
+          <Property Name="IsInternalSection" Type="Boolean" Nullable="false" />
+          <Property Name="DisplayRateCode" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="RateCodes" Relationship="IESModel.FK_RateCode_Section" FromRole="Section" ToRole="RateCode" />
+          <NavigationProperty Name="Section1" Relationship="IESModel.FK_Section_Section" FromRole="Section" ToRole="Section1" />
+          <NavigationProperty Name="Section2" Relationship="IESModel.FK_Section_Section" FromRole="Section1" ToRole="Section" />
+          <NavigationProperty Name="SectionContentTypeLU" Relationship="IESModel.FK_Section_SectionContentTypeLU" FromRole="Section" ToRole="SectionContentTypeLU" />
+          <NavigationProperty Name="Revision" Relationship="IESModel.FK_Section_Revision" FromRole="Section" ToRole="Revision" />
+          <Property Name="RevisionUniqueSectionId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="FileAttachments" Relationship="IESModel.FK_FileAttachment_SectionId" FromRole="Section" ToRole="FileAttachment" />
+          <NavigationProperty Name="RDSBSectionXrefs" Relationship="IESModel.FK_RDSBSectionXref_RateCode" FromRole="Section" ToRole="RDSBSectionXref" />
+          <Property Name="IsRdsbRequired" Type="Boolean" Nullable="false" />
+          <Property Name="SectionContainsCasbDisclosure" Type="Boolean" Nullable="false" />
+          <Property Name="SectionContainsNonCompliance" Type="Boolean" Nullable="false" />
+          <Property Name="Office" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Agency" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LMBA" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Street" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CityST" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Phone" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Other" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IncludeInCoversheet" Type="Boolean" />
+          <Property Name="IsDisclosureStatementAdequate" Type="Boolean" />
+          <Property Name="NonComplianceNotification" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="SectionContentTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Sections" Relationship="IESModel.FK_Section_SectionContentTypeLU" FromRole="SectionContentTypeLU" ToRole="Section" />
+        </EntityType>
+        <Association Name="FK_ProPricerBurdenRateMap_BurdenElementLU">
+          <End Type="IESModel.BurdenElementLU" Role="BurdenElementLU" Multiplicity="1" />
+          <End Type="IESModel.ProPricerBurdenRateMap" Role="ProPricerBurdenRateMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BurdenElementLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerBurdenRateMap">
+              <PropertyRef Name="BurdenElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerBurdenRateMap_BurdenPoolLU">
+          <End Type="IESModel.BurdenPoolLU" Role="BurdenPoolLU" Multiplicity="1" />
+          <End Type="IESModel.ProPricerBurdenRateMap" Role="ProPricerBurdenRateMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BurdenPoolLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerBurdenRateMap">
+              <PropertyRef Name="BurdenPoolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_CommBurdenPoolLU">
+          <End Type="IESModel.BurdenPoolLU" Role="BurdenPoolLU" Multiplicity="0..1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BurdenPoolLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="CommercialBurdenPoolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_GovtBurdenPoolLU">
+          <End Type="IESModel.BurdenPoolLU" Role="BurdenPoolLU" Multiplicity="0..1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BurdenPoolLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="GovernmentBurdenPoolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_CategoryLU">
+          <End Type="IESModel.CategoryLU" Role="CategoryLU" Multiplicity="1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CategoryLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_CobraCode1LU">
+          <End Type="IESModel.CobraCode1LU" Role="CobraCode1LU" Multiplicity="0..1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CobraCode1LU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="CobraCode1ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerBurdenRateMap_RateCode">
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="1" />
+          <End Type="IESModel.ProPricerBurdenRateMap" Role="ProPricerBurdenRateMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerBurdenRateMap">
+              <PropertyRef Name="RateCodeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerRateCodeXref_RateCode">
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="1" />
+          <End Type="IESModel.ProPricerRateCodeXref" Role="ProPricerRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerRateCodeXref">
+              <PropertyRef Name="RateCodeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProPricerRateCodeXref_RateCodeExtensionLU">
+          <End Type="IESModel.RateCodeExtensionLU" Role="RateCodeExtensionLU" Multiplicity="0..1" />
+          <End Type="IESModel.ProPricerRateCodeXref" Role="ProPricerRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCodeExtensionLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerRateCodeXref">
+              <PropertyRef Name="RateCodeExtensionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_RateCode">
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="1" />
+          <End Type="IESModel.RateCode" Role="RateCode1" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode1">
+              <PropertyRef Name="ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_RateTypeLU">
+          <End Type="IESModel.RateTypeLU" Role="RateTypeLU" Multiplicity="0..1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="RateTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_ResourceTypeLU">
+          <End Type="IESModel.ResourceTypeLU" Role="ResourceTypeLU" Multiplicity="0..1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ResourceTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="ResourceTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_Section">
+          <End Type="IESModel.Section" Role="Section" Multiplicity="0..1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Section">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="SectionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCodeYear_RateCode">
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="1" />
+          <End Type="IESModel.RateCodeYear" Role="RateCodeYear" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCodeYear">
+              <PropertyRef Name="RateCodeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Section_Section">
+          <End Type="IESModel.Section" Role="Section" Multiplicity="0..1" />
+          <End Type="IESModel.Section" Role="Section1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Section">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Section1">
+              <PropertyRef Name="ParentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Section_SectionContentTypeLU">
+          <End Type="IESModel.SectionContentTypeLU" Role="SectionContentTypeLU" Multiplicity="1" />
+          <End Type="IESModel.Section" Role="Section" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SectionContentTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Section">
+              <PropertyRef Name="SectionContentTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="publishRevision_Result">
+          <Property Type="Int32" Name="Id" Nullable="true" />
+          <Property Type="String" Name="Revision" Nullable="true" MaxLength="1000" />
+        </ComplexType>
+        <EntityType Name="CobraFiscalYearLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+          <Property Name="FiscalYearStartDate" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
+        <EntityType Name="Revision">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Revision1" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="History" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="DatePublished" Type="DateTime" Precision="7" />
+          <Property Name="PublishedBy" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="StartYear" Type="Int32" Nullable="false" />
+          <Property Name="EndYear" Type="Int32" Nullable="false" />
+          <Property Name="ReleaseNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="BurdenPoolLUs" Relationship="IESModel.FK_BurdenPoolLU_Revision" FromRole="Revision" ToRole="BurdenPoolLU" />
+          <NavigationProperty Name="RateCodes" Relationship="IESModel.FK_RateCode_Revision" FromRole="Revision" ToRole="RateCode" />
+          <NavigationProperty Name="Sections" Relationship="IESModel.FK_Section_Revision" FromRole="Revision" ToRole="Section" />
+          <NavigationProperty Name="RDSBDocumentInformations" Relationship="IESModel.FK__RDSBDocum__RDMRe__308E3499" FromRole="Revision" ToRole="RDSBDocumentInformation" />
+        </EntityType>
+        <Association Name="FK_BurdenPoolLU_Revision">
+          <End Type="IESModel.Revision" Role="Revision" Multiplicity="1" />
+          <End Type="IESModel.BurdenPoolLU" Role="BurdenPoolLU" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Revision">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="BurdenPoolLU">
+              <PropertyRef Name="RevisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RateCode_Revision">
+          <End Type="IESModel.Revision" Role="Revision" Multiplicity="1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Revision">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="RevisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Section_Revision">
+          <End Type="IESModel.Revision" Role="Revision" Multiplicity="1" />
+          <End Type="IESModel.Section" Role="Section" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Revision">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Section">
+              <PropertyRef Name="RevisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="UserLog">
+          <Key>
+            <PropertyRef Name="LogInUpdateDT" />
+            <PropertyRef Name="NTID" />
+            <PropertyRef Name="DisplayName" />
+          </Key>
+          <Property Name="LogInUpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="NTID" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="DisplayName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Application" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ResourceClassLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProPricerRateCodeXrefs" Relationship="IESModel.FK_ProPricerRateCodeXref_ResourceClassLU" FromRole="ResourceClassLU" ToRole="ProPricerRateCodeXref" />
+        </EntityType>
+        <Association Name="FK_ProPricerRateCodeXref_ResourceClassLU">
+          <End Type="IESModel.ResourceClassLU" Role="ResourceClassLU" Multiplicity="0..1" />
+          <End Type="IESModel.ProPricerRateCodeXref" Role="ProPricerRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ResourceClassLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProPricerRateCodeXref">
+              <PropertyRef Name="ResourceClassID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="FileAttachment">
+          <Key>
+            <PropertyRef Name="FileAttachmentId" />
+          </Key>
+          <Property Name="FileAttachmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Link" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="SectionId" Type="Int32" />
+          <Property Name="RevisionId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Section" Relationship="IESModel.FK_FileAttachment_SectionId" FromRole="FileAttachment" ToRole="Section" />
+        </EntityType>
+        <Association Name="FK_FileAttachment_SectionId">
+          <End Type="IESModel.Section" Role="Section" Multiplicity="0..1" />
+          <End Type="IESModel.FileAttachment" Role="FileAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Section">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="FileAttachment">
+              <PropertyRef Name="SectionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RDSBRateCodeXref">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="RateCodeID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RateCode" Relationship="IESModel.FK_RDSBRateCodeXref_RateCode" FromRole="RDSBRateCodeXref" ToRole="RateCode" />
+          <Property Name="RDSBDocumentInformationID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RDSBDocumentInformation" Relationship="IESModel.FK_RDSBRateCodeXref_RDSBDocumentInformation" FromRole="RDSBRateCodeXref" ToRole="RDSBDocumentInformation" />
+        </EntityType>
+        <EntityType Name="RDSBSectionXref">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="SectionID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Section" Relationship="IESModel.FK_RDSBSectionXref_RateCode" FromRole="RDSBSectionXref" ToRole="Section" />
+          <Property Name="RDSBDocumentInformationID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RDSBDocumentInformation" Relationship="IESModel.FK_RDSBSectionXref_RDSBDocumentInformation" FromRole="RDSBSectionXref" ToRole="RDSBDocumentInformation" />
+        </EntityType>
+        <Association Name="FK_RDSBRateCodeXref_RateCode">
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="1" />
+          <End Type="IESModel.RDSBRateCodeXref" Role="RDSBRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RateCode">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBRateCodeXref">
+              <PropertyRef Name="RateCodeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RDSBSectionXref_RateCode">
+          <End Type="IESModel.Section" Role="Section" Multiplicity="1" />
+          <End Type="IESModel.RDSBSectionXref" Role="RDSBSectionXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Section">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBSectionXref">
+              <PropertyRef Name="SectionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RDSBDocumentInformation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PTMProposalID" Type="Int32" Nullable="false" />
+          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="LastUpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="RDMRevisionID" Type="Int32" Nullable="false" />
+          <Property Name="StartYear" Type="Int32" />
+          <Property Name="EndYear" Type="Int32" />
+          <NavigationProperty Name="Revision" Relationship="IESModel.FK__RDSBDocum__RDMRe__308E3499" FromRole="RDSBDocumentInformation" ToRole="Revision" />
+          <NavigationProperty Name="RDSBRateCodeXrefs" Relationship="IESModel.FK_RDSBRateCodeXref_RDSBDocumentInformation" FromRole="RDSBDocumentInformation" ToRole="RDSBRateCodeXref" />
+          <NavigationProperty Name="RDSBSectionXrefs" Relationship="IESModel.FK_RDSBSectionXref_RDSBDocumentInformation" FromRole="RDSBDocumentInformation" ToRole="RDSBSectionXref" />
+          <Property Name="ParentSection" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK__RDSBDocum__RDMRe__308E3499">
+          <End Type="IESModel.Revision" Role="Revision" Multiplicity="1" />
+          <End Type="IESModel.RDSBDocumentInformation" Role="RDSBDocumentInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Revision">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBDocumentInformation">
+              <PropertyRef Name="RDMRevisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RDSBRateCodeXref_RDSBDocumentInformation">
+          <End Type="IESModel.RDSBDocumentInformation" Role="RDSBDocumentInformation" Multiplicity="1" />
+          <End Type="IESModel.RDSBRateCodeXref" Role="RDSBRateCodeXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RDSBDocumentInformation">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBRateCodeXref">
+              <PropertyRef Name="RDSBDocumentInformationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RDSBSectionXref_RDSBDocumentInformation">
+          <End Type="IESModel.RDSBDocumentInformation" Role="RDSBDocumentInformation" Multiplicity="1" />
+          <End Type="IESModel.RDSBSectionXref" Role="RDSBSectionXref" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RDSBDocumentInformation">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBSectionXref">
+              <PropertyRef Name="RDSBDocumentInformationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RateConfig">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RateTarget" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CategoryID" Type="Int32" />
+          <Property Name="Prefix" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Suffix" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Precision" Type="Int32" Nullable="false" />
+          <Property Name="Multiplier" Type="Int32" />
+          <NavigationProperty Name="CategoryLU" Relationship="IESModel.FK_RateConfig_CategoryLU" FromRole="RateConfig" ToRole="CategoryLU" />
+        </EntityType>
+        <Association Name="FK_RateConfig_CategoryLU">
+          <End Type="IESModel.CategoryLU" Role="CategoryLU" Multiplicity="0..1" />
+          <End Type="IESModel.RateConfig" Role="RateConfig" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CategoryLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RateConfig">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Banner">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="SelectedApps" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="HoursToShow" Type="Int32" Nullable="false" />
+          <Property Name="BannerText" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="TurnOffTicker" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="RateCodeReplication">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="From" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="To" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        <ComplexType Name="verifyRateCodeReplication_Result">
+          <Property Type="String" Name="RateCode" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="ColumnName" Nullable="false" MaxLength="4" />
+        </ComplexType>
+        <EntityType Name="OfflineApplication">
+          <Key>
+            <PropertyRef Name="ApplicationName" />
+          </Key>
+          <Property Name="ApplicationName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="IsOffline" Type="Boolean" Nullable="false" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        <EntityType Name="BoeDatabaseVersion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DBVersion" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="AppVersion" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="DisclosureTypeLU">
+          <Key>
+            <PropertyRef Name="DisclosureTypeID" />
+          </Key>
+          <Property Name="DisclosureTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DisclosureType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RateCodes" Relationship="IESModel.FK_RateCode_DisclosureTypeLU" FromRole="DisclosureTypeLU" ToRole="RateCode" />
+        </EntityType>
+        <EntityType Name="ELMAH_Error">
+          <Key>
+            <PropertyRef Name="ErrorId" />
+          </Key>
+          <Property Name="ErrorId" Type="Guid" Nullable="false" />
+          <Property Name="Application" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="Host" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Source" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="Message" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="User" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="StatusCode" Type="Int32" Nullable="false" />
+          <Property Name="TimeUtc" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Sequence" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AllXml" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="FK_RateCode_DisclosureTypeLU">
+          <End Type="IESModel.DisclosureTypeLU" Role="DisclosureTypeLU" Multiplicity="0..1" />
+          <End Type="IESModel.RateCode" Role="RateCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DisclosureTypeLU">
+              <PropertyRef Name="DisclosureTypeID" />
+            </Principal>
+            <Dependent Role="RateCode">
+              <PropertyRef Name="DisclosureTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="IESModelStoreContainer" CdmEntityContainer="IESEntities">
+          <FunctionImportMapping FunctionImportName="deleteCobraFiscalYear" FunctionName="IESModel.Store.deleteCobraFiscalYear" />
+          <FunctionImportMapping FunctionImportName="deleteProPricerBurdenRateMap" FunctionName="IESModel.Store.deleteProPricerBurdenRateMap" />
+          <FunctionImportMapping FunctionImportName="deleteProPricerRateCodeXref" FunctionName="IESModel.Store.deleteProPricerRateCodeXref" />
+          <FunctionImportMapping FunctionImportName="deleteRevision" FunctionName="IESModel.Store.deleteRevision" />
+          <FunctionImportMapping FunctionImportName="ExportCobraRates" FunctionName="IESModel.Store.ExportCobraRates">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="IESModel.ExportCobraRates_Result">
+                <ScalarProperty Name="CobraRateSet" ColumnName="CobraRateSet" />
+                <ScalarProperty Name="CobraCode1" ColumnName="CobraCode1" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="ExportProPricerBurdenRates" FunctionName="IESModel.Store.ExportProPricerBurdenRates">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="IESModel.ExportProPricerBurdenRates_Result">
+                <ScalarProperty Name="BurdenPool" ColumnName="BurdenPool" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="ESCAL" ColumnName="ESCAL" />
+                <ScalarProperty Name="OH_Dev" ColumnName="OH Dev" />
+                <ScalarProperty Name="OH_Prod" ColumnName="OH Prod" />
+                <ScalarProperty Name="OH_FBM" ColumnName="OH FBM" />
+                <ScalarProperty Name="OH_LVS" ColumnName="OH LVS" />
+                <ScalarProperty Name="OH_Hunts" ColumnName="OH Hunts" />
+                <ScalarProperty Name="OH_Offsite" ColumnName="OH Offsite" />
+                <ScalarProperty Name="OH_Michoud" ColumnName="OH Michoud" />
+                <ScalarProperty Name="OH_Mich_MH" ColumnName="OH Mich MH" />
+                <ScalarProperty Name="OH_Prg_Uni" ColumnName="OH Prg Uni" />
+                <ScalarProperty Name="OH_Pro_DIR" ColumnName="OH Pro DIR" />
+                <ScalarProperty Name="OH_Pro_MSC" ColumnName="OH Pro MSC" />
+                <ScalarProperty Name="OH_Pro_Serv" ColumnName="OH Pro Serv" />
+                <ScalarProperty Name="OH_On_Serv" ColumnName="OH On Serv" />
+                <ScalarProperty Name="OH_Off_Serv" ColumnName="OH Off Serv" />
+                <ScalarProperty Name="OH_PH4" ColumnName="OH PH4" />
+                <ScalarProperty Name="OH_PH5" ColumnName="OH PH5" />
+                <ScalarProperty Name="Fringe" ColumnName="Fringe" />
+                <ScalarProperty Name="Fringe_T2" ColumnName="Fringe T2" />
+                <ScalarProperty Name="FRG_Serv_Corp" ColumnName="FRG Serv Corp" />
+                <ScalarProperty Name="FRG_Serv_LMOS" ColumnName="FRG Serv LMOS" />
+                <ScalarProperty Name="G_A" ColumnName="G&amp;A" />
+                <ScalarProperty Name="G_A_T2" ColumnName="G&amp;A T2" />
+                <ScalarProperty Name="FCCOM_Dev" ColumnName="FCCOM Dev" />
+                <ScalarProperty Name="FCCOM_Prod" ColumnName="FCCOM Prod" />
+                <ScalarProperty Name="FCCOM_FBM" ColumnName="FCCOM FBM" />
+                <ScalarProperty Name="FCCOM_LVS" ColumnName="FCCOM LVS" />
+                <ScalarProperty Name="FCCOM_Hunt" ColumnName="FCCOM Hunt" />
+                <ScalarProperty Name="FCCOM_Ofst" ColumnName="FCCOM Ofst" />
+                <ScalarProperty Name="FCCOM_Mich" ColumnName="FCCOM Mich" />
+                <ScalarProperty Name="FCM_Prg_Un" ColumnName="FCM Prg Un" />
+                <ScalarProperty Name="FCCOM_Proc" ColumnName="FCCOM Proc" />
+                <ScalarProperty Name="FCCOM_ProM" ColumnName="FCCOM ProM" />
+                <ScalarProperty Name="FCCOM_G_A" ColumnName="FCCOM G&amp;A" />
+                <ScalarProperty Name="FCM_T2_G_A" ColumnName="FCM T2 G&amp;A" />
+                <ScalarProperty Name="FCCM_IWTA" ColumnName="FCCM IWTA" />
+                <ScalarProperty Name="FCCM_PH2" ColumnName="FCCM PH2" />
+                <ScalarProperty Name="FCCM_PH3" ColumnName="FCCM PH3" />
+                <ScalarProperty Name="FCCM_PH4" ColumnName="FCCM PH4" />
+                <ScalarProperty Name="Fee_Prft" ColumnName="Fee/Prft" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="ExportProPricerDirectRates" FunctionName="IESModel.Store.ExportProPricerDirectRates">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="IESModel.ExportProPricerDirectRates_Result">
+                <ScalarProperty Name="ResourceType" ColumnName="ResourceType" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="Resource" ColumnName="Resource" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ResourceClass" ColumnName="ResourceClass" />
+                <ScalarProperty Name="GovernmentBurdenPool" ColumnName="GovernmentBurdenPool" />
+                <ScalarProperty Name="CommercialBurdenPool" ColumnName="CommercialBurdenPool" />
+                <ScalarProperty Name="RateType" ColumnName="RateType" />
+                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
+                <ScalarProperty Name="BaseRate" ColumnName="BaseRate" />
+                <ScalarProperty Name="Step" ColumnName="Step" />
+                <ScalarProperty Name="Factor" ColumnName="Factor" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetProPricerBurdenRateCodes" FunctionName="IESModel.Store.GetProPricerBurdenRateCodes">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="IESModel.GetProPricerBurdenRateCodes_Result">
+                <ScalarProperty Name="BurdenPool" ColumnName="BurdenPool" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ESCAL" ColumnName="ESCAL" />
+                <ScalarProperty Name="OH_Dev" ColumnName="OH Dev" />
+                <ScalarProperty Name="OH_Prod" ColumnName="OH Prod" />
+                <ScalarProperty Name="OH_FBM" ColumnName="OH FBM" />
+                <ScalarProperty Name="OH_LVS" ColumnName="OH LVS" />
+                <ScalarProperty Name="OH_Hunts" ColumnName="OH Hunts" />
+                <ScalarProperty Name="OH_Offsite" ColumnName="OH Offsite" />
+                <ScalarProperty Name="OH_Michoud" ColumnName="OH Michoud" />
+                <ScalarProperty Name="OH_Mich_MH" ColumnName="OH Mich MH" />
+                <ScalarProperty Name="OH_Prg_Uni" ColumnName="OH Prg Uni" />
+                <ScalarProperty Name="OH_Pro_DIR" ColumnName="OH Pro DIR" />
+                <ScalarProperty Name="OH_Pro_MSC" ColumnName="OH Pro MSC" />
+                <ScalarProperty Name="OH_Pro_Serv" ColumnName="OH Pro Serv" />
+                <ScalarProperty Name="OH_On_Serv" ColumnName="OH On Serv" />
+                <ScalarProperty Name="OH_Off_Serv" ColumnName="OH Off Serv" />
+                <ScalarProperty Name="OH_PH4" ColumnName="OH PH4" />
+                <ScalarProperty Name="OH_PH5" ColumnName="OH PH5" />
+                <ScalarProperty Name="Fringe" ColumnName="Fringe" />
+                <ScalarProperty Name="Fringe_T2" ColumnName="Fringe T2" />
+                <ScalarProperty Name="FRG_Serv_Corp" ColumnName="FRG Serv Corp" />
+                <ScalarProperty Name="FRG_Serv_LMOS" ColumnName="FRG Serv LMOS" />
+                <ScalarProperty Name="G_A" ColumnName="G&amp;A" />
+                <ScalarProperty Name="G_A_T2" ColumnName="G&amp;A T2" />
+                <ScalarProperty Name="FCCOM_Dev" ColumnName="FCCOM Dev" />
+                <ScalarProperty Name="FCCOM_Prod" ColumnName="FCCOM Prod" />
+                <ScalarProperty Name="FCCOM_FBM" ColumnName="FCCOM FBM" />
+                <ScalarProperty Name="FCCOM_LVS" ColumnName="FCCOM LVS" />
+                <ScalarProperty Name="FCCOM_Hunt" ColumnName="FCCOM Hunt" />
+                <ScalarProperty Name="FCCOM_Ofst" ColumnName="FCCOM Ofst" />
+                <ScalarProperty Name="FCCOM_Mich" ColumnName="FCCOM Mich" />
+                <ScalarProperty Name="FCM_Prg_Un" ColumnName="FCM Prg Un" />
+                <ScalarProperty Name="FCCOM_Proc" ColumnName="FCCOM Proc" />
+                <ScalarProperty Name="FCCOM_ProM" ColumnName="FCCOM ProM" />
+                <ScalarProperty Name="FCCOM_G_A" ColumnName="FCCOM G&amp;A" />
+                <ScalarProperty Name="FCM_T2_G_A" ColumnName="FCM T2 G&amp;A" />
+                <ScalarProperty Name="FCCM_IWTA" ColumnName="FCCM IWTA" />
+                <ScalarProperty Name="FCCM_PH2" ColumnName="FCCM PH2" />
+                <ScalarProperty Name="FCCM_PH3" ColumnName="FCCM PH3" />
+                <ScalarProperty Name="FCCM_PH4" ColumnName="FCCM PH4" />
+                <ScalarProperty Name="Fee_Prft" ColumnName="Fee/Prft" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetRateCodeList" FunctionName="IESModel.Store.GetRateCodeList" />
+          <FunctionImportMapping FunctionImportName="upsertCobraFiscalYear" FunctionName="IESModel.Store.upsertCobraFiscalYear" />
+          <FunctionImportMapping FunctionImportName="upsertProPricerRateCodeXref" FunctionName="IESModel.Store.upsertProPricerRateCodeXref" />
+          <FunctionImportMapping FunctionImportName="upsertRevision" FunctionName="IESModel.Store.upsertRevision" />
+          <FunctionImportMapping FunctionImportName="deleteSection" FunctionName="IESModel.Store.deleteSection" />
+          <FunctionImportMapping FunctionImportName="upsertSection" FunctionName="IESModel.Store.upsertSection" />
+          <FunctionImportMapping FunctionImportName="copyRevision" FunctionName="IESModel.Store.copyRevision">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="IESModel.copyRevision_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Revision" ColumnName="Revision" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="BurdenPoolLUs">
+            <EntityTypeMapping TypeName="IESModel.BurdenPoolLU">
+              <MappingFragment StoreEntitySet="BurdenPoolLU">
+                <ScalarProperty Name="IncludeGaT2InBurdAndCommBurdTables" ColumnName="IncludeGaT2InBurdAndCommBurdTables" />
+                <ScalarProperty Name="ExcludeFCCOM" ColumnName="ExcludeFCCOM" />
+                <ScalarProperty Name="IsCommercial" ColumnName="IsCommercial" />
+                <ScalarProperty Name="RevisionID" ColumnName="RevisionID" />
+                <ScalarProperty Name="IsGaT2ApplicableForMissionSolutions" ColumnName="IsGaT2ApplicableForMissionSolutions" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="BurdenPool" ColumnName="BurdenPool" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteBurdenPoolLU" FunctionName="IESModel.Store.deleteBurdenPoolLU" />
+          <FunctionImportMapping FunctionImportName="upsertBurdenPoolLU" FunctionName="IESModel.Store.upsertBurdenPoolLU" />
+          <EntitySetMapping Name="BurdenElementLUs">
+            <EntityTypeMapping TypeName="IESModel.BurdenElementLU">
+              <MappingFragment StoreEntitySet="BurdenElementLU">
+                <ScalarProperty Name="DisplayOrder" ColumnName="DisplayOrder" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="BurdenElement" ColumnName="BurdenElement" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CategoryLUs">
+            <EntityTypeMapping TypeName="IESModel.CategoryLU">
+              <MappingFragment StoreEntitySet="CategoryLU">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CobraCode1LU">
+            <EntityTypeMapping TypeName="IESModel.CobraCode1LU">
+              <MappingFragment StoreEntitySet="CobraCode1LU">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProPricerBurdenRateMaps">
+            <EntityTypeMapping TypeName="IESModel.ProPricerBurdenRateMap">
+              <MappingFragment StoreEntitySet="ProPricerBurdenRateMap">
+                <ScalarProperty Name="RateCodeID" ColumnName="RateCodeID" />
+                <ScalarProperty Name="BurdenElementID" ColumnName="BurdenElementID" />
+                <ScalarProperty Name="BurdenPoolID" ColumnName="BurdenPoolID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProPricerRateCodeXrefs">
+            <EntityTypeMapping TypeName="IESModel.ProPricerRateCodeXref">
+              <MappingFragment StoreEntitySet="ProPricerRateCodeXref">
+                <ScalarProperty Name="ResourceClassID" ColumnName="ResourceClassID" />
+                <ScalarProperty Name="RateCodeExtensionID" ColumnName="RateCodeExtensionID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="RateCodeID" ColumnName="RateCodeID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RateCodes">
+            <EntityTypeMapping TypeName="IESModel.RateCode">
+              <MappingFragment StoreEntitySet="RateCode">
+                <ScalarProperty Name="DisclosureTypeId" ColumnName="DisclosureTypeId" />
+                <ScalarProperty Name="CobraCode1ID" ColumnName="CobraCode1ID" />
+                <ScalarProperty Name="CobraRateSet" ColumnName="CobraRateSet" />
+                <ScalarProperty Name="RateTypeID" ColumnName="RateTypeID" />
+                <ScalarProperty Name="CommercialBurdenPoolID" ColumnName="CommercialBurdenPoolID" />
+                <ScalarProperty Name="GovernmentBurdenPoolID" ColumnName="GovernmentBurdenPoolID" />
+                <ScalarProperty Name="ResourceTypeID" ColumnName="ResourceTypeID" />
+                <ScalarProperty Name="RateCode1" ColumnName="RateCode" />
+                <ScalarProperty Name="SectionID" ColumnName="SectionID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="RevisionID" ColumnName="RevisionID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RateCodeExtensionLUs">
+            <EntityTypeMapping TypeName="IESModel.RateCodeExtensionLU">
+              <MappingFragment StoreEntitySet="RateCodeExtensionLU">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="RateCodeExtension" ColumnName="RateCodeExtension" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RateCodeYears">
+            <EntityTypeMapping TypeName="IESModel.RateCodeYear">
+              <MappingFragment StoreEntitySet="RateCodeYear">
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="RateCodeID" ColumnName="RateCodeID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RateTypeLUs">
+            <EntityTypeMapping TypeName="IESModel.RateTypeLU">
+              <MappingFragment StoreEntitySet="RateTypeLU">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ResourceTypeLUs">
+            <EntityTypeMapping TypeName="IESModel.ResourceTypeLU">
+              <MappingFragment StoreEntitySet="ResourceTypeLU">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sections">
+            <EntityTypeMapping TypeName="IESModel.Section">
+              <MappingFragment StoreEntitySet="Section">
+                <ScalarProperty Name="NonComplianceNotification" ColumnName="NonComplianceNotification" />
+                <ScalarProperty Name="IsDisclosureStatementAdequate" ColumnName="IsDisclosureStatementAdequate" />
+                <ScalarProperty Name="IncludeInCoversheet" ColumnName="IncludeInCoversheet" />
+                <ScalarProperty Name="Other" ColumnName="Other" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="CityST" ColumnName="CityST" />
+                <ScalarProperty Name="Street" ColumnName="Street" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="LMBA" ColumnName="LMBA" />
+                <ScalarProperty Name="Agency" ColumnName="Agency" />
+                <ScalarProperty Name="Office" ColumnName="Office" />
+                <ScalarProperty Name="SectionContainsNonCompliance" ColumnName="SectionContainsNonCompliance" />
+                <ScalarProperty Name="SectionContainsCasbDisclosure" ColumnName="SectionContainsCasbDisclosure" />
+                <ScalarProperty Name="IsRdsbRequired" ColumnName="IsRdsbRequired" />
+                <ScalarProperty Name="RevisionUniqueSectionId" ColumnName="RevisionUniqueSectionId" />
+                <ScalarProperty Name="DisplayRateCode" ColumnName="DisplayRateCode" />
+                <ScalarProperty Name="IsInternalSection" ColumnName="IsInternalSection" />
+                <ScalarProperty Name="SectionContentTypeID" ColumnName="SectionContentTypeID" />
+                <ScalarProperty Name="TextContent" ColumnName="TextContent" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="DisplayOrder" ColumnName="DisplayOrder" />
+                <ScalarProperty Name="ParentID" ColumnName="ParentID" />
+                <ScalarProperty Name="RevisionID" ColumnName="RevisionID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SectionContentTypeLUs">
+            <EntityTypeMapping TypeName="IESModel.SectionContentTypeLU">
+              <MappingFragment StoreEntitySet="SectionContentTypeLU">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="publishRevision" FunctionName="IESModel.Store.publishRevision">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="IESModel.publishRevision_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Revision" ColumnName="Revision" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="CobraFiscalYearLUs">
+            <EntityTypeMapping TypeName="IESModel.CobraFiscalYearLU">
+              <MappingFragment StoreEntitySet="CobraFiscalYearLU">
+                <ScalarProperty Name="FiscalYearStartDate" ColumnName="FiscalYearStartDate" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="upsertProPricerBurdenRateMap" FunctionName="IESModel.Store.upsertProPricerBurdenRateMap" />
+          <EntitySetMapping Name="Revisions">
+            <EntityTypeMapping TypeName="IESModel.Revision">
+              <MappingFragment StoreEntitySet="Revision">
+                <ScalarProperty Name="ReleaseNotes" ColumnName="ReleaseNotes" />
+                <ScalarProperty Name="EndYear" ColumnName="EndYear" />
+                <ScalarProperty Name="StartYear" ColumnName="StartYear" />
+                <ScalarProperty Name="PublishedBy" ColumnName="PublishedBy" />
+                <ScalarProperty Name="DatePublished" ColumnName="DatePublished" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="History" ColumnName="History" />
+                <ScalarProperty Name="Revision1" ColumnName="Revision" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="upsertUserLog" FunctionName="IESModel.Store.upsertUserLog" />
+          <EntitySetMapping Name="UserLogs">
+            <EntityTypeMapping TypeName="IESModel.UserLog">
+              <MappingFragment StoreEntitySet="UserLog">
+                <ScalarProperty Name="Application" ColumnName="Application" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="NTID" ColumnName="NTID" />
+                <ScalarProperty Name="LogInUpdateDT" ColumnName="LogInUpdateDT" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ResourceClassLUs">
+            <EntityTypeMapping TypeName="IESModel.ResourceClassLU">
+              <MappingFragment StoreEntitySet="ResourceClassLU">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FileAttachments">
+            <EntityTypeMapping TypeName="IESModel.FileAttachment">
+              <MappingFragment StoreEntitySet="FileAttachment">
+                <ScalarProperty Name="RevisionId" ColumnName="RevisionId" />
+                <ScalarProperty Name="SectionId" ColumnName="SectionId" />
+                <ScalarProperty Name="Link" ColumnName="Link" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="FileAttachmentId" ColumnName="FileAttachmentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteFileAttachment" FunctionName="IESModel.Store.deleteFileAttachment" />
+          <FunctionImportMapping FunctionImportName="upsertFileAttachment" FunctionName="IESModel.Store.upsertFileAttachment" />
+          <FunctionImportMapping FunctionImportName="remapSectionReferences" FunctionName="IESModel.Store.remapSectionReferences" />
+          <FunctionImportMapping FunctionImportName="deleteRDSBDocumentInformation" FunctionName="IESModel.Store.deleteRDSBDocumentInformation" />
+          <FunctionImportMapping FunctionImportName="upsertRDSBDocumentInformation" FunctionName="IESModel.Store.upsertRDSBDocumentInformation" />
+          <EntitySetMapping Name="RDSBRateCodeXrefs">
+            <EntityTypeMapping TypeName="IESModel.RDSBRateCodeXref">
+              <MappingFragment StoreEntitySet="RDSBRateCodeXref">
+                <ScalarProperty Name="RDSBDocumentInformationID" ColumnName="RDSBDocumentInformationID" />
+                <ScalarProperty Name="RateCodeID" ColumnName="RateCodeID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RDSBSectionXrefs">
+            <EntityTypeMapping TypeName="IESModel.RDSBSectionXref">
+              <MappingFragment StoreEntitySet="RDSBSectionXref">
+                <ScalarProperty Name="RDSBDocumentInformationID" ColumnName="RDSBDocumentInformationID" />
+                <ScalarProperty Name="SectionID" ColumnName="SectionID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RDSBDocumentInformations">
+            <EntityTypeMapping TypeName="IESModel.RDSBDocumentInformation">
+              <MappingFragment StoreEntitySet="RDSBDocumentInformation">
+                <ScalarProperty Name="ParentSection" ColumnName="ParentSection" />
+                <ScalarProperty Name="EndYear" ColumnName="EndYear" />
+                <ScalarProperty Name="StartYear" ColumnName="StartYear" />
+                <ScalarProperty Name="RDMRevisionID" ColumnName="RDMRevisionID" />
+                <ScalarProperty Name="LastUpdateDT" ColumnName="LastUpdateDT" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="PTMProposalID" ColumnName="PTMProposalID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RateConfigs">
+            <EntityTypeMapping TypeName="IESModel.RateConfig">
+              <MappingFragment StoreEntitySet="RateConfig">
+                <ScalarProperty Name="Multiplier" ColumnName="Multiplier" />
+                <ScalarProperty Name="Precision" ColumnName="Precision" />
+                <ScalarProperty Name="Suffix" ColumnName="Suffix" />
+                <ScalarProperty Name="Prefix" ColumnName="Prefix" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="RateTarget" ColumnName="RateTarget" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Banners">
+            <EntityTypeMapping TypeName="IESModel.Banner">
+              <MappingFragment StoreEntitySet="Banner">
+                <ScalarProperty Name="TurnOffTicker" ColumnName="TurnOffTicker" />
+                <ScalarProperty Name="BannerText" ColumnName="BannerText" />
+                <ScalarProperty Name="HoursToShow" ColumnName="HoursToShow" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="SelectedApps" ColumnName="SelectedApps" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteBanner" FunctionName="IESModel.Store.deleteBanner" />
+          <FunctionImportMapping FunctionImportName="upsertBanner" FunctionName="IESModel.Store.upsertBanner" />
+          <EntitySetMapping Name="RateCodeReplications">
+            <EntityTypeMapping TypeName="IESModel.RateCodeReplication">
+              <MappingFragment StoreEntitySet="RateCodeReplication">
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="To" ColumnName="To" />
+                <ScalarProperty Name="From" ColumnName="From" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteReplication" FunctionName="IESModel.Store.deleteReplication" />
+          <FunctionImportMapping FunctionImportName="upsertReplication" FunctionName="IESModel.Store.upsertReplication" />
+          <FunctionImportMapping FunctionImportName="verifyRateCodeReplication" FunctionName="IESModel.Store.verifyRateCodeReplication">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="IESModel.verifyRateCodeReplication_Result">
+                <ScalarProperty Name="RateCode" ColumnName="RateCode" />
+                <ScalarProperty Name="ColumnName" ColumnName="ColumnName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="OfflineApplications">
+            <EntityTypeMapping TypeName="IESModel.OfflineApplication">
+              <MappingFragment StoreEntitySet="OfflineApplication">
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="IsOffline" ColumnName="IsOffline" />
+                <ScalarProperty Name="ApplicationName" ColumnName="ApplicationName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="updateOfflineApplication" FunctionName="IESModel.Store.updateOfflineApplication" />
+          <EntitySetMapping Name="BoeDatabaseVersions">
+            <EntityTypeMapping TypeName="IESModel.BoeDatabaseVersion">
+              <MappingFragment StoreEntitySet="BoeDatabaseVersion">
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="AppVersion" ColumnName="AppVersion" />
+                <ScalarProperty Name="DBVersion" ColumnName="DBVersion" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DisclosureTypeLUs">
+            <EntityTypeMapping TypeName="IESModel.DisclosureTypeLU">
+              <MappingFragment StoreEntitySet="DisclosureTypeLU">
+                <ScalarProperty Name="DisclosureType" ColumnName="DisclosureType" />
+                <ScalarProperty Name="DisclosureTypeID" ColumnName="DisclosureTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ELMAH_Error">
+            <EntityTypeMapping TypeName="IESModel.ELMAH_Error">
+              <MappingFragment StoreEntitySet="ELMAH_Error">
+                <ScalarProperty Name="AllXml" ColumnName="AllXml" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="TimeUtc" ColumnName="TimeUtc" />
+                <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+                <ScalarProperty Name="User" ColumnName="User" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="Source" ColumnName="Source" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Host" ColumnName="Host" />
+                <ScalarProperty Name="Application" ColumnName="Application" />
+                <ScalarProperty Name="ErrorId" ColumnName="ErrorId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteProPricerRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.deleteProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="deleteRateCodeviaTableParameter" FunctionName="IESModel.Store.deleteRateCodeviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="ELMAH_GetErrorsXml" FunctionName="IESModel.Store.ELMAH_GetErrorsXml" />
+          <FunctionImportMapping FunctionImportName="ELMAH_GetErrorXml" FunctionName="IESModel.Store.ELMAH_GetErrorXml" />
+          <FunctionImportMapping FunctionImportName="ELMAH_LogError" FunctionName="IESModel.Store.ELMAH_LogError" />
+          <FunctionImportMapping FunctionImportName="insertProPricerRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.insertProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="insertRateCodeviaTableParameter" FunctionName="IESModel.Store.insertRateCodeviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="insertRateCodeYearviaTableParameter" FunctionName="IESModel.Store.insertRateCodeYearviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="insertRDSBRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.insertRDSBRateCodeXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="insertRDSBSectionXrefviaTableParameter" FunctionName="IESModel.Store.insertRDSBSectionXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="updateCobraDetailviaTableParameter" FunctionName="IESModel.Store.updateCobraDetailviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="UpdateDbVersion" FunctionName="IESModel.Store.UpdateDbVersion" />
+          <FunctionImportMapping FunctionImportName="updateProPricerRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.updateProPricerRateCodeXrefviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="updateRateCodeviaTableParameter" FunctionName="IESModel.Store.updateRateCodeviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="updateRateCodeYearviaTableParameter" FunctionName="IESModel.Store.updateRateCodeYearviaTableParameter" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
