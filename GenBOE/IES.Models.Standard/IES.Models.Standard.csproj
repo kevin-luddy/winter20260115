@@ -11,10 +11,52 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<EntityDeploy Include="..\IES.Models\IESEntityModel.edmx" Link="IESEntityModel.edmx">
+			<Generator>EntityModelCodeGenerator</Generator>
+			<LastGenOutput>..\IES.Models\IESEntityModel.Designer.cs</LastGenOutput>
+		</EntityDeploy>
+		<Compile Include="..\IES.Models\Banner.cs" Link="Banner.cs" />
+		<Compile Include="..\IES.Models\BoeDatabaseVersion.cs" Link="BoeDatabaseVersion.cs" />
+		<Compile Include="..\IES.Models\BurdenElementLU.cs" Link="BurdenElementLU.cs" />
+		<Compile Include="..\IES.Models\BurdenPoolLU.cs" Link="BurdenPoolLU.cs" />
+		<Compile Include="..\IES.Models\CategoryLU.cs" Link="CategoryLU.cs" />
+		<Compile Include="..\IES.Models\CobraCode1LU.cs" Link="CobraCode1LU.cs" />
+		<Compile Include="..\IES.Models\CobraFiscalYearLU.cs" Link="CobraFiscalYearLU.cs" />
+		<Compile Include="..\IES.Models\copyRevision_Result.cs" Link="copyRevision_Result.cs" />
+		<Compile Include="..\IES.Models\DisclosureTypeLU.cs" Link="DisclosureTypeLU.cs" />
+		<Compile Include="..\IES.Models\ELMAH_Error.cs" Link="ELMAH_Error.cs" />
+		<Compile Include="..\IES.Models\ExportCobraRates_Result.cs" Link="ExportCobraRates_Result.cs" />
+		<Compile Include="..\IES.Models\ExportProPricerBurdenRates_Result.cs" Link="ExportProPricerBurdenRates_Result.cs" />
+		<Compile Include="..\IES.Models\ExportProPricerDirectRates_Result.cs" Link="ExportProPricerDirectRates_Result.cs" />
+		<Compile Include="..\IES.Models\FileAttachment.cs" Link="FileAttachment.cs" />
+		<Compile Include="..\IES.Models\GetPricingCodeMappings_Result.cs" Link="GetPricingCodeMappings_Result.cs" />
+		<Compile Include="..\IES.Models\GetProPricerBurdenRateCodes_Result.cs" Link="GetProPricerBurdenRateCodes_Result.cs" />
+		<Compile Include="..\IES.Models\IESEntityModel.Context.cs" Link="IESEntityModel.Context.cs" />
+		<Compile Include="..\IES.Models\IESEntityModel.Designer.cs" Link="IESEntityModel.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>..\IES.Models\IESEntityModel.edmx</DependentUpon>
+		</Compile>
+		<Compile Include="..\IES.Models\OfflineApplication.cs" Link="OfflineApplication.cs" />
+		<Compile Include="..\IES.Models\ProPricerBurdenRateMap.cs" Link="ProPricerBurdenRateMap.cs" />
+		<Compile Include="..\IES.Models\ProPricerRateCodeXref.cs" Link="ProPricerRateCodeXref.cs" />
+		<Compile Include="..\IES.Models\publishRevision_Result.cs" Link="publishRevision_Result.cs" />
+		<Compile Include="..\IES.Models\RateCode.cs" Link="RateCode.cs" />
+		<Compile Include="..\IES.Models\RateCodeExtensionLU.cs" Link="RateCodeExtensionLU.cs" />
+		<Compile Include="..\IES.Models\RateCodeReplication.cs" Link="RateCodeReplication.cs" />
+		<Compile Include="..\IES.Models\RateCodeYear.cs" Link="RateCodeYear.cs" />
+		<Compile Include="..\IES.Models\RateConfig.cs" Link="RateConfig.cs" />
+		<Compile Include="..\IES.Models\RateTypeLU.cs" Link="RateTypeLU.cs" />
+		<Compile Include="..\IES.Models\RDSBDocumentInformation.cs" Link="RDSBDocumentInformation.cs" />
+		<Compile Include="..\IES.Models\RDSBRateCodeXref.cs" Link="RDSBRateCodeXref.cs" />
+		<Compile Include="..\IES.Models\RDSBSectionXref.cs" Link="RDSBSectionXref.cs" />
+		<Compile Include="..\IES.Models\ResourceClassLU.cs" Link="ResourceClassLU.cs" />
+		<Compile Include="..\IES.Models\ResourceTypeLU.cs" Link="ResourceTypeLU.cs" />
+		<Compile Include="..\IES.Models\Revision.cs" Link="Revision.cs" />
+		<Compile Include="..\IES.Models\Section.cs" Link="Section.cs" />
+		<Compile Include="..\IES.Models\SectionContentTypeLU.cs" Link="SectionContentTypeLU.cs" />
+		<Compile Include="..\IES.Models\UserLog.cs" Link="UserLog.cs" />
+		<Compile Include="..\IES.Models\verifyRateCodeReplication_Result.cs" Link="verifyRateCodeReplication_Result.cs" />
 		<Compile Include="Properties\AssemblyInfo.cs" />
 	</ItemGroup>
 

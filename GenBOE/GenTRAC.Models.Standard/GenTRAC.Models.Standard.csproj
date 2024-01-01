@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\GenTRAC.Models\Attachment.cs" Link="Attachment.cs" />
+    <Compile Include="..\GenTRAC.Models\AttachmentTypeLU.cs" Link="AttachmentTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\BoeDatabaseVersion.cs" Link="BoeDatabaseVersion.cs" />
+    <Compile Include="..\GenTRAC.Models\BOEToolLU.cs" Link="BOEToolLU.cs" />
+    <Compile Include="..\GenTRAC.Models\CageCode.cs" Link="CageCode.cs" />
+    <Compile Include="..\GenTRAC.Models\CannedResponsesPAR.cs" Link="CannedResponsesPAR.cs" />
+    <Compile Include="..\GenTRAC.Models\ChecklistTypeLU.cs" Link="ChecklistTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ContractActionTypeLU.cs" Link="ContractActionTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ContractTypeGroupLU.cs" Link="ContractTypeGroupLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ContractTypeLU.cs" Link="ContractTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\CostElementLU.cs" Link="CostElementLU.cs" />
+    <Compile Include="..\GenTRAC.Models\CostVolumeToolLU.cs" Link="CostVolumeToolLU.cs" />
+    <Compile Include="..\GenTRAC.Models\CreateDfarsChecklistResponseReport_Result.cs" Link="CreateDfarsChecklistResponseReport_Result.cs" />
+    <Compile Include="..\GenTRAC.Models\CreatePARChecklistReport_Result.cs" Link="CreatePARChecklistReport_Result.cs" />
+    <Compile Include="..\GenTRAC.Models\CreateProposalActivityReport_Result.cs" Link="CreateProposalActivityReport_Result.cs" />
+    <Compile Include="..\GenTRAC.Models\CreateProposalLogReportByLatestVersion_Result.cs" Link="CreateProposalLogReportByLatestVersion_Result.cs" />
+    <Compile Include="..\GenTRAC.Models\CustomerTypeLU.cs" Link="CustomerTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\CutOffDateUtilizationLU.cs" Link="CutOffDateUtilizationLU.cs" />
+    <Compile Include="..\GenTRAC.Models\DataMartEmployee.cs" Link="DataMartEmployee.cs" />
+    <Compile Include="..\GenTRAC.Models\ELMAH_Error.cs" Link="ELMAH_Error.cs" />
+    <Compile Include="..\GenTRAC.Models\EppDelegationAuthorityLU.cs" Link="EppDelegationAuthorityLU.cs" />
+    <Compile Include="..\GenTRAC.Models\genTracData.cs" Link="genTracData.cs" />
+    <Compile Include="..\GenTRAC.Models\genTRACUser.cs" Link="genTRACUser.cs" />
+    <Compile Include="..\GenTRAC.Models\getMyProposals_Result.cs" Link="getMyProposals_Result.cs" />
+    <Compile Include="..\GenTRAC.Models\GetProposalRevisionHistory_Result.cs" Link="GetProposalRevisionHistory_Result.cs" />
+    <Compile Include="..\GenTRAC.Models\ISGSRoleLU.cs" Link="ISGSRoleLU.cs" />
+    <Compile Include="..\GenTRAC.Models\LineOfBusinessLU.cs" Link="LineOfBusinessLU.cs" />
+    <Compile Include="..\GenTRAC.Models\PARChecklistContent.cs" Link="PARChecklistContent.cs" />
+    <Compile Include="..\GenTRAC.Models\PPRChecklistContent.cs" Link="PPRChecklistContent.cs" />
+    <Compile Include="..\GenTRAC.Models\PricingToolLU.cs" Link="PricingToolLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ProgramAreaLU.cs" Link="ProgramAreaLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ProgramProposalStatusLU.cs" Link="ProgramProposalStatusLU.cs" />
+    <Compile Include="..\GenTRAC.Models\Proposal.cs" Link="Proposal.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalAdequacyReview.cs" Link="ProposalAdequacyReview.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalChecklist.cs" Link="ProposalChecklist.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalChecklistComplete.cs" Link="ProposalChecklistComplete.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalChecklistTypeLU.cs" Link="ProposalChecklistTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalClassLU.cs" Link="ProposalClassLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalContractsData.cs" Link="ProposalContractsData.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalLocationLU.cs" Link="ProposalLocationLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalPARChecklistXREF.cs" Link="ProposalPARChecklistXREF.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalPPRChecklistXREF.cs" Link="ProposalPPRChecklistXREF.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalPricingReview.cs" Link="ProposalPricingReview.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalsAttachment.cs" Link="ProposalsAttachment.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalStatusLU.cs" Link="ProposalStatusLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalTrackingGenerator.cs" Link="ProposalTrackingGenerator.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalTypeLU.cs" Link="ProposalTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ProposalUserRole.cs" Link="ProposalUserRole.cs" />
+    <Compile Include="..\GenTRAC.Models\PTMEntityModel.Context.cs" Link="PTMEntityModel.Context.cs" />
+    <Compile Include="..\GenTRAC.Models\PTMEntityModel.cs" Link="PTMEntityModel.cs" />
+    <Compile Include="..\GenTRAC.Models\PTMEntityModel.Designer.cs" Link="PTMEntityModel.Designer.cs" />
+    <Compile Include="..\GenTRAC.Models\ReasonCertificationNotRequiredLU.cs" Link="ReasonCertificationNotRequiredLU.cs" />
+    <Compile Include="..\GenTRAC.Models\RequestTypeLU.cs" Link="RequestTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ResponseLU.cs" Link="ResponseLU.cs" />
+    <Compile Include="..\GenTRAC.Models\ResponseTypeLU.cs" Link="ResponseTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\RoleLU.cs" Link="RoleLU.cs" />
+    <Compile Include="..\GenTRAC.Models\RoleTypeLU.cs" Link="RoleTypeLU.cs" />
+    <Compile Include="..\GenTRAC.Models\SplitString_Result.cs" Link="SplitString_Result.cs" />
+    <Compile Include="..\GenTRAC.Models\SystemUserRole.cs" Link="SystemUserRole.cs" />
+    <Compile Include="..\GenTRAC.Models\TextTypeLU.cs" Link="TextTypeLU.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+  </ItemGroup>
+
+</Project>
