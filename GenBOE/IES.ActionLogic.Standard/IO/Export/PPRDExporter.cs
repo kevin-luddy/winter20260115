@@ -19,6 +19,7 @@ namespace IES.ActionLogic.IO.Export
 	using IES.DataBridge.ModelViews;
 	using IES.Standard;
 	using IES.Standard.OfficeUtilities;
+	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
 	/// The PPRD Exporter.
@@ -35,33 +36,42 @@ namespace IES.ActionLogic.IO.Export
 		/// </summary>
 		private const string FIRST_SECTION_REFERENCE_NUMBER = "1.0";
 
-        /// <summary>
-        /// Generate a Word document containing the full PPRD.
-        /// </summary>
-        /// <param name="sections">Collection of Section MVs</param>
-        /// <param name="rates">Collection of RateDetail MVs</param>
-        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
-        /// <param name="serverFileName">Server path to new file to generate.</param>
-        /// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
-        /// <param name="revision">Revision modelview</param>
-        /// <param name="rateTableYears">Number of years to include in the rate tables</param>
-        /// <param name="response">the web response object to write the file back to for user download</param>
-        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        public void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel)
-		{
-			if (response == null)
-			{
-				throw new ArgumentNullException(nameof(response));
-			}
+		/// <summary>
+		/// The rate formatter
+		/// </summary>
+		private readonly RateFormatter rateFormatter;
 
+		/// <summary>
+		/// default constructor
+		/// </summary>
+		/// <param name="rateFormatter">Rate Formatter</param>
+		public PPRDExporter(RateFormatter rateFormatter)
+		{
+			this.rateFormatter = rateFormatter;
+		}
+
+		/// <summary>
+		/// Generate a Word document containing the full PPRD.
+		/// </summary>
+		/// <param name="sections">Collection of Section MVs</param>
+		/// <param name="rates">Collection of RateDetail MVs</param>
+		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
+		/// <param name="serverFileName">Server path to new file to generate.</param>
+		/// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
+		/// <param name="revision">Revision modelview</param>
+		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
+		/// <param name="response">the web response object to write the file back to for user download</param>
+		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+		public IActionResult ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel)
+		{
 			ChunkCounter counters = new ChunkCounter();
 
-			// setup the response correctly with BufferOutput since this is going to be awhile...
-			response.ContentType = PPRDExporterConstants.CONTENTTYPE_DOCX;
-			response.Clear();
-			response.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
-
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, response.OutputStream);
+			Stream stream = new MemoryStream(32000);
+			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream);
+			return new FileStreamResult(stream, PPRDExporterConstants.CONTENTTYPE_DOCX)
+			{
+				FileDownloadName = clientFileName
+			};
 		}
 
         /// <summary>
@@ -78,11 +88,6 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
         public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true)
 		{
-			if (stream == null)
-			{
-				throw new ArgumentNullException(nameof(stream));
-			}
-
 			ChunkCounter counters = new ChunkCounter();
 
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
@@ -685,7 +690,7 @@ namespace IES.ActionLogic.IO.Export
 
 					SdtElement initialYear = WordUtilities.GetTaggedChildElement(row, PPRDExporterConstants.FIELDNAME_RATECODEVALUE);
 					RateYearModelView initialRateYearMV = rate.Values.FirstOrDefault(x => x.Year == startYear) ?? new RateYearModelView();
-					string initialYearValue = RateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, initialRateYearMV.Value);
+					string initialYearValue = this.rateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, initialRateYearMV.Value);
 					WordUtilities.SetElementText(initialYear, initialYearValue);
 
 					// Append cells for additional years
@@ -693,7 +698,7 @@ namespace IES.ActionLogic.IO.Export
 					for (int i = 1; i <= years; i++)
 					{
 						RateYearModelView rateYearMV = rate.Values.FirstOrDefault(x => x.Year == startYear + i) ?? new RateYearModelView();
-						string yearValue = RateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, rateYearMV.Value);
+						string yearValue = this.rateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, rateYearMV.Value);
 						isRowEmpty = isRowEmpty && yearValue.Equals(Constants.NOT_APPLICABLE);
 						this.AppendCellToRow(row, yearValue);
 					}

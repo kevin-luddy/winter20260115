@@ -19,7 +19,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        private Logger log = new Logger(typeof(SystemPermissionMapper));
+        private readonly ILogger log;
 
         /// <summary>
         /// System Permission Loader
@@ -30,9 +30,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Constructor
         /// </summary>
         /// <param name="systemPermissionLoader">System Permission Loader</param>
-        public SystemPermissionMapper(ISystemPermissionLoader systemPermissionLoader)
-        {
-            this.SystemPermissionLoader = systemPermissionLoader;
+        public SystemPermissionMapper(ISystemPermissionLoader systemPermissionLoader, ILogger logger)
+		{
+			this.log = logger;
+			this.SystemPermissionLoader = systemPermissionLoader;
         }
 
         /// <summary>

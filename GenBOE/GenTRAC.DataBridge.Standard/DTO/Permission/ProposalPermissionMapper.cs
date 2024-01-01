@@ -19,20 +19,21 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        private Logger log = new Logger(typeof(ProposalPermissionMapper));
+        private readonly ILogger log;
 
         /// <summary>
         /// Proposal Permission Loader
         /// </summary>
-        protected IProposalPermissionLoader ProposalPermissionLoader { get; set; }
+        protected IProposalPermissionLoader ProposalPermissionLoader { get; private set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="proposalPermissionLoader">Proposal Permission data loader</param>
-        public ProposalPermissionMapper(IProposalPermissionLoader proposalPermissionLoader)
-        {
-            this.ProposalPermissionLoader = proposalPermissionLoader;
+        public ProposalPermissionMapper(IProposalPermissionLoader proposalPermissionLoader, ILogger logger)
+		{
+			this.log = logger;
+			this.ProposalPermissionLoader = proposalPermissionLoader;
         }
 
         /// <summary>

@@ -22,17 +22,16 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ProposalChecklistLoader()
-        {
-            this.Log = new Logger(typeof(ProposalChecklistLoader));
-        }
+        public ProposalChecklistLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Returns a collection of checklist DTOs by checklist IDs
         /// </summary>
         /// <param name="ids">Collection of checklist IDs</param>
         /// <returns>Collection of ChecklistDtos</returns>
-        [DbQuery]
         public override ICollection<ProposalChecklistDto> GetByIds(ICollection<int> ids)
         {
             ICollection<ProposalChecklistDto> toReturn = null;
@@ -54,7 +53,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inProposalIds">Collection of Proposal IDs</param>
         /// <returns>Collection of checklist DTOs</returns>
-        [DbQuery]
         public ICollection<ProposalChecklistDto> GetByProposalIds(ICollection<int> inProposalIds)
         {
             ICollection<ProposalChecklistDto> toReturn = null;
@@ -186,7 +184,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">Proposal ID</param>
         /// <returns>Collection of PPR checklist response items</returns>
-        [DbQuery]
         public ICollection<ChecklistResponseItem> GetPPRResponses(int proposalId)
         {
             ICollection<ChecklistResponseItem> toReturn = new List<ChecklistResponseItem>();
@@ -214,7 +211,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">Proposal ID</param>
         /// <returns>Collection of PAR checklist response items</returns>
-        [DbQuery]
         public ICollection<ChecklistResponseItem> GetPARResponses(int proposalId)
         {
             ICollection<ChecklistResponseItem> toReturn = new List<ChecklistResponseItem>();
@@ -340,7 +336,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>Collection of Save Info objects</returns>
-        [DbQuery]
         public ICollection<ProposalChecklistSaveInfo> GetAllChecklistSaveInfo(int proposalId)
         {
             ICollection<ProposalChecklistSaveInfo> saveInfo = new Collection<ProposalChecklistSaveInfo>();
@@ -367,7 +362,6 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="updateDate">Proposal update date</param>
         /// <param name="unlockOption">Indicates pricer, peer, or both users</param>
         /// <returns>Id of the saved Proposal</returns>
-        [DbQuery]
         public int? UnlockChecklist(int proposalId, DateTime updateDate, UnlockChecklistOption unlockOption)
         {
             int? toReturn = null;
@@ -385,7 +379,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalIds">Collection of proposal ids</param>
         /// <returns>Dictionary of proposal ids mapped to submittal date</returns>
-        [DbQuery]
         public IDictionary<int, DateTime?> GetProposalSubmittalDate(ICollection<int> proposalIds)
         {
             IDictionary<int, DateTime?> toReturn = new Dictionary<int, DateTime?>();

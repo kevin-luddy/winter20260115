@@ -32,15 +32,16 @@ namespace IES.ActionLogic.Mediator
         /// <summary>
         /// The logger
         /// </summary>
-        private ILogger logger = new Logger(typeof(RevisionMediator));
+        private ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RevisionMediator"/> class.
         /// </summary>
         /// <param name="revisionLoader">The revision loader.</param>
         /// <param name="cacheDataLoader">The cache data loader.</param>
-        public RevisionMediator(IRevisionLoader revisionLoader, ICacheDataLoader cacheDataLoader)
+        public RevisionMediator(ILogger logger, IRevisionLoader revisionLoader, ICacheDataLoader cacheDataLoader)
         {
+            this.logger = logger;
             this.revisionLoader = revisionLoader;
             this.cacheDataLoader = cacheDataLoader;
         }

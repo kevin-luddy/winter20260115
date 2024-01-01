@@ -19,15 +19,15 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        private IES.Standard.Logger Log { get; set; }
+        private ILogger Log { get; set; }
 
         /// <summary>
         /// Default Ctor
         /// </summary>
-        public ApprovalsLoader()
-        {
-            this.Log = new IES.Standard.Logger("ApprovalsLoader");
-        }
+        public ApprovalsLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Gets all approvals for the user

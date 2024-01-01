@@ -6,25 +6,18 @@
 
 namespace GenTRAC.DataBridge.DTO
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Data.Entity.Infrastructure;
-    using System.Linq;
-    using System.Web.Mvc;
-    using GenTRAC.Models;
-    using IES.Standard;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using GenTRAC.Models;
+	using IES.Standard;
 
-    /// <summary>
-    /// Proposal dto data loader
-    /// </summary>
-    public class ProposalLoader : DataLoader<ProposalDto>, IProposalLoader
+	/// <summary>
+	/// Proposal dto data loader
+	/// </summary>
+	public class ProposalLoader : DataLoader<ProposalDto>, IProposalLoader
     {
-        /// <summary>
-        /// Gets or sets the Permission Loader.
-        /// </summary>
-        private IProposalPermissionLoader PermissionLoader { get; set; }
-
         /// <summary>
         /// The next generation number
         /// </summary>
@@ -68,25 +61,15 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ProposalLoader()
-        {
-            this.Log = new Logger(typeof(ProposalLoader));
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProposalLoader"/> class.
-        /// </summary>
-        /// <param name="permissionLoader">The permission loader.</param>
-        public ProposalLoader(IProposalPermissionLoader permissionLoader) : this()
-        {
-            this.PermissionLoader = permissionLoader;
-        }
+        public ProposalLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Returns all Proposal IDs from the DB
         /// </summary>
         /// <returns>Proposal Ids</returns>
-        [DbQuery]
         public ICollection<int> GetAllIds()
         {
             ICollection<int> toReturn = null;
@@ -112,7 +95,6 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="ids">Proposal Id</param>
         /// <returns>The ProposalDto, null if none found</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        [DbQuery]
         public override ICollection<ProposalDto> GetByIds(ICollection<int> ids)
         {
             ICollection<ProposalDto> toReturn = null;
@@ -286,7 +268,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inTrackingNumber">Proposal Tracking Number</param>
         /// <returns>Proposal ID, -1 if none found</returns>
-        [DbQuery]
         public int GetIdByTrackingNumber(string inTrackingNumber)
         {
             if (inTrackingNumber == null)
@@ -356,7 +337,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="userids">List of user ids</param>
         /// <returns>List of Proposal ids</returns>
-        [DbQuery]
         public ICollection<int> GetProposalIdsByUser(ICollection<int> userids)
         {
             ICollection<int> toReturn = new List<int>();
@@ -625,7 +605,6 @@ namespace GenTRAC.DataBridge.DTO
         /// to perform unit testing and RDSB.  This helps performance for any tests that required fetching all proposals.
         /// </summary>
         /// <returns>Collection of slim Proposal DTOs</returns>
-        [DbQuery]
         public ICollection<ProposalDto> GetAllSlim()
         {
             ICollection<ProposalDto> toReturn = null;
@@ -662,7 +641,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inProposalId">proposal id</param>
         /// <returns>date of completed</returns>
-        [DbQuery(2)]
         public DateTime? GetProposalCompletedDate(int inProposalId)
         {
             DateTime? toReturn = null;
@@ -698,7 +676,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="cutoffDate">Earliest submit date to get proposals for</param>
         /// <returns>all completed proposals after an optional date</returns>
-        [DbQuery]
         public ICollection<ProposalDto> GetAllCompletedProposalsAfterSubmitDate(DateTime? cutoffDate)
         {
             if (cutoffDate == null)
@@ -793,7 +770,6 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="proposalId">proposal id</param>
         /// <param name="proposalTitle">name of proposal</param>
         /// <returns>true or false</returns>
-        [DbQuery]
         public bool IsProposalTitleUnique(int proposalId, string proposalTitle)
         {
             if (proposalTitle == null)
@@ -819,7 +795,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inProposalId">proposal id</param>
         /// <returns>proposal status</returns>
-        [DbQuery]
         public ProposalStatus? GetProposalStatus(int inProposalId)
         {
             ProposalStatus? toReturn = null;
@@ -1350,7 +1325,6 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets the next forecasted tracking number.
         /// </summary>
         /// <returns>The next forecasted tracking number.</returns>
-        [DbQuery]
         public string GetNextForecastedTrackingNumber()
         {
             // format: F-YY-xxx 
@@ -1369,7 +1343,6 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="cutoffDate">The cutoff date.</param>
         /// <returns>A list of proposals.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        [DbQuery]
         public ICollection<ProposalDto> GetForecastProposalsPastAllowedDate(DateTime cutoffDate)
         {
             ICollection<ProposalDto> toReturn = new List<ProposalDto>();
@@ -1538,7 +1511,6 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets the list of proposals that require the Mod Execution Missing email
         /// </summary>
         /// <returns>List of proposal DTOs</returns>
-        [DbQuery]
         public ICollection<ProposalDto> GetModExecutedDateMissingNotifications()
         {
             List<ProposalDto> toReturn = new List<ProposalDto>();
@@ -1649,7 +1621,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <returns>A list of proposals.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        [DbQuery]
         public ICollection<ProposalDto> GetProposalsCertificationTimelinePastDue()
         {
             ICollection<ProposalDto> toReturn = new List<ProposalDto>();
@@ -1865,7 +1836,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>Revision History</returns>
-        [DbQuery]
         public ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId)
         {
             ICollection<RevisionHistoryModelView> toReturn = null;
@@ -2145,7 +2115,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="selectedValue">Selected option</param>
         /// <returns>Values for dropdown</returns>
-        [DbQuery]
         public ICollection<SelectListItem> GetRomProposalOptions(int? selectedValue)
         {
             ICollection<SelectListItem> result;
@@ -2168,7 +2137,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>Submitted Date and Submitted Value</returns>
-        [DbQuery, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Tuple<DateTime?, decimal?> GetRomDateAndValue(int proposalId)
         {
             Tuple<DateTime?, decimal?> result;

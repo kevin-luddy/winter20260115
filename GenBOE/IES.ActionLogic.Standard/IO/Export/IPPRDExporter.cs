@@ -10,6 +10,7 @@ namespace IES.ActionLogic.IO.Export
 	using System.IO;
 	using System.Web;
 	using IES.DataBridge.ModelViews;
+	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
 	/// Interface for PPRD Exporter
@@ -28,7 +29,7 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="rateTableYears">Number of years to include in the rate tables</param>
         /// <param name="response">the web response object to write the file back to for user download</param>
         /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel);
+        IActionResult ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel);
 
         /// <summary>
         /// Generate a Word document containing the RDD sections and rates.

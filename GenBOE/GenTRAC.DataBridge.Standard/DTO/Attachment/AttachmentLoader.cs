@@ -19,10 +19,10 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Constructor
         /// </summary>
-        public AttachmentLoader()
-        {
-            this.Log = new Logger(typeof(AttachmentLoader));
-        }
+        public AttachmentLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Gets all Attachments for the proposal, excluding the File Contents.

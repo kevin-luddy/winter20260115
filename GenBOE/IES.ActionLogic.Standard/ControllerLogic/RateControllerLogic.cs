@@ -58,6 +58,11 @@ namespace IES.ActionLogic.ControllerLogic
 		private IRateCodeReplicationLoader replicationLoader;
 
 		/// <summary>
+		/// The rate formatter
+		/// </summary>
+		private RateFormatter rateFormatter;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="RateControllerLogic"/> class.
 		/// </summary>
 		/// <param name="rateDetailLoader">The rate detail loader.</param>
@@ -71,7 +76,8 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="securityInfo">Security Information</param>
 		/// <param name="replicationLoader">The replication loader.</param>
 		public RateControllerLogic(IRateDetailLoader rateDetailLoader, ICommonDataMapper commonDataMapper, IHomeControllerLogic homeControllerLogic, IBurdenPoolLoader burdenPoolLoader, ISectionLoader sectionLoader,
-			IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo, IRateCodeReplicationLoader replicationLoader)
+			IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo, IRateCodeReplicationLoader replicationLoader,
+			RateFormatter rateFormatter)
 			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
 
 		{
@@ -81,6 +87,7 @@ namespace IES.ActionLogic.ControllerLogic
 			this.burdenPoolLoader = burdenPoolLoader;
 			this.sectionLoader = sectionLoader;
 			this.replicationLoader = replicationLoader;
+			this.rateFormatter = rateFormatter;
 		}
 
 		/// <summary>
@@ -381,7 +388,7 @@ namespace IES.ActionLogic.ControllerLogic
 				return new ValidationMessage(RateMappingValidationConstants.RATEDETAILS_RATECATEGORY_REQUIRED);
 			}
 
-			rateDetailModelView.RatePrecision = RateFormatter.GetRatePrecision(RateTarget.Rate, rateDetailModelView.RateCategoryDescription);
+			rateDetailModelView.RatePrecision = this.rateFormatter.GetRatePrecision(RateTarget.Rate, rateDetailModelView.RateCategoryDescription);
 
 			if (rateDetailModelView.RatePrecision == -1)
 			{

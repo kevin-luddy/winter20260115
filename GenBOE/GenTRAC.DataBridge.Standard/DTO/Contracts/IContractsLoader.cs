@@ -6,14 +6,13 @@
 
 namespace GenTRAC.DataBridge.DTO
 {
-    using System.Collections.Generic;
-    using System.Web.Mvc;
-    using IES.Standard;
+	using System.Collections.Generic;
+	using IES.Standard;
 
-    /// <summary>
-    /// Contracts Loader interface
-    /// </summary>
-    public interface IContractsLoader : IDataLoader<ContractsDto>
+	/// <summary>
+	/// Contracts Loader interface
+	/// </summary>
+	public interface IContractsLoader : IDataLoader<ContractsDto>
     {
         /// <summary>
         /// Gets all Contracts for the proposal.

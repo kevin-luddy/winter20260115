@@ -6,25 +6,24 @@
 
 namespace GenTRAC.DataBridge.DTO
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Web.Mvc;
-    using GenTRAC.Models;
-    using IES.Standard;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using GenTRAC.Models;
+	using IES.Standard;
 
-    /// <summary>
-    /// Contracts Loader
-    /// </summary>
-    class ContractsLoader : DataLoader<ContractsDto>, IContractsLoader
+	/// <summary>
+	/// Contracts Loader
+	/// </summary>
+	class ContractsLoader : DataLoader<ContractsDto>, IContractsLoader
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public ContractsLoader()
-        {
-            this.Log = new Logger(typeof(ContractsLoader));
-        }
+        public ContractsLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Saves a Proposal Contract

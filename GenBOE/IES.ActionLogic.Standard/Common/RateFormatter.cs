@@ -17,17 +17,17 @@ namespace IES.ActionLogic.Common
 	/// <summary>
 	/// Rate formatting information.
 	/// </summary>
-	public static class RateFormatter
+	public class RateFormatter
     {
         /// <summary>
         /// Lookup table for PPR&amp;D and Rates format specifications.
         /// </summary>
-        private static Dictionary<string, Dictionary<string, string>> formats;
+        private Dictionary<string, Dictionary<string, string>> formats;
 
         /// <summary>
         /// The lock object
         /// </summary>
-        private static object lockObject = new object();
+        private object lockObject = new object();
 
         /// <summary>
         /// Default rate category
@@ -54,11 +54,18 @@ namespace IES.ActionLogic.Common
         /// </summary>
         internal const string MULTIPLIER = "multiplier";
 
-        /// <summary>
-        /// Rate format definition.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public static Dictionary<string, Dictionary<string, string>> Formats
+        private readonly IRateConfigLoader rateConfigLoader;
+
+		public RateFormatter(IRateConfigLoader rateConfigLoader)
+        {
+            this.rateConfigLoader = rateConfigLoader;
+        }
+
+		/// <summary>
+		/// Rate format definition.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        public Dictionary<string, Dictionary<string, string>> Formats
         {
             get
             {
@@ -69,9 +76,8 @@ namespace IES.ActionLogic.Common
                         if (formats == null)
                         {
                             Dictionary<string, Dictionary<string, string>> tempFormats = new Dictionary<string, Dictionary<string, string>>();
-                            // Load format settings from DB.
-                            IRateConfigLoader rateConfigLoader = GenBOEUnityContainer.Resolve<IRateConfigLoader>();
-                            ICollection<RateConfigModelView> rateConfigs = rateConfigLoader.GetAll();
+							// Load format settings from DB.
+							ICollection<RateConfigModelView> rateConfigs = this.rateConfigLoader.GetAll();
                             foreach (RateConfigModelView rateConfig in rateConfigs)
                             {
                                 string category = rateConfig.RateCategory == null ? RATE_CATEGORY_NONE : rateConfig.RateCategory.GetDescription();
@@ -96,7 +102,7 @@ namespace IES.ActionLogic.Common
         /// Returns all the formats in JSON for client.
         /// </summary>
         /// <returns>All formats as JSON</returns>
-        public static string JSONFormats()
+        public string JSONFormats()
         {
             return JsonConvert.SerializeObject(Formats);
         }
@@ -107,7 +113,7 @@ namespace IES.ActionLogic.Common
         /// <param name="target">target, i.e. PPR&amp;D or Rate</param>
         /// <param name="categoryDescription">rate category description, e.g. "Direct Labor"</param>
         /// <returns>Rate precision</returns>
-        public static int GetRatePrecision(RateTarget target, string categoryDescription)
+        public int GetRatePrecision(RateTarget target, string categoryDescription)
         {
             string key = target.GetDescription() + categoryDescription;
             return Convert.ToInt32(Formats[key][PRECISION]);
@@ -117,7 +123,7 @@ namespace IES.ActionLogic.Common
         /// Gets the default rate precision.
         /// </summary>
         /// <returns>Default rate precision</returns>
-        public static string DefaultRatePrecision()
+        public string DefaultRatePrecision()
         {
             string key = RateTarget.Rate.GetDescription() + RATE_CATEGORY_NONE;
             return Formats[key][PRECISION];
@@ -130,7 +136,7 @@ namespace IES.ActionLogic.Common
         /// <param name="categoryDescription">rate category description, e.g. "Direct Labor"</param>
         /// <param name="rate">rate value</param>
         /// <returns>formatted string</returns>
-        public static string FormatRate(RateTarget target, string categoryDescription, decimal? rate)
+        public string FormatRate(RateTarget target, string categoryDescription, decimal? rate)
         {
             if (!rate.HasValue)
             {

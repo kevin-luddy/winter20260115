@@ -65,7 +65,8 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="contractTypeGroupLULoader">The contract type group lu loader.</param>
         public PtmPickListMapper(ProposalTypeLULoader proposalLuLoader, ProposalClassLULoader levelOfCommitmentLoader, TypeOfRequestLULoader typeOfRequestLoader, 
             LineOfBusinessDataLoader lineOfBusinessLuLoader, ProgramAreaDataLoader programAreaLuLoader,
-            ContractTypeLULoader contractTypeLuLoader, ContractTypeGroupLULoader contractTypeGroupLULoader)
+            ContractTypeLULoader contractTypeLuLoader, ContractTypeGroupLULoader contractTypeGroupLULoader,
+            ILogger logger) : base(logger)
         {
             this.proposalLuLoader = proposalLuLoader;
             this.proposalClassLuLoader = levelOfCommitmentLoader;

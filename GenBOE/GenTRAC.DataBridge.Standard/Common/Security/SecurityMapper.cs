@@ -7,7 +7,6 @@
 namespace GenTRAC.DataBridge.Common.Security
 {
     using System.Collections.Generic;
-    using System.Web;
     using GenTRAC.DataBridge.DTO;
     using IES.Standard;
 
@@ -15,12 +14,12 @@ namespace GenTRAC.DataBridge.Common.Security
     /// The security mapper will load in the security data from the database
     /// based on the user currently logged in.
     /// </summary>
-    public class SecurityMapper : GenTRAC.DataBridge.Common.Security.ISecurityMapper
+    public class SecurityMapper : ISecurityMapper
     {
         /// <summary>
         /// The logger
         /// </summary>
-        private Logger log = new Logger(typeof(SecurityMapper));
+        private readonly ILogger log;
 
         /// <summary>
         /// Loader to load in all permissions for a user in the system
@@ -45,7 +44,7 @@ namespace GenTRAC.DataBridge.Common.Security
         /// <summary>
         /// declare private instance so we can cache returns about users existance for a brief period of time
         /// </summary>
-        private ICache cache = new MemoryCache();
+        private readonly ICache cache;
 
         /// <summary>
         /// Constructor for dependency injection
@@ -55,11 +54,15 @@ namespace GenTRAC.DataBridge.Common.Security
         /// <param name="inUserMapper">User Dto Data Mapper.</param>
         public SecurityMapper(ISecurityUserAuthorizationsDataLoader inSecurityUserAuthorizationsDataLoader,
                                 ISecurityInformation inSecurityInformation,
-                                IUserMapper inUserMapper)
+                                IUserMapper inUserMapper,
+                                ILogger logger,
+                                ICache cache)
         {
             this.securityUserAuthorizationsDataLoader = inSecurityUserAuthorizationsDataLoader;
             this.securityInformation = inSecurityInformation;
             this.userMapper = inUserMapper;
+            this.log = logger;
+            this.cache = cache;
         }
 
         /// <summary>
@@ -94,10 +97,11 @@ namespace GenTRAC.DataBridge.Common.Security
 
                 // if this is a save action, permissions should be cleared from cache
                 bool isSaveAction = false;
-                if (HttpContext.Current != null && HttpContext.Current.Items.Contains(CacheConstants.SAVE_PERMISSIONS_ACTION))
-                {
-                    isSaveAction = true;
-                }
+                // TODO TIW
+                //if (HttpContext.Current != null && HttpContext.Current.Items.Contains(CacheConstants.SAVE_PERMISSIONS_ACTION))
+                //{
+                //    isSaveAction = true;
+                //}
 
                 if (this.cache.Contains(key))
                 {

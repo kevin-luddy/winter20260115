@@ -12,6 +12,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
+	using System.Net.Http.Headers;
 	using System.Text.RegularExpressions;
 	using System.Transactions;
 	using System.Web;
@@ -22,6 +23,8 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Standard;
 	using IES.Standard.Exceptions;
 	using IO.Export;
+	using Microsoft.AspNetCore.Http;
+	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
 	/// Logic for the Document Controller.
@@ -579,16 +582,11 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="serverFileName">Server File Name</param>
 		/// <param name="httpResponse">HTTP response object</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired)
+		public IActionResult GenerateRDD(int proposalId, string serverFileName, bool portionMarkingRequired)
 		{
 			if (serverFileName == null)
 			{
 				throw new ArgumentNullException(nameof(serverFileName));
-			}
-
-			if (httpResponse == null)
-			{
-				throw new ArgumentNullException(nameof(httpResponse));
 			}
 
 			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
@@ -599,12 +597,11 @@ namespace IES.ActionLogic.ControllerLogic
 
 			string clientFileName = string.Format("{0}_{1}_{2}-{3}.docx", modelView.TrackingNumber, modelView.ProposalTitle, modelView.StartYear, modelView.EndYear).Replace(",", "_");
 
-			// setup the response correctly with BufferOutput since this is going to be awhile...
-			httpResponse.ContentType = PPRDExporterConstants.CONTENTTYPE_DOCX;
-			httpResponse.Clear();
-			httpResponse.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
-
-			this.GenerateRDD(proposalId, serverFileName, httpResponse.OutputStream, modelView, null, true, portionMarkingRequired);
+			Stream stream = this.GenerateRDD(proposalId, serverFileName, modelView, null, true, portionMarkingRequired);
+			return new FileStreamResult(stream, PPRDExporterConstants.CONTENTTYPE_DOCX)
+			{
+				FileDownloadName = clientFileName
+			};
 		}
 
 		/// <summary>
@@ -617,17 +614,14 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
 		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		public void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
+		public Stream GenerateRDD(int proposalId, string serverFileName, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
 		{
 			if (serverFileName == null)
 			{
 				throw new ArgumentNullException(nameof(serverFileName));
 			}
 
-			if (stream == null)
-			{
-				throw new ArgumentNullException(nameof(stream));
-			}
+			Stream stream = new MemoryStream(32000);
 
 			// get the document based off id if we don't already have the modelview
 			if (modelView == null)
@@ -673,6 +667,8 @@ namespace IES.ActionLogic.ControllerLogic
 			ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
 			this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, includeDocumentDetails);
+
+			return stream;
 		}
 
 		/// <summary>

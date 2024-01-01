@@ -20,7 +20,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        private IES.Standard.Logger Log { get; set; }
+        private ILogger Log { get; set; }
 
         /// <summary>
         /// Gets or sets the proposal loader.
@@ -47,14 +47,14 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public EmailInformationLoader()
-        {
-            this.Log = new IES.Standard.Logger(typeof(EmailInformationLoader));
-            // This Loader is called from the Emailer console app, so it does not have the Unity Container loaded for resolutions, have to new up any Loaders/mappers
-            this.PermissionLoader = new ProposalPermissionLoader();
-            this.ProposalLoader = new ProposalLoader(this.PermissionLoader);
-            this.UserLoader = new UserLoader();
-            this.AttachmentLoader = new AttachmentLoader();
+        public EmailInformationLoader(ILogger logger)
+		{
+			this.Log = logger;
+			// This Loader is called from the Emailer console app, so it does not have the Unity Container loaded for resolutions, have to new up any Loaders/mappers
+			this.PermissionLoader = new ProposalPermissionLoader(logger);
+            this.ProposalLoader = new ProposalLoader(logger);
+            this.UserLoader = new UserLoader(logger);
+            this.AttachmentLoader = new AttachmentLoader(logger);
         }
 
         /// <summary>
@@ -62,7 +62,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">If set, this should get emails that are only during this approval</param>
         /// <returns>A list of Proposal information that require an email.</returns>
-        [IES.Standard.DbQuery]
         public ICollection<EmailInformationDto> GetAllEmailsToBeSent(int? proposalId)
         {
             ICollection<EmailInformationDto> emailList = new List<EmailInformationDto>();

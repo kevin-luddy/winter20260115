@@ -21,22 +21,22 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        protected Logger Log { get; set; }
+        protected ILogger Log { get; private set; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public PARChecklistContentLoader()
-        {
-            this.Log = new Logger(typeof(PARChecklistContentLoader));
-        }
+        public PARChecklistContentLoader(ILogger logger)
+
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Get checklist content by proposal Id
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>Checklist Content DTO</returns>
-        [DbQuery]
         public ChecklistContentDto GetChecklistByProposalId(int proposalId)
         {
             ChecklistContentDto toReturn = null;
@@ -101,7 +101,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">Proposal ID</param>
         /// <returns>Id of checklist</returns>
-        [DbQuery]
         public int? GetChecklistIdByProposalId(int proposalId)
         {
             int? toReturn = null;

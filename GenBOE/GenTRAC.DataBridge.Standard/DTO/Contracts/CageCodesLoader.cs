@@ -20,15 +20,15 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        protected Logger Log { get; set; }
+        protected ILogger Log { get; private set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public CageCodesLoader()
-        {
-            this.Log = new Logger(typeof(CageCodesLoader));
-        }
+        public CageCodesLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Get All Cage Codes

@@ -27,25 +27,23 @@ namespace GenTRAC.DataBridge.DTO
         /// constructor
         /// </summary>
         /// <param name="adUtils">IActiveDirectoryUtilities</param>
-        public UserLoader(IActiveDirectoryUtilities adUtils)
-        {
-            this.Log = new Logger(typeof(UserLoader));
-            this.adUtils = adUtils;
+        public UserLoader(IActiveDirectoryUtilities adUtils, ILogger logger) : this(logger)
+		{
+			this.adUtils = adUtils;
         }
 
         /// <summary>
         /// constructor
         /// </summary>
-        public UserLoader()
-        {
-            this.Log = new Logger(typeof(UserLoader));
-        }
+        public UserLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Get all users
         /// </summary>
         /// <returns>All users from the DB.</returns>
-        [DbQuery]
         public ICollection<UserDTO> GetAll()
         {
             ICollection<UserDTO> toReturn = null;
@@ -79,7 +77,6 @@ namespace GenTRAC.DataBridge.DTO
         /// Get All User Ids
         /// </summary>
         /// <returns>All User Ids</returns>
-        [DbQuery]
         public ICollection<int> GetAllIds()
         {
             ICollection<int> toReturn = null;
@@ -102,7 +99,6 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="inUserNtid">user ntid to check for</param>
         /// <param name="outUserId">if the group exists, return the id</param>
         /// <returns>true/false user exists</returns>
-        [DbQuery]
         public bool UserExists(string inUserNtid, out int outUserId)
         {
             outUserId = 0;
@@ -125,7 +121,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="ids">id in the database</param>
         /// <returns>user if found, null if not</returns>
-        [DbQuery]
         public override ICollection<UserDTO> GetByIds(ICollection<int> ids)
         {
             ICollection<UserDTO> toReturn = null;
@@ -208,7 +203,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inNtid">users ntid to locate them by</param>
         /// <returns>user found, null if not found</returns>
-        [DbQuery]
         public UserDTO GetByNtid(string inNtid)
         {
             if (inNtid == null)
@@ -324,7 +318,6 @@ namespace GenTRAC.DataBridge.DTO
         /// Get All Group User Ids
         /// </summary>
         /// <returns>All Group User Ids</returns>
-        [DbQuery]
         public ICollection<int> GetAllGroupIds()
         {
             ICollection<int> toReturn = null;

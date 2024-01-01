@@ -18,14 +18,14 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        protected Logger Log { get; set; }
+        protected ILogger Log { get; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public PPRChecklistContentLoader()
+        public PPRChecklistContentLoader(ILogger logger)
         {
-            this.Log = new Logger(typeof(PPRChecklistContentLoader));
+            this.Log = logger;
         }
 
         /// <summary>
@@ -33,7 +33,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>Checklist Content DTO</returns>
-        [DbQuery]
         public ChecklistContentDto GetChecklistByProposalId(int proposalId)
         {
             ChecklistContentDto toReturn = null;
@@ -67,7 +66,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">Proposal ID</param>
         /// <returns>Id of checklist</returns>
-        [DbQuery]
         public int? GetChecklistIdByProposalId(int proposalId)
         {
             int? toReturn = null;

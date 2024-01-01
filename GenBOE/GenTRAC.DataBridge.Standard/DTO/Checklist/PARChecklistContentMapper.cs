@@ -17,7 +17,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        protected Logger Log { get; set; }
+        protected ILogger Log { get; private set; }
 
         /// <summary>
         /// Cache loader
@@ -34,9 +34,9 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inChecklistContentLoader">Checklist Content Loader</param>
         /// <param name="inCacheLoader">Cache Loader</param>
-        public PARChecklistContentMapper(IChecklistContentLoader inChecklistContentLoader, ICacheDataLoader inCacheLoader)
+        public PARChecklistContentMapper(IChecklistContentLoader inChecklistContentLoader, ICacheDataLoader inCacheLoader, ILogger logger)
         {
-            this.Log = new Logger(typeof(PARChecklistContentMapper));
+            this.Log = logger;
 
             this.DataLoader = inChecklistContentLoader;
             this.CacheLoader = inCacheLoader;

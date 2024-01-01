@@ -21,9 +21,9 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Constructor
         /// </summary>
-        public SystemPermissionLoader()
+        public SystemPermissionLoader(ILogger logger)
         {
-            this.Log = new IES.Standard.Logger(typeof(SystemPermissionLoader));
+            this.Log = logger;
         }
 
         /// <summary>
@@ -31,7 +31,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="ids">PermissionsId</param>
         /// <returns>Permission DTO.</returns>
-        [IES.Standard.DbQuery]
         public override ICollection<SystemPermissionDto> GetByIds(ICollection<int> ids)
         {
             ICollection<SystemPermissionDto> toReturn = null;
@@ -66,7 +65,6 @@ namespace GenTRAC.DataBridge.DTO
         /// Returns all system permission DTOs
         /// </summary>
         /// <returns>System Permission DTOs</returns>
-        [IES.Standard.DbQuery]
         public ICollection<SystemPermissionDto> GetAllSystemPermissions()
         {
             ICollection<SystemPermissionDto> toReturn = null;
@@ -103,7 +101,6 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets all system permission IDs
         /// </summary>
         /// <returns>Collection of IDs</returns>
-        [IES.Standard.DbQuery]
         public ICollection<int> GetAllIds()
         {
             ICollection<int> toReturn = null;
@@ -127,7 +124,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="userId">User Id</param>
         /// <returns>list of all permission ids for that user</returns>
-        [IES.Standard.DbQuery]
         public ICollection<int> GetIdsByUserId(int userId)
         {
             ICollection<int> toReturn = null;

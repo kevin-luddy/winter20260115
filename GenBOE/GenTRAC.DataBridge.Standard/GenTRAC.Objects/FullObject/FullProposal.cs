@@ -9,7 +9,6 @@ namespace GenTRAC.Objects.FullObject
     using System.Collections.Generic;
     using System.Reflection;
     using GenTRAC.DataBridge.DTO;
-    using Microsoft.Practices.Unity;
 
     /// <summary>
     /// Full Proposal
@@ -57,7 +56,8 @@ namespace GenTRAC.Objects.FullObject
         private FullProposal()
             : base()
         {
-            this.retriever = IES.Standard.classes.GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
+            // TODO TIW
+            // this.retriever = IES.Standard.classes.GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
         }
 
         /// <summary>

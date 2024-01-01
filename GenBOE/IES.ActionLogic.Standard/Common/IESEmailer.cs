@@ -50,7 +50,7 @@ namespace IES.ActionLogic.Common
         /// Constructor for dependency injection
         /// </summary>
         /// <param name="dataFetchingScheduler">The data fetching scheduler.</param>
-        public IESEmailer(IDataFetchingScheduler dataFetchingScheduler) : base(new Logger(typeof(IESEmailer)))
+        public IESEmailer(IDataFetchingScheduler dataFetchingScheduler, ILogger logger) : base(logger)
 		{
             this.DataFetchingScheduler = dataFetchingScheduler;
         }

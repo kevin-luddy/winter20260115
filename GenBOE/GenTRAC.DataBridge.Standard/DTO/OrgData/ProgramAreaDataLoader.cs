@@ -21,10 +21,10 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// ProgramAreaDataLoader
         /// </summary>
-        public ProgramAreaDataLoader()
-        {
-            this.Log = new Logger(typeof(ProgramAreaDataLoader));
-        }
+        public ProgramAreaDataLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Abstract method for retrieving Pick List Values

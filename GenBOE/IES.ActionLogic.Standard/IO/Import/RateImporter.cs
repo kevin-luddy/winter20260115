@@ -30,7 +30,7 @@ namespace IES.ActionLogic.IO.Import
         /// <param name="importedRateCodes">Rate Codes that were found in the import file, used to filter GetRatesByRevision.</param>
         /// <returns>Collection of imported rates for the current version.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
-        public static Collection<RateDetailModelView> GetRatesFromExcelFile(HttpPostedFileBase excelFile, out Collection<string> importedRateCodes)
+        public static Collection<RateDetailModelView> GetRatesFromExcelFile(Stream excelFile, out Collection<string> importedRateCodes)
         {
             Collection<RateDetailModelView> importRateDetails = new Collection<RateDetailModelView>();
             importedRateCodes = new Collection<string>();
@@ -42,7 +42,7 @@ namespace IES.ActionLogic.IO.Import
             try
             {
                 // Open the document as read-only.
-                using (SpreadsheetDocument document = SpreadsheetDocument.Open(excelFile.InputStream, false))
+                using (SpreadsheetDocument document = SpreadsheetDocument.Open(excelFile, false))
                 {
                     WorkbookPart workbook = document.WorkbookPart;
 

@@ -14,6 +14,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using GenTRAC.DataBridge.Common.Security;
 	using GenTRAC.DataBridge.DTO;
 	using IES.Standard.Exceptions;
+	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
 	/// Interface for the Document Controller Logic.
@@ -92,19 +93,18 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="serverFileName">Server File Name</param>
 		/// <param name="httpResponse">HTTP response object</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired);
+		IActionResult GenerateRDD(int proposalId, string serverFileName, bool portionMarkingRequired);
 
-        /// <summary>
-        /// Generates the RDD document for the Proposal Id passed in.
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <param name="serverFileName">Server File Name</param>
-        /// <param name="stream">stream to write the file back to for download</param>
+		/// <summary>
+		/// Generates the RDD document for the Proposal Id passed in.
+		/// </summary>
+		/// <param name="proposalId">Proposal ID</param>
+		/// <param name="serverFileName">Server File Name</param>
 		/// <param name="modelView">document detail modelview (if available)</param>
-        /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
-        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false);
+		/// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
+		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		Stream GenerateRDD(int proposalId, string serverFileName, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false);
 
         /// <summary>
         /// Check if RDSB Record exists for the given PTM Proposal ID

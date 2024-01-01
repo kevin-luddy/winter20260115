@@ -21,17 +21,16 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Constructor
         /// </summary>
-        public ProposalPermissionLoader()
-        {
-            this.Log = new IES.Standard.Logger(typeof(ProposalPermissionLoader));
-        }
+        public ProposalPermissionLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Get a Permission by Permission Id
         /// </summary>
         /// <param name="ids">PermissionsId</param>
         /// <returns>Permission DTO.</returns>
-        [IES.Standard.DbQuery]
         public override ICollection<ProposalPermissionDto> GetByIds(ICollection<int> ids)
         {
             ICollection<ProposalPermissionDto> toReturn = null;
@@ -63,7 +62,6 @@ namespace GenTRAC.DataBridge.DTO
         /// Get all Proposal Permissions
         /// </summary>
         /// <returns>All permissions from the DB for all proposals.</returns>
-        [IES.Standard.DbQuery]
         public ICollection<ProposalPermissionDto> GetAllProposalPermissions()
         {
             ICollection<ProposalPermissionDto> toReturn = null;
@@ -97,7 +95,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inProposalID">proposal id</param>
         /// <returns>All permission ids from the DB for a given proposal.</returns>
-        [IES.Standard.DbQuery]
         public ICollection<int> GetIdsByProposalId(int inProposalID)
         {
             ICollection<int> toReturn = null;
@@ -120,7 +117,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inProposalIDs">Collection of propsoal ids</param>
         /// <returns>list of all permissions by that proposal in the db</returns>
-        [IES.Standard.DbQuery]
         public ICollection<int> GetIdsForHomeProposalGrid(ICollection<int> inProposalIDs)
         {
             ICollection<int> toReturn = null;
@@ -191,7 +187,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="userId">User Id</param>
         /// <returns>list of all permission ids for that user</returns>
-        [IES.Standard.DbQuery]
         public ICollection<int> GetIdsByUserId(int userId)
         {
             ICollection<int> toReturn = null;

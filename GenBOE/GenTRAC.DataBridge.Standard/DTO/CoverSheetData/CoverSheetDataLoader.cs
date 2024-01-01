@@ -19,15 +19,15 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        public Logger Log { get; }
+        public ILogger Log { get; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public CoverSheetDataLoader()
-        {
-            this.Log = new Logger(typeof(CoverSheetDataLoader));
-        }
+        public CoverSheetDataLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Gets Cover Sheet data by a given proposal id.

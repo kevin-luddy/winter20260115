@@ -20,10 +20,10 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Ctor
         /// </summary>
-        public ContractTypeGroupLULoader()
-        {
-            this.Log = new Logger(typeof(ContractTypeGroupLULoader));
-        }
+        public ContractTypeGroupLULoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Gets the corresponding LU table

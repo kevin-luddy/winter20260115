@@ -6,11 +6,6 @@
 
 namespace GenTRAC.DataBridge.DTO
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Web.Mvc;
-    using IES.Standard;
-
     /// <summary>
     /// Cover Sheet Data Loader Interface
     /// </summary>

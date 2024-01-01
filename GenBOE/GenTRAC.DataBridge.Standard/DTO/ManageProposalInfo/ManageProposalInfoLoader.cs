@@ -18,15 +18,15 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        protected Logger Log { get; set; }
+        protected ILogger Log { get; private set; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ManageProposalInfoLoader()
-        {
-            this.Log = new Logger(typeof(ManageProposalInfoLoader));
-        }
+        public ManageProposalInfoLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Saves proposal info from the Admin Management page

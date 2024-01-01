@@ -6,14 +6,16 @@
 
 namespace IES.ActionLogic.ControllerLogic
 {
-    using System;
-    using System.Collections.Generic;
-    using IES.ActionLogic.IO.Export;
-    using IES.Standard;
-    using IES.Standard.OfficeUtilities;
-    using IES.DataBridge.Loaders;
-    using IES.DataBridge.ModelViews;
-    using Mediator;
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using IES.ActionLogic.IO.Export;
+	using IES.DataBridge.Loaders;
+	using IES.DataBridge.ModelViews;
+	using IES.Standard;
+	using IES.Standard.OfficeUtilities;
+	using Mediator;
+	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>
 	/// Logic for the RDM Reports Controller.
@@ -91,7 +93,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="burdenPools">PPR&amp;D ProPricer burden pools</param>
         /// <param name="burdenElements">PPR&amp;D ProPricer burden elements</param>
         /// <returns>An ActionResult.</returns>
-        public ActionResult ExportProPricerData(string zipPathFile, string versionNumber,
+        public string ExportProPricerData(string zipPathFile, string versionNumber,
             ICollection<RateDetailModelView> rates, ICollection<BurdenPoolDetailModelView> burdenPools, 
             ICollection<BurdenElementModelView> burdenElements)
         {
@@ -101,9 +103,9 @@ namespace IES.ActionLogic.ControllerLogic
             string exportedFileName = rdmProPricerExporter.ExportReport();
 
             // The filename is hardcoded to make it more obvious what is being replaced by string.format().
-            string fileDownloadName = $"ProPricer_RDM_Rev{versionNumber}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.zip";
+            // string fileDownloadName = $"ProPricer_RDM_Rev{versionNumber}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.zip";
 
-            return new ExportFileDownloadResult(exportedFileName, fileDownloadName);
+			return exportedFileName;
         }
 
         /// <summary>
@@ -111,9 +113,8 @@ namespace IES.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="id">Revision ID</param>
         /// <param name="serverFileName">Server File Name</param>
-        /// <param name="httpResponse">HTTP response object</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        public void GenerateFullPPRD(string id, string serverFileName, HttpResponseBase httpResponse, bool? portionMarkingRequired)
+        public IActionResult GenerateFullPPRD(string id, string serverFileName, bool? portionMarkingRequired)
         {
             if (id == null)
             {
@@ -152,7 +153,7 @@ namespace IES.ActionLogic.ControllerLogic
             ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
             // TODO - RDM 1.0 - Update to allow user to select number of years
-            this.pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, httpResponse, refNumberPrefixLevel);
+            return this.pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, refNumberPrefixLevel);
         }
 
         /// <summary>
@@ -160,7 +161,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="id">Revision Id to export</param>
         /// <param name="jsonFilePath">The server path where the JSON file will be created</param>
-        public ActionResult ExportRevisionAsJson(string id, string jsonFilePath)
+        public IActionResult ExportRevisionAsJson(string id, string jsonFilePath)
         {
             if (id == null)
             {
@@ -188,7 +189,13 @@ namespace IES.ActionLogic.ControllerLogic
 
             this.rdmRevisionExporter.ExportRevisionAsJson(currentUserDisplayName, revision, sections, rates, cobraDetails, burdenPoolGridModel, jsonFilePath);
             string fileDownloadName = $"Revision{revision.Revision}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.json";
-            return new ExportFileDownloadResult(jsonFilePath, fileDownloadName);
+
+			FileStream fs = new FileStream(jsonFilePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+            return new FileStreamResult(fs, ExportFileDownloadBase.GetContentType(fileDownloadName))
+            {
+                FileDownloadName = fileDownloadName
+            };
         }
     }
 }

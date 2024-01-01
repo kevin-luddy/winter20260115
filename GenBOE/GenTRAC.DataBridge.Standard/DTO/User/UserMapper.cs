@@ -8,9 +8,9 @@ namespace GenTRAC.DataBridge.DTO
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+	using System.Configuration;
+	using System.Linq;
     using System.Transactions;
-    using System.Web.Configuration;
     using GenTRAC.DataBridge.Common;
     using IES.Standard;
 
@@ -30,11 +30,6 @@ namespace GenTRAC.DataBridge.DTO
         private IActiveDirectoryUtilities activeDirectoryUtilities;
 
         /// <summary>
-        /// declare private instance so we can cache returns about users existance for a brief period of time
-        /// </summary>
-        private ICache memoryCache = new MemoryCache();
-
-        /// <summary>
         /// the cache
         /// </summary>
         private ICache cache = null;
@@ -51,9 +46,10 @@ namespace GenTRAC.DataBridge.DTO
                           ICacheDataLoader inCacheDataLoader,
                           ISecurityInformation inSecurityInformation,
                           IActiveDirectoryUtilities inActiveDirectoryUtilities,
-                          ICache inCache)
+                          ICache inCache,
+                          ILogger logger)
         {
-            this.Log = new Logger(typeof(IUserMapper));
+            this.Log = logger;
 
             this.DataLoader = inUserDataLoader;
             this.CacheLoader = inCacheDataLoader;
@@ -213,7 +209,7 @@ namespace GenTRAC.DataBridge.DTO
                         else
                         {
                             // need to provide a transaction for the save
-                            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(ConfigurationManager.AppSettings["TransactionTimeout"])) }))
                             {
                                 (this as IInternalDataMapper<UserDTO>).Save(new UserDTO
                                 {
@@ -258,9 +254,9 @@ namespace GenTRAC.DataBridge.DTO
         {
             string key = CacheConstants.USER_EXISTS + inUserNtid;
 
-            if (this.memoryCache.Contains(key))
+            if (this.cache.Contains(key))
             {
-                int? userId = this.memoryCache.GetData(key) as int?;
+                int? userId = this.cache.GetData(key) as int?;
 
                 outUserId = userId.HasValue ? userId.Value : 0;
             }
@@ -271,7 +267,7 @@ namespace GenTRAC.DataBridge.DTO
 
                 if (outUserId != 0)
                 {
-                    this.memoryCache.Add(key, outUserId, 30); // cache for 30 seconds
+                    this.cache.Add(key, outUserId, 30); // cache for 30 seconds
                 }
             }
 
@@ -291,7 +287,7 @@ namespace GenTRAC.DataBridge.DTO
                 CacheLoader.Remove(CacheConstants.USER + dto.Ntid);
                 CacheLoader.Remove(CacheConstants.USER + dto.Id);
                 CacheLoader.Remove(CacheConstants.USERS_ONLINE);
-                this.memoryCache.Remove(CacheConstants.USER_EXISTS + dto.Ntid);
+                this.cache.Remove(CacheConstants.USER_EXISTS + dto.Ntid);
             }
         }
 

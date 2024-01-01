@@ -20,9 +20,9 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Ctor
         /// </summary>
-        public ContractTypeLULoader()
+        public ContractTypeLULoader(ILogger logger)
         {
-            this.Log = new Logger(typeof(ContractTypeLULoader));
+            this.Log = logger;
         }
 
         /// <summary>

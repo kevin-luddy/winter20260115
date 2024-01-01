@@ -6,15 +6,14 @@
 
 namespace GenTRAC.DataBridge.DTO
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Web.Mvc;
-    using IES.Standard;
+	using System;
+	using System.Collections.Generic;
+	using IES.Standard;
 
-    /// <summary>
-    /// proposal loader interface
-    /// </summary>
-    public interface IProposalLoader : IDataLoader<ProposalDto>
+	/// <summary>
+	/// proposal loader interface
+	/// </summary>
+	public interface IProposalLoader : IDataLoader<ProposalDto>
     {
         /// <summary>
         /// Get All proposal Ids

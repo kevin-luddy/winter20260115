@@ -18,15 +18,16 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>,
         /// Logger
         /// </summary>
-        protected Logger Log { get; set; }
+        protected ILogger Log { get; private set; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public BulkArchiveLoader()
-        {
-            this.Log = new Logger(typeof(BulkArchiveLoader));
-        }
+        public BulkArchiveLoader(ILogger logger)
+
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Apply Bulk Archive for the given BulkArchiveDTO's filters.
@@ -62,7 +63,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="dto">Bulk Archive DTO</param>
         /// <returns>Number of proposals archived</returns>
-        [DbQuery]
         public int? SearchBulkArchive(BulkArchiveDto dto)
         {
             int? toReturn = 0;

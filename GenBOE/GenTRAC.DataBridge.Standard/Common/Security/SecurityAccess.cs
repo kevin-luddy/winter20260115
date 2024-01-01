@@ -21,7 +21,7 @@ namespace GenTRAC.DataBridge.Common.Security
         /// <summary>
         /// The logger
         /// </summary>
-        private IES.Standard.Logger log = new IES.Standard.Logger(typeof(SecurityAccess));
+        private readonly ILogger log;
 
         /// <summary>
         /// Used to load in all security accesses for user in the system
@@ -44,9 +44,10 @@ namespace GenTRAC.DataBridge.Common.Security
         /// </summary>
         /// <param name="inSecurityMapper">The security mapper</param>
         /// <param name="inProposalLoader">Proposal Loader</param>
-        public SecurityAccess(ISecurityMapper inSecurityMapper, IProposalLoader inProposalLoader)
-        {
-            Stopwatch sw = new Stopwatch();
+        public SecurityAccess(ISecurityMapper inSecurityMapper, IProposalLoader inProposalLoader, ILogger logger)
+		{
+			this.log = logger;
+			Stopwatch sw = new Stopwatch();
             sw.Start();
             this.log.Info("Starting to initialize security matrix...");
 

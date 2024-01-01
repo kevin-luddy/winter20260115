@@ -21,7 +21,7 @@ namespace GenTRAC.DataBridge.Common
         /// <summary>
         /// Logger
         /// </summary>
-        protected Logger Log { get; set; }
+        protected ILogger Log { get; set; }
 
         /// <summary>
         /// Data loader for the mapper

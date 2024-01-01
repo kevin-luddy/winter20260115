@@ -19,21 +19,20 @@ namespace GenTRAC.DataBridge.DTO.Reports
         /// <summary>
         /// Logger
         /// </summary>
-        protected Logger Log { get; set; }
+        protected ILogger Log { get; private set; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ReportsLoader()
-        {
-            this.Log = new Logger(typeof(ReportsLoader));
-        }
+        public ReportsLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Get pricers.
         /// </summary>
         /// <returns>pricer user ids</returns>
-        [DbQuery]
         public ICollection<int> GetPricerUserIds()
         {
             ICollection<int> toReturn = new Collection<int>();
@@ -58,7 +57,6 @@ namespace GenTRAC.DataBridge.DTO.Reports
         /// Get a collection of years that a proposal exists in
         /// </summary>
         /// <returns>proposal years</returns>
-        [DbQuery]
         public ICollection<int> GetProposalYears()
         {
             ICollection<int> toReturn = new Collection<int>();

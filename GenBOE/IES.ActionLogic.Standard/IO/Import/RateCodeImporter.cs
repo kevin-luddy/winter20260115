@@ -16,7 +16,6 @@ namespace IES.ActionLogic.IO.Import
 	using DataBridge.ModelViews;
 	using DocumentFormat.OpenXml.Packaging;
 	using IES.Standard;
-	using IES.Standard;
 	using IES.Standard.Exceptions;
 	using IES.Standard.OfficeUtilities;
 
@@ -200,7 +199,7 @@ namespace IES.ActionLogic.IO.Import
 		/// <summary>
 		/// The logger for the class.
 		/// </summary>
-		private static ILogger logger = new Logger(typeof(RateCodeImporter));
+		private static ILogger logger;
 
 		#endregion Constants
 
@@ -251,23 +250,15 @@ namespace IES.ActionLogic.IO.Import
 			}
 			catch (FileFormatException)
 			{
-				logger.Error("Imported Rate Codes file was an incorrect format.");
 				throw new NotExcelFileException();
 			}
 			catch (ColumnMissingException cme)
 			{
-				logger.Error("Imported Rate Codes file was missing a required column.");
 				throw new ColumnMissingException("Import file was missing a required column: " + cme.Message);
 			}
 			catch (CellValueMissingException cvme)
 			{
-				logger.Error("Imported Rate Codes file was missing a required cell value.");
 				throw new CellValueMissingException("Import file was missing a required cell value. Check the following column: " + cvme.Message);
-			}
-			catch (Exception ex)
-			{
-				logger.Error(ex);
-				throw;
 			}
 
 			return allRows;

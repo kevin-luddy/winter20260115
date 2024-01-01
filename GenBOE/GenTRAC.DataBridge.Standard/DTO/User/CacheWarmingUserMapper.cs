@@ -34,8 +34,8 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="inSecurityInformation">The Security Information</param>
         /// <param name="inActiveDirectoryUtilities">The Active Directory Utils</param>
         /// <param name="inCache">The Cache</param>
-        public CacheWarmingUserMapper(IUserLoader inUserLoader, ICacheDataLoader inCacheLoader, ISecurityInformation inSecurityInformation, IActiveDirectoryUtilities inActiveDirectoryUtilities, ICache inCache)
-            : base(inUserLoader, inCacheLoader, inSecurityInformation, inActiveDirectoryUtilities, inCache)
+        public CacheWarmingUserMapper(IUserLoader inUserLoader, ICacheDataLoader inCacheLoader, ISecurityInformation inSecurityInformation, IActiveDirectoryUtilities inActiveDirectoryUtilities, ICache inCache, ILogger logger)
+            : base(inUserLoader, inCacheLoader, inSecurityInformation, inActiveDirectoryUtilities, inCache, logger)
         {
             this.cache = inCache;
         }

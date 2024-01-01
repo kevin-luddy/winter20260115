@@ -23,7 +23,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Logger
         /// </summary>
-        protected Logger Log { get; set; }
+        protected ILogger Log { get; private set; }
 
         /// <summary>
         /// ILineOfBusinessDataLoader
@@ -43,10 +43,11 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="inLineOfBusinessDataLoader">LineOfBusiness DataLoader</param>
         /// <param name="inProgramAreaDataLoader">Program Area DataLoader</param>
         public OrgStructureDataMapper(IPickListLoader inLineOfBusinessDataLoader,
-                                      IPickListLoader inProgramAreaDataLoader)
-        {
-            this.Log = new Logger(typeof(OrgStructureDataMapper));
-            this.LineOfBusinessLoader = inLineOfBusinessDataLoader;
+                                      IPickListLoader inProgramAreaDataLoader,
+									  ILogger logger)
+		{
+			this.Log = logger;
+			this.LineOfBusinessLoader = inLineOfBusinessDataLoader;
             this.ProgramAreaLoader = inProgramAreaDataLoader;
         }
 

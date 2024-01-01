@@ -22,7 +22,7 @@ namespace GenTRAC.DataBridge.Common.Security
         /// <summary>
         /// Logger
         /// </summary>
-        private IES.Standard.Logger log = new IES.Standard.Logger(typeof(SecurityUserAuthorizationsDataLoader));
+        private ILogger log;
 
         /// <summary>
         /// Active Directory Utilities
@@ -33,9 +33,10 @@ namespace GenTRAC.DataBridge.Common.Security
         /// Default constructor
         /// </summary>
         /// <param name="inActiveDirectoryUtilities">Active Directory Utilities</param>
-        public SecurityUserAuthorizationsDataLoader(IES.Standard.IActiveDirectoryUtilities inActiveDirectoryUtilities)
-        {
-            this.activeDirectoryUtilities = inActiveDirectoryUtilities;
+        public SecurityUserAuthorizationsDataLoader(IActiveDirectoryUtilities inActiveDirectoryUtilities, ILogger logger)
+		{
+			this.log = logger;
+			this.activeDirectoryUtilities = inActiveDirectoryUtilities;
         }
 
         /// <summary>

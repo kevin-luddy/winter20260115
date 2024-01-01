@@ -20,10 +20,10 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// LineOfBusinessDataLoader
         /// </summary>
-        public LineOfBusinessDataLoader() 
-        {
-            this.Log = new Logger(typeof(LineOfBusinessDataLoader));
-        }
+        public LineOfBusinessDataLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
 
         /// <summary>
         /// Abstract method for retrieving Pick List Values
