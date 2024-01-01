@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GenTRAC.DataBridge.Standard\GenTRAC.DataBridge.Standard.csproj" />
+    <ProjectReference Include="..\IES.DataBridge.Standard\IES.DataBridge.Standard.csproj" />
+    <ProjectReference Include="..\IES.Standard\IES.Standard.csproj" />
+  </ItemGroup>
+
+</Project>

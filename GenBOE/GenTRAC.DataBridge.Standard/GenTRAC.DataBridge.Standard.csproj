@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GenTRAC.Models.Standard\GenTRAC.Models.Standard.csproj" />
+    <ProjectReference Include="..\IES.Standard\IES.Standard.csproj" />
+  </ItemGroup>
+
+</Project>
