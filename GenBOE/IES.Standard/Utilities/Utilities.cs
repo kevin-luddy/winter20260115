@@ -13,6 +13,7 @@ namespace IES.Standard
 	using System.Net.Http;
 	using System.Text.RegularExpressions;
 	using System.Threading;
+	using Microsoft.Extensions.Hosting;
 	using Microsoft.Net.Http.Headers;
 	using PickList;
 
@@ -711,5 +712,30 @@ namespace IES.Standard
 
 			return result;
 		}
+        /// <summary>
+        /// The Host Environment web path
+        /// </summary>
+        public static string HostEnvironmentWebpath { get; private set; }
+
+        /// <summary>
+        /// Initialize the Utilities class
+        /// </summary>
+        /// <param name="hostEnvironment"></param>
+        public static void Initialize(string hostEnvironmentWebpath)
+        {
+			HostEnvironmentWebpath = hostEnvironmentWebpath;
+        }
+
+        /// <summary>
+        /// Maps a filename to a server path
+        /// </summary>
+        /// <param name="fileName">the filename to map</param>
+        /// <returns>The mapped filename path</returns>
+        public static string MapPath(string fileName)
+        {
+            string path = Path.Combine(HostEnvironmentWebpath, fileName);
+
+            return path;
+        }
 	}
 }

@@ -1,0 +1,684 @@
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.DataBridge.DTO
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using IES.Standard;
+    using GenBOE.Models;
+    using GenBOE.Dtos;
+    using GenBOE.Objects;
+    using RteTemplateSource = IES.Standard.RteTemplateSource;
+
+    /// <summary>
+    /// This loader is exclusively used for retrievals only
+    /// </summary>
+    public class RteTemplateDataLoader : DataLoader<RteCustomTemplateModelView>, IRteTemplateDataLoader
+    {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public RteTemplateDataLoader(ILogger logger)
+		{
+			this.Log = logger;
+		}
+
+        /// <summary>
+        /// Gets all of the sources from lookup table.
+        /// </summary>
+        /// <param name="usingTemplateBOE">Is workspace using template BOEs</param>
+        /// <returns>All of the sources from lookup table.</returns>
+        
+        public ICollection<RteCustomTemplateSourceModelView> GetSources(bool usingTemplateBOE)
+        {
+            ICollection<RteCustomTemplateSourceModelView> toReturn = new Collection<RteCustomTemplateSourceModelView>();
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    toReturn = (from t in gbe.RteTemplateSources
+                                select new RteCustomTemplateSourceModelView
+                                {
+                                    SourceId = t.RteTemplateSourceId,
+                                    Description = (usingTemplateBOE && t.RteTemplateSourceId == (int)RteTemplateSource.TaskMOQ ? "Additional " : string.Empty) + t.Description,
+                                    TaskOnly = t.TaskOnly
+                                }).ToCollection<RteCustomTemplateSourceModelView>();
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Searches Templates.
+        /// </summary>
+        /// <param name="searchTerm">Search term.</param>
+        /// <returns>List of matching RTE Templates.</returns>
+        public ICollection<RteCustomTemplateModelView> Search(string searchTerm)
+        {
+            ICollection<RteCustomTemplateModelView> toReturn = new Collection<RteCustomTemplateModelView>();
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                ICollection<RteCustomTemplateQuestionModelView> questions;
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    toReturn = (from t in gbe.RteTemplates.Where(rt => rt.Workspace.AllowSearch && (rt.Description.Contains(searchTerm) || rt.ETIuser.DisplayName.Contains(searchTerm) || rt.Workspace.WorkspaceName.Contains(searchTerm)))
+                                select new RteCustomTemplateModelView
+                                {
+                                    Id = t.TemplateID,
+                                    Author = t.ETIuser.DisplayName,
+                                    AuthorId = t.AuthorID,
+                                    CreatedOn = t.CreatedOn,
+                                    Description = t.Description,
+                                    InUse = t.RteTemplateQuestions.Any(q => q.RteTemplateAnswers.Any()),
+                                    UpdateDate = t.UpdateDT,
+                                    WorkspaceId = t.WorkspaceID,
+                                    WorkspaceName = t.Workspace.WorkspaceName,
+                                    AssignedList = t.RteTemplateSources.Select(s => s.RteTemplateSourceId)
+                                }).ToCollection<RteCustomTemplateModelView>();
+
+                    ICollection<int> ids = toReturn.Select(t => t.Id).Distinct().ToList();
+
+                    questions = (from q in gbe.RteTemplateQuestions.Where(rtq => ids.Contains(rtq.TemplateID))
+                                 select new RteCustomTemplateQuestionModelView
+                                 {
+                                     Id = q.QuestionID,
+                                     Required = q.Required,
+                                     SortOrder = q.SortOrder,
+                                     TemplateId = q.TemplateID,
+                                     Text = q.Text,
+                                     UpdateDate = q.UpdateDT
+                                 }).ToCollection<RteCustomTemplateQuestionModelView>();
+                }
+
+                MatchQuestionsToTemplates(toReturn, questions);
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Gets all templates for a workspace
+        /// </summary>
+        /// <param name="workspaceId">The Id of a workspace.</param>
+        /// <returns>Collection of RTE Templates</returns>
+        
+        public ICollection<RteCustomTemplateModelView> GetTemplates(int workspaceId)
+        {
+            ICollection<RteCustomTemplateModelView> toReturn = new Collection<RteCustomTemplateModelView>();
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                ICollection<RteCustomTemplateQuestionModelView> questions;
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    toReturn = (from t in gbe.RteTemplates.Where(rt => rt.WorkspaceID == workspaceId)
+                                select new RteCustomTemplateModelView
+                                {
+                                    Id = t.TemplateID,
+                                    Author = t.ETIuser.DisplayName,
+                                    AuthorId = t.AuthorID,
+                                    CreatedOn = t.CreatedOn,
+                                    Description = t.Description,
+                                    InUse = t.RteTemplateQuestions.Any(q => q.RteTemplateAnswers.Any()),
+                                    UpdateDate = t.UpdateDT,
+                                    WorkspaceId = t.WorkspaceID,
+                                    WorkspaceName = t.Workspace.WorkspaceName,
+                                    AssignedList = t.RteTemplateSources.Select(s => s.RteTemplateSourceId)
+                                }).ToCollection<RteCustomTemplateModelView>();
+
+                    questions = (from q in gbe.RteTemplateQuestions.Where(rtq => rtq.RteTemplate.WorkspaceID == workspaceId)
+                                 select new RteCustomTemplateQuestionModelView
+                                 {
+                                     Id = q.QuestionID,
+                                     Required = q.Required,
+                                     SortOrder = q.SortOrder,
+                                     TemplateId = q.TemplateID,
+                                     Text = q.Text,
+                                     UpdateDate = q.UpdateDT
+                                 }).ToCollection<RteCustomTemplateQuestionModelView>();
+                }
+
+                MatchQuestionsToTemplates(toReturn, questions);
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Gets a collection of RteCustomTemplateModelViews matching the ids.
+        /// </summary>
+        /// <param name="ids">Rte Templates to find</param>
+        /// <returns>Collection of matching Templates.</returns>
+        
+        public override ICollection<RteCustomTemplateModelView> GetByIds(ICollection<int> ids)
+        {
+            ICollection<RteCustomTemplateModelView> toReturn = new Collection<RteCustomTemplateModelView>();
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                ICollection<RteCustomTemplateQuestionModelView> questions;
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    toReturn = (from t in gbe.RteTemplates.Where(rt => ids.Contains(rt.TemplateID))
+                                select new RteCustomTemplateModelView
+                                {
+                                    Id = t.TemplateID,
+                                    Author = t.ETIuser.DisplayName,
+                                    AuthorId = t.AuthorID,
+                                    CreatedOn = t.CreatedOn,
+                                    Description = t.Description,
+                                    InUse = t.RteTemplateQuestions.Any(q => q.RteTemplateAnswers.Any()),
+                                    UpdateDate = t.UpdateDT,
+                                    WorkspaceId = t.WorkspaceID,
+                                    WorkspaceName = t.Workspace.WorkspaceName,
+                                    AssignedList = t.RteTemplateSources.Select(s => s.RteTemplateSourceId)
+                                }).ToCollection<RteCustomTemplateModelView>();
+
+                    questions = (from q in gbe.RteTemplateQuestions.Where(rtq => ids.Contains(rtq.TemplateID))
+                                 select new RteCustomTemplateQuestionModelView
+                                 {
+                                     Id = q.QuestionID,
+                                     Required = q.Required,
+                                     SortOrder = q.SortOrder,
+                                     TemplateId = q.TemplateID,
+                                     Text = q.Text,
+                                     UpdateDate = q.UpdateDT
+                                 }).ToCollection<RteCustomTemplateQuestionModelView>();
+                }
+                
+                MatchQuestionsToTemplates(toReturn, questions);
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Get the Questions and Answers by Boe Id.
+        /// </summary>
+        /// <param name="boeId">The id of the BOE to retrieve information for.</param>
+        /// <returns>Combo of questions and answers for a BOE.</returns>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> GetByBoeId(int workspaceId, int boeId)
+        {
+            ICollection<RTECustomTemplateQuestionAnswerModelView> questions;
+            ICollection<RteTemplateAnswer> answers;
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    questions = (from q in gbe.RteTemplateQuestions.Where(rtq => rtq.RteTemplate.WorkspaceID == workspaceId && (rtq.RteTemplate.RteTemplateSources.Any(s => !s.TaskOnly)))
+                                 select new RTECustomTemplateQuestionAnswerModelView
+                                 {
+                                     QuestionId = q.QuestionID,
+                                     Required = q.Required,
+                                     SortOrder = q.SortOrder,
+                                     TemplateId = q.TemplateID,
+                                     QuestionText = q.Text,
+                                     SourceIdEnum = q.RteTemplate.RteTemplateSources.Select(s => s.RteTemplateSourceId)
+                                 }).ToCollection<RTECustomTemplateQuestionAnswerModelView>();
+
+                    answers = gbe.RteTemplateAnswers.Where(rta => rta.BOEID == boeId).ToList();
+                }
+            }
+
+            DoPostProcessing(questions);
+
+            // join answers onto questions
+            questions = MatchAnswersToQuestions(boeId, null, questions, answers);
+
+            return questions;
+        }
+
+        #region New Methods, should be used over the ones above
+
+        /// <summary>
+        /// Get the Questions ONLY for the workspace
+        /// </summary>
+        /// <param name="workspaceId">The id of the workspace to retrieve information for.</param>
+        /// <returns>Questions for the workspace.</returns>
+        
+        public ICollection<RteCustomTemplateQuestionModelView> GetQuestionsByWorkspaceId(int workspaceId)
+        {
+            ICollection<RteCustomTemplateQuestionModelView> questions;
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    questions = gbe.RteTemplateQuestions.Where(rtq => rtq.RteTemplate.WorkspaceID == workspaceId).Select(q => 
+                                 new 
+                                 {
+                                     q.QuestionID,
+                                     q.Required,
+                                     q.SortOrder,
+                                     q.TemplateID,
+                                     q.Text,
+                                     SourceIds = q.RteTemplate.RteTemplateSources.Select(s => s.RteTemplateSourceId),
+                                     q.UpdateDT
+                                 }).ToList().Select(q =>
+                                 new RteCustomTemplateQuestionModelView()
+                                 {
+                                     Id = q.QuestionID,
+                                     Required = q.Required,
+                                     SortOrder = q.SortOrder,
+                                     TemplateId = q.TemplateID,
+                                     Text = q.Text,
+                                     SourceIds = q.SourceIds.Select(x => (IES.Standard.RteTemplateSource)x).ToList(),
+                                     UpdateDate = q.UpdateDT
+                                 }).ToList();
+                }
+            }
+
+            return questions;
+        }
+
+        /// <summary>
+        /// Get the Answers ONLY for the workspace
+        /// </summary>
+        /// <param name="workspaceId">The id of the workspace to retrieve information for.</param>
+        /// <returns>Answers for the workspace.</returns>
+        
+        public ICollection<RTECustomTemplateAnswerModelView> GetAnswersByWorkspaceId(int workspaceId)
+        {
+            ICollection<RTECustomTemplateAnswerModelView> answers;
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    answers = gbe.RteTemplateAnswers.Where(x => x.BOE.WorkspaceID == workspaceId).Select(x => new RTECustomTemplateAnswerModelView()
+                    {
+                        Id = x.AnswerID,
+                        AnswerText = x.Text,
+                        BoeId = x.BOEID,
+                        QuestionId = x.QuestionID,
+                        Source = (IES.Standard.RteTemplateSource)x.RteTemplateSourceId,
+                        TaskId = x.TaskID,
+                        UpdateDate = x.UpdateDT
+                    }).ToList();
+                }
+            }
+
+            return answers;
+        }
+
+        /// <summary>
+        /// Gets Questions and Answers By Workspace Id
+        /// </summary>
+        /// <param name="workspaceId">Workspace Id</param>
+        /// <returns>Questions and Answers</returns>
+        
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> GetQuestionsAndAnswersByWorkspaceId(int workspaceId)
+        {
+            List<RTECustomTemplateQuestionAnswerModelView> result = new List<RTECustomTemplateQuestionAnswerModelView>();
+            HashSet<RteCustomTemplateQuestionModelView> questions = new HashSet<RteCustomTemplateQuestionModelView>(GetQuestionsByWorkspaceId(workspaceId));
+            HashSet<RTECustomTemplateAnswerModelView> answers = new HashSet<RTECustomTemplateAnswerModelView>(GetAnswersByWorkspaceId(workspaceId));
+
+            List<(int BoeId, List<int> TaskIds)> boeTaskIds;
+
+            using (GenBoeEntities gbe = new GenBoeEntities())
+            {
+                boeTaskIds = gbe.BOEs.Where(x => x.WorkspaceID == workspaceId)
+                                    .Select(x => new { Id = x.BOEID, TaskIds = x.BOETaskElements.Select(z => z.BOETaskElementID) }).ToList()
+                                    .Select(x => (BoeId: x.Id, TaskIds: x.TaskIds.ToList())).ToList();
+            }
+
+            boeTaskIds.ForEach(z => 
+            {
+                questions.Where(x => x.SourceIds.Contains(RteTemplateSource.BoeDescription)).ToList().ForEach(question =>
+                {
+                    result.Add(CreateAnswer(z.BoeId, null, RteTemplateSource.BoeDescription, question, answers));
+                });
+
+                questions.Where(x => x.SourceIds.Contains(RteTemplateSource.BoeSources)).ToList().ForEach(question =>
+                {
+                    result.Add(CreateAnswer(z.BoeId, null, RteTemplateSource.BoeSources, question, answers));
+                });
+
+                z.TaskIds.ForEach(taskId => 
+                {
+                    questions.Where(x => x.SourceIds.Contains(RteTemplateSource.TaskDescription)).ToList().ForEach(question => 
+                    {
+                        result.Add(CreateAnswer(z.BoeId, taskId, RteTemplateSource.TaskDescription, question, answers));
+                    });
+
+                    questions.Where(x => x.SourceIds.Contains(RteTemplateSource.TaskMOQ)).ToList().ForEach(question =>
+                    {
+                        result.Add(CreateAnswer(z.BoeId, taskId, RteTemplateSource.TaskMOQ, question, answers));
+                    });
+                });
+            });
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates an answer object for the specific Boe, Task (if applicable) and Template Source
+        /// 
+        /// If the answer doesn't exist, it inserts in a blank.. This is necessary for exports, etc
+        /// </summary>
+        /// <param name="boeId">Boe Id</param>
+        /// <param name="taskId">optional Task Id (for BOE level sources)</param>
+        /// <param name="templateSource">Template Source</param>
+        /// <param name="question">Question object</param>
+        /// <param name="answers">All answers</param>
+        /// <returns>Answer object</returns>
+        private RTECustomTemplateQuestionAnswerModelView CreateAnswer(int boeId, int? taskId, RteTemplateSource templateSource, RteCustomTemplateQuestionModelView question, HashSet<RTECustomTemplateAnswerModelView> answers)
+        {
+            RTECustomTemplateAnswerModelView answer = answers.FirstOrDefault(x => x.BoeId == boeId && x.Source == templateSource && (!taskId.HasValue || x.TaskId == taskId) && question.Id == x.QuestionId);
+
+            return new RTECustomTemplateQuestionAnswerModelView()
+            {
+                Id = answer?.Id ?? -1,
+                UpdateDate = answer?.UpdateDate ?? DateTime.Now,
+                AnswerText = answer?.AnswerText,
+
+                BoeId = boeId,
+                TaskId = taskId,
+                SourceId = (int)templateSource,
+
+                QuestionId = question.Id,
+                QuestionText = question.Text,
+                Required = question.Required,
+                SortOrder = question.SortOrder
+            };
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Get the Questions and Answers by Boe Id.
+        /// </summary>
+        /// <param name="boeId">The id of the BOE to retrieve information for.</param>
+        /// <param name="taskId">The id of the task to retrieve information for.</param>
+        /// <returns>Combo of questions and answers for a BOE.</returns>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> GetByBoeIdAndTaskId(int workspaceId, int boeId, int? taskId)
+        {
+            ICollection<RTECustomTemplateQuestionAnswerModelView> questions;
+            ICollection<RteTemplateAnswer> answers = new List<RteTemplateAnswer>();
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    questions = (from q in gbe.RteTemplateQuestions.Where(rtq => rtq.RteTemplate.WorkspaceID == workspaceId && (rtq.RteTemplate.RteTemplateSources.Any(s => s.TaskOnly)))
+                                 select new RTECustomTemplateQuestionAnswerModelView
+                                 {
+                                     QuestionId = q.QuestionID,
+                                     Required = q.Required,
+                                     SortOrder = q.SortOrder,
+                                     TemplateId = q.TemplateID,
+                                     QuestionText = q.Text,
+                                     SourceIdEnum = q.RteTemplate.RteTemplateSources.Select(s => s.RteTemplateSourceId)
+                                 }).ToCollection<RTECustomTemplateQuestionAnswerModelView>();
+
+                    if (taskId.HasValue)
+                    {
+                        answers = gbe.RteTemplateAnswers.Where(rta => rta.BOEID == boeId && rta.TaskID == taskId.Value).ToList();
+                    }
+                }
+            }
+
+            DoPostProcessing(questions);
+
+            // join answers onto questions
+            questions = MatchAnswersToQuestions(boeId, taskId, questions, answers);
+
+            return questions;
+        }
+
+        /// <summary>
+        /// Gets the Questions and Answers by Workspace Id.
+        /// </summary>
+        /// <param name="workspaceId">The Id of a workspace.</param>
+        /// <param name="boes">The full boes with tasks to retrieve questions and answers against.</param>
+        /// <returns>Combo of questions and answers for a BOE.</returns>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> GetByWorkspaceId(int workspaceId, ICollection<FullBoe> boes)
+        {
+            if (boes == null)
+            {
+                throw new ArgumentNullException(nameof(boes));
+            }
+
+            if (boes.None())
+            {
+                return new List<RTECustomTemplateQuestionAnswerModelView>();
+            }
+
+            ICollection<RTECustomTemplateQuestionAnswerModelView> boeQuestions;
+            ICollection<RTECustomTemplateQuestionAnswerModelView> taskQuestions;
+            ICollection<RteTemplateAnswer> answers;
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    boeQuestions = (from q in gbe.RteTemplateQuestions.Where(rtq => rtq.RteTemplate.WorkspaceID == workspaceId && rtq.RteTemplate.RteTemplateSources.Any(s => !s.TaskOnly))
+                                 select new RTECustomTemplateQuestionAnswerModelView
+                                 {
+                                     QuestionId = q.QuestionID,
+                                     Required = q.Required,
+                                     SortOrder = q.SortOrder,
+                                     TemplateId = q.TemplateID,
+                                     QuestionText = q.Text,
+                                     SourceIdEnum = q.RteTemplate.RteTemplateSources.Select(s => s.RteTemplateSourceId)
+                                 }).ToCollection<RTECustomTemplateQuestionAnswerModelView>();
+
+                    taskQuestions = (from q in gbe.RteTemplateQuestions.Where(rtq => rtq.RteTemplate.WorkspaceID == workspaceId && rtq.RteTemplate.RteTemplateSources.Any(s => s.TaskOnly))
+                                    select new RTECustomTemplateQuestionAnswerModelView
+                                    {
+                                        QuestionId = q.QuestionID,
+                                        Required = q.Required,
+                                        SortOrder = q.SortOrder,
+                                        TemplateId = q.TemplateID,
+                                        QuestionText = q.Text,
+                                        SourceIdEnum = q.RteTemplate.RteTemplateSources.Select(s => s.RteTemplateSourceId)
+                                    }).ToCollection<RTECustomTemplateQuestionAnswerModelView>();
+
+                    answers = gbe.RteTemplateAnswers.Where(rta => rta.BOE.WorkspaceID == workspaceId).ToList();
+                }
+            }
+
+            // enumerate proxy once
+            DoPostProcessing(boeQuestions);
+            DoPostProcessing(taskQuestions);
+
+            List<RTECustomTemplateQuestionAnswerModelView> questions = new List<RTECustomTemplateQuestionAnswerModelView>();
+
+            // join answers onto questions for each Boe
+            foreach (FullBoe boe in boes)
+            {
+                questions.AddRange(MatchAnswersToQuestions(boe.Id, null, boeQuestions, answers));
+
+                foreach(BoeTaskElementDTO task in boe.TaskElements)
+                {
+                    questions.AddRange(MatchAnswersToQuestions(boe.Id, task.Id, taskQuestions, answers));
+                }
+            }
+
+            return questions;
+        }
+
+        private void DoPostProcessing(ICollection<RTECustomTemplateQuestionAnswerModelView> questions)
+        {
+            foreach(RTECustomTemplateQuestionAnswerModelView question in questions)
+            {
+                question.SourceIdList = question.SourceIdEnum.ToList();
+                question.SourceIdEnum = null;
+            }
+        }
+
+        /// <summary>
+        /// Save the answers for RTE questions.
+        /// </summary>
+        /// <param name="answers">The answers to save.</param>
+        public void SaveAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
+        {
+            if (answers != null && answers.Any())
+            {
+                using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+                {
+                    using (GenBoeEntities gbe = new GenBoeEntities())
+                    {
+                        foreach(RTECustomTemplateQuestionAnswerModelView answer in answers)
+                        {
+                            gbe.upsertRteTemplateAnswer(answer.Id, answer.UpdateDate, answer.QuestionId, answer.BoeId, answer.TaskId, answer.AnswerText ?? string.Empty, answer.SourceId);
+                        }
+                    }
+                }
+            }
+        }
+
+        #region Protected
+
+        /// <summary>
+        /// Upsert a Template
+        /// Note: Does not save questions - SaveQuestions() will need to be called separately
+        /// </summary>
+        /// <param name="dtoToUpsert">dto to upsert</param>
+        /// <returns>id of upserted entry</returns>
+        protected override int? Upsert(RteCustomTemplateModelView dtoToUpsert)
+        {
+            if (dtoToUpsert == null)
+            {
+                throw new ArgumentNullException(nameof(dtoToUpsert));
+            }
+
+            int? toReturn = null;
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                // save
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    string joinedIds = null;
+                    if (dtoToUpsert.Assigned.Any())
+                    {
+                        joinedIds = string.Join(",", dtoToUpsert.Assigned.Select(a => a.ToString()));
+                    }
+
+                    int passedBackId = Convert.ToInt32(gbe.upsertRteTemplate(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.WorkspaceId, dtoToUpsert.Description, dtoToUpsert.AuthorId, joinedIds).ToList().FirstOrDefault());
+                    dtoToUpsert.Id = passedBackId;
+                    toReturn = passedBackId;
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Matches answers to questions.
+        /// </summary>
+        /// <param name="boeId">The boe id to match against</param>
+        /// <param name="questions"></param>
+        /// <param name="answers"></param>
+        private ICollection<RTECustomTemplateQuestionAnswerModelView> MatchAnswersToQuestions(int boeId, int? taskId, ICollection<RTECustomTemplateQuestionAnswerModelView> questions, ICollection<RteTemplateAnswer> answers)
+        {
+            List<RTECustomTemplateQuestionAnswerModelView> results = new List<RTECustomTemplateQuestionAnswerModelView>();
+            if (questions.Any())
+            {
+                foreach (RTECustomTemplateQuestionAnswerModelView question in questions)
+                {
+                    foreach (int sourceId in question.SourceIdList)
+                    {
+                        RteTemplateAnswer answer = answers.FirstOrDefault(a => a.QuestionID == question.QuestionId && a.RteTemplateSourceId == sourceId 
+                            && a.BOEID == boeId && a.TaskID == taskId);
+
+                        RTECustomTemplateQuestionAnswerModelView result = new RTECustomTemplateQuestionAnswerModelView(question, boeId, taskId, sourceId);
+                        
+                        if (answer != null)
+                        {
+                            result.AnswerText = answer.Text;
+                            result.Id = answer.AnswerID;
+                            result.UpdateDate = answer.UpdateDT;
+                        }
+
+                        results.Add(result);
+                    }
+                }
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// Saves the questions for an updated rte template
+        /// </summary>
+        /// <param name="questions">The questions to save.</param>
+        /// <param name="templateId">The template ID for the questions.</param>
+        /// <returns>Mapping of old and new IDs for the questions</returns>
+        public Dictionary<int, int> SaveQuestions(ICollection<RteCustomTemplateQuestionModelView> questions, int templateId)
+        {
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                // save
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+
+                    if (questions != null && questions.Any())
+                    {
+                        foreach (RteCustomTemplateQuestionModelView question in questions)
+                        {
+                            if (question.Updateable == UpdateType.Deleted)
+                            {
+                                gbe.deleteRteTemplateQuestion(question.Id);
+                            }
+                            else // must be an update
+                            {
+                                int? newId = Convert.ToInt32(gbe.upsertRteTemplateQuestion(question.Id, question.UpdateDate, templateId, question.Text, question.SortOrder, question.Required).ToList().FirstOrDefault());
+                                toReturn.Add(question.Id, newId.Value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Deletion of a template.
+        /// </summary>
+        /// <param name="dtoToDelete">the element to delete</param>
+        /// <returns>id of the deleted item</returns>
+        protected override int? Delete(RteCustomTemplateModelView dtoToDelete)
+        {
+            if (dtoToDelete == null)
+            {
+                throw new ArgumentNullException(nameof(dtoToDelete));
+            }
+
+            using (GenBoeEntities gbe = new GenBoeEntities())
+            {
+                return gbe.deleteRteTemplate(dtoToDelete.Id);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Matches questions to templates.
+        /// </summary>
+        /// <param name="templates">Templates.</param>
+        /// <param name="questions">Questions.</param>
+        private static void MatchQuestionsToTemplates(ICollection<RteCustomTemplateModelView> templates, ICollection<RteCustomTemplateQuestionModelView> questions)
+        {
+            // match questions to templates
+            if (templates.Any() && questions.Any())
+            {
+                templates.AsParallel().ForAll(
+                    rt =>
+                    {
+                        rt.Assigned = rt.AssignedList.ToList();
+                        rt.AssignedList = null;
+                        rt.Questions = questions.Where(q => q.TemplateId == rt.Id).ToList();
+                    });
+            }
+        }
+    }
+}

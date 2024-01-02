@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace IES.Standard
 {
@@ -34,4 +32,5 @@ namespace IES.Standard
 
 		void Error(Exception exception, string inMessage = null);
 	}
+
 }

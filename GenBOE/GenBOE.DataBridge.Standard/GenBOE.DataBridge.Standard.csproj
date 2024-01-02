@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GenBOE.Models.Standard\GenBOE.Models.Standard.csproj" />
+    <ProjectReference Include="..\GenBOE.MSTMetricModel.Standard\GenBOE.MSTMetricModel.Standard.csproj" />
+    <ProjectReference Include="..\IES.Standard\IES.Standard.csproj" />
+  </ItemGroup>
+
+</Project>

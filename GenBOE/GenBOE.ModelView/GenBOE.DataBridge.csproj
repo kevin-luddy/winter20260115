@@ -360,7 +360,6 @@
     <Compile Include="DTO\Picklists\LineOfBusinessDataLoader.cs" />
     <Compile Include="Common\Interfaces\ISecurityAccess.cs" />
     <Compile Include="Common\security\SecurityAccess.cs" />
-    <Compile Include="Common\security\SecurityGroupAuthorizationsDataLoader.cs" />
     <Compile Include="Common\security\SecurityPermissionsRequested.cs" />
     <Compile Include="Common\security\SecurityPermissionsResponse.cs" />
     <Compile Include="Common\security\SecurityUserAuthorizationsDataLoader.cs" />
