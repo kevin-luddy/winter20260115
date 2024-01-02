@@ -1,2 +1,0 @@
-﻿This file is needed so the DeleteMe directory is built when publishing.  Otherwise, bad things happen (Production may have problems with Batch Reporting)
-On app shutdown, all .xlsx files in this directory will be deleted (since they are temporary)

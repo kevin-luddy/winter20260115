@@ -87,6 +87,7 @@
 			{
 				endpoints.MapControllers();
 				endpoints.MapHealthChecks("/Health", new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
+				endpoints.MapRazorPages();
 			});
 
 			app.Use(async (context, next) =>
