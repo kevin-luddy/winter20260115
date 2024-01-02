@@ -10,18 +10,26 @@ namespace IES.Standard.PickList
     using System.Collections.Generic;
     using System.Linq;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Pick lists abstract loader class
-    /// </summary>
-    public abstract class PickListLoader : DataLoader<PickListDto>, IPickListLoader
+	/// <summary>
+	/// Pick lists abstract loader class
+	/// </summary>
+	public abstract class PickListLoader : DataLoader<PickListDto>, IPickListLoader
     {
         /// <summary>
-        /// Gets the PickList items by Id.
+        /// default ctor
         /// </summary>
-        /// <param name="ids">Ids</param>
-        /// <returns>The picklists that match the IDs.</returns>
-        public override ICollection<PickListDto> GetByIds(ICollection<int> ids)
+        /// <param name="logger">logger</param>
+        protected PickListLoader(ILogger logger) : base(logger)
+        { }
+
+		/// <summary>
+		/// Gets the PickList items by Id.
+		/// </summary>
+		/// <param name="ids">Ids</param>
+		/// <returns>The picklists that match the IDs.</returns>
+		public override ICollection<PickListDto> GetByIds(ICollection<int> ids)
         {
             return this.GetPickListValues().Where(p => ids.Contains(p.Id)).ToList();
         }

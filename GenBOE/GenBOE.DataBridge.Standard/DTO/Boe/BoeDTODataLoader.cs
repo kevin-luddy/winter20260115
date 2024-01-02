@@ -13,16 +13,16 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Standard;
-    using static IES.Standard.Constants;
+	using Microsoft.Extensions.Logging;
+	using static IES.Standard.Constants;
 
     public class BoeDTODataLoader : DataLoader<BoeDTO>, IBoeDTODataLoader
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public BoeDTODataLoader(ILogger logger)
+        public BoeDTODataLoader(ILogger<BoeDTODataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         #region Retrieves

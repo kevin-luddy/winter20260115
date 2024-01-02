@@ -13,18 +13,19 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Data Loader for MST Zone Travel Origin DTO
-    /// </summary>
-    public class MSTZoneTravelOriginDTODataLoader : IMSTZoneTravelOriginDTODataLoader
+	/// <summary>
+	/// Data Loader for MST Zone Travel Origin DTO
+	/// </summary>
+	public class MSTZoneTravelOriginDTODataLoader : IMSTZoneTravelOriginDTODataLoader
     {
         private readonly ILogger _log;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public MSTZoneTravelOriginDTODataLoader(ILogger logger)
+        public MSTZoneTravelOriginDTODataLoader(ILogger<MSTZoneTravelOriginDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

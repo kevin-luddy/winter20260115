@@ -15,7 +15,8 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Models;
     using IES.Standard;
     using IES.Standard.Exceptions;
-    using static IES.Standard.Constants;
+	using Microsoft.Extensions.Logging;
+	using static IES.Standard.Constants;
 
     public class BoeTaskElementDTODataLoader : BulkDataLoader<BoeTaskElementDTO, BOETaskElement>, IBoeTaskElementDTODataLoader
     {
@@ -40,9 +41,9 @@ namespace GenBOE.DataBridge.DTO
             IResourceSpreadLoader resourceSpreadLoader,
             IOrdinaryVariableLoader ordinaryVariableLoader,
             IBoeTaskElementCustomFieldValueXREFLoader taskElementCustomFieldLoader,
-            ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader, ILogger logger)
+            ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader, 
+            ILogger<BoeTaskElementDTODataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 			this.resourceTypeLoader = resourceTypeLoader;
             this.resourceSpreadLoader = resourceSpreadLoader;
             this.ordinaryVariableLoader = ordinaryVariableLoader;
@@ -449,14 +450,14 @@ namespace GenBOE.DataBridge.DTO
 
             if (dtosToSave.Any())
             {
-                if (this.log.DebugEnabled)
+                if (this.log.IsEnabled(LogLevel.Debug))
                 {
-                    this.log.Debug(string.Format("BoeTaskElementDTODataLoader.BulkSave => Ntid: {2}, BoeId: {1}, Count: {0}",
+                    this.log.LogDebug(string.Format("BoeTaskElementDTODataLoader.BulkSave => Ntid: {2}, BoeId: {1}, Count: {0}",
                         dtosToSave.Count, dtosToSave.First().BoeID, System.Threading.Thread.CurrentPrincipal.Identity.Name));
 
                     foreach (BoeTaskElementDTO aDto in dtosToSave)
                     {
-                        this.log.Debug(string.Format("BoeTaskElementDTODataLoader.BulkSave => Id: {0}, Hours: {2}, Cost: {3}. Moq: {1}",
+                        this.log.LogDebug(string.Format("BoeTaskElementDTODataLoader.BulkSave => Id: {0}, Hours: {2}, Cost: {3}. Moq: {1}",
                             aDto.Id, aDto.MOQHoursEquation, aDto.TotalHours, aDto.TotalCost));
                     }
                 }
@@ -734,14 +735,14 @@ namespace GenBOE.DataBridge.DTO
                         int taskElementId = taskElementDetail.Id;
                         taskElementDetail.BoeID = taskElementDetail.BoeID;
 
-                        if (this.log.DebugEnabled)
+                        if (this.log.IsEnabled(LogLevel.Debug))
                         {
-                            this.log.Debug(string.Format("BoeTaskElementDTODataLoader.SaveBoeTaskElements => Ntid: {2}, BoeId: {1}, Count: {0}",
+                            this.log.LogDebug(string.Format("BoeTaskElementDTODataLoader.SaveBoeTaskElements => Ntid: {2}, BoeId: {1}, Count: {0}",
                                 inBoeTaskElementDTOs.Count, inBoeTaskElementDTOs.First().BoeID, System.Threading.Thread.CurrentPrincipal.Identity.Name));
 
                             foreach (BoeTaskElementDTO aDto in inBoeTaskElementDTOs)
                             {
-                                this.log.Debug(string.Format("BoeTaskElementDTODataLoader.SaveBoeTaskElements => Id: {0}, Hours: {2}, Cost: {3}. Moq: {1}",
+                                this.log.LogDebug(string.Format("BoeTaskElementDTODataLoader.SaveBoeTaskElements => Id: {0}, Hours: {2}, Cost: {3}. Moq: {1}",
                                     aDto.Id, aDto.MOQHoursEquation, aDto.TotalHours, aDto.TotalCost));
                             }
                         }
@@ -857,7 +858,7 @@ namespace GenBOE.DataBridge.DTO
                     throw new ArgumentNullException(nameof(dtoToDelete));
                 }
 
-                this.Log.Debug(string.Format("BoeTaskElementDTODataLoader.Delete => Ntid: {1}, BoeId: {0}, Item Id: {2}, Hours: {3}, Cost: {4}, MOQ: {5}",
+                this.Log.LogDebug(string.Format("BoeTaskElementDTODataLoader.Delete => Ntid: {1}, BoeId: {0}, Item Id: {2}, Hours: {3}, Cost: {4}, MOQ: {5}",
                     dtoToDelete.BoeID, System.Threading.Thread.CurrentPrincipal.Identity.Name, dtoToDelete.Id, dtoToDelete.TotalHours, dtoToDelete.TotalCost, dtoToDelete.MOQHoursEquation));
 
                 using (GenBoeEntities gbe = new GenBoeEntities())

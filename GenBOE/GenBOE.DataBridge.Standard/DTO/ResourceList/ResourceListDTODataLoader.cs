@@ -6,16 +6,17 @@
 
 namespace GenBOE.DataBridge.DTO
 {
-    using System;
-    using System.Linq;
-    using IES.Standard;
-    using GenBOE.Models;
-    using GenBOE.Dtos;
+	using System;
+	using System.Linq;
+	using GenBOE.Dtos;
+	using GenBOE.Models;
+	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    public class ResourceListDTODataLoader : GenBOE.DataBridge.DTO.IResourceListDTODataLoader
+	public class ResourceListDTODataLoader : GenBOE.DataBridge.DTO.IResourceListDTODataLoader
     {
         private readonly ILogger _log;
-        public ResourceListDTODataLoader(ILogger logger)
+        public ResourceListDTODataLoader(ILogger<ResourceListDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

@@ -16,6 +16,7 @@ namespace GenBOE.DataBridge.DTO
 	using IES.Standard;
 	using IES.Standard.Exceptions;
 	using IES.Standard.PickList;
+	using Microsoft.Extensions.Logging;
 
 	public class WorkspaceDTODataLoader : DataLoader<WorkspaceDTO>, IWorkspaceDTODataLoader
 	{
@@ -30,9 +31,8 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public WorkspaceDTODataLoader(ILogger logger)
+		public WorkspaceDTODataLoader(ILogger<WorkspaceDTODataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
 		#region Retrieves
@@ -867,7 +867,7 @@ namespace GenBOE.DataBridge.DTO
 			}
 			catch (SqlException ex)
 			{
-				Log.Error(ex);
+				Log.LogError(ex, "There was an error copying the workspace.  Contact a system administrator for assistance.");
 				throw new GeneralAppException("There was an error copying the workspace.  Contact a system administrator for assistance.");
 			}
 
@@ -901,7 +901,7 @@ namespace GenBOE.DataBridge.DTO
 			}
 			catch (SqlException ex)
 			{
-				Log.Error(ex);
+				Log.LogError(ex, "There was an error copying the workspace version.  Contact a system administrator for assistance.");
 				throw new GeneralAppException("There was an error copying the workspace version.  Contact a system administrator for assistance.");
 			}
 
@@ -1018,7 +1018,7 @@ namespace GenBOE.DataBridge.DTO
 		{
 			if (workspaceID <= 0)
 			{
-				this.Log.Error("The workspace id was negative");
+				this.Log.LogError("The workspace id was negative");
 			}
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
@@ -1154,7 +1154,7 @@ namespace GenBOE.DataBridge.DTO
 					// if the result ID is not a positive number, something bad went wrong so Log it
 					if (resultID <= 0)
 					{
-						this.Log.Error("The returned ID from upsertWorkspace SP was negative");
+						this.Log.LogError("The returned ID from upsertWorkspace SP was negative");
 					}
 					else
 					{

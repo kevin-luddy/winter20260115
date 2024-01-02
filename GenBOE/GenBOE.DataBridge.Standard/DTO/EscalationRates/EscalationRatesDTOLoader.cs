@@ -13,16 +13,16 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    public class EscalationRatesDTOLoader : DataLoader<EscalationRatesDTO>, IEscalationRatesDTOLoader
+	public class EscalationRatesDTOLoader : DataLoader<EscalationRatesDTO>, IEscalationRatesDTOLoader
     {
         /// <summary>
         /// default ctor
         /// </summary>
         /// <param name="logger">logger</param>
-        public EscalationRatesDTOLoader(ILogger logger)
+        public EscalationRatesDTOLoader(ILogger<EscalationRatesDTOLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

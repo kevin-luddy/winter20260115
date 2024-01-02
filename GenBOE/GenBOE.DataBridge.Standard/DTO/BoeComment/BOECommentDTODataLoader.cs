@@ -12,12 +12,12 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.ObjectModel;
     using GenBOE.Models;
     using GenBOE.Dtos;
+	using Microsoft.Extensions.Logging;
 
-    public class BOECommentDTODataLoader : DataLoader<BOECommentDTO>, IBOECommentDTODataLoader
+	public class BOECommentDTODataLoader : DataLoader<BOECommentDTO>, IBOECommentDTODataLoader
     {
-        public BOECommentDTODataLoader(ILogger logger)
+        public BOECommentDTODataLoader(ILogger<BOECommentDTODataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         #region Retrieves

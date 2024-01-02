@@ -12,8 +12,9 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    public class ProPricerDTODataLoader : IProPricerDTODataLoader
+	public class ProPricerDTODataLoader : IProPricerDTODataLoader
     {
         private readonly ILogger _log;
 
@@ -21,7 +22,7 @@ namespace GenBOE.DataBridge.DTO
         /// default ctor
         /// </summary>
         /// <param name="logger">Logger</param>
-        public ProPricerDTODataLoader(ILogger logger)
+        public ProPricerDTODataLoader(ILogger<ProPricerDTODataLoader> logger) : base(logger)
 		{
 			this._log = logger;
 		}

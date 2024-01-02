@@ -15,12 +15,12 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    public class OrdinaryVariableLoader : BulkDataLoader<OrdinaryVariableDto, OrdinaryVariable>, IOrdinaryVariableLoader
+	public class OrdinaryVariableLoader : BulkDataLoader<OrdinaryVariableDto, OrdinaryVariable>, IOrdinaryVariableLoader
     {
-        public OrdinaryVariableLoader(ILogger logger)
+        public OrdinaryVariableLoader(ILogger<OrdinaryVariableLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

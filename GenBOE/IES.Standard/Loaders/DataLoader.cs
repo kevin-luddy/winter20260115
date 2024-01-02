@@ -10,17 +10,18 @@ namespace IES.Standard
     using System.Collections.Generic;
     using System.Transactions;
     using IES.Standard.Exceptions;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Data Loader base class
-    /// </summary>
-    public abstract class DataLoader<TDtoType> : ReadOnlyDataLoader<TDtoType>, IDataLoader<TDtoType>
+	/// <summary>
+	/// Data Loader base class
+	/// </summary>
+	public abstract class DataLoader<TDtoType> : ReadOnlyDataLoader<TDtoType>, IDataLoader<TDtoType>
         where TDtoType : IUpdateableDTO
     {
         /// <summary>
         /// Default Constructor
         /// </summary>
-        protected DataLoader() : base()
+        protected DataLoader(ILogger logger) : base(logger)
         {
         }
 
@@ -39,13 +40,13 @@ namespace IES.Standard
             if ((originalId == null || originalId < 0)
                 && (resultId == null || resultId < 0))
             {
-                this.Log.Error(Constants.ERR_INSERT_FAILED_DUE_TO_ID);
+                this.Log.LogError(Constants.ERR_INSERT_FAILED_DUE_TO_ID);
                 verificationPassed = false;
             }
             else if ((originalId != null && originalId > 0)
                 && (resultId == null || resultId.Value != originalId.Value))
             {
-                this.Log.Error(Constants.ERR_UPDATE_FAILED_DUE_TO_ID);
+                this.Log.LogError(Constants.ERR_UPDATE_FAILED_DUE_TO_ID);
                 verificationPassed = false;
             }
 
@@ -131,7 +132,7 @@ namespace IES.Standard
                 // Temporarily commenting out the exception and logging so genBOE Production does not have breaking changes.
                 // We will comb the logs and find these to fix in future sprints
                 // throw new GeneralAppException("A transaction was not supplied with the save, please create a bug report");
-                this.Log.Warn("A transaction was not supplied with the save, please create a bug report." + Environment.NewLine + Environment.StackTrace);
+                this.Log.LogWarning("A transaction was not supplied with the save, please create a bug report." + Environment.NewLine + Environment.StackTrace);
             }
         }
 

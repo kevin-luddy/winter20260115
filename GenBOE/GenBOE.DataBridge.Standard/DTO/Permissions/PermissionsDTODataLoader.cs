@@ -14,14 +14,15 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using IES.Standard.Exceptions;
     using GenBOE.Dtos;
+	using Microsoft.Extensions.Logging;
 
-    public class PermissionsDTODataLoader : IPermissionsDTODataLoader
+	public class PermissionsDTODataLoader : IPermissionsDTODataLoader
     {
         private readonly ILogger _log;
 
         private IActiveDirectoryUtilities adUtils;
 
-        public PermissionsDTODataLoader(IActiveDirectoryUtilities adUtils, ILogger logger)
+        public PermissionsDTODataLoader(IActiveDirectoryUtilities adUtils, ILogger<PermissionsDTODataLoader> logger)
 		{
 			this._log = logger;
 			this.adUtils = adUtils;

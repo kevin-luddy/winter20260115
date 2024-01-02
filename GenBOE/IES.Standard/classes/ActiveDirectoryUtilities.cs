@@ -16,6 +16,7 @@ namespace IES.Standard
 	using System.Threading;
 	using System.Xml.Linq;
 	using IES.Standard.Exceptions;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Class to manage utility interactions with the AD
@@ -105,7 +106,7 @@ namespace IES.Standard
 			if (this.cache.Contains(cacheKey))
 			{
 				object fromCache = this.cache.GetData(cacheKey);
-				this.log.Debug("ADUTILS - UserData from temporary cache is " + fromCache.ToString());
+				this.log.LogDebug("ADUTILS - UserData from temporary cache is " + fromCache.ToString());
 
 				currentAccount = fromCache as UserData;
 			}
@@ -211,7 +212,7 @@ namespace IES.Standard
 					catch (InvalidOperationException e)
 					{
 						string message = "Retry " + tries + " of " + MAX_AD_TRIES + " attempts.  Issues communicating with AD.\r\n";
-						this.log.Error(e, message);
+						this.log.LogError(e, message);
 
 						Thread.Sleep(500);
 					}
@@ -224,7 +225,7 @@ namespace IES.Standard
 
 				if (currentAccount != null)
 				{
-					this.log.Debug("GET USER FROM AD : For user Ntid " + cacheKey + " caching their data for " + this.secondsToCache + " seconds [" + currentAccount + "]");
+					this.log.LogDebug("GET USER FROM AD : For user Ntid " + cacheKey + " caching their data for " + this.secondsToCache + " seconds [" + currentAccount + "]");
 					this.cache.Add(cacheKey, currentAccount, this.secondsToCache); // cache for this.secondsToCache seconds
 				}
 			}
@@ -483,7 +484,7 @@ namespace IES.Standard
 				catch (Exception e)
 				{
 					string message = "Retry " + tries + " of " + MAX_AD_TRIES + " attempts.  Issues communicating with AD.\r\n";
-					this.log.Error(e, message);
+					this.log.LogError(e, message);
 
 					Thread.Sleep(500);
 				}
@@ -650,7 +651,7 @@ namespace IES.Standard
 						userNames.Clear();
 
 						string message = "Retry " + tries + " of " + MAX_AD_TRIES + " attempts.  Issues communicating with AD.\r\n";
-						this.log.Error(e, message);
+						this.log.LogError(e, message);
 
 						Thread.Sleep(500);
 					}

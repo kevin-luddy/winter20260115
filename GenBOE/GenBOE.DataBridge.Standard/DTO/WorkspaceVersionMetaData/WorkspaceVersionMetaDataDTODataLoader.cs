@@ -241,7 +241,7 @@ namespace GenBOE.DataBridge.DTO
 
                         if (linqResults < 0)
                         {
-                            _log.Error("The WorkspaceVersionMetaDataDataLoader.UpsertWorkspaceVersion Version ID did not save correctly and returned a negative ID value");
+                            _log.LogError("The WorkspaceVersionMetaDataDataLoader.UpsertWorkspaceVersion Version ID did not save correctly and returned a negative ID value");
                         }
 
                     } // end gbe
@@ -249,7 +249,7 @@ namespace GenBOE.DataBridge.DTO
             }
             catch (SqlException ex)
             {
-                _log.Error(ex);
+                _log.LogError(ex);
                 throw new GeneralAppException("There was an error during creation of a backup.  Contact a system administrator for assistance.");
             }
         }
@@ -307,7 +307,7 @@ namespace GenBOE.DataBridge.DTO
                     }
                     else
                     {
-                        _log.Error("Error during Workspace restore: " + linqResults);
+                        _log.LogError("Error during Workspace restore: " + linqResults);
                         throw new GeneralAppException("There was an error during Workspace Restore.  Contact a system administrator for assistance.");
                     }
                 }

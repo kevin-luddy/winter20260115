@@ -23,9 +23,8 @@ namespace GenBOE.DataBridge.DTO
         /// default constructor
         /// </summary>
         /// <param name="logger">logger</param>
-        public BOEFormIBOEDTODataLoader(ILogger logger)
-        {
-            this.Log = logger;
+        public BOEFormIBOEDTODataLoader(ILogger<BOEFormIBOEDTODataLoader> logger) : base(logger)
+		{
         }
 
         /// <summary>

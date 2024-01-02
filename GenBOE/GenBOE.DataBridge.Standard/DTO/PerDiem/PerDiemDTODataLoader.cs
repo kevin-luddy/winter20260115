@@ -13,11 +13,12 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Performs all the CRUD for Per diems.
-    /// </summary>
-    public class PerDiemDTODataLoader : IPerDiemDTODataLoader
+	/// <summary>
+	/// Performs all the CRUD for Per diems.
+	/// </summary>
+	public class PerDiemDTODataLoader : IPerDiemDTODataLoader
     {
         private readonly ILogger _log;
 
@@ -25,7 +26,7 @@ namespace GenBOE.DataBridge.DTO
         /// default ctor
         /// </summary>
         /// <param name="logger">logger</param>
-        public PerDiemDTODataLoader(ILogger logger)
+        public PerDiemDTODataLoader(ILogger<PerDiemDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

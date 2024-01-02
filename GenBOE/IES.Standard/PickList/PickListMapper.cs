@@ -10,6 +10,7 @@ namespace IES.Standard.PickList
     using System.Collections.Generic;
     using System.Linq;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Pick List Mapper
@@ -24,7 +25,7 @@ namespace IES.Standard.PickList
         /// <summary>
         /// Default ctor
         /// </summary>
-        protected PickListMapper(ILogger logger)
+        protected PickListMapper(ILogger<PickListMapper> logger)
         {
             this.log = logger;
         }

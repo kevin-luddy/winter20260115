@@ -9,6 +9,7 @@ namespace IES.Standard
 	using System;
 	using System.Diagnostics;
 	using System.Runtime.CompilerServices;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Stopwatch class to help us log start and stop of an activity, as well as time elapsed
@@ -50,8 +51,8 @@ namespace IES.Standard
 
 			this.stopwatch = new Stopwatch();
 			this.stopwatch.Start();
-			this.logger.Debug(string.Format(Constants.LOG_ACTIVITY_START, this.activity));
-			this.logger.Performance("BEGIN - " + this.activity, 0);
+			this.logger.LogDebug(string.Format(Constants.LOG_ACTIVITY_START, this.activity));
+			// TODO TIWthis.logger.LogTrace("BEGIN - " + this.activity, 0);
 		}
 
 		/// <summary>
@@ -96,8 +97,8 @@ namespace IES.Standard
 		protected virtual void Dispose(bool limitCleanupToNativeOnly)
 		{
 			this.stopwatch.Stop();
-			this.logger.Debug(string.Format(Constants.LOG_ACTIVITY_END, this.activity, this.stopwatch.ElapsedMilliseconds));
-			this.logger.Performance(this.activity, this.stopwatch.ElapsedMilliseconds);
+			this.logger.LogDebug(string.Format(Constants.LOG_ACTIVITY_END, this.activity, this.stopwatch.ElapsedMilliseconds));
+			// TODO TIW this.logger.Performance(this.activity, this.stopwatch.ElapsedMilliseconds);
 
 			this.activity = null;
 			this.logger = null;

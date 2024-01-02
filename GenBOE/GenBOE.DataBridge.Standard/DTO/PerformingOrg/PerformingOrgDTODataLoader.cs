@@ -14,8 +14,9 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    public class PerformingOrgDTODataLoader : IPerformingOrgDTODataLoader
+	public class PerformingOrgDTODataLoader : IPerformingOrgDTODataLoader
     {
         private readonly ILogger _log;
         private const int SYSTEM_PERF_ORG_LIST_ID = 1;
@@ -30,7 +31,7 @@ namespace GenBOE.DataBridge.DTO
             }
         }
 
-        public PerformingOrgDTODataLoader(ILogger logger)
+        public PerformingOrgDTODataLoader(ILogger<PerformingOrgDTODataLoader> logger)
 		{
 			this._log = logger;
 		}
@@ -289,7 +290,7 @@ namespace GenBOE.DataBridge.DTO
             }
             catch (SqlException sqlEx)
             {
-                _log.Error(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message " + sqlEx.Message);
+                _log.LogError(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message " + sqlEx.Message);
                 throw;
             }
         }
@@ -316,7 +317,7 @@ namespace GenBOE.DataBridge.DTO
             }
             catch (SqlException sqlEx)
             {
-                _log.Error(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message " + sqlEx.Message);
+                _log.LogError(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message " + sqlEx.Message);
                 throw;
             }
         }
@@ -347,7 +348,7 @@ namespace GenBOE.DataBridge.DTO
                     // if the result ID is not a positive number, something bad went wrong so log it
                     if (resultID < 0)
                     {
-                        _log.Error("The returned ID from upsertPerformingOrganization SP was negative");
+                        _log.LogError("The returned ID from upsertPerformingOrganization SP was negative");
 
                     }
                     else
@@ -391,7 +392,7 @@ namespace GenBOE.DataBridge.DTO
                     // if the result ID is not a positive number, something bad went wrong so log it
                     if (resultID < 0)
                     {
-                        _log.Error("The returned ID from upsertWorkspacePerformingOrganization SP was negative");
+                        _log.LogError("The returned ID from upsertWorkspacePerformingOrganization SP was negative");
                     }
                     else
                     {

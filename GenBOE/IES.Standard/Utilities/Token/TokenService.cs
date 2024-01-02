@@ -14,6 +14,7 @@ namespace IES.Standard
 	using System.Collections.Generic;
 	using IES.Standard.Exceptions;
 	using System.Net.Http.Headers;
+	using Microsoft.Extensions.Logging;
 
 	public class TokenService : ITokenService, IDisposable
 	{
@@ -56,7 +57,7 @@ namespace IES.Standard
 		/// ctor
 		/// </summary>
 		/// <param name="memoryCache">Memory Cache</param>
-		public TokenService(ILogger logger, ICache memoryCache)
+		public TokenService(ILogger<TokenService> logger, ICache memoryCache)
 		{
 			this._log = logger;
 			this.cache = memoryCache;
@@ -114,7 +115,7 @@ namespace IES.Standard
 			}
 			else
 			{
-				this._log.Error("Error creating new Token.");
+				this._log.LogError("Error creating new Token.");
 				throw new GeneralAppException("Error creating OAuth Token");
 			}
 

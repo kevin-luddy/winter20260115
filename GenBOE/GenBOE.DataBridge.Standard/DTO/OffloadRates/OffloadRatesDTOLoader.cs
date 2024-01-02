@@ -24,9 +24,8 @@ namespace GenBOE.DataBridge.DTO
         /// default ctor
         /// </summary>
         /// <param name="logger">logger</param>
-        public OffloadRatesDTOLoader(ILogger logger)
+        public OffloadRatesDTOLoader(ILogger<OffloadRatesDTOLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
         
         /// <summary>

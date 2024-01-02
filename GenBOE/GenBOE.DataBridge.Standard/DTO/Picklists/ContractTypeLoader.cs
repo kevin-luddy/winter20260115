@@ -11,18 +11,18 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using IES.Standard.PickList;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// ContractTypeLULoader
-    /// </summary>
-    public class ContractTypeLoader : PickListLoader
+	/// <summary>
+	/// ContractTypeLULoader
+	/// </summary>
+	public class ContractTypeLoader : PickListLoader
     {
         /// <summary>
         /// Default Ctor
         /// </summary>
-        public ContractTypeLoader(ILogger logger)
+        public ContractTypeLoader(ILogger<ContractTypeLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

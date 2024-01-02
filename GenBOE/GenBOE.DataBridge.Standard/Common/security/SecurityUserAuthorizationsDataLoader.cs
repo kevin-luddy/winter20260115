@@ -12,12 +12,13 @@ namespace GenBOE.DataBridge.Common
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// DataLoader responsible for querying database to determine what roles the
-    /// user has setup for given workspaces and boes.
-    /// </summary>
-    public class SecurityUserAuthorizationsDataLoader : ISecurityUserAuthorizationsDataLoader
+	/// <summary>
+	/// DataLoader responsible for querying database to determine what roles the
+	/// user has setup for given workspaces and boes.
+	/// </summary>
+	public class SecurityUserAuthorizationsDataLoader : ISecurityUserAuthorizationsDataLoader
     {
         private readonly ILogger _log;
 
@@ -29,7 +30,8 @@ namespace GenBOE.DataBridge.Common
         /// <summary>
         /// Default constructor
         /// </summary>
-        public SecurityUserAuthorizationsDataLoader(IActiveDirectoryUtilities inActiveDirectoryUtilities, ILogger logger)
+        public SecurityUserAuthorizationsDataLoader(IActiveDirectoryUtilities inActiveDirectoryUtilities, 
+            ILogger<SecurityUserAuthorizationsDataLoader> logger)
         {
             this._log = logger;
             this.activeDirectoryUtilities = inActiveDirectoryUtilities;

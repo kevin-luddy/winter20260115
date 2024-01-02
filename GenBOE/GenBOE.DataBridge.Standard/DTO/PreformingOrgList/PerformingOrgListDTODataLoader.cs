@@ -13,8 +13,9 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    public class PerformingOrgListDTODataLoader : IPerformingOrgListDTODataLoader
+	public class PerformingOrgListDTODataLoader : IPerformingOrgListDTODataLoader
     {
         private readonly ILogger _log;
 
@@ -22,7 +23,7 @@ namespace GenBOE.DataBridge.DTO
         /// default ctor
         /// </summary>
         /// <param name="logger">Logger</param>
-        public PerformingOrgListDTODataLoader(ILogger logger)
+        public PerformingOrgListDTODataLoader(ILogger<PerformingOrgListDTODataLoader> logger)
 		{
 			this._log = logger;
 		}
@@ -91,13 +92,12 @@ namespace GenBOE.DataBridge.DTO
             }
             catch (EntityCommandExecutionException ex)
             {
-                _log.Error(ex);
-                _log.Error(ex.InnerException);
+                _log.LogError(ex, "Error executing Entity Command");
                 throw;
             }
             catch (SqlException sqlEx)
             {
-                this._log.Error(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message: " + sqlEx.Message + "/n");
+                this._log.LogError(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message: " + sqlEx.Message + "/n");
                 throw;
             }
 
@@ -127,13 +127,12 @@ namespace GenBOE.DataBridge.DTO
             }
             catch (EntityCommandExecutionException ex)
             {
-                _log.Error(ex);
-                _log.Error(ex.InnerException);
+                _log.LogError(ex, "Error executing Entity Command");
                 throw;
             }
             catch (SqlException sqlEx)
             {
-                this._log.Error(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message: " + sqlEx.Message + "/n");
+                this._log.LogError(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message: " + sqlEx.Message + "/n");
                 throw;
             }
         }
@@ -161,13 +160,12 @@ namespace GenBOE.DataBridge.DTO
                 }
                 catch (EntityCommandExecutionException ex)
                 {
-                    _log.Error(ex);
-                    _log.Error(ex.InnerException);
+                    _log.LogError(ex, "Error executing Entity Command");
                     throw;
                 }
                 catch (SqlException sqlEx)
                 {
-                    this._log.Error(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message: " + sqlEx.Message + "/n");
+                    this._log.LogError(sqlEx, "An exception occurred in " + sqlEx.Procedure + " and has the following message: " + sqlEx.Message + "/n");
                     throw;
                 }
             }

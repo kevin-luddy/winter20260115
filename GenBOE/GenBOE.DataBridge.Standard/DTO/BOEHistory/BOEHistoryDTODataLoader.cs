@@ -12,11 +12,12 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// BOE History DTO Data loader
-    /// </summary>
-    public class BOEHistoryDTODataLoader : IBOEHistoryDTODataLoader
+	/// <summary>
+	/// BOE History DTO Data loader
+	/// </summary>
+	public class BOEHistoryDTODataLoader : IBOEHistoryDTODataLoader
     {
         /// <summary>
         /// Logger
@@ -26,7 +27,7 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Default constructor
         /// </summary>
-        public BOEHistoryDTODataLoader(ILogger logger)
+        public BOEHistoryDTODataLoader(ILogger<BOEHistoryDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

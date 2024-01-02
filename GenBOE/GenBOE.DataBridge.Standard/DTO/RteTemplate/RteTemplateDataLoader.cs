@@ -15,18 +15,18 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using RteTemplateSource = IES.Standard.RteTemplateSource;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// This loader is exclusively used for retrievals only
-    /// </summary>
-    public class RteTemplateDataLoader : DataLoader<RteCustomTemplateModelView>, IRteTemplateDataLoader
+	/// <summary>
+	/// This loader is exclusively used for retrievals only
+	/// </summary>
+	public class RteTemplateDataLoader : DataLoader<RteCustomTemplateModelView>, IRteTemplateDataLoader
     {
         /// <summary>
         /// Default constructor
         /// </summary>
-        public RteTemplateDataLoader(ILogger logger)
+        public RteTemplateDataLoader(ILogger<RteTemplateDataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

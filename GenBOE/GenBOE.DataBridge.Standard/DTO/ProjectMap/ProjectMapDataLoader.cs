@@ -13,6 +13,7 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
     public class ProjectMapDataLoader : BulkDataLoader<ProjectMapModelView, ProjectMap>, IProjectMapDataLoader
     {
@@ -31,9 +32,8 @@ namespace GenBOE.DataBridge.DTO
         /// Constructor
         /// </summary>
         /// <param name="projectMapSpreadLoader">The project map spread loader.</param>
-        public ProjectMapDataLoader(IProjectMapSpreadLoader projectMapSpreadLoader, ILogger logger)
+        public ProjectMapDataLoader(IProjectMapSpreadLoader projectMapSpreadLoader, ILogger<ProjectMapDataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 			this.projectMapSpreadLoader = projectMapSpreadLoader;
         }
 
@@ -413,11 +413,11 @@ namespace GenBOE.DataBridge.DTO
 
             if (dtosToSave.Any())
             {
-                if (this.Log.DebugEnabled)
+                if (this.Log.IsEnabled(LogLevel.Debug))
                 {
                     foreach (ProjectMapModelView aDto in dtosToSave)
                     {
-                        this.Log.Debug($"ProjectMapDataLoader.BulkSave => ActivityId: {aDto.ActivityID}, Cost Center: {aDto.CostCenter}, Activity Type Code: {aDto.InitialResource}");
+                        this.Log.LogDebug($"ProjectMapDataLoader.BulkSave => ActivityId: {aDto.ActivityID}, Cost Center: {aDto.CostCenter}, Activity Type Code: {aDto.InitialResource}");
                     }
                 }
 

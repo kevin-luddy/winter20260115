@@ -239,7 +239,7 @@ namespace GenBOE.DataBridge.DTO
                 // if the result ID is not a positive number, something bad went wrong so log it
                 if (WorkspaceVarID < 0)
                 {
-                    this._log.Error("The returned ID from upsertWorkspaceVariable SP was negative");
+                    this._log.LogError("The returned ID from upsertWorkspaceVariable SP was negative");
                 }
                 else
                 {

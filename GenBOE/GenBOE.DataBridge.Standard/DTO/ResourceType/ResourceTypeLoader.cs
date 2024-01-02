@@ -14,18 +14,18 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Models;
     using GenBOE.Dtos;
     using static IES.Standard.Constants;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Resource Type Loader
-    /// </summary>
-    public class ResourceTypeLoader : BulkDataLoader<ResourceTypeDto, BOELaborType>, IResourceTypeLoader
+	/// <summary>
+	/// Resource Type Loader
+	/// </summary>
+	public class ResourceTypeLoader : BulkDataLoader<ResourceTypeDto, BOELaborType>, IResourceTypeLoader
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public ResourceTypeLoader(ILogger logger)
+        public ResourceTypeLoader(ILogger<ResourceTypeLoader> logger) : base(logger)
         {
-            this.Log = logger;
         }
 
         virtual public ICollection<ResourceTypeDto> GetByBoeId(int boeId)
@@ -150,7 +150,7 @@ namespace GenBOE.DataBridge.DTO
 
                 if (dtoToDelete != null)
                 {
-                    this.Log.Debug(string.Format("ResourceTypeLoader.Delete => Ntid: {1}, BoeId: {0}, Item Id: {2}, Value: {3}",
+                    this.Log.LogDebug(string.Format("ResourceTypeLoader.Delete => Ntid: {1}, BoeId: {0}, Item Id: {2}, Value: {3}",
                          dtoToDelete.BoeID, System.Threading.Thread.CurrentPrincipal.Identity.Name, dtoToDelete.Id, dtoToDelete.ValueSpread));
 
                     using (GenBoeEntities gbe = new GenBoeEntities())
@@ -183,7 +183,7 @@ namespace GenBOE.DataBridge.DTO
 
                 if (dtoToUpsert != null)
                 {
-                    this.Log.Debug(string.Format("ResourceTypeLoader.Upsert => Ntid: {1}, BoeId: {0}, Item Id: {2}, Value: {3}",
+                    this.Log.LogDebug(string.Format("ResourceTypeLoader.Upsert => Ntid: {1}, BoeId: {0}, Item Id: {2}, Value: {3}",
                          dtoToUpsert.BoeID, System.Threading.Thread.CurrentPrincipal.Identity.Name, dtoToUpsert.Id, dtoToUpsert.ValueSpread));
 
                     using (GenBoeEntities gbe = new GenBoeEntities())
@@ -249,7 +249,7 @@ namespace GenBOE.DataBridge.DTO
         {
             if (dtosToSave == null) { throw new ArgumentNullException(nameof(dtosToSave)); }
 
-            this.Log.Debug(string.Format("ResourceTypeLoader.BulkSave => Ntid: {2}, BoeId: {1}, Count: {0}",
+            this.Log.LogDebug(string.Format("ResourceTypeLoader.BulkSave => Ntid: {2}, BoeId: {1}, Count: {0}",
                 dtosToSave.Count, dtosToSave.First().BoeID, System.Threading.Thread.CurrentPrincipal.Identity.Name));
 
             foreach (ResourceTypeDto aDto in dtosToSave)
@@ -257,7 +257,7 @@ namespace GenBOE.DataBridge.DTO
                 aDto.StartDateValue = aDto.StartDateValue.Normalize();
                 aDto.EndDateValue = aDto.EndDateValue.Normalize();
 
-                this.Log.Debug(string.Format("ResourceTypeLoader.BulkSave => Item Id: {0}, Value: {1}", aDto.Id, aDto.ValueSpread)); 
+                this.Log.LogDebug(string.Format("ResourceTypeLoader.BulkSave => Item Id: {0}, Value: {1}", aDto.Id, aDto.ValueSpread)); 
             }
 
             return base.BulkSave(dtosToSave);

@@ -12,15 +12,16 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Models;
     using GenBOE.Dtos;
+	using Microsoft.Extensions.Logging;
 
-    public class OtherDirectCostDTODataLoader : IOtherDirectCostDTODataLoader
+	public class OtherDirectCostDTODataLoader : IOtherDirectCostDTODataLoader
     {
         private readonly ILogger _log;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public OtherDirectCostDTODataLoader(ILogger logger)
+        public OtherDirectCostDTODataLoader(ILogger<OtherDirectCostDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

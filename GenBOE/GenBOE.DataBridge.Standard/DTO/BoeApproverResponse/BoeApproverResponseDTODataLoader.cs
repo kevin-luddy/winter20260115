@@ -13,12 +13,12 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    public class BoeApproverResponseDTODataLoader : DataLoader<BoeApproverResponseDTO>, IBoeApproverResponseDTODataLoader
+	public class BoeApproverResponseDTODataLoader : DataLoader<BoeApproverResponseDTO>, IBoeApproverResponseDTODataLoader
     {
-        public BoeApproverResponseDTODataLoader(ILogger logger)
+        public BoeApproverResponseDTODataLoader(ILogger<BoeApproverResponseDTODataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         

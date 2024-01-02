@@ -13,16 +13,16 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.ObjectModel;
     using GenBOE.Models;
     using GenBOE.Dtos;
+	using Microsoft.Extensions.Logging;
 
-    public class MiscTravelRateDTOLoader : DataLoader<MiscTravelRateDTO>, IMiscTravelRateDTOLoader
+	public class MiscTravelRateDTOLoader : DataLoader<MiscTravelRateDTO>, IMiscTravelRateDTOLoader
     {
         /// <summary>
         /// default ctor
         /// </summary>
         /// <param name="logger">logger</param>
-        public MiscTravelRateDTOLoader(ILogger logger)
+        public MiscTravelRateDTOLoader(ILogger<MiscTravelRateDTOLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
         /// <summary>
         /// Gets all miscellaneous travel rates.

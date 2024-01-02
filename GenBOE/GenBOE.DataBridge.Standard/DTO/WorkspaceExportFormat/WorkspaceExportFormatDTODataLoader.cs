@@ -13,15 +13,15 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	public class WorkspaceExportFormatDTODataLoader : DataLoader<WorkspaceExportFormatDTO>, IWorkspaceExportFormatDTODataLoader
 	{
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public WorkspaceExportFormatDTODataLoader(ILogger logger)
+		public WorkspaceExportFormatDTODataLoader(ILogger<WorkspaceExportFormatDTODataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
 		/// <summary>

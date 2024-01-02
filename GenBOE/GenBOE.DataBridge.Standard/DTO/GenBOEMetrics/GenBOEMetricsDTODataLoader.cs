@@ -13,8 +13,9 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Models;
     using GenBOE.Dtos;
+	using Microsoft.Extensions.Logging;
 
-    public class GenBOEMetricsDTODataLoader : IGenBOEMetricsDataLoader
+	public class GenBOEMetricsDTODataLoader : IGenBOEMetricsDataLoader
     {
         private readonly ILogger _log;
 
@@ -24,7 +25,7 @@ namespace GenBOE.DataBridge.DTO
         private const int LINE_OF_BUSINESS_ID_NONE = 1;
 
         // default constructor
-        public GenBOEMetricsDTODataLoader(ILogger logger)
+        public GenBOEMetricsDTODataLoader(ILogger<GenBOEMetricsDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

@@ -2,7 +2,7 @@
 
 namespace IES.Standard
 {
-	public interface ILogger
+	public interface ILogger2
 	{
 		string Identifier { get; }
 

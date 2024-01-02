@@ -8,10 +8,11 @@ namespace GenBOE.DataBridge.Common.security
 {
     using IES.Standard;
     using GenBOE.DataBridge.DTO;
+	using Microsoft.Extensions.Logging;
 
-    public class SecurityAccessSpaceSystems : SecurityAccess
+	public class SecurityAccessSpaceSystems : SecurityAccess
     {
-        public SecurityAccessSpaceSystems(IBoeDTODataLoader boeLoader, ILogger logger)
+        public SecurityAccessSpaceSystems(IBoeDTODataLoader boeLoader, ILogger<SecurityAccessSpaceSystems> logger)
             : base(boeLoader, logger)
         {
         }

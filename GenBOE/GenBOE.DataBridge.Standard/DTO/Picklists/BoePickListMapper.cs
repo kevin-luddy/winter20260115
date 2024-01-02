@@ -8,11 +8,12 @@ namespace GenBOE.DataBridge.DTO
 {
     using IES.Standard;
     using IES.Standard.PickList;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Pick List Mapper
-    /// </summary>
-    public class BoePickListMapper : PickListMapper
+	/// <summary>
+	/// Pick List Mapper
+	/// </summary>
+	public class BoePickListMapper : PickListMapper
     {
         #region Pick List Loaders
 
@@ -37,7 +38,7 @@ namespace GenBOE.DataBridge.DTO
         /// Default ctor
         /// </summary>
         public BoePickListMapper(LineOfBusinessDataLoader lineOfBusinessLoader, ProposalClassLoader proposalClassLuLoader, 
-            ContractTypeLoader contractTypeLuLoader, ILogger logger) : base(logger)
+            ContractTypeLoader contractTypeLuLoader, ILogger<BoePickListMapper> logger) : base(logger)
         {
             this.lineOfBusinessLoader = lineOfBusinessLoader;
             this.proposalClassLuLoader = proposalClassLuLoader;

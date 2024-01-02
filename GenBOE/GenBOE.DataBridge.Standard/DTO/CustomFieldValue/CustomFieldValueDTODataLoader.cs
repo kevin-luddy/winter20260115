@@ -13,12 +13,12 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    public class CustomFieldValueDTODataLoader : BulkDataLoader<CustomFieldValueDTO, CustomFieldValue>, ICustomFieldValueDTODataLoader
+	public class CustomFieldValueDTODataLoader : BulkDataLoader<CustomFieldValueDTO, CustomFieldValue>, ICustomFieldValueDTODataLoader
     {
-        public CustomFieldValueDTODataLoader(ILogger logger)
+        public CustomFieldValueDTODataLoader(ILogger<CustomFieldValueDTODataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         #region Retrieve

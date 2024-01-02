@@ -12,13 +12,14 @@ namespace IES.Standard
     using System.Collections;
     using IES.Standard.Interfaces;
     using System.Diagnostics;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// This class will mediate calls through the cache and, if not found, will
-    /// invoke a delete to obtain the data (typically from the database but could be
-    /// anywhere the caller wants based on the delegate they pass in).
-    /// </summary>
-    public class CacheDataLoader : ICacheDataLoader
+	/// <summary>
+	/// This class will mediate calls through the cache and, if not found, will
+	/// invoke a delete to obtain the data (typically from the database but could be
+	/// anywhere the caller wants based on the delegate they pass in).
+	/// </summary>
+	public class CacheDataLoader : ICacheDataLoader
     {
         private readonly ILogger _log;
 
@@ -165,14 +166,14 @@ namespace IES.Standard
                     {
                         // still didn't have any data in cache ... load it from database
                         // while we have exclusive lock!
-                        _log.Debug("Cache MISS for key " + inKeyForCache);
+                        _log.LogDebug("Cache MISS for key " + inKeyForCache);
 
                         toReturn = inLoaderMethod.DynamicInvoke(inLoadMethodParams);
 
                         if (toReturn == null)
                         {
                             // NULL returned from dataloader is a problem .. and we can't cache it (nor should we want to)
-                            _log.Error("Cannot set value [NULL] returned from DataLoader delegate into cache for key " + inKeyForCache + ". Continuing but value [NULL] is NOT CACHED");
+                            _log.LogError("Cannot set value [NULL] returned from DataLoader delegate into cache for key " + inKeyForCache + ". Continuing but value [NULL] is NOT CACHED");
                         }
                         else
                         {
@@ -201,7 +202,7 @@ namespace IES.Standard
             // log to the performance log if cache miss
             if (!cacheHit)
             {
-                _log.Performance("MISS - " + inLoaderMethod.Method.Name + " -> Key: " + inKeyForCache, sw.ElapsedMilliseconds);
+                // TODO TIW _log.Performance("MISS - " + inLoaderMethod.Method.Name + " -> Key: " + inKeyForCache, sw.ElapsedMilliseconds);
             }
 
 
@@ -310,7 +311,7 @@ namespace IES.Standard
                 }
                 else
                 {
-                    _log.Debug("Cache MISS for key " + key);
+                    _log.LogDebug("Cache MISS for key " + key);
                     delegateParams.Add(potentiallyCachedObject.Value);
                 }
             }
@@ -408,7 +409,7 @@ namespace IES.Standard
                 }
                 else
                 {
-                    _log.Debug("Cache MISS for key " + key);
+                    _log.LogDebug("Cache MISS for key " + key);
                     delegateParams.Add(potentiallyCachedObject.Value);
                 }
             }

@@ -14,8 +14,9 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    public class ClinDTODataLoader : DataLoader<ClinDTO>, IClinDTODataLoader
+	public class ClinDTODataLoader : DataLoader<ClinDTO>, IClinDTODataLoader
     {
         #region Static 'Constants' used for Clin Padding
 
@@ -28,9 +29,8 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ClinDTODataLoader(ILogger logger)
+        public ClinDTODataLoader(ILogger<ClinDTODataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         #region Retrieves

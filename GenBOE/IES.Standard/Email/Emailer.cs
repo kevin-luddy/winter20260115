@@ -13,11 +13,12 @@ namespace IES.Standard
     using System.Linq;
     using System.Net.Mail;
     using System.Text.RegularExpressions;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// The Emailer class will send an email to the recipient and replace any tokens in the subject and body as required.
-    /// </summary>
-    public class Emailer : IEmailer
+	/// <summary>
+	/// The Emailer class will send an email to the recipient and replace any tokens in the subject and body as required.
+	/// </summary>
+	public class Emailer : IEmailer
     {
         /// <summary>
         /// The logger.
@@ -105,7 +106,7 @@ namespace IES.Standard
                 // Needed for use with MailAddressCollection.Add
                 inRecipient = inRecipient?.Replace(';', ',') ?? string.Empty;
 
-                this.log.Debug("EMAIL - Entering sendemail for " + inEmailTypeToSend.ToString() + " to recipient [" + inRecipient + "]" + extraLoggingInfo);
+                this.log.LogDebug("EMAIL - Entering sendemail for " + inEmailTypeToSend.ToString() + " to recipient [" + inRecipient + "]" + extraLoggingInfo);
 
                 // validate the number of tokens to replace (i.e. number of {0}, {1}, ...) is the same as the 
                 // tokens we have been given to plug in (i.e. elements in subject and body)
@@ -114,7 +115,7 @@ namespace IES.Standard
                 if (!inSubjectReplaceTokens.Length.Equals(count))
                 {
                     string error = string.Format("Number of replaceable tokens in subject [{0}] did not match the actual number of tokens for replacing [{1}].{2}", count, inSubjectReplaceTokens.Count(), extraLoggingInfo);
-                    this.log.Error(error);
+                    this.log.LogError(error);
                     throw new ArgumentException(
                         error,
                         nameof(inSubjectReplaceTokens));
@@ -124,7 +125,7 @@ namespace IES.Standard
                 if (!inBodyReplaceTokens.Count().Equals(count))
                 {
                     string error = string.Format("Number of replaceable tokens in body [{0}] did not match the actual number of tokens for replacing [{1}].{2}", count, inBodyReplaceTokens.Length, extraLoggingInfo);
-                    this.log.Error(error);
+                    this.log.LogError(error);
                     throw new ArgumentException(
                         error,
                         nameof(inBodyReplaceTokens));
@@ -153,7 +154,7 @@ namespace IES.Standard
                     inRecipient = inUserData.Email;
                     inCClist = new Collection<UserData>(new UserData[] { new UserData { Email = inRecipient } }); // override CC users .. we're in override mode
 
-                    this.log.Debug("EMAIL - Overriding original email recipient to the currently logged in user [" + inRecipient + "]" + extraLoggingInfo);
+                    this.log.LogDebug("EMAIL - Overriding original email recipient to the currently logged in user [" + inRecipient + "]" + extraLoggingInfo);
                 }
                 else
                 {
@@ -182,7 +183,7 @@ namespace IES.Standard
                 {
                     if (cc == null || string.IsNullOrEmpty(cc.Email))
                     {
-                        this.log.Error(string.Format("Found an invalid cc email address for email, removing from list.  Recipient is [{0}], cc is [{1}], cc ntid is [{2}]. Email subject is {3}.  Email body is {4}.{5}",
+                        this.log.LogError(string.Format("Found an invalid cc email address for email, removing from list.  Recipient is [{0}], cc is [{1}], cc ntid is [{2}]. Email subject is {3}.  Email body is {4}.{5}",
                             inRecipient,
                             cc == null ? "cc null" : cc.Email,
                             cc == null ? "no ntid (cc null)" : cc.Ntid,
@@ -212,7 +213,7 @@ namespace IES.Standard
                 // form the message itself now that we have the proper recipient and subject/body have been verified as being valid
                 using (MailMessage message = new MailMessage())
                 {
-                    this.log.Debug("EMAIL - Getting ready to send email to " + inRecipient + extraLoggingInfo);
+                    this.log.LogDebug("EMAIL - Getting ready to send email to " + inRecipient + extraLoggingInfo);
 
                     message.Subject = !inSubjectReplaceTokens.Any()
                         ? inEmailTypeToSend.Subject
@@ -247,20 +248,20 @@ namespace IES.Standard
                     {
                         // there are no valid recipients for the email ... this is a problem.  log an error message and abort
                         // the send since it's not going to anyone right now
-                        this.log.Warn(string.Format(
+                        this.log.LogWarning(string.Format(
                             "Unable to send email as there are no recipients, recipients are [{0}]. Email subject is {1}.  Email body is {2}.{3}",
                             inRecipient, message.Subject, originalBody, extraLoggingInfo));
                         // returning true if there was originally a recipient
                         return !string.IsNullOrWhiteSpace(originalIncomingRecipient);
                     }
 
-                    this.log.Debug("EMAIL - SmtpSend begin" + extraLoggingInfo);
+                    this.log.LogDebug("EMAIL - SmtpSend begin" + extraLoggingInfo);
                     emailSent = TrySendEmail(inRecipient, extraLoggingInfo, fromAddress, ccsToEmail, originalParameterRecipient, message, viewInfo, 1);
                 }
             }
             else
             {
-                this.log.Info(string.Format(
+                this.log.LogInformation(string.Format(
                     "Email is disabled by configuration setting, recipients are [{0}]. Email subject is [{1}].  Email body is [{2}].{3}",
                     inRecipient, inEmailTypeToSend.Subject, inEmailTypeToSend.Body, extraLoggingInfo));
             }
@@ -298,7 +299,7 @@ namespace IES.Standard
                 if (tryNumber > 3)
                 {
                     // we have tried 3 times already, log the error
-                    this.log.Error(
+                    this.log.LogError(
                             string.Format(
                                 "There was an error sending email (with 2 retries), recipients are [{0}] (original recipient was [{4}]), cc list is [{3}]. Email subject is {1}.  Email body is {2}. {5}",
                                 inRecipient, message.Subject, message.Body.ToXmlString(), ccsToEmail,
@@ -336,7 +337,7 @@ namespace IES.Standard
                         // The email failed to send to some of the recipients, but still sent, so log the error but mark as sent
                         foreach (SmtpFailedRecipientException ex in e.InnerExceptions)
                         {
-                            this.log.Error(ex,
+                            this.log.LogError(ex,
                             string.Format(
                                 "There was an error sending email to recipient {0}. SmtpStatus is {1}.",
                                 ex.FailedRecipient, ex.StatusCode.GetDescription()));
@@ -348,7 +349,7 @@ namespace IES.Standard
                     catch (SmtpFailedRecipientException e)
                     {
                         // The email failed to send to one of the recipients, but still sent, so log the error but mark as sent
-                        this.log.Error(e,
+                        this.log.LogError(e,
                             string.Format(
                                 "There was an error sending email to recipient {0}. SmtpStatus is {1}.",
                                 e.FailedRecipient, e.StatusCode.GetDescription()));
@@ -362,7 +363,7 @@ namespace IES.Standard
 
                         // We can continue here since sending an email is not critical to the operation
                         // This is necessary when running from a development boxes where email is blocked by McAfee
-                        this.log.Error(e,
+                        this.log.LogError(e,
                             string.Format(
                                 "There was an error sending email, try #{0}",
                                 tryNumber));
@@ -393,7 +394,7 @@ namespace IES.Standard
 
                     #endregion
 
-                    this.log.Debug("EMAIL - SmtpSend end" + extraLoggingInfo);
+                    this.log.LogDebug("EMAIL - SmtpSend end" + extraLoggingInfo);
                 }
             }
 

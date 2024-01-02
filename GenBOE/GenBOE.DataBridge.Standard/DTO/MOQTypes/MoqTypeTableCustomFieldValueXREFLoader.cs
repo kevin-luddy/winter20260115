@@ -13,18 +13,18 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Loader for the Custom Field values associated with an MOQ Type Table
-    /// </summary>
-    public class MoqTypeTableCustomFieldValueXREFLoader : BulkDataLoader<CustomFieldValueContainer, MoqTypeTableCustomFieldValueXREF>, IMoqTypeTableCustomFieldValueXREFLoader
+	/// <summary>
+	/// Loader for the Custom Field values associated with an MOQ Type Table
+	/// </summary>
+	public class MoqTypeTableCustomFieldValueXREFLoader : BulkDataLoader<CustomFieldValueContainer, MoqTypeTableCustomFieldValueXREF>, IMoqTypeTableCustomFieldValueXREFLoader
     {
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MoqTypeTableCustomFieldValueXREFLoader(ILogger logger)
+        public MoqTypeTableCustomFieldValueXREFLoader(ILogger<MoqTypeTableCustomFieldValueXREFLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

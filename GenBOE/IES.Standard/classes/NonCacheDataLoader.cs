@@ -10,6 +10,7 @@ namespace IES.Standard
 	using System.Collections.ObjectModel;
 	using System.Collections;
 	using IES.Standard.Interfaces;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// This class will mediate calls through non cache.
@@ -23,7 +24,7 @@ namespace IES.Standard
 		/// Default Constructor
 		/// </summary>
 		/// <param name="logger">Logger</param>
-		public NonCacheDataLoader(ILogger logger)
+		public NonCacheDataLoader(ILogger<NonCacheDataLoader> logger)
 		{
 			_log = logger;
 		}

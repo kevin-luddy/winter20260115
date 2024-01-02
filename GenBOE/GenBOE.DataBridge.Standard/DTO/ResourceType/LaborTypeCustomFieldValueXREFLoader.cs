@@ -13,18 +13,18 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
-    
-    /// <summary>
-    /// Loader for CustomFieldValueXREF
-    /// </summary>
-    public class LaborTypeCustomFieldValueXREFLoader : BulkDataLoader<CustomFieldValueContainer, BOELaborTypeCustomFieldValueXREF>, ILaborTypeCustomFieldValueXREFLoader
+	using Microsoft.Extensions.Logging;
+
+	/// <summary>
+	/// Loader for CustomFieldValueXREF
+	/// </summary>
+	public class LaborTypeCustomFieldValueXREFLoader : BulkDataLoader<CustomFieldValueContainer, BOELaborTypeCustomFieldValueXREF>, ILaborTypeCustomFieldValueXREFLoader
     {
         /// <summary>
         /// Default constructor
         /// </summary>
-        public LaborTypeCustomFieldValueXREFLoader(ILogger logger)
+        public LaborTypeCustomFieldValueXREFLoader(ILogger<LaborTypeCustomFieldValueXREFLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

@@ -8,23 +8,25 @@ namespace IES.Standard
 {
     using System.Collections.Generic;
     using System.Linq;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Read Only Data Loader base class
-    /// </summary>
-    public abstract class ReadOnlyDataLoader<TDtoType> : IReadOnlyDataLoader<TDtoType>
+	/// <summary>
+	/// Read Only Data Loader base class
+	/// </summary>
+	public abstract class ReadOnlyDataLoader<TDtoType> : IReadOnlyDataLoader<TDtoType>
         where TDtoType : IUpdateableDTO
     {
         /// <summary>
         /// Logger
         /// </summary>
-        protected ILogger Log { get; set; }
+        protected ILogger Log { get; private set; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        protected ReadOnlyDataLoader()
+        protected ReadOnlyDataLoader(ILogger logger)
         {
+            this.Log = logger;
         }
 
         /// <summary>

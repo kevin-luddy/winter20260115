@@ -14,11 +14,12 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// BOE Search DTO Data Loader
-    /// </summary>
-    public class BOESearchDTODataLoader : IBOESearchDTODataLoader
+	/// <summary>
+	/// BOE Search DTO Data Loader
+	/// </summary>
+	public class BOESearchDTODataLoader : IBOESearchDTODataLoader
     {
         #region Constants
         /// <summary>
@@ -40,7 +41,7 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Default constructor
         /// </summary>
-        public BOESearchDTODataLoader(ILogger logger) 
+        public BOESearchDTODataLoader(ILogger<BOESearchDTODataLoader> logger) 
         {
             this.log = logger;        
         }

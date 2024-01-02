@@ -14,11 +14,12 @@ namespace GenBOE.DataBridge.Common
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Class the requests CRUD Authorizations to a given page for given roles for the currently logged in user
-    /// </summary>
-    public class SecurityAccess : ISecurityAccess
+	/// <summary>
+	/// Class the requests CRUD Authorizations to a given page for given roles for the currently logged in user
+	/// </summary>
+	public class SecurityAccess : ISecurityAccess
     {
 		private readonly ILogger _log;
 
@@ -50,14 +51,14 @@ namespace GenBOE.DataBridge.Common
                     Stopwatch sw = new Stopwatch();
 
                     sw.Start();
-                    _log.Debug("Starting to initialize security matrix...");
+                    _log.LogDebug("Starting to initialize security matrix...");
 
                     InitializeMatrix();
                     CustomizeMatrix();
                     FinalizeMatrix();
 
                     sw.Stop();
-                    _log.Debug("Finished initializing security matrix.  Took " + sw.ElapsedMilliseconds + " milliseconds.");
+                    _log.LogDebug("Finished initializing security matrix.  Took " + sw.ElapsedMilliseconds + " milliseconds.");
 
                     _Initialized = true;
 
@@ -71,7 +72,7 @@ namespace GenBOE.DataBridge.Common
         /// <summary>
         /// Default constructor
         /// </summary>
-        public SecurityAccess(IBoeDTODataLoader boeLoader, ILogger logger)
+        public SecurityAccess(IBoeDTODataLoader boeLoader, ILogger<SecurityAccess> logger)
         {
             this.boeLoader = boeLoader;
 			this._log = logger;
@@ -1261,7 +1262,7 @@ namespace GenBOE.DataBridge.Common
                         break;
 
                     default:
-                        _log.Error("Unknown role returned from database " + permissionResponse.AuthorizedRole);
+                        _log.LogError("Unknown role returned from database " + permissionResponse.AuthorizedRole);
                         break;
                 }
 

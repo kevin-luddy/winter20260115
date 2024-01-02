@@ -11,15 +11,15 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.ObjectModel;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    public class ProjectMapSpreadLoader : BulkDataLoader<ProjectMapSpreadModelView, ProjectMapSpread>, IProjectMapSpreadLoader
+	public class ProjectMapSpreadLoader : BulkDataLoader<ProjectMapSpreadModelView, ProjectMapSpread>, IProjectMapSpreadLoader
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public ProjectMapSpreadLoader(ILogger logger)
+        public ProjectMapSpreadLoader(ILogger<ProjectMapSpreadLoader> logger)
 		{
-			this.Log = logger;
 		}
 
         #region Multi DbQuery Methods

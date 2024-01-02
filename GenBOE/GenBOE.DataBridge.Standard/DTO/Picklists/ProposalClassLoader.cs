@@ -20,9 +20,8 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Default Ctor
         /// </summary>
-        public ProposalClassLoader(ILogger logger)
+        public ProposalClassLoader(ILogger<ProposalClassLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

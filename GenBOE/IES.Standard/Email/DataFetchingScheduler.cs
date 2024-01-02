@@ -8,6 +8,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace IES.Standard
 {
@@ -81,7 +82,7 @@ namespace IES.Standard
             catch (Exception ex)
             {
                 //Logging the information for now.
-                _log.Error(ex, "Exception was caught during threading for email.");
+                _log.LogError(ex, "Exception was caught during threading for email.");
             }
         }
     }

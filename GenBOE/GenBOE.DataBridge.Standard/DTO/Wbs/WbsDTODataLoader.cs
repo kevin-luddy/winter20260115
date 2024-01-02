@@ -30,9 +30,8 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public WbsDTODataLoader(ILogger logger)
+        public WbsDTODataLoader(ILogger logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         #region Retrieves

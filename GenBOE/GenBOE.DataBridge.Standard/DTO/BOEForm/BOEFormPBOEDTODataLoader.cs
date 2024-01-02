@@ -12,6 +12,7 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using System;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// The PBOE INL Form Data Loader Class.
@@ -27,9 +28,8 @@ namespace GenBOE.DataBridge.DTO
 		/// default ctor
 		/// </summary>
 		/// <param name="logger">Logger</param>
-		public BOEFormPBOEDTODataLoader(ILogger logger, IResourceDTODataLoader resourceDTODataLoader)
+		public BOEFormPBOEDTODataLoader(ILogger<BOEFormPBOEDTODataLoader> logger, IResourceDTODataLoader resourceDTODataLoader) : base(logger)
 		{
-			this.Log = logger;
 			this.resourceDTODataLoader = resourceDTODataLoader;
 		}
 

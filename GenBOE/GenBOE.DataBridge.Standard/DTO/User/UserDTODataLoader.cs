@@ -492,17 +492,17 @@ namespace GenBOE.DataBridge.DTO
 			}
 			catch (EntityCommandExecutionException ex)
 			{
-				_log.Error(ex, "An " + ex.InnerException + "occurred in " + ex.Source + " while saving " + inUserDto.ToString());
+				_log.LogError(ex, "An " + ex.InnerException + "occurred in " + ex.Source + " while saving " + inUserDto.ToString());
 				throw;
 			}
 			catch (SqlException sqlEx)
 			{
-				_log.Error(sqlEx, "An exception occurred in " + sqlEx.Procedure + " while saving " + inUserDto.ToString() + " and has the following message: " + sqlEx.Message + "/n");
+				_log.LogError(sqlEx, "An exception occurred in " + sqlEx.Procedure + " while saving " + inUserDto.ToString() + " and has the following message: " + sqlEx.Message + "/n");
 				throw;
 			}
 			catch (Exception e)
 			{
-				_log.Error(e, "an unhandled exception occurred " + " while saving " + inUserDto.ToString());
+				_log.LogError(e, "an unhandled exception occurred " + " while saving " + inUserDto.ToString());
 				throw;
 			}
 

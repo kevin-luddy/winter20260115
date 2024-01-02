@@ -13,20 +13,20 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Loader for the Custom Field values associated with a BOE Task Element
-    /// </summary>
-    public class BoeTaskElementCustomFieldValueXREFLoader : BulkDataLoader<CustomFieldValueContainer, BOETaskElementCustomFieldValueXREF>, IBoeTaskElementCustomFieldValueXREFLoader
+	/// <summary>
+	/// Loader for the Custom Field values associated with a BOE Task Element
+	/// </summary>
+	public class BoeTaskElementCustomFieldValueXREFLoader : BulkDataLoader<CustomFieldValueContainer, BOETaskElementCustomFieldValueXREF>, IBoeTaskElementCustomFieldValueXREFLoader
     {
         private readonly ILogger log;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public BoeTaskElementCustomFieldValueXREFLoader(ILogger logger)
+        public BoeTaskElementCustomFieldValueXREFLoader(ILogger<BoeTaskElementCustomFieldValueXREFLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

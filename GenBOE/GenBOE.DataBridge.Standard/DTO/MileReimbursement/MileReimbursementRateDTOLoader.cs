@@ -11,8 +11,9 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    public class MileReimbursementRateDTOLoader : IMileReimbursementRateDTOLoader
+	public class MileReimbursementRateDTOLoader : IMileReimbursementRateDTOLoader
     {
         private readonly ILogger _log;
 
@@ -20,7 +21,7 @@ namespace GenBOE.DataBridge.DTO
         /// default ctor
         /// </summary>
         /// <param name="logger">Logger</param>
-        public MileReimbursementRateDTOLoader(ILogger logger)
+        public MileReimbursementRateDTOLoader(ILogger<MileReimbursementRateDTOLoader> logger)
 		{
 			this._log = logger;
 		}

@@ -13,11 +13,12 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Models;
     using System.Collections.ObjectModel;
     using System;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// The T&M Resource Rate Data Loader Class.
-    /// </summary>
-    public class TMResourceRateDTODataLoader : DataLoader<TMResourceRateDTO>, ITMResourceRateDTODataLoader
+	/// <summary>
+	/// The T&M Resource Rate Data Loader Class.
+	/// </summary>
+	public class TMResourceRateDTODataLoader : DataLoader<TMResourceRateDTO>, ITMResourceRateDTODataLoader
     {
         private readonly ILogger _log;
 
@@ -25,9 +26,8 @@ namespace GenBOE.DataBridge.DTO
         /// Default constructor
         /// </summary>
         /// <param name="logger">logger</param>
-        public TMResourceRateDTODataLoader(ILogger logger)
-        {
-            this.Log = logger;
+        public TMResourceRateDTODataLoader(ILogger<TMResourceRateDTODataLoader> logger) : base(logger)
+		{
         }
 
 		/// <summary>

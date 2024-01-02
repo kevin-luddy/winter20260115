@@ -14,11 +14,12 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Loader for MOQ Type Selection and MOQ Table Data
-    /// </summary>
-    public class MoqTypeDataLoader : DataLoader<MoqTypeSelection>, IMoqTypeDataLoader
+	/// <summary>
+	/// Loader for MOQ Type Selection and MOQ Table Data
+	/// </summary>
+	public class MoqTypeDataLoader : DataLoader<MoqTypeSelection>, IMoqTypeDataLoader
     {
         /// <summary>
         /// MOQ Type Table Custom Field Value XREF Loader
@@ -29,9 +30,9 @@ namespace GenBOE.DataBridge.DTO
         /// constructor
         /// </summary>
         /// <param name="moqTypeTableCustomFieldValueXREFLoader">MOQ Type Table Custom Field Value XREF Loader</param>
-        public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader, ILogger logger)
+        public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader, 
+            ILogger<MoqTypeDataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 			this.moqTypeTableCustomFieldValueXREFLoader = moqTypeTableCustomFieldValueXREFLoader;
         }
 

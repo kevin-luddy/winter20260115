@@ -6,22 +6,22 @@
 
 namespace GenBOE.DataBridge.DTO
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using IES.Standard;
-    using GenBOE.Dtos;
-    using GenBOE.Models;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using GenBOE.Models;
+	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    public class MaterialDTODataLoader : IMaterialDTODataLoader
+	public class MaterialDTODataLoader : IMaterialDTODataLoader
     {
         private readonly ILogger _log;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public MaterialDTODataLoader(ILogger logger)
+        public MaterialDTODataLoader(ILogger<MaterialDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

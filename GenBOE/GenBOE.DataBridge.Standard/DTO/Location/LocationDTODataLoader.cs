@@ -13,18 +13,18 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Models;
     using GenBOE.Dtos;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// This loader is exclusively used for retrievals only
-    /// </summary>
-    public class LocationDTODataLoader : DataLoader<LocationDTO>, ILocationDTODataLoader
+	/// <summary>
+	/// This loader is exclusively used for retrievals only
+	/// </summary>
+	public class LocationDTODataLoader : DataLoader<LocationDTO>, ILocationDTODataLoader
     {
         /// <summary>
         /// Default constructor
         /// </summary>
-        public LocationDTODataLoader(ILogger logger)
+        public LocationDTODataLoader(ILogger<LocationDTODataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>
