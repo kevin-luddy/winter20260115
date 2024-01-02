@@ -11,11 +11,12 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using IES.Standard.PickList;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// ProposalClassLULoader
-    /// </summary>
-    public class ProposalClassLoader : PickListLoader
+	/// <summary>
+	/// ProposalClassLULoader
+	/// </summary>
+	public class ProposalClassLoader : PickListLoader
     {
         /// <summary>
         /// Default Ctor

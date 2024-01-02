@@ -11,18 +11,18 @@ namespace GenTRAC.DataBridge.DTO
     using GenTRAC.Models;
     using IES.Standard;
     using IES.Standard.PickList;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// ContractTypeLULoader
-    /// </summary>
-    public class ContractTypeLULoader : PickListLoader
+	/// <summary>
+	/// ContractTypeLULoader
+	/// </summary>
+	public class ContractTypeLULoader : PickListLoader
     {
         /// <summary>
         /// Default Ctor
         /// </summary>
-        public ContractTypeLULoader(ILogger logger)
+        public ContractTypeLULoader(ILogger<ContractTypeLULoader> logger) : base(logger)
         {
-            this.Log = logger;
         }
 
         /// <summary>

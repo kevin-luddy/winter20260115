@@ -13,6 +13,7 @@ namespace IES.DataBridge.Loaders
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Who's Online Loader
@@ -28,7 +29,7 @@ namespace IES.DataBridge.Loaders
 		/// Default constructor
 		/// </summary>
 		/// <param name="logger">logger</param>
-		public WhosOnlineLoader(ILogger logger)
+		public WhosOnlineLoader(ILogger<WhosOnlineLoader> logger)
 		{
 			this.log = logger;
 		}

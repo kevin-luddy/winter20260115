@@ -13,12 +13,13 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Offload Rates DTO Loader.
-    /// </summary>
-    /// <seealso cref="GenBOE.DataBridge.DTO.IOffloadRatesDTOLoader" />
-    public class OffloadRatesDTOLoader : DataLoader<OffloadRatesDTO>, IOffloadRatesDTOLoader
+	/// <summary>
+	/// Offload Rates DTO Loader.
+	/// </summary>
+	/// <seealso cref="GenBOE.DataBridge.DTO.IOffloadRatesDTOLoader" />
+	public class OffloadRatesDTOLoader : DataLoader<OffloadRatesDTO>, IOffloadRatesDTOLoader
     {
         /// <summary>
         /// default ctor

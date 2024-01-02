@@ -9,11 +9,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Linq;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// PPR Checklist Content Loader
-    /// </summary>
-    public class PPRChecklistContentLoader : IChecklistContentLoader
+	/// <summary>
+	/// PPR Checklist Content Loader
+	/// </summary>
+	public class PPRChecklistContentLoader : IChecklistContentLoader
     {
         /// <summary>
         /// Logger
@@ -23,7 +24,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public PPRChecklistContentLoader(ILogger logger)
+        public PPRChecklistContentLoader(ILogger<PPRChecklistContentLoader> logger)
         {
             this.Log = logger;
         }

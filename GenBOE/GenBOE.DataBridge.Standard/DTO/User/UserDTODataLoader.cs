@@ -15,6 +15,7 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	public class UserDTODataLoader : IUserDTODataLoader
 	{
@@ -45,7 +46,7 @@ namespace GenBOE.DataBridge.DTO
 		public UserDTODataLoader(ISecurityInformation inSecurityInformation,
 								 IActiveDirectoryUtilities inActiveDirectoryUtilities,
 								 ICache cache,
-								 ILogger logger)
+								 ILogger<UserDTODataLoader> logger)
 		{
 			_SecurityInformation = inSecurityInformation;
 			_ActiveDirectoryUtilities = inActiveDirectoryUtilities;
@@ -454,7 +455,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				// Get a list of all user Ids in the group.
 				Collection<int> groupMemberIDs = this.GetUserIDsByGroupID(inGroupID);
-				_log.Performance("DIRECT - GetUserIDsByGroupID", sw.ElapsedMilliseconds);
+				// TODO TIW_log.Performance("DIRECT - GetUserIDsByGroupID", sw.ElapsedMilliseconds);
 
 				if (groupMemberIDs != null && groupMemberIDs.Any())
 				{

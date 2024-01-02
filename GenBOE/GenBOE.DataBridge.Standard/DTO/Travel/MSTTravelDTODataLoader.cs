@@ -13,8 +13,9 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    public class MSTTravelDTODataLoader : ITravelDTODataLoader
+	public class MSTTravelDTODataLoader : ITravelDTODataLoader
     {
         /// <summary>
         /// A private class to be used only in this file
@@ -34,7 +35,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="travelTripTaskElementCustomFieldLoader">task element custom field loader</param>
         /// <param name="travelTripCustomFieldLoader">trip element custom field loader</param>
-        public MSTTravelDTODataLoader(ITravelTripTaskElementCustomFieldValueXREFLoader travelTripTaskElementCustomFieldLoader, ITravelTripCustomFieldValueXREFLoader travelTripCustomFieldLoader, ILogger logger)
+        public MSTTravelDTODataLoader(ITravelTripTaskElementCustomFieldValueXREFLoader travelTripTaskElementCustomFieldLoader, ITravelTripCustomFieldValueXREFLoader travelTripCustomFieldLoader, ILogger<MSTTravelDTODataLoader> logger)
 		{
 			this._log = logger;
 			this.travelTripTaskElementCustomFieldLoader = travelTripTaskElementCustomFieldLoader;

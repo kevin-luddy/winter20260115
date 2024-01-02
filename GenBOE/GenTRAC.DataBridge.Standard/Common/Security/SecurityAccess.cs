@@ -12,11 +12,12 @@ namespace GenTRAC.DataBridge.Common.Security
     using System.Linq;
     using GenTRAC.DataBridge.DTO;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Class the requests CRUD Authorizations to a given page for given roles for the currently logged in user
-    /// </summary>
-    public class SecurityAccess : GenTRAC.DataBridge.Common.Security.ISecurityAccess
+	/// <summary>
+	/// Class the requests CRUD Authorizations to a given page for given roles for the currently logged in user
+	/// </summary>
+	public class SecurityAccess : GenTRAC.DataBridge.Common.Security.ISecurityAccess
     {
         /// <summary>
         /// The logger
@@ -44,12 +45,13 @@ namespace GenTRAC.DataBridge.Common.Security
         /// </summary>
         /// <param name="inSecurityMapper">The security mapper</param>
         /// <param name="inProposalLoader">Proposal Loader</param>
-        public SecurityAccess(ISecurityMapper inSecurityMapper, IProposalLoader inProposalLoader, ILogger logger)
+        public SecurityAccess(ISecurityMapper inSecurityMapper, IProposalLoader inProposalLoader, 
+            ILogger<SecurityAccess> logger)
 		{
 			this.log = logger;
 			Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.log.Info("Starting to initialize security matrix...");
+            this.log.LogInformation("Starting to initialize security matrix...");
 
             this.securityMapper = inSecurityMapper;
             this.proposalLoader = inProposalLoader;
@@ -66,7 +68,7 @@ namespace GenTRAC.DataBridge.Common.Security
             this.InitializeMatrix();
 
             sw.Stop();
-            this.log.Info("Finished initializing security matrix.  Took " + sw.ElapsedMilliseconds + " milliseconds.");
+            this.log.LogInformation("Finished initializing security matrix.  Took " + sw.ElapsedMilliseconds + " milliseconds.");
         }
 
         /// <summary>
@@ -195,7 +197,7 @@ namespace GenTRAC.DataBridge.Common.Security
             SecurityAuthorization authorization = this._GetAuthorizationsRoles(inPermissions, rolesForUser, out highestRole);
 
             sw.Stop();
-            this.log.Debug(
+            this.log.LogDebug(
                 string.Format("isAuthorized(SecurityPermissions) took [{0}] milliseconds for Request {1}",
                                     sw.ElapsedMilliseconds,
                                     inPermissions.ToString()));
@@ -326,7 +328,7 @@ namespace GenTRAC.DataBridge.Common.Security
 
                         break;
                     default:
-                        this.log.Error("Unknown role returned from database " + permissionResponse.AuthorizedRole);
+                        this.log.LogError("Unknown role returned from database " + permissionResponse.AuthorizedRole);
                         break;
                 }
 

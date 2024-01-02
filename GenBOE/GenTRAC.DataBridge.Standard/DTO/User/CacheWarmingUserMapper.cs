@@ -9,11 +9,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Collections.Generic;
     using GenTRAC.DataBridge.Common.LoadersAndMappers;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// cache warming user dto data mapper
-    /// </summary>
-    public class CacheWarmingUserMapper : UserMapper, ICacheWarmingMapper
+	/// <summary>
+	/// cache warming user dto data mapper
+	/// </summary>
+	public class CacheWarmingUserMapper : UserMapper, ICacheWarmingMapper
     {
         /// <summary>
         /// Cache
@@ -34,7 +35,9 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="inSecurityInformation">The Security Information</param>
         /// <param name="inActiveDirectoryUtilities">The Active Directory Utils</param>
         /// <param name="inCache">The Cache</param>
-        public CacheWarmingUserMapper(IUserLoader inUserLoader, ICacheDataLoader inCacheLoader, ISecurityInformation inSecurityInformation, IActiveDirectoryUtilities inActiveDirectoryUtilities, ICache inCache, ILogger logger)
+        public CacheWarmingUserMapper(IUserLoader inUserLoader, ICacheDataLoader inCacheLoader, 
+            ISecurityInformation inSecurityInformation, IActiveDirectoryUtilities inActiveDirectoryUtilities, 
+            ICache inCache, ILogger<CacheWarmingUserMapper> logger)
             : base(inUserLoader, inCacheLoader, inSecurityInformation, inActiveDirectoryUtilities, inCache, logger)
         {
             this.cache = inCache;

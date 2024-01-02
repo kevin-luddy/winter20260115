@@ -9,11 +9,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Linq;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Bulk Archive Loader
-    /// </summary>
-    public class BulkArchiveLoader : IBulkArchiveLoader
+	/// <summary>
+	/// Bulk Archive Loader
+	/// </summary>
+	public class BulkArchiveLoader : IBulkArchiveLoader
     {
         /// <summary>,
         /// Logger
@@ -23,7 +24,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public BulkArchiveLoader(ILogger logger)
+        public BulkArchiveLoader(ILogger<BulkArchiveLoader> logger)
 
 		{
 			this.Log = logger;

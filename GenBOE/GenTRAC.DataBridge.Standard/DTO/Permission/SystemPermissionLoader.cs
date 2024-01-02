@@ -12,18 +12,18 @@ namespace GenTRAC.DataBridge.DTO
     using GenTRAC.Models;
     using IES.Standard;
     using IES.Standard.Exceptions;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// System Permissions Loader
-    /// </summary>
-    public class SystemPermissionLoader : DataLoader<SystemPermissionDto>, ISystemPermissionLoader
+	/// <summary>
+	/// System Permissions Loader
+	/// </summary>
+	public class SystemPermissionLoader : DataLoader<SystemPermissionDto>, ISystemPermissionLoader
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public SystemPermissionLoader(ILogger logger)
+        public SystemPermissionLoader(ILogger<SystemPermissionLoader> logger) : base(logger)
         {
-            this.Log = logger;
         }
 
         /// <summary>

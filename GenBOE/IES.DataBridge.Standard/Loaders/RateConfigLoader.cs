@@ -11,6 +11,7 @@ namespace IES.DataBridge.Loaders
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Rate Grid Loader
@@ -26,7 +27,7 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// Rate Config Loader Constructor
         /// </summary>
-        public RateConfigLoader(ILogger logger)
+        public RateConfigLoader(ILogger<RateConfigLoader> logger)
 		{
 			this.Log = logger;
 		}

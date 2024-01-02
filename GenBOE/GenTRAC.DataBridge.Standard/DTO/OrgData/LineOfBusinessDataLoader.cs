@@ -11,18 +11,18 @@ namespace GenTRAC.DataBridge.DTO
     using GenTRAC.Models;
     using IES.Standard;
     using IES.Standard.PickList;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// LineOfBusinessDataLoader
-    /// </summary>
-    public class LineOfBusinessDataLoader : PickListLoader
+	/// <summary>
+	/// LineOfBusinessDataLoader
+	/// </summary>
+	public class LineOfBusinessDataLoader : PickListLoader
     {
         /// <summary>
         /// LineOfBusinessDataLoader
         /// </summary>
-        public LineOfBusinessDataLoader(ILogger logger)
+        public LineOfBusinessDataLoader(ILogger<LineOfBusinessDataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

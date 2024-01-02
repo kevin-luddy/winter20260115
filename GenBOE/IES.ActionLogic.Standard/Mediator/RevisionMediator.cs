@@ -12,6 +12,7 @@ namespace IES.ActionLogic.Mediator
 	using DataBridge.ModelViews;
 	using IES.DataBridge.Loaders;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// The mediator for loading/caching Revisions.
@@ -39,7 +40,7 @@ namespace IES.ActionLogic.Mediator
         /// </summary>
         /// <param name="revisionLoader">The revision loader.</param>
         /// <param name="cacheDataLoader">The cache data loader.</param>
-        public RevisionMediator(ILogger logger, IRevisionLoader revisionLoader, ICacheDataLoader cacheDataLoader)
+        public RevisionMediator(ILogger<RevisionMediator> logger, IRevisionLoader revisionLoader, ICacheDataLoader cacheDataLoader)
         {
             this.logger = logger;
             this.revisionLoader = revisionLoader;

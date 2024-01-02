@@ -15,8 +15,9 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Models;
     using IES.Standard;
     using IES.Standard.Exceptions;
+	using Microsoft.Extensions.Logging;
 
-    public class WorkspaceVersionMetaDataDTODataLoader : IWorkspaceVersionMetaDataDTODataLoader
+	public class WorkspaceVersionMetaDataDTODataLoader : IWorkspaceVersionMetaDataDTODataLoader
     {
         private readonly ILogger _log;
         private const string RESTORE_WARNING_MESSAGE = "WARNING:";
@@ -24,7 +25,7 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Initializes a new instance of the <see cref="WorkspaceVersionMetaDataDTODataLoader"/> class.
         /// </summary>
-        public WorkspaceVersionMetaDataDTODataLoader(ILogger logger)
+        public WorkspaceVersionMetaDataDTODataLoader(ILogger<WorkspaceVersionMetaDataDTODataLoader> logger)
 		{
 			this._log = logger;
 		}
@@ -249,8 +250,9 @@ namespace GenBOE.DataBridge.DTO
             }
             catch (SqlException ex)
             {
-                _log.LogError(ex);
-                throw new GeneralAppException("There was an error during creation of a backup.  Contact a system administrator for assistance.");
+                _log.LogError(ex, "There was an error during creation of a backup.");
+
+				throw new GeneralAppException("There was an error during creation of a backup.  Contact a system administrator for assistance.");
             }
         }
         

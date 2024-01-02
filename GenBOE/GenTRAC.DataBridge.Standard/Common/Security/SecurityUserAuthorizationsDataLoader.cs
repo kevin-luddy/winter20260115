@@ -12,12 +12,13 @@ namespace GenTRAC.DataBridge.Common.Security
     using GenTRAC.DataBridge.DTO;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// DataLoader responsible for querying database to determine what roles the
-    /// user has setup for given workspaces and boes.
-    /// </summary>
-    public class SecurityUserAuthorizationsDataLoader : ISecurityUserAuthorizationsDataLoader
+	/// <summary>
+	/// DataLoader responsible for querying database to determine what roles the
+	/// user has setup for given workspaces and boes.
+	/// </summary>
+	public class SecurityUserAuthorizationsDataLoader : ISecurityUserAuthorizationsDataLoader
     {
         /// <summary>
         /// Logger
@@ -27,13 +28,14 @@ namespace GenTRAC.DataBridge.Common.Security
         /// <summary>
         /// Active Directory Utilities
         /// </summary>
-        private IES.Standard.IActiveDirectoryUtilities activeDirectoryUtilities = null;
+        private IActiveDirectoryUtilities activeDirectoryUtilities = null;
 
         /// <summary>
         /// Default constructor
         /// </summary>
         /// <param name="inActiveDirectoryUtilities">Active Directory Utilities</param>
-        public SecurityUserAuthorizationsDataLoader(IActiveDirectoryUtilities inActiveDirectoryUtilities, ILogger logger)
+        public SecurityUserAuthorizationsDataLoader(IActiveDirectoryUtilities inActiveDirectoryUtilities, 
+            ILogger<SecurityUserAuthorizationsDataLoader> logger)
 		{
 			this.log = logger;
 			this.activeDirectoryUtilities = inActiveDirectoryUtilities;
@@ -50,7 +52,7 @@ namespace GenTRAC.DataBridge.Common.Security
             List<SecurityPermissionsResponse> permissionsToReturn = new List<SecurityPermissionsResponse> { new SecurityPermissionsResponse(PtmRole.NotSet, null) };
             if (inUserDTO != null)
             {
-                this.log.Info("BEGIN GetPermissionsForUser for user " + inUserDTO.Ntid);
+                this.log.LogInformation("BEGIN GetPermissionsForUser for user " + inUserDTO.Ntid);
                 var groups = this.activeDirectoryUtilities.GetGroupsForUser(inUserDTO.Ntid);
                 List<string> groupNames = groups != null ? groups.Select(x => x.Ntid).ToList() : new List<string>();
                 groupNames.Add(inUserDTO.Ntid);
@@ -106,7 +108,7 @@ namespace GenTRAC.DataBridge.Common.Security
                 // Step 2 - Convert LINQ results into immutable objects for return.
                 permissionsToReturn.AddRange(resultsLinq.Select(x => new SecurityPermissionsResponse(x.AuthorizedRole, x.ProposalID)).ToArray());
 
-                this.log.Info("END GetPermissionsForUser for user " + inUserDTO.Ntid);
+                this.log.LogInformation("END GetPermissionsForUser for user " + inUserDTO.Ntid);
             }
             
             return permissionsToReturn;

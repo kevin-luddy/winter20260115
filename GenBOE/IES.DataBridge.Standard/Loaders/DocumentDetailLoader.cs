@@ -13,11 +13,12 @@ namespace IES.DataBridge.Loaders
     using IES.Standard;
     using IES.DataBridge.ModelViews;
     using IES.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Loader for the Document Details
-    /// </summary>
-    public class DocumentDetailLoader : DataLoader<DocumentDetailModelView>, IDocumentDetailLoader
+	/// <summary>
+	/// Loader for the Document Details
+	/// </summary>
+	public class DocumentDetailLoader : DataLoader<DocumentDetailModelView>, IDocumentDetailLoader
     {
         /// <summary>
         /// RDSB Rate Code Xref Loader
@@ -34,7 +35,8 @@ namespace IES.DataBridge.Loaders
         /// </summary>
         /// <param name="rdsbRateCodeXrefLoader">RDSB Rate Code Xref Loader</param>
         /// <param name="rdsbSectionXrefLoader">RDSB Section Xref Loader</param>
-        public DocumentDetailLoader(IRdsbRateCodeXrefLoader rdsbRateCodeXrefLoader, IRdsbSectionXrefLoader rdsbSectionXrefLoader)
+        public DocumentDetailLoader(IRdsbRateCodeXrefLoader rdsbRateCodeXrefLoader, IRdsbSectionXrefLoader rdsbSectionXrefLoader,
+            ILogger<DocumentDetailLoader> logger) : base(logger)
         {
             this.rdsbRateCodeXrefLoader = rdsbRateCodeXrefLoader;
             this.rdsbSectionXrefLoader = rdsbSectionXrefLoader;

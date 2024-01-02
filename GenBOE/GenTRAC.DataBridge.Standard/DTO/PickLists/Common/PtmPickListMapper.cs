@@ -8,11 +8,12 @@ namespace GenTRAC.DataBridge.DTO
 {
     using IES.Standard;
     using IES.Standard.PickList;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Pick List Mapper
-    /// </summary>
-    public class PtmPickListMapper : PickListMapper
+	/// <summary>
+	/// Pick List Mapper
+	/// </summary>
+	public class PtmPickListMapper : PickListMapper
     {
         #region Pick List Loaders
 
@@ -66,7 +67,7 @@ namespace GenTRAC.DataBridge.DTO
         public PtmPickListMapper(ProposalTypeLULoader proposalLuLoader, ProposalClassLULoader levelOfCommitmentLoader, TypeOfRequestLULoader typeOfRequestLoader, 
             LineOfBusinessDataLoader lineOfBusinessLuLoader, ProgramAreaDataLoader programAreaLuLoader,
             ContractTypeLULoader contractTypeLuLoader, ContractTypeGroupLULoader contractTypeGroupLULoader,
-            ILogger logger) : base(logger)
+            ILogger<PtmPickListMapper> logger) : base(logger)
         {
             this.proposalLuLoader = proposalLuLoader;
             this.proposalClassLuLoader = levelOfCommitmentLoader;

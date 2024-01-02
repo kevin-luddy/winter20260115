@@ -196,11 +196,6 @@ namespace IES.ActionLogic.IO.Import
 		/// </summary>
 		private static readonly string[] TextOnlyColumns = new string[] { };
 
-		/// <summary>
-		/// The logger for the class.
-		/// </summary>
-		private static ILogger logger;
-
 		#endregion Constants
 
 		#region Public Functions

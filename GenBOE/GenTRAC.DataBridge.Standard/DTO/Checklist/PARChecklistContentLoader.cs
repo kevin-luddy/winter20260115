@@ -12,11 +12,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Linq;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// PAR Checklist Content Loader
-    /// </summary>
-    public class PARChecklistContentLoader : IChecklistContentLoader
+	/// <summary>
+	/// PAR Checklist Content Loader
+	/// </summary>
+	public class PARChecklistContentLoader : IChecklistContentLoader
     {
         /// <summary>
         /// Logger
@@ -26,7 +27,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public PARChecklistContentLoader(ILogger logger)
+        public PARChecklistContentLoader(ILogger<PARChecklistContentLoader> logger)
 
 		{
 			this.Log = logger;

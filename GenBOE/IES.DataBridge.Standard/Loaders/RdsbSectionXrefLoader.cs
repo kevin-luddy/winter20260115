@@ -12,20 +12,28 @@ namespace IES.DataBridge.Loaders
 	using IES.Standard;
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// RDSB Section Xref Loader
 	/// </summary>
 	public class RdsbSectionXrefLoader : BulkDataLoader<RdsbSectionXrefModelView, RDSBSectionXref>, IRdsbSectionXrefLoader
     {
-        /// <summary>
-        /// Gets all objects based on the IDs that were passed in
-        /// </summary>
-        /// <param name="ids">IDs</param>
-        /// <returns>
-        /// Corresponding Data
-        /// </returns>
-        public override ICollection<RdsbSectionXrefModelView> GetByIds(ICollection<int> ids)
+		/// <summary>
+		/// default ctor
+		/// </summary>
+		/// <param name="logger">logger</param>
+		public RdsbSectionXrefLoader(ILogger<RdsbSectionXrefLoader> logger) : base(logger)
+		{ }
+
+		/// <summary>
+		/// Gets all objects based on the IDs that were passed in
+		/// </summary>
+		/// <param name="ids">IDs</param>
+		/// <returns>
+		/// Corresponding Data
+		/// </returns>
+		public override ICollection<RdsbSectionXrefModelView> GetByIds(ICollection<int> ids)
         {
             throw new NotImplementedException();
         }

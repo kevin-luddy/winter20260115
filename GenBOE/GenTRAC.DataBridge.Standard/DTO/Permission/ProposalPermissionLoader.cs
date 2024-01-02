@@ -12,18 +12,18 @@ namespace GenTRAC.DataBridge.DTO
     using GenTRAC.Models;
     using IES.Standard;
     using IES.Standard.Exceptions;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Permission Dto Data Loader
-    /// </summary>
-    public class ProposalPermissionLoader : DataLoader<ProposalPermissionDto>, IProposalPermissionLoader
+	/// <summary>
+	/// Permission Dto Data Loader
+	/// </summary>
+	public class ProposalPermissionLoader : DataLoader<ProposalPermissionDto>, IProposalPermissionLoader
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public ProposalPermissionLoader(ILogger logger)
+        public ProposalPermissionLoader(ILogger logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

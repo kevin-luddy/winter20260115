@@ -12,19 +12,27 @@ namespace IES.DataBridge.Loaders
     using IES.Standard;
     using IES.DataBridge.ModelViews;
     using IES.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Banner Loader
-    /// </summary>
+	/// <summary>
+	/// Banner Loader
+	/// </summary>
     public class BannerLoader : DataLoader<BannerModelView>, IBannerLoader
     {
-        #region Retrieves
+		/// <summary>
+		/// default ctor
+		/// </summary>
+		/// <param name="logger">logger</param>
+		public BannerLoader(ILogger<BannerLoader> logger) : base(logger)
+		{ }
 
-        /// <summary>
-        /// Get All Banners.
-        /// </summary>
-        /// <returns>All Banners.</returns>
-        public ICollection<BannerModelView> GetAll()
+		#region Retrieves
+
+		/// <summary>
+		/// Get All Banners.
+		/// </summary>
+		/// <returns>All Banners.</returns>
+		public ICollection<BannerModelView> GetAll()
         {
             ICollection<BannerModelView> result;
 

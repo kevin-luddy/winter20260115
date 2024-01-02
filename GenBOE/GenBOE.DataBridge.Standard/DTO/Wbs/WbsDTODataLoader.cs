@@ -13,11 +13,12 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Models;
     using GenBOE.Dtos;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// WBS DTO Data Loader
-    /// </summary>
-    public class WbsDTODataLoader : DataLoader<WbsDTO>, IWbsDTODataLoader
+	/// <summary>
+	/// WBS DTO Data Loader
+	/// </summary>
+	public class WbsDTODataLoader : DataLoader<WbsDTO>, IWbsDTODataLoader
     {
         #region Constants
 
@@ -30,7 +31,7 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public WbsDTODataLoader(ILogger logger) : base(logger)
+        public WbsDTODataLoader(ILogger<WbsDTODataLoader> logger) : base(logger)
 		{
 		}
 

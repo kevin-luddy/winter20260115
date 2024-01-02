@@ -12,19 +12,27 @@ namespace IES.DataBridge.Loaders
     using IES.Standard;
     using IES.DataBridge.ModelViews;
     using IES.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Rate Code Replication Loader
-    /// </summary>
+	/// <summary>
+	/// Rate Code Replication Loader
+	/// </summary>
     public class RateCodeReplicationLoader : DataLoader<RateCodeModelView>, IRateCodeReplicationLoader
     {
-        #region Retrieves
+		/// <summary>
+		/// default ctor
+		/// </summary>
+		/// <param name="logger">logger</param>
+		public RateCodeReplicationLoader(ILogger<RateCodeReplicationLoader> logger) : base(logger)
+		{ }
 
-        /// <summary>
-        /// Gets all the Rate Code Replications.
-        /// </summary>
-        /// <returns>All of the Rate Code Replications from the Database.</returns>
-        public ICollection<RateCodeModelView> GetAll()
+		#region Retrieves
+
+		/// <summary>
+		/// Gets all the Rate Code Replications.
+		/// </summary>
+		/// <returns>All of the Rate Code Replications from the Database.</returns>
+		public ICollection<RateCodeModelView> GetAll()
         {
             ICollection<RateCodeModelView> result;
 

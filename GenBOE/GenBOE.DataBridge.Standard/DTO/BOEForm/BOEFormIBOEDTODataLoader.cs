@@ -11,12 +11,13 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// The IBOE INL Forms Data Loader.
-    /// </summary>
-    /// <seealso cref="GenBOE.DataBridge.DTO.IBOEFormIBOEDTODataLoader" />
-    public class BOEFormIBOEDTODataLoader : DataLoader<BOEFormIBOEDTO>, IBOEFormIBOEDTODataLoader
+	/// <summary>
+	/// The IBOE INL Forms Data Loader.
+	/// </summary>
+	/// <seealso cref="GenBOE.DataBridge.DTO.IBOEFormIBOEDTODataLoader" />
+	public class BOEFormIBOEDTODataLoader : DataLoader<BOEFormIBOEDTO>, IBOEFormIBOEDTODataLoader
     {
 
         /// <summary>

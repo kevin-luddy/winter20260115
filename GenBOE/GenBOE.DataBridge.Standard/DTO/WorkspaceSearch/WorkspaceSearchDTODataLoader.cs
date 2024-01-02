@@ -12,11 +12,12 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.ObjectModel;
     using GenBOE.Models;
     using GenBOE.Dtos;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Workspace Search DTO Data Loader
-    /// </summary>
-    public class WorkspaceSearchDTODataLoader : IWorkspaceSearchDTODataLoader
+	/// <summary>
+	/// Workspace Search DTO Data Loader
+	/// </summary>
+	public class WorkspaceSearchDTODataLoader : IWorkspaceSearchDTODataLoader
     {
         /// <summary>
         /// Logger
@@ -26,7 +27,7 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Default constructor
         /// </summary>
-        public WorkspaceSearchDTODataLoader(ILogger logger)
+        public WorkspaceSearchDTODataLoader(ILogger<WorkspaceSearchDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

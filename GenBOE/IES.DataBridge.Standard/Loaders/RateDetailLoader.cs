@@ -14,6 +14,7 @@ namespace IES.DataBridge.Loaders
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
 	using IES.Standard.Exceptions;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Rate Grid Loader
@@ -42,9 +43,9 @@ namespace IES.DataBridge.Loaders
 		/// </summary>
 		/// <param name="rateYearLoader">The rate year loader.</param>
 		/// <param name="proPricerXrefLoader">The proPricerXrefLoader loader.</param>
-		public RateDetailLoader(ILogger logger, IRateCodeYearLoader rateYearLoader, IProPricerRateCodeXrefLoader proPricerXrefLoader)
+		public RateDetailLoader(ILogger<RateDetailLoader> logger, IRateCodeYearLoader rateYearLoader, 
+			IProPricerRateCodeXrefLoader proPricerXrefLoader) : base(logger)
 		{
-			this.Log = logger;
 			this.rateYearLoader = rateYearLoader;
 			this.proPricerXrefLoader = proPricerXrefLoader;
 		}
@@ -931,12 +932,12 @@ namespace IES.DataBridge.Loaders
 
 			if (dtosToSave.Any())
 			{
-				this.Log.Debug(string.Format("RateDetailLoader.BulkSave => Ntid: {2}, RateCodeId: {1}, Count: {0}",
+				this.Log.LogDebug(string.Format("RateDetailLoader.BulkSave => Ntid: {2}, RateCodeId: {1}, Count: {0}",
 				dtosToSave.Count, dtosToSave.First().Id, System.Threading.Thread.CurrentPrincipal.Identity.Name));
 
 				foreach (RateDetailModelView dto in dtosToSave)
 				{
-					this.Log.Debug(string.Format("RateDetailLoader.BulkSave => Item Id: {0}, Value: {1}", dto.Id, dto.RateCode));
+					this.Log.LogDebug(string.Format("RateDetailLoader.BulkSave => Item Id: {0}, Value: {1}", dto.Id, dto.RateCode));
 				}
 
 				using (StopwatchTimer sw = new StopwatchTimer(this.Log))

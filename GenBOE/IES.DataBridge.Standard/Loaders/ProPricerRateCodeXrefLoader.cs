@@ -12,22 +12,30 @@ namespace IES.DataBridge.Loaders
 	using IES.Standard;
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Rate Grid Loader
 	/// </summary>
 	public class ProPricerRateCodeXrefLoader : BulkDataLoader<ProPricerRateCodeXrefModelView, ProPricerRateCodeXref>, IProPricerRateCodeXrefLoader
     {
-        #region Retrieves
-
         /// <summary>
-        /// Gets all objects based on the IDs that were passed in
+        /// default ctor
         /// </summary>
-        /// <param name="ids">IDs</param>
-        /// <returns>
-        /// Corresponding Data
-        /// </returns>
-        public override ICollection<ProPricerRateCodeXrefModelView> GetByIds(ICollection<int> ids)
+        /// <param name="logger">logger</param>
+        public ProPricerRateCodeXrefLoader(ILogger<ProPricerRateCodeXrefLoader> logger) : base(logger)
+        { }
+
+		#region Retrieves
+
+		/// <summary>
+		/// Gets all objects based on the IDs that were passed in
+		/// </summary>
+		/// <param name="ids">IDs</param>
+		/// <returns>
+		/// Corresponding Data
+		/// </returns>
+		public override ICollection<ProPricerRateCodeXrefModelView> GetByIds(ICollection<int> ids)
         {
             throw new NotImplementedException();
         }

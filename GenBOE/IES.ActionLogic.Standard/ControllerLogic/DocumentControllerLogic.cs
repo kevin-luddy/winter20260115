@@ -25,6 +25,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using IO.Export;
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Logic for the Document Controller.
@@ -99,7 +100,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="rateDetailLoader">The rate detail loader.</param>
 		/// <param name="fileAttachmentLoader">The file attachment loader.</param>
 		/// <param name="pprdExporter">The PPRD exporter.</param>
-		public DocumentControllerLogic(ILogger logger, IProposalLoader proposalLoader, IDocumentLoader documentLoader, IDocumentDetailLoader documentDetailLoader, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo, IRevisionLoader revisionLoader,
+		public DocumentControllerLogic(ILogger<DocumentControllerLogic> logger, IProposalLoader proposalLoader, IDocumentLoader documentLoader, IDocumentDetailLoader documentDetailLoader, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo, IRevisionLoader revisionLoader,
 			ISectionLoader sectionLoader, IRateDetailLoader rateDetailLoader, IFileAttachmentLoader fileAttachmentLoader, IPPRDExporter pprdExporter)
 		{
 			this.logger = logger;
@@ -228,7 +229,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 			catch (Exception ex)
 			{
-				this.logger.Error(ex, string.Format("Could not delete document for proposal with ID {0}.", proposalId));
+				this.logger.LogError(ex, string.Format("Could not delete document for proposal with ID {0}.", proposalId));
 				throw;
 			}
 
@@ -246,7 +247,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 			catch (Exception ex)
 			{
-				this.logger.Error(ex, string.Format("Could not update proposal with ID {0} to remove the document Id", proposalId));
+				this.logger.LogError(ex, string.Format("Could not update proposal with ID {0} to remove the document Id", proposalId));
 				throw;
 			}
 		}
@@ -308,7 +309,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 			catch (Exception)
 			{
-				this.logger.Error(string.Format("Could not update proposal with ID {0} to add the document ID {1}", proposalId, documentId));
+				this.logger.LogError(string.Format("Could not update proposal with ID {0} to add the document ID {1}", proposalId, documentId));
 				throw;
 			}
 		}
@@ -350,7 +351,7 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				if (proposal.DocumentId.HasValue)
 				{
-					this.logger.Error("The proposal Id passed in is linked to a document but the document is not in the DB for id " + proposalId.ToString());
+					this.logger.LogError("The proposal Id passed in is linked to a document but the document is not in the DB for id " + proposalId.ToString());
 					throw new GenValidationException("The document could not be found.");
 				}
 
@@ -382,7 +383,7 @@ namespace IES.ActionLogic.ControllerLogic
 				ProposalDto proposal = proposals.FirstOrDefault(p => p.Id == model.ProposalId);
 				if (proposal == null)
 				{
-					this.logger.Error("Did not find a Proposal for Document retrieved with Id: " + model.Id);
+					this.logger.LogError("Did not find a Proposal for Document retrieved with Id: " + model.Id);
 				}
 				else
 				{
@@ -400,7 +401,7 @@ namespace IES.ActionLogic.ControllerLogic
 				{
 					if (!models.Any(m => m.ProposalId == proposal.Id))
 					{
-						this.logger.Error("Did not find a linked document for Proposal with Id: " + proposal.Id);
+						this.logger.LogError("Did not find a linked document for Proposal with Id: " + proposal.Id);
 					}
 				}
 			}
@@ -434,7 +435,7 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				if (proposal.DocumentId.HasValue)
 				{
-					this.logger.Error("The proposal Id passed in is linked to a document but the document is not in the DB for id " + proposalId.ToString());
+					this.logger.LogError("The proposal Id passed in is linked to a document but the document is not in the DB for id " + proposalId.ToString());
 					throw new GenValidationException("The document could not be found.");
 				}
 
@@ -810,7 +811,7 @@ namespace IES.ActionLogic.ControllerLogic
 				if (rate == null)
 				{
 					// logg
-					logger.Warn("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode);
+					logger.LogWarning("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode);
 					rateSections.Add(string.Empty);
 				}
 				else
@@ -822,7 +823,7 @@ namespace IES.ActionLogic.ControllerLogic
 					}
 					else
 					{
-						logger.Warn("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode + " using Rate " + rate.RateCode + " for searching");
+						logger.LogWarning("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode + " using Rate " + rate.RateCode + " for searching");
 						rateSections.Add(string.Empty);
 					}
 				}
@@ -872,7 +873,7 @@ namespace IES.ActionLogic.ControllerLogic
 				if (rate == null)
 				{
 					// logg
-					logger.Warn("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription);
+					logger.LogWarning("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription);
 					rateSections.Add(string.Empty);
 				}
 				else
@@ -884,7 +885,7 @@ namespace IES.ActionLogic.ControllerLogic
 					}
 					else
 					{
-						logger.Warn("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription + " using Rate " + rate.RateCode + " for searching");
+						logger.LogWarning("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription + " using Rate " + rate.RateCode + " for searching");
 						rateSections.Add(string.Empty);
 					}
 				}

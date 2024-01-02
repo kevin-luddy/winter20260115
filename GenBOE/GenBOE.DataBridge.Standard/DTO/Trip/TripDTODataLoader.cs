@@ -6,18 +6,19 @@
 
 namespace GenBOE.DataBridge.DTO
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using IES.Standard;
-    using GenBOE.Dtos;
-    using GenBOE.Models;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using GenBOE.Dtos;
+	using GenBOE.Models;
+	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    public class TripDTODataLoader : GenBOE.DataBridge.DTO.ITripDTODataLoader
+	public class TripDTODataLoader : ITripDTODataLoader
     {
         private readonly ILogger _log;
-        public TripDTODataLoader(ILogger logger)
+        public TripDTODataLoader(ILogger<TripDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

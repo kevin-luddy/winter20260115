@@ -11,11 +11,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Collections.ObjectModel;
     using System.Linq;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Email information dto data loader
-    /// </summary>
-    public class EmailInformationLoader : IEmailInformationLoader
+	/// <summary>
+	/// Email information dto data loader
+	/// </summary>
+	public class EmailInformationLoader : IEmailInformationLoader
     {
         /// <summary>
         /// Logger
@@ -47,10 +48,10 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public EmailInformationLoader(ILogger logger)
+        public EmailInformationLoader(ILogger<EmailInformationLoader> logger)
 		{
 			this.Log = logger;
-			// This Loader is called from the Emailer console app, so it does not have the Unity Container loaded for resolutions, have to new up any Loaders/mappers
+			// TODO TIW This Loader is called from the Emailer console app, so it does not have the Unity Container loaded for resolutions, have to new up any Loaders/mappers
 			this.PermissionLoader = new ProposalPermissionLoader(logger);
             this.ProposalLoader = new ProposalLoader(logger);
             this.UserLoader = new UserLoader(logger);
@@ -556,7 +557,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     if (coverSheetApproverRequired || role != PtmRole.CoverSheetApprover)
                     {
-                        this.Log.Error(string.Format("There is no Permission associated with Proposal {0} and role {1} ", proposal.Id, role));
+                        this.Log.LogError(string.Format("There is no Permission associated with Proposal {0} and role {1} ", proposal.Id, role));
                     }
                 }
             }
@@ -607,7 +608,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     if (coverSheetApproverRequired || role != PtmRole.CoverSheetApprover)
                     {
-                        this.Log.Error(string.Format("There is no Permission associated with Proposal {0} and role {1} ", proposal.Id, role));
+                        this.Log.LogError(string.Format("There is no Permission associated with Proposal {0} and role {1} ", proposal.Id, role));
                     }
                 }
             }

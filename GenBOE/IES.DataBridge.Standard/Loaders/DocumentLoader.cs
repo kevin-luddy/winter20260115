@@ -12,13 +12,14 @@ namespace IES.DataBridge.Loaders
     using IES.Standard;
     using IES.DataBridge.ModelViews;
     using IES.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Loader for RDSB Documents.
-    /// </summary>
-    /// <seealso cref="IES.Standard.DataLoader{IES.DataBridge.ModelViews.DocumentGridModelView}" />
-    /// <seealso cref="IES.DataBridge.Loaders.IDocumentLoader" />
-    public class DocumentLoader : DataLoader<DocumentGridModelView>, IDocumentLoader
+	/// <summary>
+	/// Loader for RDSB Documents.
+	/// </summary>
+	/// <seealso cref="IES.Standard.DataLoader{IES.DataBridge.ModelViews.DocumentGridModelView}" />
+	/// <seealso cref="IES.DataBridge.Loaders.IDocumentLoader" />
+	public class DocumentLoader : DataLoader<DocumentGridModelView>, IDocumentLoader
     {
         /// <summary>
         /// The rev loader
@@ -41,7 +42,7 @@ namespace IES.DataBridge.Loaders
         /// Initializes a new instance of the <see cref="DocumentLoader"/> class.
         /// </summary>
         /// <param name="revisionLoader">The revision loader.</param>
-        public DocumentLoader(IRevisionLoader revisionLoader)
+        public DocumentLoader(IRevisionLoader revisionLoader, ILogger<DocumentLoader> logger) : base(logger)
         {
             this.revisionLoader = revisionLoader;
         }

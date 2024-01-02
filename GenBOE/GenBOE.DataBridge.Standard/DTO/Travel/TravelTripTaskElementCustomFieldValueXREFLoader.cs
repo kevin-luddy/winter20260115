@@ -13,13 +13,14 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+	using Microsoft.Extensions.Logging;
 
-    public class TravelTripTaskElementCustomFieldValueXREFLoader : DataLoader<CustomFieldValueContainer>, ITravelTripTaskElementCustomFieldValueXREFLoader
+	public class TravelTripTaskElementCustomFieldValueXREFLoader : DataLoader<CustomFieldValueContainer>, ITravelTripTaskElementCustomFieldValueXREFLoader
     {
         /// <summary>
         /// Default constructor
         /// </summary>
-         public TravelTripTaskElementCustomFieldValueXREFLoader(ILogger logger) : base(logger)
+         public TravelTripTaskElementCustomFieldValueXREFLoader(ILogger<TravelTripTaskElementCustomFieldValueXREFLoader> logger) : base(logger)
 		{
 		}
          /// <summary>

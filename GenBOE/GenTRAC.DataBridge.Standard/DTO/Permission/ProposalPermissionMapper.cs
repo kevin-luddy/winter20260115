@@ -10,11 +10,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Collections.Generic;
     using System.Linq;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Proposal Permission Mapper
-    /// </summary>
-    public class ProposalPermissionMapper : IInternalProposalPermissionMapper
+	/// <summary>
+	/// Proposal Permission Mapper
+	/// </summary>
+	public class ProposalPermissionMapper : IInternalProposalPermissionMapper
     {
         /// <summary>
         /// Logger
@@ -30,7 +31,8 @@ namespace GenTRAC.DataBridge.DTO
         /// Constructor
         /// </summary>
         /// <param name="proposalPermissionLoader">Proposal Permission data loader</param>
-        public ProposalPermissionMapper(IProposalPermissionLoader proposalPermissionLoader, ILogger logger)
+        public ProposalPermissionMapper(IProposalPermissionLoader proposalPermissionLoader, 
+            ILogger<ProposalPermissionMapper> logger)
 		{
 			this.log = logger;
 			this.ProposalPermissionLoader = proposalPermissionLoader;

@@ -9,12 +9,13 @@ namespace GenTRAC.DataBridge.Common.Security
     using System.Collections.Generic;
     using GenTRAC.DataBridge.DTO;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// The security mapper will load in the security data from the database
-    /// based on the user currently logged in.
-    /// </summary>
-    public class SecurityMapper : ISecurityMapper
+	/// <summary>
+	/// The security mapper will load in the security data from the database
+	/// based on the user currently logged in.
+	/// </summary>
+	public class SecurityMapper : ISecurityMapper
     {
         /// <summary>
         /// The logger
@@ -55,7 +56,7 @@ namespace GenTRAC.DataBridge.Common.Security
         public SecurityMapper(ISecurityUserAuthorizationsDataLoader inSecurityUserAuthorizationsDataLoader,
                                 ISecurityInformation inSecurityInformation,
                                 IUserMapper inUserMapper,
-                                ILogger logger,
+                                ILogger<SecurityMapper> logger,
                                 ICache cache)
         {
             this.securityUserAuthorizationsDataLoader = inSecurityUserAuthorizationsDataLoader;
@@ -71,11 +72,11 @@ namespace GenTRAC.DataBridge.Common.Security
         /// <returns>A collection of permissions based on the parameters passed in</returns>
         public IReadOnlyCollection<SecurityPermissionsResponse> GetRolesForLoggedInUser()
         {
-            this.log.Debug("BEGIN Get permissions for logged in user for " + this.securityInformation.ActiveUserNTID);
+            this.log.LogDebug("BEGIN Get permissions for logged in user for " + this.securityInformation.ActiveUserNTID);
 
             IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser = this.GetRolesForUser(this.securityInformation.ActiveUserNTID);
 
-            this.log.Debug("END Get permissions for logged in user for " + this.securityInformation.ActiveUserNTID);
+            this.log.LogDebug("END Get permissions for logged in user for " + this.securityInformation.ActiveUserNTID);
 
             return rolesForUser;
         }
@@ -89,7 +90,7 @@ namespace GenTRAC.DataBridge.Common.Security
         {
             lock (this.lockObj)
             {
-                this.log.Debug("BEGIN Get permissions for specific user for " + inUserNtid);
+                this.log.LogDebug("BEGIN Get permissions for specific user for " + inUserNtid);
                 UserDTO user = this.userMapper.GetByNtid(inUserNtid);
 
                 string key = CacheConstants.ROLES_FOR_USER + inUserNtid;

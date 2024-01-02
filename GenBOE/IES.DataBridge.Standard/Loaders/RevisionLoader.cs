@@ -13,6 +13,7 @@ namespace IES.DataBridge.Loaders
     using IES.DataBridge.ModelViews;
     using IES.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Revision Data Loader
@@ -28,7 +29,7 @@ namespace IES.DataBridge.Loaders
         /// default constructor
         /// </summary>
         /// <param name="logger">logger</param>
-        public RevisionLoader(ILogger logger)
+        public RevisionLoader(ILogger<RevisionLoader> logger)
         {
             this.logger = logger;
         }

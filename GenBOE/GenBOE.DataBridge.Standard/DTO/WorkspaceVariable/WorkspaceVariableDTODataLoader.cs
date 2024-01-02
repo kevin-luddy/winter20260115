@@ -13,12 +13,13 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    public class WorkspaceVariableDTODataLoader : IWorkspaceVariableDTODataLoader
+	public class WorkspaceVariableDTODataLoader : IWorkspaceVariableDTODataLoader
     {
         private readonly ILogger _log;
 
-        public WorkspaceVariableDTODataLoader(ILogger logger)
+        public WorkspaceVariableDTODataLoader(ILogger<WorkspaceVariableDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

@@ -8,11 +8,12 @@ namespace GenTRAC.DataBridge.DTO
 {
     using GenTRAC.DataBridge.Common;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// PPR Checklist Content Mapper
-    /// </summary>
-    public class PPRChecklistContentMapper : IChecklistContentMapper
+	/// <summary>
+	/// PPR Checklist Content Mapper
+	/// </summary>
+	public class PPRChecklistContentMapper : IChecklistContentMapper
     {
         /// <summary>
         /// Logger
@@ -34,7 +35,8 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inChecklistContentLoader">Checklist Content Loader</param>
         /// <param name="inCacheLoader">Cache Loader</param>
-        public PPRChecklistContentMapper(IChecklistContentLoader inChecklistContentLoader, ICacheDataLoader inCacheLoader, ILogger logger)
+        public PPRChecklistContentMapper(IChecklistContentLoader inChecklistContentLoader, 
+            ICacheDataLoader inCacheLoader, ILogger<PPRChecklistContentMapper> logger)
 		{
 			this.Log = logger;
             this.DataLoader = inChecklistContentLoader;

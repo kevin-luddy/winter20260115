@@ -10,11 +10,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Linq;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Cover Sheet Data Dto Loader
-    /// </summary>
-    public class CoverSheetDataLoader : ICoverSheetDataLoader
+	/// <summary>
+	/// Cover Sheet Data Dto Loader
+	/// </summary>
+	public class CoverSheetDataLoader : ICoverSheetDataLoader
     {
         /// <summary>
         /// Logger
@@ -24,7 +25,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public CoverSheetDataLoader(ILogger logger)
+        public CoverSheetDataLoader(ILogger<CoverSheetDataLoader> logger)
 		{
 			this.Log = logger;
 		}

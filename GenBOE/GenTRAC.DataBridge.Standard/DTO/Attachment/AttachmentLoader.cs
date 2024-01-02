@@ -10,18 +10,18 @@ namespace GenTRAC.DataBridge.DTO
     using System.Linq;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Approvals Loader
-    /// </summary>
-    public class AttachmentLoader : DataLoader<AttachmentDto>, IAttachmentLoader
+	/// <summary>
+	/// Approvals Loader
+	/// </summary>
+	public class AttachmentLoader : DataLoader<AttachmentDto>, IAttachmentLoader
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public AttachmentLoader(ILogger logger)
+        public AttachmentLoader(ILogger logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

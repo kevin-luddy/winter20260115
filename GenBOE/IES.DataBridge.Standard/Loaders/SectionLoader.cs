@@ -12,6 +12,7 @@ namespace IES.DataBridge.Loaders
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Section Loader
@@ -23,9 +24,8 @@ namespace IES.DataBridge.Loaders
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SectionLoader"/> class.
 		/// </summary>
-		public SectionLoader(ILogger logger)
+		public SectionLoader(ILogger<SectionLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
 		#endregion

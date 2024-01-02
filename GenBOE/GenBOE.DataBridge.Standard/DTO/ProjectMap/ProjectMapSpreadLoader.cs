@@ -18,7 +18,7 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Constructor
         /// </summary>
-        public ProjectMapSpreadLoader(ILogger<ProjectMapSpreadLoader> logger)
+        public ProjectMapSpreadLoader(ILogger<ProjectMapSpreadLoader> logger) : base(logger)
 		{
 		}
 

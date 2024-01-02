@@ -6,128 +6,129 @@
 
 namespace GenBOE.DataBridge.DTO
 {
-    using System;
-    using System.Linq;
-    using IES.Standard;
-    using GenBOE.Models;
-    using GenBOE.Dtos;
-    using System.Collections.ObjectModel;
-    using System.Collections.Generic;
+	using System;
+	using System.Linq;
+	using IES.Standard;
+	using GenBOE.Models;
+	using GenBOE.Dtos;
+	using System.Collections.ObjectModel;
+	using System.Collections.Generic;
+	using Microsoft.Extensions.Logging;
 
-    public class SystemSettingDTODataLoader : GenBOE.DataBridge.DTO.ISystemSettingDTODataLoader
-    {
-        private readonly ILogger _log;
-        public SystemSettingDTODataLoader(ILogger logger) 
-        {
-            this._log = logger;
-        }
+	public class SystemSettingDTODataLoader : ISystemSettingDTODataLoader
+	{
+		private readonly ILogger _log;
+		public SystemSettingDTODataLoader(ILogger<SystemSettingDTODataLoader> logger) 
+		{
+			this._log = logger;
+		}
 
-        /// <summary>
-        /// Get all system setting DTOs
-        /// </summary>
-        /// <returns>All system settings</returns>
-        virtual public ICollection<SystemSettingDTO> GetSystemSettings()
-        {
-            ICollection<SystemSettingDTO> toReturn = new Collection<SystemSettingDTO>();
-            using (StopwatchTimer sw = new StopwatchTimer(this._log))
-            {
-                using (GenBoeEntities gbe = new GenBoeEntities())
-                {
-                    toReturn =
-                       (from ss in gbe.SystemSettings
-                        select new SystemSettingDTO
-                        {
-                            Key = ss.Key,
-                            Value = ss.Value
-                        }
-                        ).OrderBy(ss => ss.Key).ToList();
-                }
-            }
+		/// <summary>
+		/// Get all system setting DTOs
+		/// </summary>
+		/// <returns>All system settings</returns>
+		virtual public ICollection<SystemSettingDTO> GetSystemSettings()
+		{
+			ICollection<SystemSettingDTO> toReturn = new Collection<SystemSettingDTO>();
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					toReturn =
+					   (from ss in gbe.SystemSettings
+						select new SystemSettingDTO
+						{
+							Key = ss.Key,
+							Value = ss.Value
+						}
+						).OrderBy(ss => ss.Key).ToList();
+				}
+			}
 
-            return toReturn;
-        }
+			return toReturn;
+		}
 
-        /// <summary>
-        /// Get the system setting DTO
-        /// </summary>
-        /// <param name="key">system setting key to retrieve</param>
-        /// <returns>system setting value</returns>
-        
-        virtual public SystemSettingDTO GetSystemSetting(string key)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+		/// <summary>
+		/// Get the system setting DTO
+		/// </summary>
+		/// <param name="key">system setting key to retrieve</param>
+		/// <returns>system setting value</returns>
+		
+		virtual public SystemSettingDTO GetSystemSetting(string key)
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentNullException(nameof(key));
+			}
 
-            SystemSettingDTO toReturn = null;
+			SystemSettingDTO toReturn = null;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this._log))
-            {
-                using (GenBoeEntities gbe = new GenBoeEntities())
-                {
-                    var SystemSetting =
-                       (from r in gbe.SystemSettings
-                        where r.Key == key
-                        select new SystemSettingDTO
-                        {
-                            Key = r.Key,
-                            Value = r.Value
-                        }).FirstOrDefault();
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					var SystemSetting =
+					   (from r in gbe.SystemSettings
+						where r.Key == key
+						select new SystemSettingDTO
+						{
+							Key = r.Key,
+							Value = r.Value
+						}).FirstOrDefault();
 
-                    toReturn = SystemSetting;
-                }
-            }
+					toReturn = SystemSetting;
+				}
+			}
 
-            return toReturn;
-        }
+			return toReturn;
+		}
 
-        #region Commit
+		#region Commit
 
 
-        /// <summary>
-        /// Save the System Setting
-        /// </summary>
-        /// <param name="systemSetting">system setting to save</param>
-        virtual public string SaveSystemSetting(SystemSettingDTO systemSetting)
-        {
-            if (systemSetting == null)
-            {
-                throw new ArgumentNullException(nameof(systemSetting));
-            }
+		/// <summary>
+		/// Save the System Setting
+		/// </summary>
+		/// <param name="systemSetting">system setting to save</param>
+		virtual public string SaveSystemSetting(SystemSettingDTO systemSetting)
+		{
+			if (systemSetting == null)
+			{
+				throw new ArgumentNullException(nameof(systemSetting));
+			}
 
-            string key = string.Empty;
+			string key = string.Empty;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this._log))
-            {
-                using (GenBoeEntities gbe = new GenBoeEntities())
-                {
-                    key = gbe.upsertSystemSetting(systemSetting.Key, systemSetting.Value).FirstOrDefault();
-                }
-            }
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					key = gbe.upsertSystemSetting(systemSetting.Key, systemSetting.Value).FirstOrDefault();
+				}
+			}
 
-            return key;
-        }
+			return key;
+		}
 
-        /// <summary>
-        /// Clear (delete) the system setting
-        /// </summary>
-        /// <param name="key">system setting key to clear</param>
-        virtual public void ClearSystemSetting(string key)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+		/// <summary>
+		/// Clear (delete) the system setting
+		/// </summary>
+		/// <param name="key">system setting key to clear</param>
+		virtual public void ClearSystemSetting(string key)
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentNullException(nameof(key));
+			}
 
-            using (StopwatchTimer sw = new StopwatchTimer(this._log))
-            {
-                using (GenBoeEntities gbe = new GenBoeEntities())
-                {
-                    gbe.deleteSystemSetting(key);
-                }
-            }
-        }
-        #endregion Commit
-    }
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					gbe.deleteSystemSetting(key);
+				}
+			}
+		}
+		#endregion Commit
+	}
 }

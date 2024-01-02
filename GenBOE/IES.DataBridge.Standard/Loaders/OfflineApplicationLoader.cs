@@ -12,19 +12,27 @@ namespace IES.DataBridge.Loaders
     using IES.Standard;
     using IES.DataBridge.ModelViews;
     using IES.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Offline Application Loader
-    /// </summary>
+	/// <summary>
+	/// Offline Application Loader
+	/// </summary>
     public class OfflineApplicationLoader : DataLoader<OfflineApplicationModelView>, IOfflineApplicationLoader
     {
-        #region Retrieves
+		/// <summary>
+		/// default ctor
+		/// </summary>
+		/// <param name="logger">logger</param>
+		public OfflineApplicationLoader(ILogger<OfflineApplicationLoader> logger) : base(logger)
+		{ }
 
-        /// <summary>
-        /// Get all Offline Application data
-        /// </summary>
-        /// <returns>all Offline Application data</returns>
-        public ICollection<OfflineApplicationModelView> GetAll()
+		#region Retrieves
+
+		/// <summary>
+		/// Get all Offline Application data
+		/// </summary>
+		/// <returns>all Offline Application data</returns>
+		public ICollection<OfflineApplicationModelView> GetAll()
         {
             ICollection<OfflineApplicationModelView> result;
 

@@ -13,19 +13,27 @@ namespace IES.DataBridge.Loaders
     using IES.Standard;
     using IES.DataBridge.ModelViews;
     using IES.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Cobra Years Loader
-    /// </summary>
+	/// <summary>
+	/// Cobra Years Loader
+	/// </summary>
     public class CobraYearsLoader : DataLoader<CobraYearGridModelView>, ICobraYearsLoader
     {
-        #region Retrieves
+		/// <summary>
+		/// default ctor
+		/// </summary>
+		/// <param name="logger">logger</param>
+		public CobraYearsLoader(ILogger<CobraYearsLoader> logger) : base(logger)
+		{ }
 
-        /// <summary>
-        /// Get All Cobra Year Configuration Data
-        /// </summary>
-        /// <returns>All Cobra Year Data</returns>
-        public ICollection<CobraYearGridModelView> GetAll()
+		#region Retrieves
+
+		/// <summary>
+		/// Get All Cobra Year Configuration Data
+		/// </summary>
+		/// <returns>All Cobra Year Data</returns>
+		public ICollection<CobraYearGridModelView> GetAll()
         {
             ICollection<CobraYearGridModelView> result;
 

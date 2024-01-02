@@ -13,18 +13,18 @@ namespace GenTRAC.DataBridge.DTO
     using System.Text;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Proposal dto data loader
-    /// </summary>
-    public class ProposalChecklistLoader : DataLoader<ProposalChecklistDto>, IProposalChecklistLoader
+	/// <summary>
+	/// Proposal dto data loader
+	/// </summary>
+	public class ProposalChecklistLoader : DataLoader<ProposalChecklistDto>, IProposalChecklistLoader
     {
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ProposalChecklistLoader(ILogger logger)
+        public ProposalChecklistLoader(ILogger<ProposalChecklistLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

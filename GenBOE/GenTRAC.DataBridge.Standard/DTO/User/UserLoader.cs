@@ -12,11 +12,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Linq;
     using GenTRAC.Models;
     using IES.Standard;
- 
-    /// <summary>
-    /// User Data Loader Class
-    /// </summary>
-    public class UserLoader : DataLoader<UserDTO>, IUserLoader
+	using Microsoft.Extensions.Logging;
+
+	/// <summary>
+	/// User Data Loader Class
+	/// </summary>
+	public class UserLoader : DataLoader<UserDTO>, IUserLoader
     {
         /// <summary>
         /// Active Directory Utils
@@ -35,9 +36,8 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// constructor
         /// </summary>
-        public UserLoader(ILogger logger)
+        public UserLoader(ILogger logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

@@ -9,6 +9,7 @@ namespace IES.ActionLogic.Common
 	using System;
 	using IES.DataBridge.ModelViews;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// The Emailer class will send an email to the recipient and replace any tokens in the subject and body as required.
@@ -50,7 +51,8 @@ namespace IES.ActionLogic.Common
         /// Constructor for dependency injection
         /// </summary>
         /// <param name="dataFetchingScheduler">The data fetching scheduler.</param>
-        public IESEmailer(IDataFetchingScheduler dataFetchingScheduler, ILogger logger) : base(logger)
+        public IESEmailer(IDataFetchingScheduler dataFetchingScheduler, ILogger<IESEmailer> logger) 
+            : base(logger)
 		{
             this.DataFetchingScheduler = dataFetchingScheduler;
         }
@@ -70,7 +72,7 @@ namespace IES.ActionLogic.Common
             else 
             {
                 // if email is disabled by configuration setting
-                this.log.Debug("Email is disabled by configuration setting in SendPublishEmail");
+                this.log.LogDebug("Email is disabled by configuration setting in SendPublishEmail");
             }
         }
 
@@ -115,7 +117,7 @@ namespace IES.ActionLogic.Common
             else
             {
                 // if email is disabled by configuration setting
-                this.log.Debug("Email is disabled by configuration setting in SendClassifiedDeploymentSuccessEmail");
+                this.log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentSuccessEmail");
             }
         }
 
@@ -155,7 +157,7 @@ namespace IES.ActionLogic.Common
             else
             {
                 // if email is disabled by configuration setting
-                this.log.Debug("Email is disabled by configuration setting in SendClassifiedDeploymentFailedEmail");
+                this.log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentFailedEmail");
             }
         }
 

@@ -12,18 +12,18 @@ namespace GenTRAC.DataBridge.DTO
     using GenTRAC.Models;
     using IES.Standard;
     using IES.Standard.PickList;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// ProgramAreaDataLoader
-    /// </summary>
-    public class ProgramAreaDataLoader : PickListLoader
+	/// <summary>
+	/// ProgramAreaDataLoader
+	/// </summary>
+	public class ProgramAreaDataLoader : PickListLoader
     {
         /// <summary>
         /// ProgramAreaDataLoader
         /// </summary>
-        public ProgramAreaDataLoader(ILogger logger)
+        public ProgramAreaDataLoader(ILogger<ProgramAreaDataLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

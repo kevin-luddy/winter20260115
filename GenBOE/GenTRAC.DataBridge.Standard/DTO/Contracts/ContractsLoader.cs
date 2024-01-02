@@ -11,6 +11,7 @@ namespace GenTRAC.DataBridge.DTO
 	using System.Linq;
 	using GenTRAC.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Contracts Loader
@@ -20,9 +21,8 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Constructor
         /// </summary>
-        public ContractsLoader(ILogger logger)
+        public ContractsLoader(ILogger<ContractsLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

@@ -12,20 +12,28 @@ namespace IES.DataBridge.Loaders
     using IES.Standard;
     using IES.DataBridge.ModelViews;
     using IES.Models;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// File Attachment Loader
-    /// </summary>
+	/// <summary>
+	/// File Attachment Loader
+	/// </summary>
     public class FileAttachmentLoader : DataLoader<FileAttachmentRowModelView>, IFileAttachmentLoader
     {
-        #region Retrieves
+		/// <summary>
+		/// default ctor
+		/// </summary>
+		/// <param name="logger">logger</param>
+		public FileAttachmentLoader(ILogger<FileAttachmentLoader> logger) : base(logger)
+		{ }
 
-        /// <summary>
-        /// Get File Attachments for a revision.
-        /// </summary>
-        /// <param name="revisionId">The revision Id.</param>
-        /// <returns>All File Attachment Data for a revision.</returns>
-        public ICollection<FileAttachmentRowModelView> GetByRevision(int revisionId)
+		#region Retrieves
+
+		/// <summary>
+		/// Get File Attachments for a revision.
+		/// </summary>
+		/// <param name="revisionId">The revision Id.</param>
+		/// <returns>All File Attachment Data for a revision.</returns>
+		public ICollection<FileAttachmentRowModelView> GetByRevision(int revisionId)
         {
             ICollection<FileAttachmentRowModelView> result;
 

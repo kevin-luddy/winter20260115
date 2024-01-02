@@ -12,6 +12,7 @@ namespace GenTRAC.DataBridge.DTO
 	using System.Linq;
 	using GenTRAC.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Proposal dto data loader
@@ -61,9 +62,8 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ProposalLoader(ILogger logger)
+        public ProposalLoader(ILogger logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         /// <summary>

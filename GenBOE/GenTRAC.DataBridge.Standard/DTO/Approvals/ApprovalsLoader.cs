@@ -10,11 +10,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Linq;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Approvals Loader
-    /// </summary>
-    public class ApprovalsLoader : IApprovalsLoader
+	/// <summary>
+	/// Approvals Loader
+	/// </summary>
+	public class ApprovalsLoader : IApprovalsLoader
     {
         /// <summary>
         /// Logger
@@ -24,7 +25,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Ctor
         /// </summary>
-        public ApprovalsLoader(ILogger logger)
+        public ApprovalsLoader(ILogger<ApprovalsLoader> logger)
 		{
 			this.Log = logger;
 		}

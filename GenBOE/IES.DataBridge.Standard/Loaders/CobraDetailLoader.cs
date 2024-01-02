@@ -12,6 +12,7 @@ namespace IES.DataBridge.Loaders
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Cobra Grid Loader
@@ -23,9 +24,8 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// Initializes a new instance of the <see cref="CobraDetailLoader"/> class.
         /// </summary>
-        public CobraDetailLoader(ILogger logger)
+        public CobraDetailLoader(ILogger<CobraDetailLoader> logger) : base(logger)
 		{
-			this.Log = logger;
 		}
 
         #endregion
@@ -152,12 +152,12 @@ namespace IES.DataBridge.Loaders
 
             if (dtosToSave.Any())
             {
-                this.Log.Debug(string.Format("CobraDetailLoader.BulkSave => Ntid: {2}, RateCodeId: {1}, Count: {0}",
+                this.Log.LogDebug(string.Format("CobraDetailLoader.BulkSave => Ntid: {2}, RateCodeId: {1}, Count: {0}",
                 dtosToSave.Count, dtosToSave.First().Id, System.Threading.Thread.CurrentPrincipal.Identity.Name));
 
                 foreach (CobraDetailModelView dto in dtosToSave)
                 {
-                    this.Log.Debug(string.Format("CobraDetailLoader.BulkSave => Item Id: {0}, Value: {1}", dto.Id, dto.RateCode));
+                    this.Log.LogDebug(string.Format("CobraDetailLoader.BulkSave => Item Id: {0}, Value: {1}", dto.Id, dto.RateCode));
                 }
 
                 using (StopwatchTimer sw = new StopwatchTimer(this.Log))

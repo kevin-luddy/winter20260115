@@ -13,6 +13,7 @@ namespace IES.DataBridge.Loaders
 	using IES.Models;
 	using IES.Standard;
 	using IES.Standard.Exceptions;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// BurdenPoolLoader
@@ -24,9 +25,8 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// Initializes a new instance of the <see cref="BurdenPoolLoader"/> class.
         /// </summary>
-        public BurdenPoolLoader(ILogger logger)
+        public BurdenPoolLoader(ILogger<BurdenPoolLoader> logger) : base(logger)
         {
-            this.Log = logger;
         }
 
         #endregion

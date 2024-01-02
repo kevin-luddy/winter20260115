@@ -12,22 +12,30 @@ namespace IES.DataBridge.Loaders
 	using IES.Standard;
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// Rate Grid Loader
 	/// </summary>
 	public class RateCodeYearLoader : BulkDataLoader<RateYearModelView, RateCodeYear>, IRateCodeYearLoader
     {
-        #region Retrieves
+		/// <summary>
+		/// default ctor
+		/// </summary>
+		/// <param name="logger">logger</param>
+		public RateCodeYearLoader(ILogger<RateCodeYearLoader> logger) : base(logger)
+		{ }
 
-        /// <summary>
-        /// Gets all objects based on the IDs that were passed in
-        /// </summary>
-        /// <param name="ids">IDs</param>
-        /// <returns>
-        /// Corresponding Data
-        /// </returns>
-        public override ICollection<RateYearModelView> GetByIds(ICollection<int> ids)
+		#region Retrieves
+
+		/// <summary>
+		/// Gets all objects based on the IDs that were passed in
+		/// </summary>
+		/// <param name="ids">IDs</param>
+		/// <returns>
+		/// Corresponding Data
+		/// </returns>
+		public override ICollection<RateYearModelView> GetByIds(ICollection<int> ids)
         {
             throw new NotImplementedException();
         }

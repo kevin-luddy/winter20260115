@@ -12,20 +12,28 @@ namespace IES.DataBridge.Loaders
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
 	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// RDSB Rate Code Xref Loader
 	/// </summary>
 	public class RdsbRateCodeXrefLoader : BulkDataLoader<RdsbRateCodeXrefModelView, RDSBRateCodeXref>, IRdsbRateCodeXrefLoader
     {
-        /// <summary>
-        /// Gets all objects based on the IDs that were passed in
-        /// </summary>
-        /// <param name="ids">IDs</param>
-        /// <returns>
-        /// Corresponding Data
-        /// </returns>
-        public override ICollection<RdsbRateCodeXrefModelView> GetByIds(ICollection<int> ids)
+		/// <summary>
+		/// default ctor
+		/// </summary>
+		/// <param name="logger">logger</param>
+		public RdsbRateCodeXrefLoader(ILogger<RdsbRateCodeXrefLoader> logger) : base(logger)
+		{ }
+
+		/// <summary>
+		/// Gets all objects based on the IDs that were passed in
+		/// </summary>
+		/// <param name="ids">IDs</param>
+		/// <returns>
+		/// Corresponding Data
+		/// </returns>
+		public override ICollection<RdsbRateCodeXrefModelView> GetByIds(ICollection<int> ids)
         {
             throw new NotImplementedException();
         }

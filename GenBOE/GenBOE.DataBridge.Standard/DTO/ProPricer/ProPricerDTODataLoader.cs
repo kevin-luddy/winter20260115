@@ -22,7 +22,7 @@ namespace GenBOE.DataBridge.DTO
         /// default ctor
         /// </summary>
         /// <param name="logger">Logger</param>
-        public ProPricerDTODataLoader(ILogger<ProPricerDTODataLoader> logger) : base(logger)
+        public ProPricerDTODataLoader(ILogger<ProPricerDTODataLoader> logger)
 		{
 			this._log = logger;
 		}

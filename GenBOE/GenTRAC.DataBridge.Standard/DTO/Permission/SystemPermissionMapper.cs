@@ -10,11 +10,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Collections.Generic;
     using System.Linq;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// System Permissions Dto Data Mapper
-    /// </summary>
-    public class SystemPermissionMapper : IInternalSystemPermissionMapper
+	/// <summary>
+	/// System Permissions Dto Data Mapper
+	/// </summary>
+	public class SystemPermissionMapper : IInternalSystemPermissionMapper
     {
         /// <summary>
         /// Logger
@@ -30,7 +31,8 @@ namespace GenTRAC.DataBridge.DTO
         /// Constructor
         /// </summary>
         /// <param name="systemPermissionLoader">System Permission Loader</param>
-        public SystemPermissionMapper(ISystemPermissionLoader systemPermissionLoader, ILogger logger)
+        public SystemPermissionMapper(ISystemPermissionLoader systemPermissionLoader, 
+            ILogger<SystemPermissionMapper> logger)
 		{
 			this.log = logger;
 			this.SystemPermissionLoader = systemPermissionLoader;

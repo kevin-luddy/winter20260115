@@ -9,11 +9,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Linq;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Manage proposal info loader
-    /// </summary>
-    public class ManageProposalInfoLoader : IManageProposalInfoLoader
+	/// <summary>
+	/// Manage proposal info loader
+	/// </summary>
+	public class ManageProposalInfoLoader : IManageProposalInfoLoader
     {
         /// <summary>
         /// Logger
@@ -23,7 +24,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ManageProposalInfoLoader(ILogger logger)
+        public ManageProposalInfoLoader(ILogger<ManageProposalInfoLoader> logger)
 		{
 			this.Log = logger;
 		}

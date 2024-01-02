@@ -11,11 +11,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Text;
     using IES.Standard;
     using IES.Standard.PickList;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// OrgStructureDataLoader
-    /// </summary>
-    public class OrgStructureDataMapper : IOrgStructureDataMapper
+	/// <summary>
+	/// OrgStructureDataLoader
+	/// </summary>
+	public class OrgStructureDataMapper : IOrgStructureDataMapper
     {
         // Getter and Setters
         #region GetterSetters
@@ -44,7 +45,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="inProgramAreaDataLoader">Program Area DataLoader</param>
         public OrgStructureDataMapper(IPickListLoader inLineOfBusinessDataLoader,
                                       IPickListLoader inProgramAreaDataLoader,
-									  ILogger logger)
+									  ILogger<OrgStructureDataMapper> logger)
 		{
 			this.Log = logger;
 			this.LineOfBusinessLoader = inLineOfBusinessDataLoader;

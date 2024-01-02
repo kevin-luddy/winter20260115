@@ -6,16 +6,17 @@
 
 namespace GenTRAC.DataBridge.DTO
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using GenTRAC.DataBridge.DTO.Contracts;
-    using GenTRAC.Models;
-    using IES.Standard;
+	using System.Collections.Generic;
+	using System.Linq;
+	using GenTRAC.DataBridge.DTO.Contracts;
+	using GenTRAC.Models;
+	using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Cage Codes Loader
-    /// </summary>
-    public class CageCodesLoader : ICageCodesLoader
+	/// <summary>
+	/// Cage Codes Loader
+	/// </summary>
+	public class CageCodesLoader : ICageCodesLoader
     {
         /// <summary>
         /// Logger
@@ -25,7 +26,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Constructor
         /// </summary>
-        public CageCodesLoader(ILogger logger)
+        public CageCodesLoader(ILogger<CageCodesLoader> logger)
 		{
 			this.Log = logger;
 		}

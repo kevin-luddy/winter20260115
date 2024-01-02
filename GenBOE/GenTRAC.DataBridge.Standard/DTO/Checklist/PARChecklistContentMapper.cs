@@ -8,11 +8,12 @@ namespace GenTRAC.DataBridge.DTO
 {
     using GenTRAC.DataBridge.Common;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// PAR Checklist Content Mapper
-    /// </summary>
-    public class PARChecklistContentMapper : IChecklistContentMapper
+	/// <summary>
+	/// PAR Checklist Content Mapper
+	/// </summary>
+	public class PARChecklistContentMapper : IChecklistContentMapper
     {
         /// <summary>
         /// Logger
@@ -34,7 +35,8 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inChecklistContentLoader">Checklist Content Loader</param>
         /// <param name="inCacheLoader">Cache Loader</param>
-        public PARChecklistContentMapper(IChecklistContentLoader inChecklistContentLoader, ICacheDataLoader inCacheLoader, ILogger logger)
+        public PARChecklistContentMapper(IChecklistContentLoader inChecklistContentLoader, 
+            ICacheDataLoader inCacheLoader, ILogger<PARChecklistContentMapper> logger)
         {
             this.Log = logger;
 

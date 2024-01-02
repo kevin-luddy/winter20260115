@@ -10,11 +10,12 @@ namespace GenTRAC.DataBridge.DTO.Reports
     using System.Linq;
     using GenTRAC.Models;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Generic loader that can be used to obtain info for the SSRS reports
-    /// </summary>
-    public class ReportsLoader : IReportsLoader
+	/// <summary>
+	/// Generic loader that can be used to obtain info for the SSRS reports
+	/// </summary>
+	public class ReportsLoader : IReportsLoader
     {
         /// <summary>
         /// Logger
@@ -24,7 +25,7 @@ namespace GenTRAC.DataBridge.DTO.Reports
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ReportsLoader(ILogger logger)
+        public ReportsLoader(ILogger<ReportsLoader> logger)
 		{
 			this.Log = logger;
 		}

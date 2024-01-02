@@ -7,6 +7,7 @@ using IES.Standard;
 using System.Linq;
 using GenBOE.Models;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace GenBOE.DataBridge.Reference
 {
@@ -21,7 +22,7 @@ namespace GenBOE.DataBridge.Reference
         /// <summary>
         /// default constructor
         /// </summary>
-        public InUseDataLoader(ILogger logger)
+        public InUseDataLoader(ILogger<InUseDataLoader> logger)
 		{
 			this._log = logger;
 		}

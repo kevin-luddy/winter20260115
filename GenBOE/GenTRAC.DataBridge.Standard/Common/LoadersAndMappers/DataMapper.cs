@@ -10,18 +10,19 @@ namespace GenTRAC.DataBridge.Common
     using System.Collections.Generic;
     using System.Linq;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Data Mapper abstract class
-    /// </summary>
-    public abstract class DataMapper<TDtoType, TLoaderType> : IInternalDataMapper<TDtoType> where TDtoType : UpdateableDTO where TLoaderType : IDataLoader<TDtoType>
+	/// <summary>
+	/// Data Mapper abstract class
+	/// </summary>
+	public abstract class DataMapper<TDtoType, TLoaderType> : IInternalDataMapper<TDtoType> where TDtoType : UpdateableDTO where TLoaderType : IDataLoader<TDtoType>
     {
         #region Properties
 
         /// <summary>
         /// Logger
         /// </summary>
-        protected ILogger Log { get; set; }
+        protected ILogger Log { get; private set; }
 
         /// <summary>
         /// Data loader for the mapper
@@ -43,8 +44,9 @@ namespace GenTRAC.DataBridge.Common
         /// <summary>
         /// Default Constructor
         /// </summary>
-        protected DataMapper()
+        protected DataMapper(ILogger logger)
         {
+            this.Log = logger;
         }
 
         /// <summary>

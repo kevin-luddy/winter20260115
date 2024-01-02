@@ -13,11 +13,12 @@ namespace GenTRAC.DataBridge.DTO
     using System.Transactions;
     using GenTRAC.DataBridge.Common;
     using IES.Standard;
+	using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// User Dto Data Mapper
-    /// </summary>
-    public class UserMapper : DataMapper<UserDTO, IUserLoader>, IInternalUserMapper
+	/// <summary>
+	/// User Dto Data Mapper
+	/// </summary>
+	public class UserMapper : DataMapper<UserDTO, IUserLoader>, IInternalUserMapper
     {
         /// <summary>
         /// Security Information
@@ -47,10 +48,9 @@ namespace GenTRAC.DataBridge.DTO
                           ISecurityInformation inSecurityInformation,
                           IActiveDirectoryUtilities inActiveDirectoryUtilities,
                           ICache inCache,
-                          ILogger logger)
+                          ILogger logger) 
+            :base (logger)
         {
-            this.Log = logger;
-
             this.DataLoader = inUserDataLoader;
             this.CacheLoader = inCacheDataLoader;
             this.securityInformation = inSecurityInformation;
@@ -72,7 +72,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 // not cache, hardlinked
                 toReturn = this.DataLoader.GetAllIds();
-                this.Log.Performance("DIRECT - GetAllUserIds", sw.ElapsedMilliseconds);
+                // TODO TIW this.Log.Performance("DIRECT - GetAllUserIds", sw.ElapsedMilliseconds);
             }
 
             return toReturn;
@@ -90,9 +90,9 @@ namespace GenTRAC.DataBridge.DTO
             {
                 // get a list of all user Ids (not cache, hardlinked)
                 ICollection<int> allUserIDs = this.DataLoader.GetAllIds();
-                this.Log.Performance("DIRECT - GetAllUserIds", sw.ElapsedMilliseconds);
+				// TODO TIW this.Log.Performance("DIRECT - GetAllUserIds", sw.ElapsedMilliseconds);
 
-                if (allUserIDs != null && allUserIDs.Any())
+				if (allUserIDs != null && allUserIDs.Any())
                 {
                     // go through mapper so we take advantage of cache
                     var allMembers = this.GetDtos(allUserIDs);
@@ -303,9 +303,9 @@ namespace GenTRAC.DataBridge.DTO
             {
                 // get a list of all group user Ids (not cache, hardlinked)
                 ICollection<int> allGroupUserIDs = this.DataLoader.GetAllGroupIds();
-                this.Log.Performance("DIRECT - GetAllGroupIds", sw.ElapsedMilliseconds);
+				// TODO TIW this.Log.Performance("DIRECT - GetAllGroupIds", sw.ElapsedMilliseconds);
 
-                if (allGroupUserIDs != null && allGroupUserIDs.Any())
+				if (allGroupUserIDs != null && allGroupUserIDs.Any())
                 {
                     // go through mapper so we take advantage of cache
                     var allMembers = this.GetDtos(allGroupUserIDs);

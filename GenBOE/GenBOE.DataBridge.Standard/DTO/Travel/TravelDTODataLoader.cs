@@ -13,14 +13,15 @@ namespace GenBOE.DataBridge.DTO
     using IES.Standard;
     using GenBOE.Dtos;
     using GenBOE.Models;
+	using Microsoft.Extensions.Logging;
 
-    public class TravelDTODataLoader : ITravelDTODataLoader
+	public class TravelDTODataLoader : ITravelDTODataLoader
     {
         private readonly ILogger _log;
         private ITravelTripTaskElementCustomFieldValueXREFLoader travelTripTaskElementCustomFieldLoader = null;
         private ITravelTripCustomFieldValueXREFLoader travelTripCustomFieldLoader = null;
 
-        public TravelDTODataLoader(ILogger logger)
+        public TravelDTODataLoader(ILogger<TravelDTODataLoader> logger)
 		{
 			this._log = logger;
 		}
