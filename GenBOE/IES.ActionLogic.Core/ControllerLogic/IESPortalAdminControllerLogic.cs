@@ -18,6 +18,8 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Core.PickList;
 	using ModelView;
 	using Validation;
+	using GenTRAC.DataBridge.DTO;
+	using GenBOE.DataBridge.DTO;
 
 	/// <summary>
 	/// Controller Logic for IES Portal Admin area
@@ -45,7 +47,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="ptmPickListMapper">The PTM pick list mapper.</param>
         /// <param name="boePickListMapper">The BOE pick list mapper.</param>
         /// <param name="offlineApplicationLoader">Offline Application Loader</param>
-        public IESPortalAdminControllerLogic(IPickListMapper ptmPickListMapper, IPickListMapper boePickListMapper, IOfflineApplicationLoader offlineApplicationLoader)
+        public IESPortalAdminControllerLogic(PtmPickListMapper ptmPickListMapper, BoePickListMapper boePickListMapper, IOfflineApplicationLoader offlineApplicationLoader)
         {
             this.boePickListMapper = boePickListMapper;
             this.ptmPickListMapper = ptmPickListMapper;

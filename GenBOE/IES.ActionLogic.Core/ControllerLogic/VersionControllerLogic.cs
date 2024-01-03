@@ -6,23 +6,22 @@
 
 namespace IES.ActionLogic.ControllerLogic
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using IES.ActionLogic.Common;
-    using IES.Core;
-    using IES.Core;
-    using IES.DataBridge.Loaders;
-    using IES.DataBridge.ModelViews;
-    using Mediator;
+	using System;
+	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using IES.ActionLogic.Common;
+	using IES.Core;
+	using IES.DataBridge.Loaders;
+	using IES.DataBridge.ModelViews;
+	using Mediator;
 
-    /// <summary>
-    /// Logic for the Version Controller
-    /// </summary>
-    public class VersionControllerLogic : RdmControllerLogic, IVersionControllerLogic
+	/// <summary>
+	/// Logic for the Version Controller
+	/// </summary>
+	public class VersionControllerLogic : RdmControllerLogic, IVersionControllerLogic
     {
         /// <summary>
         /// Rate Detail Loader

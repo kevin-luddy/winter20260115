@@ -9,15 +9,17 @@ namespace IESPortal.Backend.Controllers
     using System;
     using System.Collections.Generic;
     using System.Configuration;
-    using System.Web.Mvc;
     using IES.ActionLogic.Common;
-    using IES.Common;
-    using IES.Common.Exceptions;
+    using IES.Core;
+    using IES.Core.Exceptions;
     using IES.DataBridge.Loaders;
     using IES.DataBridge.ModelViews;
+	using Microsoft.AspNetCore.Authorization;
+	using Microsoft.AspNetCore.Mvc;
 
-    [IES.Common.Exceptions.HandleError]
-    public class HomeController : Controller
+	// TODO TIW [IES.Core.Exceptions.HandleError]
+	[ApiController, Authorize, Route("api/Home")]
+	public class HomeController : ControllerBase
     {
         /// <summary>
         /// The banner mediator
@@ -46,63 +48,40 @@ namespace IESPortal.Backend.Controllers
             this.offlineApplicationLoader = offlineApplicationLoader;
         }
 
-        /// <summary>
-        /// Returns the Admin index view.
-        /// </summary>
-        /// <returns>Returns the Admin index view.</returns>
-        public ActionResult Index()
-        {
-            this.SetUrls();
+		///// <summary>
+		///// Returns the Header for other Applications.
+		///// </summary>
+		///// <param name="active">The active.</param>
+		///// <returns>The header only for applications.</returns>
+		//public IActionResult HeaderInternal(string active)
+		//{
+		//    ViewBag.ActiveTab = active;
+		//    ViewBag.IsAdmin = this.securityInformation.IsIESPortalAdminUser(this.securityInformation.ActiveUserNTID);
 
-            // show special BOE logo for Frank?
-            ViewBag.showLogoBoeFrank = false;
-            string frankBoeLogoVisibilityPercentage = ConfigurationManager.AppSettings["FrankBoeLogoVisibilityPercentage"];
-            int percent;
-            if (int.TryParse(frankBoeLogoVisibilityPercentage, out percent))
-            {
-                Random rand = new Random();
-                int randomValue = rand.Next(1, 101);
-                ViewBag.showLogoBoeFrank = randomValue <= percent && this.securityInformation.ActiveUserNTID.Equals("ffelicio");
-            }
+		//    this.SetUrls();
+		//    return View();
+		//}
 
-            ViewBag.ShowCarousel = this.securityInformation.ActiveUserNTID.Equals("ffelicio") || this.securityInformation.IsIESPortalAdminUser(this.securityInformation.ActiveUserNTID);
+		///// <summary>
+		///// Gets the banner for this application.
+		///// </summary>
+		///// <returns></returns>
+		//public IActionResult Banner(string active)
+		//{
+		//    if (string.IsNullOrWhiteSpace(active))
+		//    {
+		//        throw new GenValidationException("The application was not specified when retrieving banners.");
+		//    }
 
-            return View();
-        }
+		//    ViewBag.IsMultipleApps = active.Contains(",");
+		//    // Retrieve Banner(s) for this application
+		//    ICollection<BannerModelView> banners = this.bannerMediator.GetAllActiveForApps(active);
 
-        /// <summary>
-        /// Returns the Header for other Applications.
-        /// </summary>
-        /// <param name="active">The active.</param>
-        /// <returns>The header only for applications.</returns>
-        public ActionResult HeaderInternal(string active)
-        {
-            ViewBag.ActiveTab = active;
-            ViewBag.IsAdmin = this.securityInformation.IsIESPortalAdminUser(this.securityInformation.ActiveUserNTID);
+		//    return View(banners);
+		//}
 
-            this.SetUrls();
-            return View();
-        }
-
-        /// <summary>
-        /// Gets the banner for this application.
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Banner(string active)
-        {
-            if (string.IsNullOrWhiteSpace(active))
-            {
-                throw new GenValidationException("The application was not specified when retrieving banners.");
-            }
-
-            ViewBag.IsMultipleApps = active.Contains(",");
-            // Retrieve Banner(s) for this application
-            ICollection<BannerModelView> banners = this.bannerMediator.GetAllActiveForApps(active);
-
-            return View(banners);
-        }
-
-        public ActionResult AppOffline(string app)
+		[HttpGet("[action]")]
+		public OfflineApplicationModelView AppOffline(string app)
         {
             if(string.IsNullOrEmpty(app))
             {
@@ -111,48 +90,48 @@ namespace IESPortal.Backend.Controllers
 
             OfflineApplicationModelView appData = this.offlineApplicationLoader.GetByApplication(app);
 
-            return View(appData);
+            return appData;
         }
 
-        /// <summary>
-        /// Returns the Header for this IES Portal.
-        /// </summary>
-        /// <returns>The header.</returns>
-        public ActionResult Header()
-        {
-            return View();
-        }
+        ///// <summary>
+        ///// Returns the Header for this IES Portal.
+        ///// </summary>
+        ///// <returns>The header.</returns>
+        //public IActionResult Header()
+        //{
+        //    return View();
+        //}
 
-        /// <summary>
-        /// Gets the banner for this application.
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult BannerInternal(string active)
-        {
-            if (string.IsNullOrWhiteSpace(active))
-            {
-                throw new GenValidationException("The application was not specified when retrieving banners.");
-            }
+        ///// <summary>
+        ///// Gets the banner for this application.
+        ///// </summary>
+        ///// <returns></returns>
+        //public IActionResult BannerInternal(string active)
+        //{
+        //    if (string.IsNullOrWhiteSpace(active))
+        //    {
+        //        throw new GenValidationException("The application was not specified when retrieving banners.");
+        //    }
 
-            ViewBag.IsMultipleApps = active.Contains(",");
-            // Retrieve Banner(s) for this application
-            ICollection<BannerModelView> banners = this.bannerMediator.GetAllActiveForApps(active);
+        //    ViewBag.IsMultipleApps = active.Contains(",");
+        //    // Retrieve Banner(s) for this application
+        //    ICollection<BannerModelView> banners = this.bannerMediator.GetAllActiveForApps(active);
 
-            return View(banners);
-        }
+        //    return View(banners);
+        //}
 
-        private void SetUrls()
-        {
-            ViewBag.BOEUrl = ConfigurationManager.AppSettings["BOEUrl"];
-            ViewBag.RPMUrl = ConfigurationManager.AppSettings["RPMUrl"];
-            ViewBag.PTMUrl = ConfigurationManager.AppSettings["PTMUrl"];
-            ViewBag.RDMUrl = ConfigurationManager.AppSettings["RDMUrl"];
-            ViewBag.RDSBUrl = ConfigurationManager.AppSettings["RDSBUrl"];
-            ViewBag.PPUrl = ConfigurationManager.AppSettings["PPUrl"];
-            ViewBag.ACVUrl = ConfigurationManager.AppSettings["ACVUrl"];
-			ViewBag.NLFUrl = ConfigurationManager.AppSettings["NLFUrl"];
-			ViewBag.eEPPUrl = ConfigurationManager.AppSettings["EEPPUrl"];
-            ViewBag.AdminUrl = ConfigurationManager.AppSettings["AdminUrl"];
-		}
+  //      private void SetUrls()
+  //      {
+  //          ViewBag.BOEUrl = ConfigurationManager.AppSettings["BOEUrl"];
+  //          ViewBag.RPMUrl = ConfigurationManager.AppSettings["RPMUrl"];
+  //          ViewBag.PTMUrl = ConfigurationManager.AppSettings["PTMUrl"];
+  //          ViewBag.RDMUrl = ConfigurationManager.AppSettings["RDMUrl"];
+  //          ViewBag.RDSBUrl = ConfigurationManager.AppSettings["RDSBUrl"];
+  //          ViewBag.PPUrl = ConfigurationManager.AppSettings["PPUrl"];
+  //          ViewBag.ACVUrl = ConfigurationManager.AppSettings["ACVUrl"];
+		//	ViewBag.NLFUrl = ConfigurationManager.AppSettings["NLFUrl"];
+		//	ViewBag.eEPPUrl = ConfigurationManager.AppSettings["EEPPUrl"];
+  //          ViewBag.AdminUrl = ConfigurationManager.AppSettings["AdminUrl"];
+		//}
     }
 }

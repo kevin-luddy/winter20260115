@@ -48,11 +48,6 @@ namespace IES.Core.OfficeUtilities
         protected const string ContentType_JSON = "application/json";
 
         /// <summary>
-        /// File name
-        /// </summary>
-        private string theFileDownloadName;
-
-        /// <summary>
         /// Create static Regex object for FileDownload.
         /// </summary>
         private static Regex regexFileDownload = new Regex("[\\\\/:\\*\\?\"<>\\|, ]", RegexOptions.None, Constants.REGEX_TIMEOUT);

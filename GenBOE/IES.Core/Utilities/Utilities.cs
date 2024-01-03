@@ -8,11 +8,14 @@ namespace IES.Core
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
 	using System.Net.Http;
 	using System.Text.RegularExpressions;
 	using System.Threading;
+	using IES.Core.Exceptions;
+	using Microsoft.AspNetCore.Mvc.ModelBinding;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.Net.Http.Headers;
 	using PickList;
@@ -410,14 +413,49 @@ namespace IES.Core
             return new Uri(ConfigurationUtilities.GetAppSetting("PTMURL"));
         }
 
-        /// <summary>
-        /// Concatenates number, seperator, and title into one string or returns UNIQUE_MULTI_NUMBER.
-        /// </summary>
-        /// <param name="number">Number string</param>
-        /// <param name="title">Title string</param>
-        /// <param name="seperator">Seperator string</param>
-        /// <returns>Concatenated string or the value in UNIQUE_MULTI_NUMBER</returns>
-        public static string FormatNumberTitleString(string number, string title, string seperator)
+		/// <summary>
+		/// Creates a string containing all of the errors in the Model State
+		/// </summary>
+		/// <param name="modelStateDictionary">The ModelState being checked</param>
+		/// <returns>A string of errors</returns>
+		public static Collection<ValidationMessage> CreateModelStateValidationErrorList(ModelStateDictionary modelStateDictionary)
+		{
+			if (modelStateDictionary == null)
+			{
+				throw new ArgumentNullException(nameof(modelStateDictionary));
+			}
+
+			var errors = new Collection<ValidationMessage>();
+
+			foreach (var state in modelStateDictionary)
+			{
+				foreach (var error in state.Value.Errors)
+				{
+					if (!string.IsNullOrEmpty(error.ErrorMessage))
+					{
+						errors.Add(new ValidationMessage(state.Key, error.ErrorMessage));
+					}
+					else
+					{
+						errors.Add(new ValidationMessage(state.Key, "Field was not valid."));
+					}
+				}
+			}
+
+			// remove duplicate messages.
+			errors = new Collection<ValidationMessage>(errors.GroupBy(x => x.ValidationIssue).Select(x => x.First()).ToCollection());
+
+			return errors;
+		}
+
+		/// <summary>
+		/// Concatenates number, seperator, and title into one string or returns UNIQUE_MULTI_NUMBER.
+		/// </summary>
+		/// <param name="number">Number string</param>
+		/// <param name="title">Title string</param>
+		/// <param name="seperator">Seperator string</param>
+		/// <returns>Concatenated string or the value in UNIQUE_MULTI_NUMBER</returns>
+		public static string FormatNumberTitleString(string number, string title, string seperator)
         {
             if (!string.IsNullOrEmpty(number) && !string.IsNullOrEmpty(title))
             {

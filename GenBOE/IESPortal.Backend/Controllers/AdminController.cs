@@ -10,18 +10,23 @@ namespace IESPortal.Backend.Controllers
     using System.Collections.Generic;
     using System.Linq;
     using System.Transactions;
-    using IES.ActionLogic.Common;
+	using IES.ActionLogic.Common;
     using IES.ActionLogic.ControllerLogic;
     using IES.ActionLogic.ModelView;
     using IES.Core;
     using IES.Core.Exceptions;
     using IES.Core.PickList;
     using IES.DataBridge.ModelViews;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.AspNetCore.Mvc.Controllers;
+	using Microsoft.AspNetCore.Mvc.Filters;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// The Admin Controller for Admin functions
 	/// </summary>
+	[ApiController, Authorize, Route("api/Admin")]
 	public class AdminController : IESController
     {
 
@@ -55,46 +60,39 @@ namespace IESPortal.Backend.Controllers
             this.adminControllerLogic = adminControllerLogic;
         }
 
-        /// <summary>
-        /// Clears the cache.
-        /// </summary>
-        /// <returns>Returns the Index page.</returns>
-        public IActionResult ClearCache()
+		/// <summary>
+		/// Clears the cache.
+		/// </summary>
+		/// <returns>Returns the Index page.</returns>
+		[HttpGet("[action]")]
+		public IActionResult ClearCache()
         {
             this.InitializeAction("ClearCache");
             this.bannerMediator.ClearCache();
-            return this.View("Index");
+            return this.Ok();
         }
 
-        /// <summary>
-        /// Returns the Admin index view.
-        /// </summary>
-        /// <returns>Returns the Admin index view.</returns>
-        public ActionResult Index()
-        {
-            this.InitializeAction("Index");
-            return this.View();
-        }
-
-        /// <summary>
-        /// Returns the Banner Grid View.
-        /// </summary>
-        /// <returns>The Banner Grid View.</returns>
-        public ActionResult Banners()
+		/// <summary>
+		/// Returns the Banner Grid View.
+		/// </summary>
+		/// <returns>The Banner Grid View.</returns>
+		[HttpGet("[action]")]
+		public IReadOnlyCollection<BannerModelView> Banners()
         {
             this.InitializeAction("Banners");
 
             // retrieve all Banners
             IReadOnlyCollection<BannerModelView> banners = this.bannerMediator.GetAll();
-            return this.View(banners);
+            return banners;
         }
 
-        /// <summary>
-        /// Returns the Edit View for a banner
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns>Edit view for a banner</returns>
-        public ActionResult EditBanner(int id)
+		/// <summary>
+		/// Returns the Edit View for a banner
+		/// </summary>
+		/// <param name="id">The identifier.</param>
+		/// <returns>Edit view for a banner</returns>
+		[HttpGet("[action]")]
+		public BannerModelView EditBanner(int id)
         {
             this.InitializeAction("EditBanner");
             // Defaults for New
@@ -120,7 +118,7 @@ namespace IESPortal.Backend.Controllers
                 }
             }
 
-            return View(banner);
+            return banner;
         }
 
         /// <summary>
@@ -128,8 +126,8 @@ namespace IESPortal.Backend.Controllers
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>Json result of the deletion.</returns>
-        [HttpPost]
-        public ActionResult DeleteBanner(int id)
+        [HttpPost("[action]")]
+		public IActionResult DeleteBanner(int id)
         {
             this.InitializeAction("DeleteBanner");
             BannerModelView banner = this.bannerMediator.GetById(id);
@@ -152,7 +150,7 @@ namespace IESPortal.Backend.Controllers
                 scope.Complete();
             }
 
-            return this.Json(new { Status = true });
+            return this.Ok(); // TODO TIW this.Json(new { Status = true });
         }
 
         /// <summary>
@@ -161,9 +159,9 @@ namespace IESPortal.Backend.Controllers
         /// <param name="banner">The banner.</param>
         /// <returns>Json result of the save.</returns>
         /// <exception cref="GenValidationException">Banner cannot be null.</exception>
-        [HttpPost]
-        public ActionResult SaveBanner([ModelBinder(typeof(JsonNetModelBinder))] BannerModelView banner)
-        {
+        [HttpPost("[action]")]
+		public IActionResult SaveBanner(BannerModelView banner)
+        { 
             this.InitializeAction("SaveBanner");
             if (banner == null)
             {
@@ -193,7 +191,7 @@ namespace IESPortal.Backend.Controllers
                 scope.Complete();
             }
 
-            return this.Json(new { Status = true });
+            return this.Ok(); //  this.Json(new { Status = true });
         }
 
         /// <summary>
@@ -209,7 +207,7 @@ namespace IESPortal.Backend.Controllers
                 throw new ArgumentNullException(nameof(functionName));
             }
 
-            this.StartAction(this.logger, functionName);
+            this.StartAction(this.log, functionName);
 
             // Check authorization
             if (!this.securityInformation.IsIESPortalAdminUser(this.securityInformation.ActiveUserNTID))
@@ -218,90 +216,98 @@ namespace IESPortal.Backend.Controllers
             }
         }
 
-        /// <summary>
-        /// Overrides OnActionExecuted to allow us to finalize the action and log the load times.
-        /// </summary>
-        /// <param name="filterContext">Filter context</param>
-        [NonAction]
-        protected override void OnActionExecuted(ActionExecutedContext filterContext)
-        {
-            if (filterContext != null)
-            {
-                string functionName = filterContext.ActionDescriptor.ActionName;
-                this.FinalizeAction(this.logger, functionName);
-            }
+		//    /// <summary>
+		//    /// Overrides OnActionExecuted to allow us to finalize the action and log the load times.
+		//    /// </summary>
+		//    /// <param name="filterContext">Filter context</param>
+		//    [NonAction]
+		//    public override void OnActionExecuted(ActionExecutedContext filterContext)
+		//    {
+		//        if (filterContext != null)
+		//        {
+		//ControllerActionDescriptor descriptor = filterContext.ActionDescriptor as ControllerActionDescriptor;
+		//string functionName = descriptor?.ActionName;
+		//            this.FinalizeAction(this.log, functionName);
+		//        }
 
-            base.OnActionExecuted(filterContext);
-        }
+		//        base.OnActionExecuted(filterContext);
+		//    }
 
-        /// <summary>
-        /// Manage Pick List page
-        /// </summary>
-        /// <returns>Partial view w/ the page</returns>
-        public PartialViewResult DisplaySelectPickListToManage()
+		/// <summary>
+		/// Manage Pick List page
+		/// </summary>
+		/// <returns>Partial view w/ the page</returns>
+		[HttpGet("[action]")]
+		public ICollection<SelectListItem> DisplaySelectPickListToManage()
         {
             this.InitializeAction(IESWebConstants.DISPLAY_SELECT_PICK_LIST_TO_MANAGE);
             ICollection<SelectListItem> data = EnumUtilities.GetListItemsForEnum(typeof(PickListEnum));
 
-            return this.PartialView(data);
+            return data;
         }
 
-        /// <summary>
-        /// Load the Manage Offline Applications View
-        /// </summary>
-        /// <returns>Manage Offline Applications View</returns>
-        public ActionResult ManageOfflineApplications()
+		/// <summary>
+		/// Load the Manage Offline Applications View
+		/// </summary>
+		/// <returns>Manage Offline Applications View</returns>
+		[HttpGet("[action]")]
+		public ICollection<OfflineApplicationModelView> ManageOfflineApplications()
         {
             this.InitializeAction(IESWebConstants.MANAGE_OFFLINE_APPLICATIONS);
 
             ICollection<OfflineApplicationModelView> applications = this.adminControllerLogic.GetOfflineApplicationData();
 
-            return this.View(applications);
+            return applications;
         }
 
-        /// <summary>
-        /// Save updates to application offline status
-        /// </summary>
-        /// <param name="applications">ModelViews of the applications and statuses</param>
-        public void SaveManageOfflineApplications(ICollection<OfflineApplicationModelView> applications)
+		/// <summary>
+		/// Save updates to application offline status
+		/// </summary>
+		/// <param name="applications">ModelViews of the applications and statuses</param>
+		[HttpPost("[action]")]
+		public IActionResult SaveManageOfflineApplications(ICollection<OfflineApplicationModelView> applications)
         {
             this.adminControllerLogic.SaveOfflineApplicationData(applications);
+            return this.Ok();
         }
 
-        /// <summary>
-        /// Manage Pick List page
-        /// </summary>
-        /// <param name="pickListType">Pick List Type</param>
-        /// <returns>Partial view w/ the page</returns>
-        public PartialViewResult DisplayManagePickLists(int pickListType)
+		/// <summary>
+		/// Manage Pick List page
+		/// </summary>
+		/// <param name="pickListType">Pick List Type</param>
+		/// <returns>Partial view w/ the page</returns>
+		[HttpGet("[action]")]
+		public PickListGridMV DisplayManagePickLists(int pickListType)
         {
             this.InitializeAction(IESWebConstants.DISPLAY_MANAGE_PICK_LISTS);
             PickListGridMV data = this.adminControllerLogic.GetPickListItems((PickListEnum)pickListType);
 
-            return this.PartialView(data);
+            return data;
         }
 
-        /// <summary>
-        /// Fixes the pick list errors.
-        /// </summary>
-        /// <param name="pickListType">Type of the pick list.</param>
-        /// <returns>success/failure</returns>
-        public JsonResult FixPickListErrors(PickListEnum pickListType)
+		/// <summary>
+		/// Fixes the pick list errors.
+		/// </summary>
+		/// <param name="pickListType">Type of the pick list.</param>
+		/// <returns>success/failure</returns>
+		[HttpGet("[action]")]
+		public IActionResult FixPickListErrors(PickListEnum pickListType)
         {
             this.InitializeAction(IESWebConstants.ACTION_SAVE_MANAGE_PICK_LISTS);
 
             this.adminControllerLogic.FixPickListErrors(pickListType);
 
-            return this.Json(true);
+            return this.Ok(); // TODO TIW this.Json(true);
         }
 
-        /// <summary>
-        /// Save method for Pick List changes
-        /// </summary>
-        /// <param name="pickListType">Pick List Type</param>
-        /// <param name="dataToSave">Pick List items to save</param>
-        /// <returns>success/failure</returns>
-        public JsonResult SaveManagePickLists(PickListEnum pickListType, ICollection<PickListModelView> dataToSave)
+		/// <summary>
+		/// Save method for Pick List changes
+		/// </summary>
+		/// <param name="pickListType">Pick List Type</param>
+		/// <param name="dataToSave">Pick List items to save</param>
+		/// <returns>success/failure</returns>
+		[HttpPost("[action]")]
+		public IActionResult SaveManagePickLists(PickListEnum pickListType, ICollection<PickListModelView> dataToSave)
         {
             this.InitializeAction(IESWebConstants.ACTION_SAVE_MANAGE_PICK_LISTS);
             if (dataToSave == null || !dataToSave.Any())
@@ -326,7 +332,7 @@ namespace IESPortal.Backend.Controllers
 
             this.adminControllerLogic.SavePickListItems(pickListType, dataToSave);
 
-            return this.Json(true);
+            return this.Ok(); // TODO TIW this.Json(true);
         }
     }
 }

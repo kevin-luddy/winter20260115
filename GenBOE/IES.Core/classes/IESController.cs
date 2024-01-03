@@ -18,7 +18,7 @@ namespace IES.Core
 	using Microsoft.Extensions.Logging;
 	using Microsoft.AspNetCore.Mvc;
 
-	public class IESController : Controller
+	public class IESController : ControllerBase
 	{
         /// <summary>
         /// The logger.
@@ -39,12 +39,13 @@ namespace IES.Core
         /// <param name="html">HTML</param>
         /// <param name="returnConvertedText">if false, the converted text will not be returned.  if null or true, the converted text will be returned.</param>
         /// <returns>Text</returns>
-        public JsonResult ConvertHtmlToText(string html, bool? returnConvertedText)
+        [HttpPost("[action]")]
+		public JsonResult ConvertHtmlToText(string html, bool? returnConvertedText)
         {
             string htmlDecoded = HttpUtility.UrlDecode(html);
             string text = GenBOEUtilities.ConvertHtmlToText(htmlDecoded);
 
-            return this.Json(new
+            return new JsonResult(new
             {
                 Text = returnConvertedText.HasValue && !returnConvertedText.Value ? string.Empty : text,  // return converted text by default (unless explicitly disabled)
                 Length = text.Length,
@@ -52,12 +53,13 @@ namespace IES.Core
             });
         }
 
-        /// <summary>
-        /// Scrub rich-text markup to remove unwanted items and convert image tag src-attribute route values to base-64.
-        /// </summary>
-        /// <param name="html">Rich-text markup</param>
-        /// <returns>Scrubbed rich-text</returns>
-        public ContentResult PreProcessRichTextPaste(string html)
+		/// <summary>
+		/// Scrub rich-text markup to remove unwanted items and convert image tag src-attribute route values to base-64.
+		/// </summary>
+		/// <param name="html">Rich-text markup</param>
+		/// <returns>Scrubbed rich-text</returns>
+		[HttpPost("[action]")]
+		public ContentResult PreProcessRichTextPaste(string html)
         {
             string htmlDecoded = HttpUtility.UrlDecode(html);
 
@@ -123,12 +125,13 @@ namespace IES.Core
             return resultingSrc;
         }
 
-        /// <summary>
-        /// Does extra scrubbing in case HTML garbage made it through. it removes scripts and comments (stuff <script> ... </script> and <!-- ... -->
-        /// </summary>
-        /// <param name="originalScrubbedText">Original text to be cleaned</param>
-        /// <returns>Cleaned text</returns>
-        public string DoAnExtraScrubbingForRTEInput(string originalScrubbedText)
+		/// <summary>
+		/// Does extra scrubbing in case HTML garbage made it through. it removes scripts and comments (stuff <script> ... </script> and <!-- ... -->
+		/// </summary>
+		/// <param name="originalScrubbedText">Original text to be cleaned</param>
+		/// <returns>Cleaned text</returns>
+		[HttpPost("[action]")]
+		public string DoAnExtraScrubbingForRTEInput(string originalScrubbedText)
         {
             string result = originalScrubbedText;
 
