@@ -14,7 +14,6 @@ namespace UnitTestProject
 	using APTSPropricerApi.Connection;
 	using APTSPropricerApi.Controllers;
 	using APTSPropricerApi.DTOs;
-	using EBS.Core;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
