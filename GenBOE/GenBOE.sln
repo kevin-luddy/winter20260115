@@ -85,19 +85,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IES.Standard", "IES.Standar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IES.Models.Standard", "IES.Models.Standard\IES.Models.Standard.csproj", "{1F1478A7-4607-422B-A142-459185D56FCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.Models.Standard", "GenBOE.Models.Standard\GenBOE.Models.Standard.csproj", "{14F51573-0535-460E-8FF3-CB02E355C249}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenBOE.Models.Standard", "GenBOE.Models.Standard\GenBOE.Models.Standard.csproj", "{14F51573-0535-460E-8FF3-CB02E355C249}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenTRAC.Models.Standard", "GenTRAC.Models.Standard\GenTRAC.Models.Standard.csproj", "{6A9B8DBA-ECE1-4267-A4E4-7C276A38FC14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenTRAC.Models.Standard", "GenTRAC.Models.Standard\GenTRAC.Models.Standard.csproj", "{6A9B8DBA-ECE1-4267-A4E4-7C276A38FC14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IES.DataBridge.Standard", "IES.DataBridge.Standard\IES.DataBridge.Standard.csproj", "{EBA004C5-D3D2-4E68-9A2C-84C8FB3A1569}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenTRAC.DataBridge.Standard", "GenTRAC.DataBridge.Standard\GenTRAC.DataBridge.Standard.csproj", "{9FF1A3FE-2B37-479C-BA30-6FA3C5C858FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IES.ActionLogic.Standard", "IES.ActionLogic.Standard\IES.ActionLogic.Standard.csproj", "{1DECED28-001D-4635-8C4B-4AFA999A801A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenBOE.DataBridge.Standard", "GenBOE.DataBridge.Standard\GenBOE.DataBridge.Standard.csproj", "{E330AFE4-CAB1-42F5-ADEA-AF398F3D68FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenTRAC.DataBridge.Standard", "GenTRAC.DataBridge.Standard\GenTRAC.DataBridge.Standard.csproj", "{9FF1A3FE-2B37-479C-BA30-6FA3C5C858FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenBOE.MSTMetricModel.Standard", "GenBOE.MSTMetricModel.Standard\GenBOE.MSTMetricModel.Standard.csproj", "{1D394EE8-17EF-4966-A356-136DE78710B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.DataBridge.Standard", "GenBOE.DataBridge.Standard\GenBOE.DataBridge.Standard.csproj", "{E330AFE4-CAB1-42F5-ADEA-AF398F3D68FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IESPortal.Backend", "IESPortal.Backend\IESPortal.Backend.csproj", "{D2B8727A-9EB1-4189-93F0-049F755696F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.MSTMetricModel.Standard", "GenBOE.MSTMetricModel.Standard\GenBOE.MSTMetricModel.Standard.csproj", "{1D394EE8-17EF-4966-A356-136DE78710B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IES.Core", "IES.Core\IES.Core.csproj", "{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IES.DataBridge.Core", "IES.DataBridge.Core\IES.DataBridge.Core.csproj", "{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IES.ActionLogic.Core", "IES.ActionLogic.Core\IES.ActionLogic.Core.csproj", "{4E57AC75-B23B-449A-8FEE-C18FC3704174}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -369,22 +373,6 @@ Global
 		{6A9B8DBA-ECE1-4267-A4E4-7C276A38FC14}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6A9B8DBA-ECE1-4267-A4E4-7C276A38FC14}.ReleaseTFS|Any CPU.ActiveCfg = Release|Any CPU
 		{6A9B8DBA-ECE1-4267-A4E4-7C276A38FC14}.ReleaseTFS|Any CPU.Build.0 = Release|Any CPU
-		{EBA004C5-D3D2-4E68-9A2C-84C8FB3A1569}.ConsoleRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{EBA004C5-D3D2-4E68-9A2C-84C8FB3A1569}.ConsoleRelease|Any CPU.Build.0 = Release|Any CPU
-		{EBA004C5-D3D2-4E68-9A2C-84C8FB3A1569}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBA004C5-D3D2-4E68-9A2C-84C8FB3A1569}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBA004C5-D3D2-4E68-9A2C-84C8FB3A1569}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBA004C5-D3D2-4E68-9A2C-84C8FB3A1569}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBA004C5-D3D2-4E68-9A2C-84C8FB3A1569}.ReleaseTFS|Any CPU.ActiveCfg = Release|Any CPU
-		{EBA004C5-D3D2-4E68-9A2C-84C8FB3A1569}.ReleaseTFS|Any CPU.Build.0 = Release|Any CPU
-		{1DECED28-001D-4635-8C4B-4AFA999A801A}.ConsoleRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{1DECED28-001D-4635-8C4B-4AFA999A801A}.ConsoleRelease|Any CPU.Build.0 = Release|Any CPU
-		{1DECED28-001D-4635-8C4B-4AFA999A801A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DECED28-001D-4635-8C4B-4AFA999A801A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DECED28-001D-4635-8C4B-4AFA999A801A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DECED28-001D-4635-8C4B-4AFA999A801A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DECED28-001D-4635-8C4B-4AFA999A801A}.ReleaseTFS|Any CPU.ActiveCfg = Release|Any CPU
-		{1DECED28-001D-4635-8C4B-4AFA999A801A}.ReleaseTFS|Any CPU.Build.0 = Release|Any CPU
 		{9FF1A3FE-2B37-479C-BA30-6FA3C5C858FA}.ConsoleRelease|Any CPU.ActiveCfg = Release|Any CPU
 		{9FF1A3FE-2B37-479C-BA30-6FA3C5C858FA}.ConsoleRelease|Any CPU.Build.0 = Release|Any CPU
 		{9FF1A3FE-2B37-479C-BA30-6FA3C5C858FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -409,6 +397,38 @@ Global
 		{1D394EE8-17EF-4966-A356-136DE78710B8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D394EE8-17EF-4966-A356-136DE78710B8}.ReleaseTFS|Any CPU.ActiveCfg = Release|Any CPU
 		{1D394EE8-17EF-4966-A356-136DE78710B8}.ReleaseTFS|Any CPU.Build.0 = Release|Any CPU
+		{D2B8727A-9EB1-4189-93F0-049F755696F2}.ConsoleRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B8727A-9EB1-4189-93F0-049F755696F2}.ConsoleRelease|Any CPU.Build.0 = Release|Any CPU
+		{D2B8727A-9EB1-4189-93F0-049F755696F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B8727A-9EB1-4189-93F0-049F755696F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B8727A-9EB1-4189-93F0-049F755696F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B8727A-9EB1-4189-93F0-049F755696F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2B8727A-9EB1-4189-93F0-049F755696F2}.ReleaseTFS|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B8727A-9EB1-4189-93F0-049F755696F2}.ReleaseTFS|Any CPU.Build.0 = Release|Any CPU
+		{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}.ConsoleRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}.ConsoleRelease|Any CPU.Build.0 = Release|Any CPU
+		{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}.ReleaseTFS|Any CPU.ActiveCfg = Release|Any CPU
+		{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}.ReleaseTFS|Any CPU.Build.0 = Release|Any CPU
+		{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}.ConsoleRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}.ConsoleRelease|Any CPU.Build.0 = Release|Any CPU
+		{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}.ReleaseTFS|Any CPU.ActiveCfg = Release|Any CPU
+		{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}.ReleaseTFS|Any CPU.Build.0 = Release|Any CPU
+		{4E57AC75-B23B-449A-8FEE-C18FC3704174}.ConsoleRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{4E57AC75-B23B-449A-8FEE-C18FC3704174}.ConsoleRelease|Any CPU.Build.0 = Release|Any CPU
+		{4E57AC75-B23B-449A-8FEE-C18FC3704174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E57AC75-B23B-449A-8FEE-C18FC3704174}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E57AC75-B23B-449A-8FEE-C18FC3704174}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E57AC75-B23B-449A-8FEE-C18FC3704174}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E57AC75-B23B-449A-8FEE-C18FC3704174}.ReleaseTFS|Any CPU.ActiveCfg = Release|Any CPU
+		{4E57AC75-B23B-449A-8FEE-C18FC3704174}.ReleaseTFS|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
