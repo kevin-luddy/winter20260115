@@ -61,28 +61,15 @@ namespace IES.Core
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public ActiveDirectoryUtilities(ILogger logger, ICache cache)
+		/// <param name="cache">Cache</param>
+		/// <param name="logger">Logger</param>
+		/// <param name="inSecondsToCache">The number of seconds to store a value in cache</param>
+		/// <param name="clientTimeoutSeconds">The number of seconds to wait until the DirectorySearcher reaches a timeout on the client.</param>
+		public ActiveDirectoryUtilities(ILogger<ActiveDirectoryUtilities> logger, ICache cache, int inSecondsToCache = 720, int clientTimeoutSeconds = -1)
 		{
 			this.log = logger;
 			this.cache = cache;
-		}
-
-		/// <summary>
-		/// Constructor w/ seconds
-		/// </summary>
-		/// <param name="inSecondsToCache">The number of seconds to store a value in cache</param>
-		public ActiveDirectoryUtilities(ILogger logger, ICache cache, int inSecondsToCache) : this(logger, cache)
-		{
 			this.secondsToCache = inSecondsToCache;
-		}
-
-		/// <summary>
-		/// Constructor with timeoutSeconds specification.
-		/// </summary>
-		/// <param name="inSecondsToCache">The number of seconds to store a value in cache</param>
-		/// <param name="clientTimeoutSeconds">The number of seconds to wait until the DirectorySearcher reaches a timeout on the client.</param>
-		public ActiveDirectoryUtilities(ILogger logger, ICache cache, int inSecondsToCache, int clientTimeoutSeconds) : this(logger, cache, inSecondsToCache)
-		{
 			this.CLIENT_TIMEOUT_SECONDS = clientTimeoutSeconds;
 		}
 

@@ -356,16 +356,6 @@ namespace IES.Core
         }
 
         /// <summary>
-        /// Returns the Current user.
-        /// </summary>
-        /// <returns>The current user.</returns>
-        public static string CurrentUser()
-        {
-            string[] splitDomainAndNtid = Thread.CurrentPrincipal.Identity.Name.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
-            return string.Join(" ", splitDomainAndNtid);
-        }
-
-        /// <summary>
         /// Gets support email address from web.config
         /// </summary>
         /// <returns>Helpdesk email</returns>

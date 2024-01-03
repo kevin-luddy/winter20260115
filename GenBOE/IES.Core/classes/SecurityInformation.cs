@@ -10,12 +10,14 @@ namespace IES.Core
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Security.Principal;
+	using DocumentFormat.OpenXml.InkML;
+	using Microsoft.AspNetCore.Http;
 
-    /// <summary>
-    /// The security authorizations a user can be
-    /// allowed for a given page, Role
-    /// combination
-    /// </summary>
+	/// <summary>
+	/// The security authorizations a user can be
+	/// allowed for a given page, Role
+	/// combination
+	/// </summary>
     public enum SecurityAuthorization
     {
         /// <summary>
@@ -144,15 +146,19 @@ namespace IES.Core
     /// </summary>
     public class SecurityInformation : ISecurityInformation
     {
-        private IActiveDirectoryUtilities _ADUtils = null;
+        private readonly IActiveDirectoryUtilities _ADUtils;
 
-        /// <summary>
-        /// Constructor to use for dependency injection
-        /// </summary>
-        public SecurityInformation(IActiveDirectoryUtilities inADUtils, ICache memCache) 
+        private readonly IHttpContextAccessor httpContextAccessor;
+
+		/// <summary>
+		/// Constructor to use for dependency injection
+		/// </summary>
+		public SecurityInformation(IActiveDirectoryUtilities inADUtils, ICache memCache,
+			IHttpContextAccessor httpContextAccessor) 
         {
             _ADUtils = inADUtils;
             this.cache = memCache;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -205,8 +211,15 @@ namespace IES.Core
         protected virtual string ActiveUserNTIDWithDomain
         {
             get
-            {
-                return System.Threading.Thread.CurrentPrincipal.Identity.Name.ToLower();
+			{
+				string ntid = null;
+
+				if (this.httpContextAccessor.HttpContext.User != null && this.httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+				{
+					ntid = this.httpContextAccessor.HttpContext.User.Identity.Name;
+				}
+
+				return ntid;
             }
         }
 

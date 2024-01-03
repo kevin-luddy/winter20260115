@@ -1,9 +1,13 @@
 using System.Security.Principal;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using GenBOE.DataBridge.DTO;
+using GenTRAC.DataBridge.DTO;
+using IES.ActionLogic.Common;
+using IES.ActionLogic.ControllerLogic;
+using IES.Core;
+using IES.DataBridge.Loaders;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,9 +17,31 @@ using Newtonsoft.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IPrincipal>(
 				provider => provider.GetService<IHttpContextAccessor>()?.HttpContext?.User);
+
+builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
+builder.Services.AddSingleton<ICache, Cache>();
+builder.Services.AddScoped<IActiveDirectoryUtilities, ActiveDirectoryUtilities>();
+builder.Services.AddTransient<IBannerLoader, BannerLoader>();
+builder.Services.AddSingleton<BannerMediator>();
+builder.Services.AddTransient<IESPortalAdminControllerLogic>();
+builder.Services.AddScoped<PtmPickListMapper>();
+builder.Services.AddScoped<BoePickListMapper>();
+builder.Services.AddTransient<IOfflineApplicationLoader, OfflineApplicationLoader>();
+builder.Services.AddTransient<ProposalTypeLULoader>();
+builder.Services.AddTransient<ProposalClassLULoader>();
+builder.Services.AddTransient<TypeOfRequestLULoader>();
+builder.Services.AddTransient<GenTRAC.DataBridge.DTO.LineOfBusinessDataLoader>();
+builder.Services.AddTransient<ProgramAreaDataLoader>();
+builder.Services.AddTransient<ContractTypeLULoader>();
+builder.Services.AddTransient<ContractTypeGroupLULoader>();
+builder.Services.AddTransient<GenBOE.DataBridge.DTO.LineOfBusinessDataLoader>();
+builder.Services.AddTransient<ProposalClassLoader>();
+builder.Services.AddTransient<ContractTypeLoader>();
+
 
 
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -91,5 +117,7 @@ app.Use(async (context, next) =>
 
 	await next();
 });
+
+ConfigurationUtilities.Configuration = app.Configuration;
 
 app.Run();
