@@ -6,21 +6,19 @@
 
 namespace IESPortal.Backend.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Transactions;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Transactions;
 	using IES.ActionLogic.Common;
-    using IES.ActionLogic.ControllerLogic;
-    using IES.ActionLogic.ModelView;
-    using IES.Core;
-    using IES.Core.Exceptions;
-    using IES.Core.PickList;
-    using IES.DataBridge.ModelViews;
+	using IES.ActionLogic.ControllerLogic;
+	using IES.ActionLogic.ModelView;
+	using IES.Core;
+	using IES.Core.Exceptions;
+	using IES.Core.PickList;
+	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
-	using Microsoft.AspNetCore.Mvc.Controllers;
-	using Microsoft.AspNetCore.Mvc.Filters;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>
@@ -83,7 +81,7 @@ namespace IESPortal.Backend.Controllers
 
             // retrieve all Banners
             IReadOnlyCollection<BannerModelView> banners = this.bannerMediator.GetAll();
-            return banners;
+			return banners;
         }
 
 		/// <summary>
@@ -118,7 +116,7 @@ namespace IESPortal.Backend.Controllers
                 }
             }
 
-            return banner;
+			return banner;
         }
 
         /// <summary>
@@ -150,7 +148,7 @@ namespace IESPortal.Backend.Controllers
                 scope.Complete();
             }
 
-            return this.Ok(); // TODO TIW this.Json(new { Status = true });
+			return this.Ok(); // TODO TIW this.Json(new { Status = true });
         }
 
         /// <summary>
@@ -191,7 +189,7 @@ namespace IESPortal.Backend.Controllers
                 scope.Complete();
             }
 
-            return this.Ok(); //  this.Json(new { Status = true });
+			return this.Ok(); //  this.Json(new { Status = true });
         }
 
         /// <summary>
@@ -207,31 +205,12 @@ namespace IESPortal.Backend.Controllers
                 throw new ArgumentNullException(nameof(functionName));
             }
 
-            this.StartAction(this.log, functionName);
-
             // Check authorization
             if (!this.securityInformation.IsIESPortalAdminUser(this.securityInformation.ActiveUserNTID))
             {
                 throw new AuthorizationException(functionName + " was not authorized");
             }
         }
-
-		//    /// <summary>
-		//    /// Overrides OnActionExecuted to allow us to finalize the action and log the load times.
-		//    /// </summary>
-		//    /// <param name="filterContext">Filter context</param>
-		//    [NonAction]
-		//    public override void OnActionExecuted(ActionExecutedContext filterContext)
-		//    {
-		//        if (filterContext != null)
-		//        {
-		//ControllerActionDescriptor descriptor = filterContext.ActionDescriptor as ControllerActionDescriptor;
-		//string functionName = descriptor?.ActionName;
-		//            this.FinalizeAction(this.log, functionName);
-		//        }
-
-		//        base.OnActionExecuted(filterContext);
-		//    }
 
 		/// <summary>
 		/// Manage Pick List page

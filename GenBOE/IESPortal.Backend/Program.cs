@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Security.Principal;
 using GenBOE.DataBridge.DTO;
 using GenTRAC.DataBridge.DTO;
@@ -19,6 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 builder.Services.AddTransient<IPrincipal>(
 				provider => provider.GetService<IHttpContextAccessor>()?.HttpContext?.User);
 
@@ -41,8 +43,8 @@ builder.Services.AddTransient<ContractTypeGroupLULoader>();
 builder.Services.AddTransient<GenBOE.DataBridge.DTO.LineOfBusinessDataLoader>();
 builder.Services.AddTransient<ProposalClassLoader>();
 builder.Services.AddTransient<ContractTypeLoader>();
-
-
+builder.Services.AddTransient<PeopleService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -117,7 +119,5 @@ app.Use(async (context, next) =>
 
 	await next();
 });
-
-ConfigurationUtilities.Configuration = app.Configuration;
 
 app.Run();

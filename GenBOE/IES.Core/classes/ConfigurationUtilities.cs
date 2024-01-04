@@ -9,7 +9,6 @@ namespace IES.Core
 	using System;
 	using System.Configuration;
 	using System.Diagnostics.CodeAnalysis;
-	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Utilities for accessing configuration settings
@@ -17,20 +16,15 @@ namespace IES.Core
 	[ExcludeFromCodeCoverage]
     public static class ConfigurationUtilities
     {
+        #region AppSettings
+
         /// <summary>
-        /// The Configuration during startup
+        /// Retrieve a typed value from the application settings.  Check the company-specific configuration first.  If no override value is found, then check the application-level settings.
         /// </summary>
-        public static IConfiguration Configuration { get; set; }
-
-		#region AppSettings
-
-		/// <summary>
-		/// Retrieve a typed value from the application settings.  Check the company-specific configuration first.  If no override value is found, then check the application-level settings.
-		/// </summary>
-		/// <typeparam name="T">The type to return</typeparam>
-		/// <param name="key">Settings key</param>
-		/// <returns>The application setting, as a typed value</returns>
-		public static T GetAppSetting<T>(string key) where T : struct, IConvertible
+        /// <typeparam name="T">The type to return</typeparam>
+        /// <param name="key">Settings key</param>
+        /// <returns>The application setting, as a typed value</returns>
+        public static T GetAppSetting<T>(string key) where T : struct, IConvertible
         {
             return GetAppSetting(key, default(T));
         }
@@ -46,7 +40,7 @@ namespace IES.Core
 
             if (string.IsNullOrEmpty(value))
             {
-                value = Configuration[key];
+                value = ConfigurationManager.AppSettings[key];
             }
 
             return value;

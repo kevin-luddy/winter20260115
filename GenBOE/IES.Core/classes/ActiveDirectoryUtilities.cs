@@ -7,6 +7,7 @@
 namespace IES.Core
 {
 	using System;
+	using System.Collections.Concurrent;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.DirectoryServices;
@@ -23,6 +24,11 @@ namespace IES.Core
 	/// </summary>
 	public class ActiveDirectoryUtilities : IActiveDirectoryUtilities
 	{
+		/// <summary>
+		/// Concurrent bag for locking
+		/// </summary>
+		private static ConcurrentDictionary<string, Task> _locker = new ConcurrentDictionary<string, Task>();
+
 		/// <summary>
 		/// declare private instance so we can cache returns from AD for a brief period of time
 		/// </summary>
@@ -59,18 +65,30 @@ namespace IES.Core
 		private const string ACCOUNT_TYPE_GROUP = "Group";
 
 		/// <summary>
+		/// People Service
+		/// </summary>
+		private readonly PeopleService peopleService;
+
+		/// <summary>
+		/// Token Service
+		/// </summary>
+		private readonly ITokenService tokenService;
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
 		/// <param name="cache">Cache</param>
 		/// <param name="logger">Logger</param>
 		/// <param name="inSecondsToCache">The number of seconds to store a value in cache</param>
 		/// <param name="clientTimeoutSeconds">The number of seconds to wait until the DirectorySearcher reaches a timeout on the client.</param>
-		public ActiveDirectoryUtilities(ILogger<ActiveDirectoryUtilities> logger, ICache cache, int inSecondsToCache = 720, int clientTimeoutSeconds = -1)
+		public ActiveDirectoryUtilities(ITokenService tokenService, PeopleService peopleService, ILogger<ActiveDirectoryUtilities> logger, ICache cache, int inSecondsToCache = 720, int clientTimeoutSeconds = -1)
 		{
 			this.log = logger;
 			this.cache = cache;
 			this.secondsToCache = inSecondsToCache;
 			this.CLIENT_TIMEOUT_SECONDS = clientTimeoutSeconds;
+			this.peopleService = peopleService;
+			this.tokenService = tokenService;
 		}
 
 		/// <summary>
@@ -102,111 +120,114 @@ namespace IES.Core
 				// Try to query AD to get the user data.
 				int tries = 0;
 				bool finished = false;
-				while (++tries < MAX_AD_TRIES && !string.IsNullOrEmpty(inNtid))
+				using (StopwatchTimer sw = new StopwatchTimer(this.log, "GetUserByQualifiedAccount"))
 				{
-					try
+					while (++tries < MAX_AD_TRIES && !string.IsNullOrEmpty(inNtid))
 					{
-						using (DirectoryEntry directoryEntry = new DirectoryEntry(this.activeDirectoryPath))
+						try
 						{
-							directoryEntry.AuthenticationType = AuthenticationTypes.Secure;
-
-							string filter = "(&(objectClass=user)(|(cn=" + inNtid + ")(sAMAccountName=" + inNtid + ")))";
-							if (isGroup)
+							using (DirectoryEntry directoryEntry = new DirectoryEntry(this.activeDirectoryPath))
 							{
-								filter = string.Format("(&(objectClass=group)(|(cn=" + inNtid + ")(dn=" + inNtid + ")(samAccountName=" + inNtid + ")))");
-							}
+								directoryEntry.AuthenticationType = AuthenticationTypes.Secure;
 
-							using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
-							{
+								string filter = "(&(objectClass=user)(|(cn=" + inNtid + ")(sAMAccountName=" + inNtid + ")))";
 								if (isGroup)
 								{
-									ds.PropertiesToLoad.Add("sAMAccountName");
-									ds.PropertiesToLoad.Add("name");
-								}
-								else
-								{
-									ds.PropertiesToLoad.Add("sAMAccountName");
-									ds.PropertiesToLoad.Add("givenname");
-									ds.PropertiesToLoad.Add("sn");
-									ds.PropertiesToLoad.Add("displayname");
-									ds.PropertiesToLoad.Add("mail");
-									ds.PropertiesToLoad.Add("telephonenumber");
-									ds.PropertiesToLoad.Add("lmcUSAPersonIndicator");
-									ds.PropertiesToLoad.Add("employeeType");
+									filter = string.Format("(&(objectClass=group)(|(cn=" + inNtid + ")(dn=" + inNtid + ")(samAccountName=" + inNtid + ")))");
 								}
 
-								SearchResult searchResult = ds.FindOne();
-
-								if (searchResult == null)
+								using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
 								{
-									return null;
-								}
-								
-								DirectoryEntry user = searchResult.GetDirectoryEntry();
-
-								if (!user.Properties["sAMAccountName"][0].ToString().ToLower().Equals(inNtid.ToLower().Replace(" ", string.Empty)))
-								{
-									// This is a weird case that came out of a bug 2935. In this case we were searching for a user with ntid "silva". There was another
-									// account with ntid "silva$", which is what is returned by FindOne above. So if the NTIDs don't match, we do a longer search
-									user = null;
-
-									SearchResultCollection allMatches = ds.FindAll();
-
-									foreach (SearchResult aSearchResult in allMatches)
+									if (isGroup)
 									{
-										DirectoryEntry aDirEntry = aSearchResult.GetDirectoryEntry();
-
-										if (aDirEntry.Properties["sAMAccountName"][0].ToString().ToLower().Equals(inNtid.ToLower()))
-										{
-											user = aDirEntry;
-											break;
-										}
+										ds.PropertiesToLoad.Add("sAMAccountName");
+										ds.PropertiesToLoad.Add("name");
+									}
+									else
+									{
+										ds.PropertiesToLoad.Add("sAMAccountName");
+										ds.PropertiesToLoad.Add("givenname");
+										ds.PropertiesToLoad.Add("sn");
+										ds.PropertiesToLoad.Add("displayname");
+										ds.PropertiesToLoad.Add("mail");
+										ds.PropertiesToLoad.Add("telephonenumber");
+										ds.PropertiesToLoad.Add("lmcUSAPersonIndicator");
+										ds.PropertiesToLoad.Add("employeeType");
 									}
 
-									if (user == null)
+									SearchResult searchResult = ds.FindOne();
+
+									if (searchResult == null)
 									{
 										return null;
 									}
-								}
 
-								if (!isGroup)
-								{
-									currentAccount = new UserData
-									{
-										FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
-										LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
-										DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
-										Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
-										Ntid = inNtid,
-										Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
-										IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
-										IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
-									};
-								}
-								else
-								{
-									currentAccount = new UserData
-									{
-										DisplayName = user.Properties["name"][0].ToString(),
-										Ntid = inNtid
-									};
-								}
+									DirectoryEntry user = searchResult.GetDirectoryEntry();
 
-								finished = true;
+									if (!user.Properties["sAMAccountName"][0].ToString().ToLower().Equals(inNtid.ToLower().Replace(" ", string.Empty)))
+									{
+										// This is a weird case that came out of a bug 2935. In this case we were searching for a user with ntid "silva". There was another
+										// account with ntid "silva$", which is what is returned by FindOne above. So if the NTIDs don't match, we do a longer search
+										user = null;
+
+										SearchResultCollection allMatches = ds.FindAll();
+
+										foreach (SearchResult aSearchResult in allMatches)
+										{
+											DirectoryEntry aDirEntry = aSearchResult.GetDirectoryEntry();
+
+											if (aDirEntry.Properties["sAMAccountName"][0].ToString().ToLower().Equals(inNtid.ToLower()))
+											{
+												user = aDirEntry;
+												break;
+											}
+										}
+
+										if (user == null)
+										{
+											return null;
+										}
+									}
+
+									if (!isGroup)
+									{
+										currentAccount = new UserData
+										{
+											FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
+											LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
+											DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
+											Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
+											Ntid = inNtid,
+											Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
+											IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
+											IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
+										};
+									}
+									else
+									{
+										currentAccount = new UserData
+										{
+											DisplayName = user.Properties["name"][0].ToString(),
+											Ntid = inNtid
+										};
+									}
+
+									finished = true;
+								}
 							}
 						}
-					}
-					catch (InvalidOperationException e)
-					{
-						string message = "Retry " + tries + " of " + MAX_AD_TRIES + " attempts.  Issues communicating with AD.\r\n";
-						this.log.LogError(e, message);
+						catch (InvalidOperationException e)
+						{
+							string message = "Retry " + tries + " of " + MAX_AD_TRIES + " attempts.  Issues communicating with AD.\r\n";
+							this.log.LogError(e, message);
 
-						Thread.Sleep(500);
-					}
+							Thread.Sleep(500);
+						}
 
-					if (finished)
-					{
-						break; // don't retry .. we're finished
+						if (finished)
+						{
+							break; // don't retry .. we're finished
+						}
 					}
 				}
 
@@ -238,84 +259,86 @@ namespace IES.Core
 			object fromCache = this.cache.GetData(cacheKey);
 			if (fromCache == null)
 			{
-				lock(string.Intern(cacheKey))
+				lock (string.Intern(cacheKey))
 				{
 					if (!this.cache.Contains(cacheKey))
 					{
 						Dictionary<string, GroupData> distinctGroups = new Dictionary<string, GroupData>();
 
-						// ad connection
-						using (DirectoryEntry domainConnection = new DirectoryEntry(this.activeDirectoryPath))
+						using (StopwatchTimer sw = new StopwatchTimer(this.log, "Retrieve AD groups for user"))
 						{
-							domainConnection.AuthenticationType = AuthenticationTypes.Secure;
-
-							// token Group searcher
-							using (DirectorySearcher ds = new DirectorySearcher(domainConnection, string.Format("(&(objectClass=user)(samAccountName={0}))", inNtid)))
+							using (DirectoryEntry domainConnection = new DirectoryEntry(this.activeDirectoryPath))
 							{
-								if (CLIENT_TIMEOUT_SECONDS > 0)
+								domainConnection.AuthenticationType = AuthenticationTypes.Secure;
+
+								// token Group searcher
+								using (DirectorySearcher ds = new DirectorySearcher(domainConnection, string.Format("(&(objectClass=user)(samAccountName={0}))", inNtid)))
 								{
-									ds.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
-								}
-
-								ds.PropertyNamesOnly = true;
-								
-								SearchResult samResult = ds.FindOne();
-
-								if (samResult != null)
-								{
-									DirectoryEntry theUser = samResult.GetDirectoryEntry();
-									theUser.RefreshCache(new string[] { "tokenGroups" });
-
-									StringBuilder filterStringBuilder = new StringBuilder();
-										
-									// Just create a single LDAP query for all user SIDs
-									filterStringBuilder.Append("(&(objectCategory=group)(|");
-									foreach (byte[] resultBytes in theUser.Properties["tokenGroups"])
+									if (CLIENT_TIMEOUT_SECONDS > 0)
 									{
-										SecurityIdentifier sid = new SecurityIdentifier(resultBytes, 0);
-										filterStringBuilder.AppendFormat("({0}={1})", "objectSid", sid.Value);
+										ds.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
 									}
+									ds.PropertyNamesOnly = true;
 
-									filterStringBuilder.Append("))");
+									SearchResult samResult = ds.FindOne();
 
-									using (DirectorySearcher searcher = new DirectorySearcher(domainConnection, filterStringBuilder.ToString()))
+									if (samResult != null)
 									{
-										if (CLIENT_TIMEOUT_SECONDS > 0)
+										DirectoryEntry theUser = samResult.GetDirectoryEntry();
+										theUser.RefreshCache(new string[] { "tokenGroups" });
+
+										StringBuilder filterStringBuilder = new StringBuilder();
+
+										// Just create a single LDAP query for all user SIDs
+										filterStringBuilder.Append("(&(objectCategory=group)(|");
+										foreach (byte[] resultBytes in theUser.Properties["tokenGroups"])
 										{
-											searcher.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
+											SecurityIdentifier sid = new SecurityIdentifier(resultBytes, 0);
+											filterStringBuilder.AppendFormat("({0}={1})", "objectSid", sid.Value);
 										}
 
-										searcher.PropertiesToLoad.Add("sAMAccountName");
-										searcher.PropertiesToLoad.Add("distinguishedname");
-										searcher.PropertiesToLoad.Add("name");
+										filterStringBuilder.Append("))");
 
-										searcher.PageSize = 1000; // Very important to have it here. Otherwise you'll get only 1000 at all. Please refer to DirectorySearcher documentation
-
-										// We do not want to go beyond GC
-										searcher.ReferralChasing = ReferralChasingOption.None;
-
-										SearchResultCollection results = searcher.FindAll();
-
-										foreach (SearchResult searchResult in results)
+										using (DirectorySearcher searcher = new DirectorySearcher(domainConnection, filterStringBuilder.ToString()))
 										{
-											var groupData = new GroupData()
+											if (CLIENT_TIMEOUT_SECONDS > 0)
 											{
-												DisplayName = searchResult.Properties["name"][0].ToString(),
-												Ntid = searchResult.Properties["sAMAccountName"][0].ToString()
-											};
+												searcher.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
+											}
 
-											distinctGroups[groupData.Ntid] = groupData;
+											searcher.PropertiesToLoad.Add("sAMAccountName");
+											searcher.PropertiesToLoad.Add("distinguishedname");
+											searcher.PropertiesToLoad.Add("name");
+
+											searcher.PageSize = 1000; // Very important to have it here. Otherwise you'll get only 1000 at all. Please refer to DirectorySearcher documentation
+
+											// We do not want to go beyond GC
+											searcher.ReferralChasing = ReferralChasingOption.None;
+
+											SearchResultCollection results = searcher.FindAll();
+
+											foreach (SearchResult searchResult in results)
+											{
+												var groupData = new GroupData()
+												{
+													DisplayName = searchResult.Properties["name"][0].ToString(),
+													Ntid = searchResult.Properties["sAMAccountName"][0].ToString()
+												};
+
+												distinctGroups[groupData.Ntid] = groupData;
+											}
 										}
 									}
 								}
 							}
 						}
+						List <GroupData> toCache = distinctGroups.Values.ToList<GroupData>();
 
-						List<GroupData> toCache = distinctGroups.Values.ToList<GroupData>();
 
 						this.cache.Add(cacheKey, toCache, this.secondsToCache); // cache for this.secondsToCache seconds
 					}
 				}
+
 				fromCache = this.cache.GetData(cacheKey);
 			}
 
@@ -448,37 +471,40 @@ namespace IES.Core
 			
 			int tries = 0;
 			bool finished = false;
-			while (++tries < MAX_AD_TRIES)
+			using (StopwatchTimer sw = new StopwatchTimer(this.log, "IsValidADGroup"))
 			{
-				try
+				while (++tries < MAX_AD_TRIES)
 				{
-					using (DirectoryEntry directoryEntry = new DirectoryEntry(this.activeDirectoryPath))
+					try
 					{
-						directoryEntry.AuthenticationType = AuthenticationTypes.Secure;
-
-						string filter = string.Format("(&(objectClass=group)(|(cn=" + inGroupName + ")(dn=" + inGroupName + ")(samAccountName=" + inGroupName + ")))");
-
-						using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
+						using (DirectoryEntry directoryEntry = new DirectoryEntry(this.activeDirectoryPath))
 						{
-							SearchResult searchResult = ds.FindOne();
+							directoryEntry.AuthenticationType = AuthenticationTypes.Secure;
 
-							DirectoryEntry group = searchResult.GetDirectoryEntry();
-							valid = !string.IsNullOrEmpty(group.Properties["samAccountName"][0].ToString());
-							finished = true;
+							string filter = string.Format("(&(objectClass=group)(|(cn=" + inGroupName + ")(dn=" + inGroupName + ")(samAccountName=" + inGroupName + ")))");
+
+							using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
+							{
+								SearchResult searchResult = ds.FindOne();
+
+								DirectoryEntry group = searchResult.GetDirectoryEntry();
+								valid = !string.IsNullOrEmpty(group.Properties["samAccountName"][0].ToString());
+								finished = true;
+							}
 						}
 					}
-				}
-				catch (Exception e)
-				{
-					string message = "Retry " + tries + " of " + MAX_AD_TRIES + " attempts.  Issues communicating with AD.\r\n";
-					this.log.LogError(e, message);
+					catch (Exception e)
+					{
+						string message = "Retry " + tries + " of " + MAX_AD_TRIES + " attempts.  Issues communicating with AD.\r\n";
+						this.log.LogError(e, message);
 
-					Thread.Sleep(500);
-				}
+						Thread.Sleep(500);
+					}
 
-				if (finished)
-				{
-					break; // don't retry
+					if (finished)
+					{
+						break; // don't retry
+					}
 				}
 			}
 
@@ -565,19 +591,21 @@ namespace IES.Core
 				int tries = 0;
 				bool groupNotFound = true;
 				bool allUsersAdded = false;
-				while (++tries < MAX_AD_TRIES)
+				using (StopwatchTimer sw = new StopwatchTimer(this.log, "GetAdGroupUsers"))
 				{
-					try
+					while (++tries < MAX_AD_TRIES)
 					{
-
-						var groupDN = this.GetObjectDistinguishedName(ObjectClass.group, ReturnType.distinguishedName, inGroupName);
-
-						groupNotFound = false;
-
-						using (var root = new DirectoryEntry(this.activeDirectoryPath))
+						try
 						{
-							var attributesToLoad = new[]
-								{
+
+							var groupDN = this.GetObjectDistinguishedName(ObjectClass.group, ReturnType.distinguishedName, inGroupName);
+
+							groupNotFound = false;
+
+							using (var root = new DirectoryEntry(this.activeDirectoryPath))
+							{
+								var attributesToLoad = new[]
+									{
 								"displayname",
 								"distinguishedname",
 								"samaccountname",
@@ -596,62 +624,63 @@ namespace IES.Core
 								"employeeType"
 							};
 
-							var distinguishedNameWithoutLDAPPrefix = groupDN.Remove(0, 7);
-							var searchFilter = "(memberOf=" + distinguishedNameWithoutLDAPPrefix + ")";
-							using (var searcher = new DirectorySearcher(root, searchFilter, attributesToLoad))
-							{
-								searcher.PageSize = 1000; // Very important to have it here. Otherwise you'll get only 1000 at all. Please refer to DirectorySearcher documentation
-
-								if (CLIENT_TIMEOUT_SECONDS > 0)
+								var distinguishedNameWithoutLDAPPrefix = groupDN.Remove(0, 7);
+								var searchFilter = "(memberOf=" + distinguishedNameWithoutLDAPPrefix + ")";
+								using (var searcher = new DirectorySearcher(root, searchFilter, attributesToLoad))
 								{
-									searcher.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
+									searcher.PageSize = 1000; // Very important to have it here. Otherwise you'll get only 1000 at all. Please refer to DirectorySearcher documentation
+
+									if (CLIENT_TIMEOUT_SECONDS > 0)
+									{
+										searcher.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
+									}
+
+									var results = searcher.FindAll();
+
+									userNames = (from SearchResult user in results
+												 select new UserData()
+												 {
+													 DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
+													 Ntid = user.Properties["samaccountname"][0].ToString(),
+													 FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
+													 LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
+													 Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
+													 Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
+													 IsGroup = user.Properties["objectClass"].Contains("group"),
+													 State = user.Properties.Contains("st") ? user.Properties["st"][0].ToString() : string.Empty,
+													 Company = user.Properties.Contains("company") ? user.Properties["company"][0].ToString() : string.Empty,
+													 Country = user.Properties.Contains("c") ? user.Properties["c"][0].ToString() : string.Empty,
+													 Title = user.Properties.Contains("title") ? user.Properties["title"][0].ToString() : string.Empty,
+													 EmployeeId = user.Properties.Contains("lmcEmployeeID") ? user.Properties["lmcEmployeeID"][0].ToString() : string.Empty,
+													 IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
+													 IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
+												 }).ToList() as ICollection<UserData>;
 								}
 
-								var results = searcher.FindAll();
-
-								userNames = (from SearchResult user in results
-											  select new UserData()
-											  {
-												  DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
-												  Ntid = user.Properties["samaccountname"][0].ToString(),
-												  FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
-												  LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
-												  Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
-												  Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
-												  IsGroup = user.Properties["objectClass"].Contains("group"),
-												  State = user.Properties.Contains("st") ? user.Properties["st"][0].ToString() : string.Empty,
-												  Company = user.Properties.Contains("company") ? user.Properties["company"][0].ToString() : string.Empty,
-												  Country = user.Properties.Contains("c") ? user.Properties["c"][0].ToString() : string.Empty,
-												  Title = user.Properties.Contains("title") ? user.Properties["title"][0].ToString() : string.Empty,
-												  EmployeeId = user.Properties.Contains("lmcEmployeeID") ? user.Properties["lmcEmployeeID"][0].ToString() : string.Empty,
-												  IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
-												  IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
-											  }).ToList() as ICollection<UserData>;
+								allUsersAdded = true;
 							}
-
-							allUsersAdded = true;
 						}
-					}
-					catch (Exception e)
-					{
-						// clear data and try again
-						userNames.Clear();
+						catch (Exception e)
+						{
+							// clear data and try again
+							userNames.Clear();
 
-						string message = "Retry " + tries + " of " + MAX_AD_TRIES + " attempts.  Issues communicating with AD.\r\n";
-						this.log.LogError(e, message);
+							string message = "Retry " + tries + " of " + MAX_AD_TRIES + " attempts.  Issues communicating with AD.\r\n";
+							this.log.LogError(e, message);
 
-						Thread.Sleep(500);
-					}
+							Thread.Sleep(500);
+						}
 
-					if (groupNotFound)
-					{
-						Console.WriteLine($"\nWe did not find the group {inGroupName}.");
-						throw new GeneralAppException($"We did not find the group {inGroupName}.");
-					}
+						if (groupNotFound)
+						{
+							Console.WriteLine($"\nWe did not find the group {inGroupName}.");
+							throw new GeneralAppException($"We did not find the group {inGroupName}.");
+						}
 
-					if (allUsersAdded)
-					{
-						break; // don't attempt another retry
+						if (allUsersAdded)
+						{
+							break; // don't attempt another retry
+						}
 					}
 				}
 
@@ -724,36 +753,39 @@ namespace IES.Core
 			}
 			else
 			{
-				using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(this.activeDirectoryPath))
+				using (StopwatchTimer sw = new StopwatchTimer(this.log, "FindMatchingUsers"))
 				{
-					using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=person)", propertiesToLoad))
+					using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(this.activeDirectoryPath))
 					{
-						if (CLIENT_TIMEOUT_SECONDS > 0)
+						using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=person)", propertiesToLoad))
 						{
-							search.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
-						}
+							if (CLIENT_TIMEOUT_SECONDS > 0)
+							{
+								search.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
+							}
 
-						// Modify userSearchString (if necessary) according to the appropriate ActiveDirectoryMatchType.
-						if (matchBy == ActiveDirectoryMatchType.StartsWith)
-						{
-							userSearchString = $"{userSearchString}*";
-						}
-						else if (matchBy == ActiveDirectoryMatchType.Contains)
-						{
-							userSearchString = $"*{userSearchString}*";
-						}
+							// Modify userSearchString (if necessary) according to the appropriate ActiveDirectoryMatchType.
+							if (matchBy == ActiveDirectoryMatchType.StartsWith)
+							{
+								userSearchString = $"{userSearchString}*";
+							}
+							else if (matchBy == ActiveDirectoryMatchType.Contains)
+							{
+								userSearchString = $"*{userSearchString}*";
+							}
 
-						// Create the search filter.
-						if (searchBy == ActiveDirectorySearchBy.LastName)
-						{
-							search.Filter = $"(&(objectClass=user)(name={userSearchString}))";
+							// Create the search filter.
+							if (searchBy == ActiveDirectorySearchBy.LastName)
+							{
+								search.Filter = $"(&(objectClass=user)(name={userSearchString}))";
+							}
+							else if (searchBy == ActiveDirectorySearchBy.Account)
+							{
+								search.Filter = $"(&(objectClass=user)(samAccountName={userSearchString}))";
+							}
+
+							return search.FindAll();
 						}
-						else if (searchBy == ActiveDirectorySearchBy.Account)
-						{
-							search.Filter = $"(&(objectClass=user)(samAccountName={userSearchString}))";
-						}
-						
-						return search.FindAll();
 					}
 				}
 			}
@@ -773,30 +805,33 @@ namespace IES.Core
 			}
 			else
 			{
-				using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(this.activeDirectoryPath))
+				using (StopwatchTimer sw = new StopwatchTimer(this.log, "FindMatchingGroups"))
 				{
-					using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=group)"))
+					using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(this.activeDirectoryPath))
 					{
-						// TODO This code is only used in PTM, if we do use it in the future in genBOE then test out the performance fix below
-						// search.PropertyNamesOnly = true;
-						if (CLIENT_TIMEOUT_SECONDS > 0)
+						using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=group)"))
 						{
-							search.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
-						}
+							// TODO This code is only used in PTM, if we do use it in the future in genBOE then test out the performance fix below
+							// search.PropertyNamesOnly = true;
+							if (CLIENT_TIMEOUT_SECONDS > 0)
+							{
+								search.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
+							}
 
-						// Modify groupSearchString (if necessary) according to the appropriate ActiveDirectoryMatchType.
-						if (matchBy == ActiveDirectoryMatchType.StartsWith)
-						{
-							groupSearchString = $"{groupSearchString}*";
-						}
-						else if (matchBy == ActiveDirectoryMatchType.Contains)
-						{
-							groupSearchString = $"*{groupSearchString}*";
-						}
+							// Modify groupSearchString (if necessary) according to the appropriate ActiveDirectoryMatchType.
+							if (matchBy == ActiveDirectoryMatchType.StartsWith)
+							{
+								groupSearchString = $"{groupSearchString}*";
+							}
+							else if (matchBy == ActiveDirectoryMatchType.Contains)
+							{
+								groupSearchString = $"*{groupSearchString}*";
+							}
 
-						search.Filter = $"(&(objectClass=group)(|(cn={groupSearchString})(dn={groupSearchString})(samAccountName={groupSearchString})))";
+							search.Filter = $"(&(objectClass=group)(|(cn={groupSearchString})(dn={groupSearchString})(samAccountName={groupSearchString})))";
 
-						return search.FindAll();
+							return search.FindAll();
+						}
 					}
 				}
 			}

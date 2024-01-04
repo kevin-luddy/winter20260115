@@ -9,6 +9,7 @@ namespace GenTRAC.DataBridge.Common.Security
     using System.Collections.Generic;
     using GenTRAC.DataBridge.DTO;
     using IES.Core;
+	using Microsoft.AspNetCore.Http;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>
@@ -48,22 +49,29 @@ namespace GenTRAC.DataBridge.Common.Security
         private readonly ICache cache;
 
         /// <summary>
-        /// Constructor for dependency injection
+        /// http context accessor
         /// </summary>
-        /// <param name="inSecurityUserAuthorizationsDataLoader">The data loader to use for obtaining database role permissions</param>
-        /// <param name="inSecurityInformation">Information about the currently logged in user</param>
-        /// <param name="inUserMapper">User Dto Data Mapper.</param>
-        public SecurityMapper(ISecurityUserAuthorizationsDataLoader inSecurityUserAuthorizationsDataLoader,
+        private readonly IHttpContextAccessor httpContextAccessor;
+
+		/// <summary>
+		/// Constructor for dependency injection
+		/// </summary>
+		/// <param name="inSecurityUserAuthorizationsDataLoader">The data loader to use for obtaining database role permissions</param>
+		/// <param name="inSecurityInformation">Information about the currently logged in user</param>
+		/// <param name="inUserMapper">User Dto Data Mapper.</param>
+		public SecurityMapper(ISecurityUserAuthorizationsDataLoader inSecurityUserAuthorizationsDataLoader,
                                 ISecurityInformation inSecurityInformation,
                                 IUserMapper inUserMapper,
                                 ILogger<SecurityMapper> logger,
-                                ICache cache)
+                                ICache cache,
+                                IHttpContextAccessor httpContextAccessor)
         {
             this.securityUserAuthorizationsDataLoader = inSecurityUserAuthorizationsDataLoader;
             this.securityInformation = inSecurityInformation;
             this.userMapper = inUserMapper;
             this.log = logger;
             this.cache = cache;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -98,13 +106,12 @@ namespace GenTRAC.DataBridge.Common.Security
 
                 // if this is a save action, permissions should be cleared from cache
                 bool isSaveAction = false;
-                // TODO TIW
-                //if (HttpContext.Current != null && HttpContext.Current.Items.Contains(CacheConstants.SAVE_PERMISSIONS_ACTION))
-                //{
-                //    isSaveAction = true;
-                //}
+                if (httpContextAccessor.HttpContext != null && (httpContextAccessor.HttpContext.Items.ContainsKey(CacheConstants.SAVE_PERMISSIONS_ACTION)))
+                {
+                    isSaveAction = true;
+                }
 
-                if (this.cache.Contains(key))
+				if (this.cache.Contains(key))
                 {
                     rolesForUser = this.cache.GetData(key) as IReadOnlyCollection<SecurityPermissionsResponse>;
                 }

@@ -202,11 +202,11 @@ namespace IES.Core
             // log to the performance log if cache miss
             if (!cacheHit)
             {
-                // TODO TIW _log.Performance("MISS - " + inLoaderMethod.Method.Name + " -> Key: " + inKeyForCache, sw.ElapsedMilliseconds);
-            }
+				_log.LogTrace("MISS - " + inLoaderMethod.Method.Name + " -> Key: " + inKeyForCache, sw.ElapsedMilliseconds);
+			}
 
 
-            return toReturn;
+			return toReturn;
         }
 
         /// <summary>

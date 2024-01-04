@@ -17,8 +17,10 @@ namespace IES.Core
     using System.Diagnostics;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.AspNetCore.Mvc.Filters;
+	using Microsoft.AspNetCore.Mvc.Controllers;
 
-	public class IESController : ControllerBase
+	public class IESController : ControllerBase, IActionFilter
 	{
         /// <summary>
         /// The logger.
@@ -237,13 +239,8 @@ namespace IES.Core
         /// <param name="functionName">The function name being logged</param>
         /// <returns>The running stopwatch</returns>
         [NonAction]
-        protected Stopwatch StartAction(ILogger logger, string functionName)
+        private Stopwatch StartAction(string functionName)
         {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
-
             if (functionName == null)
             {
                 throw new ArgumentNullException(nameof(functionName));
@@ -251,9 +248,9 @@ namespace IES.Core
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            logger.LogDebug(string.Format("Begin " + functionName));
-            // TODO TIW logger.Performance(string.Format("BEGIN ACTION -" + functionName), 0, true);
-            this.HttpContext.Items["Stopwatch"] = sw;
+			this.log.LogDebug(string.Format("Begin " + functionName));
+			this.log.LogTrace(string.Format("BEGIN ACTION -" + functionName), 0, true);
+			this.HttpContext.Items["Stopwatch"] = sw;
             return sw;
         }
 
@@ -263,13 +260,8 @@ namespace IES.Core
         /// <param name="logger">The logger</param>
         /// <param name="functionName">The function name being logged</param>
         [NonAction]
-        protected void FinalizeAction(ILogger logger, string functionName)
+        private void FinalizeAction(string functionName)
         {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
-
             if (functionName == null)
             {
                 throw new ArgumentNullException(nameof(functionName));
@@ -282,8 +274,30 @@ namespace IES.Core
                 elapsedMilliseconds = sw.ElapsedMilliseconds;
                 this.HttpContext.Items.Remove("Stopwatch");
             }
-            logger.LogInformation(string.Format("Finished " + functionName + ": " + elapsedMilliseconds + " milliseconds."));
-            // TODO TIW logger.Performance("ACTION - " + functionName, elapsedMilliseconds);
+			this.log.LogInformation(string.Format("Finished " + functionName + ": " + elapsedMilliseconds + " milliseconds."));
+            this.log.LogTrace("ACTION - " + functionName, elapsedMilliseconds);
         }
-    }
+
+        [NonAction]
+		public void OnActionExecuting(ActionExecutingContext context)
+		{
+			if (context != null)
+			{
+				ControllerActionDescriptor descriptor = context.ActionDescriptor as ControllerActionDescriptor;
+				string functionName = descriptor?.ActionName;
+				this.StartAction(functionName);
+			}
+		}
+
+		[NonAction]
+		public void OnActionExecuted(ActionExecutedContext context)
+		{
+			if (context != null)
+            {
+                ControllerActionDescriptor descriptor = context.ActionDescriptor as ControllerActionDescriptor;
+                string functionName = descriptor?.ActionName;
+                this.FinalizeAction(functionName);
+            }
+        }
+	}
 }

@@ -52,7 +52,7 @@ namespace IES.Core
 			this.stopwatch = new Stopwatch();
 			this.stopwatch.Start();
 			this.logger.LogDebug(string.Format(Constants.LOG_ACTIVITY_START, this.activity));
-			// TODO TIWthis.logger.LogTrace("BEGIN - " + this.activity, 0);
+			this.logger.LogTrace("BEGIN - " + this.activity, 0);
 		}
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace IES.Core
 		{
 			this.stopwatch.Stop();
 			this.logger.LogDebug(string.Format(Constants.LOG_ACTIVITY_END, this.activity, this.stopwatch.ElapsedMilliseconds));
-			// TODO TIW this.logger.Performance(this.activity, this.stopwatch.ElapsedMilliseconds);
+			this.logger.LogTrace(this.activity, this.stopwatch.ElapsedMilliseconds);
 
 			this.activity = null;
 			this.logger = null;
