@@ -69,6 +69,8 @@ namespace APTSPropricerApi
 				x.SerializerSettings.ContractResolver = new DefaultContractResolver();
 			});
 
+			services.AddRazorPages();
+
 			services.AddSwaggerGen(opt =>
 			{
 				opt.SwaggerDoc("v1", new OpenApiInfo { Title = "ProPricer API", Version = $"v{ConfigurationServiceBase.Configuration["APPLICATION_VERSION"]}" });
@@ -114,7 +116,7 @@ namespace APTSPropricerApi
 			}
 
 			this.configurationService.ConfigureAppBuilder(app);
-
+			
 			ClearOutOldFiles();
 		}
 
