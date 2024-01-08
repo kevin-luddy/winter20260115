@@ -56,7 +56,11 @@
     <Compile Include="..\GenTRAC.Models\ProposalUserRole.cs" Link="ProposalUserRole.cs" />
     <Compile Include="..\GenTRAC.Models\PTMEntityModel.Context.cs" Link="PTMEntityModel.Context.cs" />
     <Compile Include="..\GenTRAC.Models\PTMEntityModel.cs" Link="PTMEntityModel.cs" />
-    <Compile Include="..\GenTRAC.Models\PTMEntityModel.Designer.cs" Link="PTMEntityModel.Designer.cs" />
+	<Compile Include="..\GenTRAC.Models\PTMEntityModel.Designer.cs" Link="PTMEntityModel.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>PTMEntityModel.edmx</DependentUpon>
+	</Compile>
     <Compile Include="..\GenTRAC.Models\ReasonCertificationNotRequiredLU.cs" Link="ReasonCertificationNotRequiredLU.cs" />
     <Compile Include="..\GenTRAC.Models\RequestTypeLU.cs" Link="RequestTypeLU.cs" />
     <Compile Include="..\GenTRAC.Models\ResponseLU.cs" Link="ResponseLU.cs" />
@@ -66,6 +70,13 @@
     <Compile Include="..\GenTRAC.Models\SplitString_Result.cs" Link="SplitString_Result.cs" />
     <Compile Include="..\GenTRAC.Models\SystemUserRole.cs" Link="SystemUserRole.cs" />
     <Compile Include="..\GenTRAC.Models\TextTypeLU.cs" Link="TextTypeLU.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<EntityDeploy Include="..\GenTRAC.Models\PTMEntityModel.edmx" Link="PTMEntityModel.edmx">
+		<Generator>EntityModelCodeGenerator</Generator>
+		<LastGenOutput>PTMEntityModel.Designer.cs</LastGenOutput>
+	</EntityDeploy>
   </ItemGroup>
 
   <ItemGroup>
