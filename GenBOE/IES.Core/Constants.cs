@@ -918,5 +918,15 @@ namespace IES.Core
         /// Key value for Column Field where there is NO WBS.
         /// </summary>
         public const string COLUMN_FIELD_KEY_NO_WBS = "NO WBS";
-    }
+
+		/// <summary>
+		/// Header name for correlation
+		/// </summary>
+		public static readonly string CORRELATION_HEADER_NAME = "CorrelationId";
+
+		/// <summary>
+		/// Name of the property that the NTID is placed into, in the Identity that comes from OAuth2
+		/// </summary>
+		public static readonly string NTID_NAME_IN_IDENTITY = "preferred_username";
+	}
 }

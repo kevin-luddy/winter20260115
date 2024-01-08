@@ -65,30 +65,18 @@ namespace IES.Core
 		private const string ACCOUNT_TYPE_GROUP = "Group";
 
 		/// <summary>
-		/// People Service
-		/// </summary>
-		private readonly PeopleService peopleService;
-
-		/// <summary>
-		/// Token Service
-		/// </summary>
-		private readonly ITokenService tokenService;
-
-		/// <summary>
 		/// Default constructor
 		/// </summary>
 		/// <param name="cache">Cache</param>
 		/// <param name="logger">Logger</param>
 		/// <param name="inSecondsToCache">The number of seconds to store a value in cache</param>
 		/// <param name="clientTimeoutSeconds">The number of seconds to wait until the DirectorySearcher reaches a timeout on the client.</param>
-		public ActiveDirectoryUtilities(ITokenService tokenService, PeopleService peopleService, ILogger<ActiveDirectoryUtilities> logger, ICache cache, int inSecondsToCache = 720, int clientTimeoutSeconds = -1)
+		public ActiveDirectoryUtilities(ILogger<ActiveDirectoryUtilities> logger, ICache cache, int inSecondsToCache = 720, int clientTimeoutSeconds = -1)
 		{
 			this.log = logger;
 			this.cache = cache;
 			this.secondsToCache = inSecondsToCache;
 			this.CLIENT_TIMEOUT_SECONDS = clientTimeoutSeconds;
-			this.peopleService = peopleService;
-			this.tokenService = tokenService;
 		}
 
 		/// <summary>

@@ -1,5 +1,8 @@
+using System.Configuration;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Security.Principal;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using GenBOE.DataBridge.DTO;
 using GenTRAC.DataBridge.DTO;
 using IES.ActionLogic.Common;
@@ -11,11 +14,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using Serilog;
+using Serilog.Ui.MsSqlServerProvider;
+using Serilog.Ui.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Add support to logging with SERILOG
+builder.Host.UseSerilog((context, configuration) =>
+	configuration.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
 builder.Services.AddMemoryCache();
@@ -24,6 +35,11 @@ builder.Services.AddHttpClient();
 builder.Services.AddTransient<IPrincipal>(
 				provider => provider.GetService<IHttpContextAccessor>()?.HttpContext?.User);
 
+builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+					 builder.WithOrigins("https://*.lmco.com")
+							 .AllowAnyMethod()
+							 .AllowAnyHeader()
+							 .AllowCredentials()));
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
 builder.Services.AddSingleton<ICache, Cache>();
 builder.Services.AddScoped<IActiveDirectoryUtilities, ActiveDirectoryUtilities>();
@@ -43,8 +59,12 @@ builder.Services.AddTransient<ContractTypeGroupLULoader>();
 builder.Services.AddTransient<GenBOE.DataBridge.DTO.LineOfBusinessDataLoader>();
 builder.Services.AddTransient<ProposalClassLoader>();
 builder.Services.AddTransient<ContractTypeLoader>();
-builder.Services.AddTransient<PeopleService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddSerilogUi(options =>
+	  // each provider exposes extension methods to configure.
+	  // example with MSSqlServerProvider:
+	  options.UseSqlServer(builder.Configuration.GetConnectionString("IESEntities"), "Logs"));
+
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -101,9 +121,16 @@ forwardedHeadersOptions.KnownProxies.Clear();
 app.UseForwardedHeaders(forwardedHeadersOptions);
 app.UseAuthentication();
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseSerilogRequestLogging();
 app.UseRouting();
-// TODO TIW app.UseCors
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
+app.UseMiddleware<UserLoggingMiddleware>();
+app.UseMiddleware<CorrelationMiddleware>();
+
+// Enable middleware to serve log-ui (HTML, JS, CSS, etc.).
+app.UseSerilogUi();
 
 app.UseEndpoints(endpoints =>
 {
@@ -118,6 +145,12 @@ app.Use(async (context, next) =>
 	context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
 
 	await next();
+});
+
+Serilog.Debugging.SelfLog.Enable(msg =>
+{
+	Debug.Print(msg);
+	Debugger.Break();
 });
 
 app.Run();
