@@ -7,6 +7,8 @@
 namespace IES.Core
 {
 	using System;
+	using Serilog;
+	using Serilog.Configuration;
 	using Serilog.Core;
 	using Serilog.Events;
 
@@ -23,6 +25,14 @@ namespace IES.Core
 		public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
 		{
 			logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(LoggerConstants.AppNameEnrichProperty, AppDomain.CurrentDomain.FriendlyName));
+		}
+	}
+
+	public static class LoggerEnrichmentConfigurationExtensions
+	{
+		public static LoggerConfiguration WithApplicationName(this LoggerEnrichmentConfiguration enrich)
+		{
+			return enrich.With<ApplicationNameEnricher>();
 		}
 	}
 }

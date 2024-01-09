@@ -195,7 +195,7 @@ namespace IES.Core
                 // split the ntid and just pass in the ntid
                 if (string.IsNullOrEmpty(ActiveUserNTIDWithDomain))
                 {
-                    return "";
+                    return string.Empty;
                 }
 
                 string[] splitDomainAndNTID = ActiveUserNTIDWithDomain.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);

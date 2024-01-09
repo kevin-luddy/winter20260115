@@ -1,10 +1,8 @@
-using System.Configuration;
 using System.Diagnostics;
-using System.Net.Http;
 using System.Security.Principal;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using GenBOE.DataBridge.DTO;
 using GenTRAC.DataBridge.DTO;
+using HealthChecks.UI.Client;
 using IES.ActionLogic.Common;
 using IES.ActionLogic.ControllerLogic;
 using IES.Core;
@@ -12,6 +10,7 @@ using IES.DataBridge.Loaders;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
@@ -60,11 +59,6 @@ builder.Services.AddTransient<GenBOE.DataBridge.DTO.LineOfBusinessDataLoader>();
 builder.Services.AddTransient<ProposalClassLoader>();
 builder.Services.AddTransient<ContractTypeLoader>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddSerilogUi(options =>
-	  // each provider exposes extension methods to configure.
-	  // example with MSSqlServerProvider:
-	  options.UseSqlServer(builder.Configuration.GetConnectionString("IESEntities"), "Logs"));
-
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -74,6 +68,11 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 	x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 	x.SerializerSettings.ContractResolver = new DefaultContractResolver();
 });
+
+builder.Services.AddHealthChecks()
+					.AddProcessAllocatedMemoryHealthCheck(1024, name: "Memory Allocation");
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -102,14 +101,21 @@ builder.Services.AddAuthorization(options =>
 		.Build());
 });
 
+builder.Services.AddSerilogUi(options =>
+	  // each provider exposes extension methods to configure.
+	  // example with MSSqlServerProvider:
+	  options.UseSqlServer(builder.Configuration.GetConnectionString("IESEntities"), "Logs"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+	app.UseDeveloperExceptionPage();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 ForwardedHeadersOptions forwardedHeadersOptions = new ForwardedHeadersOptions
 {
@@ -119,23 +125,33 @@ forwardedHeadersOptions.KnownNetworks.Clear();
 forwardedHeadersOptions.KnownProxies.Clear();
 
 app.UseForwardedHeaders(forwardedHeadersOptions);
-app.UseAuthentication();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseMiddleware<UserLoggingMiddleware>();
+app.UseMiddleware<CorrelationMiddleware>();
 app.UseSerilogRequestLogging();
 app.UseRouting();
 app.UseCors("CorsPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<UserLoggingMiddleware>();
-app.UseMiddleware<CorrelationMiddleware>();
 
-// Enable middleware to serve log-ui (HTML, JS, CSS, etc.).
-app.UseSerilogUi();
+if (app.Environment.IsDevelopment())
+{
+	app.UseSerilogUi(options =>
+	{
+		options.Authorization.AuthenticationType = AuthenticationType.Windows;
+
+		//options.Authorization.Filters = new[]
+		//{
+		//	new CustomAuthorizeFilter()
+		//};
+	});
+}
 
 app.UseEndpoints(endpoints =>
 {
 	endpoints.MapControllers();
-	// TODO TIW endpoints.MapHealthChecks("/Health", new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
+	endpoints.MapHealthChecks("/Health", new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
 });
 
 app.Use(async (context, next) =>
