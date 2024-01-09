@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
@@ -166,7 +167,10 @@ app.Use(async (context, next) =>
 Serilog.Debugging.SelfLog.Enable(msg =>
 {
 	Debug.Print(msg);
-	Debugger.Break();
 });
+
+IHostApplicationLifetime lifetime = app.Lifetime;
+
+lifetime.ApplicationStarted.Register(() => Serilog.Log.CloseAndFlush());
 
 app.Run();

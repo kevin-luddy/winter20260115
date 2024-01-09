@@ -98,7 +98,7 @@ namespace IES.Core
 		{
 			this.stopwatch.Stop();
 			this.logger.LogDebug(string.Format(Constants.LOG_ACTIVITY_END, this.activity, this.stopwatch.ElapsedMilliseconds));
-			this.logger.LogTrace(this.activity, this.stopwatch.ElapsedMilliseconds);
+			this.logger.LogTrace(string.Concat("END - ", this.activity, ",", this.stopwatch.ElapsedMilliseconds.ToString()));
 
 			this.activity = null;
 			this.logger = null;
