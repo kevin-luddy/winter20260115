@@ -83,7 +83,7 @@ namespace IES.Core
 
 				if (inUseClone)
 				{
-					toReturn = GenBOEUtilities.Clone<object>(toReturn);
+					toReturn = toReturn.DeepClone();
 				}
 			}
 			return toReturn;
@@ -145,7 +145,7 @@ namespace IES.Core
 				{
 					if (inUseClone)
 					{
-						toReturn.Add(GenBOEUtilities.Clone<object>(item));
+						toReturn.Add(item.DeepClone());
 					}
 					else
 					{
@@ -245,7 +245,7 @@ namespace IES.Core
 				{
 					if (inUseClone)
 					{
-						toReturn.Add(GenBOEUtilities.Clone<object>(item));
+						toReturn.Add(item.DeepClone());
 					}
 					else
 					{

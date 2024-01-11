@@ -239,19 +239,15 @@ namespace IES.Core
         /// <param name="functionName">The function name being logged</param>
         /// <returns>The running stopwatch</returns>
         [NonAction]
-        private Stopwatch StartAction(string functionName)
+        private void StartAction(string functionName)
         {
             if (functionName == null)
             {
                 throw new ArgumentNullException(nameof(functionName));
             }
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-			this.log.LogDebug(string.Format("Begin " + functionName));
-			this.log.LogTrace(string.Format("BEGIN ACTION -" + functionName), 0, true);
-			this.HttpContext.Items["Stopwatch"] = sw;
-            return sw;
+            StopwatchTimer sw = new StopwatchTimer(functionName, this.log);
+            this.HttpContext.Items["Stopwatch"] = sw;
         }
 
         /// <summary>
@@ -267,15 +263,12 @@ namespace IES.Core
                 throw new ArgumentNullException(nameof(functionName));
             }
 
-            long elapsedMilliseconds = 0L;
-            Stopwatch sw = this.HttpContext.Items["Stopwatch"] as Stopwatch;
+            StopwatchTimer sw = this.HttpContext.Items["Stopwatch"] as StopwatchTimer;
             if (sw != null)
             {
-                elapsedMilliseconds = sw.ElapsedMilliseconds;
-                this.HttpContext.Items.Remove("Stopwatch");
+				this.HttpContext.Items.Remove("Stopwatch");
+				sw.Dispose();
             }
-			this.log.LogInformation(string.Format("Finished " + functionName + ": " + elapsedMilliseconds + " milliseconds."));
-            this.log.LogTrace("ACTION - " + functionName, elapsedMilliseconds);
         }
 
         [NonAction]

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -46,13 +46,20 @@ namespace IES.Core
 			else
 			{
 				this.logger = logger;
-				this.activity = logger.GetType().Name + "." + this.activity;
+				Type loggerType = logger.GetType();
+				if (loggerType.IsGenericType)
+				{
+					this.activity = loggerType.GenericTypeArguments.First().Name + "." + this.activity;
+				}
+				else
+				{
+					this.activity = loggerType.Name + "." + this.activity;
+				}
 			}
 
 			this.stopwatch = new Stopwatch();
 			this.stopwatch.Start();
-			this.logger.LogDebug(string.Format(Constants.LOG_ACTIVITY_START, this.activity));
-			this.logger.LogTrace("BEGIN - " + this.activity, 0);
+			this.logger.LogTrace(string.Format(Constants.LOG_ACTIVITY_START, this.activity));
 		}
 
 		/// <summary>
@@ -97,8 +104,7 @@ namespace IES.Core
 		protected virtual void Dispose(bool limitCleanupToNativeOnly)
 		{
 			this.stopwatch.Stop();
-			this.logger.LogDebug(string.Format(Constants.LOG_ACTIVITY_END, this.activity, this.stopwatch.ElapsedMilliseconds));
-			this.logger.LogTrace(string.Concat("END - ", this.activity, ",", this.stopwatch.ElapsedMilliseconds.ToString()));
+			this.logger.LogTrace(string.Format(Constants.LOG_ACTIVITY_END, this.activity, this.stopwatch.ElapsedMilliseconds));
 
 			this.activity = null;
 			this.logger = null;

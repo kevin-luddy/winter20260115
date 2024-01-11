@@ -48,14 +48,16 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public EmailInformationLoader(ILogger<EmailInformationLoader> logger)
+        public EmailInformationLoader(ILogger<EmailInformationLoader> logger, IProposalPermissionLoader permissionLoader,
+            IProposalLoader proposalLoader, IUserLoader userLoader, IAttachmentLoader attachmentLoader)
 		{
 			this.Log = logger;
-			// TODO TIW This Loader is called from the Emailer console app, so it does not have the Unity Container loaded for resolutions, have to new up any Loaders/mappers
-			this.PermissionLoader = new ProposalPermissionLoader(logger);
-            this.ProposalLoader = new ProposalLoader(logger);
-            this.UserLoader = new UserLoader(logger);
-            this.AttachmentLoader = new AttachmentLoader(logger);
+            // TODO TIW This Loader is called from the Emailer console app which will may need to get converted,
+            //      It does not have the Unity Container loaded for resolutions, have to new up any Loaders/mappers
+            this.PermissionLoader = permissionLoader;
+            this.ProposalLoader = proposalLoader;
+            this.UserLoader = userLoader;
+            this.AttachmentLoader = attachmentLoader;
         }
 
         /// <summary>

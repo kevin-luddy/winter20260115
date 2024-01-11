@@ -7,9 +7,7 @@
 namespace IES.Core
 {
 	using System;
-	using System.Collections.Generic;
 	using System.ComponentModel;
-	using System.Linq;
 	using System.Net.Http;
 	using System.Reflection;
 	using Microsoft.AspNetCore.Http;

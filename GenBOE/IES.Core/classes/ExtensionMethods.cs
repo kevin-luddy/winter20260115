@@ -16,6 +16,7 @@ namespace IES.Core
 	using System.Reflection;
 	using System.ComponentModel;
 	using System.Text.RegularExpressions;
+	using System.Runtime.Serialization;
 
 	public static class ExtensionMethods
 	{
@@ -437,11 +438,23 @@ namespace IES.Core
 		/// <returns>The copied object</returns>
 		public static T DeepClone<T>(this T source) // where T: ISerializable
 		{
-			using (MemoryStream stream = new MemoryStream())
+			if (!typeof(T).IsSerializable)
 			{
-				BinaryFormatter formatter = new BinaryFormatter();
+				throw new ArgumentException("The type must be serializable.", nameof(source));
+			}
+
+			// Don't serialize a null object, simply return the default for that object
+			if (Object.ReferenceEquals(source, null))
+			{
+				return default(T);
+			}
+
+			IFormatter formatter = new BinaryFormatter();
+			Stream stream = new MemoryStream();
+			using (stream)
+			{
 				formatter.Serialize(stream, source);
-				stream.Position = 0;
+				stream.Seek(0, SeekOrigin.Begin);
 				return (T)formatter.Deserialize(stream);
 			}
 		}

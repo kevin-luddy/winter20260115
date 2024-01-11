@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -72,12 +72,12 @@ namespace IES.Core
         /// <summary>
         /// String that gets logged when an activity starts.
         /// </summary>
-        public const string LOG_ACTIVITY_START = "Begin {0}.";
+        public const string LOG_ACTIVITY_START = "Begin {0}, ";
 
         /// <summary>
         /// String that gets logged when an activity ends.
         /// </summary>
-        public const string LOG_ACTIVITY_END = "Finished {0}: {1} milliseconds.";
+        public const string LOG_ACTIVITY_END = "Finished {0}, {1}";
 
         /// <summary>
         /// Error message to log, if an insert fails due to ID.

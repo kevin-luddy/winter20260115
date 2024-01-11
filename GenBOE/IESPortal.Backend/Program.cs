@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Security.Principal;
 using GenBOE.DataBridge.DTO;
 using GenTRAC.DataBridge.DTO;
 using HealthChecks.UI.Client;
@@ -7,39 +6,36 @@ using IES.ActionLogic.Common;
 using IES.ActionLogic.ControllerLogic;
 using IES.Core;
 using IES.DataBridge.Loaders;
-using Microsoft.AspNetCore.Authentication.Negotiate;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json.Serialization;
 using Serilog;
-using Serilog.Ui.MsSqlServerProvider;
 using Serilog.Ui.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = new ApplicationConfigurationBase();
 
-//Add support to logging with SERILOG
-builder.Host.UseSerilog((context, configuration) =>
-	configuration.ReadFrom.Configuration(context.Configuration));
+config.ConfigureBasics(builder.Host, builder.Services, builder.Configuration, builder.Configuration.GetConnectionString("IESEntities"));
+config.AddWindowsAuthentication(builder.Services);
 
-// Add services to the container.
-builder.Services.AddMemoryCache();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient();
-builder.Services.AddTransient<IPrincipal>(
-				provider => provider.GetService<IHttpContextAccessor>()?.HttpContext?.User);
+//// Add services to the container.
+//builder.Services.AddMemoryCache();
+//builder.Services.AddHttpContextAccessor();
+////builder.Services.AddLogging(loggingBuilder =>
+////	loggingBuilder.AddSerilog(dispose: true));
+//builder.Services.AddHttpClient();
+//builder.Services.AddTransient<IPrincipal>(
+//				provider => provider.GetService<IHttpContextAccessor>()?.HttpContext?.User);
 
-builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
-					 builder.WithOrigins("https://*.lmco.com")
-							 .AllowAnyMethod()
-							 .AllowAnyHeader()
-							 .AllowCredentials()));
+//builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+//					 builder.WithOrigins("https://*.lmco.com")
+//							 .AllowAnyMethod()
+//							 .AllowAnyHeader()
+//							 .AllowCredentials()));
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
 builder.Services.AddSingleton<ICache, Cache>();
 builder.Services.AddScoped<IActiveDirectoryUtilities, ActiveDirectoryUtilities>();
@@ -61,116 +57,123 @@ builder.Services.AddTransient<ProposalClassLoader>();
 builder.Services.AddTransient<ContractTypeLoader>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-	options.JsonSerializerOptions.PropertyNamingPolicy = null;
-}).AddNewtonsoftJson(x =>
-{
-	x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-	x.SerializerSettings.ContractResolver = new DefaultContractResolver();
-});
+//builder.Services.AddControllers().AddJsonOptions(options =>
+//{
+//	options.JsonSerializerOptions.PropertyNamingPolicy = null;
+//}).AddNewtonsoftJson(x =>
+//{
+//	x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+//	x.SerializerSettings.ContractResolver = new DefaultContractResolver();
+//});
 
-builder.Services.AddHealthChecks()
-					.AddProcessAllocatedMemoryHealthCheck(1024, name: "Memory Allocation");
+//builder.Services.AddHealthChecks()
+//					.AddProcessAllocatedMemoryHealthCheck(1024, name: "Memory Allocation");
 
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddAuthentication(options =>
-{
-	options.DefaultScheme = NegotiateDefaults.AuthenticationScheme;
-	options.DefaultChallengeScheme = NegotiateDefaults.AuthenticationScheme;
-})
-				.AddNegotiate();
-				//.AddScheme<TokenAuthenticationOptions, TokenAuthenticationSchemeHandler>(
-				//	Constants.IES_TOKEN_SCHEME,
-				//	opts => { }
-				//);
-builder.Services.AddAuthorization(options =>
-{
-	//// this lets us put [Authorize(Policy = "OnlyIesToken")] onto Controller
-	//AuthorizationPolicyBuilder onlyIesTokenSchemePolicyBuilder = new(Constants.IES_TOKEN_SCHEME);
-	//options.AddPolicy("OnlyIesToken", onlyIesTokenSchemePolicyBuilder
-	//	.RequireAuthenticatedUser()
-	//	.Build());
+//// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
+//builder.Services.AddAuthentication(options =>
+//{
+//	options.DefaultScheme = NegotiateDefaults.AuthenticationScheme;
+//	options.DefaultChallengeScheme = NegotiateDefaults.AuthenticationScheme;
+//})
+//				.AddNegotiate();
+//				//.AddScheme<TokenAuthenticationOptions, TokenAuthenticationSchemeHandler>(
+//				//	Constants.IES_TOKEN_SCHEME,
+//				//	opts => { }
+//				//);
+//builder.Services.AddAuthorization(options =>
+//{
+//	//// this lets us put [Authorize(Policy = "OnlyIesToken")] onto Controller
+//	//AuthorizationPolicyBuilder onlyIesTokenSchemePolicyBuilder = new(Constants.IES_TOKEN_SCHEME);
+//	//options.AddPolicy("OnlyIesToken", onlyIesTokenSchemePolicyBuilder
+//	//	.RequireAuthenticatedUser()
+//	//	.Build());
 
-	// this lets us put [Authorize(Policy = "OnlyNegotiate")] onto Controller
-	AuthorizationPolicyBuilder negotiatePolicyBuilder = new(NegotiateDefaults.AuthenticationScheme);
-	options.AddPolicy("OnlyNegotiate", negotiatePolicyBuilder
-		.RequireAuthenticatedUser()
-		.Build());
-});
+//	// this lets us put [Authorize(Policy = "OnlyNegotiate")] onto Controller
+//	AuthorizationPolicyBuilder negotiatePolicyBuilder = new(NegotiateDefaults.AuthenticationScheme);
+//	options.AddPolicy("OnlyNegotiate", negotiatePolicyBuilder
+//		.RequireAuthenticatedUser()
+//		.Build());
+//});
 
-builder.Services.AddSerilogUi(options =>
-	  // each provider exposes extension methods to configure.
-	  // example with MSSqlServerProvider:
-	  options.UseSqlServer(builder.Configuration.GetConnectionString("IESEntities"), "Logs"));
+//builder.Services.AddSerilogUi(options =>
+//	  // each provider exposes extension methods to configure.
+//	  // example with MSSqlServerProvider:
+//	  options.UseSqlServer(builder.Configuration.GetConnectionString("IESEntities"), "Logs"));
+
+////Add support to logging with SERILOG
+//builder.Host.UseSerilog((context, configuration) =>
+//	configuration.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-	app.UseDeveloperExceptionPage();
-}
+config.ConfigureAppBuilder(app, app.Environment);
 
-app.UseSwagger();
-app.UseSwaggerUI();
+//// Configure the HTTP request pipeline.
+//if (app.Environment.IsDevelopment())
+//{
+//	app.UseDeveloperExceptionPage();
+//}
 
-ForwardedHeadersOptions forwardedHeadersOptions = new ForwardedHeadersOptions
-{
-	ForwardedHeaders = (ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto)
-};
-forwardedHeadersOptions.KnownNetworks.Clear();
-forwardedHeadersOptions.KnownProxies.Clear();
+//app.UseSwagger();
+//app.UseSwaggerUI();
 
-app.UseForwardedHeaders(forwardedHeadersOptions);
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseMiddleware<UserLoggingMiddleware>();
-app.UseMiddleware<CorrelationMiddleware>();
-app.UseSerilogRequestLogging();
-app.UseRouting();
-app.UseCors("CorsPolicy");
-app.UseAuthentication();
-app.UseAuthorization();
+//ForwardedHeadersOptions forwardedHeadersOptions = new ForwardedHeadersOptions
+//{
+//	ForwardedHeaders = (ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto)
+//};
+//forwardedHeadersOptions.KnownNetworks.Clear();
+//forwardedHeadersOptions.KnownProxies.Clear();
 
-if (app.Environment.IsDevelopment())
-{
-	app.UseSerilogUi(options =>
-	{
-		options.Authorization.AuthenticationType = AuthenticationType.Windows;
+//app.UseForwardedHeaders(forwardedHeadersOptions);
+//app.UseHttpsRedirection();
+//app.UseStaticFiles();
+//app.UseMiddleware<UserLoggingMiddleware>();
+//app.UseMiddleware<CorrelationMiddleware>();
+//app.UseSerilogRequestLogging();
+//app.UseRouting();
+//app.UseCors("CorsPolicy");
+//app.UseAuthentication();
+//app.UseAuthorization();
 
-		//options.Authorization.Filters = new[]
-		//{
-		//	new CustomAuthorizeFilter()
-		//};
-	});
-}
+//if (app.Environment.IsDevelopment())
+//{
+//	app.UseSerilogUi(options =>
+//	{
+//		options.Authorization.AuthenticationType = AuthenticationType.Windows;
 
-app.UseEndpoints(endpoints =>
-{
-	endpoints.MapControllers();
-	endpoints.MapHealthChecks("/Health", new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
-});
+//		//options.Authorization.Filters = new[]
+//		//{
+//		//	new CustomAuthorizeFilter()
+//		//};
+//	});
+//}
 
-app.Use(async (context, next) =>
-{
-	context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-	context.Response.Headers.Add("X-Frame-Options", "DENY");
-	context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+//app.UseEndpoints(endpoints =>
+//{
+//	endpoints.MapControllers();
+//	endpoints.MapHealthChecks("/Health", new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
+//});
 
-	await next();
-});
+//app.Use(async (context, next) =>
+//{
+//	context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+//	context.Response.Headers.Add("X-Frame-Options", "DENY");
+//	context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+
+//	await next();
+//});
 
 Serilog.Debugging.SelfLog.Enable(msg =>
 {
 	Debug.Print(msg);
+	Debugger.Break();
 });
 
 IHostApplicationLifetime lifetime = app.Lifetime;
 
-lifetime.ApplicationStarted.Register(() => Serilog.Log.CloseAndFlush());
+lifetime.ApplicationStopped.Register(() => Serilog.Log.CloseAndFlush());
 
 app.Run();

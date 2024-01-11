@@ -143,68 +143,53 @@ namespace IES.Core
                 throw new ArgumentNullException(nameof(inKeyForCache), "Cache Key passed into CacheDataLoader GetData method is null");
             }
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            bool cacheHit = false;
-
             inKeyForCache = inKeyForCache.ToLower(); // force lowercase strings in the event we're caching on strings (ntid, shortname, etc)
 
             object toReturn = _CacheProxy.GetData(inKeyForCache);
 
             if (toReturn == null)
             {
-                // lock since we are going to overwrite cache key
-                lock (String.Intern("LOCK" + inKeyForCache))
+                using (StopwatchTimer sw = new StopwatchTimer(_log, "MISS - " + inLoaderMethod.Method.Name + " -> Key: " + inKeyForCache))
                 {
-                    // double check now that we have lock that someone else
-                    // didn't load the cache up with our requested value
-                    // .. this avoid unnecessary database retrievals
-                    toReturn = _CacheProxy.GetData(inKeyForCache);
-
-                    if (toReturn == null)
+                    // lock since we are going to overwrite cache key
+                    lock (String.Intern("LOCK" + inKeyForCache))
                     {
-                        // still didn't have any data in cache ... load it from database
-                        // while we have exclusive lock!
-                        _log.LogDebug("Cache MISS for key " + inKeyForCache);
-
-                        toReturn = inLoaderMethod.DynamicInvoke(inLoadMethodParams);
+                        // double check now that we have lock that someone else
+                        // didn't load the cache up with our requested value
+                        // .. this avoid unnecessary database retrievals
+                        toReturn = _CacheProxy.GetData(inKeyForCache);
 
                         if (toReturn == null)
                         {
-                            // NULL returned from dataloader is a problem .. and we can't cache it (nor should we want to)
-                            _log.LogError("Cannot set value [NULL] returned from DataLoader delegate into cache for key " + inKeyForCache + ". Continuing but value [NULL] is NOT CACHED");
-                        }
-                        else
-                        {
-                            // push value back into cache for next caller
-                            if (inStoreInCacheByKey)
+                            // still didn't have any data in cache ... load it from database
+                            // while we have exclusive lock!
+                            _log.LogDebug("Cache MISS for key " + inKeyForCache);
+
+                            toReturn = inLoaderMethod.DynamicInvoke(inLoadMethodParams);
+
+                            if (toReturn == null)
                             {
-                                this._CacheProxy.Add(inKeyForCache, toReturn, secondsToCache);
+                                // NULL returned from dataloader is a problem .. and we can't cache it (nor should we want to)
+                                _log.LogError("Cannot set value [NULL] returned from DataLoader delegate into cache for key " + inKeyForCache + ". Continuing but value [NULL] is NOT CACHED");
+                            }
+                            else
+                            {
+                                // push value back into cache for next caller
+                                if (inStoreInCacheByKey)
+                                {
+                                    this._CacheProxy.Add(inKeyForCache, toReturn, secondsToCache);
+                                }
                             }
                         }
                     }
                 }
             }
-            else
-            {
-                cacheHit = true;
-            }
 
             // make a clone of the object if directed to do so
             if (toReturn != null && inUseClone)
             {
-                toReturn = GenBOEUtilities.Clone<object>(toReturn);
+                toReturn = toReturn.DeepClone();
             }
-
-            sw.Stop();
-
-            // log to the performance log if cache miss
-            if (!cacheHit)
-            {
-				_log.LogTrace("MISS - " + inLoaderMethod.Method.Name + " -> Key: " + inKeyForCache, sw.ElapsedMilliseconds);
-			}
-
 
 			return toReturn;
         }
@@ -302,7 +287,7 @@ namespace IES.Core
                 {
                     if (inUseClone)
                     {
-                        toReturn.Add(GenBOEUtilities.Clone<object>(_CacheProxy.GetData(key)));
+                        toReturn.Add(_CacheProxy.GetData(key).DeepClone());
                     }
                     else
                     {
@@ -336,7 +321,7 @@ namespace IES.Core
 
                     if (inUseClone)
                     {
-                        toReturn.Add(GenBOEUtilities.Clone<object>(item));
+                        toReturn.Add(item.DeepClone());
                     }
                     else
                     {
@@ -400,7 +385,7 @@ namespace IES.Core
                 {
                     if (inUseClone)
                     {
-                        toReturn.Add(GenBOEUtilities.Clone<object>(_CacheProxy.GetData(key)));
+                        toReturn.Add(_CacheProxy.GetData(key).DeepClone());
                     }
                     else
                     {
@@ -433,7 +418,7 @@ namespace IES.Core
 
                     if (inUseClone)
                     {
-                        toReturn.Add(GenBOEUtilities.Clone<object>(item));
+                        toReturn.Add(item.DeepClone());
                     }
                     else
                     {

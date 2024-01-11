@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2021 - 2022 Lockheed Martin Corporation
+//     Copyright (c) 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 

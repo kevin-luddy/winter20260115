@@ -72,7 +72,6 @@ namespace GenTRAC.DataBridge.DTO
             {
                 // not cache, hardlinked
                 toReturn = this.DataLoader.GetAllIds();
-                this.Log.LogTrace("DIRECT - GetAllUserIds", sw.ElapsedMilliseconds);
             }
 
             return toReturn;
@@ -90,7 +89,6 @@ namespace GenTRAC.DataBridge.DTO
             {
                 // get a list of all user Ids (not cache, hardlinked)
                 ICollection<int> allUserIDs = this.DataLoader.GetAllIds();
-				this.Log.LogTrace("DIRECT - GetAllUserIds", sw.ElapsedMilliseconds);
 
 				if (allUserIDs != null && allUserIDs.Any())
                 {
@@ -303,7 +301,6 @@ namespace GenTRAC.DataBridge.DTO
             {
                 // get a list of all group user Ids (not cache, hardlinked)
                 ICollection<int> allGroupUserIDs = this.DataLoader.GetAllGroupIds();
-				this.Log.LogTrace("DIRECT - GetAllGroupIds", sw.ElapsedMilliseconds);
 
 				if (allGroupUserIDs != null && allGroupUserIDs.Any())
                 {

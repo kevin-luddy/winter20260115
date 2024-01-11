@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog.Ui.Web.Authorization;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2024 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace IES.Core
 {
+	using Microsoft.AspNetCore.Http;
+	using Microsoft.Extensions.DependencyInjection;
+	using Serilog.Ui.Web.Authorization;
+
 	public class CustomAuthorizeFilter : IUiAuthorizationFilter
 	{
 		/// <summary>
