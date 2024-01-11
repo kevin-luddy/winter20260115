@@ -135,7 +135,6 @@ namespace IES.DataBridge.ModelViews
 		/// <summary>
 		/// Text block content.. RTE
 		/// </summary>
-		// TODO TIW [AllowHtml]
 		[DisplayFormat(ConvertEmptyStringToNull = false)]
 		public string TextContent { get; set; }
 

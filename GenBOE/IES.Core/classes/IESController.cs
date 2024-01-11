@@ -6,19 +6,18 @@
 
 namespace IES.Core
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Net;
-    using System.Text;
-    using System.Web;
-    using Exceptions;
-    using System.Diagnostics;
-	using Microsoft.Extensions.Logging;
+	using System;
+	using System.Collections;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Net;
+	using System.Text;
+	using System.Web;
+	using Exceptions;
 	using Microsoft.AspNetCore.Mvc;
-	using Microsoft.AspNetCore.Mvc.Filters;
 	using Microsoft.AspNetCore.Mvc.Controllers;
+	using Microsoft.AspNetCore.Mvc.Filters;
+	using Microsoft.Extensions.Logging;
 
 	public class IESController : ControllerBase, IActionFilter
 	{

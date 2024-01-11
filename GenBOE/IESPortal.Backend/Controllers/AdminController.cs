@@ -148,8 +148,8 @@ namespace IESPortal.Backend.Controllers
                 scope.Complete();
             }
 
-			return this.Ok(); // TODO TIW this.Json(new { Status = true });
-        }
+            return new JsonResult(new { Status = true }); // TEST TODO TIW  this.Json(new { Status = true });
+		}
 
         /// <summary>
         /// Saves the specified banner.
@@ -276,8 +276,8 @@ namespace IESPortal.Backend.Controllers
 
             this.adminControllerLogic.FixPickListErrors(pickListType);
 
-            return this.Ok(); // TODO TIW this.Json(true);
-        }
+            return new JsonResult(true); // TEST TODO TIW this.Json(true);
+		}
 
 		/// <summary>
 		/// Save method for Pick List changes
@@ -311,7 +311,7 @@ namespace IESPortal.Backend.Controllers
 
             this.adminControllerLogic.SavePickListItems(pickListType, dataToSave);
 
-            return this.Ok(); // TODO TIW this.Json(true);
-        }
+            return new JsonResult(true); // TEST TODO TIW this.Json(true);
+		}
     }
 }

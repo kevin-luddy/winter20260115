@@ -5,6 +5,7 @@ namespace IES.Core
 	using System;
 	using System.Security.Principal;
 	using HealthChecks.UI.Client;
+	using IES.Core.Exceptions;
 	using IES.Core.Logging;
 	using Microsoft.AspNetCore.Authentication.Negotiate;
 	using Microsoft.AspNetCore.Authorization;
@@ -182,75 +183,6 @@ namespace IES.Core
 
 			Log.Logger = config.CreateLogger();
 			host.UseSerilog(Log.Logger);
-
-			//host.UseSerilog((context, LoggerConfiguration) =>
-			//{
-			//	LoggerConfiguration
-			//	.ReadFrom.Configuration(configuration, new ConfigurationReaderOptions(DependencyContext.Default) { SectionName = "LoggerConfig", FormatProvider = null })
-			//	.Enrich.FromLogContext()
-			//	.Enrich.WithMachineName()
-			//	.Enrich.WithProcessId()
-			//	.Enrich.WithThreadId()
-			//	.Enrich.With<ApplicationNameEnricher>()
-			//	.WriteTo.Console(
-			//		outputTemplate: "{Level} {Timestamp:yyyy-MM-dd HH:mm:ss.fff},{UserNTID},{Message},{MachineName},{ThreadId},{ApplicationName},{CorrelationId}{NewLine}"
-			//	) //Serilog.Events.LogEventLevel.Information)
-			//	  .WriteTo.Logger(l => l
-			//	  .Filter.ByIncludingOnly(l => l.Level == Serilog.Events.LogEventLevel.Verbose)
-			//		.WriteTo.File(
-			//			path: "logs/log-.csv",
-			//			outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff},{UserNTID},{Message},{MachineName},{ThreadId},{ApplicationName},{CorrelationId}{NewLine}",
-			//			fileSizeLimitBytes: 20000000,
-			//			buffered: false,
-			//			buffered: true,
-			//			flushToDiskInterval: TimeSpan.FromSeconds(60),
-			//			rollingInterval: RollingInterval.Day,
-			//			rollOnFileSizeLimit: true,
-			//			retainedFileCountLimit: 20,
-			//			retainedFileTimeLimit: TimeSpan.FromDays(31)
-			//	)
-			//	);
-
-			//	if (logToDb)
-			//	{
-			//		ColumnOptions columnOptions = new()
-			//		{
-			//			DisableTriggers = true,
-			//			ClusteredColumnstoreIndex = false,
-			//		};
-			//		columnOptions.Store.Remove(StandardColumn.MessageTemplate);
-			//		columnOptions.Store.Add(StandardColumn.LogEvent);
-			//		columnOptions.AdditionalColumns = new List<SqlColumn>{
-			//		new SqlColumn("CorrelationId", System.Data.SqlDbType.VarChar, true, 32),
-			//		new SqlColumn("UserNTID", System.Data.SqlDbType.VarChar, true, 50),
-			//		new SqlColumn("MachineName", System.Data.SqlDbType.VarChar, true, 50),
-			//		new SqlColumn("ApplicationName", System.Data.SqlDbType.VarChar, true, 50)
-			//	};
-
-			//		columnOptions.Properties.OmitElementIfEmpty = true;
-			//		columnOptions.TimeStamp.ConvertToUtc = true;
-
-			//		LoggerConfiguration.WriteTo.MSSqlServer(
-			//			restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-			//			connectionString: connectionString,
-			//			sinkOptions: new MSSqlServerSinkOptions() { SchemaName = "dbo", TableName = "_Logs", AutoCreateSqlTable = true },
-			//			columnOptions: columnOptions);
-
-			//		services.AddSerilogUi(options =>
-			//		  options.UseSqlServer(connectionString, "_Logs"));
-			//	}
-
-			//	if (logToSplunk)
-			//	{
-			//		LoggerConfiguration.WriteTo.EventCollector(
-			//			restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-			//			splunkHost: configuration["Splunk:Host"],
-			//			uriPath: configuration["Splunk:Uri"],
-			//			eventCollectorToken: configuration["Splunk:Token"],
-			//			sourceType: configuration["Splunk:SourceType"],
-			//			index: configuration["Splunk:Index"]);
-			//	}
-			//});
 		}
 
 		/// <summary>
@@ -295,6 +227,8 @@ namespace IES.Core
 			{
 				app.UseDeveloperExceptionPage();
 			}
+
+			app.ConfigureExceptionHandler();
 
 			app.UseSwagger();
 			app.UseSwaggerUI();

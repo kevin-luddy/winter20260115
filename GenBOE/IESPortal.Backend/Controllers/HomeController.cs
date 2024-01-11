@@ -6,18 +6,14 @@
 
 namespace IESPortal.Backend.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Configuration;
-    using IES.ActionLogic.Common;
-    using IES.Core;
-    using IES.Core.Exceptions;
-    using IES.DataBridge.Loaders;
-    using IES.DataBridge.ModelViews;
+	using System;
+	using IES.ActionLogic.Common;
+	using IES.Core;
+	using IES.DataBridge.Loaders;
+	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
-	// TODO TIW [IES.Core.Exceptions.HandleError]
 	[ApiController, Authorize, Route("api/Home")]
 	public class HomeController : ControllerBase
     {
