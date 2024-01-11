@@ -7,13 +7,12 @@
 
 namespace IES.Core.Exceptions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.Serialization;
-    using System.Security.Permissions;
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Runtime.Serialization;
 
-    [Serializable]
+	[Serializable]
     [ExcludeFromCodeCoverage]
     public class ValidationException : Exception
     {
@@ -87,7 +86,6 @@ namespace IES.Core.Exceptions
 			this.ValidationList = new List<ValidationMessage>();
         }
 
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)

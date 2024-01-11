@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Security.Permissions" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\IES.ActionLogic.Core\IES.ActionLogic.Core.csproj" />
     <ProjectReference Include="..\IES.Core\IES.Core.csproj" />
   </ItemGroup>
