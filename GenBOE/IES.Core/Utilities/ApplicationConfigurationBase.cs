@@ -108,6 +108,7 @@ namespace IES.Core
 		{
 			bool logToDb = configuration.GetValue<bool>("LoggerConfig:LogIntoDb");
 			bool logToSplunk = configuration.GetValue<bool>("LoggerConfig:LogIntoSplunk");
+			bool logToFile = configuration.GetValue<bool>("LoggerConfig:LogIntoFile");
 			LoggerConfiguration config = new LoggerConfiguration()
 				.ReadFrom.Configuration(configuration, new ConfigurationReaderOptions(DependencyContext.Default) { SectionName = "LoggerConfig", FormatProvider = null })
 				.Enrich.FromLogContext()
@@ -117,22 +118,27 @@ namespace IES.Core
 				.Enrich.With<ApplicationNameEnricher>()
 				.WriteTo.Console(
 					outputTemplate: "{Level} {Timestamp:HH:mm:ss.fff} {CorrelationId} {UserNTID} {Message}{NewLine}"
-				) 
-				  .WriteTo.Logger(l => l
-					.Filter.ByIncludingOnly(l => l.Level == Serilog.Events.LogEventLevel.Verbose)
-					.WriteTo.File(
-						path: "logs/log-.csv",
-						outputTemplate: "{Timestamp:HH:mm:ss.fff},{SourceContext},{CorrelationId},{UserNTID},{Message}{NewLine}",
-						fileSizeLimitBytes: 20000000,
-						//buffered: true,
-						//flushToDiskInterval: TimeSpan.FromSeconds(60),
-						rollingInterval: RollingInterval.Day,
-						rollOnFileSizeLimit: true,
-						retainedFileCountLimit: 20,
-						retainedFileTimeLimit: TimeSpan.FromDays(31),
-						hooks: new HeaderWriter("Timestamp,Source Context,Correlation Id,User NtId,Message")
-				)
-			);
+				);
+
+			if (logToFile)
+			{
+				config
+					.WriteTo.Logger(l => l
+						.Filter.ByIncludingOnly(l => l.Level == Serilog.Events.LogEventLevel.Verbose)
+						.WriteTo.File(
+							path: "logs/log-.csv",
+							outputTemplate: "{Timestamp:HH:mm:ss.fff},{SourceContext},{CorrelationId},{UserNTID},{Message}{NewLine}",
+							fileSizeLimitBytes: 20000000,
+							//buffered: true,
+							//flushToDiskInterval: TimeSpan.FromSeconds(60),
+							rollingInterval: RollingInterval.Day,
+							rollOnFileSizeLimit: true,
+							retainedFileCountLimit: 20,
+							retainedFileTimeLimit: TimeSpan.FromDays(31),
+							hooks: new HeaderWriter("Timestamp,Source Context,Correlation Id,User NtId,Message")
+						)
+					);
+			}
 
 			if (logToDb)
 			{
