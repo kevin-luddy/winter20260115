@@ -1,83 +1,159 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace IESPortal.Backend.Controllers
 {
 	using System;
+	using System.Collections.Generic;
 	using IES.ActionLogic.Common;
 	using IES.Core;
+	using IES.Core.Exceptions;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using Microsoft.AspNetCore.Authorization;
+	using IESPortal.Backend.Models;
 	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.Extensions.Configuration;
+	using Microsoft.Extensions.Logging;
 
-	[ApiController, Authorize, Route("api/Home")]
-	public class HomeController : ControllerBase
-    {
+	[Route("api/Home")]
+	public class HomeController : IESController
+	{
         /// <summary>
         /// The banner mediator
         /// </summary>
-        private BannerMediator bannerMediator;
+        private readonly BannerMediator bannerMediator;
 
-        /// <summary>
-        /// The security information.
-        /// </summary>
-        private ISecurityInformation securityInformation;
+		/// <summary>
+		/// The security information.
+		/// </summary>
+		private ISecurityInformation securityInformation;
 
-        /// <summary>
-        /// Offline Application loader
-        /// </summary>
-        private IOfflineApplicationLoader offlineApplicationLoader;
+		/// <summary>
+		/// Offline Application loader
+		/// </summary>
+		private readonly IOfflineApplicationLoader offlineApplicationLoader;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HomeController"/> class.
-        /// </summary>
-        /// <param name="securityInformation">The security information.</param>
-        /// <param name="bannerMediator">The banner mediator.</param>
-        public HomeController(ISecurityInformation securityInformation, BannerMediator bannerMediator, IOfflineApplicationLoader offlineApplicationLoader)
+		/// <summary>
+		/// Configuration
+		/// </summary>
+		private readonly IConfiguration configuration;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HomeController"/> class.
+		/// </summary>
+		/// <param name="securityInformation">The security information.</param>
+		/// <param name="bannerMediator">The banner mediator.</param>
+		public HomeController(ILogger<HomeController> logger, IConfiguration configuration, ISecurityInformation securityInformation, BannerMediator bannerMediator, IOfflineApplicationLoader offlineApplicationLoader) 
+            : base(logger)
         {
-            this.securityInformation = securityInformation;
+			this.securityInformation = securityInformation;
+            this.configuration = configuration;
             this.bannerMediator = bannerMediator;
             this.offlineApplicationLoader = offlineApplicationLoader;
         }
 
-		///// <summary>
-		///// Returns the Header for other Applications.
-		///// </summary>
-		///// <param name="active">The active.</param>
-		///// <returns>The header only for applications.</returns>
-		//public IActionResult HeaderInternal(string active)
-		//{
-		//    ViewBag.ActiveTab = active;
-		//    ViewBag.IsAdmin = this.securityInformation.IsIESPortalAdminUser(this.securityInformation.ActiveUserNTID);
+        /// <summary>
+        /// Gets the banner for this application.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("[action]")]
+		public ICollection<BannerModelView> GetBanners(string active)
+        {
+            if (string.IsNullOrWhiteSpace(active))
+            {
+                throw new GenValidationException("The application was not specified when retrieving banners.");
+            }
 
-		//    this.SetUrls();
-		//    return View();
-		//}
+            // Retrieve Banner(s) for this application
+            ICollection<BannerModelView> banners = this.bannerMediator.GetAllActiveForApps(active);
 
-		///// <summary>
-		///// Gets the banner for this application.
-		///// </summary>
-		///// <returns></returns>
-		//public IActionResult Banner(string active)
-		//{
-		//    if (string.IsNullOrWhiteSpace(active))
-		//    {
-		//        throw new GenValidationException("The application was not specified when retrieving banners.");
-		//    }
+            return banners;
+        }
 
-		//    ViewBag.IsMultipleApps = active.Contains(",");
-		//    // Retrieve Banner(s) for this application
-		//    ICollection<BannerModelView> banners = this.bannerMediator.GetAllActiveForApps(active);
+        [HttpGet("[action]")]
+        public ICollection<HeaderLink> GetHeaderLinks(string app)
+        {
+            List<HeaderLink> headerLinks = new List<HeaderLink>
+            {
+                new HeaderLink
+                {
+                    Name = "IES",
+                    Url = configuration["IESUrl"],
+                    IsActive = app == "IES"
+                },
+				new HeaderLink
+				{
+					Name = "PTM",
+					Url = configuration["PTMUrl"],
+					IsActive = app == "PTM"
+				},
+				new HeaderLink
+				{
+					Name = "BOE",
+					Url = configuration["BOEUrl"],
+					IsActive = app == "BOE"
+				},
+				new HeaderLink
+				{
+					Name = "ACV",
+					Url = configuration["ACVUrl"],
+					IsActive = app == "ACV"
+				},
+				new HeaderLink
+				{
+					Name = "PRO PRICER",
+					Url = configuration["PPUrl"],
+					IsNewWindow = true
+				},
+				new HeaderLink
+				{
+					Name = "NLF",
+					Url = configuration["NLFUrl"],
+					IsActive = app == "NLF"
+				},
+				new HeaderLink
+				{
+					Name = "RDM",
+					Url = configuration["RDMUrl"],
+					IsActive = app == "RDM"
+				},
+				new HeaderLink
+				{
+					Name = "RDSB",
+					Url = configuration["RDSBUrl"],
+					IsActive = app == "RDSB"
+				},
+				new HeaderLink
+				{
+					Name = "RPM",
+					Url = configuration["RPMUrl"],
+					IsActive = app == "RPM"
+				},
+				new HeaderLink
+				{
+					Name = "eEPP",
+					Url = configuration["EEPPUrl"],
+					IsActive = app == "eEPP"
+				},
+			};
 
-		//    return View(banners);
-		//}
+			if (this.securityInformation.IsIESPortalAdminUser(this.securityInformation.ActiveUserNTID))
+			{
+				headerLinks.Add(new HeaderLink
+				{
+					Name = "Admin",
+					Url = System.IO.Path.Combine(configuration["AdminUrl"], "Admin")
+				});
+			}
 
-		[HttpGet("[action]")]
-		public OfflineApplicationModelView AppOffline(string app)
+			return headerLinks;
+        }
+
+        [HttpGet("[action]")]
+		public OfflineApplicationModelView GetAppOffline(string app)
         {
             if(string.IsNullOrEmpty(app))
             {
@@ -88,34 +164,6 @@ namespace IESPortal.Backend.Controllers
 
             return appData;
         }
-
-        ///// <summary>
-        ///// Returns the Header for this IES Portal.
-        ///// </summary>
-        ///// <returns>The header.</returns>
-        //public IActionResult Header()
-        //{
-        //    return View();
-        //}
-
-        ///// <summary>
-        ///// Gets the banner for this application.
-        ///// </summary>
-        ///// <returns></returns>
-        //public IActionResult BannerInternal(string active)
-        //{
-        //    if (string.IsNullOrWhiteSpace(active))
-        //    {
-        //        throw new GenValidationException("The application was not specified when retrieving banners.");
-        //    }
-
-        //    ViewBag.IsMultipleApps = active.Contains(",");
-        //    // Retrieve Banner(s) for this application
-        //    ICollection<BannerModelView> banners = this.bannerMediator.GetAllActiveForApps(active);
-
-        //    return View(banners);
-        //}
-
   //      private void SetUrls()
   //      {
   //          ViewBag.BOEUrl = ConfigurationManager.AppSettings["BOEUrl"];

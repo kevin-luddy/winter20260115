@@ -2,12 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="logs\log-*.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="parameters.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="parameters.xml" />
   </ItemGroup>
 
   <ItemGroup>

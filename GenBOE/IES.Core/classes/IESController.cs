@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -14,11 +14,14 @@ namespace IES.Core
 	using System.Text;
 	using System.Web;
 	using Exceptions;
+	using Microsoft.AspNetCore.Authentication.Negotiate;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Mvc.Controllers;
 	using Microsoft.AspNetCore.Mvc.Filters;
 	using Microsoft.Extensions.Logging;
 
+    [ApiController, Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 	public class IESController : ControllerBase, IActionFilter
 	{
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -40,7 +40,13 @@ namespace IES.Core
 
             if (string.IsNullOrEmpty(value))
             {
-                value = ConfigurationManager.AppSettings[key];
+                // try to pull from appsettings.json
+                value = ApplicationConfigurationBase.Configuration[key];
+                if (string.IsNullOrEmpty(value))
+                {
+                    // try to pull from app/web.config
+                    value = ConfigurationManager.AppSettings[key];
+                }
             }
 
             return value;

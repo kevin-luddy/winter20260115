@@ -3,8 +3,10 @@
 namespace IES.Core
 {
 	using System;
+	using System.Diagnostics;
 	using System.Security.Principal;
 	using HealthChecks.UI.Client;
+	using IES.Core.Authorization;
 	using IES.Core.Exceptions;
 	using IES.Core.Logging;
 	using Microsoft.AspNetCore.Authentication.Negotiate;
@@ -31,9 +33,14 @@ namespace IES.Core
 	public class ApplicationConfigurationBase
 	{
 		/// <summary>
+		/// Configuration
+		/// </summary>
+		public static IConfiguration Configuration { get; set; }
+
+		/// <summary>
 		/// Adds Authentication to the site
 		/// </summary>
-		public void AddWindowsAuthentication(IServiceCollection services)
+		public void AddWindowsAuthentication(IServiceCollection services, IConfiguration configuration)
 		{
 			services.AddAuthentication(options =>
 			{
@@ -56,12 +63,23 @@ namespace IES.Core
 				//	.RequireAuthenticatedUser()
 				//	.Build());
 
-				// this lets us put [Authorize(Policy = "OnlyNegotiate")] onto Controller
-				AuthorizationPolicyBuilder negotiatePolicyBuilder = new(NegotiateDefaults.AuthenticationScheme);
-				options.AddPolicy("OnlyNegotiate", negotiatePolicyBuilder
-					.RequireAuthenticatedUser()
-					.Build());
+				//// this lets us put [Authorize(Policy = "OnlyNegotiate")] onto Controller
+				//AuthorizationPolicyBuilder negotiatePolicyBuilder = new(NegotiateDefaults.AuthenticationScheme);
+				//options.AddPolicy("OnlyNegotiate", negotiatePolicyBuilder
+				//	.RequireAuthenticatedUser()
+				//	.Build());
+
+				options.AddPolicy("OnlyNegotiate", policy =>
+				{
+					policy.AuthenticationSchemes.Add(NegotiateDefaults.AuthenticationScheme);
+					policy.RequireAuthenticatedUser();
+					string allowedRoles = configuration["AllowedRoles"] ?? string.Empty;
+					policy.Requirements.Add(new GroupsCheckRequirement(allowedRoles));
+				});
+
 			});
+
+			services.AddScoped<IAuthorizationHandler, GroupsCheckHandler>();
 		}
 
 		/// <summary>
@@ -71,20 +89,39 @@ namespace IES.Core
 		/// <param name="services">Services Collection</param>
 		/// <param name="configuration">Configuration</param>
 		/// <param name="connectionString">Connection string used for Serilog logging to DB if turned on</param>
-		public void ConfigureBasics(IHostBuilder host, IServiceCollection services, IConfiguration configuration, string connectionString)
+		public void ConfigureBasics<T>(WebApplicationBuilder builder, string connectionString) where T : class
 		{
-			services.AddMemoryCache();
-			services.AddHttpContextAccessor();
-			services.AddHttpClient();
-			services.AddTransient<IPrincipal>(
+			builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
+			//builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+			//{
+			//	config.Sources.Clear();
+			//	config.SetBasePath(builder.Environment.ContentRootPath)
+			//												.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+			//												.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+			//												.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+			if (Directory.Exists("/etc/config-volume"))
+			{
+				builder.Configuration.AddJsonFile("/etc/config-volume/settings", false, true);
+			}
+			else
+			{
+				builder.Configuration.AddUserSecrets<T>();
+			}
+			//});
+
+			builder.Services.AddMemoryCache();
+			builder.Services.AddHttpContextAccessor();
+			builder.Services.AddHttpClient();
+			builder.Services.AddTransient<IPrincipal>(
 				provider => provider.GetService<IHttpContextAccessor>()?.HttpContext?.User);
 
-			this.ConfigureSerilog(host, services, configuration, connectionString);
-			services.AddSingleton(Log.Logger);
-			this.ConfigureHealthChecks(services, connectionString);
-			this.ConfigureCors(services);
+			this.ConfigureSerilog(builder.Host, builder.Services, builder.Configuration, builder.Configuration.GetConnectionString(connectionString));
+			builder.Services.AddSingleton(Log.Logger);
+			this.ConfigureHealthChecks(builder.Services, connectionString);
+			this.ConfigureCors(builder.Services);
 
-			services.AddControllers().AddJsonOptions(options =>
+			builder.Services.AddControllers().AddJsonOptions(options =>
 			{
 				options.JsonSerializerOptions.PropertyNamingPolicy = null;
 			}).AddNewtonsoftJson(x =>
@@ -94,8 +131,8 @@ namespace IES.Core
 			});
 
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-			services.AddEndpointsApiExplorer();
-			services.AddSwaggerGen();
+			builder.Services.AddEndpointsApiExplorer();
+			builder.Services.AddSwaggerGen();
 		}
 
 		/// <summary>
@@ -219,11 +256,13 @@ namespace IES.Core
 		/// <summary>
 		/// Configures the App Builder
 		/// </summary>
-		/// <param name="app">App Builder</param>
-		/// <param name="env">Web Host Environment</param>
-		public void ConfigureAppBuilder(IApplicationBuilder app, IWebHostEnvironment env)
+		/// <param name="builder">Web app builder</param>
+		public WebApplication ConfigureAppBuilder(WebApplicationBuilder builder)
 		{
-			if (!env.IsProduction())
+			WebApplication app = builder.Build();
+			Configuration = app.Configuration;
+
+			if (!app.Environment.IsProduction())
 			{
 				app.UseDeveloperExceptionPage();
 			}
@@ -244,7 +283,7 @@ namespace IES.Core
 			app.UseMiddleware<UserLoggingMiddleware>();
 			app.UseMiddleware<CorrelationMiddleware>();
 
-			if (env.IsDevelopment())
+			if (app.Environment.IsDevelopment())
 			{
 				app.UseSerilogUi(options =>
 				{
@@ -266,6 +305,17 @@ namespace IES.Core
 
 				await next();
 			});
+
+			Serilog.Debugging.SelfLog.Enable(msg =>
+			{
+				Debug.Print(msg);
+				// Debugger.Break();  // used for debugging issues with serilog
+			});
+
+			IHostApplicationLifetime lifetime = app.Lifetime;
+			lifetime.ApplicationStopped.Register(() => Serilog.Log.CloseAndFlush());
+
+			return app;
 		}
 
 		/// <summary>

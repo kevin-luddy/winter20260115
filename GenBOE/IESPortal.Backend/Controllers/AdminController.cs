@@ -24,7 +24,7 @@ namespace IESPortal.Backend.Controllers
 	/// <summary>
 	/// The Admin Controller for Admin functions
 	/// </summary>
-	[ApiController, Authorize, Route("api/Admin")]
+	[Route("api/Admin")]
 	public class AdminController : IESController
     {
 

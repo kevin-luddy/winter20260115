@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ namespace IES.Core
 	using IES.Core.Exceptions;
 	using System.Net.Http.Headers;
 	using Microsoft.Extensions.Logging;
+	using Microsoft.Extensions.Configuration;
 
 	public class TokenService : ITokenService, IDisposable
 	{
@@ -57,13 +58,13 @@ namespace IES.Core
 		/// ctor
 		/// </summary>
 		/// <param name="memoryCache">Memory Cache</param>
-		public TokenService(ILogger<TokenService> logger, ICache memoryCache)
+		public TokenService(ILogger<TokenService> logger, ICache memoryCache, IConfiguration configuration)
 		{
 			this._log = logger;
 			this.cache = memoryCache;
-			string authority = ConfigurationManager.AppSettings["oAuthDomain"];
-			this.clientId = ConfigurationManager.AppSettings["oAuthIESClientId"];
-			this.clientSecret = ConfigurationManager.AppSettings["oAuthIESClientSecret"];
+			string authority = configuration["Federation:Authority"];
+			this.clientId = configuration["Federation:ClientId"];
+			this.clientSecret = configuration["Federation:Secret"];
 			this._client.BaseAddress = new Uri(authority);
 			_client.DefaultRequestHeaders.Add("cache-control", "no-cache");
 		}

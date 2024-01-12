@@ -1,21 +1,16 @@
-using System.Diagnostics;
 using GenBOE.DataBridge.DTO;
 using GenTRAC.DataBridge.DTO;
 using IES.ActionLogic.Common;
 using IES.ActionLogic.ControllerLogic;
 using IES.Core;
-using IES.Core.Exceptions;
 using IES.DataBridge.Loaders;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ApplicationConfigurationBase();
-
-config.ConfigureBasics(builder.Host, builder.Services, builder.Configuration, builder.Configuration.GetConnectionString("IESEntities"));
-config.AddWindowsAuthentication(builder.Services);
+config.ConfigureBasics<Program>(builder, "IESEntities");
+config.AddWindowsAuthentication(builder.Services, builder.Configuration);
 
 // Add Custom Services
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
@@ -39,18 +34,5 @@ builder.Services.AddTransient<ProposalClassLoader>();
 builder.Services.AddTransient<ContractTypeLoader>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-var app = builder.Build();
-
-config.ConfigureAppBuilder(app, app.Environment);
-
-Serilog.Debugging.SelfLog.Enable(msg =>
-{
-	Debug.Print(msg);
-	// Debugger.Break();  // used for debugging issues with serilog
-});
-
-IHostApplicationLifetime lifetime = app.Lifetime;
-
-lifetime.ApplicationStopped.Register(() => Serilog.Log.CloseAndFlush());
-
+var app = config.ConfigureAppBuilder(builder);
 app.Run();

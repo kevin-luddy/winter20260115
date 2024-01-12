@@ -1,24 +1,24 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace IES.Core
 {
-    using System;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Security.Principal;
-	using DocumentFormat.OpenXml.InkML;
+	using System;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using System.Security.Principal;
 	using Microsoft.AspNetCore.Http;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// The security authorizations a user can be
 	/// allowed for a given page, Role
 	/// combination
 	/// </summary>
-    public enum SecurityAuthorization
+	public enum SecurityAuthorization
     {
         /// <summary>
         /// Uninitialized/default value
