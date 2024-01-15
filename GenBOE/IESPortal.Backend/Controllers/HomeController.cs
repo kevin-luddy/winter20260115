@@ -58,7 +58,8 @@ namespace IESPortal.Backend.Controllers
         /// <summary>
         /// Gets the banner for this application.
         /// </summary>
-        /// <returns></returns>
+		/// <param name="active">Comma-separated list of application names</param>
+        /// <returns>Banners for an application</returns>
         [HttpGet("[action]")]
 		public ICollection<BannerModelView> GetBanners(string active)
         {
@@ -73,34 +74,34 @@ namespace IESPortal.Backend.Controllers
             return banners;
         }
 
+		/// <summary>
+		/// Get Header Links
+		/// </summary>
+		/// <returns>Header Links</returns>
         [HttpGet("[action]")]
-        public ICollection<HeaderLink> GetHeaderLinks(string app)
+        public ICollection<HeaderLink> GetHeaderLinks()
         {
             List<HeaderLink> headerLinks = new List<HeaderLink>
             {
                 new HeaderLink
                 {
                     Name = "IES",
-                    Url = configuration["IESUrl"],
-                    IsActive = app == "IES"
+                    Url = configuration["IESUrl"]
                 },
 				new HeaderLink
 				{
 					Name = "PTM",
-					Url = configuration["PTMUrl"],
-					IsActive = app == "PTM"
+					Url = configuration["PTMUrl"]
 				},
 				new HeaderLink
 				{
 					Name = "BOE",
-					Url = configuration["BOEUrl"],
-					IsActive = app == "BOE"
+					Url = configuration["BOEUrl"]
 				},
 				new HeaderLink
 				{
 					Name = "ACV",
-					Url = configuration["ACVUrl"],
-					IsActive = app == "ACV"
+					Url = configuration["ACVUrl"]
 				},
 				new HeaderLink
 				{
@@ -111,32 +112,27 @@ namespace IESPortal.Backend.Controllers
 				new HeaderLink
 				{
 					Name = "NLF",
-					Url = configuration["NLFUrl"],
-					IsActive = app == "NLF"
+					Url = configuration["NLFUrl"]
 				},
 				new HeaderLink
 				{
 					Name = "RDM",
-					Url = configuration["RDMUrl"],
-					IsActive = app == "RDM"
+					Url = configuration["RDMUrl"]
 				},
 				new HeaderLink
 				{
 					Name = "RDSB",
-					Url = configuration["RDSBUrl"],
-					IsActive = app == "RDSB"
+					Url = configuration["RDSBUrl"]
 				},
 				new HeaderLink
 				{
 					Name = "RPM",
-					Url = configuration["RPMUrl"],
-					IsActive = app == "RPM"
+					Url = configuration["RPMUrl"]
 				},
 				new HeaderLink
 				{
 					Name = "eEPP",
-					Url = configuration["EEPPUrl"],
-					IsActive = app == "eEPP"
+					Url = configuration["EEPPUrl"]
 				},
 			};
 

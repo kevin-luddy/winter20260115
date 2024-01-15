@@ -4,6 +4,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
+    <Configurations>Debug;Release;ReleaseTFSCore</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

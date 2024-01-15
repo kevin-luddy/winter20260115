@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>disable</Nullable>
 	<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+	<Configurations>Debug;Release;ReleaseTFSCore</Configurations>
   </PropertyGroup>
 
 	<ItemGroup>
