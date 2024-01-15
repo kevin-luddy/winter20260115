@@ -171,7 +171,11 @@
 	<parameter name="EnableSAP" description="doesn't matter" defaultvalue="__EnableSAP__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableSAP']/@value">
 		</parameterentry>
-	</parameter>	
+	</parameter>
+	<parameter name="EnableBRC" description="doesn't matter" defaultvalue="__EnableBRC__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableBRC']/@value">
+		</parameterentry>
+	</parameter>
 	<!--system.web-->
   <parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
