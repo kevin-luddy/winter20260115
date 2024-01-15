@@ -72,6 +72,11 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_SECRET_">
 		</parameterentry>
 	</parameter>
+	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities2__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_ENTITIES_">
+		</parameterentry>
+	</parameter>
 	<parameter name="SplunkHost" description="doesn't matter" defaultvalue="__Splunk_Host__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_HOST_">
 		</parameterentry>
@@ -86,5 +91,14 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
 		</parameterentry>
 	</parameter>
-
+	
+	<!--app.config-->
+	<parameter name="ActiveDirectoryPath" description="doesn't matter" defaultvalue="__ActiveDirectoryPath__" tags="">
+		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__ActiveDirectoryPath__" tags="">
+		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
+		</parameterentry>
+	</parameter>
 </parameters>
