@@ -15,12 +15,12 @@ namespace IES.Common.Core.Models
 		/// <summary>
 		/// Adjacency lists
 		/// </summary>
-		IDictionary<T, List<T>> adjacencyLists;
+		private readonly IDictionary<T, List<T>> adjacencyLists;
 
 		/// <summary>
 		/// Table to track which vertices were visited
 		/// </summary>
-		IDictionary<T, bool> visited;
+		private readonly IDictionary<T, bool> visited;
 
 		/// <summary>
 		/// Constructor

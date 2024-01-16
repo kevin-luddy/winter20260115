@@ -8,11 +8,11 @@ namespace GenBOE.DataBridge.Core.Picklists
 {
 	using System.Collections.Generic;
 	using System.Linq;
+	using GenBOE.Models;
 	using IES.Common.Core;
 	using IES.Common.Core.PickList;
-	using GenBOE.Models;
-	using Microsoft.Extensions.Logging;
 	using IES.Common.Core.Utilities;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// ContractTypeLULoader

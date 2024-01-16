@@ -36,7 +36,7 @@ namespace IES.Common.Core
 		/// </summary>
 		public IESController(ILogger logger)
 		{
-			this.log = logger;
+			log = logger;
 		}
 
 		/// <summary>
@@ -71,9 +71,9 @@ namespace IES.Common.Core
 
 			ICollection<ValidationMessage> validationMessages = new Collection<ValidationMessage>();
 
-			string cleanedText = this.DoAnExtraScrubbingForRTEInput(htmlDecoded);
+			string cleanedText = DoAnExtraScrubbingForRTEInput(htmlDecoded);
 
-			string scrubbedHtml = HtmlAgilityPackUtilities.ScrubRichTextForSave(cleanedText, this.ConvertImageSrcAttribute, validationMessages);
+			string scrubbedHtml = HtmlAgilityPackUtilities.ScrubRichTextForSave(cleanedText, ConvertImageSrcAttribute, validationMessages);
 
 			return new ContentResult
 			{
@@ -112,7 +112,7 @@ namespace IES.Common.Core
 				}
 				catch (WebException webx)
 				{
-					this.log.LogWarning($"Could not retrieve image at \"{src}\".");
+					log.LogWarning($"Could not retrieve image at \"{src}\".");
 
 					StringBuilder sb = new StringBuilder();
 					sb.AppendFormat("Message = {0}", webx.Message);
@@ -124,7 +124,7 @@ namespace IES.Common.Core
 
 					string msg = sb.ToString();
 
-					this.log.LogError(webx, msg);
+					log.LogError(webx, msg);
 				}
 			}
 
@@ -141,8 +141,8 @@ namespace IES.Common.Core
 		{
 			string result = originalScrubbedText;
 
-			result = this.RemoveTextBasedOnStartAndEndString(result, "<script", "</script>");
-			result = this.RemoveTextBasedOnStartAndEndString(result, "<!--", "-->");
+			result = RemoveTextBasedOnStartAndEndString(result, "<script", "</script>");
+			result = RemoveTextBasedOnStartAndEndString(result, "<!--", "-->");
 
 			return result;
 		}
@@ -189,9 +189,9 @@ namespace IES.Common.Core
 		/// <returns>Text file</returns>
 		protected IActionResult CreateTextFileWithErrorMessage(params string[] errorMessages)
 		{
-			this.Response.Headers.Clear();
-			this.Response.ContentType = "text/plain";
-			this.Response.Headers.Add("Content-Disposition", new Microsoft.Extensions.Primitives.StringValues("attachment;filename=error.txt"));
+			Response.Headers.Clear();
+			Response.ContentType = "text/plain";
+			Response.Headers.Add("Content-Disposition", new Microsoft.Extensions.Primitives.StringValues("attachment;filename=error.txt"));
 
 			byte[] newline = Encoding.ASCII.GetBytes("\r\n");
 
@@ -200,12 +200,12 @@ namespace IES.Common.Core
 				foreach (string errorMessage in errorMessages)
 				{
 					byte[] errorContent = Encoding.ASCII.GetBytes(errorMessage);
-					this.Response.Body.Write(errorContent, 0, errorContent.Length);
-					this.Response.Body.Write(newline, 0, newline.Length);
+					Response.Body.Write(errorContent, 0, errorContent.Length);
+					Response.Body.Write(newline, 0, newline.Length);
 				}
 			}
 
-			this.Response.Body.Flush();
+			Response.Body.Flush();
 
 			return new EmptyResult();
 		}
@@ -225,13 +225,13 @@ namespace IES.Common.Core
 			}
 			else if (ConfigurationUtilities.GetAppSetting<bool>("LocalDebug"))
 			{
-				return this.CreateTextFileWithErrorMessage(ex.ToDisplayString());
+				return CreateTextFileWithErrorMessage(ex.ToDisplayString());
 			}
 			else
 			{
 				string supportLink = CommonUtilities.ServiceCentralLink();
 
-				return this.CreateTextFileWithErrorMessage(
+				return CreateTextFileWithErrorMessage(
 					$"An error has occurred.  This might be the result of invalid data.  If the data is valid, and the error persists, please create a ticket with IES Helpdesk at {supportLink}.");
 			}
 		}
@@ -250,8 +250,8 @@ namespace IES.Common.Core
 				throw new ArgumentNullException(nameof(functionName));
 			}
 
-			StopwatchTimer sw = new StopwatchTimer(functionName, this.log);
-			this.HttpContext.Items["Stopwatch"] = sw;
+			StopwatchTimer sw = new StopwatchTimer(functionName, log);
+			HttpContext.Items["Stopwatch"] = sw;
 		}
 
 		/// <summary>
@@ -267,10 +267,10 @@ namespace IES.Common.Core
 				throw new ArgumentNullException(nameof(functionName));
 			}
 
-			StopwatchTimer sw = this.HttpContext.Items["Stopwatch"] as StopwatchTimer;
+			StopwatchTimer sw = HttpContext.Items["Stopwatch"] as StopwatchTimer;
 			if (sw != null)
 			{
-				this.HttpContext.Items.Remove("Stopwatch");
+				HttpContext.Items.Remove("Stopwatch");
 				sw.Dispose();
 			}
 		}
@@ -282,7 +282,7 @@ namespace IES.Common.Core
 			{
 				ControllerActionDescriptor descriptor = context.ActionDescriptor as ControllerActionDescriptor;
 				string functionName = descriptor?.ActionName;
-				this.StartAction(functionName);
+				StartAction(functionName);
 			}
 		}
 
@@ -293,7 +293,7 @@ namespace IES.Common.Core
 			{
 				ControllerActionDescriptor descriptor = context.ActionDescriptor as ControllerActionDescriptor;
 				string functionName = descriptor?.ActionName;
-				this.FinalizeAction(functionName);
+				FinalizeAction(functionName);
 			}
 		}
 	}

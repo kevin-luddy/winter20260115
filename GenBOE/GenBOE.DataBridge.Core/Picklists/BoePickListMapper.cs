@@ -20,17 +20,17 @@ namespace GenBOE.DataBridge.Core.Picklists
 		/// <summary>
 		/// The line of business loader
 		/// </summary>
-		private LineOfBusinessDataLoader lineOfBusinessLoader;
+		private readonly LineOfBusinessDataLoader lineOfBusinessLoader;
 
 		/// <summary>
 		/// LU Table Loader
 		/// </summary>
-		private ProposalClassLoader proposalClassLuLoader;
+		private readonly ProposalClassLoader proposalClassLuLoader;
 
 		/// <summary>
 		/// The contract type lu loader
 		/// </summary>
-		private ContractTypeLoader contractTypeLuLoader;
+		private readonly ContractTypeLoader contractTypeLuLoader;
 
 		#endregion
 

@@ -2,7 +2,7 @@
 {
 	using System;
 
-	interface IConfigurationUtilities
+	internal interface IConfigurationUtilities
 	{
 		/// <summary>
 		/// Retrieve a string value from AppSettings

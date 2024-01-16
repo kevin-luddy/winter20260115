@@ -27,13 +27,13 @@ namespace IES.Common.Core.Loaders
 		/// <summary>
 		/// The proxy for the cache itself
 		/// </summary>
-		private ICacheService _CacheProxy = null;
+		private readonly ICacheService _CacheProxy;
 
 		/// <summary>
 		/// Seconds to cache items in the cache.  -1 indicates infinite which will
 		/// allow .net to garbage collect as needed.
 		/// </summary>
-		private int _SecondsToCacheItems = -1;
+		private readonly int _SecondsToCacheItems = -1;
 
 		/// <summary>
 		/// Constructor

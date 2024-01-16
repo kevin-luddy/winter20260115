@@ -25,14 +25,14 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			Table = table;
-			Begin = this.getRangeBegin();
-			End = this.getRangeEnd();
+			Begin = getRangeBegin();
+			End = getRangeEnd();
 			SheetName = sheetName;
 			TableName = table.Name.Value;
-			RowBegin = this.getBeginningRow();
-			RowEnd = this.getEndingRow();
-			ColumnBegin = this.getBeginningColumn();
-			ColumnEnd = this.getEndingColumn();
+			RowBegin = getBeginningRow();
+			RowEnd = getEndingRow();
+			ColumnBegin = getBeginningColumn();
+			ColumnEnd = getEndingColumn();
 			ColumnBeginIndex = GetColumnNumber(ColumnBegin);
 			ColumnEndIndex = GetColumnNumber(ColumnEnd);
 		}

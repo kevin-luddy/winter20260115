@@ -1,7 +1,7 @@
 using GenBOE.DataBridge.Core.Picklists;
+using GenTRAC.DataBridge.Core.DTO.OrgData;
 using GenTRAC.DataBridge.Core.DTO.PickLists;
 using GenTRAC.DataBridge.Core.DTO.PickLists.Common;
-using GenTRAC.DataBridge.DTO;
 using IES.ActionLogic.Common;
 using IES.ActionLogic.ControllerLogic;
 using IES.Common.Core;

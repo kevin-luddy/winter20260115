@@ -4,11 +4,11 @@ namespace IES.Common.Core.Authorization
 {
 	public class GroupsCheckRequirement : IAuthorizationRequirement
 	{
-		public ICollection<string> groups;
+		public ICollection<string> Groups { get; private set; }
 
 		public GroupsCheckRequirement(string groups)
 		{
-			this.groups = new List<string>();
+			this.Groups = new List<string>();
 			IEnumerable<string> splitGroups = groups.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(g => g.ToLower());
 			foreach (string splitGroup in splitGroups)
 			{
@@ -19,7 +19,7 @@ namespace IES.Common.Core.Authorization
 					actualGroup = split.Last();
 				}
 
-				this.groups.Add(actualGroup);
+				this.Groups.Add(actualGroup);
 			}
 		}
 	}

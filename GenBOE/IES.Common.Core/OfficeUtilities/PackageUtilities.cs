@@ -76,7 +76,7 @@ namespace IES.Common.Core.OfficeUtilities
 				}
 				else
 				{
-					docBytes = new byte[0];
+					docBytes = Array.Empty<byte>();
 				}
 
 				mem.Write(docBytes, 0, (int)docBytes.Length);

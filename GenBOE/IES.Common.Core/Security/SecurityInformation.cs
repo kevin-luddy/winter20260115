@@ -511,67 +511,67 @@ namespace IES.Common.Core.Security
 		/// <summary>
 		/// Cache Object
 		/// </summary>
-		private ICacheService cache;
+		private readonly ICacheService cache;
 
 		/// <summary>
 		/// We are caching IsSubcontractor for 30 seconds.
 		/// </summary>
-		private int secondsToCacheIsSubcontractor = 30;
+		private readonly int secondsToCacheIsSubcontractor = 30;
 
 		/// <summary>
 		/// We are caching IsRdmAdminUser for 30 seconds.
 		/// </summary>
-		private int secondsToCacheIsRdmAdmin = 30;
+		private readonly int secondsToCacheIsRdmAdmin = 30;
 
 		/// <summary>
 		/// We are caching IsRdmCobraAdminUser for 30 seconds.
 		/// </summary>
-		private int secondsToCacheIsRdmCobraAdmin = 30;
+		private readonly int secondsToCacheIsRdmCobraAdmin = 30;
 
 		/// <summary>
 		/// We are caching IsRdmViewerUser for 30 seconds.
 		/// </summary>
-		private int secondsToCacheIsRdmViewer = 30;
+		private readonly int secondsToCacheIsRdmViewer = 30;
 
 		/// <summary>
 		/// We are caching IsIESPortalAdminUser for 5 minutes.
 		/// </summary>
-		private int secondsToCacheIsIESPortalAdmin = 300;
+		private readonly int secondsToCacheIsIESPortalAdmin = 300;
 
 		/// <summary>
 		/// We are caching IsAllowedProPricerAccess for 30 seconds
 		/// </summary>
-		private int secondsToCacheIsAllowedProPricerAccess = 30;
+		private readonly int secondsToCacheIsAllowedProPricerAccess = 30;
 
 		/// <summary>
 		/// Key for the cache
 		/// </summary>
-		private string cacheKeyIsSubcontractorByUserName = "IsSubcontractorByUserName_";
+		private readonly string cacheKeyIsSubcontractorByUserName = "IsSubcontractorByUserName_";
 
 		/// <summary>
 		/// Key for the IsRdmAdmin cache
 		/// </summary>
-		private string cacheKeyIsRdmAdminByUserName = "IsRdmAdminByUserName_";
+		private readonly string cacheKeyIsRdmAdminByUserName = "IsRdmAdminByUserName_";
 
 		/// <summary>
 		/// Key for the IsRdmCobraAdmin cache
 		/// </summary>
-		private string cacheKeyIsRdmCobraAdminByUserName = "IsRdmCobraAdminByUserName_";
+		private readonly string cacheKeyIsRdmCobraAdminByUserName = "IsRdmCobraAdminByUserName_";
 
 		/// <summary>
 		/// Key for the IsRdmViewer cache
 		/// </summary>
-		private string cacheKeyIsRdmViewerByUserName = "IsRdmViewerByUserName_";
+		private readonly string cacheKeyIsRdmViewerByUserName = "IsRdmViewerByUserName_";
 
 		/// <summary>
 		/// Key for the IsIESPortalAdmin cache
 		/// </summary>
-		private string cacheKeyIsIESPortalAdminByUserName = "IsIESPortalAdminByUserName_";
+		private readonly string cacheKeyIsIESPortalAdminByUserName = "IsIESPortalAdminByUserName_";
 
 		/// <summary>
 		/// Key for the IsAllowedProPricerAccess cache
 		/// </summary>
-		private string cacheKeyIsAllowedProPricerAccess = "IsAllowedProPricerAccess_";
+		private readonly string cacheKeyIsAllowedProPricerAccess = "IsAllowedProPricerAccess_";
 
 		#endregion
 

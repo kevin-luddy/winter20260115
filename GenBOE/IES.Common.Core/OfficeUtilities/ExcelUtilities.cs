@@ -26,9 +26,9 @@ namespace IES.Common.Core.OfficeUtilities
 		public const string CUSTOM_FIELD_IMPORT_EXPORT_PREFIX = "CF - ";
 
 		// Create static Regex objects.
-		private static Regex columnNameRegex = new Regex("[A-Za-z]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
-		private static Regex rowIndexRegex = new Regex(@"\d+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
-		private static Regex commentRowIndexRegex = new Regex("[0-9]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex columnNameRegex = new Regex("[A-Za-z]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex rowIndexRegex = new Regex(@"\d+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex commentRowIndexRegex = new Regex("[0-9]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
 		/// <summary>
 		/// Takes the name of a worksheet and returns that worksheet part from the given Excel document. An empty
@@ -243,8 +243,7 @@ namespace IES.Common.Core.OfficeUtilities
 				ICollection<Row> allRows = worksheetPart.Worksheet.Descendants<Row>().Where(
 					r => r.RowIndex != 1 &&
 						 r.Descendants<Cell>().Any(
-							 c => columns.Keys.Contains(ParseColumnName(c.CellReference.Value))
-								 && c.CellValue != null
+							 c => columns.ContainsKey(ParseColumnName(c.CellReference.Value)) && c.CellValue != null
 								 && (c.DataType != null || (c.DataType == null && c.CellValue.Text.Trim().Length > 0)))).ToList();
 
 				if (allRows.Any())
@@ -1814,7 +1813,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// </summary>
 		/// <param name="worksheetPart">The worksheet part.</param>
 		/// <param name="tableId">The table identifier.</param>
-		static void FixupTableParts(WorksheetPart worksheetPart, uint tableId)
+		private static void FixupTableParts(WorksheetPart worksheetPart, uint tableId)
 		{
 			//Every table needs a unique id and name
 			foreach (TableDefinitionPart tableDefPart in worksheetPart.TableDefinitionParts)
@@ -1985,7 +1984,7 @@ namespace IES.Common.Core.OfficeUtilities
 			string cellAddress = TableRange.GetColumnName(columnIndex) + rowIndex;
 
 			// Check if the row exists, create if necessary
-			if (sheetData.Elements<Row>().Count(item => item.RowIndex == rowIndex) != 0)
+			if (sheetData.Elements<Row>().Any(item => item.RowIndex == rowIndex))
 			{
 				row = sheetData.Elements<Row>().First(item => item.RowIndex == rowIndex);
 			}
@@ -2474,7 +2473,7 @@ namespace IES.Common.Core.OfficeUtilities
 		public DuplicateValuesException(String message, Collection<string> DetailDuplicateMessages)
 			: base(message)
 		{
-			this.DetailDuplicateExceptionMessages = DetailDuplicateMessages;
+			DetailDuplicateExceptionMessages = DetailDuplicateMessages;
 		}
 
 		/// <summary>

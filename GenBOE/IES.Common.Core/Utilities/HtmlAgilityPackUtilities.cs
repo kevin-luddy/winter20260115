@@ -909,7 +909,7 @@
 		/// <summary>
 		/// Element value
 		/// </summary>
-		private string theValue = null;
+		private string theValue;
 
 		/// <summary>
 		/// Element value

@@ -31,8 +31,8 @@ namespace IES.Common.Core.Exceptions
 		public ValidationException(ICollection<ValidationMessage> validationListErrors)
 			: base()
 		{
-			this.ValidationList = new List<ValidationMessage>();
-			((List<ValidationMessage>)this.ValidationList).AddRange(validationListErrors);
+			ValidationList = new List<ValidationMessage>();
+			((List<ValidationMessage>)ValidationList).AddRange(validationListErrors);
 		}
 
 		/// <summary>
@@ -44,21 +44,21 @@ namespace IES.Common.Core.Exceptions
 			: base(info, context)
 		{
 			Title = string.Empty;
-			this.ValidationList = new List<ValidationMessage>();
+			ValidationList = new List<ValidationMessage>();
 		}
 
 		public ValidationException(string message, Exception innerException)
 			: base(message, innerException)
 		{
 			Title = string.Empty;
-			this.ValidationList = new List<ValidationMessage>() { new ValidationMessage(message) };
+			ValidationList = new List<ValidationMessage>() { new ValidationMessage(message) };
 		}
 
 		public ValidationException(string message)
 			: base(message)
 		{
 			Title = string.Empty;
-			this.ValidationList = new List<ValidationMessage>() { new ValidationMessage(message) };
+			ValidationList = new List<ValidationMessage>() { new ValidationMessage(message) };
 		}
 
 		public ValidationException(String message, String title)
@@ -75,7 +75,7 @@ namespace IES.Common.Core.Exceptions
 		public ValidationException(string message, int pkid)
 			: base(message)
 		{
-			this.ValidationList = new List<ValidationMessage>() { new ValidationMessage(message) { PkId = pkid } };
+			ValidationList = new List<ValidationMessage>() { new ValidationMessage(message) { PkId = pkid } };
 		}
 
 
@@ -83,7 +83,7 @@ namespace IES.Common.Core.Exceptions
 			: base()
 		{
 			Title = string.Empty;
-			this.ValidationList = new List<ValidationMessage>();
+			ValidationList = new List<ValidationMessage>();
 		}
 
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -94,7 +94,7 @@ namespace IES.Common.Core.Exceptions
 			}
 
 			info.AddValue("Title", Title);
-			info.AddValue("ValidationList", this.ValidationList);
+			info.AddValue("ValidationList", ValidationList);
 			base.GetObjectData(info, context);
 		}
 	}

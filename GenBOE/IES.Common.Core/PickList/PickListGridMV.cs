@@ -21,8 +21,8 @@ namespace IES.Common.Core.PickList
 		/// </summary>
 		public PickListGridMV()
 		{
-			this.PickLists = new List<PickListDto>();
-			this.Messages = new List<ValidationMessage>();
+			PickLists = new List<PickListDto>();
+			Messages = new List<ValidationMessage>();
 		}
 
 		/// <summary>
@@ -47,7 +47,7 @@ namespace IES.Common.Core.PickList
 		{
 			get
 			{
-				return this.PickLists.Any(p => p.IsReadOnly);
+				return PickLists.Any(p => p.IsReadOnly);
 			}
 		}
 

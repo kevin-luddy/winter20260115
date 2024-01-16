@@ -32,7 +32,7 @@ namespace IES.Common.Core.PickList
 		/// <returns>The picklists that match the IDs.</returns>
 		public override ICollection<PickListDto> GetByIds(ICollection<int> ids)
 		{
-			return this.GetPickListValues().Where(p => ids.Contains(p.Id)).ToList();
+			return GetPickListValues().Where(p => ids.Contains(p.Id)).ToList();
 		}
 
 		/// <summary>
@@ -54,7 +54,7 @@ namespace IES.Common.Core.PickList
 
 			foreach (PickListDto item in picklistsToSave)
 			{
-				this.Save(item);
+				Save(item);
 			}
 		}
 

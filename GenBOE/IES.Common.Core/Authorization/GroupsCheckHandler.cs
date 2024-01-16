@@ -17,20 +17,20 @@ namespace IES.Common.Core.Authorization
 		{
 			if (requirement == null)
 			{
-				throw new Exception("Groups Check Requirement not setup correctly");
+				throw new ArgumentNullException(nameof(requirement), "Groups Check Requirement not setup correctly");
 			}
 			bool result = false;
-			if (requirement.groups == null || requirement.groups.Count == 0)
+			if (requirement.Groups == null || requirement.Groups.Count == 0)
 			{
 				// pass-through allowing everyone (all groups)
 				result = true;
 			}
 			else
 			{
-				ICollection<GroupData> groups = this.activeDirectoryUtilities.GetGroupsForUser(context.User.Identity.Name);
+				ICollection<GroupData> groups = activeDirectoryUtilities.GetGroupsForUser(context.User.Identity.Name);
 				foreach (GroupData group in groups)
 				{
-					if (requirement.groups.Contains(group.Ntid.ToLower()))
+					if (requirement.Groups.Contains(group.Ntid.ToLower()))
 					{
 						result = true;
 						break;

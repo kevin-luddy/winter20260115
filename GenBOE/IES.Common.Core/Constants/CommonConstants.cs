@@ -141,7 +141,7 @@ namespace IES.Common.Core.Constants
 		/// <summary>
 		/// The system user identifier
 		/// </summary>
-		public static readonly int SYSTEM_USER_ID = 0;
+		public static readonly int SYSTEM_USER_ID;
 
 		/// <summary>
 		/// The automatic system backup prior to Template Assignment

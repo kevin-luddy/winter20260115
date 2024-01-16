@@ -22,10 +22,10 @@ namespace IES.Common.Core.PickList
 		/// </summary>
 		public PickListDto()
 		{
-			this.Id = -1;
-			this.IsReadOnly = false;
-			this.Updateable = UpdateType.None;
-			this.ParentIds = new List<int>();
+			Id = -1;
+			IsReadOnly = false;
+			Updateable = UpdateType.None;
+			ParentIds = new List<int>();
 		}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace IES.Common.Core.PickList
 		{
 			get
 			{
-				return this.IsActive ? "Active" : "Inactive";
+				return IsActive ? "Active" : "Inactive";
 			}
 		}
 
@@ -64,7 +64,7 @@ namespace IES.Common.Core.PickList
 		/// </summary>
 		public string InUseText
 		{
-			get { return this.InUse ? "In Use" : string.Empty; }
+			get { return InUse ? "In Use" : string.Empty; }
 		}
 
 		/// <summary>
@@ -72,7 +72,7 @@ namespace IES.Common.Core.PickList
 		/// </summary>
 		public string IsReadOnlyText
 		{
-			get { return this.IsReadOnly ? "Read-Only" : string.Empty; }
+			get { return IsReadOnly ? "Read-Only" : string.Empty; }
 		}
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace IES.Common.Core.PickList
 		{
 			set
 			{
-				this.ParentIds = new List<int> { value };
+				ParentIds = new List<int> { value };
 			}
 		}
 

@@ -28,7 +28,7 @@ namespace IES.Common.Core.OfficeUtilities
 
 		public void Add(params string[] cells)
 		{
-			this.Add(cells.ToList());
+			Add(cells.ToList());
 		}
 	}
 }

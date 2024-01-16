@@ -9,7 +9,6 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using IES.Common.Core;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Models;
 

@@ -11,8 +11,7 @@ namespace IES.Common.Core.Models
 
 	public class DateRange : IEquatable<DateRange>
 	{
-
-		DateTime? startDate, endDate;
+		private DateTime? startDate, endDate;
 		public DateRange() : this(new DateTime?(), new DateTime?()) { }
 		public DateRange(DateTime? startDate, DateTime? endDate)
 		{

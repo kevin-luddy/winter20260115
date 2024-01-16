@@ -23,7 +23,7 @@ namespace IES.Common.Core.OfficeUtilities
 		{
 			get
 			{
-				return this.altChunkCounter++;
+				return altChunkCounter++;
 			}
 		}
 
@@ -32,7 +32,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// </summary>
 		public ChunkCounter()
 		{
-			this.altChunkCounter = 1;
+			altChunkCounter = 1;
 		}
 	}
 }

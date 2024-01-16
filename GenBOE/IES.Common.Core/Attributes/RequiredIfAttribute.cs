@@ -20,7 +20,7 @@ namespace IES.Common.Core.Attributes
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1813:AvoidUnsealedAttributes"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1019:DefineAccessorsForAttributeArguments"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1018:MarkAttributesWithAttributeUsage")]
 	public class RequiredIfAttribute : ValidationAttribute
 	{
-		private RequiredAttribute innerAttribute = new RequiredAttribute();
+		private readonly RequiredAttribute innerAttribute = new RequiredAttribute();
 		public string DependentUpon { get; set; }
 		public object Value { get; set; }
 

@@ -30,7 +30,7 @@ namespace IES.Common.Core.PickList
 		/// </summary>
 		protected PickListMapper(ILogger<PickListMapper> logger)
 		{
-			this.log = logger;
+			log = logger;
 		}
 
 		/// <summary>
@@ -43,11 +43,11 @@ namespace IES.Common.Core.PickList
 		{
 			PickListGridMV gridMv = null;
 
-			IPickListLoader loader = this.GetPickListSettings(pickListType);
+			IPickListLoader loader = GetPickListSettings(pickListType);
 
 			if (loader != null)
 			{
-				using (StopwatchTimer sw = new StopwatchTimer("PickListMapper.GetPickListValues", this.log))
+				using (StopwatchTimer sw = new StopwatchTimer("PickListMapper.GetPickListValues", log))
 				{
 					ICollection<PickListDto> result = loader.GetPickListValues();
 
@@ -63,13 +63,13 @@ namespace IES.Common.Core.PickList
 
 					if (gridMv.ContainsParent)
 					{
-						gridMv.Parents = this.GetSelectListPickList(loader.ParentPickList.Value, null, true, true);
+						gridMv.Parents = GetSelectListPickList(loader.ParentPickList.Value, null, true, true);
 					}
 
 					if (loadChildren && gridMv.ContainsChildren)
 					{
 						// Get the Children Loader and load the values
-						IPickListLoader childrenLoader = this.GetPickListSettings(loader.ChildrenPickList.Value);
+						IPickListLoader childrenLoader = GetPickListSettings(loader.ChildrenPickList.Value);
 						gridMv.Children = childrenLoader.GetPickListValues();
 					}
 				}
@@ -88,7 +88,7 @@ namespace IES.Common.Core.PickList
 		/// <returns>Dropdown selection</returns>
 		public ICollection<SelectListItem> GetSelectListPickList(PickListEnum pickListType, int? selectedItem = null, bool includeEmptySelect = true, bool includeInactive = false)
 		{
-			PickListGridMV gridModelView = this.GetPickListValues(pickListType);
+			PickListGridMV gridModelView = GetPickListValues(pickListType);
 			ICollection<PickListDto> allPicklistData = gridModelView?.PickLists ?? new List<PickListDto>();
 			ICollection<PickListDto> dataToUse = allPicklistData.Where(x => includeInactive || x.IsActive).ToList();
 
@@ -119,7 +119,7 @@ namespace IES.Common.Core.PickList
 				throw new ArgumentNullException(nameof(dataToSave));
 			}
 
-			IPickListLoader loader = this.GetPickListSettings(pickListType);
+			IPickListLoader loader = GetPickListSettings(pickListType);
 
 			if (loader != null)
 			{
@@ -148,7 +148,7 @@ namespace IES.Common.Core.PickList
 		public bool IsPickListActive(PickListEnum pickList, int pickListId)
 		{
 			bool result = false;
-			PickListDto dto = this.GetById(pickList, pickListId);
+			PickListDto dto = GetById(pickList, pickListId);
 			if (dto != null)
 			{
 				return dto.IsActive;
@@ -166,7 +166,7 @@ namespace IES.Common.Core.PickList
 		public ICollection<PickListDto> GetChildren(PickListEnum pickList, int parentId)
 		{
 			ICollection<PickListDto> result = new List<PickListDto>();
-			PickListGridMV gridMV = this.GetPickListValues(pickList);
+			PickListGridMV gridMV = GetPickListValues(pickList);
 
 			if (gridMV != null)
 			{
@@ -186,7 +186,7 @@ namespace IES.Common.Core.PickList
 		{
 			PickListDto dto = null;
 
-			PickListGridMV gridMV = this.GetPickListValues(pickList);
+			PickListGridMV gridMV = GetPickListValues(pickList);
 
 			if (gridMV != null)
 			{

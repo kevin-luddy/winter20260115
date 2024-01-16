@@ -8,8 +8,6 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists.Common
 {
 	using GenTRAC.DataBridge.Core.DTO.OrgData;
 	using GenTRAC.DataBridge.Core.DTO.PickLists;
-	using GenTRAC.DataBridge.DTO;
-	using IES.Common.Core;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.PickList;
 	using Microsoft.Extensions.Logging;
@@ -24,37 +22,37 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists.Common
 		/// <summary>
 		/// LU Table Loader
 		/// </summary>
-		private ProposalTypeLULoader proposalLuLoader;
+		private readonly ProposalTypeLULoader proposalLuLoader;
 
 		/// <summary>
 		/// LU Table Loader
 		/// </summary>
-		private ProposalClassLULoader proposalClassLuLoader;
+		private readonly ProposalClassLULoader proposalClassLuLoader;
 
 		/// <summary>
 		/// LU Table Loader
 		/// </summary>
-		private TypeOfRequestLULoader typeOfRequestLuLoader;
+		private readonly TypeOfRequestLULoader typeOfRequestLuLoader;
 
 		/// <summary>
 		/// LU Table Loader.
 		/// </summary>
-		private LineOfBusinessDataLoader lineOfBusinessLuLoader;
+		private readonly LineOfBusinessDataLoader lineOfBusinessLuLoader;
 
 		/// <summary>
 		/// The program area lu loader.
 		/// </summary>
-		private ProgramAreaDataLoader programAreaLuLoader;
+		private readonly ProgramAreaDataLoader programAreaLuLoader;
 
 		/// <summary>
 		/// The contract type lu loader
 		/// </summary>
-		private ContractTypeLULoader contractTypeLuLoader;
+		private readonly ContractTypeLULoader contractTypeLuLoader;
 
 		/// <summary>
 		/// The contract type group lu loader
 		/// </summary>
-		private ContractTypeGroupLULoader contractTypeGroupLULoader;
+		private readonly ContractTypeGroupLULoader contractTypeGroupLULoader;
 
 		#endregion
 

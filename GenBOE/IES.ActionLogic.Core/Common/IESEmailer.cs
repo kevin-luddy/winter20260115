@@ -76,7 +76,7 @@ namespace IES.ActionLogic.Common
             else 
             {
                 // if email is disabled by configuration setting
-                this.log.LogDebug("Email is disabled by configuration setting in SendPublishEmail");
+                this.Log.LogDebug("Email is disabled by configuration setting in SendPublishEmail");
             }
         }
 
@@ -121,7 +121,7 @@ namespace IES.ActionLogic.Common
             else
             {
                 // if email is disabled by configuration setting
-                this.log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentSuccessEmail");
+                this.Log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentSuccessEmail");
             }
         }
 
@@ -161,7 +161,7 @@ namespace IES.ActionLogic.Common
             else
             {
                 // if email is disabled by configuration setting
-                this.log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentFailedEmail");
+                this.Log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentFailedEmail");
             }
         }
 

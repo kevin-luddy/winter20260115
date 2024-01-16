@@ -63,7 +63,7 @@ namespace IES.Common.Core.Exceptions
 		/// <param name="validationIssue">The validation issue.</param>
 		public ValidationMessage(string validationIssue)
 		{
-			this.ValidationIssue = validationIssue;
+			ValidationIssue = validationIssue;
 		}
 
 		/// <summary>
@@ -73,8 +73,8 @@ namespace IES.Common.Core.Exceptions
 		/// <param name="validationIssue">The validation issue.</param>
 		public ValidationMessage(string fieldName, string validationIssue)
 		{
-			this.FieldName = fieldName;
-			this.ValidationIssue = validationIssue;
+			FieldName = fieldName;
+			ValidationIssue = validationIssue;
 		}
 
 		/// <summary>
@@ -85,9 +85,9 @@ namespace IES.Common.Core.Exceptions
 		/// <param name="formIDToTarget">The form identifier to target.</param>
 		public ValidationMessage(string fieldName, string validationIssue, string formIDToTarget)
 		{
-			this.FieldName = fieldName;
-			this.ValidationIssue = validationIssue;
-			this.FormIDToTarget = formIDToTarget;
+			FieldName = fieldName;
+			ValidationIssue = validationIssue;
+			FormIDToTarget = formIDToTarget;
 		}
 	}
 }

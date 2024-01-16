@@ -70,9 +70,9 @@ namespace IES.Common.Core.Exceptions
 		public GenValidationException(string message, string validationMessage)
 			: base(message)
 		{
-			this.ValidationList = new List<ValidationMessage>();
+			ValidationList = new List<ValidationMessage>();
 			ValidationMessage vm = new ValidationMessage(validationMessage);
-			this.ValidationList.Add(vm);
+			ValidationList.Add(vm);
 		}
 
 		/// <summary>

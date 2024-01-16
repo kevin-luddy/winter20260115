@@ -15,15 +15,13 @@ namespace IES.Common.Core.Configuration
 	/// <seealso cref="SystemConfigurationSection"/>
 	public class CompanyConfigurationSection
 	{
-		private NameValueCollection _AppSettings;
-
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		public CompanyConfigurationSection()
 		{
 			Company = CompanyConfiguration.None;
-			_AppSettings = new NameValueCollection();
+			AppSettings = new NameValueCollection();
 			ConnectionStrings = new ConnectionStringSettingsCollection();
 		}
 
@@ -44,7 +42,7 @@ namespace IES.Common.Core.Configuration
 		/// <summary>
 		/// Override values for application settings
 		/// </summary>
-		public NameValueCollection AppSettings { get { return _AppSettings; } }
+		public NameValueCollection AppSettings { get; }
 
 		/// <summary>
 		/// Override values for connection strings

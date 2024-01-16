@@ -29,7 +29,7 @@ namespace IES.Common.Core.Logging
 
 		public HeaderWriter(string header, bool alwaysWriteHeader = false)
 		{
-			this.headerFactory = () => header;
+			headerFactory = () => header;
 			this.alwaysWriteHeader = alwaysWriteHeader;
 		}
 
@@ -43,7 +43,7 @@ namespace IES.Common.Core.Logging
 		{
 			try
 			{
-				if (!this.alwaysWriteHeader && underlyingStream.Length != 0)
+				if (!alwaysWriteHeader && underlyingStream.Length != 0)
 				{
 					SelfLog.WriteLine($"File header will not be written, as the stream already contains {underlyingStream.Length} bytes of content");
 					return base.OnFileOpened(underlyingStream, encoding);
@@ -57,7 +57,7 @@ namespace IES.Common.Core.Logging
 
 			using (var writer = new StreamWriter(underlyingStream, encoding, DEFAULT_BUFFER_SIZE, true))
 			{
-				var header = this.headerFactory();
+				var header = headerFactory();
 
 				writer.WriteLine(header);
 				writer.Flush();

@@ -7,7 +7,6 @@
 namespace GenTRAC.DataBridge.Core.Common.Security
 {
 	using System;
-	using IES.Common.Core;
 	using IES.Common.Core.Enums;
 
 	/// <summary>

@@ -32,7 +32,7 @@ namespace IES.Common.Core.Services
 		/// <summary>
 		/// Concurrent bag for locking
 		/// </summary>
-		private static ConcurrentDictionary<string, Task> _locker = new ConcurrentDictionary<string, Task>();
+		private static readonly ConcurrentDictionary<string, Task> _locker = new ConcurrentDictionary<string, Task>();
 
 		/// <summary>
 		/// declare private instance so we can cache returns from AD for a brief period of time
@@ -47,7 +47,7 @@ namespace IES.Common.Core.Services
 		/// <summary>
 		/// The number of seconds to store in cache
 		/// </summary>
-		private int secondsToCache = 720;
+		private readonly int secondsToCache = 720;
 
 		/// <summary>
 		/// The max number of attempts to make to AD
@@ -62,7 +62,7 @@ namespace IES.Common.Core.Services
 		/// <summary>
 		/// The number of seconds to wait until the DirectorySearcher reaches a timeout.  The default (-1) value will cause the Directory Searcher to use its default value.
 		/// </summary>
-		private int CLIENT_TIMEOUT_SECONDS = -1;
+		private readonly int CLIENT_TIMEOUT_SECONDS = -1;
 
 		/// <summary>
 		/// Group account type

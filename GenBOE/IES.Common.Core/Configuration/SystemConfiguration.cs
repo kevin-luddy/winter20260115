@@ -17,10 +17,10 @@ namespace IES.Common.Core.Configuration
 		#region Private Members
 
 		// static instance of this object
-		static volatile private SystemConfiguration _UniqueInstance = null;
+		static volatile private SystemConfiguration _UniqueInstance;
 
 		// static lock object used to make methods thread safe
-		static private object mLock = new object();
+		private static readonly object mLock = new object();
 
 		#endregion Private Members
 

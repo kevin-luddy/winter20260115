@@ -673,6 +673,9 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\ReleaseTFS.pubxml" />
     <Content Include="Scripts\angular-animate.js" />

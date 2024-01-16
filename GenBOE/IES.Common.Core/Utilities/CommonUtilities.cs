@@ -37,8 +37,8 @@ namespace IES.Common.Core.Utilities
 		/// </summary>
 		private const int BUSINESS_HOURS_END = 20;
 
-		private static string versionAndUpdatedDate = null;
-		private static object lockObject = new object();
+		private static string versionAndUpdatedDate;
+		private static readonly object lockObject = new object();
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? oneLmxStartDate;
 
@@ -91,7 +91,7 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.
 		/// </summary>
-		private static Regex regexNewLine = new Regex(@"<br( )*/*( )*>", RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexNewLine = new Regex(@"<br( )*/*( )*>", RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
 		#region Adjusting precision of decimal numbers, based on workspace settings
 
