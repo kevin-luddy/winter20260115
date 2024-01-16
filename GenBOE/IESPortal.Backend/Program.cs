@@ -1,4 +1,6 @@
-using GenBOE.DataBridge.DTO;
+using GenBOE.DataBridge.Core.Picklists;
+using GenTRAC.DataBridge.Core.DTO.PickLists;
+using GenTRAC.DataBridge.Core.DTO.PickLists.Common;
 using GenTRAC.DataBridge.DTO;
 using IES.ActionLogic.Common;
 using IES.ActionLogic.ControllerLogic;
@@ -25,11 +27,11 @@ builder.Services.AddTransient<IOfflineApplicationLoader, OfflineApplicationLoade
 builder.Services.AddTransient<ProposalTypeLULoader>();
 builder.Services.AddTransient<ProposalClassLULoader>();
 builder.Services.AddTransient<TypeOfRequestLULoader>();
-builder.Services.AddTransient<GenTRAC.DataBridge.DTO.LineOfBusinessDataLoader>();
+builder.Services.AddTransient<GenTRAC.DataBridge.Core.DTO.OrgData.LineOfBusinessDataLoader>();
 builder.Services.AddTransient<ProgramAreaDataLoader>();
 builder.Services.AddTransient<ContractTypeLULoader>();
 builder.Services.AddTransient<ContractTypeGroupLULoader>();
-builder.Services.AddTransient<GenBOE.DataBridge.DTO.LineOfBusinessDataLoader>();
+builder.Services.AddTransient<GenBOE.DataBridge.Core.Picklists.LineOfBusinessDataLoader>();
 builder.Services.AddTransient<ProposalClassLoader>();
 builder.Services.AddTransient<ContractTypeLoader>();
 builder.Services.AddScoped<ITokenService, TokenService>();

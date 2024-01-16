@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenTRAC.DataBridge.DTO
+namespace GenTRAC.DataBridge.Core.DTO.Proposal
 {
 	using System;
 

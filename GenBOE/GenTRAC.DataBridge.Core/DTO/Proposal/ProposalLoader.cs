@@ -10,6 +10,7 @@ namespace GenTRAC.DataBridge.DTO
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using GenTRAC.DataBridge.Core.DTO.Proposal;
 	using GenTRAC.Models;
 	using IES.Core;
 	using Microsoft.Extensions.Logging;

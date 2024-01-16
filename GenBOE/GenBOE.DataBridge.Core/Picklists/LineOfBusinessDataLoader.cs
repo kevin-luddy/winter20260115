@@ -4,108 +4,108 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.DataBridge.DTO
+namespace GenBOE.DataBridge.Core.Picklists
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using GenBOE.Models;
-    using IES.Core;
-    using IES.Core.PickList;
+	using System.Collections.Generic;
+	using System.Linq;
+	using GenBOE.Models;
+	using IES.Core;
+	using IES.Core.PickList;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// LineOfBusinessDataLoader
 	/// </summary>
 	public class LineOfBusinessDataLoader : PickListLoader
-    {
-        /// <summary>
-        /// LineOfBusinessDataLoader
-        /// </summary>
-        public LineOfBusinessDataLoader(ILogger<LineOfBusinessDataLoader> logger) : base(logger)
+	{
+		/// <summary>
+		/// LineOfBusinessDataLoader
+		/// </summary>
+		public LineOfBusinessDataLoader(ILogger<LineOfBusinessDataLoader> logger) : base(logger)
 		{
-        }
+		}
 
-        /// <summary>
-        /// Returns a Collection of all LOBs
-        /// </summary>
-        /// <returns>Collection of all LOBs</returns>
-        public override ICollection<PickListDto> GetPickListValues()
-        {
-            ICollection<PickListDto> toReturn = null;
+		/// <summary>
+		/// Returns a Collection of all LOBs
+		/// </summary>
+		/// <returns>Collection of all LOBs</returns>
+		public override ICollection<PickListDto> GetPickListValues()
+		{
+			ICollection<PickListDto> toReturn = null;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
-            {
-                using (GenBoeEntities gbe = new GenBoeEntities())
-                {
-                    toReturn = gbe.LineOfBusinesses.OrderBy(l => l.LineOfBusinessName)
-                        .Select(x => new PickListDto()
-                        {
-                            Id = x.LineOfBusinessID,
-                            Text = x.LineOfBusinessName,
-                            IsActive = x.IsActive,
-                            InUse = x.Workspaces.Any()
-                        })
-                        .ToList();
-                }
-            }
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					toReturn = gbe.LineOfBusinesses.OrderBy(l => l.LineOfBusinessName)
+						.Select(x => new PickListDto()
+						{
+							Id = x.LineOfBusinessID,
+							Text = x.LineOfBusinessName,
+							IsActive = x.IsActive,
+							InUse = x.Workspaces.Any()
+						})
+						.ToList();
+				}
+			}
 
-            return toReturn;
-        }
+			return toReturn;
+		}
 
-        /// <summary>
-        /// Deletes a LOB.
-        /// </summary>
-        /// <param name="dtoToDelete">Dto that will be deleted.</param>
-        /// <returns>Id of the deleted object</returns>
-        protected override int? Delete(PickListDto dtoToDelete)
-        {
-            int? toReturn = null;
+		/// <summary>
+		/// Deletes a LOB.
+		/// </summary>
+		/// <param name="dtoToDelete">Dto that will be deleted.</param>
+		/// <returns>Id of the deleted object</returns>
+		protected override int? Delete(PickListDto dtoToDelete)
+		{
+			int? toReturn = null;
 
-            using (StopwatchTimer sw = new StopwatchTimer(Log))
-            {
-                if (dtoToDelete != null && !dtoToDelete.InUse)
-                {
-                    toReturn = dtoToDelete.Id;
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			{
+				if (dtoToDelete != null && !dtoToDelete.InUse)
+				{
+					toReturn = dtoToDelete.Id;
 
-                    using (GenBoeEntities dbModel = new GenBoeEntities())
-                    {
-                        dbModel.deleteLOB(dtoToDelete.Id);
-                    }
-                }
-            }
+					using (GenBoeEntities dbModel = new GenBoeEntities())
+					{
+						dbModel.deleteLOB(dtoToDelete.Id);
+					}
+				}
+			}
 
-            return toReturn;
-        }
+			return toReturn;
+		}
 
-        /// <summary>
-        /// Upsert method to be overridden by the derived class
-        /// </summary>
-        /// <param name="dtoToUpsert">Dto to upsert.</param>
-        /// <returns>Int representing the id of the upserted item.</returns>
-        protected override int? Upsert(PickListDto dtoToUpsert)
-        {
-            int? toReturn = null;
+		/// <summary>
+		/// Upsert method to be overridden by the derived class
+		/// </summary>
+		/// <param name="dtoToUpsert">Dto to upsert.</param>
+		/// <returns>Int representing the id of the upserted item.</returns>
+		protected override int? Upsert(PickListDto dtoToUpsert)
+		{
+			int? toReturn = null;
 
-            using (StopwatchTimer sw = new StopwatchTimer(Log))
-            {
-                if (dtoToUpsert != null)
-                {
-                    using (GenBoeEntities dbModel = new GenBoeEntities())
-                    {
-                        string text = dtoToUpsert.Text;
-                        
-                        // if we are updating & the item is in use, then we need to make sure we only modify the IsActive (in other words, we need to keep the same text..)
-                        if (dtoToUpsert.InUse && dtoToUpsert.Id >= 0)
-                        {
-                            text = dbModel.LineOfBusinesses.First(x => x.LineOfBusinessID == dtoToUpsert.Id).LineOfBusinessName;
-                        }
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			{
+				if (dtoToUpsert != null)
+				{
+					using (GenBoeEntities dbModel = new GenBoeEntities())
+					{
+						string text = dtoToUpsert.Text;
 
-                        toReturn = dbModel.upsertLOB(dtoToUpsert.Id, text, dtoToUpsert.IsActive).First();
-                    }
-                }
-            }
+						// if we are updating & the item is in use, then we need to make sure we only modify the IsActive (in other words, we need to keep the same text..)
+						if (dtoToUpsert.InUse && dtoToUpsert.Id >= 0)
+						{
+							text = dbModel.LineOfBusinesses.First(x => x.LineOfBusinessID == dtoToUpsert.Id).LineOfBusinessName;
+						}
 
-            return toReturn;
-        }
-    }
+						toReturn = dbModel.upsertLOB(dtoToUpsert.Id, text, dtoToUpsert.IsActive).First();
+					}
+				}
+			}
+
+			return toReturn;
+		}
+	}
 }

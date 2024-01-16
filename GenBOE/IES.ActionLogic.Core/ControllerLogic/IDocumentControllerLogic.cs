@@ -9,10 +9,9 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
-	using System.Web;
 	using DataBridge.ModelViews;
-	using GenTRAC.DataBridge.Common.Security;
-	using GenTRAC.DataBridge.DTO;
+	using GenTRAC.DataBridge.Core.Common.Security;
+	using GenTRAC.DataBridge.Core.DTO.Proposal;
 	using IES.Core.Exceptions;
 	using Microsoft.AspNetCore.Mvc;
 

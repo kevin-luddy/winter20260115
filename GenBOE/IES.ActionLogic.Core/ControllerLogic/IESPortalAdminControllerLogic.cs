@@ -11,15 +11,15 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using System.Transactions;
-	using IES.DataBridge.Loaders;
-	using IES.DataBridge.ModelViews;
+	using GenBOE.DataBridge.Core.Picklists;
+	using GenTRAC.DataBridge.Core.DTO.PickLists.Common;
 	using IES.Core;
 	using IES.Core.Exceptions;
 	using IES.Core.PickList;
+	using IES.DataBridge.Loaders;
+	using IES.DataBridge.ModelViews;
 	using ModelView;
 	using Validation;
-	using GenTRAC.DataBridge.DTO;
-	using GenBOE.DataBridge.DTO;
 
 	/// <summary>
 	/// Controller Logic for IES Portal Admin area

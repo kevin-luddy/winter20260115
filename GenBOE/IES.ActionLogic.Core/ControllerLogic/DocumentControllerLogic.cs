@@ -12,18 +12,15 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
-	using System.Net.Http.Headers;
 	using System.Text.RegularExpressions;
 	using System.Transactions;
-	using System.Web;
 	using DataBridge.Loaders;
-	using GenTRAC.DataBridge.Common.Security;
-	using GenTRAC.DataBridge.DTO;
-	using IES.DataBridge.ModelViews;
+	using GenTRAC.DataBridge.Core.Common.Security;
+	using GenTRAC.DataBridge.Core.DTO.Proposal;
 	using IES.Core;
 	using IES.Core.Exceptions;
+	using IES.DataBridge.ModelViews;
 	using IO.Export;
-	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Logging;
 
