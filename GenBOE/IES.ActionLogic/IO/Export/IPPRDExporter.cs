@@ -16,19 +16,20 @@ namespace IES.ActionLogic.IO.Export
 	/// </summary>
 	public interface IPPRDExporter
     {
-        /// <summary>
-        /// Generate a Word document containing the full PPRD.
-        /// </summary>
-        /// <param name="sections">Collection of Section MVs</param>
-        /// <param name="rates">Collection of RateDetail MVs</param>
-        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
-        /// <param name="serverFileName">Server path to new file to generate.</param>
-        /// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
-        /// <param name="revision">Revision modelview</param>
-        /// <param name="rateTableYears">Number of years to include in the rate tables</param>
-        /// <param name="response">the web response object to write the file back to for user download</param>
-        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel);
+		/// <summary>
+		/// Generate a Word document containing the full PPRD.
+		/// </summary>
+		/// <param name="sections">Collection of Section MVs</param>
+		/// <param name="rates">Collection of RateDetail MVs</param>
+		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
+		/// <param name="serverFileName">Server path to new file to generate.</param>
+		/// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
+		/// <param name="revision">Revision modelview</param>
+		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
+		/// <param name="response">the web response object to write the file back to for user download</param>
+		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel, bool? portionMarkingRequired);
 
         /// <summary>
         /// Generate a Word document containing the RDD sections and rates.

@@ -7,10 +7,12 @@
 namespace IES.ActionLogic.IO.Export
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Web;
 	using Common;
 	using DocumentFormat.OpenXml;
@@ -36,19 +38,20 @@ namespace IES.ActionLogic.IO.Export
 		/// </summary>
 		private const string FIRST_SECTION_REFERENCE_NUMBER = "1.0";
 
-        /// <summary>
-        /// Generate a Word document containing the full PPRD.
-        /// </summary>
-        /// <param name="sections">Collection of Section MVs</param>
-        /// <param name="rates">Collection of RateDetail MVs</param>
-        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
-        /// <param name="serverFileName">Server path to new file to generate.</param>
-        /// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
-        /// <param name="revision">Revision modelview</param>
-        /// <param name="rateTableYears">Number of years to include in the rate tables</param>
-        /// <param name="response">the web response object to write the file back to for user download</param>
-        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        public void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel)
+		/// <summary>
+		/// Generate a Word document containing the full PPRD.
+		/// </summary>
+		/// <param name="sections">Collection of Section MVs</param>
+		/// <param name="rates">Collection of RateDetail MVs</param>
+		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
+		/// <param name="serverFileName">Server path to new file to generate.</param>
+		/// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
+		/// <param name="revision">Revision modelview</param>
+		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
+		/// <param name="response">the web response object to write the file back to for user download</param>
+		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		public async void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel, bool? portionMarkingRequired)
 		{
 			if (response == null)
 			{
@@ -63,20 +66,43 @@ namespace IES.ActionLogic.IO.Export
 			response.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
 
 			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, response.OutputStream);
+
+			if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
+			{
+				byte[] byteArray = File.ReadAllBytes(serverFileName);
+				ByteArrayContent content = new ByteArrayContent(byteArray);
+				content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
+
+				using (MemoryStream stream = new MemoryStream())
+				{
+					stream.Write(byteArray, 0, (int)byteArray.Length);
+					using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(stream, true))
+					{
+						// Make a post call to the Portion Marking API here
+						HttpClient httpClient = new HttpClient();
+						string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
+
+						var result = await httpClient.PostAsync(portionMarkingAPI + "/PortionMarkDocument", content);
+						result.EnsureSuccessStatusCode();
+
+						var postResponse = await result.Content.ReadAsStringAsync();
+					}
+				}
+			}
 		}
 
-        /// <summary>
-        /// Generate a Word document containing the RDD sections and rates.
-        /// </summary>
-        /// <param name="sections">Collection of Section MVs</param>
-        /// <param name="rates">Collection of RateDetail MVs</param>
-        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
-        /// <param name="serverFileName">Server path to new file to generate.</param>
-        /// <param name="revision">Revision modelview</param>
-        /// <param name="rddDocument">The RDD document to use for creation.</param>
-        /// <param name="stream">the stream to write the file back to for user download</param>
-        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+		/// <summary>
+		/// Generate a Word document containing the RDD sections and rates.
+		/// </summary>
+		/// <param name="sections">Collection of Section MVs</param>
+		/// <param name="rates">Collection of RateDetail MVs</param>
+		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
+		/// <param name="serverFileName">Server path to new file to generate.</param>
+		/// <param name="revision">Revision modelview</param>
+		/// <param name="rddDocument">The RDD document to use for creation.</param>
+		/// <param name="stream">the stream to write the file back to for user download</param>
+		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
         public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true)
 		{
 			if (stream == null)
