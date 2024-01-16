@@ -15,6 +15,10 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Common.Core;
 	using IES.Common.Core.Exceptions;
 	using Mediator;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Models;
 
 	/// <summary>
 	/// Logic for the Admin Controller.
@@ -39,7 +43,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="adUtils">AD Utilities</param>
         /// <param name="securityInfo">Security Information</param>
         public AdminControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, 
-            IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo, IRateDetailLoader rateDetailLoader,
+            IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IRateDetailLoader rateDetailLoader,
             IRateCodeReplicationLoader replicationLoader)
             : base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
         {
@@ -104,7 +108,7 @@ namespace IES.ActionLogic.ControllerLogic
                 }
 
                 // Look for Cobra Dates missing a Year.
-                List<string> missingYear = collection.Where(config => config.Year <= 0).Select(config => config.CobraDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)).ToList();
+                List<string> missingYear = collection.Where(config => config.Year <= 0).Select(config => config.CobraDate.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR)).ToList();
                 if (missingYear.Any())
                 {
                     string missingYearMessage = string.Join(", ", missingYear);
@@ -120,7 +124,7 @@ namespace IES.ActionLogic.ControllerLogic
                 }
 
                 // Look for duplicate Cobra Dates.  Ignores blank and invalid dates, which are caught in an earlier message.
-                List<string> duplicateCobraDates = collection.Where(config => config.CobraDate != DateTime.MinValue).GroupBy(config => config.CobraDate).Where(config => config.Count() > 1).Select(group => group.Key.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)).ToList();
+                List<string> duplicateCobraDates = collection.Where(config => config.CobraDate != DateTime.MinValue).GroupBy(config => config.CobraDate).Where(config => config.Count() > 1).Select(group => group.Key.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR)).ToList();
                 if (duplicateCobraDates.Any())
                 {
                     string duplicateCobraDateMessage = string.Join(", ", duplicateCobraDates);

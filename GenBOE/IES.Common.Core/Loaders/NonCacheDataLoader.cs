@@ -12,6 +12,7 @@ namespace IES.Common.Core.Loaders
 	using IES.Common.Core.Interfaces;
 	using Microsoft.Extensions.Logging;
 	using IES.Common.Core.Utilities;
+	using IES.Common.Core;
 
 	/// <summary>
 	/// This class will mediate calls through non cache.

@@ -10,6 +10,7 @@ namespace IES.Common.Core.Loaders
 	using System.Collections.Generic;
 	using System.Transactions;
 	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
@@ -44,13 +45,13 @@ namespace IES.Common.Core.Loaders
 			if ((originalId == null || originalId < 0)
 				&& (resultId == null || resultId < 0))
 			{
-				Log.LogError(Constants.ERR_INSERT_FAILED_DUE_TO_ID);
+				Log.LogError(CommonConstants.ERR_INSERT_FAILED_DUE_TO_ID);
 				verificationPassed = false;
 			}
 			else if (originalId != null && originalId > 0
 				&& (resultId == null || resultId.Value != originalId.Value))
 			{
-				Log.LogError(Constants.ERR_UPDATE_FAILED_DUE_TO_ID);
+				Log.LogError(CommonConstants.ERR_UPDATE_FAILED_DUE_TO_ID);
 				verificationPassed = false;
 			}
 
@@ -86,7 +87,7 @@ namespace IES.Common.Core.Loaders
 
 					if (!VerifyIdAfterUpsert(originalId, result))
 					{
-						throw new GeneralAppException(Constants.ERR_INSERT_FAILED_DUE_TO_ID);
+						throw new GeneralAppException(CommonConstants.ERR_INSERT_FAILED_DUE_TO_ID);
 					}
 				}
 				else

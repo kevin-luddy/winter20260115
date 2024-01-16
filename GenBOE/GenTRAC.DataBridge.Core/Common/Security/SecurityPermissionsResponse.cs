@@ -8,6 +8,7 @@ namespace GenTRAC.DataBridge.Core.Common.Security
 {
 	using System;
 	using IES.Common.Core;
+	using IES.Common.Core.Enums;
 
 	/// <summary>
 	/// Immutable class to capture the response for use in code to understand

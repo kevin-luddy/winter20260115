@@ -6,14 +6,14 @@
 
 namespace IES.DataBridge.Loaders
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
-    using IES.DataBridge.ModelViews;
+	using System.Collections.Generic;
+	using IES.Common.Core.Loaders;
+	using IES.DataBridge.ModelViews;
 
-    /// <summary>
-    /// Interface for Cobra Years Loader
-    /// </summary>
-    public interface ICobraYearsLoader : IDataLoader<CobraYearGridModelView>
+	/// <summary>
+	/// Interface for Cobra Years Loader
+	/// </summary>
+	public interface ICobraYearsLoader : IDataLoader<CobraYearGridModelView>
     {
         /// <summary>
         /// Get All Cobra Year Configuration Data

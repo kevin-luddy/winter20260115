@@ -30,7 +30,7 @@ namespace IES.Common.Core.Logging
 			if (!string.IsNullOrEmpty(token))
 			{
 				client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
-				client.DefaultRequestHeaders.Add(HeaderNames.Authorization, Constants.TOKEN_PREFIX + token);
+				client.DefaultRequestHeaders.Add(HeaderNames.Authorization, CommonConstants.TOKEN_PREFIX + token);
 			}
 		}
 
@@ -43,7 +43,7 @@ namespace IES.Common.Core.Logging
 		{
 			if (!string.IsNullOrEmpty(correlationId))
 			{
-				client.DefaultRequestHeaders.Add(Constants.CORRELATION_HEADER_NAME, correlationId);
+				client.DefaultRequestHeaders.Add(CommonConstants.CORRELATION_HEADER_NAME, correlationId);
 			}
 		}
 
@@ -55,7 +55,7 @@ namespace IES.Common.Core.Logging
 		{
 			string correlationId = null;
 
-			if (context.Request.Headers.TryGetValue(Constants.CORRELATION_HEADER_NAME, out StringValues id))
+			if (context.Request.Headers.TryGetValue(CommonConstants.CORRELATION_HEADER_NAME, out StringValues id))
 			{
 				correlationId = id;
 			}

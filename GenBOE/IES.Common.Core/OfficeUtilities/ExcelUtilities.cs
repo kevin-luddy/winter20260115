@@ -26,9 +26,9 @@ namespace IES.Common.Core.OfficeUtilities
         public const string CUSTOM_FIELD_IMPORT_EXPORT_PREFIX = "CF - ";
 
         // Create static Regex objects.
-        private static Regex columnNameRegex = new Regex("[A-Za-z]+", RegexOptions.None, Constants.REGEX_TIMEOUT);
-        private static Regex rowIndexRegex = new Regex(@"\d+", RegexOptions.None, Constants.REGEX_TIMEOUT);
-        private static Regex commentRowIndexRegex = new Regex("[0-9]+", RegexOptions.None, Constants.REGEX_TIMEOUT);
+        private static Regex columnNameRegex = new Regex("[A-Za-z]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+        private static Regex rowIndexRegex = new Regex(@"\d+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+        private static Regex commentRowIndexRegex = new Regex("[0-9]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
         /// <summary>
         /// Takes the name of a worksheet and returns that worksheet part from the given Excel document. An empty

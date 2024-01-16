@@ -13,6 +13,7 @@ namespace IES.Common.Core.Utilities
 	using System.Linq;
 	using System.Net.Http;
 	using System.Text.RegularExpressions;
+	using IES.Common.Core;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
@@ -90,7 +91,7 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.
 		/// </summary>
-		private static Regex regexNewLine = new Regex(@"<br( )*/*( )*>", RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+		private static Regex regexNewLine = new Regex(@"<br( )*/*( )*>", RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
 		#region Adjusting precision of decimal numbers, based on workspace settings
 
@@ -196,7 +197,7 @@ namespace IES.Common.Core.Utilities
 		{
 			string format = "#,##0.##";
 
-			if (numberOfDecimalPlaces == Constants.DOLLARS_AND_CENTS_PRECISION)
+			if (numberOfDecimalPlaces == CommonConstants.DOLLARS_AND_CENTS_PRECISION)
 			{
 				format = "#,##0.00";
 			}
@@ -451,9 +452,9 @@ namespace IES.Common.Core.Utilities
 		{
 			if (!string.IsNullOrEmpty(number) && !string.IsNullOrEmpty(title))
 			{
-				if (number.ToUpper() == Constants.UNIQUE_MULTI_NUMBER && title.ToUpper() == Constants.UNIQUE_MULTI_NUMBER)
+				if (number.ToUpper() == CommonConstants.UNIQUE_MULTI_NUMBER && title.ToUpper() == CommonConstants.UNIQUE_MULTI_NUMBER)
 				{
-					return Constants.UNIQUE_MULTI_NUMBER;
+					return CommonConstants.UNIQUE_MULTI_NUMBER;
 				}
 			}
 			return number + seperator + title;
@@ -653,7 +654,7 @@ namespace IES.Common.Core.Utilities
 
 			if (!string.IsNullOrEmpty(token))
 			{
-				string fullToken = Constants.TOKEN_PREFIX + token;
+				string fullToken = CommonConstants.TOKEN_PREFIX + token;
 				if (!client.DefaultRequestHeaders.Any(h => h.Key == HeaderNames.Authorization && h.Value.Any(v => v == fullToken)))
 				{
 					lock (lockObject)

@@ -16,6 +16,8 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Common.Core.OfficeUtilities;
 	using Mediator;
 	using Microsoft.AspNetCore.Mvc;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Interfaces;
 
 	/// <summary>
 	/// Logic for the RDM Reports Controller.
@@ -72,7 +74,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="adUtils">AD Utilities</param>
         /// <param name="securityInfo">Security Information</param>
         public ReportsControllerLogic(IPPRDExporter pprdExporter, IRdmRevisionExporter rdmRevisionExporter, IRateDetailLoader rateDetailLoader, ICobraDetailLoader cobraDetailLoader, ISectionLoader sectionLoader, IFileAttachmentLoader fileAttachmentLoader,
-            IBurdenPoolLoader burdenPoolLoader, IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo)
+            IBurdenPoolLoader burdenPoolLoader, IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
             : base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
         {
             this.pprdExporter = pprdExporter;
@@ -103,7 +105,7 @@ namespace IES.ActionLogic.ControllerLogic
             string exportedFileName = rdmProPricerExporter.ExportReport();
 
             // The filename is hardcoded to make it more obvious what is being replaced by string.format().
-            // string fileDownloadName = $"ProPricer_RDM_Rev{versionNumber}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.zip";
+            // string fileDownloadName = $"ProPricer_RDM_Rev{versionNumber}_{DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY)}.zip";
 
 			return exportedFileName;
         }
@@ -138,7 +140,7 @@ namespace IES.ActionLogic.ControllerLogic
                 throw new ArgumentException("Revision ID is invalid");
             }
 
-            string clientFileName = $"FullPPRD_RDM_Rev{revisionMV.Revision}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.docx";
+            string clientFileName = $"FullPPRD_RDM_Rev{revisionMV.Revision}_{DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY)}.docx";
 
             // Get SectionsMVs
             ICollection<SectionModelView> sections = this.sectionLoader.GetAll(revisionMV);
@@ -188,7 +190,7 @@ namespace IES.ActionLogic.ControllerLogic
             BurdenPoolGridModelView burdenPoolGridModel = this.burdenPoolLoader.GetByRevision(revision.Id);
 
             this.rdmRevisionExporter.ExportRevisionAsJson(currentUserDisplayName, revision, sections, rates, cobraDetails, burdenPoolGridModel, jsonFilePath);
-            string fileDownloadName = $"Revision{revision.Revision}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.json";
+            string fileDownloadName = $"Revision{revision.Revision}_{DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY)}.json";
 
 			FileStream fs = new FileStream(jsonFilePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 

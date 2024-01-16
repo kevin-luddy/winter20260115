@@ -11,7 +11,8 @@ namespace IES.ActionLogic.IO.Export
     using System.Collections.ObjectModel;
     using System.Linq;
     using IES.Common.Core;
-    using IES.Common.Core.OfficeUtilities;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.OfficeUtilities;
     using IES.DataBridge.ModelViews;
 
     /// <summary>
@@ -41,8 +42,8 @@ namespace IES.ActionLogic.IO.Export
                                    cobraExportRow.RateSet,
                                    cobraExportRow.Code1,
                                    cobraExportRow.Description,
-                                   cobraExportRow.Date.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR),
-                                   cobraExportRow.Value == null ? string.Empty : cobraExportRow.Value.GetValueOrDefault().ToString(Constants.FIXED_POINT_FORMATTING_SIX_DECIMAL_PLACES)
+                                   cobraExportRow.Date.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR),
+                                   cobraExportRow.Value == null ? string.Empty : cobraExportRow.Value.GetValueOrDefault().ToString(CommonConstants.FIXED_POINT_FORMATTING_SIX_DECIMAL_PLACES)
                                });
 
             return ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);

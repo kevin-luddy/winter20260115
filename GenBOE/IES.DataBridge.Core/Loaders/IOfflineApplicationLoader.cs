@@ -6,14 +6,14 @@
 
 namespace IES.DataBridge.Loaders
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
-    using IES.DataBridge.ModelViews;
+	using System.Collections.Generic;
+	using IES.Common.Core.Loaders;
+	using IES.DataBridge.ModelViews;
 
-    /// <summary>
-    /// Interface for Offline Application Loader
-    /// </summary>
-    public interface IOfflineApplicationLoader : IDataLoader<OfflineApplicationModelView>
+	/// <summary>
+	/// Interface for Offline Application Loader
+	/// </summary>
+	public interface IOfflineApplicationLoader : IDataLoader<OfflineApplicationModelView>
     {
         /// <summary>
         /// Get all Offline Application data

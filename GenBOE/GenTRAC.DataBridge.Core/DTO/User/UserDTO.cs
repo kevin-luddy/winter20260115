@@ -7,7 +7,8 @@
 namespace GenTRAC.DataBridge.Core.DTO.User
 {
 	using System;
-	using IES.Common.Core;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Models;
 
 	/// <summary>
 	/// Encapsulate a user in the system

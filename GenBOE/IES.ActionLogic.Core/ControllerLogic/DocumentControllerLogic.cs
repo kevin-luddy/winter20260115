@@ -18,7 +18,11 @@ namespace IES.ActionLogic.ControllerLogic
 	using GenTRAC.DataBridge.Core.Common.Security;
 	using GenTRAC.DataBridge.Core.DTO.Proposal;
 	using IES.Common.Core;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
 	using IO.Export;
 	using Microsoft.AspNetCore.Mvc;
@@ -52,7 +56,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Active Directory Utilities
 		/// </summary>
-		private readonly IActiveDirectoryUtilities adUtils;
+		private readonly IActiveDirectoryService adUtils;
 
 		/// <summary>
 		/// Security Information
@@ -97,7 +101,8 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="rateDetailLoader">The rate detail loader.</param>
 		/// <param name="fileAttachmentLoader">The file attachment loader.</param>
 		/// <param name="pprdExporter">The PPRD exporter.</param>
-		public DocumentControllerLogic(ILogger<DocumentControllerLogic> logger, IProposalLoader proposalLoader, IDocumentLoader documentLoader, IDocumentDetailLoader documentDetailLoader, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo, IRevisionLoader revisionLoader,
+		public DocumentControllerLogic(ILogger<DocumentControllerLogic> logger, IProposalLoader proposalLoader, IDocumentLoader documentLoader, IDocumentDetailLoader documentDetailLoader, 
+			IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IRevisionLoader revisionLoader,
 			ISectionLoader sectionLoader, IRateDetailLoader rateDetailLoader, IFileAttachmentLoader fileAttachmentLoader, IPPRDExporter pprdExporter)
 		{
 			this.logger = logger;
@@ -157,7 +162,7 @@ namespace IES.ActionLogic.ControllerLogic
 					&& !p.DocumentId.HasValue
 					&& !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.Revised
 					&& p.CustomerType != CustomerType.Commercial && p.CustomerType != CustomerType.InternationalCommercial
-					&& (isAdmin || roles.Any(r => r.ProposalID == p.Id && Constants.EDIT_ROLES.Contains(r.AuthorizedRole)))).ToList();
+					&& (isAdmin || roles.Any(r => r.ProposalID == p.Id && CommonConstants.EDIT_ROLES.Contains(r.AuthorizedRole)))).ToList();
 
 			// do a sanity check to make sure there are no documents that think they are linked to proposals
 			if (proposals.Any())

@@ -13,6 +13,9 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Common.Core;
 	using IES.Common.Core.Exceptions;
 	using Mediator;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
+	using IES.Common.Core.Enums;
 
 	/// <summary>
 	/// Logic for the Home Controller
@@ -26,7 +29,8 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="areaLockingLoader">Area Locking Loader</param>
         /// <param name="adUtils">AD Utilities</param>
         /// <param name="securityInfo">Security Information</param>
-        public HomeControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo)
+        public HomeControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, 
+            IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
             : base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
         {
         }
@@ -88,7 +92,7 @@ namespace IES.ActionLogic.ControllerLogic
 
             foreach (LockArea area in Enum.GetValues(typeof(LockArea)))
             {
-                if (area != IES.Common.Core.LockArea.None)
+                if (area != IES.Common.Core.Enums.LockArea.None)
                 {
                     lockInfo = this.LockArea(area, true, out status, out message);
                     if (!status)
@@ -149,7 +153,7 @@ namespace IES.ActionLogic.ControllerLogic
 
             foreach (LockArea area in Enum.GetValues(typeof(LockArea)))
             {
-                if (area != IES.Common.Core.LockArea.None)
+                if (area != IES.Common.Core.Enums.LockArea.None)
                 {
                     this.UnlockArea(area, true);
                 }

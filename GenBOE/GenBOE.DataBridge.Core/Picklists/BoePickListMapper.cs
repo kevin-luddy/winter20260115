@@ -6,7 +6,7 @@
 
 namespace GenBOE.DataBridge.Core.Picklists
 {
-	using IES.Common.Core;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.PickList;
 	using Microsoft.Extensions.Logging;
 

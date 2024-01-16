@@ -11,7 +11,9 @@ namespace GenTRAC.DataBridge.DTO
     using System.Linq;
     using GenTRAC.Models;
     using IES.Common.Core;
-    using IES.Common.Core.PickList;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.PickList;
+	using IES.Common.Core.Utilities;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>

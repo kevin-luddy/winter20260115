@@ -6,17 +6,19 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System;
-    using IES.Common.Core;
-    using Newtonsoft.Json;
+	using System;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
+	using Newtonsoft.Json;
 
-    /// <summary>
-    /// RDM base Model View. 
-    /// Currently trying to transition ModelView common behaviors to this base class.
-    /// This can be used as the base class for anything coming back from the client
-    /// that may be dirty.
-    /// </summary>
-    [Serializable]
+	/// <summary>
+	/// RDM base Model View. 
+	/// Currently trying to transition ModelView common behaviors to this base class.
+	/// This can be used as the base class for anything coming back from the client
+	/// that may be dirty.
+	/// </summary>
+	[Serializable]
     public abstract class IESUpdateableModelView : IUpdateableDTO
     {
         /// <summary>

@@ -17,7 +17,12 @@ namespace IES.ActionLogic.ControllerLogic
 	using DataBridge.Common;
 	using IES.ActionLogic.Validation;
 	using IES.Common.Core;
+	using IES.Common.Core.Configuration;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Mediator;
@@ -76,7 +81,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="securityInfo">Security Information</param>
 		/// <param name="replicationLoader">The replication loader.</param>
 		public RateControllerLogic(IRateDetailLoader rateDetailLoader, ICommonDataMapper commonDataMapper, IHomeControllerLogic homeControllerLogic, IBurdenPoolLoader burdenPoolLoader, ISectionLoader sectionLoader,
-			IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo, IRateCodeReplicationLoader replicationLoader,
+			IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IRateCodeReplicationLoader replicationLoader,
 			RateFormatter rateFormatter)
 			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
 
@@ -809,7 +814,7 @@ namespace IES.ActionLogic.ControllerLogic
 				}
 
 				// Set to 5x Normal timeout (nominally 5 minutes total).
-				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 				{
 					this.rateDetailLoader.BulkSave(importResults);
 					scope.Complete();
@@ -861,7 +866,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			// Set to 5x Normal timeout (nominally 5 minutes total).
-			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 			{
 				this.rateDetailLoader.SaveDetails(importedRateCodes);
 				scope.Complete();

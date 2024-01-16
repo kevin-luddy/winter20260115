@@ -7,7 +7,8 @@
 namespace IES.Common.Core.Interfaces
 {
     using System;
-    using IES.Common.Core.Models;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Models;
 
     /// <summary>
     /// Base interface for the Updateable DTOs

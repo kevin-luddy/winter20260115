@@ -16,7 +16,9 @@ namespace IES.ActionLogic.IO.Import
 	using DataBridge.ModelViews;
 	using DocumentFormat.OpenXml.Packaging;
 	using IES.Common.Core;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Models;
 	using IES.Common.Core.OfficeUtilities;
 
 	/// <summary>

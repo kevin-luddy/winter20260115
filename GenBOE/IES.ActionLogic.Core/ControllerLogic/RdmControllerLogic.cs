@@ -11,8 +11,11 @@ namespace IES.ActionLogic.ControllerLogic
     using System.Linq;
     using Common;
     using IES.Common.Core;
-    using IES.Common.Core.Exceptions;
-    using IES.DataBridge.Loaders;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
+	using IES.DataBridge.Loaders;
     using IES.DataBridge.ModelViews;
     using Mediator;
 
@@ -37,7 +40,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <summary>
         /// Active Directory Utilities
         /// </summary>
-        public IActiveDirectoryUtilities AdUtils { get; }
+        public IActiveDirectoryService AdUtils { get; }
 
         /// <summary>
         /// Security Information
@@ -120,7 +123,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="revisionMediator">The revision Mediator.</param>
         /// <param name="adUtils">Active Directory Utilities</param>
         /// <param name="securityInfo">Security Info</param>
-        protected RdmControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo)
+        protected RdmControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
         {
             this.AreaLockingLoader = areaLockingLoader;
             this.RevisionMediator = revisionMediator;

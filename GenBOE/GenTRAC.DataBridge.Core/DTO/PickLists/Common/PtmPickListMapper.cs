@@ -10,6 +10,7 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists.Common
 	using GenTRAC.DataBridge.Core.DTO.PickLists;
 	using GenTRAC.DataBridge.DTO;
 	using IES.Common.Core;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.PickList;
 	using Microsoft.Extensions.Logging;
 

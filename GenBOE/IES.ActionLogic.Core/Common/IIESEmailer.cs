@@ -7,7 +7,8 @@
 namespace IES.ActionLogic.Common
 {
     using IES.Common.Core;
-    using IES.DataBridge.ModelViews;
+	using IES.Common.Core.Models;
+	using IES.DataBridge.ModelViews;
 
     /// <summary>
     /// The Emailer class will send an email to the recipient and replace any tokens in the subject and body as required.

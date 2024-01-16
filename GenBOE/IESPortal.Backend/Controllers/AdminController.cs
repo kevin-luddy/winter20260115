@@ -14,8 +14,14 @@ namespace IESPortal.Backend.Controllers
 	using IES.ActionLogic.ControllerLogic;
 	using IES.ActionLogic.ModelView;
 	using IES.Common.Core;
+	using IES.Common.Core.Configuration;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.Common.Core.PickList;
+	using IES.Common.Core.Utilities;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
@@ -140,7 +146,7 @@ namespace IESPortal.Backend.Controllers
                 new TransactionOptions
                 {
                     IsolationLevel = IsolationLevel.Snapshot,
-                    Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
+                    Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
                 }))
             {
                 this.bannerMediator.Save(banner);
@@ -168,7 +174,7 @@ namespace IESPortal.Backend.Controllers
 
             if (!ModelState.IsValid)
             {
-                throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
+                throw new GenValidationException(CommonUtilities.CreateModelStateValidationErrorList(ModelState));
             }
 
             if (banner.SelectedApps == null || banner.SelectedApps.None())
@@ -180,7 +186,7 @@ namespace IESPortal.Backend.Controllers
                 new TransactionOptions
                 {
                     IsolationLevel = IsolationLevel.Snapshot,
-                    Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
+                    Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
                 }))
             {
                 banner.Updateable = UpdateType.Upsert;

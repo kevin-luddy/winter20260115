@@ -9,7 +9,8 @@ namespace IES.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using IES.Common.Core;
     using IES.Common.Core.Exceptions;
-    using IES.DataBridge.ModelViews;
+	using IES.Common.Core.Models;
+	using IES.DataBridge.ModelViews;
 
     /// <summary>
     /// Interface for the PPRD Controller Logic.

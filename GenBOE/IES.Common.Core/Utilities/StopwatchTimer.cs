@@ -60,7 +60,7 @@ namespace IES.Common.Core.Utilities
 
 			stopwatch = new Stopwatch();
 			stopwatch.Start();
-			this.logger.LogTrace(string.Format(Constants.LOG_ACTIVITY_START, this.activity));
+			this.logger.LogTrace(string.Format(CommonConstants.LOG_ACTIVITY_START, this.activity));
 		}
 
 		/// <summary>
@@ -105,7 +105,7 @@ namespace IES.Common.Core.Utilities
 		protected virtual void Dispose(bool limitCleanupToNativeOnly)
 		{
 			stopwatch.Stop();
-			logger.LogTrace(string.Format(Constants.LOG_ACTIVITY_END, activity, stopwatch.ElapsedMilliseconds));
+			logger.LogTrace(string.Format(CommonConstants.LOG_ACTIVITY_END, activity, stopwatch.ElapsedMilliseconds));
 
 			activity = null;
 			logger = null;

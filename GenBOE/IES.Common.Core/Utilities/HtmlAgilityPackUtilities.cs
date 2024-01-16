@@ -529,9 +529,9 @@
 				{
 					IEnumerable<HtmlNode> allCellNodes = rowNode.Descendants().Where(n => n.Name.ToLower() == "td");
 					int totalCellsInRow = allCellNodes.Count();
-					if (totalCellsInRow > Constants.MAXIMUM_COLUMNS_PER_TABLE_MS_WORD)
+					if (totalCellsInRow > CommonConstants.MAXIMUM_COLUMNS_PER_TABLE_MS_WORD)
 					{
-						validationMessages.Add(new ValidationMessage(string.Format("The number of table columns exceeds the maximum {0} supported by Microsoft Word.", Constants.MAXIMUM_COLUMNS_PER_TABLE_MS_WORD)));
+						validationMessages.Add(new ValidationMessage(string.Format("The number of table columns exceeds the maximum {0} supported by Microsoft Word.", CommonConstants.MAXIMUM_COLUMNS_PER_TABLE_MS_WORD)));
 						stop = true;
 						break;
 					}

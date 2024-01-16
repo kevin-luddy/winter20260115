@@ -8,11 +8,12 @@ namespace IES.DataBridge.ModelViews
 {
     using System;
     using IES.Common.Core;
+	using IES.Common.Core.Constants;
 
-    /// <summary>
-    /// The ModelView for the Cobra Year Converter Grid.
-    /// </summary>
-    public class CobraYearGridModelView : IESUpdateableModelView
+	/// <summary>
+	/// The ModelView for the Cobra Year Converter Grid.
+	/// </summary>
+	public class CobraYearGridModelView : IESUpdateableModelView
     {
         /// <summary>
         /// Constructor
@@ -40,7 +41,7 @@ namespace IES.DataBridge.ModelViews
         {
             get
             {
-                return this.CobraDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR);
+                return this.CobraDate.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR);
             }
 
             set

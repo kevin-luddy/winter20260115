@@ -1,8 +1,8 @@
 ﻿namespace IES.Common.Core.Models
 {
 	using System;
+	using IES.Common.Core;
 	using IES.Common.Core.Enums;
-	using IES.Common.Core.Utilities;
 
 	/// <summary>
 	/// Allows identification of output format template ID that either DO or DO NOT correspond to actual (defined) enumeration values

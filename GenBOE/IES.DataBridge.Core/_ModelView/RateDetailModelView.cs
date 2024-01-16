@@ -11,7 +11,8 @@ namespace IES.DataBridge.ModelViews
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using IES.Common.Core;
-    using Newtonsoft.Json;
+	using IES.Common.Core.Enums;
+	using Newtonsoft.Json;
 
     /// <summary>
     /// The Model View used for Rate Details.

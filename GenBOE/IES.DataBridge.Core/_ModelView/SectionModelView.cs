@@ -10,6 +10,7 @@ namespace IES.DataBridge.ModelViews
 	using System.Collections.Generic;
 	using System.ComponentModel.DataAnnotations;
 	using IES.Common.Core;
+	using IES.Common.Core.Enums;
 
 	/// <summary>
 	/// The Model for a section in a document.

@@ -8,11 +8,12 @@ namespace IES.DataBridge.Common
 {
     using System.Collections.Generic;
     using IES.Common.Core;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// Interface for the Common Data Mappers
-    /// </summary>
-    public interface ICommonDataMapper
+	/// <summary>
+	/// Interface for the Common Data Mappers
+	/// </summary>
+	public interface ICommonDataMapper
     {
         /// <summary>
         /// Gets all Resource Classes as an options list.

@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.Common.Core.Utilities
+namespace IES.Common.Core
 {
 	using System.IO;
 	using System.Xml.Serialization;

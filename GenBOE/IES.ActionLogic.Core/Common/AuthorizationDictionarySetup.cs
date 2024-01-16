@@ -8,12 +8,13 @@ namespace IES.ActionLogic.Common
 {
     using System.Collections.Generic;
     using IES.Common.Core;
+	using IES.Common.Core.Constants;
 
-    /// <summary>
-    /// This class generates a dictionary that will be used by the controllers to check access authorization
-    /// for each controller's action
-    /// </summary>
-    internal static class AuthorizationDictionarySetup
+	/// <summary>
+	/// This class generates a dictionary that will be used by the controllers to check access authorization
+	/// for each controller's action
+	/// </summary>
+	internal static class AuthorizationDictionarySetup
     {
         /// <summary>
         /// Generate a dictionary containing controllers and actions that allow read-only (viewer) access.

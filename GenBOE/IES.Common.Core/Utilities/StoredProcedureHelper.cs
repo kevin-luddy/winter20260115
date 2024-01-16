@@ -88,7 +88,7 @@ namespace IES.Common.Core.Utilities
 				// code generates it
 				using (SqlCommand command = new SqlCommand(sql, sqlConnection))
 				{
-					command.CommandTimeout = ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT);
+					command.CommandTimeout = ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", CommonConstants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT);
 
 					command.Parameters.Add(parameter);
 

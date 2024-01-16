@@ -9,6 +9,7 @@ namespace IES.DataBridge.ModelViews
 	using System;
 	using System.Configuration;
 	using IES.Common.Core;
+	using IES.Common.Core.Models;
 
 	/// <summary>
 	/// A Model View class for locking a document for edit.

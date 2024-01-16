@@ -50,7 +50,7 @@ namespace IES.Common.Core.OfficeUtilities
         /// <summary>
         /// Create static Regex object for FileDownload.
         /// </summary>
-        private static Regex regexFileDownload = new Regex("[\\\\/:\\*\\?\"<>\\|, ]", RegexOptions.None, Constants.REGEX_TIMEOUT);
+        private static Regex regexFileDownload = new Regex("[\\\\/:\\*\\?\"<>\\|, ]", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
         /// <summary>
         /// Gets the content type based on the filename

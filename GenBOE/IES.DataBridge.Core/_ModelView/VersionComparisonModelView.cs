@@ -10,11 +10,12 @@ namespace IES.DataBridge.ModelViews
     using System.Collections.ObjectModel;
     using IES.Common.Core;
     using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// ModelView for the Version Comparison partial page
-    /// </summary>
-    public class VersionComparisonModelView : IESUpdateableModelView
+	/// <summary>
+	/// ModelView for the Version Comparison partial page
+	/// </summary>
+	public class VersionComparisonModelView : IESUpdateableModelView
     {
         /// <summary>
         /// Default Constructor

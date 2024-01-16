@@ -7,7 +7,8 @@
 namespace IES.DataBridge.Loaders
 {
     using IES.Common.Core;
-    using IES.DataBridge.ModelViews;
+	using IES.Common.Core.Loaders;
+	using IES.DataBridge.ModelViews;
 
     /// <summary>
     /// Interface for Document Detail Loader

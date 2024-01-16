@@ -15,6 +15,8 @@ namespace IES.Common.Core.Loaders
 	using System.Globalization;
 	using System.Linq;
 	using System.Threading.Tasks;
+	using IES.Common.Core;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
 	using IES.Common.Core.Utilities;

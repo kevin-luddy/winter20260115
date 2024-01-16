@@ -56,7 +56,7 @@
 			{
 				// TODO:  This is future work for genBOE integration
 				//// this lets us put [Authorize(Policy = "OnlyIesToken")] onto Controller
-				//AuthorizationPolicyBuilder onlyIesTokenSchemePolicyBuilder = new(Constants.IES_TOKEN_SCHEME);
+				//AuthorizationPolicyBuilder onlyIesTokenSchemePolicyBuilder = new(CommonConstants.IES_TOKEN_SCHEME);
 				//options.AddPolicy("OnlyIesToken", onlyIesTokenSchemePolicyBuilder
 				//	.RequireAuthenticatedUser()
 				//	.Build());

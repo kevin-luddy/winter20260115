@@ -10,6 +10,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.DataBridge.ModelViews;
 	using IES.Common.Core;
 	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Models;
 
 	/// <summary>
 	/// Interface for the File Attachment Controller Logic.
@@ -22,6 +23,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="fileAttachments">Collection of File Attachment rows</param>
         /// <param name="sections">The sections for the current revision.</param>
         /// <returns>A list of validation errors (if any).</returns>
-        ICollection<ValidationMessage> ValidateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, ICollection<OptionModelView> sections);
+        ICollection<ValidationMessage> ValidateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, 
+            ICollection<OptionModelView> sections);
     }
 }

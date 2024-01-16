@@ -6,14 +6,15 @@
 
 namespace IES.DataBridge.Loaders
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
-    using IES.DataBridge.ModelViews;
+	using System.Collections.Generic;
+	using IES.Common.Core.Loaders;
+	using IES.Common.Core.Models;
+	using IES.DataBridge.ModelViews;
 
-    /// <summary>
-    /// Interface for Section Loader
-    /// </summary>
-    public interface ISectionLoader : IDataLoader<SectionModelView>
+	/// <summary>
+	/// Interface for Section Loader
+	/// </summary>
+	public interface ISectionLoader : IDataLoader<SectionModelView>
     {
         /// <summary>
         /// Get all sections by revision.

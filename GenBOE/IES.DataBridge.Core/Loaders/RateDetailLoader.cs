@@ -15,6 +15,11 @@ namespace IES.DataBridge.Loaders
 	using IES.Models;
 	using IES.Common.Core.Exceptions;
 	using Microsoft.Extensions.Logging;
+	using IES.Common.Core.Models;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Utilities;
+	using IES.Common.Core.Loaders;
+	using IES.Common.Core.Constants;
 
 	/// <summary>
 	/// Rate Grid Loader
@@ -888,7 +893,7 @@ namespace IES.DataBridge.Loaders
 		/// <returns>Meta data required for bulk save processing</returns>
 		public override BulkSaveMetaData CreateBulkSaveMetaData()
 		{
-			BulkSaveMetaData metaData = new BulkSaveMetaData(Constants.IES_DB_CONTEXT_NAME);
+			BulkSaveMetaData metaData = new BulkSaveMetaData(CommonConstants.IES_DB_CONTEXT_NAME);
 
 			metaData.BulkDeleteStoredProcedureName = "deleteRateCodeviaTableParameter";
 			metaData.BulkInsertStoredProcedureName = "insertRateCodeviaTableParameter";

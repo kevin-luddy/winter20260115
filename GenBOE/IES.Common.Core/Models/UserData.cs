@@ -8,7 +8,7 @@ namespace IES.Common.Core.Models
 {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using IES.Common.Core.Utilities;
+	using IES.Common.Core;
 
 	/// <summary>
 	/// Class representing AD information about a given user

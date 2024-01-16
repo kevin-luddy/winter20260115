@@ -7,11 +7,12 @@
 namespace IES.DataBridge.ModelViews
 {
     using IES.Common.Core;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// The Model View used for Burden Element to Rate Code mapping values.
-    /// </summary>
-    public class BurdenElementRateCodeMappingModelView : UpdateableDTO
+	/// <summary>
+	/// The Model View used for Burden Element to Rate Code mapping values.
+	/// </summary>
+	public class BurdenElementRateCodeMappingModelView : UpdateableDTO
     {
         /// <summary>
         /// Gets or sets the burden element.

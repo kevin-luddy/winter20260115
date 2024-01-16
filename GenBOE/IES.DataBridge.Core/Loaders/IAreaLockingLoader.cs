@@ -8,11 +8,13 @@ namespace IES.DataBridge.Loaders
 {
     using System.Collections.Generic;
     using IES.Common.Core;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// Interface for the Area Locking Loader
-    /// </summary>
-    public interface IAreaLockingLoader
+	/// <summary>
+	/// Interface for the Area Locking Loader
+	/// </summary>
+	public interface IAreaLockingLoader
     {
         /// <summary>
         /// Adds lock for area to cache - can add new lock or extend existing

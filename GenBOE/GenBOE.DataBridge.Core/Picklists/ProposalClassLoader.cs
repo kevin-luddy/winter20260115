@@ -12,6 +12,7 @@ namespace GenBOE.DataBridge.Core.Picklists
 	using IES.Common.Core.PickList;
 	using GenBOE.Models;
 	using Microsoft.Extensions.Logging;
+	using IES.Common.Core.Utilities;
 
 	/// <summary>
 	/// ProposalClassLULoader

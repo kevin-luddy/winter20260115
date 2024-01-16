@@ -7,7 +7,7 @@
 namespace IES.Common.Core.Constants
 {
 	/// <summary>
-	/// This class holds constants used for talking to the Controllers.
+	/// This class holds CommonConstants used for talking to the Controllers.
 	/// </summary>
 	public static class IESWebConstants
 	{

@@ -5,6 +5,9 @@ using GenTRAC.DataBridge.DTO;
 using IES.ActionLogic.Common;
 using IES.ActionLogic.ControllerLogic;
 using IES.Common.Core;
+using IES.Common.Core.Interfaces;
+using IES.Common.Core.Security;
+using IES.Common.Core.Services;
 using IES.DataBridge.Loaders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +19,8 @@ config.AddWindowsAuthentication(builder.Services, builder.Configuration);
 
 // Add Custom Services
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
-builder.Services.AddSingleton<ICache, Cache>();
-builder.Services.AddScoped<IActiveDirectoryUtilities, ActiveDirectoryUtilities>();
+builder.Services.AddSingleton<ICacheService, CacheService>();
+builder.Services.AddScoped<IActiveDirectoryService, ActiveDirectoryService>();
 builder.Services.AddTransient<IBannerLoader, BannerLoader>();
 builder.Services.AddSingleton<BannerMediator>();
 builder.Services.AddTransient<IESPortalAdminControllerLogic>();

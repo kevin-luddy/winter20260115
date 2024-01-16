@@ -8,12 +8,13 @@ namespace IES.DataBridge.ModelViews
 {
     using System.Collections.Generic;
     using IES.Common.Core;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// A Model View class for a PPR&amp;D Document
-    /// </summary>
-    /// <seealso cref="IES.DataBridge.ModelViews.DocumentModelView" />
-    public class PPRDModelView
+	/// <summary>
+	/// A Model View class for a PPR&amp;D Document
+	/// </summary>
+	/// <seealso cref="IES.DataBridge.ModelViews.DocumentModelView" />
+	public class PPRDModelView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PPRDModelView"/> class.

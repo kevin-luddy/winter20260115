@@ -6,7 +6,6 @@
 
 using System.Configuration;
 using IES.Common.Core.Enums;
-using IES.Common.Core.Utilities;
 
 namespace IES.Common.Core.Configuration
 {

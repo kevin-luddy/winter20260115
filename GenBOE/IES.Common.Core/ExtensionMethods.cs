@@ -4,21 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.Common.Core.Utilities
+namespace IES.Common.Core
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Globalization;
 	using System.Collections.ObjectModel;
-	using System.IO;
-	using System.Runtime.Serialization.Formatters.Binary;
-	using System.Reflection;
 	using System.ComponentModel;
-	using System.Text.RegularExpressions;
+	using System.Globalization;
+	using System.IO;
+	using System.Linq;
+	using System.Reflection;
 	using System.Runtime.Serialization;
-	using IES.Common.Core.Attributes;
+	using System.Runtime.Serialization.Formatters.Binary;
+	using System.Text.RegularExpressions;
 	using IES.Common.Core.Constants;
+	using IES.Common.Core.Attributes;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Models;
 	using IES.Common.Core.Utilities;
@@ -28,12 +28,12 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Create static Regex object for Indices.
 		/// </summary>
-		private static readonly Regex regexIndices = new Regex("\\[\\d+\\]", RegexOptions.None, Constants.REGEX_TIMEOUT);
+		private static readonly Regex regexIndices = new Regex("\\[\\d+\\]", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
 		/// <summary>
 		/// Create static Regex object for CarriageReturns.
 		/// </summary>
-		private static readonly Regex regexCarriageReturns = new Regex(@"[\n\r]+", RegexOptions.None, Constants.REGEX_TIMEOUT);
+		private static readonly Regex regexCarriageReturns = new Regex(@"[\n\r]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
 		/// <summary>
 		/// Returns true if the value is equal after both ToLower, and Trim
@@ -108,12 +108,12 @@ namespace IES.Common.Core.Utilities
 
 		public static DateTime? Normalize(this DateTime? dt)
 		{
-			return dt.HasValue ? GenBOEUtilities.AdjustDateTimePrecision(dt.Value) : (DateTime?)null;
+			return dt.HasValue ? GenBOEUtilities.AdjustDateTimePrecision(dt.Value) : null;
 		}
 
 		public static DateTime? Normalize(this DateTime? dt, DateTimePrecision precision)
 		{
-			return dt.HasValue ? GenBOEUtilities.AdjustDateTimePrecision(dt.Value, precision) : (DateTime?)null;
+			return dt.HasValue ? GenBOEUtilities.AdjustDateTimePrecision(dt.Value, precision) : null;
 		}
 
 		public static bool IsInRange(this DateTime dt, DateTime dtStart, DateTime dtEnd)
@@ -258,7 +258,7 @@ namespace IES.Common.Core.Utilities
 				return 0;
 			}
 
-			return (decimal)(endDate.Value.Subtract(startDate.Value).Days / Constants.POP_MONTHS_DIVISOR);
+			return (decimal)(endDate.Value.Subtract(startDate.Value).Days / CommonConstants.POP_MONTHS_DIVISOR);
 		}
 
 		#endregion Date/Time methods

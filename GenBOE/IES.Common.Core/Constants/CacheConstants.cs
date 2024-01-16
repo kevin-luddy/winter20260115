@@ -39,7 +39,7 @@
         readonly static public string RESOURCE_CLASS_TYPE = "ResourceClassType".ToLower();
         readonly static public string GET_ALL_REVISIONS = "GET_ALL_REVISIONS".ToLower();
 
-        #region PTM Constants
+        #region PTM CommonConstants
 
         /// <summary>
         /// User
@@ -86,7 +86,7 @@
         /// </summary>
         public const string SAVE_PERMISSIONS_ACTION = "SavePermissionsAction";
 
-        #endregion PTM Constants
+        #endregion PTM CommonConstants
     }
 
 }

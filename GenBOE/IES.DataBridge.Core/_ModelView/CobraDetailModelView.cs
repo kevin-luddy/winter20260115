@@ -7,7 +7,8 @@
 namespace IES.DataBridge.ModelViews
 {
     using IES.Common.Core;
-    using Newtonsoft.Json;
+	using IES.Common.Core.Enums;
+	using Newtonsoft.Json;
 
     /// <summary>
     /// The Model View used for COBRA Mapping Details.

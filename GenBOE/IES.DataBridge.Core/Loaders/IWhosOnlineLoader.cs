@@ -8,7 +8,8 @@ namespace IES.DataBridge.Loaders
 {
     using System.Collections.Generic;
     using IES.Common.Core;
-    using IES.DataBridge.ModelViews;
+	using IES.Common.Core.Models;
+	using IES.DataBridge.ModelViews;
 
     /// <summary>
     /// Interface for the Who's Online Loader

@@ -9,6 +9,8 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Collections.Generic;
 	using IES.DataBridge.ModelViews;
 	using IES.Common.Core;
+	using IES.Common.Core.Models;
+	using IES.Common.Core.Enums;
 
 	/// <summary>
 	/// Interface for the Home Controller Logic

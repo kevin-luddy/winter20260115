@@ -20,6 +20,8 @@ namespace IES.ActionLogic.IO.Export
 	using IES.Common.Core;
 	using IES.Common.Core.OfficeUtilities;
 	using Microsoft.AspNetCore.Mvc;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Constants;
 
 	/// <summary>
 	/// The PPRD Exporter.
@@ -694,12 +696,12 @@ namespace IES.ActionLogic.IO.Export
 					WordUtilities.SetElementText(initialYear, initialYearValue);
 
 					// Append cells for additional years
-					bool isRowEmpty = initialYearValue.Equals(Constants.NOT_APPLICABLE);
+					bool isRowEmpty = initialYearValue.Equals(CommonConstants.NOT_APPLICABLE);
 					for (int i = 1; i <= years; i++)
 					{
 						RateYearModelView rateYearMV = rate.Values.FirstOrDefault(x => x.Year == startYear + i) ?? new RateYearModelView();
 						string yearValue = this.rateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, rateYearMV.Value);
-						isRowEmpty = isRowEmpty && yearValue.Equals(Constants.NOT_APPLICABLE);
+						isRowEmpty = isRowEmpty && yearValue.Equals(CommonConstants.NOT_APPLICABLE);
 						this.AppendCellToRow(row, yearValue);
 					}
 

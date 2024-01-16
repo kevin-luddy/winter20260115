@@ -8,11 +8,12 @@ namespace GenTRAC.DataBridge.DTO
 {
     using System;
     using IES.Common.Core;
+	using IES.Common.Core.Enums;
 
-    /// <summary>
-    /// Dto used to hold data that will be displayed on Home Proposal View.
-    /// </summary>
-    [Serializable]
+	/// <summary>
+	/// Dto used to hold data that will be displayed on Home Proposal View.
+	/// </summary>
+	[Serializable]
     public class HomeProposalViewDto
     {
         /// <summary>

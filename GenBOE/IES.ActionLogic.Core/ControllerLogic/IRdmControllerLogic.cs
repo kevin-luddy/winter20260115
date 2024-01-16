@@ -8,7 +8,10 @@ namespace IES.ActionLogic.ControllerLogic
 {
     using System.Collections.Generic;
     using IES.Common.Core;
-    using IES.DataBridge.Loaders;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
+	using IES.DataBridge.Loaders;
     using IES.DataBridge.ModelViews;
     using Mediator;
 
@@ -32,7 +35,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <summary>
         /// Active Directory Utilities
         /// </summary>
-        IActiveDirectoryUtilities AdUtils { get; }
+        IActiveDirectoryService AdUtils { get; }
 
         /// <summary>
         /// Security Information

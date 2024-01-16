@@ -8,7 +8,8 @@ namespace IES.Common.Core.Models
 {
     using System;
     using System.Globalization;
-    using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Interfaces;
 
     /// <summary>
     /// Base class for the Updateable DTOs
@@ -113,26 +114,5 @@ namespace IES.Common.Core.Models
         {
             throw new NotImplementedException("This method needs to be implemented by your DTO.");
         }
-    }
-
-    /// <summary>
-    /// Update Type Enum
-    /// </summary>
-    public enum UpdateType
-    {
-        /// <summary>
-        /// None
-        /// </summary>
-        None = 0,
-
-        /// <summary>
-        /// Upsert
-        /// </summary>
-        Upsert = 1,
-
-        /// <summary>
-        /// Delete
-        /// </summary>
-        Deleted = 2
     }
 }

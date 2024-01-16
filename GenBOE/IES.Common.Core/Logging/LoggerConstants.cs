@@ -7,7 +7,7 @@
 namespace IES.Common.Core.Logging
 {
 	/// <summary>
-	/// Logger constants
+	/// Logger CommonConstants
 	/// </summary>
 	public static partial class LoggerConstants
 	{

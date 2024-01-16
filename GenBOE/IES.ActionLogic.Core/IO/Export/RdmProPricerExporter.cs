@@ -12,8 +12,10 @@ namespace IES.ActionLogic.IO.Export
 	using System.Linq;
 	using System.Text;
 	using IES.Common.Core;
-	using IES.Common.Core.Compression;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Utilities;
 	using IES.DataBridge.ModelViews;
 
 	/// <summary>
@@ -70,7 +72,7 @@ namespace IES.ActionLogic.IO.Export
 		/// <summary>
 		/// prefix
 		/// </summary>
-		private string prefix = DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY);
+		private string prefix = DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY);
 		#endregion
 
 		/// <summary>

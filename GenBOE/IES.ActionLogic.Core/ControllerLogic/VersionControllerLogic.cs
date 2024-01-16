@@ -14,6 +14,10 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Threading.Tasks;
 	using IES.ActionLogic.Common;
 	using IES.Common.Core;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Mediator;
@@ -43,7 +47,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="securityInfo">Security Information</param>
         /// <param name="emailer">The emailer.</param>
         public VersionControllerLogic(IRateDetailLoader rateDetailLoader,
-            IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo, IIESEmailer emailer)
+            IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IIESEmailer emailer)
             : base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
         {
             this.rateDetailLoader = rateDetailLoader;

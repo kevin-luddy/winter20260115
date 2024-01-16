@@ -10,6 +10,7 @@ namespace IES.Common.Core.Models
 	using System.Collections.Generic;
 	using System.ComponentModel.DataAnnotations;
 	using IES.Common.Core.Attributes;
+	using IES.Common.Core.Enums;
 
 	/// <summary>
 	/// Model View for Project Map Items/Rows.

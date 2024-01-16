@@ -9,9 +9,9 @@ namespace IES.Common.Core.Utilities
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using IES.Common.Core;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Models;
-	using IES.Common.Core.Utilities;
 
 	/// <summary>
 	/// Set of general utility methods for enumerated types

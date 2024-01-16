@@ -8,8 +8,8 @@ namespace IES.Common.Core.Models
 {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using IES.Common.Core;
 	using IES.Common.Core.Enums;
-	using IES.Common.Core.Utilities;
 
 	/// <summary>
 	/// Class representing Area Locking information, including time of lock and who created the lock

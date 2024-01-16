@@ -13,11 +13,12 @@ namespace IES.ActionLogic.IO.Export
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
     using IES.Common.Core;
+	using IES.Common.Core.Constants;
 
-    /// <summary>
-    /// Word Exporter class containing export methods and other utilities
-    /// </summary>
-    public class WordExporter
+	/// <summary>
+	/// Word Exporter class containing export methods and other utilities
+	/// </summary>
+	public class WordExporter
     {
         /// <summary>
         /// Run the export: Read the Word template file into an in-memory OpenXml Wordprocessing document, call the designated data

@@ -9,11 +9,12 @@ namespace IES.DataBridge.ModelViews
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using IES.Common.Core;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// The Model View used for COBRA mapping detail Grid/Table.
-    /// </summary>
-    public class CobraGridModelView
+	/// <summary>
+	/// The Model View used for COBRA mapping detail Grid/Table.
+	/// </summary>
+	public class CobraGridModelView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CobraGridModelView"/> class.

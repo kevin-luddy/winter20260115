@@ -15,7 +15,7 @@ namespace IES.Common.Core.Utilities
 	/// <summary>
 	/// Generates Zip archives.
 	/// </summary>
-	public static class ZipUtility
+	public static class Zip
 	{
 		/// <summary>
 		/// Zips a collection of streams into a physical zip file.

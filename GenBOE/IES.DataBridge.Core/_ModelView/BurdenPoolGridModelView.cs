@@ -7,11 +7,12 @@ namespace IES.DataBridge.ModelViews
 {
     using System.Collections.Generic;
     using IES.Common.Core;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// The Model for a grid in the Burden Pool Grid/Table.
-    /// </summary>
-    public class BurdenPoolGridModelView  
+	/// <summary>
+	/// The Model for a grid in the Burden Pool Grid/Table.
+	/// </summary>
+	public class BurdenPoolGridModelView  
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BurdenPoolGridModelView"/> class.

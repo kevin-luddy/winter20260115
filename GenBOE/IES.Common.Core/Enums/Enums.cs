@@ -54,7 +54,7 @@ namespace IES.Common.Core.Enums
     }
 
     /// <summary>
-    /// Constants associated with the LineOfBusinessType.
+    /// CommonConstants associated with the LineOfBusinessType.
     /// </summary>
     public static class LineOfBusinessTypeConstants
     {
@@ -94,7 +94,7 @@ namespace IES.Common.Core.Enums
     }
 
     /// <summary>
-    /// Specifies constants tightly coupled with the ElementOfCostType
+    /// Specifies CommonConstants tightly coupled with the ElementOfCostType
     /// </summary>
     public static class ElementOfCostTypeConstants
     {
@@ -764,7 +764,7 @@ namespace IES.Common.Core.Enums
     }
 
     /// <summary>
-    /// Specifies set of constants associated with the Rate
+    /// Specifies set of CommonConstants associated with the Rate
     /// </summary>
     public static class RateTypeConstants
     {

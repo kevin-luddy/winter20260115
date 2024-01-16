@@ -10,8 +10,11 @@ namespace IES.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using System.Linq;
     using IES.Common.Core;
-    using IES.Common.Core.Exceptions;
-    using IES.DataBridge.Loaders;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
+	using IES.DataBridge.Loaders;
     using IES.DataBridge.ModelViews;
     using Mediator;
 
@@ -34,7 +37,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="adUtils">AD Utilities</param>
         /// <param name="securityInfo">Security Information</param>
         public PPRDControllerLogic(IFileAttachmentLoader fileAttachmentLoader,
-            IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo)
+            IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
             : base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
         {
             this.fileAttachmentLoader = fileAttachmentLoader;

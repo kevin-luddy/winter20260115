@@ -13,6 +13,7 @@ namespace IES.Common.Core.Email
 	using System.Linq;
 	using System.Net.Mail;
 	using System.Text.RegularExpressions;
+	using IES.Common.Core;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Models;
@@ -37,7 +38,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// The regex for an email address.
 		/// </summary>
-		private static readonly Regex RegexEmailAddress = new Regex(EMAIL_ADDRESS_REG_EX, RegexOptions.None, Constants.REGEX_TIMEOUT);
+		private static readonly Regex RegexEmailAddress = new Regex(EMAIL_ADDRESS_REG_EX, RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
 		/// <summary>
 		/// Public ctor

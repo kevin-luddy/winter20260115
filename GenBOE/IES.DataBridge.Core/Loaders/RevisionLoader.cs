@@ -14,6 +14,8 @@ namespace IES.DataBridge.Loaders
     using IES.Models;
 	using IES.Common.Core;
 	using Microsoft.Extensions.Logging;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Utilities;
 
 	/// <summary>
 	/// Revision Data Loader

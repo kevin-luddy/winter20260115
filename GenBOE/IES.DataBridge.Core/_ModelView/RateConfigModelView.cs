@@ -7,11 +7,12 @@
 namespace IES.DataBridge.ModelViews
 {
     using IES.Common.Core;
+	using IES.Common.Core.Enums;
 
-    /// <summary>
-    /// The Model View used for Rate Details.
-    /// </summary>
-    public class RateConfigModelView
+	/// <summary>
+	/// The Model View used for Rate Details.
+	/// </summary>
+	public class RateConfigModelView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RateConfigModelView"/> class.

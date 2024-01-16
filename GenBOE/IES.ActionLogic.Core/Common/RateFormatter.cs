@@ -12,6 +12,8 @@ namespace IES.ActionLogic.Common
 	using DataBridge.Loaders;
 	using DataBridge.ModelViews;
 	using IES.Common.Core;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
 	using Newtonsoft.Json;
 
 	/// <summary>
@@ -140,7 +142,7 @@ namespace IES.ActionLogic.Common
         {
             if (!rate.HasValue)
             {
-                return target == RateTarget.PPRD ? Constants.NOT_APPLICABLE : string.Empty;
+                return target == RateTarget.PPRD ? CommonConstants.NOT_APPLICABLE : string.Empty;
             }
 
             string key = target.GetDescription() + categoryDescription;

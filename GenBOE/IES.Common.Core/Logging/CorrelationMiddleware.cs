@@ -42,10 +42,10 @@ namespace IES.Common.Core.Logging
 			if (string.IsNullOrEmpty(correlationId))
 			{
 				correlationId = Guid.NewGuid().ToString();
-				context.Request.Headers.Add(Constants.CORRELATION_HEADER_NAME, correlationId);
+				context.Request.Headers.Add(CommonConstants.CORRELATION_HEADER_NAME, correlationId);
 			}
 
-			LogContext.PushProperty(Constants.CORRELATION_HEADER_NAME, correlationId);
+			LogContext.PushProperty(CommonConstants.CORRELATION_HEADER_NAME, correlationId);
 			await next(context);
 		}
 	}

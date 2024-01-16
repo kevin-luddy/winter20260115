@@ -13,6 +13,12 @@ namespace GenTRAC.DataBridge.DTO
 	using GenTRAC.DataBridge.Core.DTO.Proposal;
 	using GenTRAC.Models;
 	using IES.Common.Core;
+	using IES.Common.Core.Configuration;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Loaders;
+	using IES.Common.Core.Models;
+	using IES.Common.Core.Utilities;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>
@@ -161,7 +167,7 @@ namespace GenTRAC.DataBridge.DTO
                             IsCostVolumeClassified = entity.CostVolumeClassified,
                             DocumentId = entity.DocumentId,
                             ForecastedTrackingNumber = entity.ForecastedTrackingID,
-                            IsForecastProposal = entity.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                            IsForecastProposal = entity.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                             ForecastEmailSent = entity.ForecastEmailSent,
                             ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
                             CostElementTypeIds = entity.CostElementLUs.Select(x => x.CostElementID),
@@ -298,13 +304,13 @@ namespace GenTRAC.DataBridge.DTO
             {
                 // Handle both the current and legacy tracking number format
                 string altTrackingNumber = string.Empty;
-                if (inTrackingNumber.Length == Constants.TRACKING_NUMBER_LENGTH)
+                if (inTrackingNumber.Length == CommonConstants.TRACKING_NUMBER_LENGTH)
                 {
-                    altTrackingNumber = Constants.PROPOSAL_CENTURY + inTrackingNumber;
+                    altTrackingNumber = CommonConstants.PROPOSAL_CENTURY + inTrackingNumber;
                 }
-                else if (inTrackingNumber.Length == Constants.LEGACY_TRACKING_NUMBER_LENGTH)
+                else if (inTrackingNumber.Length == CommonConstants.LEGACY_TRACKING_NUMBER_LENGTH)
                 {
-                    altTrackingNumber = inTrackingNumber.Substring(2, Constants.TRACKING_NUMBER_LENGTH);
+                    altTrackingNumber = inTrackingNumber.Substring(2, CommonConstants.TRACKING_NUMBER_LENGTH);
                 }
 
                 altTrackingNumber = altTrackingNumber.Trim().ToLower();
@@ -405,7 +411,7 @@ namespace GenTRAC.DataBridge.DTO
                                 ProposalDateAssigned = entity.Date_Assigned,
                                 ProposalDueDate = entity.Estimated_Ship_Date__Due_Date_.Value,
                                 HasLinkedDocument = entity.DocumentId.HasValue,
-                                IsForecastProposal = entity.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                                IsForecastProposal = entity.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                                 HasWriteAccessToLinkedDocument = proposalIdsWithWriteAccess.Contains(entity.ProposalID),
                                 IsCommercialCustomer = entity.CustomerTypeId == (int)CustomerType.Commercial ||
                                                        entity.CustomerTypeId == (int)CustomerType.InternationalCommercial,
@@ -425,7 +431,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <returns>A collection of proposal ids</returns>
         private static ICollection<int> GetProposalIdsWithLinkedDocumentWriteAccess(string ntID, genTRACEntities dbModel)
         {
-            int[] writeAccessRoles = Constants.EDIT_ROLES.Select(x => (int)x).ToArray();
+            int[] writeAccessRoles = CommonConstants.EDIT_ROLES.Select(x => (int)x).ToArray();
 
             // a distinct list of proposal ids, to which the user has write access (based on the roles above)
             ICollection<int> proposalIdsWithWriteAccess = dbModel.ProposalUserRoles
@@ -468,7 +474,7 @@ namespace GenTRAC.DataBridge.DTO
                                     ProposalTitle = p.ProposalTitle,
                                     CustomerType = (CustomerType)p.CustomerTypeID,
                                     DocumentId = p.DocumentId,
-                                    IsForecastProposal = p.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                                    IsForecastProposal = p.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                                     HasWriteAccessToLinkedDocument = proposalIdsWithWriteAccess.Contains(p.ProposalID)
                                 }).Distinct().ToList();
                 }
@@ -628,7 +634,7 @@ namespace GenTRAC.DataBridge.DTO
                             ProposalTitle = x.ProposalTitle,
                             DocumentId = x.DocumentId,
                             CustomerType = (CustomerType)x.CustomerTypeID,
-                            IsForecastProposal = x.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                            IsForecastProposal = x.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                             RevisionOfId = x.RevisionOfId
                         }).ToList();
                 }
@@ -709,7 +715,7 @@ namespace GenTRAC.DataBridge.DTO
                                     ProposalTitle = p.ProposalTitle,
                                     DocumentId = p.DocumentId,
                                     CustomerType = (CustomerType)p.CustomerTypeID,
-                                    IsForecastProposal = p.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                                    IsForecastProposal = p.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                                     ContractActionType = (ContractActionType?)p.ContractActionType,
                                     ContractActionTypeOtherText = p.ContractActionTypeOtherText
                                 }).ToCollection();
@@ -881,7 +887,7 @@ namespace GenTRAC.DataBridge.DTO
                         IsCostVolumeClassified = entity.CostVolumeClassified,
                         DocumentId = entity.DocumentId,
                         ForecastedTrackingNumber = entity.ForecastedTrackingID,
-                        IsForecastProposal = entity.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                        IsForecastProposal = entity.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                         ForecastEmailSent = entity.ForecastEmailSent,
                         ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
                         CostElementTypeIds = entity.CostElementLUs.Select(x => x.CostElementID),
@@ -1050,7 +1056,7 @@ namespace GenTRAC.DataBridge.DTO
                         IsCostVolumeClassified = entity.CostVolumeClassified,
                         DocumentId = entity.DocumentId,
                         ForecastedTrackingNumber = entity.ForecastedTrackingID,
-                        IsForecastProposal = entity.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                        IsForecastProposal = entity.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                         ForecastEmailSent = entity.ForecastEmailSent,
                         ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
                         CostElementTypeIds = entity.CostElementLUs.Select(x => x.CostElementID),
@@ -1221,7 +1227,7 @@ namespace GenTRAC.DataBridge.DTO
                             IsCostVolumeClassified = entity.CostVolumeClassified,
                             DocumentId = entity.DocumentId,
                             ForecastedTrackingNumber = entity.ForecastedTrackingID,
-                            IsForecastProposal = entity.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                            IsForecastProposal = entity.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                             ForecastEmailSent = entity.ForecastEmailSent,
                             ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
                             CostElementTypeIds = entity.CostElementLUs.Select(x => x.CostElementID),
@@ -1407,7 +1413,7 @@ namespace GenTRAC.DataBridge.DTO
                             IsCostVolumeClassified = entity.CostVolumeClassified,
                             DocumentId = entity.DocumentId,
                             ForecastedTrackingNumber = entity.ForecastedTrackingID,
-                            IsForecastProposal = entity.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                            IsForecastProposal = entity.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                             ForecastEmailSent = entity.ForecastEmailSent,
                             ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
                             CostElementTypeIds = entity.CostElementLUs.Select(x => x.CostElementID),
@@ -1591,7 +1597,7 @@ namespace GenTRAC.DataBridge.DTO
                     IsCostVolumeClassified = x.Proposals.CostVolumeClassified,
                     DocumentId = x.Proposals.DocumentId,
                     ForecastedTrackingNumber = x.Proposals.ForecastedTrackingID,
-                    IsForecastProposal = x.Proposals.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                    IsForecastProposal = x.Proposals.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                     ForecastEmailSent = x.Proposals.ForecastEmailSent,
                     ContractTypeIds = x.Proposals.ContractTypeLUs.Select(y => y.ContractTypeID).ToList(),
                     CostElementTypeIds = x.Proposals.CostElementLUs.Select(y => y.CostElementID).ToList(),
@@ -1692,7 +1698,7 @@ namespace GenTRAC.DataBridge.DTO
                         IsCostVolumeClassified = entity.Proposals.CostVolumeClassified,
                         DocumentId = entity.Proposals.DocumentId,
                         ForecastedTrackingNumber = entity.Proposals.ForecastedTrackingID,
-                        IsForecastProposal = entity.Proposals.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                        IsForecastProposal = entity.Proposals.ProposalClassLU.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
                         ForecastEmailSent = entity.Proposals.ForecastEmailSent,
                         ContractTypeIds = entity.Proposals.ContractTypeLUs.Select(x => x.ContractTypeID),
                         CostElementTypeIds = entity.Proposals.CostElementLUs.Select(x => x.CostElementID),
@@ -1898,15 +1904,15 @@ namespace GenTRAC.DataBridge.DTO
             switch (proposalStatus)
             {
                 case ProposalStatus.InProgress:
-                    result = "Due: " + (revisedDeliveryDate.HasValue ? revisedDeliveryDate.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)
-                        : anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR));
+                    result = "Due: " + (revisedDeliveryDate.HasValue ? revisedDeliveryDate.Value.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR)
+                        : anticipatedDeliveryDate.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR));
                     break;
                 case ProposalStatus.Completed:
                 case ProposalStatus.PendingCertification:
                 case ProposalStatus.PendingAward:
                 case ProposalStatus.Lost:
                 case ProposalStatus.Revised:
-                    result = "Approval Workflow Completed: " + (maxCompleteDate?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A");
+                    result = "Approval Workflow Completed: " + (maxCompleteDate?.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A");
                     break;
                 case ProposalStatus.Archived:
                 case ProposalStatus.Deleted:
@@ -1941,7 +1947,7 @@ namespace GenTRAC.DataBridge.DTO
                 }
                 else if (proposalStatus == ProposalStatus.PendingAward || proposalStatus == ProposalStatus.Lost || proposalStatus == ProposalStatus.Completed)
                 {
-                    result = "Certification Completed: " + certificationTimelineCompleted?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
+                    result = "Certification Completed: " + certificationTimelineCompleted?.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
                 }
             }
 
@@ -2044,7 +2050,7 @@ namespace GenTRAC.DataBridge.DTO
             searchString = (searchString ?? string.Empty).Trim().ToLower();
 
             return dbModel.Proposals.Where(
-                                x => x.ProposalClassLU.ProposalClass != Constants.PROPOSAL_CLASS_FORECASTED
+                                x => x.ProposalClassLU.ProposalClass != CommonConstants.PROPOSAL_CLASS_FORECASTED
 
                                 // ToDo: Proposal doesn't already have a linked eEPP record (will come later)
                                 && true

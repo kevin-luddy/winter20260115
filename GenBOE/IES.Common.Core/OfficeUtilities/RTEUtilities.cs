@@ -32,25 +32,25 @@ namespace IES.Common.Core.OfficeUtilities
 
         // Create static Regex objects.
         // bold font
-        private static Regex regexStrong = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "strong"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static Regex regexStrong = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "strong"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
         // italics font
-        private static Regex regexEm = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "em"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static Regex regexEm = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "em"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
         // subscript
-        private static Regex regexSub = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sub"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static Regex regexSub = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sub"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
         // superscript
-        private static Regex regexSup = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sup"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static Regex regexSup = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sup"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
         // spans are used when you set either a color or alignment to a partial element (partial line, but also partial "strong" and so on
-        private static Regex regexSpan = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "span"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static Regex regexSpan = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "span"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
         // every line is wrapped in a paragraph, so empty lines will be always wrapped in this; putting it at the end, to have this go last, for efficiency
-        private static Regex regexP = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "p"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static Regex regexP = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "p"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
         // next we need to remove text that starts w/ a "mso-" above and ends with ";" - this is Microsoft-specific formatting.
-        private static Regex regexMicrosoft = new Regex("( ){0,1}mso-[A-Za-z0-9:.% #='?-]*;", RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static Regex regexMicrosoft = new Regex("( ){0,1}mso-[A-Za-z0-9:.% #='?-]*;", RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
         #region These are used in Excel, when we need to display just text, and no other markup or images
 

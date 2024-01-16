@@ -19,7 +19,7 @@ namespace IES.Common.Core.OfficeUtilities
     [ExcludeFromCodeCoverage]
     public static class WordUtilities
     {
-        #region Constants
+        #region CommonConstants
 
         public const char NEWLINE_CHAR = '\n';
 

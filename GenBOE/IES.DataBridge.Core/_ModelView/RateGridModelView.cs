@@ -10,11 +10,12 @@ namespace IES.DataBridge.ModelViews
     using System.Collections.ObjectModel;
     using IES.Common.Core;
     using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// The Model for a grid in the Rate Grid/Table.
-    /// </summary>
-    public class RateGridModelView : IESModelView
+	/// <summary>
+	/// The Model for a grid in the Rate Grid/Table.
+	/// </summary>
+	public class RateGridModelView : IESModelView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RateGridModelView"/> class.

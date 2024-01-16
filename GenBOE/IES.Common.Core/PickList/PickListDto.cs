@@ -8,7 +8,8 @@ namespace IES.Common.Core.PickList
 {
     using System;
     using System.Collections.Generic;
-    using IES.Common.Core.Models;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Models;
 
     /// <summary>
     /// Pick list Dto

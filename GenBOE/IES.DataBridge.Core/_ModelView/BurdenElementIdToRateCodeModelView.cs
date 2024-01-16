@@ -8,11 +8,12 @@ namespace IES.DataBridge.ModelViews
 {
     using System;
     using IES.Common.Core;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// The Model View is used in the BurdenPoolLoader to load the BurdenElementID to RateCode to avoid an additional DB call.
-    /// </summary>
-    [Serializable]
+	/// <summary>
+	/// The Model View is used in the BurdenPoolLoader to load the BurdenElementID to RateCode to avoid an additional DB call.
+	/// </summary>
+	[Serializable]
     public class BurdenElementIdToRateCodeModelView : UpdateableDTO
     {
         /// <summary>

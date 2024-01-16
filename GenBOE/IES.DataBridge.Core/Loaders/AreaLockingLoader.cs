@@ -11,6 +11,9 @@ namespace IES.DataBridge.Loaders
     using System.Collections.ObjectModel;
 	using System.Configuration;
 	using IES.Common.Core;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 
 	/// <summary>
 	/// Loader for Area Locking
@@ -20,7 +23,7 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// Cache Object
         /// </summary>
-        private ICache cache;
+        private ICacheService cache;
 
         /// <summary>
         /// Number of seconds to store lock in cache
@@ -41,9 +44,9 @@ namespace IES.DataBridge.Loaders
         /// Constructor
         /// </summary>
         /// <param name="cache">Cache</param>
-        public AreaLockingLoader(ICache cache)
+        public AreaLockingLoader(ICacheService cacheservice)
         {
-            this.cache = cache;
+            this.cache = cacheservice;
         }
 
         /// <summary>
@@ -114,7 +117,7 @@ namespace IES.DataBridge.Loaders
             {
                 foreach (LockArea area in Enum.GetValues(typeof(LockArea)))
                 {
-                    if (area != IES.Common.Core.LockArea.None)
+                    if (area != IES.Common.Core.Enums.LockArea.None)
                     {
                         AreaLockData areaLock = this.GetAreaLock(area);
 

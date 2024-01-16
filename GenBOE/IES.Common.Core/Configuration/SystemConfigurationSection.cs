@@ -9,7 +9,6 @@ using System.Configuration;
 using System.Linq;
 using System.Xml;
 using IES.Common.Core.Enums;
-using IES.Common.Core.Utilities;
 
 namespace IES.Common.Core.Configuration
 {

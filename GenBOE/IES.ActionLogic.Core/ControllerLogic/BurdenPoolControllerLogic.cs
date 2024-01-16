@@ -11,7 +11,8 @@ namespace IES.ActionLogic.ControllerLogic
     using System.Linq;
     using IES.Common.Core;
     using IES.Common.Core.Exceptions;
-    using IES.DataBridge.Loaders;
+	using IES.Common.Core.Interfaces;
+	using IES.DataBridge.Loaders;
     using IES.DataBridge.ModelViews;
     using Mediator;
 
@@ -27,7 +28,8 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="areaLockingLoader">Area Locking Loader</param>
         /// <param name="adUtils">AD Utilities</param>
         /// <param name="securityInfo">Security Information</param>
-        public BurdenPoolControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo)
+        public BurdenPoolControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, 
+            IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
             : base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
         {
         }

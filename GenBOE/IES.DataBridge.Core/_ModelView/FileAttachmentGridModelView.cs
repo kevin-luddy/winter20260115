@@ -8,11 +8,12 @@ namespace IES.DataBridge.ModelViews
 {
     using System.Collections.Generic;
     using IES.Common.Core;
+	using IES.Common.Core.Models;
 
-    /// <summary>
-    /// The Model for a grid in the File Attachment Grid/Table.
-    /// </summary>
-    public class FileAttachmentGridModelView  
+	/// <summary>
+	/// The Model for a grid in the File Attachment Grid/Table.
+	/// </summary>
+	public class FileAttachmentGridModelView  
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FileAttachmentGridModelView"/> class.

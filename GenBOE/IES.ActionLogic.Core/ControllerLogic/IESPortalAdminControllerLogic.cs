@@ -14,7 +14,11 @@ namespace IES.ActionLogic.ControllerLogic
 	using GenBOE.DataBridge.Core.Picklists;
 	using GenTRAC.DataBridge.Core.DTO.PickLists.Common;
 	using IES.Common.Core;
+	using IES.Common.Core.Configuration;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Models;
 	using IES.Common.Core.PickList;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
@@ -136,20 +140,20 @@ namespace IES.ActionLogic.ControllerLogic
             if (ptmData.ContainsParent && boeData.ContainsParent)
             {
                 // This is a serious error since we currently do not reconfigure parentIds for BOE vs PTM
-                throw new GenValidationException(Constants.PickListValidation.CONTAINS_PARENTS);
+                throw new GenValidationException(CommonConstants.PickListValidation.CONTAINS_PARENTS);
             }
 
             // this currently will never hit until we allow both picklists to contain parents
             if (ptmData.ContainsParent && boeData.ContainsParent && ptmData.AllowsMultipleParents != boeData.AllowsMultipleParents)
             {
                 // This is a serious error, throw exception
-                throw new GenValidationException(Constants.PickListValidation.MULTIPLE_PARENTS);
+                throw new GenValidationException(CommonConstants.PickListValidation.MULTIPLE_PARENTS);
             }
 
             if (ptmData.PickListName != boeData.PickListName)
             {
                 // This is a serious error, throw exception
-                throw new GenValidationException(Constants.PickListValidation.NAME);
+                throw new GenValidationException(CommonConstants.PickListValidation.NAME);
             }
 
             // remove Read-Only values when comparing lists
@@ -157,7 +161,7 @@ namespace IES.ActionLogic.ControllerLogic
             ICollection<PickListDto> boeValues = boeData.PickLists.Where(p => !p.IsReadOnly).ToList();
             if (ptmValues.Count != boeValues.Count)
             {
-                messages.Add(new ValidationMessage(Constants.PickListValidation.NUMBER_ITEMS));
+                messages.Add(new ValidationMessage(CommonConstants.PickListValidation.NUMBER_ITEMS));
             }
 
             foreach (PickListDto ptm in ptmValues)
@@ -168,12 +172,12 @@ namespace IES.ActionLogic.ControllerLogic
                 {
                     if (ptm.IsActive != boe.IsActive)
                     {
-                        messages.Add(new ValidationMessage(string.Format(Constants.PickListValidation.ACTIVE, ptm.Text)));
+                        messages.Add(new ValidationMessage(string.Format(CommonConstants.PickListValidation.ACTIVE, ptm.Text)));
                     }
                 }
                 else
                 {
-                    messages.Add(new ValidationMessage(string.Format(Constants.PickListValidation.MISSING, ptm.Text, "BOE")));
+                    messages.Add(new ValidationMessage(string.Format(CommonConstants.PickListValidation.MISSING, ptm.Text, "BOE")));
                 }
             }
 
@@ -183,7 +187,7 @@ namespace IES.ActionLogic.ControllerLogic
                 PickListDto ptm = ptmValues.FirstOrDefault(b => b.Text == boe.Text);
                 if (ptm == null)
                 {
-                    messages.Add(new ValidationMessage(string.Format(Constants.PickListValidation.MISSING, boe.Text, "PTM")));
+                    messages.Add(new ValidationMessage(string.Format(CommonConstants.PickListValidation.MISSING, boe.Text, "PTM")));
                 }
             }
 

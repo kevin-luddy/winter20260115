@@ -15,6 +15,9 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Common.Core;
 	using IES.Common.Core.Exceptions;
 	using Mediator;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Models;
 
 	/// <summary>
 	/// Logic for the File Attachment Controller.
@@ -28,7 +31,8 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="areaLockingLoader">Area Locking Loader</param>
         /// <param name="adUtils">AD Utilities</param>
         /// <param name="securityInfo">Security Information</param>
-        public FileAttachmentControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryUtilities adUtils, ISecurityInformation securityInfo)
+        public FileAttachmentControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, 
+            IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
             : base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
         {
         }
