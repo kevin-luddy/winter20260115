@@ -10,7 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GenBOE.DataBridge.Core\GenBOE.DataBridge.Core.csproj" />
     <ProjectReference Include="..\GenTRAC.DataBridge.Core\GenTRAC.DataBridge.Core.csproj" />
-    <ProjectReference Include="..\IES.Core\IES.Core.csproj" />
+    <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
     <ProjectReference Include="..\IES.DataBridge.Core\IES.DataBridge.Core.csproj" />
   </ItemGroup>
 

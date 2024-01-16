@@ -7,7 +7,7 @@
 namespace IES.DataBridge.Loaders
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// Interface for the Area Locking Loader

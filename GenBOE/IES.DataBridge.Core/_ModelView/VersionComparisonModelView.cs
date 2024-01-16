@@ -8,8 +8,8 @@ namespace IES.DataBridge.ModelViews
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using IES.Core;
-    using IES.Core.Exceptions;
+    using IES.Common.Core;
+    using IES.Common.Core.Exceptions;
 
     /// <summary>
     /// ModelView for the Version Comparison partial page

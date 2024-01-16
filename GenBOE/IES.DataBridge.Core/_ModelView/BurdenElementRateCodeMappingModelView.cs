@@ -6,7 +6,7 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// The Model View used for Burden Element to Rate Code mapping values.

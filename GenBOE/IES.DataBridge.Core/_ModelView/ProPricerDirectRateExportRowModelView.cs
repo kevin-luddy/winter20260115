@@ -9,7 +9,7 @@ namespace IES.DataBridge.ModelViews
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.Text;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// The Model View used for a ProPricer Direct Rate Export Row.

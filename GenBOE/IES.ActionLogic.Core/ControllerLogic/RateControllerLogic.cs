@@ -16,8 +16,8 @@ namespace IES.ActionLogic.ControllerLogic
 	using Common;
 	using DataBridge.Common;
 	using IES.ActionLogic.Validation;
-	using IES.Core;
-	using IES.Core.Exceptions;
+	using IES.Common.Core;
+	using IES.Common.Core.Exceptions;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Mediator;

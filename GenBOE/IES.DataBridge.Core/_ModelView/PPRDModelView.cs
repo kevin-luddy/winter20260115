@@ -7,7 +7,7 @@
 namespace IES.DataBridge.ModelViews
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// A Model View class for a PPR&amp;D Document

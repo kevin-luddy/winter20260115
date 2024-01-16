@@ -91,7 +91,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenBOE.MSTMetricModel.Stand
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IESPortal.Backend", "IESPortal.Backend\IESPortal.Backend.csproj", "{D2B8727A-9EB1-4189-93F0-049F755696F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IES.Core", "IES.Core\IES.Core.csproj", "{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IES.Common.Core", "IES.Common.Core\IES.Common.Core.csproj", "{489EF95A-1FAE-41EF-B137-CE5DC7E97A69}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IES.DataBridge.Core", "IES.DataBridge.Core\IES.DataBridge.Core.csproj", "{AADBCC65-8A8E-440C-9E1E-3597F2A4BDBD}"
 EndProject

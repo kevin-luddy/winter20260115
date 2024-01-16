@@ -13,7 +13,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Linq;
 	using System.Threading.Tasks;
 	using IES.ActionLogic.Common;
-	using IES.Core;
+	using IES.Common.Core;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Mediator;

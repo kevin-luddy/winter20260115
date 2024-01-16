@@ -7,13 +7,13 @@
 namespace IES.DataBridge.Loaders
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
     using IES.DataBridge.ModelViews;
 
     /// <summary>
     /// Inteface for Burden Pool Loader
     /// </summary>
-    /// <seealso cref="IES.Core.IDataLoader{IES.DataBridge.ModelViews.BurdenPoolDetailModelView}" />
+    /// <seealso cref="IES.Common.Core.IDataLoader{IES.DataBridge.ModelViews.BurdenPoolDetailModelView}" />
     public interface IBurdenPoolLoader : IDataLoader<BurdenPoolDetailModelView>
     {
         /// <summary>

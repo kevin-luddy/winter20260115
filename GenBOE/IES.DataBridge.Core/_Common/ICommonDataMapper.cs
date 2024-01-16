@@ -7,7 +7,7 @@
 namespace IES.DataBridge.Common
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// Interface for the Common Data Mappers

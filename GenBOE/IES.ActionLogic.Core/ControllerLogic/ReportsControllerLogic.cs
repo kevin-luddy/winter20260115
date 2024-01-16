@@ -12,8 +12,8 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.ActionLogic.IO.Export;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using IES.Core;
-	using IES.Core.OfficeUtilities;
+	using IES.Common.Core;
+	using IES.Common.Core.OfficeUtilities;
 	using Mediator;
 	using Microsoft.AspNetCore.Mvc;
 

@@ -7,8 +7,8 @@
 namespace IES.ActionLogic.ControllerLogic
 {
     using System.Collections.Generic;
-    using IES.Core;
-    using IES.Core.Exceptions;
+    using IES.Common.Core;
+    using IES.Common.Core.Exceptions;
     using IES.DataBridge.ModelViews;
 
     /// <summary>

@@ -8,8 +8,8 @@ namespace GenBOE.DataBridge.Core.Picklists
 {
 	using System.Collections.Generic;
 	using System.Linq;
-	using IES.Core;
-	using IES.Core.PickList;
+	using IES.Common.Core;
+	using IES.Common.Core.PickList;
 	using GenBOE.Models;
 	using Microsoft.Extensions.Logging;
 

@@ -13,9 +13,9 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using GenBOE.DataBridge.Core.Picklists;
 	using GenTRAC.DataBridge.Core.DTO.PickLists.Common;
-	using IES.Core;
-	using IES.Core.Exceptions;
-	using IES.Core.PickList;
+	using IES.Common.Core;
+	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.PickList;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using ModelView;

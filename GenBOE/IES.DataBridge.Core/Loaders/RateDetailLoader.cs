@@ -10,10 +10,10 @@ namespace IES.DataBridge.Loaders
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using System.Linq.Expressions;
-	using IES.Core;
+	using IES.Common.Core;
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
-	using IES.Core.Exceptions;
+	using IES.Common.Core.Exceptions;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>

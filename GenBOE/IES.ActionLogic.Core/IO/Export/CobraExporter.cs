@@ -10,8 +10,8 @@ namespace IES.ActionLogic.IO.Export
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using IES.Core;
-    using IES.Core.OfficeUtilities;
+    using IES.Common.Core;
+    using IES.Common.Core.OfficeUtilities;
     using IES.DataBridge.ModelViews;
 
     /// <summary>

@@ -7,13 +7,13 @@
 namespace GenTRAC.DataBridge.Core.DTO.User
 {
 	using System;
-	using IES.Core;
+	using IES.Common.Core;
 
 	/// <summary>
 	/// Encapsulate a user in the system
 	/// </summary>
 	[Serializable]
-	public class UserDTO : UpdateableDTO, IES.Core.Interfaces.ICachableDTO
+	public class UserDTO : UpdateableDTO, IES.Common.Core.Interfaces.ICachableDTO
 	{
 		/// <summary>
 		/// Constructor

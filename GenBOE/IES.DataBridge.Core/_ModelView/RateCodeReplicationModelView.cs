@@ -7,7 +7,7 @@
 namespace IES.DataBridge.ModelViews
 {
     using System.Collections.Generic;
-    using IES.Core.Exceptions;
+    using IES.Common.Core.Exceptions;
 
     /// <summary>
     /// Model View for the Rate Code Replication page in RDM.

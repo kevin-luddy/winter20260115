@@ -7,7 +7,7 @@
 namespace IES.ActionLogic.ControllerLogic
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
     using IES.DataBridge.Loaders;
     using IES.DataBridge.ModelViews;
     using Mediator;

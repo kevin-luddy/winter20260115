@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IES.ActionLogic.Core\IES.ActionLogic.Core.csproj" />
-    <ProjectReference Include="..\IES.Core\IES.Core.csproj" />
+    <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

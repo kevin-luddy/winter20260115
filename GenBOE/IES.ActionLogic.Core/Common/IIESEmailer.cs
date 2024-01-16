@@ -6,7 +6,7 @@
 
 namespace IES.ActionLogic.Common
 {
-    using IES.Core;
+    using IES.Common.Core;
     using IES.DataBridge.ModelViews;
 
     /// <summary>

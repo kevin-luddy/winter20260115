@@ -7,13 +7,13 @@
 namespace IES.DataBridge.Loaders
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
     using IES.DataBridge.ModelViews;
 
     /// <summary>
     /// Interface for a Document Loader
     /// </summary>
-    /// <seealso cref="IES.Core.IDataLoader{IES.DataBridge.ModelViews.DocumentGridModelView}" />
+    /// <seealso cref="IES.Common.Core.IDataLoader{IES.DataBridge.ModelViews.DocumentGridModelView}" />
     public interface IDocumentLoader : IDataLoader<DocumentGridModelView>
     {
         /// <summary>

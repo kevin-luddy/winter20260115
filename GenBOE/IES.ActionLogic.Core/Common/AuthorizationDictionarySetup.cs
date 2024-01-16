@@ -7,7 +7,7 @@
 namespace IES.ActionLogic.Common
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// This class generates a dictionary that will be used by the controllers to check access authorization

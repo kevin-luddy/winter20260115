@@ -10,7 +10,7 @@ namespace IES.DataBridge.ModelViews
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
-    using IES.Core;
+    using IES.Common.Core;
     using Newtonsoft.Json;
 
     /// <summary>

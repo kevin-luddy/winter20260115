@@ -7,7 +7,7 @@
 namespace IES.DataBridge.ModelViews
 {
     using System;
-    using IES.Core;
+    using IES.Common.Core;
     using Newtonsoft.Json;
 
     /// <summary>

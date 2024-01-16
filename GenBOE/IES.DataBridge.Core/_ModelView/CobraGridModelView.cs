@@ -8,7 +8,7 @@ namespace IES.DataBridge.ModelViews
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// The Model View used for COBRA mapping detail Grid/Table.

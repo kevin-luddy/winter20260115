@@ -6,7 +6,7 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// Revision Options that include start and end years to refresh rate grid.

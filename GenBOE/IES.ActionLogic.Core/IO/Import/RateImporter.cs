@@ -14,8 +14,8 @@ namespace IES.ActionLogic.IO.Import
     using System.Web;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Spreadsheet;
-    using IES.Core.Exceptions;
-    using IES.Core.OfficeUtilities;
+    using IES.Common.Core.Exceptions;
+    using IES.Common.Core.OfficeUtilities;
     using IES.DataBridge.ModelViews;
 
     /// <summary>

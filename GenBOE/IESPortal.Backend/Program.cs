@@ -4,7 +4,7 @@ using GenTRAC.DataBridge.Core.DTO.PickLists.Common;
 using GenTRAC.DataBridge.DTO;
 using IES.ActionLogic.Common;
 using IES.ActionLogic.ControllerLogic;
-using IES.Core;
+using IES.Common.Core;
 using IES.DataBridge.Loaders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

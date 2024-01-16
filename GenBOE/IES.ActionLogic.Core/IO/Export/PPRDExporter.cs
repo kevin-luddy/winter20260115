@@ -17,8 +17,8 @@ namespace IES.ActionLogic.IO.Export
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Wordprocessing;
 	using IES.DataBridge.ModelViews;
-	using IES.Core;
-	using IES.Core.OfficeUtilities;
+	using IES.Common.Core;
+	using IES.Common.Core.OfficeUtilities;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>

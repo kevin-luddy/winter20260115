@@ -11,9 +11,9 @@ namespace IES.ActionLogic.IO.Export
 	using System.IO;
 	using System.Linq;
 	using System.Text;
-	using IES.Core;
-	using IES.Core.Compression;
-	using IES.Core.Exceptions;
+	using IES.Common.Core;
+	using IES.Common.Core.Compression;
+	using IES.Common.Core.Exceptions;
 	using IES.DataBridge.ModelViews;
 
 	/// <summary>

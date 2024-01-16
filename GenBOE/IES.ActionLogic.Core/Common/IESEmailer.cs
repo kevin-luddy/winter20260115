@@ -8,7 +8,7 @@ namespace IES.ActionLogic.Common
 {
 	using System;
 	using IES.DataBridge.ModelViews;
-	using IES.Core;
+	using IES.Common.Core;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>

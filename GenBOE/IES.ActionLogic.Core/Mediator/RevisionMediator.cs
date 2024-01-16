@@ -11,7 +11,7 @@ namespace IES.ActionLogic.Mediator
 	using System.Linq;
 	using DataBridge.ModelViews;
 	using IES.DataBridge.Loaders;
-	using IES.Core;
+	using IES.Common.Core;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>

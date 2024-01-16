@@ -15,9 +15,9 @@ namespace IES.ActionLogic.IO.Import
 	using Common;
 	using DataBridge.ModelViews;
 	using DocumentFormat.OpenXml.Packaging;
-	using IES.Core;
-	using IES.Core.Exceptions;
-	using IES.Core.OfficeUtilities;
+	using IES.Common.Core;
+	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.OfficeUtilities;
 
 	/// <summary>
 	/// Responsible for RateCode-specific Excel import.

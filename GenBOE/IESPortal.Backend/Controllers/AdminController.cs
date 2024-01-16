@@ -13,9 +13,9 @@ namespace IESPortal.Backend.Controllers
 	using IES.ActionLogic.Common;
 	using IES.ActionLogic.ControllerLogic;
 	using IES.ActionLogic.ModelView;
-	using IES.Core;
-	using IES.Core.Exceptions;
-	using IES.Core.PickList;
+	using IES.Common.Core;
+	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.PickList;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;

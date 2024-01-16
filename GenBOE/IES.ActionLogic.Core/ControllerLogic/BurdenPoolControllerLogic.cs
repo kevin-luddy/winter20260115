@@ -9,8 +9,8 @@ namespace IES.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using IES.Core;
-    using IES.Core.Exceptions;
+    using IES.Common.Core;
+    using IES.Common.Core.Exceptions;
     using IES.DataBridge.Loaders;
     using IES.DataBridge.ModelViews;
     using Mediator;

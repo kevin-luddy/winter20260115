@@ -8,7 +8,7 @@ namespace IES.ActionLogic.ControllerLogic
 {
 	using System.Collections.Generic;
 	using IES.DataBridge.ModelViews;
-	using IES.Core;
+	using IES.Common.Core;
 
 	/// <summary>
 	/// Interface for the Home Controller Logic

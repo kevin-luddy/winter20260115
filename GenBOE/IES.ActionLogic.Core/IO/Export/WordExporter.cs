@@ -12,7 +12,7 @@ namespace IES.ActionLogic.IO.Export
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// Word Exporter class containing export methods and other utilities

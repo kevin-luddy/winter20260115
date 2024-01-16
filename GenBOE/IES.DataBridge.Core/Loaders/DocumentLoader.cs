@@ -9,7 +9,7 @@ namespace IES.DataBridge.Loaders
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using IES.Core;
+    using IES.Common.Core;
     using IES.DataBridge.ModelViews;
     using IES.Models;
 	using Microsoft.Extensions.Logging;
@@ -17,7 +17,7 @@ namespace IES.DataBridge.Loaders
 	/// <summary>
 	/// Loader for RDSB Documents.
 	/// </summary>
-	/// <seealso cref="IES.Core.DataLoader{IES.DataBridge.ModelViews.DocumentGridModelView}" />
+	/// <seealso cref="IES.Common.Core.DataLoader{IES.DataBridge.ModelViews.DocumentGridModelView}" />
 	/// <seealso cref="IES.DataBridge.Loaders.IDocumentLoader" />
 	public class DocumentLoader : DataLoader<DocumentGridModelView>, IDocumentLoader
     {

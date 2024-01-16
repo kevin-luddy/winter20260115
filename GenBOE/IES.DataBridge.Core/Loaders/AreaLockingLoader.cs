@@ -10,7 +10,7 @@ namespace IES.DataBridge.Loaders
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
 	using System.Configuration;
-	using IES.Core;
+	using IES.Common.Core;
 
 	/// <summary>
 	/// Loader for Area Locking
@@ -114,7 +114,7 @@ namespace IES.DataBridge.Loaders
             {
                 foreach (LockArea area in Enum.GetValues(typeof(LockArea)))
                 {
-                    if (area != IES.Core.LockArea.None)
+                    if (area != IES.Common.Core.LockArea.None)
                     {
                         AreaLockData areaLock = this.GetAreaLock(area);
 

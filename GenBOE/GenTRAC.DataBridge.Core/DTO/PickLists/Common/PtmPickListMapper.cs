@@ -9,8 +9,8 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists.Common
 	using GenTRAC.DataBridge.Core.DTO.OrgData;
 	using GenTRAC.DataBridge.Core.DTO.PickLists;
 	using GenTRAC.DataBridge.DTO;
-	using IES.Core;
-	using IES.Core.PickList;
+	using IES.Common.Core;
+	using IES.Common.Core.PickList;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>

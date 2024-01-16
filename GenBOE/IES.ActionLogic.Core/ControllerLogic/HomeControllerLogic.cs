@@ -10,8 +10,8 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Collections.Generic;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using IES.Core;
-	using IES.Core.Exceptions;
+	using IES.Common.Core;
+	using IES.Common.Core.Exceptions;
 	using Mediator;
 
 	/// <summary>
@@ -88,7 +88,7 @@ namespace IES.ActionLogic.ControllerLogic
 
             foreach (LockArea area in Enum.GetValues(typeof(LockArea)))
             {
-                if (area != IES.Core.LockArea.None)
+                if (area != IES.Common.Core.LockArea.None)
                 {
                     lockInfo = this.LockArea(area, true, out status, out message);
                     if (!status)
@@ -149,7 +149,7 @@ namespace IES.ActionLogic.ControllerLogic
 
             foreach (LockArea area in Enum.GetValues(typeof(LockArea)))
             {
-                if (area != IES.Core.LockArea.None)
+                if (area != IES.Common.Core.LockArea.None)
                 {
                     this.UnlockArea(area, true);
                 }

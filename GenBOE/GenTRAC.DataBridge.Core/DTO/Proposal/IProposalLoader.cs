@@ -9,7 +9,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 	using System;
 	using System.Collections.Generic;
 	using GenTRAC.DataBridge.DTO;
-	using IES.Core;
+	using IES.Common.Core;
 
 	/// <summary>
 	/// proposal loader interface

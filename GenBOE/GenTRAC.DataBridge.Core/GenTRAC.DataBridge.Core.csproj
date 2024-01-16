@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GenTRAC.Models.Standard\GenTRAC.Models.Standard.csproj" />
-    <ProjectReference Include="..\IES.Core\IES.Core.csproj" />
+    <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using DataBridge.ModelViews;
 	using GenTRAC.DataBridge.Core.Common.Security;
 	using GenTRAC.DataBridge.Core.DTO.Proposal;
-	using IES.Core.Exceptions;
+	using IES.Common.Core.Exceptions;
 	using Microsoft.AspNetCore.Mvc;
 
 	/// <summary>

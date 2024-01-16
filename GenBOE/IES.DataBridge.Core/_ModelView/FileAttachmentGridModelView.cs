@@ -7,7 +7,7 @@
 namespace IES.DataBridge.ModelViews
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// The Model for a grid in the File Attachment Grid/Table.

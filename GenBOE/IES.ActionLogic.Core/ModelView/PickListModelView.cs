@@ -7,7 +7,7 @@
 namespace IES.ActionLogic.ModelView
 {
     using System.Reflection;
-    using IES.Core.PickList;
+    using IES.Common.Core.PickList;
 
     /// <summary>
     /// Model View for editing a PickList DTO

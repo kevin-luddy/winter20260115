@@ -11,8 +11,8 @@ namespace IES.DataBridge.Loaders
 	using System.Linq;
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
-	using IES.Core;
-	using IES.Core.Exceptions;
+	using IES.Common.Core;
+	using IES.Common.Core.Exceptions;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>

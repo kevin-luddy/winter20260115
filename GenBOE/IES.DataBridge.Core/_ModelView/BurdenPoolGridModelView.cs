@@ -6,7 +6,7 @@
 namespace IES.DataBridge.ModelViews
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// The Model for a grid in the Burden Pool Grid/Table.

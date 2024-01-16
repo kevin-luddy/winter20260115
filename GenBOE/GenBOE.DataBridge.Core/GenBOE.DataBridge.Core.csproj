@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GenBOE.Models.Standard\GenBOE.Models.Standard.csproj" />
-    <ProjectReference Include="..\IES.Core\IES.Core.csproj" />
+    <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
   </ItemGroup>
 
 </Project>

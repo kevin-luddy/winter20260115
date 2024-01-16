@@ -11,7 +11,7 @@ namespace IES.ActionLogic.Common
 	using System.Linq;
 	using DataBridge.Loaders;
 	using DataBridge.ModelViews;
-	using IES.Core;
+	using IES.Common.Core;
 	using Newtonsoft.Json;
 
 	/// <summary>

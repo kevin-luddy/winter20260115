@@ -12,7 +12,7 @@ namespace GenTRAC.DataBridge.DTO
 	using System.Linq;
 	using GenTRAC.DataBridge.Core.DTO.Proposal;
 	using GenTRAC.Models;
-	using IES.Core;
+	using IES.Common.Core;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>

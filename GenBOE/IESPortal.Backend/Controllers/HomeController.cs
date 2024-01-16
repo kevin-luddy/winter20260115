@@ -9,8 +9,8 @@ namespace IESPortal.Backend.Controllers
 	using System;
 	using System.Collections.Generic;
 	using IES.ActionLogic.Common;
-	using IES.Core;
-	using IES.Core.Exceptions;
+	using IES.Common.Core;
+	using IES.Common.Core.Exceptions;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using IESPortal.Backend.Models;

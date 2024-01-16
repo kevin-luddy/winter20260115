@@ -7,7 +7,7 @@
 namespace GenTRAC.DataBridge.DTO
 {
     using System;
-    using IES.Core;
+    using IES.Common.Core;
 
     /// <summary>
     /// Dto used to hold data that will be displayed on Home Proposal View.

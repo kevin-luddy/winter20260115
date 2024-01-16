@@ -9,13 +9,13 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using IES.Core;
+	using IES.Common.Core;
 
 	/// <summary>
 	/// Proposal Dto Class
 	/// </summary>
 	[Serializable]
-	public class ProposalDto : UpdateableDTO, IES.Core.Interfaces.ICachableDTO
+	public class ProposalDto : UpdateableDTO, IES.Common.Core.Interfaces.ICachableDTO
 	{
 		/// <summary>
 		/// for ICachableDTO..

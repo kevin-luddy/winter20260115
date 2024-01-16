@@ -7,7 +7,7 @@
 namespace IES.DataBridge.Common
 {
     using System.Collections.Generic;
-    using IES.Core;
+    using IES.Common.Core;
     using Loaders;
 
     /// <summary>

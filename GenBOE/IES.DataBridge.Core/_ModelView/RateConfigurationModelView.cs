@@ -7,7 +7,7 @@
 namespace IES.DataBridge.ModelViews
 {
     using System.Linq;
-    using IES.Core.Exceptions;
+    using IES.Common.Core.Exceptions;
     using IES.Models;
 
     /// <summary>

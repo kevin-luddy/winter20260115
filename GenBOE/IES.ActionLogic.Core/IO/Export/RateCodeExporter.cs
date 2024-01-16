@@ -14,8 +14,8 @@ namespace IES.ActionLogic.IO.Export
 	using Common;
 	using DataBridge.ModelViews;
 	using DocumentFormat.OpenXml.Packaging;
-	using IES.Core;
-	using IES.Core.OfficeUtilities;
+	using IES.Common.Core;
+	using IES.Common.Core.OfficeUtilities;
 
 	/// <summary>
 	/// Responsible for Rate Code Excel export.
