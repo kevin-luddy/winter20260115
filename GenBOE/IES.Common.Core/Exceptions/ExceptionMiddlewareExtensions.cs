@@ -50,127 +50,127 @@ namespace IES.Common.Core.Exceptions
 			{
 				appError.Run(async filterContext =>
 				{
-				var contextFeature = filterContext.Features.Get<IExceptionHandlerFeature>();
+					var contextFeature = filterContext.Features.Get<IExceptionHandlerFeature>();
 
-				if (filterContext.Request.IsAjaxRequest())
-				{
-					// Separate out the ticket link since for classified it will not exist
-					string helpDeskLink = "If the error persists, please open a ticket with the Helpdesk at: ";
-					string supportLink = CommonUtilities.ServiceCentralLink();
-
-					helpDeskLink = helpDeskLink + supportLink;
-
-					string message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
-
-					if (!CommonUtilities.DisableExternalHelpLinksForClassifiedInstallations())
+					if (filterContext.Request.IsAjaxRequest())
 					{
-						message = message + " " + helpDeskLink;
-					}
+						// Separate out the ticket link since for classified it will not exist
+						string helpDeskLink = "If the error persists, please open a ticket with the Helpdesk at: ";
+						string supportLink = CommonUtilities.ServiceCentralLink();
 
-					string title = "Application Error";
-					string returnType = contextFeature.Error.GetType().ToString();
-					ICollection<ValidationMessage> messageList = new List<ValidationMessage>();
-					string details =
-						(contextFeature.Error.Message == null ? "No Message" : contextFeature.Error.Message) +
-						"<br />" +
-						(contextFeature.Error.StackTrace == null ? "No StackTrace" : contextFeature.Error.StackTrace.ToString());
+						helpDeskLink = helpDeskLink + supportLink;
 
-					if (contextFeature.Error.Message.Contains("has been updated and is out of sync with the data in your browser."))
-					{
-						message = "A newer version was recently saved by another user. To prevent overriding information, please copy your changes, open the current version and reapply the changes as necessary.";
-						title = "Save Error";
-						details = contextFeature.Error.Message;
-					}
-					else if ((contextFeature.Error.GetType() == typeof(EntityCommandExecutionException) || contextFeature.Error.GetType() == typeof(EntityException) || contextFeature.Error.GetType() == typeof(SqlException)) && contextFeature.Error.Message.Contains("See the inner exception for details."))
-					{
-						if (contextFeature.Error.InnerException != null && contextFeature.Error.InnerException.Message != null && contextFeature.Error.InnerException.Message.Contains("has been updated and is out of sync with the data in your browser."))
-						{
-							message = "A newer version was recently saved by another user. To prevent overriding information, please copy your changes, open the current version and reapply the changes as necessary.";
-							logger.LogWarning(contextFeature.Error.InnerException, message);
-							title = "Save Error";
-							details = contextFeature.Error.InnerException.Message;
-						}
-						else
-						{
-							message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
-
-							if (!CommonUtilities.DisableExternalHelpLinksForClassifiedInstallations())
-							{
-								message = message + " " + helpDeskLink;
-							}
-
-							logger.LogError(contextFeature.Error.InnerException, message);
-
-							title = "Application Error";
-							details = message;
-						}
-					}
-					else if (contextFeature.Error.GetType() == typeof(EntityCommandExecutionException) || contextFeature.Error.GetType() == typeof(EntityException) || contextFeature.Error.GetType() == typeof(SqlException))
-					{
-						message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
-						logger.LogError(contextFeature.Error, message);
+						string message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
 
 						if (!CommonUtilities.DisableExternalHelpLinksForClassifiedInstallations())
 						{
 							message = message + " " + helpDeskLink;
 						}
 
-						title = "Application Error";
-						details = message;
-					}
-					else if (contextFeature.Error.GetType() == typeof(ValidationException))
-					{
-						message = contextFeature.Error.Message;
-						details = contextFeature.Error.Message;
-						if (!string.IsNullOrEmpty(((ValidationException)contextFeature.Error).Title))
+						string title = "Application Error";
+						string returnType = contextFeature.Error.GetType().ToString();
+						ICollection<ValidationMessage> messageList = new List<ValidationMessage>();
+						string details =
+							(contextFeature.Error.Message == null ? "No Message" : contextFeature.Error.Message) +
+							"<br />" +
+							(contextFeature.Error.StackTrace == null ? "No StackTrace" : contextFeature.Error.StackTrace.ToString());
+
+						if (contextFeature.Error.Message.Contains("has been updated and is out of sync with the data in your browser."))
 						{
-							title = ((ValidationException)contextFeature.Error).Title;
+							message = "A newer version was recently saved by another user. To prevent overriding information, please copy your changes, open the current version and reapply the changes as necessary.";
+							title = "Save Error";
+							details = contextFeature.Error.Message;
+						}
+						else if ((contextFeature.Error.GetType() == typeof(EntityCommandExecutionException) || contextFeature.Error.GetType() == typeof(EntityException) || contextFeature.Error.GetType() == typeof(SqlException)) && contextFeature.Error.Message.Contains("See the inner exception for details."))
+						{
+							if (contextFeature.Error.InnerException != null && contextFeature.Error.InnerException.Message != null && contextFeature.Error.InnerException.Message.Contains("has been updated and is out of sync with the data in your browser."))
+							{
+								message = "A newer version was recently saved by another user. To prevent overriding information, please copy your changes, open the current version and reapply the changes as necessary.";
+								logger.LogWarning(contextFeature.Error.InnerException, message);
+								title = "Save Error";
+								details = contextFeature.Error.InnerException.Message;
+							}
+							else
+							{
+								message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
+
+								if (!CommonUtilities.DisableExternalHelpLinksForClassifiedInstallations())
+								{
+									message = message + " " + helpDeskLink;
+								}
+
+								logger.LogError(contextFeature.Error.InnerException, message);
+
+								title = "Application Error";
+								details = message;
+							}
+						}
+						else if (contextFeature.Error.GetType() == typeof(EntityCommandExecutionException) || contextFeature.Error.GetType() == typeof(EntityException) || contextFeature.Error.GetType() == typeof(SqlException))
+						{
+							message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
+							logger.LogError(contextFeature.Error, message);
+
+							if (!CommonUtilities.DisableExternalHelpLinksForClassifiedInstallations())
+							{
+								message = message + " " + helpDeskLink;
+							}
+
+							title = "Application Error";
+							details = message;
+						}
+						else if (contextFeature.Error.GetType() == typeof(ValidationException))
+						{
+							message = contextFeature.Error.Message;
+							details = contextFeature.Error.Message;
+							if (!string.IsNullOrEmpty(((ValidationException)contextFeature.Error).Title))
+							{
+								title = ((ValidationException)contextFeature.Error).Title;
+							}
+							else
+							{
+								title = "Validation Error";
+							}
+						}
+						else if (contextFeature.Error.GetType() == typeof(GenValidationException))
+						{
+							returnType = "GenValidationException";
+							message = contextFeature.Error.Message;
+							details = contextFeature.Error.Message;
+							messageList = ((GenValidationException)contextFeature.Error).ValidationList;
+							title = "";
+
+						}
+						else if (contextFeature.Error.GetType() == typeof(AuthorizationException))
+						{
+
+							message = @"You do not have permission to this page. Please contact the workspace owner or open a ticket with Helpdesk at " + supportLink;
+							details = contextFeature.Error.Message;
+							title = "Authorization Error";
 						}
 						else
 						{
-							title = "Validation Error";
+							//unknown error type, log it
+							logger.LogError(contextFeature.Error, "Unknown Error");
 						}
-					}
-					else if (contextFeature.Error.GetType() == typeof(GenValidationException))
-					{
-						returnType = "GenValidationException";
-						message = contextFeature.Error.Message;
-						details = contextFeature.Error.Message;
-						messageList = ((GenValidationException)contextFeature.Error).ValidationList;
-						title = "";
 
-					}
-					else if (contextFeature.Error.GetType() == typeof(AuthorizationException))
-					{
+						//contextFeature.ErrorHandled = true;
+						filterContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+						// filterContext.Response.TrySkipIisCustomErrors = true;
+						var statusCodePagesFeature = filterContext.Features.Get<IStatusCodePagesFeature>();
 
-						message = @"You do not have permission to this page. Please contact the workspace owner or open a ticket with Helpdesk at " + supportLink;
-						details = contextFeature.Error.Message;
-						title = "Authorization Error";
-					}
-					else
-					{
-						//unknown error type, log it
-						logger.LogError(contextFeature.Error, "Unknown Error");
-					}
+						if (statusCodePagesFeature is not null)
+						{
+							statusCodePagesFeature.Enabled = false;
+						}
 
-					//contextFeature.ErrorHandled = true;
-					filterContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-					// filterContext.Response.TrySkipIisCustomErrors = true;
-					var statusCodePagesFeature = filterContext.Features.Get<IStatusCodePagesFeature>();
-
-					if (statusCodePagesFeature is not null)
-					{
-						statusCodePagesFeature.Enabled = false;
-					}
-
-					var error = new
-					{
-						Message = message,
-						Details = details,
-						Title = title,
-						MessageList = messageList,
-						ReturnType = returnType
-					};
+						var error = new
+						{
+							Message = message,
+							Details = details,
+							Title = title,
+							MessageList = messageList,
+							ReturnType = returnType
+						};
 
 						await filterContext.Response.WriteAsJsonAsync(error);
 						//filterContext.Result = new JsonResult() { Data = error, JsonRequestBehavior = JsonRequestBehavior.AllowGet };

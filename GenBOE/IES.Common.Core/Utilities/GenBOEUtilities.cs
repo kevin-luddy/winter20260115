@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Web;
-using IES.Common.Core.Exceptions;
+﻿using System.Web;
 using HtmlAgilityPack;
 using IES.Common.Core.Enums;
+using IES.Common.Core.Exceptions;
 
 namespace IES.Common.Core.Utilities
 {

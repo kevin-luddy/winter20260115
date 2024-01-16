@@ -15,7 +15,6 @@ namespace IES.Common.Core.Security
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
 	using Microsoft.AspNetCore.Http;
-	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// The security authorizations a user can be

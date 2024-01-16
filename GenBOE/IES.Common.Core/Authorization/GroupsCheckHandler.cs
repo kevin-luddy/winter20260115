@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IES.Common.Core.Interfaces;
+﻿using IES.Common.Core.Interfaces;
 using IES.Common.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 
@@ -42,7 +37,7 @@ namespace IES.Common.Core.Authorization
 					}
 				}
 			}
-			
+
 			if (result)
 			{
 				context.Succeed(requirement);

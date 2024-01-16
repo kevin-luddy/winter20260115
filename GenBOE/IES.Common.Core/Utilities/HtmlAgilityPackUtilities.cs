@@ -5,9 +5,9 @@
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using System.Web;
-	using IES.Common.Core.Exceptions;
 	using HtmlAgilityPack;
 	using IES.Common.Core.Constants;
+	using IES.Common.Core.Exceptions;
 
 	/// <summary>
 	/// Utilities for the HtmlAgilityPack

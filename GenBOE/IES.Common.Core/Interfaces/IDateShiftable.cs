@@ -9,7 +9,6 @@ namespace IES.Common.Core.Interfaces
 	using System;
 	using System.Collections.Generic;
 	using IES.Common.Core.Enums;
-	using IES.Common.Core.Models;
 
 	/// <summary>
 	/// Represents an object that can be Date Shifted.

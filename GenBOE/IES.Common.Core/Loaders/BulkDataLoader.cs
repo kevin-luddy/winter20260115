@@ -18,7 +18,6 @@ namespace IES.Common.Core.Loaders
 	using IES.Common.Core;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Interfaces;
-	using IES.Common.Core.Models;
 	using IES.Common.Core.Utilities;
 	using Microsoft.Extensions.Logging;
 

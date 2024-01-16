@@ -8,31 +8,31 @@
 namespace IES.Common.Core.Exceptions
 {
 	using System;
-    using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Runtime.Serialization;
-    
+
 	[Serializable]
-    [ExcludeFromCodeCoverage]
-    public class InvalidDataRelationException : Exception
-    {
-        protected InvalidDataRelationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+	[ExcludeFromCodeCoverage]
+	public class InvalidDataRelationException : Exception
+	{
+		protected InvalidDataRelationException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+		}
 
-        public InvalidDataRelationException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+		public InvalidDataRelationException(string message, Exception innerException)
+			: base(message, innerException)
+		{
+		}
 
-        public InvalidDataRelationException(string message)
-            : base(message)
-        {
-        }
+		public InvalidDataRelationException(string message)
+			: base(message)
+		{
+		}
 
-        public InvalidDataRelationException()
-            : base()
-        {
-        }
-    }
+		public InvalidDataRelationException()
+			: base()
+		{
+		}
+	}
 }

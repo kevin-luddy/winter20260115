@@ -17,8 +17,8 @@ namespace IES.Common.Core
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 	using System.Text.RegularExpressions;
-	using IES.Common.Core.Constants;
 	using IES.Common.Core.Attributes;
+	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Models;
 	using IES.Common.Core.Utilities;

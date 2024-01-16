@@ -6,13 +6,13 @@
 namespace IES.Common.Core.Loaders
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Collections;
-	using IES.Common.Core.Interfaces;
-	using Microsoft.Extensions.Logging;
-	using IES.Common.Core.Utilities;
 	using IES.Common.Core;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Utilities;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// This class will mediate calls through non cache.

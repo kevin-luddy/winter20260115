@@ -4,10 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace IES.Common.Core.Email

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace IES.Common.Core.Interfaces
+﻿namespace IES.Common.Core.Interfaces
 {
 	public interface IStartEndDates
 	{

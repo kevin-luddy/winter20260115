@@ -6,32 +6,32 @@
 
 namespace IES.Common.Core.Exceptions
 {
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.Serialization;
+	using System;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Runtime.Serialization;
 
-    [Serializable]
-    [ExcludeFromCodeCoverage]
-    public class AuthorizationException : Exception
-    {
-        protected AuthorizationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+	[Serializable]
+	[ExcludeFromCodeCoverage]
+	public class AuthorizationException : Exception
+	{
+		protected AuthorizationException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+		}
 
-        public AuthorizationException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+		public AuthorizationException(string message, Exception innerException)
+			: base(message, innerException)
+		{
+		}
 
-        public AuthorizationException(string message)
-            : base(message)
-        {
-        }
+		public AuthorizationException(string message)
+			: base(message)
+		{
+		}
 
-        public AuthorizationException()
-            : base()
-        {
-        }
-    }
+		public AuthorizationException()
+			: base()
+		{
+		}
+	}
 }

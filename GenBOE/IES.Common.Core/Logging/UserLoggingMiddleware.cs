@@ -6,7 +6,6 @@
 
 namespace IES.Common.Core.Logging
 {
-	using System.Linq;
 	using System.Threading.Tasks;
 	using Microsoft.AspNetCore.Http;
 	using Serilog.Context;

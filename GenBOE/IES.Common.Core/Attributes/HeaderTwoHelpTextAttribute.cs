@@ -6,27 +6,27 @@
 
 namespace IES.Common.Core.Attributes
 {
-    using System;
+	using System;
 
-    /// <summary>
-    /// Header Help text attribute
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Enum | AttributeTargets.Field)]
-    public sealed class HeaderTwoHelpTextAttribute : Attribute
-    {
+	/// <summary>
+	/// Header Help text attribute
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Enum | AttributeTargets.Field)]
+	public sealed class HeaderTwoHelpTextAttribute : Attribute
+	{
 
-        /// <summary>
-        /// Attribute for providing help text.
-        /// </summary>
-        /// <param name="headerTwoHelpText">helpText</param>
-        public HeaderTwoHelpTextAttribute(string headerTwoHelpText)
-        {
-            HeaderTwoHelpText = headerTwoHelpText;
-        }
+		/// <summary>
+		/// Attribute for providing help text.
+		/// </summary>
+		/// <param name="headerTwoHelpText">helpText</param>
+		public HeaderTwoHelpTextAttribute(string headerTwoHelpText)
+		{
+			HeaderTwoHelpText = headerTwoHelpText;
+		}
 
-        /// <summary>
-        /// Help text
-        /// </summary>
-        public string HeaderTwoHelpText { get; }
-    }
+		/// <summary>
+		/// Help text
+		/// </summary>
+		public string HeaderTwoHelpText { get; }
+	}
 }
