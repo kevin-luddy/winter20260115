@@ -58,52 +58,117 @@ namespace IES.DataBridge.Loaders
 
             using (IESEntities context = new IESEntities())
             {
-                ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
-                if (sectionsOnly)
+                //ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
+                IQueryable<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id));
+				if (sectionsOnly)
                 {
                     // Filter out Sections that don't have a Content Type of Section
                     sectionsForRevision = sectionsForRevision
-                        .Where(x => x.SectionContentTypeID == (int)SectionContentType.Section).ToCollection();
-                }
+						//.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section).ToCollection();
+						.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section);
+				}
 
                 if (sectionIds != null)
                 {
                     int sectionType = (int)SectionContentType.Section;
-                    sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID)).ToCollection();
-                }
+					//sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID)).ToCollection();
+					sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID));
+				}
 
-                sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
+				/*ICollection<Section> sectionsForRevisionList = sectionsForRevision.Select(x => new Section
                 {
-                    Id = r.ID,
-                    UpdateDate = r.UpdateDate,
-                    RevisionId = r.RevisionID,
-                    ParentId = r.ParentID,
-                    DisplayOrder = r.DisplayOrder,
-                    Title = r.Title,
-                    TextContent = r.TextContent,
-                    ContentType = (SectionContentType)r.SectionContentTypeID,
-                    IsInternalSection = r.IsInternalSection,
-                    DisplayRateCode = r.DisplayRateCode,
-                    RevisionUniqueSectionId = r.RevisionUniqueSectionId,
-                    IsRdsbRequired = r.IsRdsbRequired,
-                    SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
-                    IsDisclosureStatementAdequate = r.IsDisclosureStatementAdequate is null ? false : r.IsDisclosureStatementAdequate.Value,
-                    SectionContainsNonCompliance = r.SectionContainsNonCompliance,
-                    NonComplianceNotification = r.NonComplianceNotification is null ? false : r.NonComplianceNotification.Value,
-                    Office = r.Office,
-                    Agency = r.Agency,
-                    LMBA = r.LMBA,
-                    Name = r.Name,
-                    Street = r.Street,
-                    CityST = r.CityST,
-                    Phone = r.Phone,
-                    Email = r.Email,
-                    Other = r.Other,
-                    IncludeInCoversheet = r.IncludeInCoversheet,
-                }).ToList();
-            }
+                    ID = x.ID,
+					UpdateDate = x.UpdateDate,
+					RevisionID = x.RevisionID,
+					ParentID = x.ParentID,
+					DisplayOrder = x.DisplayOrder,
+					Title = x.Title,
+					TextContent = x.TextContent,
+					SectionContentTypeID = x.SectionContentTypeID,
+					IsInternalSection = x.IsInternalSection,
+					DisplayRateCode = x.DisplayRateCode,
+					RevisionUniqueSectionId = x.RevisionUniqueSectionId,
+					IsRdsbRequired = x.IsRdsbRequired,
+					SectionContainsCasbDisclosure = x.SectionContainsCasbDisclosure,
+					IsDisclosureStatementAdequate = x.IsDisclosureStatementAdequate == null ? false : x.IsDisclosureStatementAdequate.Value,
+					SectionContainsNonCompliance = x.SectionContainsNonCompliance,
+					NonComplianceNotification = x.NonComplianceNotification == null ? false : x.NonComplianceNotification.Value,
+					Office = x.Office,
+					Agency = x.Agency,
+					LMBA = x.LMBA,
+					Name = x.Name,
+					Street = x.Street,
+					CityST = x.CityST,
+					Phone = x.Phone,
+					Email = x.Email,
+					Other = x.Other,
+					IncludeInCoversheet = x.IncludeInCoversheet,
+				}).ToList();*/
 
-            foreach (SectionModelView topLevelSection in sectionDetailsByRevision.Where(x => (x.ParentId == null)))
+                // Original code below
+				//sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
+				//{
+				//                Id = r.ID,
+				//                UpdateDate = r.UpdateDate,
+				//                RevisionId = r.RevisionID,
+				//                ParentId = r.ParentID,
+				//                DisplayOrder = r.DisplayOrder,
+				//                Title = r.Title,
+				//                TextContent = r.TextContent,
+				//                ContentType = (SectionContentType)r.SectionContentTypeID,
+				//                IsInternalSection = r.IsInternalSection,
+				//                DisplayRateCode = r.DisplayRateCode,
+				//                RevisionUniqueSectionId = r.RevisionUniqueSectionId,
+				//                IsRdsbRequired = r.IsRdsbRequired,
+				//                SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
+				//                IsDisclosureStatementAdequate = r.IsDisclosureStatementAdequate is null ? false : r.IsDisclosureStatementAdequate.Value,
+				//                SectionContainsNonCompliance = r.SectionContainsNonCompliance,
+				//                NonComplianceNotification = r.NonComplianceNotification is null ? false : r.NonComplianceNotification.Value,
+				//                Office = r.Office,
+				//                Agency = r.Agency,
+				//                LMBA = r.LMBA,
+				//                Name = r.Name,
+				//                Street = r.Street,
+				//                CityST = r.CityST,
+				//                Phone = r.Phone,
+				//                Email = r.Email,
+				//                Other = r.Other,
+				//                IncludeInCoversheet = r.IncludeInCoversheet,
+				//            }).ToList();
+				//        }
+
+				sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
+				{
+					Id = r.ID,
+					UpdateDate = r.UpdateDate,
+					RevisionId = r.RevisionID,
+					ParentId = r.ParentID,
+					DisplayOrder = r.DisplayOrder,
+					Title = r.Title,
+					TextContent = r.TextContent,
+					ContentType = (SectionContentType)r.SectionContentTypeID,
+					IsInternalSection = r.IsInternalSection,
+					DisplayRateCode = r.DisplayRateCode,
+					RevisionUniqueSectionId = r.RevisionUniqueSectionId,
+					IsRdsbRequired = r.IsRdsbRequired,
+					SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
+					IsDisclosureStatementAdequate = r.IsDisclosureStatementAdequate == null ? false : r.IsDisclosureStatementAdequate.Value,
+					SectionContainsNonCompliance = r.SectionContainsNonCompliance,
+					NonComplianceNotification = r.NonComplianceNotification == null ? false : r.NonComplianceNotification.Value,
+					Office = r.Office,
+					Agency = r.Agency,
+					LMBA = r.LMBA,
+					Name = r.Name,
+					Street = r.Street,
+					CityST = r.CityST,
+					Phone = r.Phone,
+					Email = r.Email,
+					Other = r.Other,
+					IncludeInCoversheet = r.IncludeInCoversheet,
+				}).ToList();
+			}
+
+			foreach (SectionModelView topLevelSection in sectionDetailsByRevision.Where(x => (x.ParentId == null)))
             {
                 sectionsToReturn.Add(this.GetBySectionId(topLevelSection.Id, sectionDetailsByRevision));
             }
