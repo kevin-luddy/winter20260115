@@ -237,9 +237,9 @@ namespace IES.ActionLogic.IO.Import
 					// non import-related columns. Each row is represented as a Key/Value pair Dictionary object
 					// in an enumerable collection
 
-					List<string> requiredColumns = new List<string>(RequiredColumns);
+					List<string> requiredColumns = new(RequiredColumns);
 
-					List<string> allColumns = new List<string>(RequiredColumns);
+					List<string> allColumns = new(RequiredColumns);
 
 					allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, string.Empty, requiredColumns.ToArray(),
 						allColumns.ToArray(), RequiredValueColumns, UniqueValueColumns, TextOnlyColumns);
@@ -271,12 +271,12 @@ namespace IES.ActionLogic.IO.Import
 		private static ICollection<RateDetailModelView> CreateDTOsToReturn(ICollection<Dictionary<string, string>> allRows, RateGridModelView rates)
 		{
 			// Create the collection to return
-			List<RateDetailModelView> toReturn = new List<RateDetailModelView>();
+			List<RateDetailModelView> toReturn = new();
 
 			// For each Dictionary object (representing imported row data)
 			foreach (Dictionary<string, string> row in allRows)
 			{
-				RateDetailModelView rateCodeMapRow = new RateDetailModelView();
+				RateDetailModelView rateCodeMapRow = new();
 
 				// Add the new Rate Code to the collection to be returned
 				toReturn.Add(rateCodeMapRow);

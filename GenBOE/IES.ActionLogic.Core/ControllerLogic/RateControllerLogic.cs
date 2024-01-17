@@ -113,7 +113,7 @@ namespace IES.ActionLogic.ControllerLogic
 			ICollection<OptionModelView> governmentBurdenPoolOptions;
 			this.burdenPoolLoader.GetBurdenPoolOptions(revision.Id, out commercialBurdenPoolOptions, out governmentBurdenPoolOptions);
 
-			RateGridModelView model = new RateGridModelView
+			RateGridModelView model = new()
 			{
 				SelectedRevisionId = revision.Id,
 				AdminUser = this.IsRDMAdminUser,
@@ -184,7 +184,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			// Make sure all the imported rates exist. We will not load only part of an import file.
-			Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			Collection<ValidationMessage> validationErrors = new();
 			foreach (RateDetailModelView rdmv in importRateDetails)
 			{
 				try
@@ -230,7 +230,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(rateDetailModelViews));
 			}
 
-			Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			Collection<ValidationMessage> validationErrors = new();
 
 			foreach (RateDetailModelView rdmv in rateDetailModelViews.Where(x => !x.IsDeleted))
 			{
@@ -331,8 +331,8 @@ namespace IES.ActionLogic.ControllerLogic
 		private ICollection<ValidationMessage> ValidateRateCodeObject(RateDetailModelView rateDetailModelView)
 		{
 			ICollection<ValidationMessage> validationMessages = new Collection<ValidationMessage>();
-			ValidationContext ctx = new ValidationContext(rateDetailModelView, null, null);
-			List<ValidationResult> errors = new List<ValidationResult>();
+			ValidationContext ctx = new(rateDetailModelView, null, null);
+			List<ValidationResult> errors = new();
 			Validator.TryValidateObject(rateDetailModelView, ctx, errors, true);
 
 			foreach (ValidationResult error in errors)
@@ -745,7 +745,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(existingRates));
 			}
 
-			Collection<RateDetailModelView> importResults = new Collection<RateDetailModelView>();
+			Collection<RateDetailModelView> importResults = new();
 
 			if (importedRates == null)
 			{
@@ -814,7 +814,7 @@ namespace IES.ActionLogic.ControllerLogic
 				}
 
 				// Set to 5x Normal timeout (nominally 5 minutes total).
-				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 				{
 					this.rateDetailLoader.BulkSave(importResults);
 					scope.Complete();
@@ -866,7 +866,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			// Set to 5x Normal timeout (nominally 5 minutes total).
-			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 			{
 				this.rateDetailLoader.SaveDetails(importedRateCodes);
 				scope.Complete();

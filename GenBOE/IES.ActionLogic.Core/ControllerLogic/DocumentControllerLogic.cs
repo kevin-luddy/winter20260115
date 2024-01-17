@@ -101,7 +101,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="rateDetailLoader">The rate detail loader.</param>
 		/// <param name="fileAttachmentLoader">The file attachment loader.</param>
 		/// <param name="pprdExporter">The PPRD exporter.</param>
-		public DocumentControllerLogic(ILogger<DocumentControllerLogic> logger, IProposalLoader proposalLoader, IDocumentLoader documentLoader, IDocumentDetailLoader documentDetailLoader, 
+		public DocumentControllerLogic(ILogger<DocumentControllerLogic> logger, IProposalLoader proposalLoader, IDocumentLoader documentLoader, IDocumentDetailLoader documentDetailLoader,
 			IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IRevisionLoader revisionLoader,
 			ISectionLoader sectionLoader, IRateDetailLoader rateDetailLoader, IFileAttachmentLoader fileAttachmentLoader, IPPRDExporter pprdExporter)
 		{
@@ -182,7 +182,7 @@ namespace IES.ActionLogic.ControllerLogic
 							proposal = this.proposalLoader.GetById(proposal.Id);
 							proposal.DocumentId = model.Id;
 							proposal.Updateable = UpdateType.Upsert;
-							using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+							using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 							{
 								this.proposalLoader.Save(proposal);
 								scope.Complete();
@@ -222,7 +222,7 @@ namespace IES.ActionLogic.ControllerLogic
 
 			try
 			{
-				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+				using (TransactionScope scope = new(TransactionScopeOption.Required,
 					new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 				{
 					this.documentLoader.Save(new DocumentGridModelView[] { model });
@@ -240,7 +240,7 @@ namespace IES.ActionLogic.ControllerLogic
 
 			try
 			{
-				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 				{
 					// This has to be done inside another transaction because it is a different Database
 					this.proposalLoader.Save(proposal);
@@ -291,7 +291,7 @@ namespace IES.ActionLogic.ControllerLogic
 			};
 
 			int documentId;
-			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 			{
 				documentId = this.documentLoader.Save(new DocumentGridModelView[] { model }).First().Value;
 				scope.Complete();
@@ -302,7 +302,7 @@ namespace IES.ActionLogic.ControllerLogic
 
 			try
 			{
-				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 				{
 					// This has to be done inside another transaction because it is a different Database
 					this.proposalLoader.Save(proposal);
@@ -696,7 +696,7 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				if ((!section.IsInternalSection.HasValue || !section.IsInternalSection.Value) && section.ContentType == SectionContentType.Section)
 				{
-					SectionDetailModelView detail = new SectionDetailModelView
+					SectionDetailModelView detail = new()
 					{
 						Id = section.Id,
 						Title = section.Title,
@@ -713,8 +713,8 @@ namespace IES.ActionLogic.ControllerLogic
 						Name = section.Name,
 						Street = section.Street,
 						CityST = section.CityST,
-						Phone	= section.Phone,
-						Email	= section.Email,
+						Phone = section.Phone,
+						Email = section.Email,
 						Other = section.Other
 					};
 
@@ -780,7 +780,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(rateCodes));
 			}
 
-			List<string> rateSections = new List<string>();
+			List<string> rateSections = new();
 			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
 			if (modelView == null)
 			{
@@ -788,7 +788,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			ICollection<SectionModelView> sections = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
-			Dictionary<int, string> sectionIdToParentSection = new Dictionary<int, string>();
+			Dictionary<int, string> sectionIdToParentSection = new();
 
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);
@@ -848,7 +848,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(rateDescriptions));
 			}
 
-			List<string> rateSections = new List<string>();
+			List<string> rateSections = new();
 			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
 			if (modelView == null)
 			{
@@ -856,7 +856,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			ICollection<SectionModelView> sections = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
-			Dictionary<int, string> sectionIdToParentSection = new Dictionary<int, string>();
+			Dictionary<int, string> sectionIdToParentSection = new();
 
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);

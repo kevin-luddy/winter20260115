@@ -101,7 +101,7 @@ namespace IES.ActionLogic.IO.Export
 		private static void PopulateOptionsList(SpreadsheetDocument spreadsheet, RateGridModelView rates)
 		{
 			// Create collections of strings for each row in the export file
-			ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet(ImportExportConstants.OPTIONS_LISTS);
+			ExcelExportWorksheet optionsListWorksheet = new(ImportExportConstants.OPTIONS_LISTS);
 
 			string[] rateCategoryOptions = rates.RateCategories.Where(x => x.Id > 0).OrderBy(x => x.Label).Select(x => x.Label).ToArray();
 			string[] sectionOptions = rates.Sections.Where(x => x.Id > 0).Select(x => x.Label).ToArray();
@@ -114,7 +114,7 @@ namespace IES.ActionLogic.IO.Export
 
 			// Options List Column Headers
 			// Really the Defined Names for the dropdown lists
-			List<string> headerValues = new List<string>
+			List<string> headerValues = new()
 			{
 				ImportExportConstants.CATEGORIES,
 				ImportExportConstants.SECTIONS,
@@ -132,7 +132,7 @@ namespace IES.ActionLogic.IO.Export
 			// Add option value rows
 			for (int i = 0; i < maxRows; i++)
 			{
-				List<string> optionValues = new List<string>
+				List<string> optionValues = new()
 				{
 					rateCategoryOptions.Length > i ? rateCategoryOptions[i] : string.Empty,
 					sectionOptions.Length > i ? sectionOptions[i] : string.Empty,
@@ -152,7 +152,7 @@ namespace IES.ActionLogic.IO.Export
 			ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, optionsListWorksheet, 1);
 
 			// Adjust existing Defined Names
-			Dictionary<string, int> lengths = new Dictionary<string, int>()
+			Dictionary<string, int> lengths = new()
 			{
 				{ ImportExportConstants.CATEGORIES, rateCategoryOptions.Length },
 				{ ImportExportConstants.SECTIONS, sectionOptions.Length },
@@ -180,7 +180,7 @@ namespace IES.ActionLogic.IO.Export
 			uint endDataRowIndex = (uint)(rateCodeResourcesCount + 11); // all of the data rows and ten extra
 
 			// Adjust the spread offset by the custom fields and multi columns 
-			Dictionary<string, string> dataValidationReferences = new Dictionary<string, string>();
+			Dictionary<string, string> dataValidationReferences = new();
 
 			// Add data validation references for Lookup columns
 			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.CATEGORIES,
@@ -483,7 +483,7 @@ namespace IES.ActionLogic.IO.Export
 			};
 		}
 
-		#pragma warning disable CA1505
+#pragma warning disable CA1505
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private static Collection<string> GetRowAsStringCollection(RateDetailModelView data, RateGridModelView rates)
 		{
@@ -633,6 +633,6 @@ namespace IES.ActionLogic.IO.Export
 				data.CommercialBurdenPoolId.HasValue ? rates.CommercialBurdenPools.Single(x => x.Id == data.CommercialBurdenPoolId).Label : string.Empty
 			};
 		}
-		#pragma warning restore CA1505
+#pragma warning restore CA1505
 	}
 }

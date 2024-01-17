@@ -6,48 +6,48 @@
 
 namespace IES.ActionLogic.ModelView
 {
-    using System.Reflection;
-    using IES.Common.Core.PickList;
+	using System.Reflection;
+	using IES.Common.Core.PickList;
 
-    /// <summary>
-    /// Model View for editing a PickList DTO
-    /// </summary>
-    /// <seealso cref="IES.Common.PickList.PickListDto" />
-    public class PickListModelView : PickListDto
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PickListModelView"/> class.
-        /// </summary>
-        /// <param name="dto">The dto.</param>
-        public PickListModelView(PickListDto dto)
-        {
-            if (dto != null)
-            {
-                foreach (PropertyInfo prop in dto.GetType().GetProperties())
-                {
-                    if (prop.CanWrite)
-                    {
-                        this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(dto, null), null);
-                    }
-                }
-            }
-        }
+	/// <summary>
+	/// Model View for editing a PickList DTO
+	/// </summary>
+	/// <seealso cref="IES.Common.PickList.PickListDto" />
+	public class PickListModelView : PickListDto
+	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PickListModelView"/> class.
+		/// </summary>
+		/// <param name="dto">The dto.</param>
+		public PickListModelView(PickListDto dto)
+		{
+			if (dto != null)
+			{
+				foreach (PropertyInfo prop in dto.GetType().GetProperties())
+				{
+					if (prop.CanWrite)
+					{
+						this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(dto, null), null);
+					}
+				}
+			}
+		}
 
-        /// <summary>
-        /// Used for Testing and MVC binding only
-        /// </summary>
-        public PickListModelView()
-        {
-        }
+		/// <summary>
+		/// Used for Testing and MVC binding only
+		/// </summary>
+		public PickListModelView()
+		{
+		}
 
-        /// <summary>
-        /// Gets or sets the PTM identifier.
-        /// </summary>
-        public int PtmId { get; set; }
+		/// <summary>
+		/// Gets or sets the PTM identifier.
+		/// </summary>
+		public int PtmId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the BOE identifier.
-        /// </summary>
-        public int BoeId { get; set; }
-    }
+		/// <summary>
+		/// Gets or sets the BOE identifier.
+		/// </summary>
+		public int BoeId { get; set; }
+	}
 }

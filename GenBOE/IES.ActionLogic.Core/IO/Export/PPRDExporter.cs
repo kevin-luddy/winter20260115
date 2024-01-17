@@ -66,7 +66,7 @@ namespace IES.ActionLogic.IO.Export
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
 		public IActionResult ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel)
 		{
-			ChunkCounter counters = new ChunkCounter();
+			ChunkCounter counters = new();
 
 			Stream stream = new MemoryStream(32000);
 			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream);
@@ -76,43 +76,43 @@ namespace IES.ActionLogic.IO.Export
 			};
 		}
 
-        /// <summary>
-        /// Generate a Word document containing the RDD sections and rates.
-        /// </summary>
-        /// <param name="sections">Collection of Section MVs</param>
-        /// <param name="rates">Collection of RateDetail MVs</param>
-        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
-        /// <param name="serverFileName">Server path to new file to generate.</param>
-        /// <param name="revision">Revision modelview</param>
-        /// <param name="rddDocument">The RDD document to use for creation.</param>
-        /// <param name="stream">the stream to write the file back to for user download</param>
-        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true)
+		/// <summary>
+		/// Generate a Word document containing the RDD sections and rates.
+		/// </summary>
+		/// <param name="sections">Collection of Section MVs</param>
+		/// <param name="rates">Collection of RateDetail MVs</param>
+		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
+		/// <param name="serverFileName">Server path to new file to generate.</param>
+		/// <param name="revision">Revision modelview</param>
+		/// <param name="rddDocument">The RDD document to use for creation.</param>
+		/// <param name="stream">the stream to write the file back to for user download</param>
+		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+		public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true)
 		{
-			ChunkCounter counters = new ChunkCounter();
+			ChunkCounter counters = new();
 
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
 			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream);
 		}
 
-        #region Populate Methods
+		#region Populate Methods
 
-        /// <summary>
-        /// Populate the Word document with the the full PPRD.
-        /// </summary>
-        /// <param name="document">Word document to store the PPRD.</param>
-        /// <param name="sections">Section model views</param>
-        /// <param name="rates">Rate Detail model views</param>
-        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
-        /// <param name="revision">Revision modelview</param>
-        /// <param name="rateTableYears">Number of years to include in the rate tables</param>
-        /// <param name="counters">The chunk counters</param>
-        /// <param name="rddDocument">The RDD document model view.</param>
-        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        private void PopulatePPRDExport(WordprocessingDocument document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, ref ChunkCounter counters, int refNumberPrefixLevel, DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
+		/// <summary>
+		/// Populate the Word document with the the full PPRD.
+		/// </summary>
+		/// <param name="document">Word document to store the PPRD.</param>
+		/// <param name="sections">Section model views</param>
+		/// <param name="rates">Rate Detail model views</param>
+		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
+		/// <param name="revision">Revision modelview</param>
+		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
+		/// <param name="counters">The chunk counters</param>
+		/// <param name="rddDocument">The RDD document model view.</param>
+		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+		private void PopulatePPRDExport(WordprocessingDocument document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, ref ChunkCounter counters, int refNumberPrefixLevel, DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
 		{
 			// Populate the header
 			this.PopulatePPRDHeader(document, revision);
@@ -239,23 +239,23 @@ namespace IES.ActionLogic.IO.Export
 			}
 		}
 
-        /// <summary>
-        /// Populate the Section Container
-        /// </summary>
-        /// <param name="section">Section MV</param>
-        /// <param name="rates">Rate Detail MVs</param>
-        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
-        /// <param name="publishYear">Publish year</param>
-        /// <param name="rateTableYears">Number of years to include in the rate tables</param>
-        /// <param name="subsectionLevel">Subsection level</param>
-        /// <param name="sectionContainerTemplate">The Section Container Template</param>
-        /// <param name="lastElement">Last Element</param>
-        /// <param name="mainPart">The main document part</param>
-        /// <param name="counters">The chunk counters</param>
-        /// <param name="rddDocument">The RDD document to create from.  If null, then export full PPRD.</param>
-        /// <param name="firstSection">Bool noting if this is the first section</param>
-        /// <param name="refNumberPrefixLevel">The prefix level for the Reference Numbers.</param>
-        private void PopulateSectionContainer(SectionModelView section, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, int publishYear, int rateTableYears, int subsectionLevel, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainPart, ref ChunkCounter counters, DocumentDetailModelView rddDocument, bool firstSection, int refNumberPrefixLevel)
+		/// <summary>
+		/// Populate the Section Container
+		/// </summary>
+		/// <param name="section">Section MV</param>
+		/// <param name="rates">Rate Detail MVs</param>
+		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
+		/// <param name="publishYear">Publish year</param>
+		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
+		/// <param name="subsectionLevel">Subsection level</param>
+		/// <param name="sectionContainerTemplate">The Section Container Template</param>
+		/// <param name="lastElement">Last Element</param>
+		/// <param name="mainPart">The main document part</param>
+		/// <param name="counters">The chunk counters</param>
+		/// <param name="rddDocument">The RDD document to create from.  If null, then export full PPRD.</param>
+		/// <param name="firstSection">Bool noting if this is the first section</param>
+		/// <param name="refNumberPrefixLevel">The prefix level for the Reference Numbers.</param>
+		private void PopulateSectionContainer(SectionModelView section, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, int publishYear, int rateTableYears, int subsectionLevel, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainPart, ref ChunkCounter counters, DocumentDetailModelView rddDocument, bool firstSection, int refNumberPrefixLevel)
 		{
 			if (rddDocument == null || rddDocument.SelectedSectionIds.Contains(section.Id))
 			{
@@ -271,7 +271,7 @@ namespace IES.ActionLogic.IO.Export
 				{
 					SdtElement pageBreakElement =
 						WordUtilities.GetTaggedChildElement(sectionContainer, PPRDExporterConstants.PAGE_BREAK);
-					Paragraph pageBreak = new Paragraph(new Run(new Break() { Type = BreakValues.Page }));
+					Paragraph pageBreak = new(new Run(new Break() { Type = BreakValues.Page }));
 					pageBreakElement.Append(pageBreak);
 				}
 
@@ -305,17 +305,17 @@ namespace IES.ActionLogic.IO.Export
 							PPRDExporterConstants.FIELDNAME_TEXTELEMENT);
 						SdtElement rateTableElement =
 							WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_RATES);
-                        SdtElement addressTableElement =
-                            WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_ADDRESS);
+						SdtElement addressTableElement =
+							WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_ADDRESS);
 
-                        if (modelView.ContentType == SectionContentType.Text && textElement != null)
+						if (modelView.ContentType == SectionContentType.Text && textElement != null)
 						{
 							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, ref counters, false, modelView.IsInternalSection ?? false);
 
 							// Remove table elements
 							this.RemoveElement(rateTableElement);
-                            this.RemoveElement(addressTableElement);
-                        }
+							this.RemoveElement(addressTableElement);
+						}
 						else if (modelView.ContentType == SectionContentType.RateTable && rateTableElement != null)
 						{
 							// Get rates for section
@@ -380,54 +380,54 @@ namespace IES.ActionLogic.IO.Export
 
 							// Remove the text address element
 							this.RemoveElement(textElement);
-                            this.RemoveElement(addressTableElement);
-                        }
-                        else if (modelView.ContentType == SectionContentType.Address && addressTableElement != null)  //new address table code here
-                        {
-                            // Populate Address Table
-                            SdtElement addressOffice = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOFFICE);
-                            WordUtilities.SetElementText(addressOffice, modelView.Office);
+							this.RemoveElement(addressTableElement);
+						}
+						else if (modelView.ContentType == SectionContentType.Address && addressTableElement != null)  //new address table code here
+						{
+							// Populate Address Table
+							SdtElement addressOffice = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOFFICE);
+							WordUtilities.SetElementText(addressOffice, modelView.Office);
 
-                            SdtElement addressAgency = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSAGENCY);
-                            WordUtilities.SetElementText(addressAgency, modelView.Agency);
+							SdtElement addressAgency = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSAGENCY);
+							WordUtilities.SetElementText(addressAgency, modelView.Agency);
 
-                            SdtElement addressLMBA = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSLMBA);
-                            WordUtilities.SetElementText(addressLMBA, modelView.LMBA);
+							SdtElement addressLMBA = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSLMBA);
+							WordUtilities.SetElementText(addressLMBA, modelView.LMBA);
 
-                            SdtElement addressName = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSNAME);
-                            WordUtilities.SetElementText(addressName, modelView.Name);
+							SdtElement addressName = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSNAME);
+							WordUtilities.SetElementText(addressName, modelView.Name);
 
-                            SdtElement addressStreet = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSSTREET);
-                            WordUtilities.SetElementText(addressStreet, modelView.Street);
+							SdtElement addressStreet = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSSTREET);
+							WordUtilities.SetElementText(addressStreet, modelView.Street);
 
-                            SdtElement addressCity = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSCITY);
-                            WordUtilities.SetElementText(addressCity, modelView.CityST);
+							SdtElement addressCity = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSCITY);
+							WordUtilities.SetElementText(addressCity, modelView.CityST);
 
-                            SdtElement addressPhone = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSPHONE);
-                            WordUtilities.SetElementText(addressPhone, modelView.Phone);
+							SdtElement addressPhone = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSPHONE);
+							WordUtilities.SetElementText(addressPhone, modelView.Phone);
 
-                            SdtElement addressEmail = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSEMAIL);
-                            WordUtilities.SetElementText(addressEmail, modelView.Email);
+							SdtElement addressEmail = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSEMAIL);
+							WordUtilities.SetElementText(addressEmail, modelView.Email);
 
-                            SdtElement addressOther = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOTHER);
-                            WordUtilities.SetElementText(addressOther, modelView.Other);
+							SdtElement addressOther = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOTHER);
+							WordUtilities.SetElementText(addressOther, modelView.Other);
 
 
-                            // Adjust bottom border thickness
-                            Table addressTable = addressTableElement.Descendants<Table>().FirstOrDefault();
-                            this.AdjustTableBorders(addressTable);
+							// Adjust bottom border thickness
+							Table addressTable = addressTableElement.Descendants<Table>().FirstOrDefault();
+							this.AdjustTableBorders(addressTable);
 
-                            // Remove the text element
-                            this.RemoveElement(textElement);
-                            this.RemoveElement(rateTableElement);
-                        }
-                        else
+							// Remove the text element
+							this.RemoveElement(textElement);
+							this.RemoveElement(rateTableElement);
+						}
+						else
 						{
 							// Remove all elements
 							this.RemoveElement(textElement);
 							this.RemoveElement(rateTableElement);
-                            this.RemoveElement(addressTableElement);
-                        }
+							this.RemoveElement(addressTableElement);
+						}
 					}
 				}
 
@@ -488,14 +488,14 @@ namespace IES.ActionLogic.IO.Export
 			}
 		}
 
-        /// <summary>
-        /// Populate the section title and number
-        /// </summary>
-        /// <param name="sectionContainer">Section Container</param>
-        /// <param name="section">Section ModelView</param>
-        /// <param name="subsectionLevel">Section level - 0 for top-level, 1 for subsection, etc</param>
-        /// <param name="refNumberPrefixLevel">The prefix level for the Reference Numbers.</param>
-        private void PopulateSectionTitle(SdtElement sectionContainer, SectionModelView section, int subsectionLevel, int refNumberPrefixLevel)
+		/// <summary>
+		/// Populate the section title and number
+		/// </summary>
+		/// <param name="sectionContainer">Section Container</param>
+		/// <param name="section">Section ModelView</param>
+		/// <param name="subsectionLevel">Section level - 0 for top-level, 1 for subsection, etc</param>
+		/// <param name="refNumberPrefixLevel">The prefix level for the Reference Numbers.</param>
+		private void PopulateSectionTitle(SdtElement sectionContainer, SectionModelView section, int subsectionLevel, int refNumberPrefixLevel)
 		{
 			// Get section title container elements
 			SdtElement sectionTitleContainerElement =
@@ -721,17 +721,17 @@ namespace IES.ActionLogic.IO.Export
 			}
 		}
 
-        /// <summary>
-        /// Populates the File Attachments Section.
-        /// </summary>
-        /// <param name="fileAttachments">The file attachments.</param>
-        /// <param name="sectionContainerTemplate">The section container template.</param>
-        /// <param name="lastElement">The last element.</param>
-        /// <param name="mainDocumentPart">The main document part.</param>
-        /// <param name="counters">The counters.</param>
-        /// <param name="lastSection">The last section of the document (if one exists).</param>
-        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        private void PopulateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainDocumentPart, ref ChunkCounter counters, SectionModelView lastSection, int refNumberPrefixLevel)
+		/// <summary>
+		/// Populates the File Attachments Section.
+		/// </summary>
+		/// <param name="fileAttachments">The file attachments.</param>
+		/// <param name="sectionContainerTemplate">The section container template.</param>
+		/// <param name="lastElement">The last element.</param>
+		/// <param name="mainDocumentPart">The main document part.</param>
+		/// <param name="counters">The counters.</param>
+		/// <param name="lastSection">The last section of the document (if one exists).</param>
+		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+		private void PopulateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainDocumentPart, ref ChunkCounter counters, SectionModelView lastSection, int refNumberPrefixLevel)
 		{
 			ICollection<FileAttachmentRowModelView> attachments = fileAttachments.Where(f => f.SectionId == 0).ToList();
 
@@ -751,7 +751,7 @@ namespace IES.ActionLogic.IO.Export
 				}
 
 				// Populate the section title using a fake SectionModel
-				SectionModelView attachmentSection = new SectionModelView
+				SectionModelView attachmentSection = new()
 				{
 					Title = FILE_ATTACHMENTS_TITLE,
 					IsInternalSection = false,
@@ -815,10 +815,10 @@ namespace IES.ActionLogic.IO.Export
 		/// <param name="element">element to apply formatting to</param>
 		private void ApplyInternalSectionFormatting(SdtElement element)
 		{
-			RunProperties runProperties = new RunProperties();
+			RunProperties runProperties = new();
 
-			Italic italic = new Italic() { Val = OnOffValue.FromBoolean(true) };
-			Color color = new Color() { Val = PPRDExporterConstants.INTERNALSECTIONTEXTCOLOR }; // blue
+			Italic italic = new() { Val = OnOffValue.FromBoolean(true) };
+			Color color = new() { Val = PPRDExporterConstants.INTERNALSECTIONTEXTCOLOR }; // blue
 
 			runProperties.Append(italic);
 			runProperties.Append(color);
@@ -844,22 +844,22 @@ namespace IES.ActionLogic.IO.Export
 				if (templateCell != null)
 				{
 					// Set the cell, paragraph, and run properties
-					TableCellProperties cellProperties = new TableCellProperties(templateCell.TableCellProperties.CloneNode(true));
+					TableCellProperties cellProperties = new(templateCell.TableCellProperties.CloneNode(true));
 					ParagraphProperties paraProperties = templateCell.Descendants<ParagraphProperties>().FirstOrDefault();
 					RunProperties runProperties = templateCell.Descendants<RunProperties>().FirstOrDefault();
 
 					// Set the text and cell properties
-					TableCell cell = new TableCell();
-					Text cellText = new Text() { Text = text };
+					TableCell cell = new();
+					Text cellText = new() { Text = text };
 					cell.PrependChild(cellProperties);
 
 					// Add text and run properties to run
-					Run run = new Run();
+					Run run = new();
 					run.Append(cellText);
 					run.PrependChild(runProperties != null ? runProperties.CloneNode(true) : new RunProperties());
 
 					// Add run and paragraph properties to paragraph, add paragraph to cell
-					Paragraph paragraph = new Paragraph(run);
+					Paragraph paragraph = new(run);
 					paragraph.PrependChild(paraProperties != null ? paraProperties.CloneNode(true) : new ParagraphProperties());
 					cell.Append(paragraph);
 

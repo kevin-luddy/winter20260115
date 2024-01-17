@@ -14,7 +14,7 @@ namespace IES.ActionLogic.ControllerLogic
 	/// Interface for the RDM Reports Controller Logic.
 	/// </summary>
 	public interface IReportsControllerLogic : IRdmControllerLogic
-    {
+	{
 		/// <summary>
 		/// Generate a zip file containing the ProPricer direct and burden rate exports.
 		/// </summary>
@@ -25,8 +25,8 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="burdenElements">PPR&amp;D ProPricer burden elements</param>
 		/// <returns>An ActionResult.</returns>
 		string ExportProPricerData(string zipPathFile, string versionNumber,
-            ICollection<RateDetailModelView> rates, ICollection<BurdenPoolDetailModelView> burdenPools, 
-            ICollection<BurdenElementModelView> burdenElements);
+			ICollection<RateDetailModelView> rates, ICollection<BurdenPoolDetailModelView> burdenPools,
+			ICollection<BurdenElementModelView> burdenElements);
 
 		/// <summary>
 		/// Generates the Full PPRD document
@@ -43,5 +43,5 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="jsonFilePath">The server path where the JSON file will be created</param>
 		/// <returns>Revision data as JSON.</returns>
 		IActionResult ExportRevisionAsJson(string id, string jsonFilePath);
-    }
+	}
 }

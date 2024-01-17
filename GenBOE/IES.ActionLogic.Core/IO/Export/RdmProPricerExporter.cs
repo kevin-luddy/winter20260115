@@ -104,26 +104,26 @@ namespace IES.ActionLogic.IO.Export
 			this.FindMinMaxYears(); // set min/max year
 			string toReturn;
 			// Initialize collection of streams to zip
-			Dictionary<string, Stream> zipContents = new Dictionary<string, Stream>();
+			Dictionary<string, Stream> zipContents = new();
 			// Add streams to dictionary for zipping, generate CSV data for the 5 ProPricer exports.
-			using (MemoryStream ms1 = new MemoryStream(ExportProPricer(this.GetDirectRateRows(IsGovOrComm.Commerical))))
+			using (MemoryStream ms1 = new(ExportProPricer(this.GetDirectRateRows(IsGovOrComm.Commerical))))
 			{
 				zipContents.Add(string.Format("{0}_Direct_Rate_Commercial.csv", this.prefix), ms1);
 				// Note: ms2 (Government Direct Rates (NET)) and ms6 (Government Direct Rates Services (NET)) are identical as requested by the customer.
-				using (MemoryStream ms2 = new MemoryStream(ExportProPricer(this.GetDirectRateRows(IsGovOrComm.Government))))
+				using (MemoryStream ms2 = new(ExportProPricer(this.GetDirectRateRows(IsGovOrComm.Government))))
 				{
 					zipContents.Add(string.Format("{0}_Direct_Rate.csv", this.prefix), ms2);
 					// Note: ms3 (Government Burden Rates (NET)) and ms4 (Commercial Burden Rates (GRS)) are identical as requested by the customer.
-					using (MemoryStream ms3 = new MemoryStream(ExportProPricer(this.GetBurdenRateRows(false, false))))
+					using (MemoryStream ms3 = new(ExportProPricer(this.GetBurdenRateRows(false, false))))
 					{
 						zipContents.Add(string.Format("{0}_Burden_Rate.csv", this.prefix), ms3);
-						using (MemoryStream ms4 = new MemoryStream(ExportProPricer(this.GetBurdenRateRows(false, true))))
+						using (MemoryStream ms4 = new(ExportProPricer(this.GetBurdenRateRows(false, true))))
 						{
 							zipContents.Add(string.Format("{0}_Burden_Rate_Commercial.csv", this.prefix), ms4);
-							using (MemoryStream ms5 = new MemoryStream(ExportProPricer(this.GetBurdenRateRows(true, false))))
+							using (MemoryStream ms5 = new(ExportProPricer(this.GetBurdenRateRows(true, false))))
 							{
 								zipContents.Add(string.Format("{0}_Burden_Rate_Services.csv", this.prefix), ms5);
-								using (MemoryStream ms6 = new MemoryStream(ExportProPricer(this.GetDirectRateRows(IsGovOrComm.Government))))
+								using (MemoryStream ms6 = new(ExportProPricer(this.GetDirectRateRows(IsGovOrComm.Government))))
 								{
 									zipContents.Add(string.Format("{0}_Direct_Rate_Services.csv", this.prefix), ms6);
 									// Zip files and return zip file path & name to caller
@@ -149,7 +149,7 @@ namespace IES.ActionLogic.IO.Export
 		/// <returns>Byte Array containing comma separated row data.</returns>
 		private static byte[] ExportProPricer(ICollection<IProPricerExportModelView> proPricerExportRows)
 		{
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new();
 
 			// combine the rows into a single string
 			foreach (IProPricerExportModelView row in proPricerExportRows)
@@ -564,7 +564,7 @@ namespace IES.ActionLogic.IO.Export
 		/// <returns>ProPricerDirectRateExportRowModelView</returns>
 		private ProPricerDirectRateExportRowModelView CreateDirectRateRow(RateDetailModelView rate, int mappingSequence, string description, string resourceClass, IsGovOrComm isGovOrComm, int year)
 		{
-			ProPricerDirectRateExportRowModelView toReturn = new ProPricerDirectRateExportRowModelView();
+			ProPricerDirectRateExportRowModelView toReturn = new();
 			// use base ratecode for resource or create [RATECODE]1,2,3,4,5,6,7,8 or 9
 			toReturn.ResourceType = rate.ResourceType.GetName();
 			toReturn.Resource = mappingSequence == 0 ? rate.RateCode : string.Format(rate.RateCode + "{0}", mappingSequence.ToString());
@@ -594,7 +594,7 @@ namespace IES.ActionLogic.IO.Export
 			BurdenElementModelView burdenElement = this.BurdenElements.Single(x => x.Name == "G&A T2");
 			List<BurdenElementModelView> orderedList = this.BurdenElements.OrderBy(x => x.DisplayOrder).ToList();
 			int gat2BurdenElementIndex = orderedList.IndexOf(burdenElement);
-			List<int> fccomIndices = new List<int>();
+			List<int> fccomIndices = new();
 			for (int i = 0; i < orderedList.Count; i++)
 			{
 				if (orderedList[i].Name.StartsWith("FCCOM") || orderedList[i].Name.StartsWith("FCCM") || orderedList[i].Name.StartsWith("FCM"))
@@ -617,7 +617,7 @@ namespace IES.ActionLogic.IO.Export
 			{
 				for (int year = this.MinYear; year <= this.MaxYear; year++)
 				{
-					ProPricerBurdenRateExportRowModelView row = new ProPricerBurdenRateExportRowModelView
+					ProPricerBurdenRateExportRowModelView row = new()
 					{
 						BurdenPool = burdenPool.BurdenPool,
 						Description = burdenPool.Description,
