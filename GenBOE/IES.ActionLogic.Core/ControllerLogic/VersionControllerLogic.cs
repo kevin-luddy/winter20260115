@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Concurrent;
@@ -12,7 +12,8 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using System.Threading.Tasks;
-	using IES.ActionLogic.Common;
+	using IES.ActionLogic.Core.Common;
+	using IES.ActionLogic.Core.Mediator;
 	using IES.Common.Core;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
@@ -20,7 +21,6 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using Mediator;
 
 	/// <summary>
 	/// Logic for the Version Controller
@@ -64,20 +64,20 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>Differences based on the selected version</returns>
 		public VersionComparisonModelView GetVersionDifferences(int id, int secondId, bool isRdmAdminUser, UserData activeUser)
 		{
-			ICollection<RevisionModelView> revisions = this.Revisions;
+			ICollection<RevisionModelView> revisions = Revisions;
 			if (revisions == null || revisions.Count == 0)
 			{
 				throw new ArgumentException("There are no revisions to compare.");
 			}
 
-			RevisionModelView wipRevision = this.WipRevision;
+			RevisionModelView wipRevision = WipRevision;
 
 			VersionComparisonModelView modelView = new()
 			{
 				AdminUser = isRdmAdminUser,
 				WorkInProgressHistory = wipRevision.History,
 				ReleaseNotes = wipRevision.ReleaseNotes,
-				ReplicationValidationMessages = this.rateDetailLoader.VerifyRateCodeReplication(wipRevision.Id)
+				ReplicationValidationMessages = rateDetailLoader.VerifyRateCodeReplication(wipRevision.Id)
 			};
 
 			if (revisions.Count <= 1)
@@ -95,7 +95,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentException("Could not find specified revision");
 			}
 
-			modelView.AvailableVersions = this.RevisionMediator.GetRevisionOptions(revisions);
+			modelView.AvailableVersions = RevisionMediator.GetRevisionOptions(revisions);
 
 			modelView.FirstSelectedRevision = modelView.AvailableVersions.First(x => x.Id == firstSelectedRevision.Id);
 
@@ -157,12 +157,12 @@ namespace IES.ActionLogic.ControllerLogic
 			if (!modelView.IsEarliestVersion)
 			{
 				modelView.SecondSelectedRevision = modelView.AvailableCompareToVersions.FirstOrDefault(x => x.Id == secondSelectedRevision.Id);
-				modelView.PPRDDifferences = this.RevisionMediator.GetVersionComparisonRows(secondSelectedRevision.Id, firstSelectedRevision.Id);
+				modelView.PPRDDifferences = RevisionMediator.GetVersionComparisonRows(secondSelectedRevision.Id, firstSelectedRevision.Id);
 			}
 
 			if (modelView.AdminUser)
 			{
-				modelView.ActiveLocks = this.AreaLockingLoader.GetActiveLocksByOtherUsers(activeUser);
+				modelView.ActiveLocks = AreaLockingLoader.GetActiveLocksByOtherUsers(activeUser);
 			}
 
 			return modelView;
@@ -175,19 +175,19 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>Collection of invalid rates - empty if all valid</returns>
 		public ICollection<string> GetInvalidRates(int? id)
 		{
-			RevisionModelView revision = this.RevisionMediator.GetById(id);
-			ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revision);
+			RevisionModelView revision = RevisionMediator.GetById(id);
+			ICollection<RateDetailModelView> rates = rateDetailLoader.GetRatesByRevision(revision);
 
 			// Get the published year - use current year if not published.
 			int publishYear = revision.DatePublished?.Year ?? DateTime.Now.Year;
 
 			// Rates have match for at least one of the categories.
-			var backwardLookingRates = rates.Where(r =>
+			List<RateDetailModelView> backwardLookingRates = rates.Where(r =>
 				r.RateCategory == RateCategory.Fccom || r.RateCategory == RateCategory.Fringe ||
 				r.RateCategory == RateCategory.GA || r.RateCategory == RateCategory.Overhead).ToList();
 
 			// Rates do not have a match for any of the categories.
-			var forwardLookingRates = rates.Where(r =>
+			List<RateDetailModelView> forwardLookingRates = rates.Where(r =>
 				r.RateCategory != RateCategory.Fccom && r.RateCategory != RateCategory.Fringe &&
 				r.RateCategory != RateCategory.GA && r.RateCategory != RateCategory.Overhead).ToList();
 
@@ -215,7 +215,7 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				// If all values are 0 or null for a given year range, validation fails.
 				if (rate.Values.Where(v => v.Year >= startYear && v.Year <= startYear + yearsToValidate)
-					.All(w => (w.Value == null || w.Value == 0)))
+					.All(w => w.Value == null || w.Value == 0))
 				{
 					toReturn.Add(rate.RateCode);
 				}
@@ -231,7 +231,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="currentUser">The current user</param>
 		public void SendPublishEmail(RevisionModelView publishedRevision, UserData currentUser)
 		{
-			this.emailer.SendPublishEmail(publishedRevision, currentUser);
+			emailer.SendPublishEmail(publishedRevision, currentUser);
 		}
 	}
 }

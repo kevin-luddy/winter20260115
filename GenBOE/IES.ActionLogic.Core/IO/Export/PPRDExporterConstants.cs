@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.IO.Export
+namespace IES.ActionLogic.Core.IO.Export
 {
 	/// <summary>
 	/// Constants for PPRDExporter

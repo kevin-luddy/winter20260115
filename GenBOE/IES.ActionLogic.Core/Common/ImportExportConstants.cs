@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.Common
+namespace IES.ActionLogic.Core.Common
 {
 	using System.Collections.Generic;
 

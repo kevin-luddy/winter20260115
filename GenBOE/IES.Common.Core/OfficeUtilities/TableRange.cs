@@ -7,7 +7,6 @@
 namespace IES.Common.Core.OfficeUtilities
 {
 	using System;
-	using System.Linq;
 	using System.Text;
 	using DocumentFormat.OpenXml.Spreadsheet;
 

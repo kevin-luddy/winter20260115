@@ -6,15 +6,14 @@
 
 namespace IES.DataBridge.Loaders
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
+	using System.Collections.Generic;
 	using IES.Common.Core.Loaders;
 	using IES.DataBridge.ModelViews;
 
-    /// <summary>
-    /// Interface for Banner Loader
-    /// </summary>
-    public interface IRateCodeReplicationLoader : IDataLoader<RateCodeModelView>
+	/// <summary>
+	/// Interface for Banner Loader
+	/// </summary>
+	public interface IRateCodeReplicationLoader : IDataLoader<RateCodeModelView>
     {
         /// <summary>
         /// Get all Rate Code Replications.

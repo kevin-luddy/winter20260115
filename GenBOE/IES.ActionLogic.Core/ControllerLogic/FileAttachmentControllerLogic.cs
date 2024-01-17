@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Generic;
@@ -12,7 +12,6 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Linq;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using IES.Common.Core;
 	using IES.Common.Core.Exceptions;
 	using Mediator;
 	using IES.Common.Core.Interfaces;

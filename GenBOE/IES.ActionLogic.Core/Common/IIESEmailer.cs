@@ -4,9 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.Common
+namespace IES.ActionLogic.Core.Common
 {
-	using IES.Common.Core;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
 

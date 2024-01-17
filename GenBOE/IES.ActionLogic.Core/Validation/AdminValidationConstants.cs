@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.Validation
+namespace IES.ActionLogic.Core.Validation
 {
 	/// <summary>
 	/// Validation constants for Admin.

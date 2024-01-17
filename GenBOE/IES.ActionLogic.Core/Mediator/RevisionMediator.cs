@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.Mediator
+namespace IES.ActionLogic.Core.Mediator
 {
 	using System;
 	using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace IES.ActionLogic.Mediator
 	/// <summary>
 	/// The mediator for loading/caching Revisions.
 	/// </summary>
-	/// <seealso cref="IES.ActionLogic.Mediator.IRevisionMediator" />
+	/// <seealso cref="IRevisionMediator" />
 	public class RevisionMediator : IRevisionMediator
 	{
 		/// <summary>
@@ -57,7 +57,7 @@ namespace IES.ActionLogic.Mediator
 		/// <returns>If Id is null, return current WIP revision; othewise, return specified revision.</returns>
 		public RevisionModelView GetById(int? id)
 		{
-			IList<RevisionModelView> revisions = this.GetAll();
+			IList<RevisionModelView> revisions = GetAll();
 
 			RevisionModelView revision = id == null ?
 						revisions.FirstOrDefault(r => r.DatePublished == null) :
@@ -100,7 +100,7 @@ namespace IES.ActionLogic.Mediator
 		/// <returns>Current WIP Revision</returns>
 		public RevisionModelView GetWipRevision()
 		{
-			return this.GetById(null);
+			return GetById(null);
 		}
 
 		/// <summary>
@@ -110,10 +110,10 @@ namespace IES.ActionLogic.Mediator
 		public IList<RevisionModelView> GetAll()
 		{
 			IList<RevisionModelView> revisions;
-			using (StopwatchTimer sw = new("DataMapper.GetById", this.logger))
+			using (StopwatchTimer sw = new("DataMapper.GetById", logger))
 			{
-				GetAllRevisionsDelegate cacheDelegate = new(this.revisionLoader.GetAll);
-				revisions = this.cacheDataLoader.GetData(cacheDelegate, new object[0], CacheConstants.GET_ALL_REVISIONS) as IList<RevisionModelView>;
+				GetAllRevisionsDelegate cacheDelegate = new(revisionLoader.GetAll);
+				revisions = cacheDataLoader.GetData(cacheDelegate, Array.Empty<object>(), CacheConstants.GET_ALL_REVISIONS) as IList<RevisionModelView>;
 			}
 
 			return revisions;
@@ -125,7 +125,7 @@ namespace IES.ActionLogic.Mediator
 		/// <returns>Revision options</returns>
 		public IList<RevisionOptionModelView> GetRevisionOptions()
 		{
-			return this.GetRevisionOptions(this.GetAll());
+			return GetRevisionOptions(GetAll());
 		}
 
 		/// <summary>
@@ -156,9 +156,9 @@ namespace IES.ActionLogic.Mediator
 		/// <returns>Id of the deleted dto</returns>
 		public int? Delete(RevisionModelView dtoToDelete)
 		{
-			this.cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
-			int? id = this.revisionLoader.Delete(dtoToDelete);
-			this.cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
+			cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
+			int? id = revisionLoader.Delete(dtoToDelete);
+			cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
 
 			return id;
 		}
@@ -174,9 +174,9 @@ namespace IES.ActionLogic.Mediator
 		/// <returns>Id of the new WIP revision.</returns>
 		public int? Publish(RevisionModelView wipRevision, string publishedBy, DateTime? datePublished = null)
 		{
-			this.cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
-			int? id = this.revisionLoader.Publish(wipRevision, publishedBy, datePublished);
-			this.cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
+			cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
+			int? id = revisionLoader.Publish(wipRevision, publishedBy, datePublished);
+			cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
 
 			return id;
 		}
@@ -191,9 +191,9 @@ namespace IES.ActionLogic.Mediator
 		/// <returns>Id of the new WIP revision.</returns>
 		public int? Rollback(IESUpdateableModelView lastPublishedRevision, RevisionModelView wipRevision)
 		{
-			this.cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
-			int? id = this.revisionLoader.Rollback(lastPublishedRevision, wipRevision);
-			this.cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
+			cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
+			int? id = revisionLoader.Rollback(lastPublishedRevision, wipRevision);
+			cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
 
 			return id;
 		}
@@ -206,7 +206,7 @@ namespace IES.ActionLogic.Mediator
 		/// <returns>result</returns>
 		public ICollection<VersionComparisonGridRowModelView> GetVersionComparisonRows(int oldID, int newID)
 		{
-			return this.revisionLoader.GetVersionComparisonRows(oldID, newID);
+			return revisionLoader.GetVersionComparisonRows(oldID, newID);
 		}
 
 		/// <summary>
@@ -216,9 +216,9 @@ namespace IES.ActionLogic.Mediator
 		/// <returns>Id of the dto after the modification</returns>
 		public int? Upsert(RevisionModelView dtoToUpsert)
 		{
-			this.cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
-			int? id = this.revisionLoader.Upsert(dtoToUpsert);
-			this.cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
+			cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
+			int? id = revisionLoader.Upsert(dtoToUpsert);
+			cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
 
 			return id;
 		}
@@ -228,7 +228,7 @@ namespace IES.ActionLogic.Mediator
 		/// </summary>
 		public void ClearRevisionCache()
 		{
-			this.cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
+			cacheDataLoader.Remove(CacheConstants.GET_ALL_REVISIONS);
 		}
 	}
 

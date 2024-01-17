@@ -6,17 +6,16 @@
 
 namespace IES.DataBridge.Loaders
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
+	using System.Collections.Generic;
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
 
-    /// <summary>
-    /// Inteface for Burden Pool Loader
-    /// </summary>
-    /// <seealso cref="IES.Common.Core.IDataLoader{IES.DataBridge.ModelViews.BurdenPoolDetailModelView}" />
-    public interface IBurdenPoolLoader : IDataLoader<BurdenPoolDetailModelView>
+	/// <summary>
+	/// Inteface for Burden Pool Loader
+	/// </summary>
+	/// <seealso cref="IES.Common.Core.IDataLoader{IES.DataBridge.ModelViews.BurdenPoolDetailModelView}" />
+	public interface IBurdenPoolLoader : IDataLoader<BurdenPoolDetailModelView>
     {
         /// <summary>
         /// Gets all Commercial and Government Burden Pools as options lists.

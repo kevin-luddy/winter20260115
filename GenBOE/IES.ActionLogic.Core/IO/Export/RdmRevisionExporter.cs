@@ -3,7 +3,8 @@
 //     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
-namespace IES.ActionLogic.IO.Export
+
+namespace IES.ActionLogic.Core.IO.Export
 {
 	using System;
 	using System.Collections.Generic;

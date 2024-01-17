@@ -4,17 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
-	using IES.Common.Core;
+	using IES.ActionLogic.Core.Mediator;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using Mediator;
 
 	/// <summary>
 	/// Logic for the BurdenPool Controller.

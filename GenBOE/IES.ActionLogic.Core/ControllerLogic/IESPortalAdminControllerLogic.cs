@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Generic;
@@ -13,17 +13,15 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using GenBOE.DataBridge.Core.Picklists;
 	using GenTRAC.DataBridge.Core.DTO.PickLists.Common;
-	using IES.Common.Core;
+	using IES.ActionLogic.Core.ModelView;
+	using IES.ActionLogic.Core.Validation;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
-	using IES.Common.Core.Models;
 	using IES.Common.Core.PickList;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using ModelView;
-	using Validation;
 
 	/// <summary>
 	/// Controller Logic for IES Portal Admin area
@@ -68,16 +66,16 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>All of the items</returns>
 		public PickListGridMV GetPickListItems(PickListEnum pickListType, bool loadChildren = false)
 		{
-			PickListGridMV ptmData = this.ptmPickListMapper.GetPickListValues(pickListType, loadChildren);
-			PickListGridMV boeData = this.boePickListMapper.GetPickListValues(pickListType, loadChildren);
+			PickListGridMV ptmData = ptmPickListMapper.GetPickListValues(pickListType, loadChildren);
+			PickListGridMV boeData = boePickListMapper.GetPickListValues(pickListType, loadChildren);
 
 			if (ptmData != null && boeData != null)
 			{
-				this.ValidatePickLists(ptmData, boeData);
+				ValidatePickLists(ptmData, boeData);
 			}
 
 			PickListGridMV result = ptmData ?? boeData;
-			this.ConfigurePickListIds(result, ptmData, boeData);
+			ConfigurePickListIds(result, ptmData, boeData);
 
 			return result;
 		}
@@ -209,7 +207,7 @@ namespace IES.ActionLogic.ControllerLogic
 
 			// Validate updated items have unique Text values.
 			List<PickListModelView> updatedItems = dataToSave.Where(x => x.Updateable == UpdateType.Upsert).ToList();
-			PickListGridMV gridModelView = this.GetPickListItems(pickListType, true);
+			PickListGridMV gridModelView = GetPickListItems(pickListType, true);
 
 			if (updatedItems.Any())
 			{
@@ -292,8 +290,8 @@ namespace IES.ActionLogic.ControllerLogic
 		public void FixPickListErrors(PickListEnum pickListType)
 		{
 			// Not including Read-Only DTOs
-			ICollection<PickListDto> ptmData = this.ptmPickListMapper.GetPickListValues(pickListType).PickLists.Where(p => !p.IsReadOnly).ToList();
-			ICollection<PickListDto> boeData = this.boePickListMapper.GetPickListValues(pickListType).PickLists.Where(p => !p.IsReadOnly).ToList();
+			ICollection<PickListDto> ptmData = ptmPickListMapper.GetPickListValues(pickListType).PickLists.Where(p => !p.IsReadOnly).ToList();
+			ICollection<PickListDto> boeData = boePickListMapper.GetPickListValues(pickListType).PickLists.Where(p => !p.IsReadOnly).ToList();
 
 			ICollection<PickListDto> updatedPTM = new List<PickListDto>();
 			ICollection<PickListDto> updatedBOE = new List<PickListDto>();
@@ -337,7 +335,7 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(ConfigurationUtilities.GetAppSetting("TransactionTimeout"))) }))
 				{
-					this.ptmPickListMapper.SavePickList(pickListType, updatedPTM);
+					ptmPickListMapper.SavePickList(pickListType, updatedPTM);
 					scope.Complete();
 				}
 			}
@@ -346,7 +344,7 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(ConfigurationUtilities.GetAppSetting("TransactionTimeout"))) }))
 				{
-					this.boePickListMapper.SavePickList(pickListType, updatedBOE);
+					boePickListMapper.SavePickList(pickListType, updatedBOE);
 					scope.Complete();
 				}
 			}
@@ -383,12 +381,12 @@ namespace IES.ActionLogic.ControllerLogic
 
 			using (TransactionScope scope1 = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable, Timeout = new TimeSpan(0, 0, Convert.ToInt32(ConfigurationUtilities.GetAppSetting("TransactionTimeout"))) }))
 			{
-				this.ptmPickListMapper.SavePickList(pickListType, ptmDtos);
+				ptmPickListMapper.SavePickList(pickListType, ptmDtos);
 
 				// Now save to BOE inside a nested transaction
 				using (TransactionScope scope2 = new(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable, Timeout = new TimeSpan(0, 0, Convert.ToInt32(ConfigurationUtilities.GetAppSetting("TransactionTimeout"))) }))
 				{
-					this.boePickListMapper.SavePickList(pickListType, boeDtos);
+					boePickListMapper.SavePickList(pickListType, boeDtos);
 
 					scope2.Complete();
 				}
@@ -406,7 +404,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>offline application data</returns>
 		public ICollection<OfflineApplicationModelView> GetOfflineApplicationData()
 		{
-			return this.offlineApplicationLoader.GetAll();
+			return offlineApplicationLoader.GetAll();
 		}
 
 		/// <summary>
@@ -421,7 +419,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			// determine which applications changed status
-			ICollection<OfflineApplicationModelView> originalValues = this.GetOfflineApplicationData();
+			ICollection<OfflineApplicationModelView> originalValues = GetOfflineApplicationData();
 			ICollection<OfflineApplicationModelView> toUpdate = new Collection<OfflineApplicationModelView>();
 
 			foreach (OfflineApplicationModelView app in applications)
@@ -436,7 +434,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// Only update those that changed
 			foreach (OfflineApplicationModelView dto in toUpdate)
 			{
-				this.offlineApplicationLoader.Update(dto);
+				offlineApplicationLoader.Update(dto);
 			}
 		}
 	}

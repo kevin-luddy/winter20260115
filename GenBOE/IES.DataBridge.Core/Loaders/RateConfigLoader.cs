@@ -10,7 +10,6 @@ namespace IES.DataBridge.Loaders
 	using System.Linq;
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
-	using IES.Common.Core;
 	using Microsoft.Extensions.Logging;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Utilities;

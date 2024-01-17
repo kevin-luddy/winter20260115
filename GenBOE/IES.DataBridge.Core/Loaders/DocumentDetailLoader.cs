@@ -13,7 +13,6 @@ namespace IES.DataBridge.Loaders
 	using IES.Common.Core;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Loaders;
-	using IES.Common.Core.Models;
 	using IES.Common.Core.Utilities;
 	using IES.DataBridge.ModelViews;
 	using IES.Models;

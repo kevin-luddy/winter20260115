@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;

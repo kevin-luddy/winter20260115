@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Generic;
@@ -45,19 +45,19 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>Lock Model View</returns>
 		public LockModelView LockArea(LockArea area, bool isLockingAllAreas, out bool status, out string message)
 		{
-			bool isLockAllowed = this.IsLockAllowed(area, isLockingAllAreas);
+			bool isLockAllowed = IsLockAllowed(area, isLockingAllAreas);
 			if (!isLockAllowed)
 			{
 				throw new AuthorizationException("You are not authorized to perform this operation.");
 			}
 
 			LockModelView lockInfo;
-			AreaLockData areaLock = this.AreaLockingLoader.GetAreaLock(area);
+			AreaLockData areaLock = AreaLockingLoader.GetAreaLock(area);
 			if (areaLock == null)
 			{
 				// add lock
-				areaLock = new AreaLockData() { Area = area, TimeOfLock = DateTime.Now, LockedBy = this.ActiveUser.DeepClone() };
-				this.AreaLockingLoader.LockArea(area, areaLock);
+				areaLock = new AreaLockData() { Area = area, TimeOfLock = DateTime.Now, LockedBy = ActiveUser.DeepClone() };
+				AreaLockingLoader.LockArea(area, areaLock);
 				lockInfo = new LockModelView(false, isLockAllowed, areaLock.TimeOfLock, areaLock.LockedBy.DisplayName);
 				status = true;
 				message = "Successfully locked for edit.";
@@ -65,7 +65,7 @@ namespace IES.ActionLogic.ControllerLogic
 			else
 			{
 				// already locked
-				status = this.ActiveUserOwnsLock(areaLock);
+				status = ActiveUserOwnsLock(areaLock);
 				lockInfo = new LockModelView(!status, isLockAllowed, areaLock.TimeOfLock, areaLock.LockedBy.DisplayName);
 				message = $"The {area.GetDescription()} page is currently locked for edit by {areaLock.LockedBy.DisplayName}.";
 			}
@@ -82,7 +82,7 @@ namespace IES.ActionLogic.ControllerLogic
 		public LockModelView LockAllAreas(out bool status, out string message)
 		{
 			// Only RDM Admins can lock all areas
-			if (!this.IsRDMAdminUser)
+			if (!IsRDMAdminUser)
 			{
 				throw new AuthorizationException("You are not authorized to perform this operation.");
 			}
@@ -94,7 +94,7 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				if (area != IES.Common.Core.Enums.LockArea.None)
 				{
-					lockInfo = this.LockArea(area, true, out status, out message);
+					lockInfo = LockArea(area, true, out status, out message);
 					if (!status)
 					{
 						return lockInfo;
@@ -115,19 +115,19 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>Lock Model View</returns>
 		public LockModelView UnlockArea(LockArea area, bool isUnlockingAllAreas)
 		{
-			bool isLockAllowed = this.IsLockAllowed(area, isUnlockingAllAreas);
+			bool isLockAllowed = IsLockAllowed(area, isUnlockingAllAreas);
 			if (!isLockAllowed)
 			{
 				throw new AuthorizationException("You are not authorized to perform this operation.");
 			}
 
 			LockModelView lockInfo = new(true, isLockAllowed, null, string.Empty);
-			AreaLockData areaLock = this.AreaLockingLoader.GetAreaLock(area);
+			AreaLockData areaLock = AreaLockingLoader.GetAreaLock(area);
 			if (areaLock != null)
 			{
-				if (this.ActiveUserOwnsLock(areaLock))
+				if (ActiveUserOwnsLock(areaLock))
 				{
-					this.AreaLockingLoader.UnlockArea(area);
+					AreaLockingLoader.UnlockArea(area);
 				}
 				else
 				{
@@ -146,7 +146,7 @@ namespace IES.ActionLogic.ControllerLogic
 		public ICollection<AreaLockData> UnlockAllAreas()
 		{
 			// Only RDM Admins can unlock all areas
-			if (!this.IsRDMAdminUser)
+			if (!IsRDMAdminUser)
 			{
 				throw new AuthorizationException("You are not authorized to perform this operation.");
 			}
@@ -155,11 +155,11 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				if (area != IES.Common.Core.Enums.LockArea.None)
 				{
-					this.UnlockArea(area, true);
+					UnlockArea(area, true);
 				}
 			}
 
-			return this.AreaLockingLoader.GetActiveLocksByOtherUsers(this.ActiveUser);
+			return AreaLockingLoader.GetActiveLocksByOtherUsers(ActiveUser);
 		}
 
 		/// <summary>
@@ -171,21 +171,21 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>Lock Model View</returns>
 		public LockModelView RefreshLockOnArea(LockArea area, out bool status, out string message)
 		{
-			bool isLockAllowed = this.IsLockAllowed(area, false);
+			bool isLockAllowed = IsLockAllowed(area, false);
 			if (!isLockAllowed)
 			{
 				throw new AuthorizationException("You are not authorized to perform this operation.");
 			}
 
 			LockModelView lockInfo;
-			AreaLockData areaLock = this.AreaLockingLoader.GetAreaLock(area);
+			AreaLockData areaLock = AreaLockingLoader.GetAreaLock(area);
 			if (areaLock != null)
 			{
-				if (this.ActiveUserOwnsLock(areaLock))
+				if (ActiveUserOwnsLock(areaLock))
 				{
 					// Lock exists and user was the one to lock it
 					areaLock.TimeOfLock = DateTime.Now;
-					this.AreaLockingLoader.LockArea(area, areaLock);
+					AreaLockingLoader.LockArea(area, areaLock);
 					lockInfo = new LockModelView(false, isLockAllowed, areaLock.TimeOfLock, areaLock.LockedBy.DisplayName);
 					status = true;
 					message = string.Empty;
@@ -201,8 +201,8 @@ namespace IES.ActionLogic.ControllerLogic
 			else
 			{
 				// Lock no longer exists, create a new lock
-				areaLock = new AreaLockData() { Area = area, TimeOfLock = DateTime.Now, LockedBy = this.ActiveUser.DeepClone() };
-				this.AreaLockingLoader.LockArea(area, areaLock);
+				areaLock = new AreaLockData() { Area = area, TimeOfLock = DateTime.Now, LockedBy = ActiveUser.DeepClone() };
+				AreaLockingLoader.LockArea(area, areaLock);
 				lockInfo = new LockModelView(false, isLockAllowed, areaLock.TimeOfLock, areaLock.LockedBy.DisplayName);
 				status = true;
 				message = string.Empty;

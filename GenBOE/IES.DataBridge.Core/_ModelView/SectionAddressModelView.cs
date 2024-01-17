@@ -6,12 +6,6 @@
 
 namespace IES.DataBridge.ModelViews
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-
 	/// <summary>
 	/// The Model for an address from a section
 	/// </summary>

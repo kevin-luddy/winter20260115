@@ -9,7 +9,6 @@ namespace IES.DataBridge.ModelViews
 	using System;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Interfaces;
-	using IES.Common.Core.Models;
 	using Newtonsoft.Json;
 
 	/// <summary>

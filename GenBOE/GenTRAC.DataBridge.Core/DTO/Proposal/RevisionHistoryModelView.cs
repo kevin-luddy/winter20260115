@@ -19,7 +19,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// <summary>
 		/// Is currently selected (what proposal are you viewing this tab from)
 		/// </summary>
-		public bool IsCurrentlySelected { get; set; } = false;
+		public bool IsCurrentlySelected { get; set; }
 
 		/// <summary>
 		/// Proposal Tracking Number
@@ -44,31 +44,31 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// <summary>
 		/// Should the proposal display the Proposal Setup tab
 		/// </summary>
-		public bool DisplayProposalSetupTab { get; set; } = false;
+		public bool DisplayProposalSetupTab { get; set; }
 
 		/// <summary>
 		/// Should the proposal display the checklist tab
 		/// </summary>
-		public bool DisplayChecklistTab { get; set; } = false;
+		public bool DisplayChecklistTab { get; set; }
 
 		/// <summary>
 		/// Should the proposal display the Post Submittal Attachment tab
 		/// </summary>
-		public bool DisplayPSATab { get; set; } = false;
+		public bool DisplayPSATab { get; set; }
 
 		/// <summary>
 		/// Should the proposal display the approvals tab
 		/// </summary>
-		public bool DisplayApprovalsTab { get; set; } = false;
+		public bool DisplayApprovalsTab { get; set; }
 
 		/// <summary>
 		/// Should the proposal display the certification tab
 		/// </summary>
-		public bool DisplayCertificationTab { get; set; } = false;
+		public bool DisplayCertificationTab { get; set; }
 
 		/// <summary>
 		/// Should the proposal display the revision tab
 		/// </summary>
-		public bool DisplayRevisionTab { get; set; } = false;
+		public bool DisplayRevisionTab { get; set; }
 	}
 }

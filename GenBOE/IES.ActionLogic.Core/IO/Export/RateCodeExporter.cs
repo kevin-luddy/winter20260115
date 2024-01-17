@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.IO.Export
+namespace IES.ActionLogic.Core.IO.Export
 {
 	using System;
 	using System.Collections.Generic;
@@ -64,7 +64,7 @@ namespace IES.ActionLogic.IO.Export
 		private static void PopulateRateCodes(RateGridModelView rates, SpreadsheetDocument spreadsheet)
 		{
 			// Create collections of strings for each row in the export file
-			var worksheet = new ExcelExportWorksheet();
+			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
 
 			Collection<string> headers = GetHeaders();
 
@@ -86,7 +86,7 @@ namespace IES.ActionLogic.IO.Export
 
 			AddDataValidation(worksheetPart, rates.Rates.Count);
 
-			string sheetRange = ExcelUtilities.RedefineSheetDimensions(worksheetPart, ((uint)rates.Rates.Count) + 1U, 0);
+			string sheetRange = ExcelUtilities.RedefineSheetDimensions(worksheetPart, (uint)rates.Rates.Count + 1U, 0);
 			ExcelUtilities.SetIgnoredErrors(worksheetPart.Worksheet, sheetRange);
 
 			// save the worksheet

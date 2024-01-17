@@ -4,11 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System.Collections.Generic;
 	using IES.DataBridge.ModelViews;
-	using IES.Common.Core;
 	using IES.Common.Core.Models;
 
 	/// <summary>

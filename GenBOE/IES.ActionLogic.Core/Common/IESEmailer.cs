@@ -4,11 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.Common
+namespace IES.ActionLogic.Core.Common
 {
 	using System;
 	using IES.DataBridge.ModelViews;
-	using IES.Common.Core;
 	using Microsoft.Extensions.Logging;
 	using IES.Common.Core.Email;
 	using IES.Common.Core.Models;
@@ -58,7 +57,7 @@ namespace IES.ActionLogic.Common
 		public IESEmailer(IDataFetchingScheduler dataFetchingScheduler, ILogger<IESEmailer> logger)
 			: base(logger)
 		{
-			this.DataFetchingScheduler = dataFetchingScheduler;
+			DataFetchingScheduler = dataFetchingScheduler;
 		}
 
 		/// <summary>
@@ -68,15 +67,15 @@ namespace IES.ActionLogic.Common
 		/// <param name="currentUser">The current user</param>
 		public void SendPublishEmail(RevisionModelView publishedRevision, UserData currentUser)
 		{
-			if (!ConfigurationUtilities.GetAppSetting<bool>("DisableAllEmails", false))
+			if (!ConfigurationUtilities.GetAppSetting("DisableAllEmails", false))
 			{
-				SendPublishEmailDelegate emailDelegate = new(this.PrivateSendPublishEmailDelegate);
-				this.DataFetchingScheduler.FetchEmails(emailDelegate, new object[] { publishedRevision, currentUser });
+				SendPublishEmailDelegate emailDelegate = new(PrivateSendPublishEmailDelegate);
+				DataFetchingScheduler.FetchEmails(emailDelegate, new object[] { publishedRevision, currentUser });
 			}
 			else
 			{
 				// if email is disabled by configuration setting
-				this.Log.LogDebug("Email is disabled by configuration setting in SendPublishEmail");
+				Log.LogDebug("Email is disabled by configuration setting in SendPublishEmail");
 			}
 		}
 
@@ -103,7 +102,7 @@ namespace IES.ActionLogic.Common
 			string[] bodyTokens = { publishedRevision.ReleaseNotes, homeUrl, exportUrl, summaryUrl };
 			string distributionList = ConfigurationUtilities.GetAppSetting("EstimatingDataGroupDL");
 
-			this.SendEmail(emailContent, distributionList, null, subjectTokens, bodyTokens, null, currentUser);
+			SendEmail(emailContent, distributionList, null, subjectTokens, bodyTokens, null, currentUser);
 		}
 
 		/// <summary>
@@ -113,15 +112,15 @@ namespace IES.ActionLogic.Common
 		/// <param name="currentUser">The current user</param>
 		public void SendClassifiedDeploymentSuccessEmail(RevisionModelView deployedRevision, UserData currentUser)
 		{
-			if (!ConfigurationUtilities.GetAppSetting<bool>("DisableAllEmails", false))
+			if (!ConfigurationUtilities.GetAppSetting("DisableAllEmails", false))
 			{
-				SendClassifiedDeploymentSuccessEmailDelegate emailDelegate = new(this.PrivateSendClassifiedDeploymentSuccessEmailDelegate);
-				this.DataFetchingScheduler.FetchEmails(emailDelegate, new object[] { deployedRevision, currentUser });
+				SendClassifiedDeploymentSuccessEmailDelegate emailDelegate = new(PrivateSendClassifiedDeploymentSuccessEmailDelegate);
+				DataFetchingScheduler.FetchEmails(emailDelegate, new object[] { deployedRevision, currentUser });
 			}
 			else
 			{
 				// if email is disabled by configuration setting
-				this.Log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentSuccessEmail");
+				Log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentSuccessEmail");
 			}
 		}
 
@@ -143,7 +142,7 @@ namespace IES.ActionLogic.Common
 			string[] bodyTokens = { deployedRevision.DisplayRevision, deployedRevision.ReleaseNotes };
 			string distributionList = ConfigurationUtilities.GetAppSetting("EmailDistributionList");
 
-			this.SendEmail(emailContent, distributionList, null, subjectTokens, bodyTokens, null, currentUser);
+			SendEmail(emailContent, distributionList, null, subjectTokens, bodyTokens, null, currentUser);
 		}
 
 		/// <summary>
@@ -153,15 +152,15 @@ namespace IES.ActionLogic.Common
 		/// <param name="currentUser">The current user</param>
 		public void SendClassifiedDeploymentFailedEmail(string failureMessage, UserData currentUser)
 		{
-			if (!ConfigurationUtilities.GetAppSetting<bool>("DisableAllEmails", false))
+			if (!ConfigurationUtilities.GetAppSetting("DisableAllEmails", false))
 			{
-				SendClassifiedDeploymentFailedEmailDelegate emailDelegate = new(this.PrivateSendClassifiedDeploymentFailedEmailDelegate);
-				this.DataFetchingScheduler.FetchEmails(emailDelegate, new object[] { failureMessage, currentUser });
+				SendClassifiedDeploymentFailedEmailDelegate emailDelegate = new(PrivateSendClassifiedDeploymentFailedEmailDelegate);
+				DataFetchingScheduler.FetchEmails(emailDelegate, new object[] { failureMessage, currentUser });
 			}
 			else
 			{
 				// if email is disabled by configuration setting
-				this.Log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentFailedEmail");
+				Log.LogDebug("Email is disabled by configuration setting in SendClassifiedDeploymentFailedEmail");
 			}
 		}
 
@@ -174,11 +173,11 @@ namespace IES.ActionLogic.Common
 		public void PrivateSendClassifiedDeploymentFailedEmailDelegate(string failureMessage, UserData currentUser)
 		{
 			EmailContent emailContent = Emails.CLASSIFIED_DEPLOYMENT_FAILED_EMAIL;
-			string[] subjectTokens = { };
+			string[] subjectTokens = Array.Empty<string>();
 			string[] bodyTokens = { failureMessage };
 			string distributionList = ConfigurationUtilities.GetAppSetting("EmailDistributionList");
 
-			this.SendEmail(emailContent, distributionList, null, subjectTokens, bodyTokens, null, currentUser);
+			SendEmail(emailContent, distributionList, null, subjectTokens, bodyTokens, null, currentUser);
 		}
 	}
 }

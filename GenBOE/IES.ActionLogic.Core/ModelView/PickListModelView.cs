@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ModelView
+namespace IES.ActionLogic.Core.ModelView
 {
 	using System.Reflection;
 	using IES.Common.Core.PickList;
@@ -12,7 +12,7 @@ namespace IES.ActionLogic.ModelView
 	/// <summary>
 	/// Model View for editing a PickList DTO
 	/// </summary>
-	/// <seealso cref="IES.Common.PickList.PickListDto" />
+	/// <seealso cref="Common.PickList.PickListDto" />
 	public class PickListModelView : PickListDto
 	{
 		/// <summary>
@@ -27,7 +27,7 @@ namespace IES.ActionLogic.ModelView
 				{
 					if (prop.CanWrite)
 					{
-						this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(dto, null), null);
+						GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(dto, null), null);
 					}
 				}
 			}

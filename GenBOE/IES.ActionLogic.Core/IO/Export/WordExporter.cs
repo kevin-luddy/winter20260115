@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.IO.Export
+namespace IES.ActionLogic.Core.IO.Export
 {
 	using System;
 	using System.IO;
@@ -12,7 +12,6 @@ namespace IES.ActionLogic.IO.Export
 	using DocumentFormat.OpenXml;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Wordprocessing;
-	using IES.Common.Core;
 	using IES.Common.Core.Constants;
 
 	/// <summary>
@@ -32,7 +31,7 @@ namespace IES.ActionLogic.IO.Export
 			// open a copy of the Excel template file into memory
 			byte[] byteArray = File.ReadAllBytes(templateFilePathFull);
 
-			this.Export(byteArray, populateData, stream);
+			Export(byteArray, populateData, stream);
 		}
 
 		/// <summary>
@@ -71,7 +70,7 @@ namespace IES.ActionLogic.IO.Export
 						populateData(document);
 
 						// Save all the changes
-						this.SaveDocument(document);
+						SaveDocument(document);
 					}
 
 					// write the document from the file into the caller's stream

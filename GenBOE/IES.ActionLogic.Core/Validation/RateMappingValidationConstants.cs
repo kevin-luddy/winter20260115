@@ -6,7 +6,7 @@
 
 using System.Collections.ObjectModel;
 
-namespace IES.ActionLogic.Validation
+namespace IES.ActionLogic.Core.Validation
 {
 	using System.Collections.Generic;
 

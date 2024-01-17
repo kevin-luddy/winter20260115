@@ -4,13 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.IO.Export
+namespace IES.ActionLogic.Core.IO.Export
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
-	using IES.Common.Core;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.OfficeUtilities;
 	using IES.DataBridge.ModelViews;

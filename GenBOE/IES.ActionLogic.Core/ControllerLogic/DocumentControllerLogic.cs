@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Generic;
@@ -22,7 +22,6 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
-	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
 	using IO.Export;
 	using Microsoft.AspNetCore.Mvc;
@@ -110,7 +109,7 @@ namespace IES.ActionLogic.ControllerLogic
 			this.documentLoader = documentLoader;
 			this.documentDetailLoader = documentDetailLoader;
 			this.adUtils = adUtils;
-			this.securityInformation = securityInfo;
+			securityInformation = securityInfo;
 			this.revisionLoader = revisionLoader;
 			this.sectionLoader = sectionLoader;
 			this.rateDetailLoader = rateDetailLoader;
@@ -130,14 +129,14 @@ namespace IES.ActionLogic.ControllerLogic
 		{
 			bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
 
-			ICollection<ProposalDto> proposals = isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(activeUserNtid);
+			ICollection<ProposalDto> proposals = isAdmin ? proposalLoader.GetAllSlim() : proposalLoader.GetProposalsByUser(activeUserNtid);
 
 			proposals = proposals.Where(p => p.DocumentId.HasValue && p.CustomerType != CustomerType.Commercial && p.CustomerType != CustomerType.InternationalCommercial).ToList();
 
 			ICollection<DocumentGridModelView> models = new List<DocumentGridModelView>();
 			if (proposals.Any())
 			{
-				models = this.RetrieveDocuments(proposals, isAdmin);
+				models = RetrieveDocuments(proposals, isAdmin);
 			}
 
 			models = models.OrderByDescending(x => x.ProposalTrackingNumber).ToList();
@@ -156,7 +155,7 @@ namespace IES.ActionLogic.ControllerLogic
 		{
 			bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
 
-			ICollection<ProposalDto> proposals = isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(activeUserNtid);
+			ICollection<ProposalDto> proposals = isAdmin ? proposalLoader.GetAllSlim() : proposalLoader.GetProposalsByUser(activeUserNtid);
 			proposals = proposals.Where(p =>
 					(p.ProposalStatus == ProposalStatus.InProgress || p.ProposalStatus == ProposalStatus.PendingCertification || p.ProposalStatus == ProposalStatus.PendingAward)
 					&& !p.DocumentId.HasValue
@@ -167,7 +166,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// do a sanity check to make sure there are no documents that think they are linked to proposals
 			if (proposals.Any())
 			{
-				ICollection<DocumentGridModelView> models = this.RetrieveDocuments(proposals, isAdmin);
+				ICollection<DocumentGridModelView> models = RetrieveDocuments(proposals, isAdmin);
 				if (models.Any())
 				{
 					// ok, we have some discrepancies....remove them from the proposals being returned, and update the proposals
@@ -179,12 +178,12 @@ namespace IES.ActionLogic.ControllerLogic
 							proposals.Remove(proposal);
 
 							// retrieve the original proposal with all properties set
-							proposal = this.proposalLoader.GetById(proposal.Id);
+							proposal = proposalLoader.GetById(proposal.Id);
 							proposal.DocumentId = model.Id;
 							proposal.Updateable = UpdateType.Upsert;
 							using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 							{
-								this.proposalLoader.Save(proposal);
+								proposalLoader.Save(proposal);
 								scope.Complete();
 							}
 						}
@@ -207,7 +206,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			document.Updateable = UpdateType.Upsert;
-			this.documentDetailLoader.Save(document);
+			documentDetailLoader.Save(document);
 		}
 
 		/// <summary>
@@ -217,7 +216,7 @@ namespace IES.ActionLogic.ControllerLogic
 		public void DeleteDocument(int proposalId)
 		{
 			ProposalDto proposal;
-			DocumentGridModelView model = this.RetrieveDocumentByProposalId(proposalId, out proposal);
+			DocumentGridModelView model = RetrieveDocumentByProposalId(proposalId, out proposal);
 			model.Updateable = UpdateType.Deleted;
 
 			try
@@ -225,13 +224,13 @@ namespace IES.ActionLogic.ControllerLogic
 				using (TransactionScope scope = new(TransactionScopeOption.Required,
 					new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 				{
-					this.documentLoader.Save(new DocumentGridModelView[] { model });
+					documentLoader.Save(new DocumentGridModelView[] { model });
 					scope.Complete();
 				}
 			}
 			catch (Exception ex)
 			{
-				this.logger.LogError(ex, string.Format("Could not delete document for proposal with ID {0}.", proposalId));
+				logger.LogError(ex, string.Format("Could not delete document for proposal with ID {0}.", proposalId));
 				throw;
 			}
 
@@ -243,13 +242,13 @@ namespace IES.ActionLogic.ControllerLogic
 				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 				{
 					// This has to be done inside another transaction because it is a different Database
-					this.proposalLoader.Save(proposal);
+					proposalLoader.Save(proposal);
 					scope.Complete();
 				}
 			}
 			catch (Exception ex)
 			{
-				this.logger.LogError(ex, string.Format("Could not update proposal with ID {0} to remove the document Id", proposalId));
+				logger.LogError(ex, string.Format("Could not update proposal with ID {0} to remove the document Id", proposalId));
 				throw;
 			}
 		}
@@ -265,14 +264,14 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new GenValidationException("There was no proposal Id passed back.");
 			}
 
-			ProposalDto proposal = this.proposalLoader.GetById(proposalId);
+			ProposalDto proposal = proposalLoader.GetById(proposalId);
 
 			if (proposal == null)
 			{
 				throw new GenValidationException("The proposal Id passed in is invalid: " + proposalId.ToString());
 			}
 
-			DocumentGridModelView model = this.RetrieveDocuments(new ProposalDto[] { proposal }).FirstOrDefault();
+			DocumentGridModelView model = RetrieveDocuments(new ProposalDto[] { proposal }).FirstOrDefault();
 
 			if (model != null)
 			{
@@ -285,7 +284,7 @@ namespace IES.ActionLogic.ControllerLogic
 				Id = -1,
 				Updateable = UpdateType.Upsert,
 				ProposalId = proposalId,
-				DocumentCreatedBy = this.adUtils.GetUserByQualifiedAccount(this.securityInformation.ActiveUserNTID, false).DisplayName,
+				DocumentCreatedBy = adUtils.GetUserByQualifiedAccount(securityInformation.ActiveUserNTID, false).DisplayName,
 				StartYear = DateTime.Now.Year,
 				EndYear = DateTime.Now.Year + 5
 			};
@@ -293,7 +292,7 @@ namespace IES.ActionLogic.ControllerLogic
 			int documentId;
 			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 			{
-				documentId = this.documentLoader.Save(new DocumentGridModelView[] { model }).First().Value;
+				documentId = documentLoader.Save(new DocumentGridModelView[] { model }).First().Value;
 				scope.Complete();
 			}
 
@@ -305,13 +304,13 @@ namespace IES.ActionLogic.ControllerLogic
 				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 				{
 					// This has to be done inside another transaction because it is a different Database
-					this.proposalLoader.Save(proposal);
+					proposalLoader.Save(proposal);
 					scope.Complete();
 				}
 			}
 			catch (Exception)
 			{
-				this.logger.LogError(string.Format("Could not update proposal with ID {0} to add the document ID {1}", proposalId, documentId));
+				logger.LogError(string.Format("Could not update proposal with ID {0} to add the document ID {1}", proposalId, documentId));
 				throw;
 			}
 		}
@@ -324,7 +323,7 @@ namespace IES.ActionLogic.ControllerLogic
 		public DocumentGridModelView RetrieveDocumentByProposalId(int proposalId)
 		{
 			ProposalDto proposal;
-			return this.RetrieveDocumentByProposalId(proposalId, out proposal);
+			return RetrieveDocumentByProposalId(proposalId, out proposal);
 		}
 
 		/// <summary>
@@ -340,20 +339,20 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new GenValidationException("There was no proposal Id passed back.");
 			}
 
-			proposal = this.proposalLoader.GetById(proposalId);
+			proposal = proposalLoader.GetById(proposalId);
 
 			if (proposal == null)
 			{
 				throw new GenValidationException("The proposal Id passed in is invalid: " + proposalId.ToString());
 			}
 
-			DocumentGridModelView modelView = this.RetrieveDocuments(new ProposalDto[] { proposal }).FirstOrDefault();
+			DocumentGridModelView modelView = RetrieveDocuments(new ProposalDto[] { proposal }).FirstOrDefault();
 
 			if (modelView == null)
 			{
 				if (proposal.DocumentId.HasValue)
 				{
-					this.logger.LogError("The proposal Id passed in is linked to a document but the document is not in the DB for id " + proposalId.ToString());
+					logger.LogError("The proposal Id passed in is linked to a document but the document is not in the DB for id " + proposalId.ToString());
 					throw new GenValidationException("The document could not be found.");
 				}
 
@@ -376,16 +375,16 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(proposals));
 			}
 
-			RevisionModelView latestRevision = this.revisionLoader.GetAll().Where(r => r.DatePublished.HasValue).OrderByDescending(r => r.DatePublished).First();
+			RevisionModelView latestRevision = revisionLoader.GetAll().Where(r => r.DatePublished.HasValue).OrderByDescending(r => r.DatePublished).First();
 
-			ICollection<DocumentGridModelView> models = this.documentLoader.GetByProposalIds(proposals.Select(p => p.Id).ToList(), latestRevision.Id);
+			ICollection<DocumentGridModelView> models = documentLoader.GetByProposalIds(proposals.Select(p => p.Id).ToList(), latestRevision.Id);
 
 			foreach (DocumentGridModelView model in models)
 			{
 				ProposalDto proposal = proposals.FirstOrDefault(p => p.Id == model.ProposalId);
 				if (proposal == null)
 				{
-					this.logger.LogError("Did not find a Proposal for Document retrieved with Id: " + model.Id);
+					logger.LogError("Did not find a Proposal for Document retrieved with Id: " + model.Id);
 				}
 				else
 				{
@@ -403,7 +402,7 @@ namespace IES.ActionLogic.ControllerLogic
 				{
 					if (!models.Any(m => m.ProposalId == proposal.Id))
 					{
-						this.logger.LogError("Did not find a linked document for Proposal with Id: " + proposal.Id);
+						logger.LogError("Did not find a linked document for Proposal with Id: " + proposal.Id);
 					}
 				}
 			}
@@ -424,27 +423,27 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new GenValidationException("There was no proposal Id passed back.");
 			}
 
-			ProposalDto proposal = this.proposalLoader.GetById(proposalId);
+			ProposalDto proposal = proposalLoader.GetById(proposalId);
 
 			if (proposal == null)
 			{
 				throw new GenValidationException("The proposal Id passed in is invalid: " + proposalId.ToString());
 			}
 
-			DocumentDetailModelView modelView = this.documentDetailLoader.GetByProposalId(proposalId);
+			DocumentDetailModelView modelView = documentDetailLoader.GetByProposalId(proposalId);
 
 			if (modelView == null || modelView.Id <= 0)
 			{
 				if (proposal.DocumentId.HasValue)
 				{
-					this.logger.LogError("The proposal Id passed in is linked to a document but the document is not in the DB for id " + proposalId.ToString());
+					logger.LogError("The proposal Id passed in is linked to a document but the document is not in the DB for id " + proposalId.ToString());
 					throw new GenValidationException("The document could not be found.");
 				}
 
 				if (createIfNotExists == true)
 				{
-					this.SaveNewDocument(proposalId);
-					modelView = this.documentDetailLoader.GetByProposalId(proposalId);
+					SaveNewDocument(proposalId);
+					modelView = documentDetailLoader.GetByProposalId(proposalId);
 				}
 
 				if (modelView == null || modelView.Id <= 0)
@@ -459,7 +458,7 @@ namespace IES.ActionLogic.ControllerLogic
 			modelView.ProposalStatus = proposal.ProposalStatus.ToDescription();
 
 			// Get available revisions
-			Collection<RevisionModelView> revisions = this.revisionLoader.GetAll().Where(x => x.DatePublished.HasValue).OrderByDescending(x => x.DatePublished).ToCollection();
+			Collection<RevisionModelView> revisions = revisionLoader.GetAll().Where(x => x.DatePublished.HasValue).OrderByDescending(x => x.DatePublished).ToCollection();
 			RevisionModelView firstRevision = revisions.First();
 			foreach (RevisionModelView revision in revisions)
 			{
@@ -487,7 +486,7 @@ namespace IES.ActionLogic.ControllerLogic
 			RevisionModelView revision = null;
 			if (document.SelectedRevisionId.HasValue)
 			{
-				revision = this.revisionLoader.GetAll().FirstOrDefault(r => r.DatePublished.HasValue && r.Id == document.SelectedRevisionId);
+				revision = revisionLoader.GetAll().FirstOrDefault(r => r.DatePublished.HasValue && r.Id == document.SelectedRevisionId);
 			}
 
 			if (revision == null)
@@ -531,7 +530,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 			else if (revision != null)
 			{
-				ICollection<RdsbRateDetailModelView> rates = this.rateDetailLoader.GetRatesForRdsbDocument(document.SelectedRevisionId.Value);
+				ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(document.SelectedRevisionId.Value);
 				if (document.SelectedRateCodeIds.Any(r => !rates.Any(rr => rr.Id == r)))
 				{
 					messages.Add(new ValidationMessage("SelectedRateCodeIds", "At least one Rate Code could not be found."));
@@ -545,14 +544,14 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 			else if (revision != null)
 			{
-				ICollection<SectionModelView> sections = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = document.SelectedRevisionId.Value }, true);
-				ICollection<int> allSectionIds = this.GetSectionIds(sections, false);
+				ICollection<SectionModelView> sections = sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = document.SelectedRevisionId.Value }, true);
+				ICollection<int> allSectionIds = GetSectionIds(sections, false);
 				if (document.SelectedSectionIds.Any(s => !allSectionIds.Contains(s)))
 				{
 					messages.Add(new ValidationMessage("SelectedSectionIds", "At least one Section could not be found."));
 				}
 
-				ICollection<int> requiredSectionIds = this.GetSectionIds(sections, true);
+				ICollection<int> requiredSectionIds = GetSectionIds(sections, true);
 				if (requiredSectionIds.Any(s => !document.SelectedSectionIds.Contains(s)))
 				{
 					messages.Add(new ValidationMessage("SelectedSectionIds", "At least one required Section was not selected."));
@@ -570,10 +569,10 @@ namespace IES.ActionLogic.ControllerLogic
 		public ICollection<SectionDetailModelView> GetSectionsForRevision(int revisionId)
 		{
 			ICollection<SectionModelView> sections =
-				this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revisionId });
+				sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revisionId });
 
 			// convert into section detail model view stripping out internal sections and non-section content
-			ICollection<SectionDetailModelView> details = this.ConvertSections(sections);
+			ICollection<SectionDetailModelView> details = ConvertSections(sections);
 
 			return details;
 		}
@@ -592,7 +591,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(serverFileName));
 			}
 
-			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
+			DocumentDetailModelView modelView = RetrieveDocumentDetailByProposalId(proposalId);
 			if (modelView == null)
 			{
 				throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString());
@@ -600,7 +599,7 @@ namespace IES.ActionLogic.ControllerLogic
 
 			string clientFileName = string.Format("{0}_{1}_{2}-{3}.docx", modelView.TrackingNumber, modelView.ProposalTitle, modelView.StartYear, modelView.EndYear).Replace(",", "_");
 
-			Stream stream = this.GenerateRDD(proposalId, serverFileName, modelView, null, true, portionMarkingRequired);
+			Stream stream = GenerateRDD(proposalId, serverFileName, modelView, null, true, portionMarkingRequired);
 			return new FileStreamResult(stream, PPRDExporterConstants.CONTENTTYPE_DOCX)
 			{
 				FileDownloadName = clientFileName
@@ -629,7 +628,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// get the document based off id if we don't already have the modelview
 			if (modelView == null)
 			{
-				modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
+				modelView = RetrieveDocumentDetailByProposalId(proposalId);
 				if (modelView == null)
 				{
 					throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString());
@@ -647,7 +646,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			// Get Revision MV
-			RevisionModelView revisionMV = this.revisionLoader.GetAll().FirstOrDefault(r => r.Id == modelView.SelectedRevisionId.Value);
+			RevisionModelView revisionMV = revisionLoader.GetAll().FirstOrDefault(r => r.Id == modelView.SelectedRevisionId.Value);
 
 			if (revisionMV == null)
 			{
@@ -658,18 +657,18 @@ namespace IES.ActionLogic.ControllerLogic
 			string refNumberPrefix = string.IsNullOrWhiteSpace(modelView.ParentSection) ? string.Empty : modelView.ParentSection + ".";
 			int refNumberPrefixLevel = string.IsNullOrWhiteSpace(modelView.ParentSection) ? 0 : Regex.Matches(modelView.ParentSection, ".").Count;
 
-			ICollection<SectionModelView> sections = this.sectionLoader.GetAll(revisionMV, false, modelView.SelectedSectionIds, refNumberPrefix);
+			ICollection<SectionModelView> sections = sectionLoader.GetAll(revisionMV, false, modelView.SelectedSectionIds, refNumberPrefix);
 
 			// Get Rates
-			ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revisionMV);
+			ICollection<RateDetailModelView> rates = rateDetailLoader.GetRatesByRevision(revisionMV);
 
 			// Remove Labor Rates not selected
 			rates = rates.Where(r => r.RateCategory != RateCategory.DirectLabor || modelView.SelectedRateCodeIds.Contains(r.Id)).ToList();
 
 			// Get File Attachments
-			ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
+			ICollection<FileAttachmentRowModelView> fileAttachments = fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
-			this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, includeDocumentDetails);
+			pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, includeDocumentDetails);
 
 			return stream;
 		}
@@ -722,7 +721,7 @@ namespace IES.ActionLogic.ControllerLogic
 					if (section.ChildNodes != null && section.ChildNodes.Any())
 					{
 						// recursively call the children and set them on converted details
-						detail.ChildNodes = this.ConvertSections(section.ChildNodes);
+						detail.ChildNodes = ConvertSections(section.ChildNodes);
 					}
 				}
 			}
@@ -742,14 +741,14 @@ namespace IES.ActionLogic.ControllerLogic
 			foreach (SectionModelView section in sections)
 			{
 				// If only getting required sections, make sure they're also not internal just in case
-				if (!onlyRequiredSections || (section.IsRdsbRequired && (!section.IsInternalSection ?? true)))
+				if (!onlyRequiredSections || section.IsRdsbRequired && (!section.IsInternalSection ?? true))
 				{
 					ids.Add(section.Id);
 				}
 
 				if (section.ChildNodes != null && section.ChildNodes.Any())
 				{
-					ids.AddRange(this.GetSectionIds(section.ChildNodes, onlyRequiredSections));
+					ids.AddRange(GetSectionIds(section.ChildNodes, onlyRequiredSections));
 				}
 			}
 
@@ -781,13 +780,13 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			List<string> rateSections = new();
-			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
+			DocumentDetailModelView modelView = RetrieveDocumentDetailByProposalId(proposalId);
 			if (modelView == null)
 			{
 				throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString(), nameof(proposalId));
 			}
 
-			ICollection<SectionModelView> sections = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
+			ICollection<SectionModelView> sections = sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
 			Dictionary<int, string> sectionIdToParentSection = new();
 
 			// set all reference numbers to top parent
@@ -849,13 +848,13 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			List<string> rateSections = new();
-			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
+			DocumentDetailModelView modelView = RetrieveDocumentDetailByProposalId(proposalId);
 			if (modelView == null)
 			{
 				throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString(), nameof(proposalId));
 			}
 
-			ICollection<SectionModelView> sections = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
+			ICollection<SectionModelView> sections = sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
 			Dictionary<int, string> sectionIdToParentSection = new();
 
 			// set all reference numbers to top parent
@@ -904,7 +903,7 @@ namespace IES.ActionLogic.ControllerLogic
 		public ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId)
 		{
 			ICollection<SectionAddressModelView> sections = new List<SectionAddressModelView>();
-			sections = this.sectionLoader.GetAddresses(ptmTrackingId);
+			sections = sectionLoader.GetAddresses(ptmTrackingId);
 
 			return sections;
 		}

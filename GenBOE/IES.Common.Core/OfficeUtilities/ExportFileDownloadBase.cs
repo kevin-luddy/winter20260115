@@ -8,8 +8,6 @@ namespace IES.Common.Core.OfficeUtilities
 {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Text.RegularExpressions;
-	using IES.Common.Core.Constants;
 
 	/// <summary>
 	/// Action result for returning export files

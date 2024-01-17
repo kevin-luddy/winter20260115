@@ -4,20 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using IES.ActionLogic.IO.Export;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using IES.Common.Core;
 	using IES.Common.Core.OfficeUtilities;
 	using Mediator;
 	using Microsoft.AspNetCore.Mvc;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Interfaces;
+	using IES.ActionLogic.Core.IO.Export;
 
 	/// <summary>
 	/// Logic for the RDM Reports Controller.
@@ -129,11 +128,11 @@ namespace IES.ActionLogic.ControllerLogic
 
 			if (int.TryParse(id, out revisonId))
 			{
-				revisionMV = this.RevisionMediator.GetById(revisonId);
+				revisionMV = RevisionMediator.GetById(revisonId);
 			}
 			else if (id.Equals(PPRDExporterConstants.WORKINPROGRESSID))
 			{
-				revisionMV = this.WipRevision;
+				revisionMV = WipRevision;
 			}
 			else
 			{
@@ -143,19 +142,19 @@ namespace IES.ActionLogic.ControllerLogic
 			string clientFileName = $"FullPPRD_RDM_Rev{revisionMV.Revision}_{DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY)}.docx";
 
 			// Get SectionsMVs
-			ICollection<SectionModelView> sections = this.sectionLoader.GetAll(revisionMV);
+			ICollection<SectionModelView> sections = sectionLoader.GetAll(revisionMV);
 
 			// No prefix
 			int refNumberPrefixLevel = 0;
 
 			// Get Rates
-			ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revisionMV);
+			ICollection<RateDetailModelView> rates = rateDetailLoader.GetRatesByRevision(revisionMV);
 
 			// Get File Attachments
-			ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
+			ICollection<FileAttachmentRowModelView> fileAttachments = fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
 			// TODO - RDM 1.0 - Update to allow user to select number of years
-			return this.pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, refNumberPrefixLevel);
+			return pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, refNumberPrefixLevel);
 		}
 
 		/// <summary>
@@ -176,20 +175,20 @@ namespace IES.ActionLogic.ControllerLogic
 
 			if (int.TryParse(id, out revisonId))
 			{
-				revision = this.RevisionMediator.GetById(revisonId);
+				revision = RevisionMediator.GetById(revisonId);
 			}
 			else
 			{
 				throw new ArgumentException("Revision ID is invalid");
 			}
 
-			string currentUserDisplayName = this.AdUtils.GetUserByQualifiedAccount(this.SecurityInformation.ActiveUserNTID, false).DisplayName;
-			ICollection<SectionModelView> sections = this.sectionLoader.GetAll(revision);
-			ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revision);
-			ICollection<CobraDetailModelView> cobraDetails = this.cobraDetailLoader.GetCobraDetailsByRevision(revision);
-			BurdenPoolGridModelView burdenPoolGridModel = this.burdenPoolLoader.GetByRevision(revision.Id);
+			string currentUserDisplayName = AdUtils.GetUserByQualifiedAccount(SecurityInformation.ActiveUserNTID, false).DisplayName;
+			ICollection<SectionModelView> sections = sectionLoader.GetAll(revision);
+			ICollection<RateDetailModelView> rates = rateDetailLoader.GetRatesByRevision(revision);
+			ICollection<CobraDetailModelView> cobraDetails = cobraDetailLoader.GetCobraDetailsByRevision(revision);
+			BurdenPoolGridModelView burdenPoolGridModel = burdenPoolLoader.GetByRevision(revision.Id);
 
-			this.rdmRevisionExporter.ExportRevisionAsJson(currentUserDisplayName, revision, sections, rates, cobraDetails, burdenPoolGridModel, jsonFilePath);
+			rdmRevisionExporter.ExportRevisionAsJson(currentUserDisplayName, revision, sections, rates, cobraDetails, burdenPoolGridModel, jsonFilePath);
 			string fileDownloadName = $"Revision{revision.Revision}_{DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY)}.json";
 
 			FileStream fs = new(jsonFilePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);

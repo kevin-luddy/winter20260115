@@ -9,7 +9,6 @@ namespace IES.DataBridge.ModelViews
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel.DataAnnotations;
-	using IES.Common.Core;
 	using IES.Common.Core.Enums;
 
 	/// <summary>

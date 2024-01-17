@@ -70,8 +70,8 @@ namespace IES.DataBridge.ModelViews
             }
 
             // shorten names for brevity
-            const string DQ = ProPricerExportModelView.DOUBLE_QUOTE;
-            const string EF = ProPricerExportModelView.END_FIELD;
+            const char DQ = ProPricerExportModelView.DOUBLE_QUOTE;
+            const char EF = ProPricerExportModelView.END_FIELD;
             stringBuilder.Append(this.BurdenPool ?? string.Empty);
             stringBuilder.Append(EF);
             stringBuilder.Append(DQ);

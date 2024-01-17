@@ -10,9 +10,9 @@ namespace IESPortal.Backend.Controllers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Transactions;
-	using IES.ActionLogic.Common;
-	using IES.ActionLogic.ControllerLogic;
-	using IES.ActionLogic.ModelView;
+	using IES.ActionLogic.Core.Common;
+	using IES.ActionLogic.Core.ControllerLogic;
+	using IES.ActionLogic.Core.ModelView;
 	using IES.Common.Core;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;

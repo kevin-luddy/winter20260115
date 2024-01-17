@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.IO.Import
+namespace IES.ActionLogic.Core.IO.Import
 {
 	using System;
 	using System.Collections.Generic;
@@ -15,7 +15,6 @@ namespace IES.ActionLogic.IO.Import
 	using Common;
 	using DataBridge.ModelViews;
 	using DocumentFormat.OpenXml.Packaging;
-	using IES.Common.Core;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Models;
@@ -191,12 +190,12 @@ namespace IES.ActionLogic.IO.Import
 		/// <summary>
 		/// Array of the columns in the imported file that must contain unique values.
 		/// </summary>
-		private static readonly string[] UniqueValueColumns = new string[] { };
+		private static readonly string[] UniqueValueColumns = Array.Empty<string>();
 
 		/// <summary>
 		/// Array of the columns that must be parsed as text.
 		/// </summary>
-		private static readonly string[] TextOnlyColumns = new string[] { };
+		private static readonly string[] TextOnlyColumns = Array.Empty<string>();
 
 		#endregion Constants
 

@@ -119,7 +119,7 @@ namespace IES.DataBridge.ModelViews
             }
 
             // shorten names for brevity
-            const string DQ = ProPricerExportModelView.DOUBLE_QUOTE;
+            const char DQ = ProPricerExportModelView.DOUBLE_QUOTE;
             stringBuilder.Append(DQ);
             stringBuilder.Append(this.ResourceType.GetDescription());
             stringBuilder.Append(ProPricerExportModelView.DOUBLEQUOTE_ENDFIELD_DOUBLEQUOTE);
@@ -146,7 +146,7 @@ namespace IES.DataBridge.ModelViews
             stringBuilder.Append(this.Step);
             stringBuilder.Append(ProPricerExportModelView.DOUBLEQUOTE_ENDFIELD_DOUBLEQUOTE);
             stringBuilder.Append(this.Factor);
-            stringBuilder.AppendLine(DQ);
+            stringBuilder.AppendLine(DQ.ToString());
         }
 
         /// <summary>

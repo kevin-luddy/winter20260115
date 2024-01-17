@@ -6,17 +6,16 @@
 
 namespace IES.DataBridge.Loaders
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
-    using IES.Common.Core.Exceptions;
+	using System.Collections.Generic;
+	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
 
-    /// <summary>
-    /// Rate Grid Loader
-    /// </summary>
-    public interface IRateDetailLoader : IBulkDataLoader<RateDetailModelView>
+	/// <summary>
+	/// Rate Grid Loader
+	/// </summary>
+	public interface IRateDetailLoader : IBulkDataLoader<RateDetailModelView>
     {
         /// <summary>
         /// Get rates by Revision.

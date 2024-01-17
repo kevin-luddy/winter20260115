@@ -4,16 +4,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System.Collections.Generic;
-	using IES.Common.Core;
+	using IES.ActionLogic.Core.Mediator;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using Mediator;
 
 	/// <summary>
 	/// Interface for a base RDM Controller Logic class.

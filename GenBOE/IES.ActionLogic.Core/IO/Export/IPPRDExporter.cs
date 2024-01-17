@@ -4,11 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.IO.Export
+namespace IES.ActionLogic.Core.IO.Export
 {
 	using System.Collections.Generic;
 	using System.IO;
-	using System.Web;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Mvc;
 

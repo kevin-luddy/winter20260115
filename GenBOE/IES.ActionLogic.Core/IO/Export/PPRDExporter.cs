@@ -4,14 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.IO.Export
+namespace IES.ActionLogic.Core.IO.Export
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
-	using System.Web;
 	using Common;
 	using DocumentFormat.OpenXml;
 	using DocumentFormat.OpenXml.Packaging;
@@ -69,7 +68,7 @@ namespace IES.ActionLogic.IO.Export
 			ChunkCounter counters = new();
 
 			Stream stream = new MemoryStream(32000);
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream);
+			Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream);
 			return new FileStreamResult(stream, PPRDExporterConstants.CONTENTTYPE_DOCX)
 			{
 				FileDownloadName = clientFileName
@@ -94,7 +93,7 @@ namespace IES.ActionLogic.IO.Export
 
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream);
+			Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream);
 		}
 
 		#region Populate Methods
@@ -115,17 +114,17 @@ namespace IES.ActionLogic.IO.Export
 		private void PopulatePPRDExport(WordprocessingDocument document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, ref ChunkCounter counters, int refNumberPrefixLevel, DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
 		{
 			// Populate the header
-			this.PopulatePPRDHeader(document, revision);
+			PopulatePPRDHeader(document, revision);
 
 			if (includeDocumentDetails)
 			{
 				// Populate introduction text
-				this.PopulateIntroduction(document, revision, ref counters);
+				PopulateIntroduction(document, revision, ref counters);
 			}
 			else
 			{
 				// Remove the document details - including introduction, clarification, and ToC
-				this.RemoveElement(WordUtilities.GetTaggedElement(document, PPRDExporterConstants.CONTAINER_DOCUMENT_DETAILS));
+				RemoveElement(WordUtilities.GetTaggedElement(document, PPRDExporterConstants.CONTAINER_DOCUMENT_DETAILS));
 			}
 
 			// Get the section container template to begin the process of populating the body of the document
@@ -147,25 +146,25 @@ namespace IES.ActionLogic.IO.Export
 			SectionModelView lastSection = sections.LastOrDefault();
 
 			// Add File Attachments that do not have sections
-			this.PopulateFileAttachments(fileAttachments, sectionContainerTemplate, lastElement, document.MainDocumentPart, ref counters, lastSection, refNumberPrefixLevel);
+			PopulateFileAttachments(fileAttachments, sectionContainerTemplate, lastElement, document.MainDocumentPart, ref counters, lastSection, refNumberPrefixLevel);
 
 			int firstSectionId = sections.FirstOrDefault() == null ? -1 : sections.First().Id;
 
 			// Reverse iterate over sections so they will be properly shown in the document
 			foreach (SectionModelView section in sections.Reverse())
 			{
-				this.PopulateSectionContainer(section, rates, fileAttachments, publishYear, rateTableYears, 0, sectionContainerTemplate,
+				PopulateSectionContainer(section, rates, fileAttachments, publishYear, rateTableYears, 0, sectionContainerTemplate,
 					lastElement, document.MainDocumentPart, ref counters, rddDocument, section.Id == firstSectionId, refNumberPrefixLevel);
 			}
 
 			if (sectionContainerTemplate != null)
 			{
 				// delete the template
-				this.RemoveElement(sectionContainerTemplate);
+				RemoveElement(sectionContainerTemplate);
 			}
 
 			// Clean up
-			this.PerformFinalDocumentCleanup(document);
+			PerformFinalDocumentCleanup(document);
 		}
 
 		/// <summary>
@@ -219,7 +218,7 @@ namespace IES.ActionLogic.IO.Export
 			SdtElement historyElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
 				PPRDExporterConstants.FIELDNAME_HISTORY);
 			WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, historyElement,
-				this.ReplaceParagraphTags(revision.History), ref counters);
+				ReplaceParagraphTags(revision.History), ref counters);
 
 			// populate Release Notes
 			SdtElement publishDateElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
@@ -231,11 +230,11 @@ namespace IES.ActionLogic.IO.Export
 			if (!string.IsNullOrWhiteSpace(revision.ReleaseNotes))
 			{
 				WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, releaseNotesElement,
-					this.ReplaceParagraphTags(revision.ReleaseNotes), ref counters);
+					ReplaceParagraphTags(revision.ReleaseNotes), ref counters);
 			}
 			else
 			{
-				this.RemoveElement(releaseNotesElement);
+				RemoveElement(releaseNotesElement);
 			}
 		}
 
@@ -276,7 +275,7 @@ namespace IES.ActionLogic.IO.Export
 				}
 
 				// Populate the section number and title
-				this.PopulateSectionTitle(sectionContainer, section, subsectionLevel, refNumberPrefixLevel);
+				PopulateSectionTitle(sectionContainer, section, subsectionLevel, refNumberPrefixLevel);
 
 				// Separate out the child node elements
 				ICollection<SectionModelView> textAndTableMVs =
@@ -313,8 +312,8 @@ namespace IES.ActionLogic.IO.Export
 							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, ref counters, false, modelView.IsInternalSection ?? false);
 
 							// Remove table elements
-							this.RemoveElement(rateTableElement);
-							this.RemoveElement(addressTableElement);
+							RemoveElement(rateTableElement);
+							RemoveElement(addressTableElement);
 						}
 						else if (modelView.ContentType == SectionContentType.RateTable && rateTableElement != null)
 						{
@@ -340,7 +339,7 @@ namespace IES.ActionLogic.IO.Export
 							if (totalYears <= PPRDExporterConstants.MAX_TABLE_ROW_YEARS)
 							{
 								// Populate Rate Table
-								this.PopulateRateTable(rateTableElement, sectionRates, firstYear, totalYears,
+								PopulateRateTable(rateTableElement, sectionRates, firstYear, totalYears,
 									modelView.DisplayRateCode);
 							}
 							else
@@ -364,10 +363,10 @@ namespace IES.ActionLogic.IO.Export
 
 									// Number of years will be the max for all tables but the last, which will be the remaining number of years
 									int years = startYear == startYears.Last()
-										? (firstYear + totalYears) - startYear
+										? firstYear + totalYears - startYear
 										: PPRDExporterConstants.MAX_TABLE_ROW_YEARS - 1;
 
-									this.PopulateRateTable(tableElement, sectionRates, startYear, years,
+									PopulateRateTable(tableElement, sectionRates, startYear, years,
 										modelView.DisplayRateCode);
 
 									currentInsertionElement.InsertAfterSelf(tableElement);
@@ -379,8 +378,8 @@ namespace IES.ActionLogic.IO.Export
 							}
 
 							// Remove the text address element
-							this.RemoveElement(textElement);
-							this.RemoveElement(addressTableElement);
+							RemoveElement(textElement);
+							RemoveElement(addressTableElement);
 						}
 						else if (modelView.ContentType == SectionContentType.Address && addressTableElement != null)  //new address table code here
 						{
@@ -415,28 +414,28 @@ namespace IES.ActionLogic.IO.Export
 
 							// Adjust bottom border thickness
 							Table addressTable = addressTableElement.Descendants<Table>().FirstOrDefault();
-							this.AdjustTableBorders(addressTable);
+							AdjustTableBorders(addressTable);
 
 							// Remove the text element
-							this.RemoveElement(textElement);
-							this.RemoveElement(rateTableElement);
+							RemoveElement(textElement);
+							RemoveElement(rateTableElement);
 						}
 						else
 						{
 							// Remove all elements
-							this.RemoveElement(textElement);
-							this.RemoveElement(rateTableElement);
-							this.RemoveElement(addressTableElement);
+							RemoveElement(textElement);
+							RemoveElement(rateTableElement);
+							RemoveElement(addressTableElement);
 						}
 					}
 				}
 
 				// Get the file attachments for this section
 				ICollection<FileAttachmentRowModelView> sectionFileAttachments = fileAttachments.Where(f => f.SectionId == section.Id).ToList();
-				this.AddFileAttachments(mainPart, ref counters, textAndTableContainerTemplate, ref lastTextTableElement, sectionFileAttachments);
+				AddFileAttachments(mainPart, ref counters, textAndTableContainerTemplate, ref lastTextTableElement, sectionFileAttachments);
 
 				// Remove the template element
-				this.RemoveElement(textAndTableContainerTemplate);
+				RemoveElement(textAndTableContainerTemplate);
 
 				subsectionLevel++;
 
@@ -444,7 +443,7 @@ namespace IES.ActionLogic.IO.Export
 				foreach (SectionModelView subsectionElement in subsectionMVs.Reverse())
 				{
 					// Recursive call to populate subsections
-					this.PopulateSectionContainer(subsectionElement, rates, fileAttachments, publishYear, rateTableYears, subsectionLevel, sectionContainerTemplate, lastElement, mainPart, ref counters, rddDocument, firstSection, refNumberPrefixLevel);
+					PopulateSectionContainer(subsectionElement, rates, fileAttachments, publishYear, rateTableYears, subsectionLevel, sectionContainerTemplate, lastElement, mainPart, ref counters, rddDocument, firstSection, refNumberPrefixLevel);
 				}
 			}
 		}
@@ -482,8 +481,8 @@ namespace IES.ActionLogic.IO.Export
 					WordUtilities.SetElementTextWithHTML(mainPart, textElement, hyperlink, ref counters, false, false);
 
 					// Remove table elements
-					this.RemoveElement(rateTableElement);
-					this.RemoveElement(addressTableElement);
+					RemoveElement(rateTableElement);
+					RemoveElement(addressTableElement);
 				}
 			}
 		}
@@ -519,7 +518,7 @@ namespace IES.ActionLogic.IO.Export
 
 						if (section.IsInternalSection == true)
 						{
-							this.ApplyInternalSectionFormatting(sectionNumberElement);
+							ApplyInternalSectionFormatting(sectionNumberElement);
 						}
 					}
 
@@ -531,14 +530,14 @@ namespace IES.ActionLogic.IO.Export
 
 						if (section.IsInternalSection == true)
 						{
-							this.ApplyInternalSectionFormatting(sectionTitleElement);
+							ApplyInternalSectionFormatting(sectionTitleElement);
 						}
 					}
 				}
 
 				// Remove other containers
-				this.RemoveIt(subsectionTitleContainerElement);
-				this.RemoveIt(subsubsectionTitleContainerElement);
+				RemoveIt(subsectionTitleContainerElement);
+				RemoveIt(subsubsectionTitleContainerElement);
 			}
 			else if (subsectionLevel + refNumberPrefixLevel == 1)
 			{
@@ -554,7 +553,7 @@ namespace IES.ActionLogic.IO.Export
 
 						if (section.IsInternalSection == true)
 						{
-							this.ApplyInternalSectionFormatting(subsectionNumberElement);
+							ApplyInternalSectionFormatting(subsectionNumberElement);
 						}
 					}
 
@@ -566,14 +565,14 @@ namespace IES.ActionLogic.IO.Export
 
 						if (section.IsInternalSection == true)
 						{
-							this.ApplyInternalSectionFormatting(subsectionTitleElement);
+							ApplyInternalSectionFormatting(subsectionTitleElement);
 						}
 					}
 				}
 
 				// Remove other containers
-				this.RemoveIt(sectionTitleContainerElement);
-				this.RemoveIt(subsubsectionTitleContainerElement);
+				RemoveIt(sectionTitleContainerElement);
+				RemoveIt(subsubsectionTitleContainerElement);
 			}
 			else
 			{
@@ -589,7 +588,7 @@ namespace IES.ActionLogic.IO.Export
 
 						if (section.IsInternalSection == true)
 						{
-							this.ApplyInternalSectionFormatting(subsubsectionNumberElement);
+							ApplyInternalSectionFormatting(subsubsectionNumberElement);
 						}
 					}
 
@@ -601,14 +600,14 @@ namespace IES.ActionLogic.IO.Export
 
 						if (section.IsInternalSection == true)
 						{
-							this.ApplyInternalSectionFormatting(subsubsectionTitleElement);
+							ApplyInternalSectionFormatting(subsubsectionTitleElement);
 						}
 					}
 				}
 
 				// Remove other containers
-				this.RemoveIt(sectionTitleContainerElement);
-				this.RemoveIt(subsectionTitleContainerElement);
+				RemoveIt(sectionTitleContainerElement);
+				RemoveIt(subsectionTitleContainerElement);
 			}
 		}
 
@@ -640,7 +639,7 @@ namespace IES.ActionLogic.IO.Export
 
 				if (descriptionHeaderCell != null)
 				{
-					this.SetCellWidth(descriptionHeaderCell, PPRDExporterConstants.DESCRIPTION_NO_RATE_CODE_COLUMN_WIDTH);
+					SetCellWidth(descriptionHeaderCell, PPRDExporterConstants.DESCRIPTION_NO_RATE_CODE_COLUMN_WIDTH);
 				}
 			}
 
@@ -648,28 +647,28 @@ namespace IES.ActionLogic.IO.Export
 			if (rateTable != null)
 			{
 				// Make sure preferred table width is not set
-				this.RemoveTablePreferredWidth(rateTable);
+				RemoveTablePreferredWidth(rateTable);
 
 				// Set header row property to keep header between page breaks
 				TableRow headerRow = rateTable.Descendants<TableRow>().First();
-				this.SetHeaderRow(headerRow);
-				this.AdjustRowBorders(headerRow);
+				SetHeaderRow(headerRow);
+				AdjustRowBorders(headerRow);
 
 				// Append additional years to header row
 				for (int i = 1; i <= years; i++)
 				{
-					this.AppendCellToRow(headerRow, (startYear + i).ToString());
+					AppendCellToRow(headerRow, (startYear + i).ToString());
 				}
 
 				// Initialize "insertion" row
 				TableRow templateDataRow = rateTable.Descendants<TableRow>().ElementAt(1);
-				this.SetCannotSplit(templateDataRow);
+				SetCannotSplit(templateDataRow);
 				TableRow currentInsertionRow = templateDataRow;
 
 				foreach (RateDetailModelView rate in rates)
 				{
 					// Create new row in the table
-					TableRow row = this.CloneMarkedTemplateRow(templateDataRow);
+					TableRow row = CloneMarkedTemplateRow(templateDataRow);
 
 					// Populate the row
 					SdtElement rateDescription = WordUtilities.GetTaggedChildElement(row, PPRDExporterConstants.FIELDNAME_RATECODEDESCRIPTION);
@@ -684,7 +683,7 @@ namespace IES.ActionLogic.IO.Export
 						TableCell rateDescriptionCell = rateDescription.Descendants<TableCell>().FirstOrDefault();
 						if (rateDescriptionCell != null)
 						{
-							this.SetCellWidth(rateDescriptionCell, PPRDExporterConstants.DESCRIPTION_NO_RATE_CODE_COLUMN_WIDTH);
+							SetCellWidth(rateDescriptionCell, PPRDExporterConstants.DESCRIPTION_NO_RATE_CODE_COLUMN_WIDTH);
 						}
 					}
 
@@ -692,7 +691,7 @@ namespace IES.ActionLogic.IO.Export
 
 					SdtElement initialYear = WordUtilities.GetTaggedChildElement(row, PPRDExporterConstants.FIELDNAME_RATECODEVALUE);
 					RateYearModelView initialRateYearMV = rate.Values.FirstOrDefault(x => x.Year == startYear) ?? new RateYearModelView();
-					string initialYearValue = this.rateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, initialRateYearMV.Value);
+					string initialYearValue = rateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, initialRateYearMV.Value);
 					WordUtilities.SetElementText(initialYear, initialYearValue);
 
 					// Append cells for additional years
@@ -700,9 +699,9 @@ namespace IES.ActionLogic.IO.Export
 					for (int i = 1; i <= years; i++)
 					{
 						RateYearModelView rateYearMV = rate.Values.FirstOrDefault(x => x.Year == startYear + i) ?? new RateYearModelView();
-						string yearValue = this.rateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, rateYearMV.Value);
+						string yearValue = rateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, rateYearMV.Value);
 						isRowEmpty = isRowEmpty && yearValue.Equals(CommonConstants.NOT_APPLICABLE);
-						this.AppendCellToRow(row, yearValue);
+						AppendCellToRow(row, yearValue);
 					}
 
 					// Add the row to the table (unless the row is empty, i.e. all values are "N/A")
@@ -717,7 +716,7 @@ namespace IES.ActionLogic.IO.Export
 				templateDataRow.Remove();
 
 				// Adjust bottom border thickness
-				this.AdjustTableBorders(rateTable);
+				AdjustTableBorders(rateTable);
 			}
 		}
 
@@ -759,7 +758,7 @@ namespace IES.ActionLogic.IO.Export
 				};
 
 				// Populate the section number and title
-				this.PopulateSectionTitle(sectionContainer, attachmentSection, 0, refNumberPrefixLevel);
+				PopulateSectionTitle(sectionContainer, attachmentSection, 0, refNumberPrefixLevel);
 
 				// Get the container template
 				SdtElement textAndTableContainerTemplate =
@@ -767,10 +766,10 @@ namespace IES.ActionLogic.IO.Export
 				OpenXmlElement lastTextTableElement = textAndTableContainerTemplate;
 
 				// Add the file attachments
-				this.AddFileAttachments(mainDocumentPart, ref counters, textAndTableContainerTemplate, ref lastTextTableElement, attachments);
+				AddFileAttachments(mainDocumentPart, ref counters, textAndTableContainerTemplate, ref lastTextTableElement, attachments);
 
 				// Remove the template element
-				this.RemoveElement(textAndTableContainerTemplate);
+				RemoveElement(textAndTableContainerTemplate);
 			}
 		}
 

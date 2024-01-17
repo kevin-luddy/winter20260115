@@ -4,25 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using Common;
-	using IES.Common.Core;
+	using IES.ActionLogic.Core.Mediator;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using Mediator;
 
 	/// <summary>
 	/// Abstract base class for RDM Controller Logic classes.
 	/// </summary>
-	/// <seealso cref="IES.ActionLogic.ControllerLogic.IRdmControllerLogic" />
+	/// <seealso cref="IRdmControllerLogic" />
 	public abstract class RdmControllerLogic : IRdmControllerLogic
 	{
 		#region Loaders
@@ -125,10 +124,10 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="securityInfo">Security Info</param>
 		protected RdmControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
 		{
-			this.AreaLockingLoader = areaLockingLoader;
-			this.RevisionMediator = revisionMediator;
-			this.AdUtils = adUtils;
-			this.SecurityInformation = securityInfo;
+			AreaLockingLoader = areaLockingLoader;
+			RevisionMediator = revisionMediator;
+			AdUtils = adUtils;
+			SecurityInformation = securityInfo;
 		}
 
 		/// <summary>
@@ -140,17 +139,17 @@ namespace IES.ActionLogic.ControllerLogic
 		{
 			LockModelView lockInfo;
 
-			AreaLockData areaLock = this.AreaLockingLoader.GetAreaLock(area);
+			AreaLockData areaLock = AreaLockingLoader.GetAreaLock(area);
 
 			if (areaLock == null)
 			{
-				lockInfo = new LockModelView(true, this.IsLockAllowed(area, false), null, string.Empty);
+				lockInfo = new LockModelView(true, IsLockAllowed(area, false), null, string.Empty);
 			}
 			else
 			{
 				// already locked
-				bool status = this.ActiveUserOwnsLock(areaLock);
-				lockInfo = new LockModelView(!status, this.IsLockAllowed(area, false), areaLock.TimeOfLock, areaLock.LockedBy.DisplayName);
+				bool status = ActiveUserOwnsLock(areaLock);
+				lockInfo = new LockModelView(!status, IsLockAllowed(area, false), areaLock.TimeOfLock, areaLock.LockedBy.DisplayName);
 			}
 
 			return lockInfo;
@@ -168,7 +167,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(areaLock));
 			}
 
-			return this.ActiveUser.Ntid == areaLock.LockedBy.Ntid;
+			return ActiveUser.Ntid == areaLock.LockedBy.Ntid;
 		}
 
 		/// <summary>
@@ -176,7 +175,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// </summary>
 		public string ActiveUserNTID
 		{
-			get { return this.SecurityInformation.ActiveUserNTID; }
+			get { return SecurityInformation.ActiveUserNTID; }
 		}
 
 		/// <summary>
@@ -186,7 +185,7 @@ namespace IES.ActionLogic.ControllerLogic
 		{
 			get
 			{
-				return this.AdUtils.GetUserByQualifiedAccount(this.ActiveUserNTID, false);
+				return AdUtils.GetUserByQualifiedAccount(ActiveUserNTID, false);
 			}
 		}
 
@@ -198,7 +197,7 @@ namespace IES.ActionLogic.ControllerLogic
 			get
 			{
 				// return false; // For testing only - Uncomment this line and comment out next line to set current user to non-admin read only
-				return this.SecurityInformation.IsRdmAdminUser(this.ActiveUserNTID);
+				return SecurityInformation.IsRdmAdminUser(ActiveUserNTID);
 			}
 		}
 
@@ -210,7 +209,7 @@ namespace IES.ActionLogic.ControllerLogic
 			get
 			{
 				// return false; // For testing only - Uncomment this line and comment out next line to set current user to non-cobra-admin access
-				return this.SecurityInformation.IsRdmCobraAdminUser(this.ActiveUserNTID);
+				return SecurityInformation.IsRdmCobraAdminUser(ActiveUserNTID);
 			}
 		}
 
@@ -221,7 +220,7 @@ namespace IES.ActionLogic.ControllerLogic
 		{
 			get
 			{
-				return this.SecurityInformation.IsRdmViewerUser(this.ActiveUserNTID);
+				return SecurityInformation.IsRdmViewerUser(ActiveUserNTID);
 			}
 		}
 
@@ -239,20 +238,20 @@ namespace IES.ActionLogic.ControllerLogic
 		public bool IsUserAuthorized(string controllerName, string functionName)
 		{
 			// First, check if this is a common admin operation (i.e. Lock/Unlock/RefreshLock)
-			if (this.IsCommonAdminAction(controllerName, functionName) && (this.IsRDMAdminUser || this.IsRDMCobraAdminUser))
+			if (IsCommonAdminAction(controllerName, functionName) && (IsRDMAdminUser || IsRDMCobraAdminUser))
 			{
 				return true;
 			}
 
 			// Next, check RDM Admin or RDM COBRA Admin specific operations
-			bool isCobraAdminAction = this.IsCobraAdminAction(controllerName, functionName);
-			if ((this.IsRDMAdminUser && !isCobraAdminAction) || (this.IsRDMCobraAdminUser && isCobraAdminAction))
+			bool isCobraAdminAction = IsCobraAdminAction(controllerName, functionName);
+			if (IsRDMAdminUser && !isCobraAdminAction || IsRDMCobraAdminUser && isCobraAdminAction)
 			{
 				return true;
 			}
 
 			// Otherwise, check to see if this is a Viewer action. 
-			return (this.IsRDMViewerUser || this.IsRDMAdminUser || this.IsRDMCobraAdminUser) && this.IsViewerAction(controllerName, functionName);
+			return (IsRDMViewerUser || IsRDMAdminUser || IsRDMCobraAdminUser) && IsViewerAction(controllerName, functionName);
 		}
 
 		/// <summary>
@@ -298,12 +297,12 @@ namespace IES.ActionLogic.ControllerLogic
 		{
 			get
 			{
-				ICollection<RevisionModelView> data = this.RevisionMediator.GetAll();
+				ICollection<RevisionModelView> data = RevisionMediator.GetAll();
 
-				if (!this.IsRDMAdminUser && !this.IsRDMCobraAdminUser)
+				if (!IsRDMAdminUser && !IsRDMCobraAdminUser)
 				{
 					// remove WIP if you are not an admin
-					RevisionModelView wipRevision = data.FirstOrDefault(x => x.Id == this.WipRevision.Id);
+					RevisionModelView wipRevision = data.FirstOrDefault(x => x.Id == WipRevision.Id);
 					if (wipRevision != null)
 					{
 						data.Remove(wipRevision);
@@ -319,7 +318,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// </summary>
 		public RevisionModelView WipRevision
 		{
-			get { return this.RevisionMediator.GetWipRevision(); }
+			get { return RevisionMediator.GetWipRevision(); }
 		}
 
 		/// <summary>
@@ -329,7 +328,7 @@ namespace IES.ActionLogic.ControllerLogic
 		{
 			get
 			{
-				return this.Revisions.Where(r => r.DatePublished != null).OrderByDescending(r => r.DatePublished).FirstOrDefault();
+				return Revisions.Where(r => r.DatePublished != null).OrderByDescending(r => r.DatePublished).FirstOrDefault();
 			}
 		}
 
@@ -341,9 +340,9 @@ namespace IES.ActionLogic.ControllerLogic
 		public void VerifyLockForSaving(LockArea areaToCheck, int revisionId)
 		{
 			// Confirm that either user owns lock or area is unlocked
-			AreaLockData areaLock = this.AreaLockingLoader.GetAreaLock(areaToCheck);
+			AreaLockData areaLock = AreaLockingLoader.GetAreaLock(areaToCheck);
 
-			if (areaLock != null && (areaLock.LockedBy.Ntid != this.ActiveUser.Ntid))
+			if (areaLock != null && areaLock.LockedBy.Ntid != ActiveUser.Ntid)
 			{
 				string validationString = $"Revision {revisionId} is locked by {areaLock.LockedBy.DisplayName}.  Your editing session may have timed out.";
 				throw new GenValidationException(validationString);
@@ -359,12 +358,12 @@ namespace IES.ActionLogic.ControllerLogic
 		protected bool IsLockAllowed(LockArea area, bool isLockingAllAreas)
 		{
 			// if locking all areas, allow lock for RDM Admins (normally, RDM Admins aren't allowed to lock Cobra Data).
-			if (isLockingAllAreas && this.IsRDMAdminUser)
+			if (isLockingAllAreas && IsRDMAdminUser)
 			{
 				return true;
 			}
 
-			return area == LockArea.CobraData ? this.IsRDMCobraAdminUser : this.IsRDMAdminUser;
+			return area == LockArea.CobraData ? IsRDMCobraAdminUser : IsRDMAdminUser;
 		}
 	}
 }

@@ -6,15 +6,14 @@
 
 namespace IES.DataBridge.Loaders
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
+	using System.Collections.Generic;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
 
-    /// <summary>
-    /// Interface for the Who's Online Loader
-    /// </summary>
-    public interface IWhosOnlineLoader
+	/// <summary>
+	/// Interface for the Who's Online Loader
+	/// </summary>
+	public interface IWhosOnlineLoader
     {
         /// <summary>
         /// Updates the database with the latest access time of the current user.

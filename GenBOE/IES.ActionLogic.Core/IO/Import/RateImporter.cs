@@ -4,14 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.IO.Import
+namespace IES.ActionLogic.Core.IO.Import
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
-	using System.Web;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Spreadsheet;
 	using IES.Common.Core.Exceptions;
@@ -137,7 +136,7 @@ namespace IES.ActionLogic.IO.Import
 												}
 												else
 												{
-													throw new GenValidationException(String.Format("Invalid Column Header: {0}", columnName));
+													throw new GenValidationException(string.Format("Invalid Column Header: {0}", columnName));
 												}
 
 												break;

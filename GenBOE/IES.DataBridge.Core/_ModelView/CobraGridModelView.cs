@@ -6,9 +6,8 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using IES.Common.Core;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using IES.Common.Core.Models;
 
 	/// <summary>

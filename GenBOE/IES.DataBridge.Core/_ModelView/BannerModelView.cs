@@ -4,17 +4,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace IES.DataBridge.ModelViews
 {
-    /// <summary>
-    /// Model View for a Banner
-    /// </summary>
-    public class BannerModelView : IESUpdateableModelView
+	/// <summary>
+	/// Model View for a Banner
+	/// </summary>
+	public class BannerModelView : IESUpdateableModelView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BannerModelView"/> class.

@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.Common
+namespace IES.ActionLogic.Core.Common
 {
 	using System;
 	using System.Collections.Generic;
@@ -45,7 +45,7 @@ namespace IES.ActionLogic.Common
 					{
 						if (banners == null)
 						{
-							banners = this.bannerLoader.GetAll().ToList().AsReadOnly();
+							banners = bannerLoader.GetAll().ToList().AsReadOnly();
 						}
 					}
 				}
@@ -86,7 +86,7 @@ namespace IES.ActionLogic.Common
 				// This weeds out weird edge cases of DB not matching the cached versions
 				banners = null;
 
-				this.bannerLoader.Save(banner);
+				bannerLoader.Save(banner);
 			}
 		}
 
@@ -97,7 +97,7 @@ namespace IES.ActionLogic.Common
 		/// <returns>The Banner with that Id or null if not found.</returns>
 		public BannerModelView GetById(int id)
 		{
-			return this.Banners.FirstOrDefault(b => b.Id == id);
+			return Banners.FirstOrDefault(b => b.Id == id);
 		}
 
 		/// <summary>
@@ -106,7 +106,7 @@ namespace IES.ActionLogic.Common
 		/// <returns>All Banners</returns>
 		public IReadOnlyCollection<BannerModelView> GetAll()
 		{
-			return this.Banners;
+			return Banners;
 		}
 
 		/// <summary>
@@ -133,7 +133,7 @@ namespace IES.ActionLogic.Common
 			//      There is no end date
 			//      This is maintenance banner
 			//      This is warning banner and end date has not happened yet
-			return this.Banners.Where(b => b.SelectedApps.Intersect(apps).Any() && b.StartDate < now && (b.HoursToShow <= 0 || (!b.TurnOffTicker || b.StartDate.AddHours(b.HoursToShow) > now))).ToList();
+			return Banners.Where(b => b.SelectedApps.Intersect(apps).Any() && b.StartDate < now && (b.HoursToShow <= 0 || !b.TurnOffTicker || b.StartDate.AddHours(b.HoursToShow) > now)).ToList();
 		}
 	}
 }

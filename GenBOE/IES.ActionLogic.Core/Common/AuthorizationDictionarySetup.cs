@@ -4,10 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.Common
+namespace IES.ActionLogic.Core.Common
 {
 	using System.Collections.Generic;
-	using IES.Common.Core;
 	using IES.Common.Core.Constants;
 
 	/// <summary>

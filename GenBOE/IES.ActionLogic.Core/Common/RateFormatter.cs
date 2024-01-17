@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.Common
+namespace IES.ActionLogic.Core.Common
 {
 	using System;
 	using System.Collections.Generic;
@@ -79,7 +79,7 @@ namespace IES.ActionLogic.Common
 						{
 							Dictionary<string, Dictionary<string, string>> tempFormats = new();
 							// Load format settings from DB.
-							ICollection<RateConfigModelView> rateConfigs = this.rateConfigLoader.GetAll();
+							ICollection<RateConfigModelView> rateConfigs = rateConfigLoader.GetAll();
 							foreach (RateConfigModelView rateConfig in rateConfigs)
 							{
 								string category = rateConfig.RateCategory == null ? RATE_CATEGORY_NONE : rateConfig.RateCategory.GetDescription();

@@ -6,8 +6,7 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System;
-    using IES.Common.Core;
+	using System;
 	using IES.Common.Core.Constants;
 
 	/// <summary>

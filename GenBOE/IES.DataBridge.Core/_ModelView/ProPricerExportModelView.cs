@@ -18,17 +18,17 @@ namespace IES.DataBridge.ModelViews
         /// <summary>
         /// double quotes are needed around certain fields for the export
         /// </summary>
-        protected const string DOUBLE_QUOTE = "\u0022";
+        protected const char DOUBLE_QUOTE = '\u0022';
 
         /// <summary>
         /// a comma has to follow each field in the file row
         /// </summary>
-        protected const string END_FIELD = ",";
+        protected const char END_FIELD = ',';
 
-        /// <summary>
-        /// Double quotes surrounding a comma (end-field terminator)
-        /// </summary>
-        protected const string DOUBLEQUOTE_ENDFIELD_DOUBLEQUOTE = DOUBLE_QUOTE + END_FIELD + DOUBLE_QUOTE;
+		/// <summary>
+		/// Double quotes surrounding a comma (end-field terminator)
+		/// </summary>
+		protected const string DOUBLEQUOTE_ENDFIELD_DOUBLEQUOTE = "\u0022,\u0022";
 
         #endregion Constants
 

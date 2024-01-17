@@ -6,25 +6,24 @@
 
 namespace IES.DataBridge.Common
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
+	using System.Collections.Generic;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
 	using Loaders;
 
-    /// <summary>
-    /// This class will load the common lookup/reference data from the Loaders
-    /// and pass the results through the CacheDataLoader which will cache
-    /// if injected with the Cached data loader.
-    /// 
-    /// Callers should NOT invoke these methods inside of loops. Instead, grab the entire collection or dictionary outside
-    /// of the loop. Inside of the loop, you can reference that variable to either lookup values using the dictionary or 
-    /// search for names in the collection. This eliminates multiple calls to the cache to re-create the same objects over
-    /// and over again.
-    /// 
-    /// </summary>
-    public class CommonDataMapper : ICommonDataMapper
+	/// <summary>
+	/// This class will load the common lookup/reference data from the Loaders
+	/// and pass the results through the CacheDataLoader which will cache
+	/// if injected with the Cached data loader.
+	/// 
+	/// Callers should NOT invoke these methods inside of loops. Instead, grab the entire collection or dictionary outside
+	/// of the loop. Inside of the loop, you can reference that variable to either lookup values using the dictionary or 
+	/// search for names in the collection. This eliminates multiple calls to the cache to re-create the same objects over
+	/// and over again.
+	/// 
+	/// </summary>
+	public class CommonDataMapper : ICommonDataMapper
     {
         /// <summary>
         /// The rate detail loader

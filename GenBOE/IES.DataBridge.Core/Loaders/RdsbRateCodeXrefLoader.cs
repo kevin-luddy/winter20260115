@@ -11,7 +11,6 @@ namespace IES.DataBridge.Loaders
 	using System.Collections.ObjectModel;
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
-	using IES.Common.Core;
 	using Microsoft.Extensions.Logging;
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Constants;

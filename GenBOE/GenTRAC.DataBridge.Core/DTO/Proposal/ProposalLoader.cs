@@ -85,7 +85,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 				using (genTRACEntities dbModel = new())
 				{
 					// select the Proposal IDs from the database
-					var resultLinq = from x in dbModel.Proposals
+					IQueryable<int> resultLinq = from x in dbModel.Proposals
 									 select x.ProposalID;
 
 					toReturn = resultLinq.ToArray();
@@ -655,7 +655,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 			{
 				using (genTRACEntities dbModel = new())
 				{
-					var completed = (from p in dbModel.Proposals
+					int completed = (from p in dbModel.Proposals
 									 where p.ProposalID == inProposalId
 									 select p.ProposalStatusID).First();
 
@@ -785,7 +785,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 
 			using (genTRACEntities dbModel = new())
 			{
-				var proposals = dbModel.Proposals;
+				System.Data.Entity.DbSet<Proposal> proposals = dbModel.Proposals;
 
 				// If another proposal has this title and the ids don't match, then it's a different proposal
 				bool otherProposalHaveThisTitle = proposals.Where(x => x.ProposalTitle.ToLower() == proposalTitle.ToLower()
@@ -1817,7 +1817,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 			using (genTRACEntities dbModel = new())
 			{
 				// select the Proposal IDs from the database
-				var forecastedTracking = from x in dbModel.Proposals
+				IQueryable<string> forecastedTracking = from x in dbModel.Proposals
 										 where x.ForecastedTrackingID.StartsWith(currentYear)
 										 select x.ForecastedTrackingID;
 

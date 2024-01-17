@@ -6,8 +6,7 @@
 
 namespace IES.DataBridge.Loaders
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
+	using System.Collections.Generic;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Models;
 

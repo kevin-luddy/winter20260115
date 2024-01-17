@@ -6,16 +6,14 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System;
-    using IES.Common.Core;
+	using System;
 	using IES.Common.Core.Enums;
-	using IES.Common.Core.Models;
 	using Newtonsoft.Json;
 
-    /// <summary>
-    /// The Model View used for Rate Year Values.
-    /// </summary>
-    [Serializable]
+	/// <summary>
+	/// The Model View used for Rate Year Values.
+	/// </summary>
+	[Serializable]
     public class RateYearModelView : IESUpdateableModelView
     {
         /// <summary>

@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Generic;
@@ -15,7 +15,8 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using Common;
 	using DataBridge.Common;
-	using IES.ActionLogic.Validation;
+	using IES.ActionLogic.Core.Mediator;
+	using IES.ActionLogic.Core.Validation;
 	using IES.Common.Core;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
@@ -25,7 +26,6 @@ namespace IES.ActionLogic.ControllerLogic
 	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using Mediator;
 
 	/// <summary>
 	/// Logic for the Rate Controller.
@@ -111,29 +111,29 @@ namespace IES.ActionLogic.ControllerLogic
 
 			ICollection<OptionModelView> commercialBurdenPoolOptions;
 			ICollection<OptionModelView> governmentBurdenPoolOptions;
-			this.burdenPoolLoader.GetBurdenPoolOptions(revision.Id, out commercialBurdenPoolOptions, out governmentBurdenPoolOptions);
+			burdenPoolLoader.GetBurdenPoolOptions(revision.Id, out commercialBurdenPoolOptions, out governmentBurdenPoolOptions);
 
 			RateGridModelView model = new()
 			{
 				SelectedRevisionId = revision.Id,
-				AdminUser = this.IsRDMAdminUser,
-				CobraAdminUser = this.IsRDMCobraAdminUser,
-				Versions = this.RevisionMediator.GetRevisionOptions(revisions),
-				Rates = this.rateDetailLoader.GetRatesByRevision(revision),
-				Sections = this.sectionLoader.RetrieveSectionsAsOptions(revision),
+				AdminUser = IsRDMAdminUser,
+				CobraAdminUser = IsRDMCobraAdminUser,
+				Versions = RevisionMediator.GetRevisionOptions(revisions),
+				Rates = rateDetailLoader.GetRatesByRevision(revision),
+				Sections = sectionLoader.RetrieveSectionsAsOptions(revision),
 				RateCategories = ExtensionMethods.GetOptions<RateCategory>().OrderBy(x => x.Label).ToList(),
-				LockInfo = this.homeControllerLogic.GetCurrentLockInfo(LockArea.RDMRates),
+				LockInfo = homeControllerLogic.GetCurrentLockInfo(LockArea.RDMRates),
 				RateTypes = ExtensionMethods.GetOptions<RateType>().OrderBy(x => x.Label).ToList(),
 				DisclosureTypes = ExtensionMethods.GetOptions<DisclosureType>().OrderBy(x => x.Id).ToList(),
-				ResourceClasses = this.commonDataMapper.GetResourceClassOptions(revision.Id),
+				ResourceClasses = commonDataMapper.GetResourceClassOptions(revision.Id),
 				ResourceTypes = ExtensionMethods.GetOptions<DirectRateMappingResourceType>().OrderBy(x => x.Label).ToList(),
 				CommercialBurdenPools = commercialBurdenPoolOptions,
 				GovernmentBurdenPools = governmentBurdenPoolOptions
 			};
 
-			if (this.WipRevision.Id == revision.Id)
+			if (WipRevision.Id == revision.Id)
 			{
-				model.ReplicationValidationMessages = this.rateDetailLoader.VerifyRateCodeReplication(revision.Id);
+				model.ReplicationValidationMessages = rateDetailLoader.VerifyRateCodeReplication(revision.Id);
 			}
 
 			return model;
@@ -159,7 +159,7 @@ namespace IES.ActionLogic.ControllerLogic
 				int.TryParse(secondRevision.Revision, out secondRevisionNumber);
 			}
 
-			ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetComparableRates(firstRevision, secondRevision);
+			ICollection<RateDetailModelView> rates = rateDetailLoader.GetComparableRates(firstRevision, secondRevision);
 
 			return rates;
 		}
@@ -235,7 +235,7 @@ namespace IES.ActionLogic.ControllerLogic
 			foreach (RateDetailModelView rdmv in rateDetailModelViews.Where(x => !x.IsDeleted))
 			{
 				// Get the precision before we loop through years.
-				ValidationMessage precisionMsg = this.SetPrecision(rdmv);
+				ValidationMessage precisionMsg = SetPrecision(rdmv);
 				if (precisionMsg != null)
 				{
 					validationErrors.Add(precisionMsg);
@@ -262,7 +262,7 @@ namespace IES.ActionLogic.ControllerLogic
 
 							// If the rounded value does not equal the actual value, we have too many decimal places.
 							if (decimal.Round((decimal)rateYear.Value, rdmv.RatePrecision) != rateYear.Value ||
-								(rateYear.Value < 0 && !isNonLaborEscalation))
+								rateYear.Value < 0 && !isNonLaborEscalation)
 							{
 								string validationString = string.Format(isNonLaborEscalation ? RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR_ALLOW_NEGATIVE : RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR,
 																		rdmv.RateCode, rateYear.Year, rateYear.Value, rdmv.RateCategoryDescription, rdmv.RatePrecision);
@@ -274,7 +274,7 @@ namespace IES.ActionLogic.ControllerLogic
 				}
 
 				// Validate Rate ProPricer Mappings
-				validationErrors.AddRange(this.ValidateRateProPricerMappings(rdmv));
+				validationErrors.AddRange(ValidateRateProPricerMappings(rdmv));
 			}
 
 			return validationErrors;
@@ -299,7 +299,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			// validate rate codes are unique
-			ICollection<ValidationMessage> validationErrors = this.ValidateRateCodeIsUnique(importedRateCodes);
+			ICollection<ValidationMessage> validationErrors = ValidateRateCodeIsUnique(importedRateCodes);
 
 			// perform additional validations against individual rate code rows 
 			int rowIndex = -1;
@@ -307,10 +307,10 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				rowIndex++;
 				// validate using model view annotations 
-				ICollection<ValidationMessage> modelValidationErrors = this.ValidateRateCodeObject(importedRateCode);
+				ICollection<ValidationMessage> modelValidationErrors = ValidateRateCodeObject(importedRateCode);
 
 				// validate ProPricer mappings
-				ICollection<ValidationMessage> rowValidationErrors = this.ValidateRateProPricerMappings(importedRateCode);
+				ICollection<ValidationMessage> rowValidationErrors = ValidateRateProPricerMappings(importedRateCode);
 
 				// Augment each validation message with the row index and add to the list of errors
 				foreach (ValidationMessage validationError in modelValidationErrors.Concat(rowValidationErrors))
@@ -393,7 +393,7 @@ namespace IES.ActionLogic.ControllerLogic
 				return new ValidationMessage(RateMappingValidationConstants.RATEDETAILS_RATECATEGORY_REQUIRED);
 			}
 
-			rateDetailModelView.RatePrecision = this.rateFormatter.GetRatePrecision(RateTarget.Rate, rateDetailModelView.RateCategoryDescription);
+			rateDetailModelView.RatePrecision = rateFormatter.GetRatePrecision(RateTarget.Rate, rateDetailModelView.RateCategoryDescription);
 
 			if (rateDetailModelView.RatePrecision == -1)
 			{
@@ -420,7 +420,7 @@ namespace IES.ActionLogic.ControllerLogic
 
 			// if nothing is entered or all values have been cleared by user, nothing to validate
 			if (!commercialBurdenPoolSet && !governmentBurdenPoolSet &&
-				this.IsAllRateDescriptionsAndResourceClassesEmpty(rateDetailModelView) &&
+				IsAllRateDescriptionsAndResourceClassesEmpty(rateDetailModelView) &&
 				!rateTypeSet && !resourceTypeSet && !disclosureTypeSet)
 			{
 				return validationErrors;
@@ -431,68 +431,68 @@ namespace IES.ActionLogic.ControllerLogic
 			// Commercial and Government Burden Pools must both be populated (or null for certain rates)
 			if (!commercialBurdenPoolSet && governmentBurdenPoolSet)
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_COMMERCIAL_BURDENPOOL_REQUIRED));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_COMMERCIAL_BURDENPOOL_REQUIRED));
 			}
 			else if (!governmentBurdenPoolSet && commercialBurdenPoolSet)
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_GOVERNMENT_BURDENPOOL_REQUIRED));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_GOVERNMENT_BURDENPOOL_REQUIRED));
 			}
 			else if (!commercialBurdenPoolSet && !governmentBurdenPoolSet &&
 					 !rateDetailModelView.RateCode.EndsWith("NL") &&
 					 !allowEmptyBurdenPools.Any(x => rateDetailModelView.RateCode.Contains(x)))
 			{
 				// Can only be blank for Resources ******NL, Mileage, NLBESCCH, Travel Escalation, Travel Factor, or TRAVLESC
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_COMMERCIAL_AND_GOVERNMENT_BURDENPOOL_REQUIRED));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_COMMERCIAL_AND_GOVERNMENT_BURDENPOOL_REQUIRED));
 			}
 
 			if (!rateTypeSet)
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RATETYPE_REQUIRED));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RATETYPE_REQUIRED));
 			}
 
 			if (!disclosureTypeSet)
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_DISCLOSURETYPE_REQUIRED));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_DISCLOSURETYPE_REQUIRED));
 			}
 
 			if (!resourceTypeSet)
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RESOURCETYPE_REQUIRED));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RESOURCETYPE_REQUIRED));
 			}
 
 			// if additional labor rates are selected, at least one of the descriptions needs to be filled in 
-			if (rateDetailModelView.GenerateAdditionalDirectLaborRates && !this.IsAnyExtendedRateDescriptionPopulated(rateDetailModelView))
+			if (rateDetailModelView.GenerateAdditionalDirectLaborRates && !IsAnyExtendedRateDescriptionPopulated(rateDetailModelView))
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_ADDITIONAL_DESCRIPTIONS_REQUIRED));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_ADDITIONAL_DESCRIPTIONS_REQUIRED));
 			}
 
-			if (rateDetailModelView.GenerateAdditionalDirectLaborRates && rateDetailModelView.DisclosureType != DisclosureType.OneLMX && !this.IsAnyExtendedLegacyRateDescriptionPopulated(rateDetailModelView))
+			if (rateDetailModelView.GenerateAdditionalDirectLaborRates && rateDetailModelView.DisclosureType != DisclosureType.OneLMX && !IsAnyExtendedLegacyRateDescriptionPopulated(rateDetailModelView))
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_ADDITIONAL_DESCRIPTIONS_REQUIRED));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_ADDITIONAL_DESCRIPTIONS_REQUIRED));
 			}
 
 			// if additional labor rates not selected, need single description 
 			if (rateDetailModelView.GenerateAdditionalDirectLaborRates == false && string.IsNullOrEmpty(rateDetailModelView.RateDescription))
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_DESCRIPTION_REQUIRED));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_DESCRIPTION_REQUIRED));
 			}
 
 			// don't allow both base and extended rate descriptions to be filled in (this may happen during an import)
-			if (!string.IsNullOrEmpty(rateDetailModelView.RateDescription) && this.IsAnyExtendedRateDescriptionPopulated(rateDetailModelView))
+			if (!string.IsNullOrEmpty(rateDetailModelView.RateDescription) && IsAnyExtendedRateDescriptionPopulated(rateDetailModelView))
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_DESCRIPTION_INVALID));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_DESCRIPTION_INVALID));
 			}
 
 			// don't allow a resource class without a corresponding rate description (this may happen during an import)
-			if (this.IsAnyResourceClassMissingCorrespondingRateDescription(rateDetailModelView))
+			if (IsAnyResourceClassMissingCorrespondingRateDescription(rateDetailModelView))
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RESOURCE_CLASS_WITHOUT_RATE_DESCRIPTION));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RESOURCE_CLASS_WITHOUT_RATE_DESCRIPTION));
 			}
 
 			// Resource Type must be labor when additional ProPricer rate descriptions are specified.
-			if (!rateDetailModelView.ResourceType.Equals(DirectRateMappingResourceType.Labor) && this.IsAnyExtendedRateDescriptionPopulated(rateDetailModelView))
+			if (!rateDetailModelView.ResourceType.Equals(DirectRateMappingResourceType.Labor) && IsAnyExtendedRateDescriptionPopulated(rateDetailModelView))
 			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RESOURCETYPE_INVALID));
+				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RESOURCETYPE_INVALID));
 			}
 
 			return validationErrors;
@@ -505,61 +505,61 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>True if all of the Rate Descriptions and Resource Classes are empty; False otherwise.</returns>
 		private bool IsAllRateDescriptionsAndResourceClassesEmpty(RateDetailModelView rateDetailModelView)
 		{
-			return string.IsNullOrEmpty(rateDetailModelView.RateDescription) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass, rateDetailModelView.ResourceClassId) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription1) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass1, rateDetailModelView.ResourceClassId1) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription2) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass2, rateDetailModelView.ResourceClassId2) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription3) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass3, rateDetailModelView.ResourceClassId3) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription4) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass4, rateDetailModelView.ResourceClassId4) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription5) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass5, rateDetailModelView.ResourceClassId5) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription6) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription7) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription8) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription9) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass9, rateDetailModelView.ResourceClassId9) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription11) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass11, rateDetailModelView.ResourceClassId11) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription12) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass12, rateDetailModelView.ResourceClassId12) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription13) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass13, rateDetailModelView.ResourceClassId13) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription14) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass14, rateDetailModelView.ResourceClassId14) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription15) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass15, rateDetailModelView.ResourceClassId15) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription21) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass21, rateDetailModelView.ResourceClassId21) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription22) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass22, rateDetailModelView.ResourceClassId22) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription23) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass23, rateDetailModelView.ResourceClassId23) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription24) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass24, rateDetailModelView.ResourceClassId24) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription25) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass25, rateDetailModelView.ResourceClassId25) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription31) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass31, rateDetailModelView.ResourceClassId31) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription32) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass32, rateDetailModelView.ResourceClassId32) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription33) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass33, rateDetailModelView.ResourceClassId33) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription34) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass34, rateDetailModelView.ResourceClassId34) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription35) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass35, rateDetailModelView.ResourceClassId35) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription41) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass41, rateDetailModelView.ResourceClassId41) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription42) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass42, rateDetailModelView.ResourceClassId42) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription43) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass43, rateDetailModelView.ResourceClassId43) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription44) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass44, rateDetailModelView.ResourceClassId44) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription45) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass45, rateDetailModelView.ResourceClassId45) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription51) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass51, rateDetailModelView.ResourceClassId51) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription52) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass52, rateDetailModelView.ResourceClassId52) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription53) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass53, rateDetailModelView.ResourceClassId53) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription54) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass54, rateDetailModelView.ResourceClassId54) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription55) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass55, rateDetailModelView.ResourceClassId55) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription61) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass61, rateDetailModelView.ResourceClassId61) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription62) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass62, rateDetailModelView.ResourceClassId62) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription63) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass63, rateDetailModelView.ResourceClassId63) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription64) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass64, rateDetailModelView.ResourceClassId64) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription65) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass65, rateDetailModelView.ResourceClassId65) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription71) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass71, rateDetailModelView.ResourceClassId71) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription72) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass72, rateDetailModelView.ResourceClassId72) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription73) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass73, rateDetailModelView.ResourceClassId73) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription74) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass74, rateDetailModelView.ResourceClassId74) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription75) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass75, rateDetailModelView.ResourceClassId75) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription81) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass81, rateDetailModelView.ResourceClassId81) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription82) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass82, rateDetailModelView.ResourceClassId82) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription83) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass83, rateDetailModelView.ResourceClassId83) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription84) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass84, rateDetailModelView.ResourceClassId84) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription85) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass85, rateDetailModelView.ResourceClassId85) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription91) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass91, rateDetailModelView.ResourceClassId91) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription92) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass92, rateDetailModelView.ResourceClassId92) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription93) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass93, rateDetailModelView.ResourceClassId93) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription94) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass94, rateDetailModelView.ResourceClassId94) &&
-				   string.IsNullOrEmpty(rateDetailModelView.RateDescription95) && !this.IsResourceClassPopulated(rateDetailModelView.ResourceClass95, rateDetailModelView.ResourceClassId95);
+			return string.IsNullOrEmpty(rateDetailModelView.RateDescription) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass, rateDetailModelView.ResourceClassId) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription1) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass1, rateDetailModelView.ResourceClassId1) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription2) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass2, rateDetailModelView.ResourceClassId2) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription3) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass3, rateDetailModelView.ResourceClassId3) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription4) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass4, rateDetailModelView.ResourceClassId4) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription5) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass5, rateDetailModelView.ResourceClassId5) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription6) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription7) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription8) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription9) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass9, rateDetailModelView.ResourceClassId9) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription11) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass11, rateDetailModelView.ResourceClassId11) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription12) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass12, rateDetailModelView.ResourceClassId12) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription13) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass13, rateDetailModelView.ResourceClassId13) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription14) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass14, rateDetailModelView.ResourceClassId14) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription15) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass15, rateDetailModelView.ResourceClassId15) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription21) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass21, rateDetailModelView.ResourceClassId21) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription22) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass22, rateDetailModelView.ResourceClassId22) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription23) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass23, rateDetailModelView.ResourceClassId23) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription24) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass24, rateDetailModelView.ResourceClassId24) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription25) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass25, rateDetailModelView.ResourceClassId25) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription31) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass31, rateDetailModelView.ResourceClassId31) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription32) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass32, rateDetailModelView.ResourceClassId32) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription33) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass33, rateDetailModelView.ResourceClassId33) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription34) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass34, rateDetailModelView.ResourceClassId34) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription35) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass35, rateDetailModelView.ResourceClassId35) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription41) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass41, rateDetailModelView.ResourceClassId41) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription42) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass42, rateDetailModelView.ResourceClassId42) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription43) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass43, rateDetailModelView.ResourceClassId43) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription44) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass44, rateDetailModelView.ResourceClassId44) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription45) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass45, rateDetailModelView.ResourceClassId45) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription51) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass51, rateDetailModelView.ResourceClassId51) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription52) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass52, rateDetailModelView.ResourceClassId52) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription53) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass53, rateDetailModelView.ResourceClassId53) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription54) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass54, rateDetailModelView.ResourceClassId54) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription55) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass55, rateDetailModelView.ResourceClassId55) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription61) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass61, rateDetailModelView.ResourceClassId61) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription62) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass62, rateDetailModelView.ResourceClassId62) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription63) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass63, rateDetailModelView.ResourceClassId63) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription64) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass64, rateDetailModelView.ResourceClassId64) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription65) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass65, rateDetailModelView.ResourceClassId65) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription71) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass71, rateDetailModelView.ResourceClassId71) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription72) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass72, rateDetailModelView.ResourceClassId72) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription73) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass73, rateDetailModelView.ResourceClassId73) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription74) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass74, rateDetailModelView.ResourceClassId74) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription75) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass75, rateDetailModelView.ResourceClassId75) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription81) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass81, rateDetailModelView.ResourceClassId81) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription82) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass82, rateDetailModelView.ResourceClassId82) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription83) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass83, rateDetailModelView.ResourceClassId83) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription84) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass84, rateDetailModelView.ResourceClassId84) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription85) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass85, rateDetailModelView.ResourceClassId85) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription91) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass91, rateDetailModelView.ResourceClassId91) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription92) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass92, rateDetailModelView.ResourceClassId92) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription93) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass93, rateDetailModelView.ResourceClassId93) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription94) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass94, rateDetailModelView.ResourceClassId94) &&
+				   string.IsNullOrEmpty(rateDetailModelView.RateDescription95) && !IsResourceClassPopulated(rateDetailModelView.ResourceClass95, rateDetailModelView.ResourceClassId95);
 		}
 
 		/// <summary>
@@ -569,61 +569,61 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>True if any of the extended Resource Classes (i.e. 1-9) are populated without a corresponding Rate Description; False otherwise.</returns>
 		private bool IsAnyResourceClassMissingCorrespondingRateDescription(RateDetailModelView rateDetailModelView)
 		{
-			return (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass, rateDetailModelView.ResourceClassId)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription1) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass1, rateDetailModelView.ResourceClassId1)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription2) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass2, rateDetailModelView.ResourceClassId2)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription3) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass3, rateDetailModelView.ResourceClassId3)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription4) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass4, rateDetailModelView.ResourceClassId4)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription5) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass5, rateDetailModelView.ResourceClassId5)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription6) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription7) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription8) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription9) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass9, rateDetailModelView.ResourceClassId9)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription11) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass11, rateDetailModelView.ResourceClassId11)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription12) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass12, rateDetailModelView.ResourceClassId12)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription13) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass13, rateDetailModelView.ResourceClassId13)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription14) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass14, rateDetailModelView.ResourceClassId14)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription15) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass15, rateDetailModelView.ResourceClassId15)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription21) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass21, rateDetailModelView.ResourceClassId21)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription22) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass22, rateDetailModelView.ResourceClassId22)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription23) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass23, rateDetailModelView.ResourceClassId23)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription24) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass24, rateDetailModelView.ResourceClassId24)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription25) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass25, rateDetailModelView.ResourceClassId25)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription31) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass31, rateDetailModelView.ResourceClassId31)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription32) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass32, rateDetailModelView.ResourceClassId32)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription33) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass33, rateDetailModelView.ResourceClassId33)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription34) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass34, rateDetailModelView.ResourceClassId34)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription35) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass35, rateDetailModelView.ResourceClassId35)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription41) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass41, rateDetailModelView.ResourceClassId41)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription42) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass42, rateDetailModelView.ResourceClassId42)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription43) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass43, rateDetailModelView.ResourceClassId43)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription44) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass44, rateDetailModelView.ResourceClassId44)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription45) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass45, rateDetailModelView.ResourceClassId45)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription51) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass51, rateDetailModelView.ResourceClassId51)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription52) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass52, rateDetailModelView.ResourceClassId52)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription53) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass53, rateDetailModelView.ResourceClassId53)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription54) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass54, rateDetailModelView.ResourceClassId54)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription55) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass55, rateDetailModelView.ResourceClassId55)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription61) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass61, rateDetailModelView.ResourceClassId61)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription62) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass62, rateDetailModelView.ResourceClassId62)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription63) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass63, rateDetailModelView.ResourceClassId63)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription64) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass64, rateDetailModelView.ResourceClassId64)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription65) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass65, rateDetailModelView.ResourceClassId65)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription71) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass71, rateDetailModelView.ResourceClassId71)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription72) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass72, rateDetailModelView.ResourceClassId72)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription73) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass73, rateDetailModelView.ResourceClassId73)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription74) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass74, rateDetailModelView.ResourceClassId74)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription75) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass75, rateDetailModelView.ResourceClassId75)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription81) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass81, rateDetailModelView.ResourceClassId81)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription82) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass82, rateDetailModelView.ResourceClassId82)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription83) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass83, rateDetailModelView.ResourceClassId83)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription84) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass84, rateDetailModelView.ResourceClassId84)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription85) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass85, rateDetailModelView.ResourceClassId85)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription91) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass91, rateDetailModelView.ResourceClassId91)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription92) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass92, rateDetailModelView.ResourceClassId92)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription93) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass93, rateDetailModelView.ResourceClassId93)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription94) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass94, rateDetailModelView.ResourceClassId94)) ||
-				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription95) && this.IsResourceClassPopulated(rateDetailModelView.ResourceClass95, rateDetailModelView.ResourceClassId95));
+			return string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription) && IsResourceClassPopulated(rateDetailModelView.ResourceClass, rateDetailModelView.ResourceClassId) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription1) && IsResourceClassPopulated(rateDetailModelView.ResourceClass1, rateDetailModelView.ResourceClassId1) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription2) && IsResourceClassPopulated(rateDetailModelView.ResourceClass2, rateDetailModelView.ResourceClassId2) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription3) && IsResourceClassPopulated(rateDetailModelView.ResourceClass3, rateDetailModelView.ResourceClassId3) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription4) && IsResourceClassPopulated(rateDetailModelView.ResourceClass4, rateDetailModelView.ResourceClassId4) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription5) && IsResourceClassPopulated(rateDetailModelView.ResourceClass5, rateDetailModelView.ResourceClassId5) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription6) && IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription7) && IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription8) && IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription9) && IsResourceClassPopulated(rateDetailModelView.ResourceClass9, rateDetailModelView.ResourceClassId9) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription11) && IsResourceClassPopulated(rateDetailModelView.ResourceClass11, rateDetailModelView.ResourceClassId11) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription12) && IsResourceClassPopulated(rateDetailModelView.ResourceClass12, rateDetailModelView.ResourceClassId12) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription13) && IsResourceClassPopulated(rateDetailModelView.ResourceClass13, rateDetailModelView.ResourceClassId13) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription14) && IsResourceClassPopulated(rateDetailModelView.ResourceClass14, rateDetailModelView.ResourceClassId14) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription15) && IsResourceClassPopulated(rateDetailModelView.ResourceClass15, rateDetailModelView.ResourceClassId15) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription21) && IsResourceClassPopulated(rateDetailModelView.ResourceClass21, rateDetailModelView.ResourceClassId21) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription22) && IsResourceClassPopulated(rateDetailModelView.ResourceClass22, rateDetailModelView.ResourceClassId22) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription23) && IsResourceClassPopulated(rateDetailModelView.ResourceClass23, rateDetailModelView.ResourceClassId23) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription24) && IsResourceClassPopulated(rateDetailModelView.ResourceClass24, rateDetailModelView.ResourceClassId24) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription25) && IsResourceClassPopulated(rateDetailModelView.ResourceClass25, rateDetailModelView.ResourceClassId25) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription31) && IsResourceClassPopulated(rateDetailModelView.ResourceClass31, rateDetailModelView.ResourceClassId31) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription32) && IsResourceClassPopulated(rateDetailModelView.ResourceClass32, rateDetailModelView.ResourceClassId32) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription33) && IsResourceClassPopulated(rateDetailModelView.ResourceClass33, rateDetailModelView.ResourceClassId33) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription34) && IsResourceClassPopulated(rateDetailModelView.ResourceClass34, rateDetailModelView.ResourceClassId34) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription35) && IsResourceClassPopulated(rateDetailModelView.ResourceClass35, rateDetailModelView.ResourceClassId35) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription41) && IsResourceClassPopulated(rateDetailModelView.ResourceClass41, rateDetailModelView.ResourceClassId41) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription42) && IsResourceClassPopulated(rateDetailModelView.ResourceClass42, rateDetailModelView.ResourceClassId42) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription43) && IsResourceClassPopulated(rateDetailModelView.ResourceClass43, rateDetailModelView.ResourceClassId43) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription44) && IsResourceClassPopulated(rateDetailModelView.ResourceClass44, rateDetailModelView.ResourceClassId44) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription45) && IsResourceClassPopulated(rateDetailModelView.ResourceClass45, rateDetailModelView.ResourceClassId45) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription51) && IsResourceClassPopulated(rateDetailModelView.ResourceClass51, rateDetailModelView.ResourceClassId51) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription52) && IsResourceClassPopulated(rateDetailModelView.ResourceClass52, rateDetailModelView.ResourceClassId52) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription53) && IsResourceClassPopulated(rateDetailModelView.ResourceClass53, rateDetailModelView.ResourceClassId53) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription54) && IsResourceClassPopulated(rateDetailModelView.ResourceClass54, rateDetailModelView.ResourceClassId54) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription55) && IsResourceClassPopulated(rateDetailModelView.ResourceClass55, rateDetailModelView.ResourceClassId55) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription61) && IsResourceClassPopulated(rateDetailModelView.ResourceClass61, rateDetailModelView.ResourceClassId61) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription62) && IsResourceClassPopulated(rateDetailModelView.ResourceClass62, rateDetailModelView.ResourceClassId62) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription63) && IsResourceClassPopulated(rateDetailModelView.ResourceClass63, rateDetailModelView.ResourceClassId63) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription64) && IsResourceClassPopulated(rateDetailModelView.ResourceClass64, rateDetailModelView.ResourceClassId64) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription65) && IsResourceClassPopulated(rateDetailModelView.ResourceClass65, rateDetailModelView.ResourceClassId65) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription71) && IsResourceClassPopulated(rateDetailModelView.ResourceClass71, rateDetailModelView.ResourceClassId71) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription72) && IsResourceClassPopulated(rateDetailModelView.ResourceClass72, rateDetailModelView.ResourceClassId72) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription73) && IsResourceClassPopulated(rateDetailModelView.ResourceClass73, rateDetailModelView.ResourceClassId73) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription74) && IsResourceClassPopulated(rateDetailModelView.ResourceClass74, rateDetailModelView.ResourceClassId74) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription75) && IsResourceClassPopulated(rateDetailModelView.ResourceClass75, rateDetailModelView.ResourceClassId75) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription81) && IsResourceClassPopulated(rateDetailModelView.ResourceClass81, rateDetailModelView.ResourceClassId81) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription82) && IsResourceClassPopulated(rateDetailModelView.ResourceClass82, rateDetailModelView.ResourceClassId82) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription83) && IsResourceClassPopulated(rateDetailModelView.ResourceClass83, rateDetailModelView.ResourceClassId83) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription84) && IsResourceClassPopulated(rateDetailModelView.ResourceClass84, rateDetailModelView.ResourceClassId84) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription85) && IsResourceClassPopulated(rateDetailModelView.ResourceClass85, rateDetailModelView.ResourceClassId85) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription91) && IsResourceClassPopulated(rateDetailModelView.ResourceClass91, rateDetailModelView.ResourceClassId91) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription92) && IsResourceClassPopulated(rateDetailModelView.ResourceClass92, rateDetailModelView.ResourceClassId92) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription93) && IsResourceClassPopulated(rateDetailModelView.ResourceClass93, rateDetailModelView.ResourceClassId93) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription94) && IsResourceClassPopulated(rateDetailModelView.ResourceClass94, rateDetailModelView.ResourceClassId94) ||
+				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription95) && IsResourceClassPopulated(rateDetailModelView.ResourceClass95, rateDetailModelView.ResourceClassId95);
 		}
 
 		/// <summary>
@@ -715,7 +715,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>True if Resource Class is populated; False otherwise.</returns>
 		private bool IsResourceClassPopulated(string resourceClass, int? resourceClassId)
 		{
-			return !string.IsNullOrWhiteSpace(resourceClass) || (resourceClassId.HasValue && resourceClassId.Value > 0);
+			return !string.IsNullOrWhiteSpace(resourceClass) || resourceClassId.HasValue && resourceClassId.Value > 0;
 		}
 
 		/// <summary>
@@ -752,7 +752,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new GenValidationException("Imported Rates are null.");
 			}
 
-			this.ReplicateRateCodes(importedRates);
+			ReplicateRateCodes(importedRates);
 
 			try
 			{
@@ -814,9 +814,9 @@ namespace IES.ActionLogic.ControllerLogic
 				}
 
 				// Set to 5x Normal timeout (nominally 5 minutes total).
-				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 				{
-					this.rateDetailLoader.BulkSave(importResults);
+					rateDetailLoader.BulkSave(importResults);
 					scope.Complete();
 				}
 			}
@@ -839,7 +839,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(importedRates));
 			}
 
-			ICollection<RateCodeModelView> replications = this.replicationLoader.GetAll();
+			ICollection<RateCodeModelView> replications = replicationLoader.GetAll();
 
 			foreach (RateCodeModelView replication in replications)
 			{
@@ -866,9 +866,9 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			// Set to 5x Normal timeout (nominally 5 minutes total).
-			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 			{
-				this.rateDetailLoader.SaveDetails(importedRateCodes);
+				rateDetailLoader.SaveDetails(importedRateCodes);
 				scope.Complete();
 			}
 		}
@@ -911,10 +911,10 @@ namespace IES.ActionLogic.ControllerLogic
 					else
 					{
 						// Clone the existing rate code and update the imported properties
-						RateDetailModelView updatedRateCode = this.CloneAndUpdateImportedRateCodeProperties(existingRateCode, importedRateCode);
+						RateDetailModelView updatedRateCode = CloneAndUpdateImportedRateCodeProperties(existingRateCode, importedRateCode);
 
 						// If there are changes, add it to the collection
-						if (this.IsImportedRateCodeDirty(existingRateCode, updatedRateCode))
+						if (IsImportedRateCodeDirty(existingRateCode, updatedRateCode))
 						{
 							updatedRateCodes.Add(updatedRateCode);
 						}
@@ -1101,126 +1101,126 @@ namespace IES.ActionLogic.ControllerLogic
 			return existingRateCode.Id != importedRateCode.Id ||                    // sanity check (not modified by import)
 				existingRateCode.RevisionId != importedRateCode.RevisionId ||       // sanity check (not modified by import)
 				existingRateCode.RatePrecision != importedRateCode.RatePrecision || // sanity check (not modified by import)
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.CommercialBurdenPoolId, importedRateCode.CommercialBurdenPoolId) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.Description, importedRateCode.Description) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.GovernmentBurdenPoolId, importedRateCode.GovernmentBurdenPoolId) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.CommercialBurdenPoolId, importedRateCode.CommercialBurdenPoolId) ||
+				!IsStringPropertyEquivalent(existingRateCode.Description, importedRateCode.Description) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.GovernmentBurdenPoolId, importedRateCode.GovernmentBurdenPoolId) ||
 				(int)existingRateCode.RateCategory != (int)importedRateCode.RateCategory ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription, importedRateCode.RateDescription) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription1, importedRateCode.RateDescription1) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription2, importedRateCode.RateDescription2) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription3, importedRateCode.RateDescription3) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription4, importedRateCode.RateDescription4) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription5, importedRateCode.RateDescription5) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription6, importedRateCode.RateDescription6) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription7, importedRateCode.RateDescription7) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription8, importedRateCode.RateDescription8) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription9, importedRateCode.RateDescription9) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription11, importedRateCode.RateDescription11) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription12, importedRateCode.RateDescription12) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription13, importedRateCode.RateDescription13) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription14, importedRateCode.RateDescription14) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription15, importedRateCode.RateDescription15) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription21, importedRateCode.RateDescription21) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription22, importedRateCode.RateDescription22) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription23, importedRateCode.RateDescription23) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription24, importedRateCode.RateDescription24) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription25, importedRateCode.RateDescription25) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription31, importedRateCode.RateDescription31) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription32, importedRateCode.RateDescription32) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription33, importedRateCode.RateDescription33) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription34, importedRateCode.RateDescription34) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription35, importedRateCode.RateDescription35) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription41, importedRateCode.RateDescription41) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription42, importedRateCode.RateDescription42) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription43, importedRateCode.RateDescription43) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription44, importedRateCode.RateDescription44) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription45, importedRateCode.RateDescription45) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription51, importedRateCode.RateDescription51) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription52, importedRateCode.RateDescription52) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription53, importedRateCode.RateDescription53) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription54, importedRateCode.RateDescription54) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription55, importedRateCode.RateDescription55) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription61, importedRateCode.RateDescription61) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription62, importedRateCode.RateDescription62) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription63, importedRateCode.RateDescription63) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription64, importedRateCode.RateDescription64) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription65, importedRateCode.RateDescription65) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription71, importedRateCode.RateDescription71) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription72, importedRateCode.RateDescription72) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription73, importedRateCode.RateDescription73) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription74, importedRateCode.RateDescription74) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription75, importedRateCode.RateDescription75) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription81, importedRateCode.RateDescription81) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription82, importedRateCode.RateDescription82) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription83, importedRateCode.RateDescription83) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription84, importedRateCode.RateDescription84) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription85, importedRateCode.RateDescription85) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription91, importedRateCode.RateDescription91) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription92, importedRateCode.RateDescription92) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription93, importedRateCode.RateDescription93) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription94, importedRateCode.RateDescription94) ||
-				!this.IsStringPropertyEquivalent(existingRateCode.RateDescription95, importedRateCode.RateDescription95) ||
-				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.RateType, (int?)importedRateCode.RateType) ||
-				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.DisclosureType, (int?)importedRateCode.DisclosureType) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId, importedRateCode.ResourceClassId) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId1, importedRateCode.ResourceClassId1) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId2, importedRateCode.ResourceClassId2) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId3, importedRateCode.ResourceClassId3) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId4, importedRateCode.ResourceClassId4) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId5, importedRateCode.ResourceClassId5) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId6, importedRateCode.ResourceClassId6) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId7, importedRateCode.ResourceClassId7) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId8, importedRateCode.ResourceClassId8) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId9, importedRateCode.ResourceClassId9) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId11, importedRateCode.ResourceClassId11) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId12, importedRateCode.ResourceClassId12) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId13, importedRateCode.ResourceClassId13) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId14, importedRateCode.ResourceClassId14) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId15, importedRateCode.ResourceClassId15) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId21, importedRateCode.ResourceClassId21) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId22, importedRateCode.ResourceClassId22) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId23, importedRateCode.ResourceClassId23) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId24, importedRateCode.ResourceClassId24) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId25, importedRateCode.ResourceClassId25) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId31, importedRateCode.ResourceClassId31) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId32, importedRateCode.ResourceClassId32) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId33, importedRateCode.ResourceClassId33) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId34, importedRateCode.ResourceClassId34) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId35, importedRateCode.ResourceClassId35) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId41, importedRateCode.ResourceClassId41) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId42, importedRateCode.ResourceClassId42) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId43, importedRateCode.ResourceClassId43) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId44, importedRateCode.ResourceClassId44) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId45, importedRateCode.ResourceClassId45) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId51, importedRateCode.ResourceClassId51) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId52, importedRateCode.ResourceClassId52) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId53, importedRateCode.ResourceClassId53) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId54, importedRateCode.ResourceClassId54) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId55, importedRateCode.ResourceClassId55) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId61, importedRateCode.ResourceClassId61) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId62, importedRateCode.ResourceClassId62) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId63, importedRateCode.ResourceClassId63) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId64, importedRateCode.ResourceClassId64) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId65, importedRateCode.ResourceClassId65) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId71, importedRateCode.ResourceClassId71) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId72, importedRateCode.ResourceClassId72) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId73, importedRateCode.ResourceClassId73) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId74, importedRateCode.ResourceClassId74) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId75, importedRateCode.ResourceClassId75) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId81, importedRateCode.ResourceClassId81) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId82, importedRateCode.ResourceClassId82) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId83, importedRateCode.ResourceClassId83) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId84, importedRateCode.ResourceClassId84) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId85, importedRateCode.ResourceClassId85) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId91, importedRateCode.ResourceClassId91) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId92, importedRateCode.ResourceClassId92) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId93, importedRateCode.ResourceClassId93) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId94, importedRateCode.ResourceClassId94) ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId95, importedRateCode.ResourceClassId95) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription, importedRateCode.RateDescription) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription1, importedRateCode.RateDescription1) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription2, importedRateCode.RateDescription2) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription3, importedRateCode.RateDescription3) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription4, importedRateCode.RateDescription4) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription5, importedRateCode.RateDescription5) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription6, importedRateCode.RateDescription6) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription7, importedRateCode.RateDescription7) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription8, importedRateCode.RateDescription8) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription9, importedRateCode.RateDescription9) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription11, importedRateCode.RateDescription11) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription12, importedRateCode.RateDescription12) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription13, importedRateCode.RateDescription13) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription14, importedRateCode.RateDescription14) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription15, importedRateCode.RateDescription15) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription21, importedRateCode.RateDescription21) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription22, importedRateCode.RateDescription22) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription23, importedRateCode.RateDescription23) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription24, importedRateCode.RateDescription24) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription25, importedRateCode.RateDescription25) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription31, importedRateCode.RateDescription31) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription32, importedRateCode.RateDescription32) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription33, importedRateCode.RateDescription33) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription34, importedRateCode.RateDescription34) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription35, importedRateCode.RateDescription35) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription41, importedRateCode.RateDescription41) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription42, importedRateCode.RateDescription42) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription43, importedRateCode.RateDescription43) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription44, importedRateCode.RateDescription44) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription45, importedRateCode.RateDescription45) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription51, importedRateCode.RateDescription51) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription52, importedRateCode.RateDescription52) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription53, importedRateCode.RateDescription53) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription54, importedRateCode.RateDescription54) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription55, importedRateCode.RateDescription55) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription61, importedRateCode.RateDescription61) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription62, importedRateCode.RateDescription62) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription63, importedRateCode.RateDescription63) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription64, importedRateCode.RateDescription64) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription65, importedRateCode.RateDescription65) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription71, importedRateCode.RateDescription71) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription72, importedRateCode.RateDescription72) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription73, importedRateCode.RateDescription73) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription74, importedRateCode.RateDescription74) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription75, importedRateCode.RateDescription75) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription81, importedRateCode.RateDescription81) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription82, importedRateCode.RateDescription82) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription83, importedRateCode.RateDescription83) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription84, importedRateCode.RateDescription84) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription85, importedRateCode.RateDescription85) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription91, importedRateCode.RateDescription91) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription92, importedRateCode.RateDescription92) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription93, importedRateCode.RateDescription93) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription94, importedRateCode.RateDescription94) ||
+				!IsStringPropertyEquivalent(existingRateCode.RateDescription95, importedRateCode.RateDescription95) ||
+				!IsNullableIdPropertyEquivalent((int?)existingRateCode.RateType, (int?)importedRateCode.RateType) ||
+				!IsNullableIdPropertyEquivalent((int?)existingRateCode.DisclosureType, (int?)importedRateCode.DisclosureType) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId, importedRateCode.ResourceClassId) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId1, importedRateCode.ResourceClassId1) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId2, importedRateCode.ResourceClassId2) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId3, importedRateCode.ResourceClassId3) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId4, importedRateCode.ResourceClassId4) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId5, importedRateCode.ResourceClassId5) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId6, importedRateCode.ResourceClassId6) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId7, importedRateCode.ResourceClassId7) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId8, importedRateCode.ResourceClassId8) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId9, importedRateCode.ResourceClassId9) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId11, importedRateCode.ResourceClassId11) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId12, importedRateCode.ResourceClassId12) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId13, importedRateCode.ResourceClassId13) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId14, importedRateCode.ResourceClassId14) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId15, importedRateCode.ResourceClassId15) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId21, importedRateCode.ResourceClassId21) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId22, importedRateCode.ResourceClassId22) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId23, importedRateCode.ResourceClassId23) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId24, importedRateCode.ResourceClassId24) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId25, importedRateCode.ResourceClassId25) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId31, importedRateCode.ResourceClassId31) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId32, importedRateCode.ResourceClassId32) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId33, importedRateCode.ResourceClassId33) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId34, importedRateCode.ResourceClassId34) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId35, importedRateCode.ResourceClassId35) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId41, importedRateCode.ResourceClassId41) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId42, importedRateCode.ResourceClassId42) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId43, importedRateCode.ResourceClassId43) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId44, importedRateCode.ResourceClassId44) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId45, importedRateCode.ResourceClassId45) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId51, importedRateCode.ResourceClassId51) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId52, importedRateCode.ResourceClassId52) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId53, importedRateCode.ResourceClassId53) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId54, importedRateCode.ResourceClassId54) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId55, importedRateCode.ResourceClassId55) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId61, importedRateCode.ResourceClassId61) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId62, importedRateCode.ResourceClassId62) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId63, importedRateCode.ResourceClassId63) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId64, importedRateCode.ResourceClassId64) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId65, importedRateCode.ResourceClassId65) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId71, importedRateCode.ResourceClassId71) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId72, importedRateCode.ResourceClassId72) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId73, importedRateCode.ResourceClassId73) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId74, importedRateCode.ResourceClassId74) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId75, importedRateCode.ResourceClassId75) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId81, importedRateCode.ResourceClassId81) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId82, importedRateCode.ResourceClassId82) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId83, importedRateCode.ResourceClassId83) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId84, importedRateCode.ResourceClassId84) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId85, importedRateCode.ResourceClassId85) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId91, importedRateCode.ResourceClassId91) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId92, importedRateCode.ResourceClassId92) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId93, importedRateCode.ResourceClassId93) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId94, importedRateCode.ResourceClassId94) ||
+				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId95, importedRateCode.ResourceClassId95) ||
 
-				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.ResourceType, (int?)importedRateCode.ResourceType) ||
+				!IsNullableIdPropertyEquivalent((int?)existingRateCode.ResourceType, (int?)importedRateCode.ResourceType) ||
 				existingRateCode.RevisionId != importedRateCode.RevisionId ||
-				!this.IsNullableIdPropertyEquivalent(existingRateCode.Section, importedRateCode.Section);
+				!IsNullableIdPropertyEquivalent(existingRateCode.Section, importedRateCode.Section);
 		}
 
 		/// <summary>
@@ -1233,7 +1233,7 @@ namespace IES.ActionLogic.ControllerLogic
 		{
 			bool string1Null = string.IsNullOrWhiteSpace(string1);
 			bool string2Null = string.IsNullOrWhiteSpace(string2);
-			return (string1Null && string2Null) || (!string1Null && !string2Null && string1.Trim().Equals(string2.Trim()));
+			return string1Null && string2Null || !string1Null && !string2Null && string1.Trim().Equals(string2.Trim());
 		}
 
 		/// <summary>
@@ -1244,7 +1244,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <returns>true, if both ids are null/not set, or both are equal</returns>
 		private bool IsNullableIdPropertyEquivalent(int? id1, int? id2)
 		{
-			return ((!id1.HasValue || id1 == 0) && (!id2.HasValue || id2 == 0)) || (id1.HasValue && id2.HasValue && id1.Value == id2.Value);
+			return (!id1.HasValue || id1 == 0) && (!id2.HasValue || id2 == 0) || id1.HasValue && id2.HasValue && id1.Value == id2.Value;
 		}
 	}
 }

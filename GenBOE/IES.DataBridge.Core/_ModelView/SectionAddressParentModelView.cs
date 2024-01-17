@@ -6,12 +6,6 @@
 
 namespace IES.DataBridge.ModelViews
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-
 	/// <summary>
 	/// A truncated model of the Section object, used for recursively traversing through sections to get the Title
 	/// </summary>

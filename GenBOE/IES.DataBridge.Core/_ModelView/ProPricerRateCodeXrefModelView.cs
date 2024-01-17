@@ -4,15 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
 using Newtonsoft.Json;
 
 namespace IES.DataBridge.ModelViews
 {
-    /// <summary>
-    /// The Model View used for ProPricer mappings.
-    /// </summary>
-    [Serializable]
+	/// <summary>
+	/// The Model View used for ProPricer mappings.
+	/// </summary>
+	[Serializable]
     public class ProPricerRateCodeXrefModelView : IESUpdateableModelView
     {
         /// <summary>

@@ -6,15 +6,14 @@
 
 namespace IES.DataBridge.Loaders
 {
-    using System.Collections.Generic;
-    using IES.Common.Core;
+	using System.Collections.Generic;
 	using IES.Common.Core.Loaders;
 	using IES.DataBridge.ModelViews;
 
-    /// <summary>
-    /// Interface for the ProPricerRateCodeXrefLoader
-    /// </summary>
-    public interface IProPricerRateCodeXrefLoader : IBulkDataLoader<ProPricerRateCodeXrefModelView>
+	/// <summary>
+	/// Interface for the ProPricerRateCodeXrefLoader
+	/// </summary>
+	public interface IProPricerRateCodeXrefLoader : IBulkDataLoader<ProPricerRateCodeXrefModelView>
     {
         /// <summary>
         /// Get ProPricer Rate Code Xrefs for Rate Code ID

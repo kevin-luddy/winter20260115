@@ -4,21 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using IES.ActionLogic.Validation;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using IES.Common.Core;
 	using IES.Common.Core.Exceptions;
 	using Mediator;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Constants;
-	using IES.Common.Core.Models;
+	using IES.ActionLogic.Core.Validation;
 
 	/// <summary>
 	/// Logic for the Admin Controller.
@@ -132,7 +130,7 @@ namespace IES.ActionLogic.ControllerLogic
 				}
 
 				// Look for Year / Cobra Date combinations that do not match.  The year of the Cobra Date should be =(Year) or =(Year - 1).  Ignores blank and invalid dates, which are caught in an earlier message.
-				List<int> dateCombinationErrors = collection.Where(config => config.CobraDate != DateTime.MinValue && config.CobraDate.Year != config.Year && config.CobraDate.Year != (config.Year - 1)).Select(config => config.Year).ToList();
+				List<int> dateCombinationErrors = collection.Where(config => config.CobraDate != DateTime.MinValue && config.CobraDate.Year != config.Year && config.CobraDate.Year != config.Year - 1).Select(config => config.Year).ToList();
 				if (dateCombinationErrors.Any())
 				{
 					string dateCombinationErrorMessage = string.Join(", ", dateCombinationErrors);
@@ -190,10 +188,10 @@ namespace IES.ActionLogic.ControllerLogic
 		{
 			RateCodeReplicationModelView modelView = new()
 			{
-				RateCodes = this.rateDetailLoader.GetRateCodesForRevision(this.WipRevision.Id),
-				LockInfo = this.GetCurrentLockInfo(LockArea.RateCodeReplication),
-				ValidationMessages = this.rateDetailLoader.VerifyRateCodeReplication(this.WipRevision.Id),
-				Replications = this.replicationLoader.GetAll()
+				RateCodes = rateDetailLoader.GetRateCodesForRevision(WipRevision.Id),
+				LockInfo = GetCurrentLockInfo(LockArea.RateCodeReplication),
+				ValidationMessages = rateDetailLoader.VerifyRateCodeReplication(WipRevision.Id),
+				Replications = replicationLoader.GetAll()
 			};
 
 			return modelView;
@@ -205,7 +203,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="rateCodes">The rate code replication to save.</param>
 		public void SaveRateCodeReplication(ICollection<RateCodeModelView> rateCodes)
 		{
-			this.replicationLoader.Save(rateCodes);
+			replicationLoader.Save(rateCodes);
 		}
 
 		/// <summary>
@@ -225,8 +223,8 @@ namespace IES.ActionLogic.ControllerLogic
 
 			List<ValidationMessage> errors = new();
 
-			ICollection<RateDto> allRateCodes = this.rateDetailLoader.GetRateCodesForRevision(this.WipRevision.Id);
-			ICollection<RateCodeModelView> dbRateCodes = this.replicationLoader.GetAll();
+			ICollection<RateDto> allRateCodes = rateDetailLoader.GetRateCodesForRevision(WipRevision.Id);
+			ICollection<RateCodeModelView> dbRateCodes = replicationLoader.GetAll();
 
 			// Create a merged list
 			List<RateCodeModelView> mergedList = rateCodes.ToList();
@@ -304,7 +302,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// </summary>
 		public void ClearRevisionCache()
 		{
-			this.RevisionMediator.ClearRevisionCache();
+			RevisionMediator.ClearRevisionCache();
 		}
 	}
 }

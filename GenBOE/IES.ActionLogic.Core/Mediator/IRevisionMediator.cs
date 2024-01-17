@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.Mediator
+namespace IES.ActionLogic.Core.Mediator
 {
 	using System.Collections.Generic;
 	using DataBridge.Loaders;

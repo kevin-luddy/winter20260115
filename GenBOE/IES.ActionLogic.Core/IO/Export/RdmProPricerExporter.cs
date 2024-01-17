@@ -3,7 +3,8 @@
 //     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
-namespace IES.ActionLogic.IO.Export
+
+namespace IES.ActionLogic.Core.IO.Export
 {
 	using System;
 	using System.Collections.Generic;
@@ -86,12 +87,12 @@ namespace IES.ActionLogic.IO.Export
 			ICollection<BurdenPoolDetailModelView> burdenPools,
 			ICollection<BurdenElementModelView> burdenElements)
 		{
-			this.Rates = rates;
-			this.ZipFilePath = zipFilePath;
-			this.MinYear = 0;
-			this.MaxYear = 0;
-			this.BurdenElements = burdenElements;
-			this.BurdenPools = burdenPools;
+			Rates = rates;
+			ZipFilePath = zipFilePath;
+			MinYear = 0;
+			MaxYear = 0;
+			BurdenElements = burdenElements;
+			BurdenPools = burdenPools;
 		}
 		#region Public Methods
 
@@ -101,33 +102,33 @@ namespace IES.ActionLogic.IO.Export
 		/// <returns>Location of the zipped files.</returns>
 		public string ExportReport()
 		{
-			this.FindMinMaxYears(); // set min/max year
+			FindMinMaxYears(); // set min/max year
 			string toReturn;
 			// Initialize collection of streams to zip
 			Dictionary<string, Stream> zipContents = new();
 			// Add streams to dictionary for zipping, generate CSV data for the 5 ProPricer exports.
-			using (MemoryStream ms1 = new(ExportProPricer(this.GetDirectRateRows(IsGovOrComm.Commerical))))
+			using (MemoryStream ms1 = new(ExportProPricer(GetDirectRateRows(IsGovOrComm.Commerical))))
 			{
-				zipContents.Add(string.Format("{0}_Direct_Rate_Commercial.csv", this.prefix), ms1);
+				zipContents.Add(string.Format("{0}_Direct_Rate_Commercial.csv", prefix), ms1);
 				// Note: ms2 (Government Direct Rates (NET)) and ms6 (Government Direct Rates Services (NET)) are identical as requested by the customer.
-				using (MemoryStream ms2 = new(ExportProPricer(this.GetDirectRateRows(IsGovOrComm.Government))))
+				using (MemoryStream ms2 = new(ExportProPricer(GetDirectRateRows(IsGovOrComm.Government))))
 				{
-					zipContents.Add(string.Format("{0}_Direct_Rate.csv", this.prefix), ms2);
+					zipContents.Add(string.Format("{0}_Direct_Rate.csv", prefix), ms2);
 					// Note: ms3 (Government Burden Rates (NET)) and ms4 (Commercial Burden Rates (GRS)) are identical as requested by the customer.
-					using (MemoryStream ms3 = new(ExportProPricer(this.GetBurdenRateRows(false, false))))
+					using (MemoryStream ms3 = new(ExportProPricer(GetBurdenRateRows(false, false))))
 					{
-						zipContents.Add(string.Format("{0}_Burden_Rate.csv", this.prefix), ms3);
-						using (MemoryStream ms4 = new(ExportProPricer(this.GetBurdenRateRows(false, true))))
+						zipContents.Add(string.Format("{0}_Burden_Rate.csv", prefix), ms3);
+						using (MemoryStream ms4 = new(ExportProPricer(GetBurdenRateRows(false, true))))
 						{
-							zipContents.Add(string.Format("{0}_Burden_Rate_Commercial.csv", this.prefix), ms4);
-							using (MemoryStream ms5 = new(ExportProPricer(this.GetBurdenRateRows(true, false))))
+							zipContents.Add(string.Format("{0}_Burden_Rate_Commercial.csv", prefix), ms4);
+							using (MemoryStream ms5 = new(ExportProPricer(GetBurdenRateRows(true, false))))
 							{
-								zipContents.Add(string.Format("{0}_Burden_Rate_Services.csv", this.prefix), ms5);
-								using (MemoryStream ms6 = new(ExportProPricer(this.GetDirectRateRows(IsGovOrComm.Government))))
+								zipContents.Add(string.Format("{0}_Burden_Rate_Services.csv", prefix), ms5);
+								using (MemoryStream ms6 = new(ExportProPricer(GetDirectRateRows(IsGovOrComm.Government))))
 								{
-									zipContents.Add(string.Format("{0}_Direct_Rate_Services.csv", this.prefix), ms6);
+									zipContents.Add(string.Format("{0}_Direct_Rate_Services.csv", prefix), ms6);
 									// Zip files and return zip file path & name to caller
-									toReturn = Zip.ZipFiles(zipContents, this.ZipFilePath);
+									toReturn = Zip.ZipFiles(zipContents, ZipFilePath);
 								}
 							}
 						}
@@ -171,7 +172,7 @@ namespace IES.ActionLogic.IO.Export
 		{
 			ICollection<IProPricerExportModelView> toReturn = new Collection<IProPricerExportModelView>();
 			toReturn.Add(ProPricerDirectRateExportRowModelView.GetDirectRateHeaderModelView()); // get col header names
-			foreach (RateDetailModelView rate in this.Rates)
+			foreach (RateDetailModelView rate in Rates)
 			{
 				// Only export rates if at least one description is specified.
 				if (string.IsNullOrEmpty(rate.RateDescription) &&
@@ -236,52 +237,52 @@ namespace IES.ActionLogic.IO.Export
 				// Determine if we have rate descriptions for 1-9, if so we have to create mappings
 				if (!string.IsNullOrEmpty(rate.RateDescription))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 0, rate.RateDescription, rate.ResourceClass, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 0, rate.RateDescription, rate.ResourceClass, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription1))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 1, rate.RateDescription1, rate.ResourceClass1, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 1, rate.RateDescription1, rate.ResourceClass1, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription2))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 2, rate.RateDescription2, rate.ResourceClass2, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 2, rate.RateDescription2, rate.ResourceClass2, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription3))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 3, rate.RateDescription3, rate.ResourceClass3, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 3, rate.RateDescription3, rate.ResourceClass3, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription4))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 4, rate.RateDescription4, rate.ResourceClass4, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 4, rate.RateDescription4, rate.ResourceClass4, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription5))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 5, rate.RateDescription5, rate.ResourceClass5, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 5, rate.RateDescription5, rate.ResourceClass5, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription6))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 6, rate.RateDescription6, rate.ResourceClass6, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 6, rate.RateDescription6, rate.ResourceClass6, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription7))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 7, rate.RateDescription7, rate.ResourceClass7, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 7, rate.RateDescription7, rate.ResourceClass7, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription8))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 8, rate.RateDescription8, rate.ResourceClass8, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 8, rate.RateDescription8, rate.ResourceClass8, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription9))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 9, rate.RateDescription9, rate.ResourceClass9, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 9, rate.RateDescription9, rate.ResourceClass9, isGovOrComm));
 				}
 
 				#region 1LMX Rates
@@ -289,235 +290,235 @@ namespace IES.ActionLogic.IO.Export
 				// Level 1
 				if (!string.IsNullOrEmpty(rate.RateDescription11))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 11, rate.RateDescription11, rate.ResourceClass11, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 11, rate.RateDescription11, rate.ResourceClass11, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription12))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 12, rate.RateDescription12, rate.ResourceClass12, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 12, rate.RateDescription12, rate.ResourceClass12, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription13))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 13, rate.RateDescription13, rate.ResourceClass13, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 13, rate.RateDescription13, rate.ResourceClass13, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription14))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 14, rate.RateDescription14, rate.ResourceClass14, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 14, rate.RateDescription14, rate.ResourceClass14, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription15))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 15, rate.RateDescription15, rate.ResourceClass15, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 15, rate.RateDescription15, rate.ResourceClass15, isGovOrComm));
 				}
 
 				// Level 2
 				if (!string.IsNullOrEmpty(rate.RateDescription21))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 21, rate.RateDescription21, rate.ResourceClass21, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 21, rate.RateDescription21, rate.ResourceClass21, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription22))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 22, rate.RateDescription22, rate.ResourceClass22, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 22, rate.RateDescription22, rate.ResourceClass22, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription23))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 23, rate.RateDescription23, rate.ResourceClass23, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 23, rate.RateDescription23, rate.ResourceClass23, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription24))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 24, rate.RateDescription24, rate.ResourceClass24, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 24, rate.RateDescription24, rate.ResourceClass24, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription25))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 25, rate.RateDescription25, rate.ResourceClass25, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 25, rate.RateDescription25, rate.ResourceClass25, isGovOrComm));
 				}
 
 				// Level 3
 				if (!string.IsNullOrEmpty(rate.RateDescription31))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 31, rate.RateDescription31, rate.ResourceClass31, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 31, rate.RateDescription31, rate.ResourceClass31, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription32))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 32, rate.RateDescription32, rate.ResourceClass32, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 32, rate.RateDescription32, rate.ResourceClass32, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription33))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 33, rate.RateDescription33, rate.ResourceClass33, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 33, rate.RateDescription33, rate.ResourceClass33, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription34))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 34, rate.RateDescription34, rate.ResourceClass34, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 34, rate.RateDescription34, rate.ResourceClass34, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription35))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 35, rate.RateDescription35, rate.ResourceClass35, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 35, rate.RateDescription35, rate.ResourceClass35, isGovOrComm));
 				}
 
 				// Level 4
 				if (!string.IsNullOrEmpty(rate.RateDescription41))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 41, rate.RateDescription41, rate.ResourceClass41, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 41, rate.RateDescription41, rate.ResourceClass41, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription42))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 42, rate.RateDescription42, rate.ResourceClass42, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 42, rate.RateDescription42, rate.ResourceClass42, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription43))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 43, rate.RateDescription43, rate.ResourceClass43, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 43, rate.RateDescription43, rate.ResourceClass43, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription44))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 44, rate.RateDescription44, rate.ResourceClass44, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 44, rate.RateDescription44, rate.ResourceClass44, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription45))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 45, rate.RateDescription45, rate.ResourceClass45, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 45, rate.RateDescription45, rate.ResourceClass45, isGovOrComm));
 				}
 
 				// Level 5
 				if (!string.IsNullOrEmpty(rate.RateDescription51))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 51, rate.RateDescription51, rate.ResourceClass51, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 51, rate.RateDescription51, rate.ResourceClass51, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription52))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 52, rate.RateDescription52, rate.ResourceClass52, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 52, rate.RateDescription52, rate.ResourceClass52, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription53))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 53, rate.RateDescription53, rate.ResourceClass53, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 53, rate.RateDescription53, rate.ResourceClass53, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription54))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 54, rate.RateDescription54, rate.ResourceClass54, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 54, rate.RateDescription54, rate.ResourceClass54, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription55))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 55, rate.RateDescription55, rate.ResourceClass55, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 55, rate.RateDescription55, rate.ResourceClass55, isGovOrComm));
 				}
 
 				// Level 6
 				if (!string.IsNullOrEmpty(rate.RateDescription61))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 61, rate.RateDescription61, rate.ResourceClass61, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 61, rate.RateDescription61, rate.ResourceClass61, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription62))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 62, rate.RateDescription62, rate.ResourceClass62, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 62, rate.RateDescription62, rate.ResourceClass62, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription63))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 63, rate.RateDescription63, rate.ResourceClass63, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 63, rate.RateDescription63, rate.ResourceClass63, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription64))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 64, rate.RateDescription64, rate.ResourceClass64, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 64, rate.RateDescription64, rate.ResourceClass64, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription65))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 65, rate.RateDescription65, rate.ResourceClass65, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 65, rate.RateDescription65, rate.ResourceClass65, isGovOrComm));
 				}
 
 				// Level 7
 				if (!string.IsNullOrEmpty(rate.RateDescription71))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 71, rate.RateDescription71, rate.ResourceClass71, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 71, rate.RateDescription71, rate.ResourceClass71, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription72))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 72, rate.RateDescription72, rate.ResourceClass72, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 72, rate.RateDescription72, rate.ResourceClass72, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription73))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 73, rate.RateDescription73, rate.ResourceClass73, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 73, rate.RateDescription73, rate.ResourceClass73, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription74))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 74, rate.RateDescription74, rate.ResourceClass74, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 74, rate.RateDescription74, rate.ResourceClass74, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription75))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 75, rate.RateDescription75, rate.ResourceClass75, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 75, rate.RateDescription75, rate.ResourceClass75, isGovOrComm));
 				}
 
 				// Level 8
 				if (!string.IsNullOrEmpty(rate.RateDescription81))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 81, rate.RateDescription81, rate.ResourceClass81, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 81, rate.RateDescription81, rate.ResourceClass81, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription82))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 82, rate.RateDescription82, rate.ResourceClass82, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 82, rate.RateDescription82, rate.ResourceClass82, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription83))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 83, rate.RateDescription83, rate.ResourceClass83, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 83, rate.RateDescription83, rate.ResourceClass83, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription84))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 84, rate.RateDescription84, rate.ResourceClass84, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 84, rate.RateDescription84, rate.ResourceClass84, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription85))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 85, rate.RateDescription85, rate.ResourceClass85, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 85, rate.RateDescription85, rate.ResourceClass85, isGovOrComm));
 				}
 
 				// Level 9
 				if (!string.IsNullOrEmpty(rate.RateDescription91))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 91, rate.RateDescription91, rate.ResourceClass91, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 91, rate.RateDescription91, rate.ResourceClass91, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription92))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 92, rate.RateDescription92, rate.ResourceClass92, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 92, rate.RateDescription92, rate.ResourceClass92, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription93))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 93, rate.RateDescription93, rate.ResourceClass93, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 93, rate.RateDescription93, rate.ResourceClass93, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription94))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 94, rate.RateDescription94, rate.ResourceClass94, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 94, rate.RateDescription94, rate.ResourceClass94, isGovOrComm));
 				}
 
 				if (!string.IsNullOrEmpty(rate.RateDescription95))
 				{
-					toReturn.AddRange(this.CreateDirectRateRows(rate, 95, rate.RateDescription95, rate.ResourceClass95, isGovOrComm));
+					toReturn.AddRange(CreateDirectRateRows(rate, 95, rate.RateDescription95, rate.ResourceClass95, isGovOrComm));
 				}
 
 				#endregion
@@ -540,11 +541,11 @@ namespace IES.ActionLogic.IO.Export
 			RateDetailModelView rate, int mappingSequence, string description, string resourceClass, IsGovOrComm isGovOrComm)
 		{
 			ICollection<ProPricerDirectRateExportRowModelView> toReturn = new Collection<ProPricerDirectRateExportRowModelView>();
-			for (int year = this.MinYear; year <= this.MaxYear; year++)
+			for (int year = MinYear; year <= MaxYear; year++)
 			{
 				if (rate.Values.Any(r => r.Year == year && r.Value.HasValue))
 				{
-					toReturn.Add(this.CreateDirectRateRow(rate, mappingSequence, description, resourceClass, isGovOrComm, year));
+					toReturn.Add(CreateDirectRateRow(rate, mappingSequence, description, resourceClass, isGovOrComm, year));
 				}
 			}
 
@@ -591,8 +592,8 @@ namespace IES.ActionLogic.IO.Export
 		{
 			ICollection<IProPricerExportModelView> toReturn = new Collection<IProPricerExportModelView>();
 			// get the index of the "G&A T2" (Services G&A) column, as it requires special handling below
-			BurdenElementModelView burdenElement = this.BurdenElements.Single(x => x.Name == "G&A T2");
-			List<BurdenElementModelView> orderedList = this.BurdenElements.OrderBy(x => x.DisplayOrder).ToList();
+			BurdenElementModelView burdenElement = BurdenElements.Single(x => x.Name == "G&A T2");
+			List<BurdenElementModelView> orderedList = BurdenElements.OrderBy(x => x.DisplayOrder).ToList();
 			int gat2BurdenElementIndex = orderedList.IndexOf(burdenElement);
 			List<int> fccomIndices = new();
 			for (int i = 0; i < orderedList.Count; i++)
@@ -610,12 +611,12 @@ namespace IES.ActionLogic.IO.Export
 				Description = "Description",
 				EffectiveDate = "Effective Date",
 				Date = "Date",
-				Rates = this.BurdenElements.OrderBy(x => x.DisplayOrder).Select(bp => bp.Name).ToList()
+				Rates = BurdenElements.OrderBy(x => x.DisplayOrder).Select(bp => bp.Name).ToList()
 			});
 
-			foreach (BurdenPoolDetailModelView burdenPool in this.BurdenPools)
+			foreach (BurdenPoolDetailModelView burdenPool in BurdenPools)
 			{
-				for (int year = this.MinYear; year <= this.MaxYear; year++)
+				for (int year = MinYear; year <= MaxYear; year++)
 				{
 					ProPricerBurdenRateExportRowModelView row = new()
 					{
@@ -663,7 +664,7 @@ namespace IES.ActionLogic.IO.Export
 
 						// find mapped rate for this burden element
 						string rateValue = string.Empty;
-						RateDetailModelView rate = this.Rates.FirstOrDefault(x => x.RateCode == rateCodeMapping);
+						RateDetailModelView rate = Rates.FirstOrDefault(x => x.RateCode == rateCodeMapping);
 						if (rate != null && rate.Values != null)
 						{
 							// find Rate for current year
@@ -693,18 +694,18 @@ namespace IES.ActionLogic.IO.Export
 		/// </summary>
 		internal void FindMinMaxYears()
 		{
-			this.MinYear = 9999;
-			this.MaxYear = 0;
+			MinYear = 9999;
+			MaxYear = 0;
 
-			foreach (RateDetailModelView rate in this.Rates)
+			foreach (RateDetailModelView rate in Rates)
 			{
 				int rateMinYear = rate.Values.Min(x => x.Year);
 				int rateMaxYear = rate.Values.Max(x => x.Year);
-				this.MinYear = Math.Min(this.MinYear, rateMinYear);
-				this.MaxYear = Math.Max(this.MaxYear, rateMaxYear);
+				MinYear = Math.Min(MinYear, rateMinYear);
+				MaxYear = Math.Max(MaxYear, rateMaxYear);
 			}
 
-			if (this.MinYear == 9999 || this.MaxYear == 0)
+			if (MinYear == 9999 || MaxYear == 0)
 			{
 				throw new GeneralAppException("Unable to get min/max rate years.");
 			}

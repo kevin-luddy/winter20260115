@@ -4,19 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace IES.ActionLogic.ControllerLogic
+namespace IES.ActionLogic.Core.ControllerLogic
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using IES.Common.Core;
+	using IES.ActionLogic.Core.Mediator;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using Mediator;
 
 	/// <summary>
 	/// PPRD Controller Logic
@@ -73,7 +72,7 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(wipRevision));
 			}
 
-			ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(wipRevision.Id);
+			ICollection<FileAttachmentRowModelView> fileAttachments = fileAttachmentLoader.GetByRevision(wipRevision.Id);
 
 			foreach (int sectionId in sectionIds)
 			{
@@ -117,7 +116,7 @@ namespace IES.ActionLogic.ControllerLogic
 
 			foreach (SectionModelView section in sections)
 			{
-				this.ValidateSection(section, validationErrors, casbSections, nonComplianceSections);
+				ValidateSection(section, validationErrors, casbSections, nonComplianceSections);
 			}
 
 			if (casbSections.Count != 1)
@@ -171,7 +170,7 @@ namespace IES.ActionLogic.ControllerLogic
 						numAddressInSection++;
 					}
 
-					this.ValidateSection(child, validationErrors, casbSections, nonComplianceSections);  // recursively validate children
+					ValidateSection(child, validationErrors, casbSections, nonComplianceSections);  // recursively validate children
 				}
 
 				if (numTablesInSection > 1)
