@@ -11,6 +11,7 @@ namespace IES.Common.Core.Services
 	using System.Collections.ObjectModel;
 	using System.DirectoryServices;
 	using System.Linq;
+	using System.Security.AccessControl;
 	using System.Security.Principal;
 	using System.Text;
 	using System.Threading;
@@ -924,6 +925,47 @@ namespace IES.Common.Core.Services
 					IsUsPerson = GetPropertyValue("lmcUSAPersonIndicator", adproperties) == "Y",
 					IsSubcontractor = GetPropertyValue("employeeType", adproperties) != "E"
 				});
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets the authorization groups from web configuration.
+		/// </summary>
+		/// <returns>A list of AD groups from web.config that are authorized to use the application.</returns>
+		public ICollection<GroupData> GetAuthorizationGroupsFromWebConfig()
+		{
+			throw new NotImplementedException();
+
+			// TODO: reconfigure to work with IConfiguration, TFS deployment will have to override appsettings.json
+			//ICollection<GroupData> groups = new List<GroupData>();
+
+			//AuthorizationSection section = (AuthorizationSection)WebConfigurationManager.GetSection("system.web/authorization");
+			//StringCollection approvedADGroups = section.Rules.OfType<AuthorizationRule>().Where(r => r.Action == AuthorizationRuleAction.Allow).Select(r => r.Roles).First();
+
+			//foreach (string group in approvedADGroups)
+			//{
+			//	string[] splitGroup = group.Trim().Split('\\'); //split group into domain [0] and name [1] strings
+
+			//	groups.Add(new GroupData() { Ntid = splitGroup[1] });
+			//}
+
+			//return groups;
+		}
+
+		/// <summary>
+		/// Gets accounts that should not be updated during an AD sync
+		/// </summary>
+		/// <returns>List of NTIDs</returns>
+		public ICollection<string> GetNoADSyncAccountsFromWebConfig()
+		{
+			List<string> result = new();
+			string value = ConfigurationUtilities.GetAppSetting("NoADSyncAccounts");
+
+			if (!string.IsNullOrEmpty(value))
+			{
+				result.AddRange(value.Split(',').Select(x => x.Trim()));
 			}
 
 			return result;

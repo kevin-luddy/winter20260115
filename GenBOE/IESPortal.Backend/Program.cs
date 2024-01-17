@@ -12,8 +12,8 @@ using IES.DataBridge.Loaders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-var builder = WebApplication.CreateBuilder(args);
-var config = new ApplicationConfigurationBase();
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+ApplicationConfigurationBase config = new();
 config.ConfigureBasics<Program>(builder, "IESEntities");
 config.AddWindowsAuthentication(builder.Services, builder.Configuration);
 
@@ -39,5 +39,5 @@ builder.Services.AddTransient<ProposalClassLoader>();
 builder.Services.AddTransient<ContractTypeLoader>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-var app = config.ConfigureAppBuilder(builder);
+WebApplication app = config.ConfigureAppBuilder(builder);
 app.Run();
