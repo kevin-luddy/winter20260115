@@ -43,14 +43,14 @@ namespace IES.Common.Core.Exceptions
 
 		public static void ConfigureExceptionHandler(this IApplicationBuilder app)
 		{
-			var loggerFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
-			var logger = loggerFactory.CreateLogger("ExceptionMiddlewareExtensions");
+			ILoggerFactory loggerFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
+			ILogger logger = loggerFactory.CreateLogger("ExceptionMiddlewareExtensions");
 
 			app.UseExceptionHandler(appError =>
 			{
 				appError.Run(async filterContext =>
 				{
-					var contextFeature = filterContext.Features.Get<IExceptionHandlerFeature>();
+					IExceptionHandlerFeature contextFeature = filterContext.Features.Get<IExceptionHandlerFeature>();
 
 					if (filterContext.Request.IsAjaxRequest())
 					{
@@ -156,7 +156,7 @@ namespace IES.Common.Core.Exceptions
 						//contextFeature.ErrorHandled = true;
 						filterContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 						// filterContext.Response.TrySkipIisCustomErrors = true;
-						var statusCodePagesFeature = filterContext.Features.Get<IStatusCodePagesFeature>();
+						IStatusCodePagesFeature statusCodePagesFeature = filterContext.Features.Get<IStatusCodePagesFeature>();
 
 						if (statusCodePagesFeature is not null)
 						{

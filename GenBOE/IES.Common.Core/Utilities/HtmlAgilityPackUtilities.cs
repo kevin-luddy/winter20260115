@@ -111,7 +111,7 @@
 				throw new ArgumentNullException(nameof(nodes));
 			}
 
-			List<ElementValues> results = new List<ElementValues>(nodes.Count);
+			List<ElementValues> results = new(nodes.Count);
 
 			foreach (HtmlNode inputElement in nodes)
 			{
@@ -228,7 +228,7 @@
 				throw new ArgumentNullException(nameof(tableNode));
 			}
 
-			List<string> rowLabels = new List<string>();
+			List<string> rowLabels = new();
 
 			HtmlNodeCollection bodyRowNodes;
 			// get all rows in table
@@ -286,7 +286,7 @@
 				throw new ArgumentNullException(nameof(tableNode));
 			}
 
-			List<string> columnLabels = new List<string>();
+			List<string> columnLabels = new();
 
 			HtmlNodeCollection headerRowNodes;
 			if ((headerRowNodes = tableNode.SelectNodes("./thead/tr")) != null)
@@ -326,11 +326,11 @@
 				throw new ArgumentNullException(nameof(sharedRowLabels));
 			}
 
-			HtmlDocument doc = new HtmlDocument();
+			HtmlDocument doc = new();
 			doc.LoadHtml(pageContent);
 
-			List<ElementValues> results = new List<ElementValues>(0);
-			Dictionary<string, IList<string>> rowLabelsByTable = new Dictionary<string, IList<string>>();
+			List<ElementValues> results = new(0);
+			Dictionary<string, IList<string>> rowLabelsByTable = new();
 
 			HtmlNodeCollection tableNodes;
 			// get all tables
@@ -463,7 +463,7 @@
 		{
 			#region Load the document
 
-			HtmlDocument document = new HtmlDocument();
+			HtmlDocument document = new();
 			document.LoadHtml(html);
 
 			#endregion
@@ -636,7 +636,7 @@
 																	&& x.ChildNodes.Any(z => z.OuterHtml.ToLower().Contains(searchString.ToLower()) && z.Name.ToLower() == "div")
 															).SelectMany(x => x.ChildNodes.Where(z => z.Name.ToLower() == "textarea")).ToList();
 
-			for (int i = 0; i < textAreasToProcess.Count(); i++)
+			for (int i = 0; i < textAreasToProcess.Count; i++)
 			{
 				// Update the parent w/ the Html Decoded contents of the text area. This will set the right value as well as remove the muck that Boe added..
 				textAreasToProcess[i].ParentNode.InnerHtml = HttpUtility.HtmlDecode(textAreasToProcess[i].InnerHtml);
@@ -756,7 +756,7 @@
 
 					if (scrubbed)
 					{
-						System.Text.StringBuilder sb = new System.Text.StringBuilder();
+						System.Text.StringBuilder sb = new();
 
 						foreach (string scrubbedEntry in scrubbedStyleEntries)
 						{
@@ -778,7 +778,7 @@
 
 		private static string ReplaceStyleValues(FourStyleValues styleValues)
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			System.Text.StringBuilder sb = new();
 
 			const string STYLE_ATTR_FORMAT = "{0}:{1};";
 
@@ -811,7 +811,7 @@
 
 		private static FourStyleValues InterpretStyleValues(string[] styleValues)
 		{
-			FourStyleValues result = new FourStyleValues
+			FourStyleValues result = new()
 			{
 				Name = styleValues[0]
 			};
@@ -876,7 +876,7 @@
 
 		internal static HtmlNodeCollection GetAllNodes(HtmlDocument document)
 		{
-			HtmlNodeCollection allNodes = new HtmlNodeCollection(document.DocumentNode);
+			HtmlNodeCollection allNodes = new(document.DocumentNode);
 
 			GetAllNodes(document.DocumentNode.ChildNodes, allNodes);
 

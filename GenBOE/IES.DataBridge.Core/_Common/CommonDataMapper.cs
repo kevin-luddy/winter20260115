@@ -54,7 +54,7 @@ namespace IES.DataBridge.Common
         /// <returns>Resource Class options list.</returns>
         public ICollection<OptionModelView> GetResourceClassOptions(int revisionId)
         {
-            GetResourceClassOptionsDelegate resourceClassDelegate = new GetResourceClassOptionsDelegate(this.rateDetailLoader.GetResourceClassOptions);
+            GetResourceClassOptionsDelegate resourceClassDelegate = new(this.rateDetailLoader.GetResourceClassOptions);
             object toReturn = this.cacheDataLoader.GetData(resourceClassDelegate, new object[] { revisionId }, CacheConstants.RESOURCE_CLASS_TYPE, false);
             return toReturn as ICollection<OptionModelView>;
         }

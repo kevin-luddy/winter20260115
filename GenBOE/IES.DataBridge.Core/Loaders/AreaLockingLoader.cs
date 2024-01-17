@@ -38,7 +38,7 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// An object for locking items while modifying cache
         /// </summary>
-        private static readonly object LockObject = new object();
+        private static readonly object LockObject = new();
 
         /// <summary>
         /// Constructor

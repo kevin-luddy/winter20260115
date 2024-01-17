@@ -69,7 +69,7 @@ namespace IES.Common.Core.Models
 		{
 			IList<T> results = new List<T>();
 
-			Stack<T> stack = new Stack<T>();
+			Stack<T> stack = new();
 
 			ICollection<T> vertices = new List<T>();
 			foreach (T key in visited.Keys)

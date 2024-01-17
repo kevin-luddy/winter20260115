@@ -202,7 +202,7 @@ namespace IES.Common.Core.Security
 				}
 
 				string[] splitDomainAndNTID = ActiveUserNTIDWithDomain.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
-				string ntIDOnly = splitDomainAndNTID.Count() == 2 ? splitDomainAndNTID[1] : splitDomainAndNTID[0];
+				string ntIDOnly = splitDomainAndNTID.Length == 2 ? splitDomainAndNTID[1] : splitDomainAndNTID[0];
 
 				return ntIDOnly.ToLower();
 			}
@@ -237,7 +237,7 @@ namespace IES.Common.Core.Security
 			{
 				return "<none>";
 			}
-			var toReturn = from role in inRoles select role.ToString();
+			IEnumerable<string> toReturn = from role in inRoles select role.ToString();
 
 			return string.Join(",", toReturn.ToArray());
 		}
@@ -480,13 +480,13 @@ namespace IES.Common.Core.Security
 			foreach (string item in groupNamesArray)
 			{
 				string[] splitDomainAndGroup = item.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
-				if (splitDomainAndGroup.Count() == 2)
+				if (splitDomainAndGroup.Length == 2)
 				{
 					string groupName = splitDomainAndGroup[1];
 
 					isUserInGroups = _ADUtils.IsMemberOfADGroup(inUserName.ToLower(), groupName.ToLower());
 				}
-				else if (splitDomainAndGroup.Count() == 1)
+				else if (splitDomainAndGroup.Length == 1)
 				{   // Group name only (no domain specified)
 					// lookup the group domain
 					string groupName = splitDomainAndGroup[0];

@@ -73,7 +73,7 @@ namespace IES.Common.Core.Loaders
 
 			int? result = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				if (dtoToSave.Updateable == UpdateType.Deleted)
 				{
@@ -110,7 +110,7 @@ namespace IES.Common.Core.Loaders
 				throw new ArgumentNullException(nameof(dtosToSave));
 			}
 
-			Dictionary<int, int> toReturn = new Dictionary<int, int>();
+			Dictionary<int, int> toReturn = new();
 
 			foreach (TDtoType dto in dtosToSave)
 			{

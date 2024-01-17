@@ -60,7 +60,7 @@ namespace IES.Common.Core.OfficeUtilities
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		public MemoryStream UpdateDocumentVersion(byte[] fileData, string physicalFilePathCache, ExcelReportTemplate exportFormat)
 		{
-			MemoryStream mem = new MemoryStream();
+			MemoryStream mem = new();
 			lock (CacheConstants.OPEN_XML_LOCK)
 			{
 				byte[] docBytes;

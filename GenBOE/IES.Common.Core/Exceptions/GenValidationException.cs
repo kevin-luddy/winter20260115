@@ -71,7 +71,7 @@ namespace IES.Common.Core.Exceptions
 			: base(message)
 		{
 			ValidationList = new List<ValidationMessage>();
-			ValidationMessage vm = new ValidationMessage(validationMessage);
+			ValidationMessage vm = new(validationMessage);
 			ValidationList.Add(vm);
 		}
 

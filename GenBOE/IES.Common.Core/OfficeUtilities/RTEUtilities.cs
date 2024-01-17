@@ -32,25 +32,25 @@ namespace IES.Common.Core.OfficeUtilities
 
 		// Create static Regex objects.
 		// bold font
-		private static readonly Regex regexStrong = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "strong"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexStrong = new(regexToRemoveEmptyElement.Replace("ELEMENT", "strong"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
 		// italics font
-		private static readonly Regex regexEm = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "em"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexEm = new(regexToRemoveEmptyElement.Replace("ELEMENT", "em"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
 		// subscript
-		private static readonly Regex regexSub = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sub"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexSub = new(regexToRemoveEmptyElement.Replace("ELEMENT", "sub"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
 		// superscript
-		private static readonly Regex regexSup = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sup"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexSup = new(regexToRemoveEmptyElement.Replace("ELEMENT", "sup"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
 		// spans are used when you set either a color or alignment to a partial element (partial line, but also partial "strong" and so on
-		private static readonly Regex regexSpan = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "span"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexSpan = new(regexToRemoveEmptyElement.Replace("ELEMENT", "span"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
 		// every line is wrapped in a paragraph, so empty lines will be always wrapped in this; putting it at the end, to have this go last, for efficiency
-		private static readonly Regex regexP = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "p"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexP = new(regexToRemoveEmptyElement.Replace("ELEMENT", "p"), RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
 		// next we need to remove text that starts w/ a "mso-" above and ends with ";" - this is Microsoft-specific formatting.
-		private static readonly Regex regexMicrosoft = new Regex("( ){0,1}mso-[A-Za-z0-9:.% #='?-]*;", RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexMicrosoft = new("( ){0,1}mso-[A-Za-z0-9:.% #='?-]*;", RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
 
 		#region These are used in Excel, when we need to display just text, and no other markup or images
 
@@ -67,20 +67,20 @@ namespace IES.Common.Core.OfficeUtilities
 				throw new ArgumentNullException(nameof(htmlToProcess));
 			}
 
-			List<string> plainTextFromHtml = new List<string>();
+			List<string> plainTextFromHtml = new();
 
 			if (htmlToProcess.Any())
 			{
 				lock (CacheConstants.OPEN_XML_LOCK)
 				{
-					using (MemoryStream ms = new MemoryStream())
+					using (MemoryStream ms = new())
 					{
 						using (WordprocessingDocument document = WordprocessingDocument.Create(ms, WordprocessingDocumentType.Document))
 						{
 							document.AddMainDocumentPart();
 
-							HtmlConverter converter = new HtmlConverter(document.MainDocumentPart);
-							StringBuilder temp = new StringBuilder();
+							HtmlConverter converter = new(document.MainDocumentPart);
+							StringBuilder temp = new();
 
 							foreach (string html in htmlToProcess)
 							{
@@ -100,7 +100,7 @@ namespace IES.Common.Core.OfficeUtilities
                                      * As a work-around remedy, just strip out the markup tags here and returning the raw text.
                                      * 
                                      */
-									HtmlDocument htmldoc = new HtmlDocument();
+									HtmlDocument htmldoc = new();
 									htmldoc.LoadHtml(html);
 									paragraphs = converter.Parse(htmldoc.DocumentNode.InnerText);
 								}
@@ -217,7 +217,7 @@ namespace IES.Common.Core.OfficeUtilities
 			if (!string.IsNullOrEmpty(htmlFormattedText))
 			{
 				// Build comparers for all of the html elements - built from static Regex objects for performance reasons.
-				List<Regex> comparers = new List<Regex>();
+				List<Regex> comparers = new();
 				comparers.Add(regexStrong);
 				comparers.Add(regexEm);
 				comparers.Add(regexSub);
@@ -277,7 +277,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <returns>Mhtml formatted string</returns>
 		internal static string ConvertHtmlToMhtml(string htmlContent, decimal? desiredFontSize, ICollection<string> desiredFontFamilies, SpacingDetailsForRTEWordExports paragraphSpacing)
 		{
-			using (StringWriter writer = new StringWriter())
+			using (StringWriter writer = new())
 
 			{
 
@@ -386,7 +386,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <returns>A collection of images ready for further processing</returns>
 		private static ICollection<ImageDataForMhtml> ProcessImagesForMhtml(TextWriter writer, string html)
 		{
-			var imagesForProcessing = new List<ImageDataForMhtml>();
+			List<ImageDataForMhtml> imagesForProcessing = new();
 
 			// here is a sample of a base64 encoded image
 			// <img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==\" alt=\"Red dot\" >
@@ -405,7 +405,7 @@ namespace IES.Common.Core.OfficeUtilities
 			int imageStartIndex;
 			int imageCounter = 0;
 
-			var compare = CultureInfo.CurrentCulture.CompareInfo;
+			CompareInfo compare = CultureInfo.CurrentCulture.CompareInfo;
 
 			// continue while there is another image
 			while ((imageStartIndex = compare.IndexOf(html, IMAGE_TAG_START, searchStartIndex, CompareOptions.IgnoreCase)) >= 0)
@@ -436,7 +436,7 @@ namespace IES.Common.Core.OfficeUtilities
 
 				// extract the image data and add to list
 				string imageData = html.Substring(imgDataStartIndex, imgDataEndIndex - imgDataStartIndex);
-				ImageDataForMhtml newImage = new ImageDataForMhtml() { ImageNumber = imageCounter++, ImageType = imageType, Base64EncodingOfImage = imageData };
+				ImageDataForMhtml newImage = new() { ImageNumber = imageCounter++, ImageType = imageType, Base64EncodingOfImage = imageData };
 				imagesForProcessing.Add(newImage);
 
 				// Now we need to tear out the base64 image information & replace it with a fake location.. ( | is used to show boundaries)
@@ -563,7 +563,7 @@ namespace IES.Common.Core.OfficeUtilities
 			string belowSpacing = GetValueFromXml(innerXml.Replace(" ", string.Empty), "w:after=\"", "\"");
 			string lineIndent = GetValueFromXml(innerXml.Replace(" ", string.Empty), "w:firstLine=\"", "\"");
 
-			SpacingDetailsForRTEWordExports spacingOptions = new SpacingDetailsForRTEWordExports();
+			SpacingDetailsForRTEWordExports spacingOptions = new();
 
 			int value;
 			if (int.TryParse(aboveSpacing, out value)) { spacingOptions.Above = value; }

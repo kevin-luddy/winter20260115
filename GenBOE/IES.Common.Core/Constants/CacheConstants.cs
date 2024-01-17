@@ -3,7 +3,7 @@
 	static public class CacheConstants
 	{
 		// Shared OpenXml lock
-		readonly static public object OPEN_XML_LOCK = new object();
+		readonly static public object OPEN_XML_LOCK = new();
 
 		// Security
 		readonly static public string SECURITY_PERMISSIONS_BY_USERID = "Permissions_By_UserId".ToLower();

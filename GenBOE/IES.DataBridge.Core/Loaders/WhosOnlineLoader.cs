@@ -48,10 +48,10 @@ namespace IES.DataBridge.Loaders
 				throw new ArgumentNullException(nameof(userData));
 			}
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.log))
+			using (StopwatchTimer sw = new(this.log))
 			{
 				// Upsert SP
-				using (IESEntities iesEntities = new IESEntities())
+				using (IESEntities iesEntities = new())
 				{
 					iesEntities.upsertUserLog(userData.Ntid, userData.DisplayName, applicationName);
 				} // end using iesEntities
@@ -67,9 +67,9 @@ namespace IES.DataBridge.Loaders
 		{
 			ICollection<WhosOnlineModelView> toReturn = new Collection<WhosOnlineModelView>();
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.log))
+			using (StopwatchTimer sw = new(this.log))
 			{
-				using (IESEntities iesEntities = new IESEntities())
+				using (IESEntities iesEntities = new())
 				{
 					// Get up to 30 most recent users
 					Collection<UserLog> users = (from allUsers in iesEntities.UserLogs

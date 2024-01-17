@@ -66,7 +66,7 @@ namespace IES.Common.Core.Configuration
 				throw new ArgumentNullException(nameof(section));
 			}
 
-			SystemConfigurationSection configuration = new SystemConfigurationSection();
+			SystemConfigurationSection configuration = new();
 
 			foreach (XmlNode companyConfigurationNode in section.ChildNodes)
 			{
@@ -74,7 +74,7 @@ namespace IES.Common.Core.Configuration
 				{
 					CompanyConfiguration company = GetAttributeValue(companyConfigurationNode, "company").GetEnumeratedValue<CompanyConfiguration>(CompanyConfiguration.None);
 
-					CompanyConfigurationSection companyConfiguration = new CompanyConfigurationSection(company);
+					CompanyConfigurationSection companyConfiguration = new(company);
 
 					foreach (XmlNode companySettingNode in companyConfigurationNode.ChildNodes)
 					{
@@ -99,7 +99,7 @@ namespace IES.Common.Core.Configuration
 								{
 									if (connectionStringNode.NodeType == XmlNodeType.Element && connectionStringNode.Name == "add")
 									{
-										ConnectionStringSettings connectionString = new ConnectionStringSettings();
+										ConnectionStringSettings connectionString = new();
 
 										connectionString.Name = GetAttributeValue(connectionStringNode, "name");
 										connectionString.ConnectionString = GetAttributeValue(connectionStringNode, "connectionString");

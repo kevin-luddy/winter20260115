@@ -22,7 +22,7 @@ namespace IES.Common.Core
 		/// <returns>An Xml String.</returns>
 		public static string ToXmlString<T>(this T input)
 		{
-			using (var writer = new StringWriter())
+			using (StringWriter writer = new())
 			{
 				input.ToXml(writer);
 				return writer.ToString();

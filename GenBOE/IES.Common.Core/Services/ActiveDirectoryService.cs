@@ -30,11 +30,6 @@ namespace IES.Common.Core.Services
 	public class ActiveDirectoryService : IActiveDirectoryService
 	{
 		/// <summary>
-		/// Concurrent bag for locking
-		/// </summary>
-		private static readonly ConcurrentDictionary<string, Task> _locker = new ConcurrentDictionary<string, Task>();
-
-		/// <summary>
 		/// declare private instance so we can cache returns from AD for a brief period of time
 		/// </summary>
 		private readonly ICacheService cache;
@@ -113,13 +108,13 @@ namespace IES.Common.Core.Services
 				// Try to query AD to get the user data.
 				int tries = 0;
 				bool finished = false;
-				using (StopwatchTimer sw = new StopwatchTimer(log, "GetUserByQualifiedAccount"))
+				using (StopwatchTimer sw = new(log, "GetUserByQualifiedAccount"))
 				{
 					while (++tries < MAX_AD_TRIES && !string.IsNullOrEmpty(inNtid))
 					{
 						try
 						{
-							using (DirectoryEntry directoryEntry = new DirectoryEntry(activeDirectoryPath))
+							using (DirectoryEntry directoryEntry = new(activeDirectoryPath))
 							{
 								directoryEntry.AuthenticationType = AuthenticationTypes.Secure;
 
@@ -129,7 +124,7 @@ namespace IES.Common.Core.Services
 									filter = string.Format("(&(objectClass=group)(|(cn=" + inNtid + ")(dn=" + inNtid + ")(samAccountName=" + inNtid + ")))");
 								}
 
-								using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
+								using (DirectorySearcher ds = new(directoryEntry, filter))
 								{
 									if (isGroup)
 									{
@@ -256,16 +251,16 @@ namespace IES.Common.Core.Services
 				{
 					if (!cache.Contains(cacheKey))
 					{
-						Dictionary<string, GroupData> distinctGroups = new Dictionary<string, GroupData>();
+						Dictionary<string, GroupData> distinctGroups = new();
 
-						using (StopwatchTimer sw = new StopwatchTimer(log, "Retrieve AD groups for user"))
+						using (StopwatchTimer sw = new(log, "Retrieve AD groups for user"))
 						{
-							using (DirectoryEntry domainConnection = new DirectoryEntry(activeDirectoryPath))
+							using (DirectoryEntry domainConnection = new(activeDirectoryPath))
 							{
 								domainConnection.AuthenticationType = AuthenticationTypes.Secure;
 
 								// token Group searcher
-								using (DirectorySearcher ds = new DirectorySearcher(domainConnection, string.Format("(&(objectClass=user)(samAccountName={0}))", inNtid)))
+								using (DirectorySearcher ds = new(domainConnection, string.Format("(&(objectClass=user)(samAccountName={0}))", inNtid)))
 								{
 									if (CLIENT_TIMEOUT_SECONDS > 0)
 									{
@@ -280,19 +275,19 @@ namespace IES.Common.Core.Services
 										DirectoryEntry theUser = samResult.GetDirectoryEntry();
 										theUser.RefreshCache(new string[] { "tokenGroups" });
 
-										StringBuilder filterStringBuilder = new StringBuilder();
+										StringBuilder filterStringBuilder = new();
 
 										// Just create a single LDAP query for all user SIDs
 										filterStringBuilder.Append("(&(objectCategory=group)(|");
 										foreach (byte[] resultBytes in theUser.Properties["tokenGroups"])
 										{
-											SecurityIdentifier sid = new SecurityIdentifier(resultBytes, 0);
+											SecurityIdentifier sid = new(resultBytes, 0);
 											filterStringBuilder.AppendFormat("({0}={1})", "objectSid", sid.Value);
 										}
 
 										filterStringBuilder.Append("))");
 
-										using (DirectorySearcher searcher = new DirectorySearcher(domainConnection, filterStringBuilder.ToString()))
+										using (DirectorySearcher searcher = new(domainConnection, filterStringBuilder.ToString()))
 										{
 											if (CLIENT_TIMEOUT_SECONDS > 0)
 											{
@@ -312,7 +307,7 @@ namespace IES.Common.Core.Services
 
 											foreach (SearchResult searchResult in results)
 											{
-												var groupData = new GroupData()
+												GroupData groupData = new()
 												{
 													DisplayName = searchResult.Properties["name"][0].ToString(),
 													Ntid = searchResult.Properties["sAMAccountName"][0].ToString()
@@ -349,7 +344,7 @@ namespace IES.Common.Core.Services
 		{
 			List<string> groupNames = groups != null ? groups.Select(x => x.Ntid).ToList() : new List<string>();
 			groupNames.Add(ntid);
-			XElement xml = new XElement("ROOT");
+			XElement xml = new("ROOT");
 			foreach (string groupName in groupNames)
 			{
 				xml.Add(new XElement("id", groupName));
@@ -369,9 +364,9 @@ namespace IES.Common.Core.Services
 			ReturnType returnType, string objectName)
 		{
 			string distinguishedName = string.Empty;
-			using (DirectoryEntry entry = new DirectoryEntry(activeDirectoryPath))
+			using (DirectoryEntry entry = new(activeDirectoryPath))
 			{
-				using (DirectorySearcher mySearcher = new DirectorySearcher(entry))
+				using (DirectorySearcher mySearcher = new(entry))
 				{
 					if (CLIENT_TIMEOUT_SECONDS > 0)
 					{
@@ -464,19 +459,19 @@ namespace IES.Common.Core.Services
 
 			int tries = 0;
 			bool finished = false;
-			using (StopwatchTimer sw = new StopwatchTimer(log, "IsValidADGroup"))
+			using (StopwatchTimer sw = new(log, "IsValidADGroup"))
 			{
 				while (++tries < MAX_AD_TRIES)
 				{
 					try
 					{
-						using (DirectoryEntry directoryEntry = new DirectoryEntry(activeDirectoryPath))
+						using (DirectoryEntry directoryEntry = new(activeDirectoryPath))
 						{
 							directoryEntry.AuthenticationType = AuthenticationTypes.Secure;
 
 							string filter = string.Format("(&(objectClass=group)(|(cn=" + inGroupName + ")(dn=" + inGroupName + ")(samAccountName=" + inGroupName + ")))");
 
-							using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
+							using (DirectorySearcher ds = new(directoryEntry, filter))
 							{
 								SearchResult searchResult = ds.FindOne();
 
@@ -586,20 +581,20 @@ namespace IES.Common.Core.Services
 				int tries = 0;
 				bool groupNotFound = true;
 				bool allUsersAdded = false;
-				using (StopwatchTimer sw = new StopwatchTimer(log, "GetAdGroupUsers"))
+				using (StopwatchTimer sw = new(log, "GetAdGroupUsers"))
 				{
 					while (++tries < MAX_AD_TRIES)
 					{
 						try
 						{
 
-							var groupDN = GetObjectDistinguishedName(ObjectClass.group, ReturnType.distinguishedName, inGroupName);
+							string groupDN = GetObjectDistinguishedName(ObjectClass.group, ReturnType.distinguishedName, inGroupName);
 
 							groupNotFound = false;
 
-							using (var root = new DirectoryEntry(activeDirectoryPath))
+							using (DirectoryEntry root = new(activeDirectoryPath))
 							{
-								var attributesToLoad = new[]
+								string[] attributesToLoad = new[]
 									{
 								"displayname",
 								"distinguishedname",
@@ -619,9 +614,9 @@ namespace IES.Common.Core.Services
 								"employeeType"
 							};
 
-								var distinguishedNameWithoutLDAPPrefix = groupDN.Remove(0, 7);
-								var searchFilter = "(memberOf=" + distinguishedNameWithoutLDAPPrefix + ")";
-								using (var searcher = new DirectorySearcher(root, searchFilter, attributesToLoad))
+								string distinguishedNameWithoutLDAPPrefix = groupDN.Remove(0, 7);
+								string searchFilter = "(memberOf=" + distinguishedNameWithoutLDAPPrefix + ")";
+								using (DirectorySearcher searcher = new(root, searchFilter, attributesToLoad))
 								{
 									searcher.PageSize = 1000; // Very important to have it here. Otherwise you'll get only 1000 at all. Please refer to DirectorySearcher documentation
 
@@ -630,7 +625,7 @@ namespace IES.Common.Core.Services
 										searcher.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
 									}
 
-									var results = searcher.FindAll();
+									SearchResultCollection results = searcher.FindAll();
 
 									userNames = (from SearchResult user in results
 												 select new UserData()
@@ -698,7 +693,7 @@ namespace IES.Common.Core.Services
 		/// <returns>Dictionary (indexed by user account name) of dictionaries (indexed by property name)</returns>
 		private Dictionary<string, Dictionary<string, string>> GetActiveDirectoryProperties(SearchResultCollection results, string[] propertyNames)
 		{
-			Dictionary<string, Dictionary<string, string>> propertiesByUser = new Dictionary<string, Dictionary<string, string>>();
+			Dictionary<string, Dictionary<string, string>> propertiesByUser = new();
 
 			foreach (SearchResult res in results)
 			{
@@ -717,7 +712,7 @@ namespace IES.Common.Core.Services
 		/// <returns>Dictionary (indexed by property name)</returns>
 		private Dictionary<string, string> GetActiveDirectoryProperties(SearchResult ad, string[] propertyNames)
 		{
-			Dictionary<string, string> properties = new Dictionary<string, string>();
+			Dictionary<string, string> properties = new();
 
 			foreach (string propertyName in propertyNames)
 			{
@@ -748,11 +743,11 @@ namespace IES.Common.Core.Services
 			}
 			else
 			{
-				using (StopwatchTimer sw = new StopwatchTimer(log, "FindMatchingUsers"))
+				using (StopwatchTimer sw = new(log, "FindMatchingUsers"))
 				{
-					using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(activeDirectoryPath))
+					using (DirectoryEntry activeDirectoryRoot = new(activeDirectoryPath))
 					{
-						using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=person)", propertiesToLoad))
+						using (DirectorySearcher search = new(activeDirectoryRoot, "(objectCategory=person)", propertiesToLoad))
 						{
 							if (CLIENT_TIMEOUT_SECONDS > 0)
 							{
@@ -800,11 +795,11 @@ namespace IES.Common.Core.Services
 			}
 			else
 			{
-				using (StopwatchTimer sw = new StopwatchTimer(log, "FindMatchingGroups"))
+				using (StopwatchTimer sw = new(log, "FindMatchingGroups"))
 				{
-					using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(activeDirectoryPath))
+					using (DirectoryEntry activeDirectoryRoot = new(activeDirectoryPath))
 					{
-						using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=group)"))
+						using (DirectorySearcher search = new(activeDirectoryRoot, "(objectCategory=group)"))
 						{
 							// TODO This code is only used in PTM, if we do use it in the future in genBOE then test out the performance fix below
 							// search.PropertyNamesOnly = true;
@@ -848,7 +843,7 @@ namespace IES.Common.Core.Services
 				throw new ArgumentException("A 'Search By' of 'User account' may not be used with a 'Search Type' of 'Contains'.  Please choose a different combination.");
 			}
 
-			List<UserData> results = new List<UserData>();
+			List<UserData> results = new();
 
 			if (!string.IsNullOrEmpty(userSearchString))
 			{
@@ -903,7 +898,7 @@ namespace IES.Common.Core.Services
 		/// <returns>Corresponding User Data</returns>
 		private List<UserData> CreateUserDtosFromAdData(string[] propertyNames, SearchResultCollection matchSet, bool isUserNotGroup)
 		{
-			List<UserData> result = new List<UserData>();
+			List<UserData> result = new();
 
 			Dictionary<string, Dictionary<string, string>> propertiesByUser = GetActiveDirectoryProperties(matchSet, propertyNames);
 
@@ -1000,9 +995,9 @@ namespace IES.Common.Core.Services
 			if (string.IsNullOrEmpty(unsafeInput)) { return string.Empty; }
 
 			// besides letters and numbers, we also allow a space, a period, a comma, an appostrophy a dash and a slash (when domains are included)
-			List<char> allowedSpecialChars = new List<char>() { ' ', '.', ',', '\'', '-', '\\' };
+			List<char> allowedSpecialChars = new() { ' ', '.', ',', '\'', '-', '\\' };
 
-			string result = new string(unsafeInput.Where(x => char.IsLetterOrDigit(x) || allowedSpecialChars.Contains(x)).ToArray());
+			string result = new(unsafeInput.Where(x => char.IsLetterOrDigit(x) || allowedSpecialChars.Contains(x)).ToArray());
 
 			return result;
 		}

@@ -67,7 +67,7 @@ namespace IES.DataBridge.Loaders
         {
             DocumentDetailModelView toReturn = null;
 
-            using (IESEntities context = new IESEntities())
+            using (IESEntities context = new())
             {
                 {
                     // ToCollection doesn't work in the linq statement, so the result needs to be stored in an anonymous type and then converted to the MV 
@@ -128,9 +128,9 @@ namespace IES.DataBridge.Loaders
             int? result;
 
             // Upsert to RDSBDocumentInformation
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     result = context.upsertRDSBDocumentInformation(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalId, dtoToUpsert.DocumentCreatedBy, dtoToUpsert.SelectedRevisionId, dtoToUpsert.StartYear, dtoToUpsert.EndYear, dtoToUpsert.ParentSection).First();
                 }

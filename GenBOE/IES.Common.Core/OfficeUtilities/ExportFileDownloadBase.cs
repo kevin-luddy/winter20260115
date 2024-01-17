@@ -48,11 +48,6 @@ namespace IES.Common.Core.OfficeUtilities
 		protected const string ContentType_JSON = "application/json";
 
 		/// <summary>
-		/// Create static Regex object for FileDownload.
-		/// </summary>
-		private static readonly Regex regexFileDownload = new Regex("[\\\\/:\\*\\?\"<>\\|, ]", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
-
-		/// <summary>
 		/// Gets the content type based on the filename
 		/// </summary>
 		/// <param name="fileName">File to get content type against</param>

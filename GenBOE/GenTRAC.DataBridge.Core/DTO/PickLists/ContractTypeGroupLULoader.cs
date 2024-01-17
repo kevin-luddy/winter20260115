@@ -34,9 +34,9 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 		{
 			ICollection<PickListDto> result = new List<PickListDto>();
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					result = dbModel.ContractTypeGroupLUs.Select(x => new PickListDto()
 					{
@@ -60,11 +60,11 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ContractTypeGroupLULoader.Upsert", Log))
+			using (StopwatchTimer sw = new("ContractTypeGroupLULoader.Upsert", Log))
 			{
 				if (dtoToUpsert != null)
 				{
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						string text = dtoToUpsert.Text;
 
@@ -91,13 +91,13 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ContractTypeGroupLULoader.Delete", Log))
+			using (StopwatchTimer sw = new("ContractTypeGroupLULoader.Delete", Log))
 			{
 				if (dtoToDelete != null && !dtoToDelete.InUse)
 				{
 					toReturn = dtoToDelete.Id;
 
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						dbModel.deleteContractTypeGroup(dtoToDelete.Id);
 					}

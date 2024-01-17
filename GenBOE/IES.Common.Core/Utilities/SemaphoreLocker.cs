@@ -2,11 +2,11 @@
 {
 	public class SemaphoreLocker
 	{
-		private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+		private readonly SemaphoreSlim _semaphore = new(1, 1);
 
 		public async Task LockAsync(Func<Task> worker)
 		{
-			var isTaken = false;
+			bool isTaken = false;
 			try
 			{
 				do
@@ -34,7 +34,7 @@
 		// overloading variant for non-void methods with return type (generic T)
 		public async Task<T> LockAsync<T>(Func<Task<T>> worker)
 		{
-			var isTaken = false;
+			bool isTaken = false;
 			try
 			{
 				do

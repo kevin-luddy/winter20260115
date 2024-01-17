@@ -43,9 +43,9 @@ namespace IES.DataBridge.Loaders
         {
             ICollection<RateConfigModelView> rateConfigs;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     rateConfigs = context.RateConfigs
                     .Select(r =>

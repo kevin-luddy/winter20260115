@@ -79,7 +79,7 @@ namespace IES.Common.Core.Loaders
 			}
 
 			object toReturn = null;
-			using (StopwatchTimer sw = new StopwatchTimer(string.Format("NonCache GetData with delegate {0} and key {1}", inLoaderMethod.ToString(), inKeyForCache), _log))
+			using (StopwatchTimer sw = new(string.Format("NonCache GetData with delegate {0} and key {1}", inLoaderMethod.ToString(), inKeyForCache), _log))
 			{
 				toReturn = inLoaderMethod.DynamicInvoke(inLoadMethodParams);
 
@@ -132,9 +132,9 @@ namespace IES.Common.Core.Loaders
 				throw new ArgumentNullException(nameof(inCacheKeyToIDDictionary));
 			}
 
-			Collection<object> toReturn = new Collection<object>();
+			Collection<object> toReturn = new();
 
-			Collection<int> delegateParams = new Collection<int>();
+			Collection<int> delegateParams = new();
 			foreach (KeyValuePair<string, int> potentiallyCachedObject in inCacheKeyToIDDictionary)
 			{
 				delegateParams.Add(potentiallyCachedObject.Value);
@@ -231,8 +231,8 @@ namespace IES.Common.Core.Loaders
 				throw new ArgumentNullException(nameof(inCacheKeyToIDDictionary), "Dictionary passed to CacheDataLoader GetData method is null");
 			}
 
-			Collection<object> toReturn = new Collection<object>();
-			Collection<int> delegateParams = new Collection<int>();
+			Collection<object> toReturn = new();
+			Collection<int> delegateParams = new();
 
 			foreach (KeyValuePair<string, int> potentiallyCachedObject in inCacheKeyToIDDictionary)
 			{

@@ -154,7 +154,7 @@ namespace IES.Common.Core.Utilities
 				msin.Position = 0;
 
 				// convert to a bitmap image
-				using (Bitmap bmp = new Bitmap(Image.FromStream(msin)))
+				using (Bitmap bmp = new(Image.FromStream(msin)))
 				{
 					msout = new MemoryStream();
 					msout.Position = 0;
@@ -281,7 +281,7 @@ namespace IES.Common.Core.Utilities
 		{
 			byte[] totalImageBytes;
 
-			using (WebClient webClient = new WebClient())
+			using (WebClient webClient = new())
 			{
 				webClient.Proxy = new WebProxy(proxy);
 				webClient.UseDefaultCredentials = false;
@@ -313,7 +313,7 @@ namespace IES.Common.Core.Utilities
 
 			string convertedHtml = html;  // initialize
 
-			HtmlDocument document = new HtmlDocument();
+			HtmlDocument document = new();
 			document.LoadHtml(html);
 
 			HtmlNodeCollection nodes;
@@ -325,7 +325,7 @@ namespace IES.Common.Core.Utilities
 				{
 					IList<HtmlAttribute> attributesToRemove = new List<HtmlAttribute>();
 
-					EmailImageInfo imageInfo = new EmailImageInfo();
+					EmailImageInfo imageInfo = new();
 
 					foreach (HtmlAttribute attribute in imgNode.Attributes)
 					{

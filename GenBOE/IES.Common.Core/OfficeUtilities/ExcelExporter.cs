@@ -110,7 +110,7 @@ namespace IES.Common.Core.OfficeUtilities
 				toReturn = templateFileLocation;
 
 				// Make sure that the copied template is writable
-				FileInfo copiedFileInfo = new FileInfo(toReturn);
+				FileInfo copiedFileInfo = new(toReturn);
 				if (copiedFileInfo.IsReadOnly)
 				{
 					throw new ArgumentException($"The specified template file '{templateFileLocation}' is read-only. Please set the duplicateTemplateFile parameter to true to make a copy of the template, or pass in the name of an already-copied and writable template file.");
@@ -151,7 +151,7 @@ namespace IES.Common.Core.OfficeUtilities
 			// open a copy of the Excel template file into memory
 			byte[] byteArray = File.ReadAllBytes(templateFileLocation);
 
-			using (MemoryStream memory = new MemoryStream())
+			using (MemoryStream memory = new())
 			{
 				// synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
 				lock (CacheConstants.OPEN_XML_LOCK)
@@ -213,7 +213,7 @@ namespace IES.Common.Core.OfficeUtilities
 			// If we found the worksheet, let's move on. Otherwise bomb out.
 			if (worksheetPart != null)
 			{
-				Dictionary<uint, uint> columnStyles = new Dictionary<uint, uint>();
+				Dictionary<uint, uint> columnStyles = new();
 				foreach (Column column in worksheetPart.Worksheet.Descendants<Column>())
 				{
 					if (column.Min.HasValue && column.Style != null && column.Style.HasValue)
@@ -240,14 +240,14 @@ namespace IES.Common.Core.OfficeUtilities
 					rowIndex = (int)startRow;
 				}
 
-				var originalRows = sheetData.Descendants<Row>().ToList();
+				List<Row> originalRows = sheetData.Descendants<Row>().ToList();
 
 				// Iterate over rows of data and append each as an Excel Row object
 				foreach (ICollection<string> row in worksheetData)
 				{
-					var originalRow = originalRows.FirstOrDefault(r => r.RowIndex == rowIndex);
+					Row originalRow = originalRows.FirstOrDefault(r => r.RowIndex == rowIndex);
 
-					var newRow = ExcelUtilities.CreateExcelContentRow(document, rowIndex, columnStyles, originalRow, row.ToArray());
+					Row newRow = ExcelUtilities.CreateExcelContentRow(document, rowIndex, columnStyles, originalRow, row.ToArray());
 
 					if (originalRow != null)
 					{
@@ -280,7 +280,7 @@ namespace IES.Common.Core.OfficeUtilities
 			if (worksheetPart != null)
 			{
 				SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-				var allRows = sheetData.Descendants<Row>().ToList();
+				List<Row> allRows = sheetData.Descendants<Row>().ToList();
 
 				uint rowIndex = startRow;
 
@@ -422,12 +422,12 @@ namespace IES.Common.Core.OfficeUtilities
 			{
 				throw new ArgumentNullException(nameof(worksheetPart));
 			}
-			DataValidations dataValidations = new DataValidations() { Count = Convert.ToUInt32(dataValidationReferences.Count) };
+			DataValidations dataValidations = new() { Count = Convert.ToUInt32(dataValidationReferences.Count) };
 
 			// Add data validations for each defined name
 			foreach (KeyValuePair<string, string> dataValidationReference in dataValidationReferences)
 			{
-				DataValidation dataValidation = new DataValidation()
+				DataValidation dataValidation = new()
 				{
 					Type = DataValidationValues.List,
 					AllowBlank = true,
@@ -435,7 +435,7 @@ namespace IES.Common.Core.OfficeUtilities
 					ShowErrorMessage = showErrorMessage,
 					SequenceOfReferences = new ListValue<StringValue>() { InnerText = dataValidationReference.Value.Trim() }
 				};
-				Formula1 formula1 = new Formula1();
+				Formula1 formula1 = new();
 				formula1.Text = dataValidationReference.Key;    // defined name
 				dataValidation.Append(formula1);
 				dataValidations.Append(dataValidation);
@@ -459,7 +459,7 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 			// Add names
 			DefinedNames definedNames = spreadsheet.WorkbookPart.Workbook.GetFirstChild<DefinedNames>();
-			foreach (var newDefinedName in newDefinedNames)
+			foreach (KeyValuePair<string, string> newDefinedName in newDefinedNames)
 			{
 				definedNames.AppendChild(new DefinedName() { Name = newDefinedName.Key, Text = newDefinedName.Value });
 			}

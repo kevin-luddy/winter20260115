@@ -33,9 +33,9 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 		{
 			ICollection<PickListDto> result = new List<PickListDto>();
 
-			using (StopwatchTimer sw = new StopwatchTimer("TypeOfRequestLULoader.GetProposalTypes", Log))
+			using (StopwatchTimer sw = new("TypeOfRequestLULoader.GetProposalTypes", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					result = dbModel.RequestTypeLUs.Select(x => new PickListDto()
 					{
@@ -59,11 +59,11 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("TypeOfRequestLULoader.Upsert", Log))
+			using (StopwatchTimer sw = new("TypeOfRequestLULoader.Upsert", Log))
 			{
 				if (dtoToUpsert != null)
 				{
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						string text = dtoToUpsert.Text;
 
@@ -90,13 +90,13 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("TypeOfRequestLULoader.Delete", Log))
+			using (StopwatchTimer sw = new("TypeOfRequestLULoader.Delete", Log))
 			{
 				if (dtoToDelete != null && !dtoToDelete.InUse)
 				{
 					toReturn = dtoToDelete.Id;
 
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						dbModel.deleteTypeOfRequest(dtoToDelete.Id);
 					}

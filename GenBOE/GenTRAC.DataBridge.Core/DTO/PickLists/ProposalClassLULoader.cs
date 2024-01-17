@@ -33,9 +33,9 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 		{
 			ICollection<PickListDto> result = new List<PickListDto>();
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalClassLULoader.GetProposalTypes", Log))
+			using (StopwatchTimer sw = new("ProposalClassLULoader.GetProposalTypes", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					result = dbModel.ProposalClassLUs.Select(x => new PickListDto()
 					{
@@ -60,11 +60,11 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalClassLULoader.Upsert", Log))
+			using (StopwatchTimer sw = new("ProposalClassLULoader.Upsert", Log))
 			{
 				if (dtoToUpsert != null)
 				{
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						string text = dtoToUpsert.Text;
 
@@ -91,11 +91,11 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalClassLULoader.Delete", Log))
+			using (StopwatchTimer sw = new("ProposalClassLULoader.Delete", Log))
 			{
 				// check the IsReadOnly flag from the DB before allowing delete
 				bool isReadOnly;
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					isReadOnly = dbModel.ProposalClassLUs.First(x => x.ProposalClassID == dtoToDelete.Id).IsReadOnly;
 				}
@@ -104,7 +104,7 @@ namespace GenTRAC.DataBridge.Core.DTO.PickLists
 				{
 					toReturn = dtoToDelete.Id;
 
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						dbModel.deleteProposalClass(dtoToDelete.Id);
 					}

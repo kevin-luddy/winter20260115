@@ -191,7 +191,7 @@ namespace IES.Common.Core.Models
 		/// <returns>A list of discrete spreads for this object.</returns>
 		public ICollection<ProjectMapSpreadModelView> CreateSpreads(DateTime startingMonth)
 		{
-			List<ProjectMapSpreadModelView> spreads = new List<ProjectMapSpreadModelView>();
+			List<ProjectMapSpreadModelView> spreads = new();
 
 			if (DiscreteMonths != null && DiscreteMonths.Length > 0)
 			{

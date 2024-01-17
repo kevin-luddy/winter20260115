@@ -68,9 +68,9 @@ namespace IES.DataBridge.Loaders
 		{
 			ICollection<RateSectionModelView> rateDetails;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new(this.Log))
 			{
-				using (IESEntities context = new IESEntities())
+				using (IESEntities context = new())
 				{
 					rateDetails = context.RateCodes.Where(x => x.RevisionID == wipRevision.Id)
 					.Select(r =>
@@ -98,9 +98,9 @@ namespace IES.DataBridge.Loaders
 		{
 			ICollection<RateDetailModelView> rateDetails;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new(this.Log))
 			{
-				using (IESEntities context = new IESEntities())
+				using (IESEntities context = new())
 				{
 					// Define filter - limit with specific rate codes if string array is provided (Import).
 					Expression<Func<RateCode, bool>> detailFilter;
@@ -178,7 +178,7 @@ namespace IES.DataBridge.Loaders
 			foreach (RateDetailModelView rate in rateDetails)
 			{
 				// Fill in missing years
-				List<RateYearModelView> fullYearList = new List<RateYearModelView>();
+				List<RateYearModelView> fullYearList = new();
 				int lastYear = revision.StartYear;
 				foreach (RateYearModelView rateYear in rate.Values)
 				{
@@ -523,9 +523,9 @@ namespace IES.DataBridge.Loaders
 		{
 			List<RateDto> rateCodes;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new(this.Log))
 			{
-				using (IESEntities context = new IESEntities())
+				using (IESEntities context = new())
 				{
 					rateCodes = context.RateCodes.Where(r => r.RevisionID == revisionId)
 					.OrderBy(y => y.RateCode1)
@@ -550,9 +550,9 @@ namespace IES.DataBridge.Loaders
 		{
 			List<ValidationMessage> messages;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new(this.Log))
 			{
-				using (IESEntities context = new IESEntities())
+				using (IESEntities context = new())
 				{
 					messages = context.verifyRateCodeReplication(revisionId)
 					.Select(r =>
@@ -607,7 +607,7 @@ namespace IES.DataBridge.Loaders
 				int minDifferenceYear = endYear;
 				int maxDifferenceYear = startYear;
 
-				HashSet<string> allRateCodes = new HashSet<string>(currentRates.Concat(previousRates).Select(r => r.RateCode).ToList());
+				HashSet<string> allRateCodes = new(currentRates.Concat(previousRates).Select(r => r.RateCode).ToList());
 
 				foreach (string rateCode in allRateCodes.OrderBy(s => s))
 				{
@@ -701,7 +701,7 @@ namespace IES.DataBridge.Loaders
 		public ICollection<OptionModelView> GetResourceClassOptions(int revisionId)
 		{
 			ICollection<OptionModelView> result;
-			using (IESEntities context = new IESEntities())
+			using (IESEntities context = new())
 			{
 				// get Resource Classes for this revision
 				result = context.ResourceClassLUs
@@ -729,9 +729,9 @@ namespace IES.DataBridge.Loaders
 			ICollection<RdsbRateDetailModelView> toReturn;
 
 			int directLaborId = (int)RateCategory.DirectLabor;
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new(this.Log))
 			{
-				using (IESEntities context = new IESEntities())
+				using (IESEntities context = new())
 				{
 					toReturn = context.RateCodes.Where(x => x.RevisionID == revisionId && x.SectionID.HasValue && x.CategoryID == directLaborId)
 						.OrderBy(y => y.CategoryID)
@@ -850,7 +850,7 @@ namespace IES.DataBridge.Loaders
 					else if (previousXref == null && newDescription.Length > 0)
 					{
 						// No previous xref, upsert the new xref.
-						ProPricerRateCodeXrefModelView newXref = new ProPricerRateCodeXrefModelView()
+						ProPricerRateCodeXrefModelView newXref = new()
 						{
 							Id = -1,
 							Updateable = UpdateType.Upsert,
@@ -893,7 +893,7 @@ namespace IES.DataBridge.Loaders
 		/// <returns>Meta data required for bulk save processing</returns>
 		public override BulkSaveMetaData CreateBulkSaveMetaData()
 		{
-			BulkSaveMetaData metaData = new BulkSaveMetaData(CommonConstants.IES_DB_CONTEXT_NAME);
+			BulkSaveMetaData metaData = new(CommonConstants.IES_DB_CONTEXT_NAME);
 
 			metaData.BulkDeleteStoredProcedureName = "deleteRateCodeviaTableParameter";
 			metaData.BulkInsertStoredProcedureName = "insertRateCodeviaTableParameter";
@@ -945,7 +945,7 @@ namespace IES.DataBridge.Loaders
 					this.Log.LogDebug(string.Format("RateDetailLoader.BulkSave => Item Id: {0}, Value: {1}", dto.Id, dto.RateCode));
 				}
 
-				using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+				using (StopwatchTimer sw = new(this.Log))
 				{
 					ICollection<RateDetailModelView> upsertableRateDetailCollection = dtosToSave.Where(d => d.Updateable != UpdateType.None).ToCollection();
 
@@ -1032,7 +1032,7 @@ namespace IES.DataBridge.Loaders
 		/// <returns>entity representing the dto</returns>
 		protected override RateCode ConvertDtoToEntity(RateDetailModelView dtoToConvert)
 		{
-			RateCode entity = new RateCode();
+			RateCode entity = new();
 
 			if (dtoToConvert == null)
 			{

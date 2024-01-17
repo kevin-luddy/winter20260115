@@ -55,9 +55,9 @@ namespace IES.Common.Core.Logging
 				// otherwise we'd *never* write it!
 			}
 
-			using (var writer = new StreamWriter(underlyingStream, encoding, DEFAULT_BUFFER_SIZE, true))
+			using (StreamWriter writer = new(underlyingStream, encoding, DEFAULT_BUFFER_SIZE, true))
 			{
-				var header = headerFactory();
+				string header = headerFactory();
 
 				writer.WriteLine(header);
 				writer.Flush();

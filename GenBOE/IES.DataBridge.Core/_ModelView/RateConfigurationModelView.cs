@@ -20,7 +20,7 @@ namespace IES.DataBridge.ModelViews
         /// </summary>
         public RateConfigurationModelView()
         {
-            using (IESEntities context = new IESEntities())
+            using (IESEntities context = new())
             {
                 Revision revision = context.Revisions.Where(r => r.DatePublished == null).First();
                 if (revision != null)

@@ -46,10 +46,10 @@ namespace IES.DataBridge.Loaders
 			/// <returns>If Id is null, return current WIP revision; othewise, return specified revision.</returns>
 			internal RevisionModelView GetById(int? id)
         {
-            RevisionModelView result = new RevisionModelView();
+            RevisionModelView result = new();
             using (new StopwatchTimer(this.logger))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     Revision revision = id == null ?
                         context.Revisions.FirstOrDefault(r => r.DatePublished == null) :
@@ -81,7 +81,7 @@ namespace IES.DataBridge.Loaders
 
             using (new StopwatchTimer(this.logger))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     result = context.Revisions.Select(r =>
                         new RevisionModelView()
@@ -122,7 +122,7 @@ namespace IES.DataBridge.Loaders
 
             int? result;
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 result = iesEntities.upsertRevision(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.Revision,
                     dtoToUpsert.History, dtoToUpsert.CreatedBy, dtoToUpsert.StartYear, dtoToUpsert.EndYear, dtoToUpsert.ReleaseNotes).First();
@@ -145,7 +145,7 @@ namespace IES.DataBridge.Loaders
 
             int? toReturn;
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 toReturn = iesEntities.deleteRevision(dtoToDelete.Id, dtoToDelete.UpdateDate);
             }
@@ -180,7 +180,7 @@ namespace IES.DataBridge.Loaders
                 throw new ArgumentException("Publish failed - Missing publishedBy parameter.");
             }
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 publishRevision_Result publishRevisionResult = iesEntities.publishRevision(wipRevision.Id, wipRevision.UpdateDate, publishedBy, wipRevision.History, wipRevision.ReleaseNotes, datePublished).First();
                 result = publishRevisionResult.Id;
@@ -211,7 +211,7 @@ namespace IES.DataBridge.Loaders
                 throw new ArgumentException("Rollback failed - No WIP revision.");
             }
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 // Preserve the revision, description, and createdBy values
                 string revision = wipRevision.Revision;
@@ -268,7 +268,7 @@ namespace IES.DataBridge.Loaders
 
             using (new StopwatchTimer(this.logger))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     // We aren't calling .ToList() on the 3 vars to allow the EF to optimize this and only
                     // make a single DB call (on UNION) on the bottom.
@@ -379,7 +379,7 @@ namespace IES.DataBridge.Loaders
 
             using (new StopwatchTimer(this.logger))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     // We aren't calling .ToList() on the 3 vars to allow the EF to optimize this and only
                     // make a single DB call (on UNION) on the bottom.

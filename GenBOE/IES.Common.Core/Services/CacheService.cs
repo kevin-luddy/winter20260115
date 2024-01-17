@@ -15,7 +15,7 @@ namespace IES.Common.Core.Services
 	public class CacheService : ICacheService
 	{
 		private readonly ILogger _log;
-		private readonly object LOCK = new object();
+		private readonly object LOCK = new();
 		private readonly IMemoryCache _cache;
 
 		/// <summary>
@@ -65,7 +65,7 @@ namespace IES.Common.Core.Services
 
 			TimeSpan cacheTime = inSecondsToCacheItems < 1 ? new TimeSpan(365, 0, 0, 0, 0) : new TimeSpan(0, 0, inSecondsToCacheItems);
 
-			MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+			MemoryCacheEntryOptions options = new()
 			{
 				SlidingExpiration = cacheTime,
 				Priority = CacheItemPriority.Normal
@@ -101,7 +101,7 @@ namespace IES.Common.Core.Services
 			string key = inKey.ToLower();
 			_log.LogDebug($"Adding key {key} for value {inValue.ToString()} and will cache for {inSecondsToCacheItems} seconds");
 
-			MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+			MemoryCacheEntryOptions options = new()
 			{
 				AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(inSecondsToCacheItems),
 				Priority = CacheItemPriority.Normal
@@ -151,7 +151,10 @@ namespace IES.Common.Core.Services
 
 				PropertyInfo prop = _cache.GetType().GetProperty("EntriesCollection", BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.NonPublic | BindingFlags.Public);
 				if (prop is null)
+				{
 					return;
+				}
+
 				object innerCache = prop.GetValue(_cache);
 				MethodInfo clearMethod = innerCache.GetType().GetMethod("Clear", BindingFlags.Instance | BindingFlags.Public);
 				clearMethod.Invoke(innerCache, null);

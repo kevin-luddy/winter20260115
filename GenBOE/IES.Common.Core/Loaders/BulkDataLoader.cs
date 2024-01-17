@@ -85,9 +85,9 @@ namespace IES.Common.Core.Loaders
 
 			ValidateTransactionScope();
 
-			Dictionary<int, int> toReturn = new Dictionary<int, int>();
+			Dictionary<int, int> toReturn = new();
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				// Don't bother if there is nothing to process
 				if (dtosToSave.Any(d => d.Updateable != UpdateType.None))
@@ -185,12 +185,12 @@ namespace IES.Common.Core.Loaders
 
 			Log.LogDebug("Bulk Insert starting.");
 
-			ConcurrentDictionary<int, int> toReturn = new ConcurrentDictionary<int, int>();
+			ConcurrentDictionary<int, int> toReturn = new();
 
 			if (dtosToInsert.Any())
 			{
 				// We'll hold onto the original negative ids and return them in the dictionary
-				Collection<int> origIds = new Collection<int>();
+				Collection<int> origIds = new();
 				int j = -1;
 				foreach (TDtoType dto in dtosToInsert)
 				{
@@ -204,7 +204,7 @@ namespace IES.Common.Core.Loaders
 				Log.LogDebug("Starting conversion from entities to DataTable for BulkInsert.");
 				DataTable dataTable = StoredProcedureHelper.ToDataTable(entitiesToInsert, metadata.EntityPropertiesToMapToDataTable);
 
-				using (DbContext objectContext = new DbContext(metadata.DbContextName))
+				using (DbContext objectContext = new(metadata.DbContextName))
 				{
 					Log.LogDebug("Executing the Bulk Insert");
 					ICollection<KeyValuePair<int, DateTime?>> insertResult = null;
@@ -282,7 +282,7 @@ namespace IES.Common.Core.Loaders
 
 			Log.LogDebug("Executing Bulk Update.");
 
-			Dictionary<int, int> toReturn = new Dictionary<int, int>();
+			Dictionary<int, int> toReturn = new();
 
 			if (dtosToUpdate.Any())
 			{
@@ -290,7 +290,7 @@ namespace IES.Common.Core.Loaders
 				ICollection<TEntityType> entitiesToUpdate = dtosToUpdate.Select(d => ConvertDtoToEntity(d)).ToCollection();
 				DataTable dataTable = StoredProcedureHelper.ToDataTable(entitiesToUpdate, metadata.EntityPropertiesToMapToDataTable);
 
-				using (DbContext objectContext = new DbContext(metadata.DbContextName))
+				using (DbContext objectContext = new(metadata.DbContextName))
 				{
 					ICollection<KeyValuePair<int, DateTime?>> updateResult = StoredProcedureHelper.ExecuteTableValueProcedure(
 						objectContext,
@@ -360,7 +360,7 @@ namespace IES.Common.Core.Loaders
 
 				DataTable dataTable = StoredProcedureHelper.ToDataTable(entitiesToDelete, metadata.EntityPropertiesToMapToDataTable);
 
-				using (DbContext objectContext = new DbContext(metadata.DbContextName))
+				using (DbContext objectContext = new(metadata.DbContextName))
 				{
 					StoredProcedureHelper.ExecuteTableValueProcedure(
 						objectContext,

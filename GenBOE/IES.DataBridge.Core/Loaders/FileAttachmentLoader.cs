@@ -39,9 +39,9 @@ namespace IES.DataBridge.Loaders
         {
             ICollection<FileAttachmentRowModelView> result;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     result = context.FileAttachments.Where(f => f.RevisionId == revisionId).Select(e =>
                         new FileAttachmentRowModelView()
@@ -94,7 +94,7 @@ namespace IES.DataBridge.Loaders
                 sectionId = null;
             }
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 result = iesEntities.upsertFileAttachment(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.Name, dtoToUpsert.Link, sectionId, dtoToUpsert.RevisionID).First();
             }
@@ -116,7 +116,7 @@ namespace IES.DataBridge.Loaders
 
             int? toReturn;
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 toReturn = iesEntities.deleteFileAttachment(dtoToDelete.Id, dtoToDelete.UpdateDate);
             }

@@ -33,7 +33,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// <summary>
 		/// The next generation number lock
 		/// </summary>
-		private static readonly object nextGenerationNumberLock = new object();
+		private static readonly object nextGenerationNumberLock = new();
 
 		/// <summary>
 		/// The forecast generation number format.
@@ -80,9 +80,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ICollection<int> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetAllIds", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetAllIds", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					// select the Proposal IDs from the database
 					var resultLinq = from x in dbModel.Proposals
@@ -105,9 +105,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ICollection<ProposalDto> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetByIds", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetByIds", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					// select the Proposal IDs from the database
 					// eagerly load ContractTypeLUs and CostElementLUs and ProposalClassLU for later use
@@ -287,9 +287,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 			if (trimmedTrackingNumber.StartsWith("f"))
 			{
 				// this is a Forecast tracking ID
-				using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetIdByTrackingNumber", Log))
+				using (StopwatchTimer sw = new("ProposalLoader.GetIdByTrackingNumber", Log))
 				{
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						toReturn = (from x in dbModel.Proposals
 									where x.ForecastedTrackingID.Trim().ToLower() == trimmedTrackingNumber
@@ -314,9 +314,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 
 				altTrackingNumber = altTrackingNumber.Trim().ToLower();
 
-				using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetIdByTrackingNumber", Log))
+				using (StopwatchTimer sw = new("ProposalLoader.GetIdByTrackingNumber", Log))
 				{
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						toReturn = (from x in dbModel.Proposals
 									where x.ProposalTrackingID.Trim().ToLower() == trimmedTrackingNumber
@@ -347,9 +347,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ICollection<int> toReturn = new List<int>();
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalIdsByUser", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetProposalIdsByUser", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					IQueryable<int> proposalIds = dbModel.ProposalUserRoles.Where(u => userids.Contains(u.UserID)).Select(c => c.ProposalID).Distinct();
 					toReturn = new List<int>(proposalIds);
@@ -381,7 +381,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 
 			using (new StopwatchTimer("ProposalLoader.GetProposalsByUser", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					dbModel.Database.CommandTimeout = 360;  // extend time for admins
 
@@ -450,7 +450,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ICollection<ProposalDto> toReturn = null;
 
-			List<int> roles = new List<int>() { (int)PtmRole.Pricer, (int)PtmRole.BackupPricer, (int)PtmRole.CostVolumeLead, (int)PtmRole.CoverSheetApprover, (int)PtmRole.PricingVerification, (int)PtmRole.PeerReviewer, (int)PtmRole.LOBEstLead };
+			List<int> roles = new() { (int)PtmRole.Pricer, (int)PtmRole.BackupPricer, (int)PtmRole.CostVolumeLead, (int)PtmRole.CoverSheetApprover, (int)PtmRole.PricingVerification, (int)PtmRole.PeerReviewer, (int)PtmRole.LOBEstLead };
 			if (includeWorkpaceCreator)
 			{
 				roles.Add((int)PtmRole.GenBoeWorkspaceCreator);
@@ -458,7 +458,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 
 			using (new StopwatchTimer("ProposalLoader.GetProposalsByUser", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					ICollection<int> proposalIdsWithWriteAccess = GetProposalIdsWithLinkedDocumentWriteAccess(ntID, dbModel);
 
@@ -491,12 +491,12 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.Upsert", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.Upsert", Log))
 			{
 				if (dtoToUpsert != null)
 				{
 					// save
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						toReturn = dbModel.upsertProposal(
 							dtoToUpsert.Id,
@@ -588,11 +588,11 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.Delete", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.Delete", Log))
 			{
 				if (dtoToDelete != null)
 				{
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						dbModel.deleteProposal(
 							dtoToDelete.Id,
@@ -615,9 +615,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ICollection<ProposalDto> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetAllSlim", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetAllSlim", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					toReturn = dbModel.Proposals
 						.Select(x => new ProposalDto
@@ -651,9 +651,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			DateTime? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalCompletedDate", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetProposalCompletedDate", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					var completed = (from p in dbModel.Proposals
 									 where p.ProposalID == inProposalId
@@ -692,9 +692,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 
 			ICollection<ProposalDto> toReturn = new Collection<ProposalDto>();
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalCompletedDate", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetProposalCompletedDate", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					toReturn = (from p in dbModel.Proposals
 								join c in dbModel.ProposalContractsDatas
@@ -735,10 +735,10 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.UpdateProposalStatus", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.UpdateProposalStatus", Log))
 			{
 				// save
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					toReturn = dbModel.updateProposalStatus(
 						proposalId,
@@ -757,10 +757,10 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// <param name="updateDate">The update date.</param>
 		public void UpdateProposalForecastEmailSent(int proposalId, DateTime updateDate)
 		{
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.UpdateProposalForecastEmailSent", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.UpdateProposalForecastEmailSent", Log))
 			{
 				// save
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					dbModel.updateProposalForecastEmailSent(
 						proposalId,
@@ -783,7 +783,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 				throw new ArgumentException("proposalTitle is null");
 			}
 
-			using (genTRACEntities dbModel = new genTRACEntities())
+			using (genTRACEntities dbModel = new())
 			{
 				var proposals = dbModel.Proposals;
 
@@ -805,9 +805,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ProposalStatus? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalStatus", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetProposalStatus", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					toReturn = (ProposalStatus?)(from p in dbModel.Proposals
 												 where p.ProposalID == inProposalId
@@ -829,9 +829,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 			ICollection<ProposalDto> toReturn = new List<ProposalDto>();
 
 			int workflowStatusAsInteger = (int)workflowStatus;
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalsByWorkflowStatus", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetProposalsByWorkflowStatus", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					toReturn = toReturn = dbModel.Proposals.Where(p => p.WorkflowStatus == workflowStatusAsInteger).Select(entity => new
 					{
@@ -998,9 +998,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ICollection<ProposalDto> toReturn = new List<ProposalDto>();
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalsByWorkflowStatus", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetProposalsByWorkflowStatus", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					toReturn = toReturn = dbModel.Proposals.Where(p => p.ProposalStatusID == (int)proposalStatus).Select(entity => new
 					{
@@ -1168,9 +1168,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 			ICollection<ProposalDto> toReturn = new List<ProposalDto>();
 
 			int workflowStatusAsInteger = (int)workflowStatus;
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalsByWorkflowStatusAndCutoffDate", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetProposalsByWorkflowStatusAndCutoffDate", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					toReturn = toReturn = dbModel.Proposals.Where(p => p.WorkflowStatus == workflowStatusAsInteger && p.WorkflowStatusLastUpdated < cutoffDate)
 						.Select(entity => new
@@ -1353,9 +1353,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ICollection<ProposalDto> toReturn = new List<ProposalDto>();
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetForecastProposalsPastAllowedDate", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetForecastProposalsPastAllowedDate", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					toReturn = dbModel.Proposals.Where(p => !p.ForecastEmailSent && p.AnticipatedDeliveryDate < cutoffDate && p.ForecastedTrackingID != null
 													&& p.ForecastedTrackingID != string.Empty && (p.ProposalTrackingID == null || p.ProposalTrackingID == string.Empty))
@@ -1519,12 +1519,12 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// <returns>List of proposal DTOs</returns>
 		public ICollection<ProposalDto> GetModExecutedDateMissingNotifications()
 		{
-			List<ProposalDto> toReturn = new List<ProposalDto>();
+			List<ProposalDto> toReturn = new();
 			DateTime lastSentThreshold = DateTime.Now.AddDays(-7);
 			DateTime initialSendThreshold = DateTime.Now.AddDays(-15);
 			DateTime featureStartDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("PtmContractsStartDate"));
 
-			using (genTRACEntities context = new genTRACEntities())
+			using (genTRACEntities context = new())
 			{
 				var data = context.Proposals.GroupJoin(context.ProposalContractsDatas, p => p.ProposalID, c => c.ProposalID, (p, c) => new { p, c })
 						.SelectMany(prop => prop.c.DefaultIfEmpty(), (prop, cont) => new { Proposals = prop.p, Contracts = cont })
@@ -1633,9 +1633,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 			DateTime now = DateTime.Now.Date;
 			DateTime thirtyDaysAgo = now.AddDays(-30);
 			DateTime sixtyDaysAgo = now.AddDays(-60);
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalsCertificationTimelinePastDue", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetProposalsCertificationTimelinePastDue", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					// Retrieves list of proposals and associated contracts
 					var proposalsList = dbModel.Proposals.GroupJoin(dbModel.ProposalContractsDatas, p => p.ProposalID, c => c.ProposalID, (p, c) => new { p, c })
@@ -1814,7 +1814,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 
 			ICollection<string> forecastedTrackingNumbers = null;
 
-			using (genTRACEntities dbModel = new genTRACEntities())
+			using (genTRACEntities dbModel = new())
 			{
 				// select the Proposal IDs from the database
 				var forecastedTracking = from x in dbModel.Proposals
@@ -1846,9 +1846,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ICollection<RevisionHistoryModelView> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRevisionHistory", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetRevisionHistory", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					IEnumerable<int?> proposalIds = dbModel.GetProposalRevisionHistory(proposalId).Select(x => x.ProposalId);
 
@@ -1992,9 +1992,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			List<EppProposalData> result;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetEppProposalData", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetEppProposalData", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					result = GetFilteredProposalsForEppRetrieval(dbModel, ntid, isAdmin, searchString)
 						.Select(entity => new
@@ -2075,9 +2075,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			EppProposalData result;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetEppProposalDataByProposalTrackingNumber", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetEppProposalDataByProposalTrackingNumber", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					result = dbModel.Proposals
 						.Where(x =>
@@ -2125,9 +2125,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			ICollection<SelectListItem> result;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRomProposalOptions", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetRomProposalOptions", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					result = dbModel.Proposals.Where(x => x.ProposalClassLU.ProposalClass == "ROM")
 						.Select(x => new { id = x.ProposalID, text = x.ProposalTrackingID + " " + x.ProposalTitle }).ToList()
@@ -2148,9 +2148,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		{
 			Tuple<DateTime?, decimal?> result;
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRomDateAndValue", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetRomDateAndValue", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					result = dbModel.Proposals.Where(x => x.ProposalID == proposalId)
 						.Select(x => new { submittedDate = x.ProposalChecklists.FirstOrDefault().ProposalSubmittalDate, submittedValue = x.ProposalChecklists.FirstOrDefault().ISGSTotalPrice }).ToList()
@@ -2180,9 +2180,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 
 			searchString = (searchString ?? string.Empty).Trim().ToLower();
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetAcvProposalData", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetAcvProposalData", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					result = dbModel.Proposals.Where(x =>
 									x.ProposalStatusID == (int)ProposalStatus.InProgress
@@ -2203,11 +2203,11 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// <returns>Header data for the proposal ID</returns>
 		public AcvHeaderDataDto GetAcvHeaderDataByProposalId(int proposalId)
 		{
-			AcvHeaderDataDto result = new AcvHeaderDataDto();
+			AcvHeaderDataDto result = new();
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetAcvHeaderDataByProposalId", Log))
+			using (StopwatchTimer sw = new("ProposalLoader.GetAcvHeaderDataByProposalId", Log))
 			{
-				using (genTRACEntities dbModel = new genTRACEntities())
+				using (genTRACEntities dbModel = new())
 				{
 					result = dbModel.Proposals.Where(x => x.ProposalID == proposalId).Select(x => new AcvHeaderDataDto()
 					{

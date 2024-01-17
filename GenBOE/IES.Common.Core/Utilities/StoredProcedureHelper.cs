@@ -50,7 +50,7 @@ namespace IES.Common.Core.Utilities
 			ICollection<KeyValuePair<int, DateTime?>> idToUpdateDateXref = new Dictionary<int, DateTime?>();
 
 			// create the table valued parameter for the stored procedure
-			SqlParameter parameter = new SqlParameter(paramName, dataTable);
+			SqlParameter parameter = new(paramName, dataTable);
 			parameter.SqlDbType = SqlDbType.Structured;
 			parameter.TypeName = typeName;
 
@@ -79,14 +79,14 @@ namespace IES.Common.Core.Utilities
 			}
 
 			// this sql connection will be automatically enlisted in the current transaction
-			using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+			using (SqlConnection sqlConnection = new(connectionString))
 			{
 				sqlConnection.Open();
 
 				// execute sql using a SqlDataReader so we can get the returned ids and update dates 
 				// in the same order we sent them - we suppress the security warning because no part of the sql command comes from the user
 				// code generates it
-				using (SqlCommand command = new SqlCommand(sql, sqlConnection))
+				using (SqlCommand command = new(sql, sqlConnection))
 				{
 					command.CommandTimeout = ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", CommonConstants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT);
 
@@ -156,15 +156,15 @@ namespace IES.Common.Core.Utilities
 				throw new ArgumentException("collection must contain at least one property name", nameof(propertiesToIncludeInTable));
 			}
 
-			DataTable table = new DataTable();
+			DataTable table = new();
 
 			// get properties of T 
-			var binding = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty;
-			var options = PropertyReflectionOptions.IgnoreEnumerable | PropertyReflectionOptions.IgnoreIndexer;
+			BindingFlags binding = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty;
+			PropertyReflectionOptions options = PropertyReflectionOptions.IgnoreEnumerable | PropertyReflectionOptions.IgnoreIndexer;
 
-			var properties = ReflectionHelper.GetProperties(typeof(TEntityType), binding, options).ToList();
+			List<PropertyInfo> properties = ReflectionHelper.GetProperties(typeof(TEntityType), binding, options).ToList();
 			ICollection<PropertyInfo> includedProperties = new Collection<PropertyInfo>();
-			Dictionary<string, object> nestedValues = new Dictionary<string, object>();
+			Dictionary<string, object> nestedValues = new();
 
 			// create table schema based on properties to include - the order of the property names MUST match the order of the table type columns
 			foreach (string propertyName in propertiesToIncludeInTable)
@@ -210,7 +210,7 @@ namespace IES.Common.Core.Utilities
 			table.Columns.Add("OrderID", typeof(int));
 
 			// create table data from T instances - adding one for the DeveloperOrderId column in the DataTable type
-			int numberOfPropertiesIncluded = includedProperties.Count();
+			int numberOfPropertiesIncluded = includedProperties.Count;
 			object[] values = new object[numberOfPropertiesIncluded + 1];
 
 			int developerOrderId = 0;

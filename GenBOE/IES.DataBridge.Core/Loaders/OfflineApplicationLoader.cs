@@ -38,9 +38,9 @@ namespace IES.DataBridge.Loaders
         {
             ICollection<OfflineApplicationModelView> result;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities iesEntities = new IESEntities())
+                using (IESEntities iesEntities = new())
                 {
                     result = iesEntities.OfflineApplications.Select(o =>
                         new OfflineApplicationModelView()
@@ -64,9 +64,9 @@ namespace IES.DataBridge.Loaders
         {
             OfflineApplicationModelView result;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities iesEntities = new IESEntities())
+                using (IESEntities iesEntities = new())
                 {
                     result = iesEntities.OfflineApplications
                         .Where(a => a.ApplicationName == application)
@@ -110,9 +110,9 @@ namespace IES.DataBridge.Loaders
                 throw new ArgumentNullException(nameof(dtoToUpdate));
             }
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities iesEntities = new IESEntities())
+                using (IESEntities iesEntities = new())
                 {
                     iesEntities.updateOfflineApplication(dtoToUpdate.ApplicationName, dtoToUpdate.IsOffline, dtoToUpdate.UpdateDate);
                 }

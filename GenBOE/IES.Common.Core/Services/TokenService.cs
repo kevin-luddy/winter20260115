@@ -53,7 +53,7 @@ namespace IES.Common.Core.Services
 		/// <summary>
 		/// Http Client for Token Service
 		/// </summary>
-		private readonly HttpClient _client = new HttpClient();
+		private readonly HttpClient _client = new();
 
 		/// <summary>
 		/// ctor
@@ -99,7 +99,7 @@ namespace IES.Common.Core.Services
 		{
 			Token token = null;
 
-			List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
+			List<KeyValuePair<string, string>> postData = new();
 			postData.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
 			postData.Add(new KeyValuePair<string, string>("client_id", clientId));
 			postData.Add(new KeyValuePair<string, string>("client_secret", clientSecret));

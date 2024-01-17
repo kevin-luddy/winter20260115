@@ -65,7 +65,7 @@ namespace IES.Common.Core.Utilities
 		/// <returns>Text</returns>
 		public static string ConvertHtmlToText(string html)
 		{
-			HtmlDocument document = new HtmlDocument();
+			HtmlDocument document = new();
 			document.LoadHtml(html);
 			string text = HttpUtility.HtmlDecode(document.DocumentNode.InnerText);
 			return text;

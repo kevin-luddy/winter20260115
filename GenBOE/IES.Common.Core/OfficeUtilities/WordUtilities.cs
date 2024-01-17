@@ -298,7 +298,7 @@ namespace IES.Common.Core.OfficeUtilities
 						// If this is not the last Run, add a break to the Run
 						if (ndx < inText.Length - 1)
 						{
-							Break newlineElement = new Break();
+							Break newlineElement = new();
 							textElement.InsertAfterSelf<Break>(newlineElement);
 
 							Text nextTextElement = textElement.CloneNode(true) as Text;
@@ -322,9 +322,9 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			// Change all the text that has Hours to EPs (Equivalent Persons)
-			var body = document.MainDocumentPart.Document.Body;
-			var texts = body.Descendants<Text>();
-			foreach (var text in texts)
+			Body body = document.MainDocumentPart.Document.Body;
+			IEnumerable<Text> texts = body.Descendants<Text>();
+			foreach (Text text in texts)
 			{
 				if (text.Text.Contains("Hours"))
 				{
@@ -394,13 +394,13 @@ namespace IES.Common.Core.OfficeUtilities
 						// we are attaching properties to an existing Run/Paragraph, in order to make sure that it basically goes "invisible", as there's no fool proof way to replace it w/ the chunk
 
 						// 2 half points -> font size of 1, to make it as invisible as possible
-						FontSize size = new FontSize() { Val = "2" };
+						FontSize size = new() { Val = "2" };
 
 						// clear out any weird spacing
-						SpacingBetweenLines spacing = new SpacingBetweenLines() { Before = "0", After = "0", Line = "0", AfterLines = 0, BeforeLines = 0 };
+						SpacingBetweenLines spacing = new() { Before = "0", After = "0", Line = "0", AfterLines = 0, BeforeLines = 0 };
 
 						// create a run properties object, for modifying runs
-						RunProperties runProp = new RunProperties();
+						RunProperties runProp = new();
 						runProp.Append(size);
 						runProp.Append(spacing);
 
@@ -418,7 +418,7 @@ namespace IES.Common.Core.OfficeUtilities
 						{
 							// finally, if no runs exist, it's likely that a paragraph is in place, so we have to create paragraph properties instead & use those
 							// we need to clone because the original nodes are already a part of the RunProperties..
-							ParagraphProperties parProperties = new ParagraphProperties();
+							ParagraphProperties parProperties = new();
 							parProperties.Append(size.CloneNode(true));
 							parProperties.Append(spacing.CloneNode(true));
 
@@ -441,7 +441,7 @@ namespace IES.Common.Core.OfficeUtilities
 					// Write the mhtml into this newly associated AlternativeFormatImportPart
 					using (Stream chunkStream = chunk.GetStream(FileMode.Create, FileAccess.Write))
 					{
-						using (StreamWriter writer = new StreamWriter(chunkStream, Encoding.UTF8)) //Encoding.UTF8 removes special characters
+						using (StreamWriter writer = new(chunkStream, Encoding.UTF8)) //Encoding.UTF8 removes special characters
 						{
 							RTEUtilities.ConvertHtmlToMhtml(writer, htmlFormattedText, fontSize, fontFamilies, paragraphSizing, applyInternalSectionFormatting);
 						}

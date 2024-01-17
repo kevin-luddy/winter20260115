@@ -150,7 +150,7 @@ namespace IES.Common.Core.Loaders
 
 			if (toReturn == null)
 			{
-				using (StopwatchTimer sw = new StopwatchTimer(_log, "MISS - " + inLoaderMethod.Method.Name + " -> Key: " + inKeyForCache))
+				using (StopwatchTimer sw = new(_log, "MISS - " + inLoaderMethod.Method.Name + " -> Key: " + inKeyForCache))
 				{
 					// lock since we are going to overwrite cache key
 					lock (string.Intern("LOCK" + inKeyForCache))
@@ -277,8 +277,8 @@ namespace IES.Common.Core.Loaders
 				throw new ArgumentNullException(nameof(inCacheKeyToIDDictionary), "Dictionary passed to CacheDataLoader GetData method is null");
 			}
 
-			Collection<object> toReturn = new Collection<object>();
-			Collection<int> delegateParams = new Collection<int>();
+			Collection<object> toReturn = new();
+			Collection<int> delegateParams = new();
 
 			foreach (KeyValuePair<string, int> potentiallyCachedObject in inCacheKeyToIDDictionary)
 			{
@@ -375,8 +375,8 @@ namespace IES.Common.Core.Loaders
 				throw new ArgumentNullException(nameof(inCacheKeyToIDDictionary), "Dictionary passed to CacheDataLoader GetData method is null");
 			}
 
-			Collection<object> toReturn = new Collection<object>();
-			Collection<int> delegateParams = new Collection<int>();
+			Collection<object> toReturn = new();
+			Collection<int> delegateParams = new();
 
 			foreach (KeyValuePair<string, int> potentiallyCachedObject in inCacheKeyToIDDictionary)
 			{

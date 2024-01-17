@@ -45,9 +45,9 @@ namespace IES.DataBridge.Loaders
         {
             ICollection<CobraDetailModelView> cobraDetails;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     // Grab all the Cobra Mapping Details for this revision.
                     cobraDetails = context.RateCodes.Where(x => x.RevisionID == revision.Id)
@@ -115,7 +115,7 @@ namespace IES.DataBridge.Loaders
         /// <returns>Meta data required for bulk save processing</returns>
         public override BulkSaveMetaData CreateBulkSaveMetaData()
         {
-            BulkSaveMetaData metaData = new BulkSaveMetaData(CommonConstants.IES_DB_CONTEXT_NAME);
+            BulkSaveMetaData metaData = new(CommonConstants.IES_DB_CONTEXT_NAME);
 
             metaData.BulkDeleteStoredProcedureName = string.Empty;  // Not implemented
             metaData.BulkInsertStoredProcedureName = string.Empty;  // Not implemented
@@ -164,7 +164,7 @@ namespace IES.DataBridge.Loaders
                     this.Log.LogDebug(string.Format("CobraDetailLoader.BulkSave => Item Id: {0}, Value: {1}", dto.Id, dto.RateCode));
                 }
 
-                using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+                using (StopwatchTimer sw = new(this.Log))
                 {
                     // Set the Code1 values to null if the selected value is empty (not set)
                     foreach (CobraDetailModelView cobraDetailModelView in dtosToSave)
@@ -187,7 +187,7 @@ namespace IES.DataBridge.Loaders
         /// <returns>entity representing the dto</returns>
         protected override RateCode ConvertDtoToEntity(CobraDetailModelView dtoToConvert)
         {
-            RateCode entity = new RateCode();
+            RateCode entity = new();
 
             if (dtoToConvert == null)
             {

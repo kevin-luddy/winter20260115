@@ -75,7 +75,7 @@ namespace IES.DataBridge.Loaders
         /// <returns>Meta data required for bulk save processing</returns>
         public override BulkSaveMetaData CreateBulkSaveMetaData()
         {
-            BulkSaveMetaData metaData = new BulkSaveMetaData(CommonConstants.IES_DB_CONTEXT_NAME);
+            BulkSaveMetaData metaData = new(CommonConstants.IES_DB_CONTEXT_NAME);
 
             metaData.BulkInsertStoredProcedureName = "insertRateCodeYearviaTableParameter";
             metaData.BulkUpdateStoredProcedureName = "updateRateCodeYearviaTableParameter";
@@ -105,7 +105,7 @@ namespace IES.DataBridge.Loaders
         /// <returns>entity representing the dto</returns>
         protected override RateCodeYear ConvertDtoToEntity(RateYearModelView dtoToConvert)
         {
-            RateCodeYear entity = new RateCodeYear();
+            RateCodeYear entity = new();
 
             if (dtoToConvert == null)
             {

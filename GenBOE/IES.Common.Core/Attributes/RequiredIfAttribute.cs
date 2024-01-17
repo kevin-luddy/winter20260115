@@ -20,7 +20,7 @@ namespace IES.Common.Core.Attributes
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1813:AvoidUnsealedAttributes"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1019:DefineAccessorsForAttributeArguments"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1018:MarkAttributesWithAttributeUsage")]
 	public class RequiredIfAttribute : ValidationAttribute
 	{
-		private readonly RequiredAttribute innerAttribute = new RequiredAttribute();
+		private readonly RequiredAttribute innerAttribute = new();
 		public string DependentUpon { get; set; }
 		public object Value { get; set; }
 
@@ -51,12 +51,12 @@ namespace IES.Common.Core.Attributes
 		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
 		{
 			// get a reference to the property this validation depends upon
-			var field = validationContext.ObjectType.GetProperty(DependentUpon);
+			System.Reflection.PropertyInfo field = validationContext.ObjectType.GetProperty(DependentUpon);
 
 			if (field != null)
 			{
 				// get the value of the dependent property
-				var dependentValue = field.GetValue(validationContext.ObjectInstance, null);
+				object dependentValue = field.GetValue(validationContext.ObjectInstance, null);
 
 				// compare the value against the target value
 				if (dependentValue != null)

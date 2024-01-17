@@ -26,9 +26,9 @@ namespace IES.Common.Core.OfficeUtilities
 		public const string CUSTOM_FIELD_IMPORT_EXPORT_PREFIX = "CF - ";
 
 		// Create static Regex objects.
-		private static readonly Regex columnNameRegex = new Regex("[A-Za-z]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
-		private static readonly Regex rowIndexRegex = new Regex(@"\d+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
-		private static readonly Regex commentRowIndexRegex = new Regex("[0-9]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex columnNameRegex = new("[A-Za-z]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex rowIndexRegex = new(@"\d+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex commentRowIndexRegex = new("[0-9]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
 		/// <summary>
 		/// Takes the name of a worksheet and returns that worksheet part from the given Excel document. An empty
@@ -178,7 +178,7 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			// Initialize a collection of Key/Value pair Dictionary objects that will hold the rows of imported data
-			Collection<Dictionary<string, string>> toReturn = new Collection<Dictionary<string, string>>();
+			Collection<Dictionary<string, string>> toReturn = new();
 
 			// Get the specified worksheet part
 			WorksheetPart worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
@@ -187,7 +187,7 @@ namespace IES.Common.Core.OfficeUtilities
 			if (worksheetPart != null)
 			{
 				// Get column names from the list of header strings passed to this function
-				var columns = new Dictionary<string, string>();
+				Dictionary<string, string> columns = new();
 
 				// Create a list to hold names of columns that aren't found
 				string headersNotFound = string.Empty;
@@ -221,14 +221,14 @@ namespace IES.Common.Core.OfficeUtilities
 				}
 
 				// Initialize a cache to hold values so we can stop if we find any matching values in unique columns
-				var valueCache = new Dictionary<string, List<string>>();
+				Dictionary<string, List<string>> valueCache = new();
 
 				// Create a list to hold names rows with duplicate values in unique columns
-				Collection<string> uniqueValueExceptionMessages = new Collection<string>();
+				Collection<string> uniqueValueExceptionMessages = new();
 
 				if (uniqueValueColumns != null)
 				{
-					foreach (var uniqueValueColumn in uniqueValueColumns)
+					foreach (string uniqueValueColumn in uniqueValueColumns)
 					{
 						valueCache.Add(uniqueValueColumn, new List<string>());
 					}
@@ -255,9 +255,9 @@ namespace IES.Common.Core.OfficeUtilities
 
 					foreach (Row row in allRows)
 					{
-						Dictionary<string, string> rowToReturn = new Dictionary<string, string>();
+						Dictionary<string, string> rowToReturn = new();
 
-						foreach (var column in columns)
+						foreach (KeyValuePair<string, string> column in columns)
 						{
 							// Get the cell value for the current column and row
 							Cell cell = row.Descendants<Cell>().FirstOrDefault(c => ParseColumnName(c.CellReference.Value).Equals(column.Key, StringComparison.CurrentCultureIgnoreCase));
@@ -304,10 +304,10 @@ namespace IES.Common.Core.OfficeUtilities
 					// Throw exception for duplicate values in unique value coilumns
 					if (valueCache.Count > 0)
 					{
-						foreach (var uniqueValueColumn in valueCache)
+						foreach (KeyValuePair<string, List<string>> uniqueValueColumn in valueCache)
 						{
 							// Get all duplicate values in the column
-							var duplicateValues = from value in uniqueValueColumn.Value
+							IEnumerable<string> duplicateValues = from value in uniqueValueColumn.Value
 												  group value by value.Trim().ToLower() into groupedValues
 												  where groupedValues.Count() > 1
 												  select groupedValues.Key;
@@ -495,7 +495,7 @@ namespace IES.Common.Core.OfficeUtilities
 			// If the cell is styled, we'll look for the format in the stylesheet
 			if (cell.StyleIndex != null && cell.StyleIndex.HasValue)
 			{
-				var cellFormat = stylesheet.CellFormats.ElementAtOrDefault((int)cell.StyleIndex.Value);
+				OpenXmlElement cellFormat = stylesheet.CellFormats.ElementAtOrDefault((int)cell.StyleIndex.Value);
 
 				// If the style of the cell was found, we'll check for a number format
 				if (cellFormat != null)
@@ -506,7 +506,7 @@ namespace IES.Common.Core.OfficeUtilities
 					// the number rounded when the floating point number spans many decimal places. By using double it will return the number you see in the spreadsheet. 
 					if (Double.TryParse(toReturn, out numericalValue) && !textOnly)
 					{
-						var numberFormatID = (cellFormat as CellFormat).NumberFormatId;
+						UInt32Value numberFormatID = (cellFormat as CellFormat).NumberFormatId;
 
 						// If the number format is defined, and not the General format
 						if (numberFormatID.HasValue)
@@ -581,14 +581,14 @@ namespace IES.Common.Core.OfficeUtilities
 							// If the numbering format was not a built in format, let's check it manually
 							else
 							{
-								var numberingFormat = (from NumberingFormat n in stylesheet.NumberingFormats
+								NumberingFormat numberingFormat = (from NumberingFormat n in stylesheet.NumberingFormats
 													   where n.NumberFormatId.HasValue &&
 															 n.NumberFormatId.Value == numberFormatID
 													   select n).FirstOrDefault();
 
 								if (numberingFormat != null && numberingFormat.FormatCode.HasValue)
 								{
-									var numberingFormatCode = numberingFormat.FormatCode.Value;
+									string numberingFormatCode = numberingFormat.FormatCode.Value;
 
 									// Check for custom Date format
 									if (numberingFormatCode.Contains('m') && numberingFormatCode.Contains("yy"))
@@ -639,12 +639,12 @@ namespace IES.Common.Core.OfficeUtilities
 			// If the cell is styled, we'll look for the format in the stylesheet
 			if (cell.StyleIndex != null && cell.StyleIndex.HasValue)
 			{
-				var cellFormat = stylesheet.CellFormats.ElementAtOrDefault((int)cell.StyleIndex.Value);
+				OpenXmlElement cellFormat = stylesheet.CellFormats.ElementAtOrDefault((int)cell.StyleIndex.Value);
 
 				// If the style of the cell was found, we'll check for a number format
 				if (cellFormat != null)
 				{
-					var numberFormatID = (cellFormat as CellFormat).NumberFormatId;
+					UInt32Value numberFormatID = (cellFormat as CellFormat).NumberFormatId;
 
 					if (numberFormatID == 42 || numberFormatID == 44) // 8 is Currency
 					{
@@ -665,11 +665,11 @@ namespace IES.Common.Core.OfficeUtilities
 		public static ICollection<string> GetAllColumnHeaderStrings(SpreadsheetDocument document, string worksheetName)
 		{
 			ICollection<string> columnHeaders = new List<string>();
-			var worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
+			WorksheetPart worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
 
 			if (worksheetPart != null)
 			{
-				var firstRow = worksheetPart.Worksheet.Descendants<Row>().First();
+				Row firstRow = worksheetPart.Worksheet.Descendants<Row>().First();
 				columnHeaders = (from c in firstRow.Descendants<Cell>()
 								 select GetCellValue(c, document.WorkbookPart)).ToList();
 			}
@@ -686,7 +686,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <returns>An Excel column name (i.e. A, B, C, etc) for the specified header string</returns>
 		public static string GetColumnNameFromHeaderString(SpreadsheetDocument document, string worksheetName, string headerString)
 		{
-			var worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
+			WorksheetPart worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
 
 			if (worksheetPart == null)
 			{
@@ -694,9 +694,9 @@ namespace IES.Common.Core.OfficeUtilities
 				return null;
 			}
 
-			var firstRow = worksheetPart.Worksheet.Descendants<Row>().First();
+			Row firstRow = worksheetPart.Worksheet.Descendants<Row>().First();
 
-			var headerCell = (from c in firstRow.Descendants<Cell>()
+			Cell headerCell = (from c in firstRow.Descendants<Cell>()
 							  where GetCellValue(c, document.WorkbookPart).Equals(headerString, StringComparison.CurrentCultureIgnoreCase)
 							  select c).FirstOrDefault();
 
@@ -717,7 +717,7 @@ namespace IES.Common.Core.OfficeUtilities
 		public static string ParseColumnName(string cellName)
 		{
 			// Create a regular expression to match the column name portion of the cell name.
-			var match = columnNameRegex.Match(cellName);
+			Match match = columnNameRegex.Match(cellName);
 
 			// Return the column name
 			return match.Value;
@@ -731,7 +731,7 @@ namespace IES.Common.Core.OfficeUtilities
 		public static uint ParseRowIndex(string cellName)
 		{
 			// Create a regular expression to match the row index portion the cell name.
-			var match = rowIndexRegex.Match(cellName);
+			Match match = rowIndexRegex.Match(cellName);
 
 			// Return the row index
 			return uint.Parse(match.Value);
@@ -751,10 +751,10 @@ namespace IES.Common.Core.OfficeUtilities
 			int toReturn = 0;
 			columnName = columnName.ToUpper();
 
-			for (var iChar = columnName.Length - 1; iChar >= 0; iChar--)
+			for (int iChar = columnName.Length - 1; iChar >= 0; iChar--)
 			{
-				var colPiece = columnName[iChar];
-				var colNum = colPiece - 64;
+				char colPiece = columnName[iChar];
+				int colNum = colPiece - 64;
 				toReturn = toReturn + colNum * (int)Math.Pow(26, columnName.Length - (iChar + 1));
 			}
 
@@ -769,13 +769,13 @@ namespace IES.Common.Core.OfficeUtilities
 		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "columnIndex+1")]
 		public static string GetColumnNameFromColumnIndex(int columnIndex)
 		{
-			var toReturn = string.Empty;
+			string toReturn = string.Empty;
 
-			var columnNumber = columnIndex + 1;
+			int columnNumber = columnIndex + 1;
 			while (columnNumber > 0)
 			{
-				var currentLetterNumber = (columnNumber - 1) % 26;
-				var currentLetter = (char)(currentLetterNumber + 65);
+				int currentLetterNumber = (columnNumber - 1) % 26;
+				char currentLetter = (char)(currentLetterNumber + 65);
 				toReturn = currentLetter + toReturn;
 				columnNumber = (columnNumber - (currentLetterNumber + 1)) / 26;
 			}
@@ -801,13 +801,13 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			// Create the new row and set its index.
-			Row toReturn = new Row();
+			Row toReturn = new();
 			toReturn.RowIndex = (UInt32)rowIndex;
 
 			if (values.Length > 0)
 			{
 				// Cache of cells in the original Row
-				var originalCells = new List<Cell>();
+				List<Cell> originalCells = new();
 
 				if (originalRow != null)
 				{
@@ -815,7 +815,7 @@ namespace IES.Common.Core.OfficeUtilities
 				}
 
 				// For each given String value, create a new text cell and append it to the row
-				for (var ndx = 0; ndx < values.Length; ndx++)
+				for (int ndx = 0; ndx < values.Length; ndx++)
 				{
 					uint? style = null;
 					uint styleIndex;
@@ -832,13 +832,13 @@ namespace IES.Common.Core.OfficeUtilities
 					}
 
 					// Get the cell name to create
-					var cellReference = GetColumnNameFromColumnIndex(ndx) + rowIndex;
+					string cellReference = GetColumnNameFromColumnIndex(ndx) + rowIndex;
 
 					// Find the original cell in the template, if it exists
-					var originalCell = originalCells.FirstOrDefault(c => c.CellReference.HasValue && c.CellReference.Value.Equals(cellReference, StringComparison.CurrentCultureIgnoreCase));
+					Cell originalCell = originalCells.FirstOrDefault(c => c.CellReference.HasValue && c.CellReference.Value.Equals(cellReference, StringComparison.CurrentCultureIgnoreCase));
 
 					// Create the new cell
-					var cell = CreateExcelCell(document, cellReference, values[ndx], style, originalCell);
+					Cell cell = CreateExcelCell(document, cellReference, values[ndx], style, originalCell);
 
 					if (cell != null)
 					{
@@ -1010,16 +1010,16 @@ namespace IES.Common.Core.OfficeUtilities
 				else if (SetTextAsBold(ref text))
 				{
 					// Create a run for the text
-					Run run = new Run();
+					Run run = new();
 					run.Append(new Text(text));
 
 					// Set the text as bold in the run properties
-					RunProperties runProperties = new RunProperties();
+					RunProperties runProperties = new();
 					runProperties.Append(new Bold());
 					run.RunProperties = runProperties;
 
 					// Add run/text to the cell
-					InlineString inlineString = new InlineString();
+					InlineString inlineString = new();
 					inlineString.Append(run);
 					toReturn.DataType = CellValues.InlineString;
 					toReturn.Append(inlineString);
@@ -1115,28 +1115,28 @@ namespace IES.Common.Core.OfficeUtilities
 			if (newColumnHeaderStrings == null) { throw new ArgumentNullException(nameof(newColumnHeaderStrings)); }
 			if (newColumnHeaderStrings.Length > 0)
 			{
-				var duplications = newColumnHeaderStrings.Length - 1;
+				int duplications = newColumnHeaderStrings.Length - 1;
 
-				var columnName = GetColumnNameFromHeaderString(document, worksheetName, columnHeaderString);
-				var columnIndex = GetColumnIndexFromColumnName(columnName);
+				string columnName = GetColumnNameFromHeaderString(document, worksheetName, columnHeaderString);
+				int columnIndex = GetColumnIndexFromColumnName(columnName);
 
-				var worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
+				WorksheetPart worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
 
 				if (worksheetPart != null)
 				{
-					var worksheet = worksheetPart.Worksheet;
+					Worksheet worksheet = worksheetPart.Worksheet;
 
 					if (duplications > 0)
 					{
-						var columns = worksheet.Descendants<Column>().ToList();
+						List<Column> columns = worksheet.Descendants<Column>().ToList();
 
-						var column = columns.FirstOrDefault(c => c.Min.HasValue && c.Min.Value == columnIndex + 1);
+						Column column = columns.FirstOrDefault(c => c.Min.HasValue && c.Min.Value == columnIndex + 1);
 
 						if (column != null)
 						{
-							var greaterColumns = columns.Where(c => c.Min > column.Min).OrderByDescending(c => c.Max.Value).ToList();
+							List<Column> greaterColumns = columns.Where(c => c.Min > column.Min).OrderByDescending(c => c.Max.Value).ToList();
 
-							foreach (var greaterColumn in greaterColumns)
+							foreach (Column greaterColumn in greaterColumns)
 							{
 								if (greaterColumn == greaterColumns.First())
 								{
@@ -1144,7 +1144,7 @@ namespace IES.Common.Core.OfficeUtilities
 								}
 								else
 								{
-									for (var ndx = (int)greaterColumn.Max.Value; ndx >= (int)greaterColumn.Min.Value; ndx--)
+									for (int ndx = (int)greaterColumn.Max.Value; ndx >= (int)greaterColumn.Min.Value; ndx--)
 									{
 										TransferAllCellsFromOneColumnToAnother(worksheetPart, GetColumnNameFromColumnIndex(ndx - 1), GetColumnNameFromColumnIndex(ndx + duplications - 1), true);
 									}
@@ -1154,7 +1154,7 @@ namespace IES.Common.Core.OfficeUtilities
 								}
 							}
 
-							for (var ndx = columnIndex + duplications; ndx >= columnIndex + 1; ndx--)
+							for (int ndx = columnIndex + duplications; ndx >= columnIndex + 1; ndx--)
 							{
 								TransferAllCellsFromOneColumnToAnother(worksheetPart, columnName, GetColumnNameFromColumnIndex(ndx), false);
 							}
@@ -1163,11 +1163,11 @@ namespace IES.Common.Core.OfficeUtilities
 						}
 					}
 
-					foreach (var newColumnHeaderString in newColumnHeaderStrings)
+					foreach (string newColumnHeaderString in newColumnHeaderStrings)
 					{
 						columnName = GetColumnNameFromHeaderString(document, worksheetName, columnHeaderString);
 
-						var cell = worksheet.Descendants<Cell>().FirstOrDefault(c => ParseRowIndex(c.CellReference) == 1 && ParseColumnName(c.CellReference).Equals(columnName, StringComparison.CurrentCultureIgnoreCase));
+						Cell cell = worksheet.Descendants<Cell>().FirstOrDefault(c => ParseRowIndex(c.CellReference) == 1 && ParseColumnName(c.CellReference).Equals(columnName, StringComparison.CurrentCultureIgnoreCase));
 
 						if (cell != null)
 						{
@@ -1191,26 +1191,26 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="columnHeaderString">The column header string.</param>
 		public static void RemoveColumn(SpreadsheetDocument document, string worksheetName, string columnHeaderString)
 		{
-			var columnName = GetColumnNameFromHeaderString(document, worksheetName, columnHeaderString);
-			var columnIndex = GetColumnIndexFromColumnName(columnName);
+			string columnName = GetColumnNameFromHeaderString(document, worksheetName, columnHeaderString);
+			int columnIndex = GetColumnIndexFromColumnName(columnName);
 
-			var worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
+			WorksheetPart worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
 
 			if (worksheetPart != null)
 			{
-				var worksheet = worksheetPart.Worksheet;
+				Worksheet worksheet = worksheetPart.Worksheet;
 
-				var columns = worksheet.Descendants<Column>().ToList();
+				List<Column> columns = worksheet.Descendants<Column>().ToList();
 
-				var column = columns.FirstOrDefault(c => c.Min.HasValue && c.Min.Value == columnIndex + 1);
+				Column column = columns.FirstOrDefault(c => c.Min.HasValue && c.Min.Value == columnIndex + 1);
 
 				if (column != null)
 				{
 					RemoveAllCellsFromColumn(worksheetPart, columnName);
 
-					var greaterColumns = columns.Where(c => c.Min > column.Min).ToList();
+					List<Column> greaterColumns = columns.Where(c => c.Min > column.Min).ToList();
 
-					foreach (var greaterColumn in greaterColumns)
+					foreach (Column greaterColumn in greaterColumns)
 					{
 						if (greaterColumn == greaterColumns.Last())
 						{
@@ -1218,7 +1218,7 @@ namespace IES.Common.Core.OfficeUtilities
 						}
 						else
 						{
-							for (var ndx = (int)greaterColumn.Min.Value; ndx <= (int)greaterColumn.Max.Value; ndx++)
+							for (int ndx = (int)greaterColumn.Min.Value; ndx <= (int)greaterColumn.Max.Value; ndx++)
 							{
 								TransferAllCellsFromOneColumnToAnother(worksheetPart, GetColumnNameFromColumnIndex(ndx - 1), GetColumnNameFromColumnIndex(ndx - 2), true);
 							}
@@ -1243,13 +1243,13 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="move">True to move everything from the column, false to make a copy of it.</param>
 		private static void TransferAllCellsFromOneColumnToAnother(WorksheetPart worksheetPart, string fromColumnName, string toColumnName, bool move)
 		{
-			var fromColumnIndex = GetColumnIndexFromColumnName(fromColumnName);
-			var toColumnIndex = GetColumnIndexFromColumnName(toColumnName);
-			var delta = toColumnIndex - fromColumnIndex;
+			int fromColumnIndex = GetColumnIndexFromColumnName(fromColumnName);
+			int toColumnIndex = GetColumnIndexFromColumnName(toColumnName);
+			int delta = toColumnIndex - fromColumnIndex;
 
-			var cellsToMove = worksheetPart.Worksheet.Descendants<Cell>().Where(c => ParseColumnName(c.CellReference).Equals(fromColumnName, StringComparison.CurrentCultureIgnoreCase)).ToList();
+			List<Cell> cellsToMove = worksheetPart.Worksheet.Descendants<Cell>().Where(c => ParseColumnName(c.CellReference).Equals(fromColumnName, StringComparison.CurrentCultureIgnoreCase)).ToList();
 
-			foreach (var itemToMove in cellsToMove)
+			foreach (Cell itemToMove in cellsToMove)
 			{
 				if (move)
 				{
@@ -1257,26 +1257,26 @@ namespace IES.Common.Core.OfficeUtilities
 				}
 				else
 				{
-					var newItem = (Cell)itemToMove.CloneNode(true);
+					Cell newItem = (Cell)itemToMove.CloneNode(true);
 					newItem.CellReference = toColumnName + ParseRowIndex(newItem.CellReference);
 					newItem.StyleIndex = itemToMove.StyleIndex;
 					itemToMove.InsertAfterSelf(newItem);
 				}
 			}
 
-			var mergeCellsToMove = worksheetPart.Worksheet.Descendants<MergeCell>().Where(c => c.Reference.Value.Split(':').Select(r => ParseColumnName(r)).Contains(fromColumnName)).ToList();
+			List<MergeCell> mergeCellsToMove = worksheetPart.Worksheet.Descendants<MergeCell>().Where(c => c.Reference.Value.Split(':').Select(r => ParseColumnName(r)).Contains(fromColumnName)).ToList();
 
-			foreach (var itemToMove in mergeCellsToMove)
+			foreach (MergeCell itemToMove in mergeCellsToMove)
 			{
 				if (move)
 				{
-					var updatedMergeCellReferences = itemToMove.Reference.Value.Split(':').Select(r => GetColumnNameFromColumnIndex(GetColumnIndexFromColumnName(ParseColumnName(r)) + delta) + ParseRowIndex(r));
+					IEnumerable<string> updatedMergeCellReferences = itemToMove.Reference.Value.Split(':').Select(r => GetColumnNameFromColumnIndex(GetColumnIndexFromColumnName(ParseColumnName(r)) + delta) + ParseRowIndex(r));
 					itemToMove.Reference = String.Join(":", updatedMergeCellReferences);
 				}
 				else
 				{
-					var newItem = (MergeCell)itemToMove.CloneNode(true);
-					var updatedMergeCellReferences = newItem.Reference.Value.Split(':').Select(r => GetColumnNameFromColumnIndex(GetColumnIndexFromColumnName(ParseColumnName(r)) + delta) + +ParseRowIndex(r));
+					MergeCell newItem = (MergeCell)itemToMove.CloneNode(true);
+					IEnumerable<string> updatedMergeCellReferences = newItem.Reference.Value.Split(':').Select(r => GetColumnNameFromColumnIndex(GetColumnIndexFromColumnName(ParseColumnName(r)) + delta) + +ParseRowIndex(r));
 					newItem.Reference = String.Join(":", updatedMergeCellReferences);
 					itemToMove.InsertAfterSelf(newItem);
 				}
@@ -1297,16 +1297,16 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="fromColumnName">The column name to remove</param>
 		private static void RemoveAllCellsFromColumn(WorksheetPart worksheetPart, string fromColumnName)
 		{
-			var cellsToRemove = worksheetPart.Worksheet.Descendants<Cell>().Where(c => ParseColumnName(c.CellReference).Equals(fromColumnName, StringComparison.CurrentCultureIgnoreCase)).ToList();
+			List<Cell> cellsToRemove = worksheetPart.Worksheet.Descendants<Cell>().Where(c => ParseColumnName(c.CellReference).Equals(fromColumnName, StringComparison.CurrentCultureIgnoreCase)).ToList();
 
-			foreach (var itemToRemove in cellsToRemove)
+			foreach (Cell itemToRemove in cellsToRemove)
 			{
 				itemToRemove.Remove();
 			}
 
-			var mergeCellsToRemove = worksheetPart.Worksheet.Descendants<MergeCell>().Where(c => c.Reference.Value.Split(':').Select(r => ParseColumnName(r)).Contains(fromColumnName)).ToList();
+			List<MergeCell> mergeCellsToRemove = worksheetPart.Worksheet.Descendants<MergeCell>().Where(c => c.Reference.Value.Split(':').Select(r => ParseColumnName(r)).Contains(fromColumnName)).ToList();
 
-			foreach (var itemToRemove in mergeCellsToRemove)
+			foreach (MergeCell itemToRemove in mergeCellsToRemove)
 			{
 				itemToRemove.Remove();
 			}
@@ -1327,12 +1327,12 @@ namespace IES.Common.Core.OfficeUtilities
 		public static string CopyExcelTemplateFile(string templateFileLocation)
 		{
 			// Create a new random file name in the specified directory
-			var toReturn = Path.GetDirectoryName(templateFileLocation) + "\\" + Path.GetRandomFileName() + ".xlsx";
+			string toReturn = Path.GetDirectoryName(templateFileLocation) + "\\" + Path.GetRandomFileName() + ".xlsx";
 
 			File.Copy(templateFileLocation, toReturn);
 
 			// Make sure that the copied template is writable
-			FileInfo copiedFileInfo = new FileInfo(toReturn);
+			FileInfo copiedFileInfo = new(toReturn);
 			copiedFileInfo.IsReadOnly = false;
 
 			return toReturn;
@@ -1349,7 +1349,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <returns>List of defined names</returns>
 		internal static Dictionary<string, DefinedNameData> GetDefinedNames(WorkbookPart workbookPart)
 		{
-			Dictionary<string, DefinedNameData> definedNames = new Dictionary<string, DefinedNameData>();
+			Dictionary<string, DefinedNameData> definedNames = new();
 
 			DefinedNames definedNamesElement = workbookPart.Workbook.GetFirstChild<DefinedNames>();
 
@@ -1403,7 +1403,7 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			// Retrieve a reference to the workbook part.
-			var wbPart = document.WorkbookPart;
+			WorkbookPart wbPart = document.WorkbookPart;
 
 			// Get the worksheets
 			Sheets sheets = wbPart.Workbook.Sheets;
@@ -1422,7 +1422,7 @@ namespace IES.Common.Core.OfficeUtilities
 		{
 			if (sheets == null) { throw new ArgumentNullException(nameof(sheets)); }
 
-			Collection<Tuple<string, string>> SheetIDs = new Collection<Tuple<string, string>>();
+			Collection<Tuple<string, string>> SheetIDs = new();
 
 			foreach (Sheet item in sheets)
 			{
@@ -1454,7 +1454,7 @@ namespace IES.Common.Core.OfficeUtilities
 		public static Collection<Table> GetTablesInWorksheetPart(WorksheetPart wsp)
 		{
 			if (wsp == null) { throw new ArgumentNullException(nameof(wsp)); }
-			Collection<Table> toReturn = new Collection<Table>();
+			Collection<Table> toReturn = new();
 			foreach (TableDefinitionPart item in wsp.TableDefinitionParts)
 			{
 				toReturn.Add(item.Table);
@@ -1751,7 +1751,7 @@ namespace IES.Common.Core.OfficeUtilities
 			WorksheetPart sourceSheetPart = GetWorkSheetPartBySheetName(workbookPart, sheetName);
 			//Take advantage of AddPart for deep cloning
 			WorksheetPart clonedSheet;
-			using (MemoryStream memory = new MemoryStream())
+			using (MemoryStream memory = new())
 			{
 				//Take advantage of AddPart for deep cloning
 				SpreadsheetDocument tempSheet = SpreadsheetDocument.Create(memory, spreadsheet.DocumentType);
@@ -1782,7 +1782,7 @@ namespace IES.Common.Core.OfficeUtilities
 				clonedSheet.Worksheet.SheetProperties.CodeName = "Sheet" + sheetId;
 				//Add new sheet to main workbook part
 				Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>();
-				Sheet copiedSheet = new Sheet();
+				Sheet copiedSheet = new();
 				copiedSheet.Name = clonedSheetName;
 				copiedSheet.Id = workbookPart.GetIdOfPart(clonedSheet);
 				copiedSheet.SheetId = sheetId;
@@ -2023,7 +2023,7 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			// Check if the column collection exists
-			var columns = worksheet.Elements<Columns>().FirstOrDefault() ?? worksheet.InsertAt(new Columns(), 0);
+			Columns columns = worksheet.Elements<Columns>().FirstOrDefault() ?? worksheet.InsertAt(new Columns(), 0);
 
 			// Check if the column exists
 			if (columns.Elements<Column>().All(item => item.Min != columnIndex))

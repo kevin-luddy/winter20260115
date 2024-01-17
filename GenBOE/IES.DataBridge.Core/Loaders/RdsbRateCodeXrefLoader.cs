@@ -69,7 +69,7 @@ namespace IES.DataBridge.Loaders
         /// <returns>Meta data required for bulk save processing</returns>
         public override BulkSaveMetaData CreateBulkSaveMetaData()
         {
-            BulkSaveMetaData metaData = new BulkSaveMetaData(CommonConstants.IES_DB_CONTEXT_NAME);
+            BulkSaveMetaData metaData = new(CommonConstants.IES_DB_CONTEXT_NAME);
 
             metaData.BulkInsertStoredProcedureName = "insertRDSBRateCodeXrefviaTableParameter";
             metaData.BulkUpdateStoredProcedureName = string.Empty; // not implemented
@@ -95,7 +95,7 @@ namespace IES.DataBridge.Loaders
         /// <returns>entity representing the dto</returns>
         protected override RDSBRateCodeXref ConvertDtoToEntity(RdsbRateCodeXrefModelView dtoToConvert)
         {
-            RDSBRateCodeXref entity = new RDSBRateCodeXref();
+            RDSBRateCodeXref entity = new();
 
             if (dtoToConvert == null)
             {

@@ -57,7 +57,7 @@ namespace IES.Common.Core.Utilities
 		{
 			// Add a trailing forward slash to the URI for the file
 			string zipUri = string.Concat("/", Path.GetFileName(fileName));
-			Uri partUri = new Uri(zipUri, UriKind.Relative);
+			Uri partUri = new(zipUri, UriKind.Relative);
 
 			// Set the content type to zipped data
 			string contentType = MediaTypeNames.Application.Zip;

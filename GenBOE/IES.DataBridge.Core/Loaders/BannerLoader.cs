@@ -38,9 +38,9 @@ namespace IES.DataBridge.Loaders
         {
             ICollection<BannerModelView> result;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     result = context.Banners.Select(e =>
                         new BannerModelView()
@@ -89,7 +89,7 @@ namespace IES.DataBridge.Loaders
 
             int? result;
             
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 result = iesEntities.upsertBanner(dtoToUpsert.Id, dtoToUpsert.UpdateDate, string.Join(",", dtoToUpsert.SelectedApps), dtoToUpsert.StartDate, dtoToUpsert.HoursToShow, dtoToUpsert.BannerText, dtoToUpsert.TurnOffTicker).First();
             }
@@ -111,7 +111,7 @@ namespace IES.DataBridge.Loaders
 
             int? toReturn;
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 toReturn = iesEntities.deleteBanner(dtoToDelete.Id, dtoToDelete.UpdateDate);
             }

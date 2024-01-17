@@ -52,9 +52,9 @@ namespace IES.DataBridge.Loaders
         {
             ICollection<ProPricerRateCodeXrefModelView> toReturn = new Collection<ProPricerRateCodeXrefModelView>();
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     toReturn = context.ProPricerRateCodeXrefs.Where(x => x.RateCodeID == rateCodeId).OrderByDescending(x => x.UpdateDate)
                         .Select(p => new ProPricerRateCodeXrefModelView()
@@ -106,7 +106,7 @@ namespace IES.DataBridge.Loaders
         /// <returns>Meta data required for bulk save processing</returns>
         public override BulkSaveMetaData CreateBulkSaveMetaData()
         {
-            BulkSaveMetaData metaData = new BulkSaveMetaData(CommonConstants.IES_DB_CONTEXT_NAME);
+            BulkSaveMetaData metaData = new(CommonConstants.IES_DB_CONTEXT_NAME);
 
             metaData.BulkInsertStoredProcedureName = "insertProPricerRateCodeXrefviaTableParameter";
             metaData.BulkUpdateStoredProcedureName = "updateProPricerRateCodeXrefviaTableParameter";
@@ -133,7 +133,7 @@ namespace IES.DataBridge.Loaders
         /// <returns>entity representing the dto</returns>
         protected override ProPricerRateCodeXref ConvertDtoToEntity(ProPricerRateCodeXrefModelView dtoToConvert)
         {
-            ProPricerRateCodeXref entity = new ProPricerRateCodeXref();
+            ProPricerRateCodeXref entity = new();
 
             if (dtoToConvert == null)
             {

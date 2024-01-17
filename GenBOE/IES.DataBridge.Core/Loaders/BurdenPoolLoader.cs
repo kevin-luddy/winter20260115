@@ -44,11 +44,11 @@ namespace IES.DataBridge.Loaders
         /// <returns>BurdenPoolGridModelView</returns>
         public BurdenPoolGridModelView GetByRevision(int revisionId)
         {
-            BurdenPoolGridModelView result = new BurdenPoolGridModelView();
+            BurdenPoolGridModelView result = new();
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     // Get Rate Codes for this revision. Start with "Not Selected" option.
                     result.RateCodes = new Collection<OptionModelView>() { new OptionModelView() { Id = 0, Label = string.Empty } }; 
@@ -114,7 +114,7 @@ namespace IES.DataBridge.Loaders
         public void GetBurdenPoolOptions(int revisionId, out ICollection<OptionModelView> commercialBurdenPoolOptions, out ICollection<OptionModelView> governmentBurdenPoolsOptions)
         {
             ICollection<BurdenPoolLU> burdenPools;
-            using (IESEntities context = new IESEntities())
+            using (IESEntities context = new())
             {
                 // get Burden Pools for this revision
                 burdenPools = context.BurdenPoolLUs
@@ -204,7 +204,7 @@ namespace IES.DataBridge.Loaders
 
             int? burdenPoolId;
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 burdenPoolId = iesEntities.upsertBurdenPoolLU(
                     dtoToUpsert.Id,
@@ -363,7 +363,7 @@ namespace IES.DataBridge.Loaders
         {
             if (bpdmv.BurdenElementRateCodeMappings != null)
             {
-                using (IESEntities iesEntities = new IESEntities())
+                using (IESEntities iesEntities = new())
                 {
                     foreach (BurdenElementIdToRateCodeModelView bercm in bpdmv.BurdenElementRateCodeMappings)
                     {
@@ -399,7 +399,7 @@ namespace IES.DataBridge.Loaders
             // Burden pool added, then deleted before save - don't delete.
             if (dtoToDelete.Id > 0)
             {
-                using (IESEntities iesEntities = new IESEntities())
+                using (IESEntities iesEntities = new())
                 {
                     toReturn = iesEntities.deleteBurdenPoolLU(dtoToDelete.Id, dtoToDelete.UpdateDate);  // Stored Procedure also deletes associated ProPricerBurdenRateMap rows 
                 }

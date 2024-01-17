@@ -60,7 +60,7 @@ namespace IES.DataBridge.Loaders
 			ICollection<SectionModelView> sectionDetailsByRevision = null;
 			ICollection<SectionModelView> sectionsToReturn = new List<SectionModelView>();
 
-			using (IESEntities context = new IESEntities())
+			using (IESEntities context = new())
 			{
 				ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
 				if (sectionsOnly)
@@ -201,7 +201,7 @@ namespace IES.DataBridge.Loaders
 			{
 				if (section.ContentType == SectionContentType.Section)
 				{
-					OptionModelView option = new OptionModelView()
+					OptionModelView option = new()
 					{
 						Id = section.Id,
 						Label = string.Format("{0} - {1}", section.ReferenceNumber, section.Title)
@@ -253,7 +253,7 @@ namespace IES.DataBridge.Loaders
 		{
 			int? id = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new(this.Log))
 			{
 				id = this.SaveAll(revision, section, null);
 			}
@@ -311,9 +311,9 @@ namespace IES.DataBridge.Loaders
 		/// <param name="newId">New section Id</param>
 		private void RemapSectionReferences(int oldId, DateTime oldUpdateDate, int newId)
 		{
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new(this.Log))
 			{
-				using (IESEntities iesEntities = new IESEntities())
+				using (IESEntities iesEntities = new())
 				{
 					iesEntities.remapSectionReferences(oldId, oldUpdateDate, newId);
 				}
@@ -334,9 +334,9 @@ namespace IES.DataBridge.Loaders
 
 			int? result = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new(this.Log))
 			{
-				using (IESEntities iesEntities = new IESEntities())
+				using (IESEntities iesEntities = new())
 				{
 					result = iesEntities.upsertSection(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.RevisionId,
 						dtoToUpsert.ParentId, dtoToUpsert.DisplayOrder, dtoToUpsert.Title,
@@ -370,7 +370,7 @@ namespace IES.DataBridge.Loaders
 					}
 				}
 
-				using (IESEntities iesEntities = new IESEntities())
+				using (IESEntities iesEntities = new())
 				{
 					toReturn = iesEntities.deleteSection(dtoToDelete.Id, dtoToDelete.UpdateDate);
 				}
@@ -397,7 +397,7 @@ namespace IES.DataBridge.Loaders
 			}
 
 			// parent container for current top-level section data from DB
-			SectionModelView parent = new SectionModelView
+			SectionModelView parent = new()
 			{
 				ChildNodes = this.GetAll(revision)
 			};
@@ -497,7 +497,7 @@ namespace IES.DataBridge.Loaders
 			// Process New Sections (i.e. new sections added by the user)
 			foreach (SectionModelView section in newSections)
 			{
-				SectionModelView s = new SectionModelView(section.RevisionId, section.DisplayOrder, section.IsInternalSection,
+				SectionModelView s = new(section.RevisionId, section.DisplayOrder, section.IsInternalSection,
 					section.Title, section.TextContent, section.DisplayRateCode, section.ContentType, section.ReferenceNumber,
 					section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosure, section.IsDisclosureStatementAdequate, section.SectionContainsNonCompliance, section.NonComplianceNotification,
 					section.Office, section.Agency, section.LMBA, section.Name, section.Street, section.CityST, section.Phone, section.Email, section.Other, section.IncludeInCoversheet);
@@ -519,7 +519,7 @@ namespace IES.DataBridge.Loaders
             IList<SectionAddressParentModelView> allSections = new List<SectionAddressParentModelView>();
             IList<Section> addresses = new List<Section>();
 
-			using (IESEntities context = new IESEntities())
+			using (IESEntities context = new())
 			{
 				// Get the revision ID for the PTM Tracking ID
 				int? rdmRevision = context.RDSBDocumentInformations.FirstOrDefault(x => x.PTMProposalID == ptmTrackingId)?.RDMRevisionID;
@@ -542,8 +542,8 @@ namespace IES.DataBridge.Loaders
             // Get section titles
             foreach (var addressIterator in addresses)
             {
-                SectionAddressParentModelView address = new SectionAddressParentModelView
-                {
+                SectionAddressParentModelView address = new()
+				{
                     Id = addressIterator.ID,
                     Title = addressIterator.Title,
                     ParentID = addressIterator.ParentID
@@ -602,7 +602,7 @@ namespace IES.DataBridge.Loaders
             string casbSection = null;
             string nonCompliance = null;
 
-			using (IESEntities context = new IESEntities())
+			using (IESEntities context = new())
 			{
 				int? rdmRevision = context.RDSBDocumentInformations.FirstOrDefault(x => x.PTMProposalID == proposalId)?.RDMRevisionID;
 

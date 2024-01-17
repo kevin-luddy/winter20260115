@@ -47,7 +47,7 @@ namespace IES.Common.Core.PickList
 
 			if (loader != null)
 			{
-				using (StopwatchTimer sw = new StopwatchTimer("PickListMapper.GetPickListValues", log))
+				using (StopwatchTimer sw = new("PickListMapper.GetPickListValues", log))
 				{
 					ICollection<PickListDto> result = loader.GetPickListValues();
 

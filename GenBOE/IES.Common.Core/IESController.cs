@@ -114,7 +114,7 @@ namespace IES.Common.Core
 				{
 					log.LogWarning($"Could not retrieve image at \"{src}\".");
 
-					StringBuilder sb = new StringBuilder();
+					StringBuilder sb = new();
 					sb.AppendFormat("Message = {0}", webx.Message);
 					sb.AppendFormat(", Status = {0}", webx.Status.ToString());
 					foreach (DictionaryEntry entry in webx.Data)
@@ -250,7 +250,7 @@ namespace IES.Common.Core
 				throw new ArgumentNullException(nameof(functionName));
 			}
 
-			StopwatchTimer sw = new StopwatchTimer(functionName, log);
+			StopwatchTimer sw = new(functionName, log);
 			HttpContext.Items["Stopwatch"] = sw;
 		}
 

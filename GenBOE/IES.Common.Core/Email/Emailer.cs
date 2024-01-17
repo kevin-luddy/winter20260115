@@ -38,7 +38,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// The regex for an email address.
 		/// </summary>
-		private static readonly Regex RegexEmailAddress = new Regex(EMAIL_ADDRESS_REG_EX, RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex RegexEmailAddress = new(EMAIL_ADDRESS_REG_EX, RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
 		/// <summary>
 		/// Public ctor
@@ -119,7 +119,7 @@ namespace IES.Common.Core.Email
 				int count = inEmailTypeToSend.Subject.Count(f => f == '{');
 				if (!inSubjectReplaceTokens.Length.Equals(count))
 				{
-					string error = string.Format("Number of replaceable tokens in subject [{0}] did not match the actual number of tokens for replacing [{1}].{2}", count, inSubjectReplaceTokens.Count(), extraLoggingInfo);
+					string error = string.Format("Number of replaceable tokens in subject [{0}] did not match the actual number of tokens for replacing [{1}].{2}", count, inSubjectReplaceTokens.Length, extraLoggingInfo);
 					Log.LogError(error);
 					throw new ArgumentException(
 						error,
@@ -127,7 +127,7 @@ namespace IES.Common.Core.Email
 				}
 
 				count = inEmailTypeToSend.Body.Count(f => f == '{');
-				if (!inBodyReplaceTokens.Count().Equals(count))
+				if (!inBodyReplaceTokens.Length.Equals(count))
 				{
 					string error = string.Format("Number of replaceable tokens in body [{0}] did not match the actual number of tokens for replacing [{1}].{2}", count, inBodyReplaceTokens.Length, extraLoggingInfo);
 					Log.LogError(error);
@@ -183,7 +183,7 @@ namespace IES.Common.Core.Email
 				}
 
 				// Remove invalid entries from the cc list.  An empty list is handled below so an empty ValidatedRecipients array is okay here
-				List<string> ccStringList = new List<string>();
+				List<string> ccStringList = new();
 				foreach (UserData cc in inCClist)
 				{
 					if (cc == null || string.IsNullOrEmpty(cc.Email))
@@ -216,7 +216,7 @@ namespace IES.Common.Core.Email
 				inRecipient = string.Join(",", validatedRecipients);
 
 				// form the message itself now that we have the proper recipient and subject/body have been verified as being valid
-				using (MailMessage message = new MailMessage())
+				using (MailMessage message = new())
 				{
 					Log.LogDebug("EMAIL - Getting ready to send email to " + inRecipient + extraLoggingInfo);
 
@@ -329,7 +329,7 @@ namespace IES.Common.Core.Email
 							message.CC.Add(ccsToEmail);
 						}
 
-						using (SmtpClient smtp = new SmtpClient(ConfigurationUtilities.GetAppSetting("EmailServer")))
+						using (SmtpClient smtp = new(ConfigurationUtilities.GetAppSetting("EmailServer")))
 						{
 							smtp.Send(message);
 						}
@@ -430,7 +430,7 @@ namespace IES.Common.Core.Email
 				Stream imageStream = GenImageUtilities.ConvertBase64StringToStream(image);
 				imageStreams.Add(imageStream);
 
-				LinkedResource imageResource = new LinkedResource(imageStream, image.MimeType)
+				LinkedResource imageResource = new(imageStream, image.MimeType)
 				{
 					ContentId = image.EmailContentId
 				};
@@ -452,7 +452,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent for the approver emails.
 		/// </summary>
-		public static readonly EmailContent APPROVER_EMAIL = new EmailContent
+		public static readonly EmailContent APPROVER_EMAIL = new()
 		{
 			Subject = "PTM: PROPOSAL APPROVAL ACTION REQUIRED",
 			Body = "You have a proposal approval action due for {0} - {1}. Please use the link below to complete your approval. Please complete your action as soon as possible. " +
@@ -463,7 +463,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent for the Lead Alert when approvers do not approve.
 		/// </summary>
-		public static readonly EmailContent LEAD_ALERT_APPROVERS_EMAIL = new EmailContent
+		public static readonly EmailContent LEAD_ALERT_APPROVERS_EMAIL = new()
 		{
 			Subject = "PTM: PROPOSAL APPROVAL ACTION REQUIRED",
 			Body = "Warning: All approvers have not approved after 3 emails have been sent for {0} - {1}. " +
@@ -474,7 +474,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent for the Lead Alert when LOB Estimating Lead/Manager does not approve.
 		/// </summary>
-		public static readonly EmailContent LEAD_ALERT_LOB_NOT_APPROVED_EMAIL = new EmailContent
+		public static readonly EmailContent LEAD_ALERT_LOB_NOT_APPROVED_EMAIL = new()
 		{
 			Subject = "PTM: PROPOSAL APPROVAL ACTION REQUIRED",
 			Body = "Warning: LOB Estimating Lead/Manager has not approved after 3 emails have been sent for {0} - {1}. " +
@@ -485,7 +485,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent for the Lead Alert when LOB Estimating Lead/Manager approves.
 		/// </summary>
-		public static readonly EmailContent LEAD_ALERT_LOB_APPROVED_EMAIL = new EmailContent
+		public static readonly EmailContent LEAD_ALERT_LOB_APPROVED_EMAIL = new()
 		{
 			Subject = "PTM: PROPOSAL APPROVAL ALERT",
 			Body = "Alert: LOB Estimating Lead/Manager has approved the proposal for {0} - {1}. " +
@@ -496,7 +496,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent when a Forecast Proposal is within X days of the Anticipated Delivery Date.
 		/// </summary>
-		public static readonly EmailContent FORECAST_ALERT_EMAIL = new EmailContent
+		public static readonly EmailContent FORECAST_ALERT_EMAIL = new()
 		{
 			Subject = "PTM: FORECASTED PROPOSAL ALERT",
 			Body = "Alert: Forecasted Proposal {0} - {1} is due soon. " +
@@ -507,7 +507,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent for monthly Certification Timeline reminder email
 		/// </summary>
-		public static readonly EmailContent CERTIFICATION_TIMELINE_EMAIL = new EmailContent
+		public static readonly EmailContent CERTIFICATION_TIMELINE_EMAIL = new()
 		{
 			Subject = "PTM: Certification Timeline ALERT for {0} - {1} (Action Required)",
 			Body = "PTM records indicate that for proposal tracking number {0} ({1}), the Certification Timeline data has not been completed.  " +
@@ -521,7 +521,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent to lead estimator when user approves
 		/// </summary>
-		public static readonly EmailContent APPROVAL_EMAIL = new EmailContent
+		public static readonly EmailContent APPROVAL_EMAIL = new()
 		{
 			Subject = "PTM: APPROVAL STATUS PROPOSAL {0} {1}",
 			Body = "{0} has approved the subject proposal as {1}. " +
@@ -531,7 +531,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent to the Estimating Data Distribution List after RDM Publishes a new version.
 		/// </summary>
-		public static readonly EmailContent PUBLISH_EMAIL = new EmailContent
+		public static readonly EmailContent PUBLISH_EMAIL = new()
 		{
 			Subject = "PPR&D REVISION {0} Published {1}",
 			Body = "The PPR&D has been revised and is available in RDM.<br/><br/>" +
@@ -546,7 +546,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent to the distribution list after RDM successfully deploys a revision to the classified environment.
 		/// </summary>
-		public static readonly EmailContent CLASSIFIED_DEPLOYMENT_SUCCESS_EMAIL = new EmailContent
+		public static readonly EmailContent CLASSIFIED_DEPLOYMENT_SUCCESS_EMAIL = new()
 		{
 			Subject = "PPR&D REVISION {0} deployment succeeded",
 			Body = "The PPR&D REVISION {0} deployment succeeded.<br/>" +
@@ -556,7 +556,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent to the distribution list after RDM fails to deploy a revision to the classified environment.
 		/// </summary>
-		public static readonly EmailContent CLASSIFIED_DEPLOYMENT_FAILED_EMAIL = new EmailContent
+		public static readonly EmailContent CLASSIFIED_DEPLOYMENT_FAILED_EMAIL = new()
 		{
 			Subject = "PPR&D revision deployment failed",
 			Body = "PPR&D revision deployment failed.<br/>" +
@@ -566,7 +566,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent to LOB Estimating Manager/Delegate when a user selects a pricing tool other than ProPricer and/or a boe tool other than genBoe
 		/// </summary>
-		public static readonly EmailContent NONPREFERRED_PRICING_ESTIMATING_TOOL_EMAIL = new EmailContent
+		public static readonly EmailContent NONPREFERRED_PRICING_ESTIMATING_TOOL_EMAIL = new()
 		{
 			Subject = "PTM: NON-PREFERRED PRICING/ESTIMATING TOOL SELECTED FOR PROPOSAL",
 			Body = "{0} has selected a tool other than ProPricer and/or genBOE to price/estimate their {1} {2} proposal. "
@@ -577,7 +577,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content sent to LOB Estimating Manager/Delegate when a user adjusts a previously non-preferred a pricing and/or a boe tool to ProPricer and genBoe
 		/// </summary>
-		public static readonly EmailContent PREFERRED_PRICING_ESTIMATING_TOOL_EMAIL = new EmailContent
+		public static readonly EmailContent PREFERRED_PRICING_ESTIMATING_TOOL_EMAIL = new()
 		{
 			Subject = "PTM: PRICING/ESTIMATING TOOL ADJUSTED FOR PROPOSAL",
 			Body = "{0} has adjusted his/her tool selection for {1} {2}. Both tools are now set to our preferred tool(s). "
@@ -587,7 +587,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email content to 
 		/// </summary>
-		public static readonly EmailContent MISSING_OPTIONAL_DOCUMENT_REMINDER_EMAIL = new EmailContent
+		public static readonly EmailContent MISSING_OPTIONAL_DOCUMENT_REMINDER_EMAIL = new()
 		{
 			Subject = "PTM: DOCUMENT UPLOAD REMINDER",
 			Body = "Reminder: At the time of your approval, as Lead{0} Estimator of PTM record {1} - {2}, you had not uploaded the Documented "
@@ -598,7 +598,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email sent when Proposal status is set to Lost
 		/// </summary>
-		public static readonly EmailContent STATUS_LOST_SET = new EmailContent
+		public static readonly EmailContent STATUS_LOST_SET = new()
 		{
 			Subject = "{0} Notification", // [PTM Entry Number]
 			Body = "{0} was lost. {1}" // [PTM Entry Number], [Link to specific PTM entry]
@@ -607,7 +607,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email sent when Proposal status is set to No Bid
 		/// </summary>
-		public static readonly EmailContent STATUS_NO_BID_SET = new EmailContent
+		public static readonly EmailContent STATUS_NO_BID_SET = new()
 		{
 			Subject = "{0} Notification", // [PTM Entry Number]
 			Body = "{0} was a No Bid. {1}" // [PTM Entry Number], [Link to specific PTM entry.]
@@ -616,7 +616,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email sent to remind the contracts leads to enter the Mod Executed Date
 		/// </summary>
-		public static readonly EmailContent MISSING_MOD_CERTIFICATION_DATE = new EmailContent
+		public static readonly EmailContent MISSING_MOD_CERTIFICATION_DATE = new()
 		{
 			Subject = "{0} Notification", // [PTM Entry Number]
 			Body = "{0} requires the Mod Executed Date, which is necessary to complete the entry. Please visit the Contracts tab and enter the date. Your prompt response is appreciated, thank you. {1}" // [PTM Entry Number], [Link to specific PTM entry.]
@@ -625,7 +625,7 @@ namespace IES.Common.Core.Email
 		/// <summary>
 		/// Email sent when Proposal status is set to Completed
 		/// </summary>
-		public static readonly EmailContent STATUS_COMPLETED_SET = new EmailContent
+		public static readonly EmailContent STATUS_COMPLETED_SET = new()
 		{
 			Subject = "{0} Notification", // [PTM Entry Number]
 			Body = "{0} was completed and placed on contract. {1}" // [PTM Entry Number], [Link to specific PTM entry.]

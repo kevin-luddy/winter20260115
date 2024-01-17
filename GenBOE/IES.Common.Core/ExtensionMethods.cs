@@ -28,12 +28,12 @@ namespace IES.Common.Core
 		/// <summary>
 		/// Create static Regex object for Indices.
 		/// </summary>
-		private static readonly Regex regexIndices = new Regex("\\[\\d+\\]", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexIndices = new("\\[\\d+\\]", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
 		/// <summary>
 		/// Create static Regex object for CarriageReturns.
 		/// </summary>
-		private static readonly Regex regexCarriageReturns = new Regex(@"[\n\r]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
+		private static readonly Regex regexCarriageReturns = new(@"[\n\r]+", RegexOptions.None, CommonConstants.REGEX_TIMEOUT);
 
 		/// <summary>
 		/// Returns true if the value is equal after both ToLower, and Trim
@@ -341,13 +341,13 @@ namespace IES.Common.Core
 		/// <returns>Sorted list</returns>
 		public static IEnumerable<T> PropertyNameSort<T>(this IEnumerable<T> inAllItems, SortOrder inSortOrder, string inSortField)
 		{
-			List<T> toReturn = new List<T>();
+			List<T> toReturn = new();
 
 			if (inAllItems != null)
 			{
 				toReturn = inAllItems.ToList();
 
-				if (toReturn.Count() > 0)
+				if (toReturn.Count > 0)
 				{
 					PropertyInfo firstItemProperty = typeof(T).GetProperty(inSortField);
 
@@ -401,7 +401,7 @@ namespace IES.Common.Core
 
 		public static Collection<T> ToCollection<T>(this List<T> list)
 		{
-			Collection<T> toReturn = new Collection<T>();
+			Collection<T> toReturn = new();
 			if (list == null)
 			{
 				throw new ArgumentNullException(nameof(list), "ToCollection conversion");
@@ -422,7 +422,7 @@ namespace IES.Common.Core
 
 		public static Collection<T> ToCollection<T>(this IEnumerable<T> items)
 		{
-			Collection<T> toReturn = new Collection<T>();
+			Collection<T> toReturn = new();
 			if (items == null)
 			{
 				throw new ArgumentNullException(nameof(items), "ToCollection conversion");
@@ -666,7 +666,7 @@ namespace IES.Common.Core
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		public static Collection<OptionModelView> GetOptions<T>() where T : struct, IComparable, IFormattable, IConvertible
 		{
-			Collection<OptionModelView> options = new Collection<OptionModelView>();
+			Collection<OptionModelView> options = new();
 			foreach (T propType in GetEnumValues<T>())
 			{
 				options.Add(new OptionModelView() { Id = Convert.ToInt32(propType), Label = propType.GetDescription() });
@@ -683,7 +683,7 @@ namespace IES.Common.Core
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		public static Collection<SelectListItem> GetSelectItems<T>() where T : struct, IComparable, IFormattable, IConvertible
 		{
-			Collection<SelectListItem> items = new Collection<SelectListItem>();
+			Collection<SelectListItem> items = new();
 			foreach (T propType in GetEnumValues<T>())
 			{
 				items.Add(new SelectListItem() { Value = propType.ToString(), Text = propType.GetDescription() });

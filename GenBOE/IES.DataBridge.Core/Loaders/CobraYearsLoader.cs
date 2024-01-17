@@ -39,9 +39,9 @@ namespace IES.DataBridge.Loaders
         {
             ICollection<CobraYearGridModelView> result;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     result = context.CobraFiscalYearLUs.Select(e =>
                         new CobraYearGridModelView()
@@ -69,9 +69,9 @@ namespace IES.DataBridge.Loaders
         public ICollection<CobraExportRowModelView> GetCobraExportRows(int id, int startYear)
         {
             ICollection<CobraExportRowModelView> cobraRates;
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     // navigation property not available for RateCodeYears so joins created in query below
                     cobraRates = (from ry in context.RateCodeYears
@@ -125,7 +125,7 @@ namespace IES.DataBridge.Loaders
 
             int? result;
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 result = iesEntities.upsertCobraFiscalYear(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.Year, dtoToUpsert.CobraDate).First();
             }
@@ -147,7 +147,7 @@ namespace IES.DataBridge.Loaders
 
             int? toReturn;
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 toReturn = iesEntities.deleteCobraFiscalYear(dtoToDelete.Id, dtoToDelete.UpdateDate);
             }

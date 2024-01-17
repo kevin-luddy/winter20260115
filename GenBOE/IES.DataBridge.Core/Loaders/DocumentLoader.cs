@@ -59,7 +59,7 @@ namespace IES.DataBridge.Loaders
         {
             ICollection<DocumentGridModelView> documents = null;
 
-            using (IESEntities context = new IESEntities())
+            using (IESEntities context = new())
             {
                 // DatePublished should always be set since a Document cannot be linked to the WIP
                 documents = context.RDSBDocumentInformations.Where(x => proposalIds.Contains(x.PTMProposalID))
@@ -109,9 +109,9 @@ namespace IES.DataBridge.Loaders
 
             int? result;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities iesEntities = new IESEntities())
+                using (IESEntities iesEntities = new())
                 {
                     result = iesEntities.upsertRDSBDocumentInformation(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalId, dtoToUpsert.DocumentCreatedBy, dtoToUpsert.RDMRevisionId, dtoToUpsert.StartYear, dtoToUpsert.EndYear, string.Empty).First();
                 }
@@ -144,7 +144,7 @@ namespace IES.DataBridge.Loaders
 
             if (dtoToDelete != null)
             {
-                using (IESEntities iesEntities = new IESEntities())
+                using (IESEntities iesEntities = new())
                 {
                     toReturn = iesEntities.deleteRDSBDocumentInformation(dtoToDelete.Id, dtoToDelete.UpdateDate);
                 }
@@ -162,7 +162,7 @@ namespace IES.DataBridge.Loaders
         {
             bool recordExists = false;
 
-            using (IESEntities context = new IESEntities())
+            using (IESEntities context = new())
             {
                 recordExists = context.RDSBDocumentInformations.Any(x => x.PTMProposalID == proposalId);
             }

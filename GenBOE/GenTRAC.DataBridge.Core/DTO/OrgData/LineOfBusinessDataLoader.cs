@@ -35,9 +35,9 @@ namespace GenTRAC.DataBridge.Core.DTO.OrgData
 		{
 			ICollection<PickListDto> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
-				using (genTRACEntities gbe = new genTRACEntities())
+				using (genTRACEntities gbe = new())
 				{
 					toReturn = gbe.LineOfBusinessLUs.Select(x => new PickListDto()
 					{
@@ -61,13 +61,13 @@ namespace GenTRAC.DataBridge.Core.DTO.OrgData
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				if (dtoToDelete != null && !dtoToDelete.InUse)
 				{
 					toReturn = dtoToDelete.Id;
 
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						dbModel.deleteLOB(dtoToDelete.Id);
 					}
@@ -86,11 +86,11 @@ namespace GenTRAC.DataBridge.Core.DTO.OrgData
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				if (dtoToUpsert != null)
 				{
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						string text = dtoToUpsert.Text;
 

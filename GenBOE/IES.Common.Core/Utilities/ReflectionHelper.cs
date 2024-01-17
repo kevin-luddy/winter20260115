@@ -22,11 +22,11 @@ namespace IES.Common.Core.Utilities
 		/// </summary>         
 		public static IEnumerable<PropertyInfo> GetProperties(Type typeToReflectOn, BindingFlags binding, PropertyReflectionOptions options = PropertyReflectionOptions.All)
 		{
-			var properties = typeToReflectOn.GetProperties(binding);
+			PropertyInfo[] properties = typeToReflectOn.GetProperties(binding);
 			bool all = (options & PropertyReflectionOptions.All) != 0;
 			bool ignoreIndexer = (options & PropertyReflectionOptions.IgnoreIndexer) != 0;
 			bool ignoreEnumerable = (options & PropertyReflectionOptions.IgnoreEnumerable) != 0;
-			foreach (var property in properties)
+			foreach (PropertyInfo property in properties)
 			{
 				if (!all)
 				{
@@ -53,7 +53,7 @@ namespace IES.Common.Core.Utilities
 			{
 				throw new ArgumentNullException(nameof(property));
 			}
-			var parameters = property.GetIndexParameters();
+			ParameterInfo[] parameters = property.GetIndexParameters();
 			if (parameters != null && parameters.Length > 0)
 			{
 				return true;

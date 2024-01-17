@@ -36,9 +36,9 @@ namespace GenTRAC.DataBridge.Core.DTO.OrgData
 		{
 			ICollection<PickListDto> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
-				using (genTRACEntities gbe = new genTRACEntities())
+				using (genTRACEntities gbe = new())
 				{
 					toReturn = gbe.ProgramAreaLUs.Select(x => new PickListDto()
 					{
@@ -63,13 +63,13 @@ namespace GenTRAC.DataBridge.Core.DTO.OrgData
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				if (dtoToDelete != null && !dtoToDelete.InUse)
 				{
 					toReturn = dtoToDelete.Id;
 
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						dbModel.deleteProgramArea(dtoToDelete.Id);
 					}
@@ -88,7 +88,7 @@ namespace GenTRAC.DataBridge.Core.DTO.OrgData
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				if (dtoToUpsert != null)
 				{
@@ -97,7 +97,7 @@ namespace GenTRAC.DataBridge.Core.DTO.OrgData
 						throw new ArgumentException("The Program Area needs a Line of Business selected as the Parent.");
 					}
 
-					using (genTRACEntities dbModel = new genTRACEntities())
+					using (genTRACEntities dbModel = new())
 					{
 						string text = dtoToUpsert.Text;
 

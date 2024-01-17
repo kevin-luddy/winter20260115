@@ -38,9 +38,9 @@ namespace IES.DataBridge.Loaders
         {
             ICollection<RateCodeModelView> result;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            using (StopwatchTimer sw = new(this.Log))
             {
-                using (IESEntities context = new IESEntities())
+                using (IESEntities context = new())
                 {
                     result = context.RateCodeReplications.Select(e =>
                         new RateCodeModelView()
@@ -86,7 +86,7 @@ namespace IES.DataBridge.Loaders
 
             int? result;
             
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 result = iesEntities.upsertReplication(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.From, dtoToUpsert.To).First();
             }
@@ -108,7 +108,7 @@ namespace IES.DataBridge.Loaders
 
             int? toReturn = null;
 
-            using (IESEntities iesEntities = new IESEntities())
+            using (IESEntities iesEntities = new())
             {
                 toReturn = iesEntities.deleteReplication(dtoToDelete.Id, dtoToDelete.UpdateDate);
             }

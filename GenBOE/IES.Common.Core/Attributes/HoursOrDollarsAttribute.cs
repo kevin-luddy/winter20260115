@@ -39,7 +39,7 @@ namespace IES.Common.Core.Attributes
 				throw new ArgumentNullException(nameof(validationContext));
 			}
 
-			var model = validationContext.ObjectInstance as ProjectMapModelView;
+			ProjectMapModelView model = validationContext.ObjectInstance as ProjectMapModelView;
 			if ((model.Dollars ?? 0) == 0 && (model.Hours ?? 0) == 0 ||
 				model.Dollars.HasValue && model.Dollars != 0 && model.Hours.HasValue && model.Hours != 0)
 			{
