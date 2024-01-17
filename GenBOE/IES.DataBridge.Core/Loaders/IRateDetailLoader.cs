@@ -75,12 +75,19 @@ namespace IES.DataBridge.Loaders
         /// <returns>necessary details of Rate Codes for the RDSB Edit Document dropdown</returns>
         ICollection<RdsbRateDetailModelView> GetRatesForRdsbDocument(int revisionId);
 
-        /// <summary>
-        /// Gets the rate codes for a revision.
-        /// </summary>
-        /// <param name="revisionId">The revision identifier.</param>
-        /// <returns>A collection of Rate Codes</returns>
-        ICollection<RateDto> GetRateCodesForRevision(int revisionId);
+		/// <summary>
+		/// Gets the necessary details of Rate Codes attached to Sections for a given Revision for the RDSB Edit Document dropdowns.
+		/// </summary>
+		/// <param name="revisionId">Revision ID</param>
+		/// <returns>necessary details of Rate Codes for the RDSB Edit Document dropdown</returns>
+		ICollection<RdsbRateDetailModelView> GetAllRatesForRdsbDocument(int revisionId);
+
+		/// <summary>
+		/// Gets the rate codes for a revision.
+		/// </summary>
+		/// <param name="revisionId">The revision identifier.</param>
+		/// <returns>A collection of Rate Codes</returns>
+		ICollection<RateDto> GetRateCodesForRevision(int revisionId);
 
         /// <summary>
         /// Verifies the rate code replication rate codes.

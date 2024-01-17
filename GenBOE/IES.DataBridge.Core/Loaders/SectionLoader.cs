@@ -10,6 +10,7 @@ namespace IES.DataBridge.Loaders
 	using System.Collections.Generic;
 	using System.Linq;
 	using IES.Common.Core;
+	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Models;
@@ -539,35 +540,55 @@ namespace IES.DataBridge.Loaders
 				}
 			}
 
-            // Get section titles
-            foreach (var addressIterator in addresses)
-            {
-                SectionAddressParentModelView address = new()
+			// Get section titles
+			if (addresses.Any())
+			{
+				foreach (Section addressIterator in addresses)
 				{
-                    Id = addressIterator.ID,
-                    Title = addressIterator.Title,
-                    ParentID = addressIterator.ParentID
-                };
-                string title = GetSectionTitle(address, allSections);
-                addressIterator.Title = title;
-            }
+					SectionAddressParentModelView address = new()
+					{
+						Id = addressIterator.ID,
+						Title = addressIterator.Title,
+						ParentID = addressIterator.ParentID
+					};
+					string title = GetSectionTitle(address, allSections);
+					addressIterator.Title = title;
+				}
 
-            result = addresses.Select(x =>
-                new SectionAddressModelView
-                {
-                    Id = x.ID,
-                    Title = x.Title,
-                    Office = x.Office,
-                    Agency = x.Agency,
-                    LMBA = x.LMBA,
-                    Name = x.Name,
-                    Street = x.Street,
-                    CityST = x.CityST,
-                    Phone = x.Phone,
-                    Email = x.Email,
-                }).ToList();
+				result = addresses.Select(x =>
+					new SectionAddressModelView
+					{
+						Id = x.ID,
+						Title = x.Title,
+						Office = x.Office,
+						Agency = x.Agency,
+						LMBA = x.LMBA,
+						Name = x.Name,
+						Street = x.Street,
+						CityST = x.CityST,
+						Phone = x.Phone,
+						Email = x.Email,
+					}).ToList();
+			}
+			else // Use default address
+			{
+				SectionAddressModelView defaultAddress = new()
+				{
+					Id = 0,
+					Title = "Default Address",
+					Office = CommonConstants.DEFAULT_ADDRESS_OFFICE,
+					Agency = CommonConstants.DEFAULT_ADDRESS_AGENCY,
+					LMBA = CommonConstants.DEFAULT_ADDRESS_LM_BA,
+					Name = CommonConstants.DEFAULT_ADDRESS_NAME,
+					Street = CommonConstants.DEFAULT_ADDRESS_STREET,
+					CityST = CommonConstants.DEFAULT_ADDRESS_CITY_ST,
+					Phone = CommonConstants.DEFAULT_ADDRESS_PHONE,
+					Email = CommonConstants.DEFAULT_ADDRESS_EMAIL
+				};
 
-            return result;
+				result.Add(defaultAddress);
+			}
+			return result;
         }
 
         /// <summary>
@@ -592,15 +613,17 @@ namespace IES.DataBridge.Loaders
             return title;
         }
 
-        /// <summary>
-        /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Disclosure data
-        /// </summary>
-        /// <param name="proposalId">PTM Proposal ID</param>
-        /// <returns>Data to support a Cover Sheet creation</returns>
-        public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
-        {
-            string casbSection = null;
+		/// <summary>
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Compliance data, and 3) Disclosure Statements
+		/// </summary>
+		/// <param name="proposalId">PTM Proposal ID</param>
+		/// <returns>Data to support a Cover Sheet creation</returns>
+		public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
+		{
+			string casbSection = null;
             string nonCompliance = null;
+			bool adequateDisclosure = false;
+			bool noncomplianceNotification = false;
 
 			using (IESEntities context = new())
 			{
@@ -612,10 +635,12 @@ namespace IES.DataBridge.Loaders
 
 					casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
 					nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
+					adequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequate.HasValue && x.IsDisclosureStatementAdequate.Value == true) ? true : false;
+					noncomplianceNotification = flatSections.Any(x => x.NonComplianceNotification.HasValue && x.NonComplianceNotification.Value == true) ? true : false;
 				}
 			}
 
-			return (casbSection, nonCompliance);
+			return (casbSection, nonCompliance, adequateDisclosure, noncomplianceNotification);
 		}
 
 		/// <summary>

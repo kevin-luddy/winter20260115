@@ -756,11 +756,11 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		}
 
 		/// <summary>
-		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Compliance data, and 3) Disclosure Statements
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+		public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
 		{
 			return sectionLoader.GetCoverSheetData(proposalId);
 		}
@@ -792,7 +792,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);
 
-			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetAllRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
 
 			foreach (string rateCode in rateCodes)
 			{
@@ -860,7 +860,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);
 
-			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetAllRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
 
 			foreach (string rateDescription in rateDescriptions)
 			{

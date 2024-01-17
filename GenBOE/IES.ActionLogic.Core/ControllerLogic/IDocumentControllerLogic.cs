@@ -113,11 +113,11 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		bool DoesRdsbRecordExistForProposalId(int proposalId);
 
 		/// <summary>
-		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Compliance data, and 3) Disclosure Statements
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		(string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId);
+		(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId);
 
 		/// <summary>
 		/// Gets data necessary for CPS Reports

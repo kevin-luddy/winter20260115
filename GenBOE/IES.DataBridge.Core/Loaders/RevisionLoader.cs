@@ -396,12 +396,12 @@ namespace IES.DataBridge.Loaders
                             newDescription = x.newBP.Description
                         });
 
-                    var deletedItems = context.BurdenPoolLUs.Where(oldBp => oldBp.RevisionID == oldID)
+					IQueryable<string> deletedItems = context.BurdenPoolLUs.Where(oldBp => oldBp.RevisionID == oldID)
                         .Where(x => !context.BurdenPoolLUs.Where(newBp => newBp.RevisionID == newID)
                             .Select(z => z.BurdenPool).Contains(x.BurdenPool))
                         .Select(oldBp => oldBp.BurdenPool);
 
-                    var addedItems = context.BurdenPoolLUs.Where(newBp => newBp.RevisionID == newID)
+					IQueryable<string> addedItems = context.BurdenPoolLUs.Where(newBp => newBp.RevisionID == newID)
                         .Where(x => !context.BurdenPoolLUs.Where(oldBp => oldBp.RevisionID == oldID)
                             .Select(z => z.BurdenPool).Contains(x.BurdenPool))
                         .Select(newBp => newBp.BurdenPool);
