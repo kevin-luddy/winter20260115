@@ -91,13 +91,6 @@
 		{
 			builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
-			//builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
-			//{
-			//	config.Sources.Clear();
-			//	config.SetBasePath(builder.Environment.ContentRootPath)
-			//												.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-			//												.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-			//												.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 			if (Directory.Exists("/etc/config-volume"))
 			{
 				builder.Configuration.AddJsonFile("/etc/config-volume/settings", false, true);
@@ -106,8 +99,7 @@
 			{
 				builder.Configuration.AddUserSecrets<T>();
 			}
-			//});
-
+			
 			builder.Services.AddMemoryCache();
 			builder.Services.AddHttpContextAccessor();
 			builder.Services.AddHttpClient();
@@ -165,8 +157,6 @@
 							path: "logs/log-.csv",
 							outputTemplate: "{Timestamp:HH:mm:ss.fff},{SourceContext},{CorrelationId},{UserNTID},{Message}{NewLine}",
 							fileSizeLimitBytes: 20000000,
-							//buffered: true,
-							//flushToDiskInterval: TimeSpan.FromSeconds(60),
 							rollingInterval: RollingInterval.Day,
 							rollOnFileSizeLimit: true,
 							retainedFileCountLimit: 20,
