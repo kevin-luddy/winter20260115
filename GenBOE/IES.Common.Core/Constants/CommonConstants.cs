@@ -4,10 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using IES.Common.Core.Enums;
-
 namespace IES.Common.Core.Constants
 {
+	using IES.Common.Core.Enums;
+
 	/// <summary>
 	/// String CommonConstants that can be used through the solution.
 	/// </summary>

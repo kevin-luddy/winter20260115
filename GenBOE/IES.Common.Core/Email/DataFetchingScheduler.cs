@@ -4,12 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.Logging;
-
 namespace IES.Common.Core.Email
 {
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using Microsoft.Extensions.Logging;
+
 	/// <summary>
 	/// This class will asynchronously schedule threads to retrieve data from the DB and load it into cache.
 	/// </summary>

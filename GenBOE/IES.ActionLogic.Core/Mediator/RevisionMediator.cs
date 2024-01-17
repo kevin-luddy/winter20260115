@@ -25,17 +25,17 @@ namespace IES.ActionLogic.Core.Mediator
 		/// <summary>
 		/// The revision loader
 		/// </summary>
-		private IRevisionLoader revisionLoader;
+		private readonly IRevisionLoader revisionLoader;
 
 		/// <summary>
 		/// The cache
 		/// </summary>
-		private ICacheDataLoader cacheDataLoader;
+		private readonly ICacheDataLoader cacheDataLoader;
 
 		/// <summary>
 		/// The logger
 		/// </summary>
-		private ILogger logger;
+		private readonly ILogger logger;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RevisionMediator"/> class.

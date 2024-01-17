@@ -60,12 +60,12 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <summary>
 		/// The replication loader
 		/// </summary>
-		private IRateCodeReplicationLoader replicationLoader;
+		private readonly IRateCodeReplicationLoader replicationLoader;
 
 		/// <summary>
 		/// The rate formatter
 		/// </summary>
-		private RateFormatter rateFormatter;
+		private readonly RateFormatter rateFormatter;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RateControllerLogic"/> class.
@@ -797,7 +797,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 							}
 
 							// Only save Rates that have changes.
-							if (modified == true)
+							if (modified)
 							{
 								// Add to collection for bulk save.
 								importResults.Add(existingRateDetailMV);

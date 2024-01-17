@@ -346,7 +346,7 @@ namespace IES.ActionLogic.Core.Common
 		/// <summary>
 		/// Worksheets to be hidden on export, and excluded from import
 		/// </summary>
-		private static string[] excludedSheetNames = { OPTIONS_LISTS };
+		private static readonly string[] excludedSheetNames = { OPTIONS_LISTS };
 
 		/// <summary>
 		/// Excluded sheet names

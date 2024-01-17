@@ -25,7 +25,7 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// The rev loader
         /// </summary>
-        private IRevisionLoader revisionLoader;
+        private readonly IRevisionLoader revisionLoader;
 
         /// <summary>
         /// Gets all objects based on the IDs that were passed in

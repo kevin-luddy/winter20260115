@@ -3,12 +3,12 @@
 //     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
-using System.Collections.Specialized;
-using System.Configuration;
-using IES.Common.Core.Enums;
-
 namespace IES.Common.Core.Configuration
 {
+	using System.Collections.Specialized;
+	using System.Configuration;
+	using IES.Common.Core.Enums;
+
 	/// <summary>
 	/// Individual company configuration and override settings
 	/// </summary>

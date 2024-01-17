@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-
-namespace IES.Common.Core.Authorization
+﻿namespace IES.Common.Core.Authorization
 {
+	using Microsoft.AspNetCore.Authorization;
+
 	public class GroupsCheckRequirement : IAuthorizationRequirement
 	{
 		public ICollection<string> Groups { get; private set; }

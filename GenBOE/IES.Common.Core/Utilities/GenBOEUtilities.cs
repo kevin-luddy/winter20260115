@@ -1,10 +1,10 @@
-﻿using System.Web;
-using HtmlAgilityPack;
-using IES.Common.Core.Enums;
-using IES.Common.Core.Exceptions;
-
-namespace IES.Common.Core.Utilities
+﻿namespace IES.Common.Core.Utilities
 {
+	using System.Web;
+	using HtmlAgilityPack;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Exceptions;
+
 	/// <summary>
 	/// This class is for general utility functions for the whole solution to use.
 	/// </summary>

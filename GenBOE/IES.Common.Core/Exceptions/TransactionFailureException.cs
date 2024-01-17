@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace IES.Common.Core.Exceptions
+﻿namespace IES.Common.Core.Exceptions
 {
+	using System.Runtime.Serialization;
+
 	[Serializable]
 	public class TransactionFailureException : Exception
 	{

@@ -341,7 +341,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <returns>Row</returns>
 		internal static Row GetRow(WorksheetPart worksheetPart, uint rowIndex)
 		{
-			return worksheetPart.Worksheet.GetFirstChild<SheetData>().Elements<Row>().Where(r => r.RowIndex == rowIndex).SingleOrDefault();
+			return worksheetPart.Worksheet.GetFirstChild<SheetData>().Elements<Row>().SingleOrDefault(r => r.RowIndex == rowIndex);
 		}
 
 		/// <summary>
@@ -755,7 +755,7 @@ namespace IES.Common.Core.OfficeUtilities
 			{
 				char colPiece = columnName[iChar];
 				int colNum = colPiece - 64;
-				toReturn = toReturn + colNum * (int)Math.Pow(26, columnName.Length - (iChar + 1));
+				toReturn += colNum * (int)Math.Pow(26, columnName.Length - (iChar + 1));
 			}
 
 			return toReturn - 1;
@@ -801,8 +801,10 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			// Create the new row and set its index.
-			Row toReturn = new();
-			toReturn.RowIndex = (UInt32)rowIndex;
+			Row toReturn = new()
+			{
+				RowIndex = (UInt32)rowIndex
+			};
 
 			if (values.Length > 0)
 			{
@@ -980,9 +982,11 @@ namespace IES.Common.Core.OfficeUtilities
 			// If we passed in text we;'ll need to create a new cell
 			if (!string.IsNullOrEmpty(text))
 			{
-				toReturn = new Cell();
-				// Create the cell reference (i.e. A1) from the header letter and row index given
-				toReturn.CellReference = cellReference;
+				toReturn = new Cell
+				{
+					// Create the cell reference (i.e. A1) from the header letter and row index given
+					CellReference = cellReference
+				};
 
 				// If there was already a cell at this cellReference, use its style first
 				if (originalCell != null &&
@@ -1140,7 +1144,7 @@ namespace IES.Common.Core.OfficeUtilities
 							{
 								if (greaterColumn == greaterColumns.First())
 								{
-									greaterColumn.Min = greaterColumn.Min + (uint)duplications;
+									greaterColumn.Min += (uint)duplications;
 								}
 								else
 								{
@@ -1149,8 +1153,8 @@ namespace IES.Common.Core.OfficeUtilities
 										TransferAllCellsFromOneColumnToAnother(worksheetPart, GetColumnNameFromColumnIndex(ndx - 1), GetColumnNameFromColumnIndex(ndx + duplications - 1), true);
 									}
 
-									greaterColumn.Min = greaterColumn.Min + (uint)duplications;
-									greaterColumn.Max = greaterColumn.Max + (uint)duplications;
+									greaterColumn.Min += (uint)duplications;
+									greaterColumn.Max += (uint)duplications;
 								}
 							}
 
@@ -1159,7 +1163,7 @@ namespace IES.Common.Core.OfficeUtilities
 								TransferAllCellsFromOneColumnToAnother(worksheetPart, columnName, GetColumnNameFromColumnIndex(ndx), false);
 							}
 
-							column.Max = column.Max + (uint)duplications;
+							column.Max += (uint)duplications;
 						}
 					}
 
@@ -1214,7 +1218,7 @@ namespace IES.Common.Core.OfficeUtilities
 					{
 						if (greaterColumn == greaterColumns.Last())
 						{
-							greaterColumn.Min = greaterColumn.Min - 1;
+							greaterColumn.Min--;
 						}
 						else
 						{
@@ -1223,8 +1227,8 @@ namespace IES.Common.Core.OfficeUtilities
 								TransferAllCellsFromOneColumnToAnother(worksheetPart, GetColumnNameFromColumnIndex(ndx - 1), GetColumnNameFromColumnIndex(ndx - 2), true);
 							}
 
-							greaterColumn.Min = greaterColumn.Min - 1;
-							greaterColumn.Max = greaterColumn.Max - 1;
+							greaterColumn.Min--;
+							greaterColumn.Max--;
 						}
 					}
 
@@ -1332,8 +1336,10 @@ namespace IES.Common.Core.OfficeUtilities
 			File.Copy(templateFileLocation, toReturn);
 
 			// Make sure that the copied template is writable
-			FileInfo copiedFileInfo = new(toReturn);
-			copiedFileInfo.IsReadOnly = false;
+			FileInfo copiedFileInfo = new(toReturn)
+			{
+				IsReadOnly = false
+			};
 
 			return toReturn;
 		}
@@ -1782,10 +1788,12 @@ namespace IES.Common.Core.OfficeUtilities
 				clonedSheet.Worksheet.SheetProperties.CodeName = "Sheet" + sheetId;
 				//Add new sheet to main workbook part
 				Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>();
-				Sheet copiedSheet = new();
-				copiedSheet.Name = clonedSheetName;
-				copiedSheet.Id = workbookPart.GetIdOfPart(clonedSheet);
-				copiedSheet.SheetId = sheetId;
+				Sheet copiedSheet = new()
+				{
+					Name = clonedSheetName,
+					Id = workbookPart.GetIdOfPart(clonedSheet),
+					SheetId = sheetId
+				};
 				sheets.Append(copiedSheet);
 				//Save Changes
 				workbookPart.Workbook.Save();

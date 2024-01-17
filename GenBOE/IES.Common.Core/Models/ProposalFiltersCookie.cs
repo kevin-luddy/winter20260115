@@ -4,10 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using IES.Common.Core.Enums;
-
 namespace IES.Common.Core.Models
 {
+	using IES.Common.Core.Enums;
+
 	/// <summary>
 	/// Cookie for storing proposal filter options
 	/// </summary>

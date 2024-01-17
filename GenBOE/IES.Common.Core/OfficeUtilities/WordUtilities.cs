@@ -31,7 +31,7 @@ namespace IES.Common.Core.OfficeUtilities
 
 		internal static Tag GetTag(ICollection<Tag> tags, string tag)
 		{
-			return tags.Where(s => s.Val.Value.Equals(tag, StringComparison.CurrentCultureIgnoreCase)).LastOrDefault();
+			return tags.LastOrDefault(s => s.Val.Value.Equals(tag, StringComparison.CurrentCultureIgnoreCase));
 		}
 
 		internal static Tag GetTag(OpenXmlElement element, string tag)

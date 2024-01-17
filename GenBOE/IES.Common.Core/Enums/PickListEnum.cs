@@ -4,10 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.ComponentModel;
-
 namespace IES.Common.Core.Enums
 {
+	using System.ComponentModel;
+
 	/// <summary>
 	/// All pick lists that are editable via admin page
 	/// </summary>

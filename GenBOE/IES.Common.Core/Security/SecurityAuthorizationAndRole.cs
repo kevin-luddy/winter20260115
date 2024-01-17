@@ -4,10 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using IES.Common.Core.Enums;
-
 namespace IES.Common.Core.Security
 {
+	using IES.Common.Core.Enums;
+
 	/// <summary>
 	/// Composite of authorization and role enumerated values
 	/// </summary>

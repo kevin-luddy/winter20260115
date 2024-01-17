@@ -4,11 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-
 namespace IES.DataBridge.ModelViews
 {
+	using System.ComponentModel.DataAnnotations;
+	using Newtonsoft.Json;
+
 	/// <summary>
 	/// Model View for a Banner
 	/// </summary>

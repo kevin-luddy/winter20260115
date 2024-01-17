@@ -20,7 +20,7 @@ namespace IES.ActionLogic.Core.Common
 		/// <summary>
 		/// The banner loader
 		/// </summary>
-		private IBannerLoader bannerLoader;
+		private readonly IBannerLoader bannerLoader;
 
 		/// <summary>
 		/// The banners
@@ -30,7 +30,7 @@ namespace IES.ActionLogic.Core.Common
 		/// <summary>
 		/// The banner lock
 		/// </summary>
-		private static object bannerLock = new();
+		private static readonly object bannerLock = new();
 
 		/// <summary>
 		/// Gets the banners.

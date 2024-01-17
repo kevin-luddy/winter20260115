@@ -26,12 +26,12 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <summary>
 		/// The rate detail loader
 		/// </summary>
-		private IRateDetailLoader rateDetailLoader;
+		private readonly IRateDetailLoader rateDetailLoader;
 
 		/// <summary>
 		/// The replication loader
 		/// </summary>
-		private IRateCodeReplicationLoader replicationLoader;
+		private readonly IRateCodeReplicationLoader replicationLoader;
 
 		/// <summary>
 		/// Constructor

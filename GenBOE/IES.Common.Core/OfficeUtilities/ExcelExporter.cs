@@ -435,8 +435,10 @@ namespace IES.Common.Core.OfficeUtilities
 					ShowErrorMessage = showErrorMessage,
 					SequenceOfReferences = new ListValue<StringValue>() { InnerText = dataValidationReference.Value.Trim() }
 				};
-				Formula1 formula1 = new();
-				formula1.Text = dataValidationReference.Key;    // defined name
+				Formula1 formula1 = new()
+				{
+					Text = dataValidationReference.Key    // defined name
+				};
 				dataValidation.Append(formula1);
 				dataValidations.Append(dataValidation);
 			}

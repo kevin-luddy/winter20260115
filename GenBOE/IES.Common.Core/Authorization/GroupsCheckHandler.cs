@@ -1,9 +1,9 @@
-﻿using IES.Common.Core.Interfaces;
-using IES.Common.Core.Models;
-using Microsoft.AspNetCore.Authorization;
-
-namespace IES.Common.Core.Authorization
+﻿namespace IES.Common.Core.Authorization
 {
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
+	using Microsoft.AspNetCore.Authorization;
+
 	public class GroupsCheckHandler : AuthorizationHandler<GroupsCheckRequirement>
 	{
 		private readonly IActiveDirectoryService activeDirectoryUtilities;

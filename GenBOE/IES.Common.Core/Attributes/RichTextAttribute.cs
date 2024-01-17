@@ -3,11 +3,11 @@
 //     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
-using System.ComponentModel.DataAnnotations;
-using IES.Common.Core.Enums;
-
 namespace IES.Common.Core.Attributes
 {
+	using System.ComponentModel.DataAnnotations;
+	using IES.Common.Core.Enums;
+
 	/// <summary>
 	/// Identifies a string property as containing rich-text.
 	/// </summary>

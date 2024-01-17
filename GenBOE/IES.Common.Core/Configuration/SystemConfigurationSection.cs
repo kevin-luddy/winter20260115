@@ -3,12 +3,12 @@
 //     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
-using System.Configuration;
-using System.Xml;
-using IES.Common.Core.Enums;
-
 namespace IES.Common.Core.Configuration
 {
+	using System.Configuration;
+	using System.Xml;
+	using IES.Common.Core.Enums;
+
 	/// <summary>
 	/// Web.config section handler for "systemConfiguration"
 	/// </summary>
@@ -99,11 +99,12 @@ namespace IES.Common.Core.Configuration
 								{
 									if (connectionStringNode.NodeType == XmlNodeType.Element && connectionStringNode.Name == "add")
 									{
-										ConnectionStringSettings connectionString = new();
-
-										connectionString.Name = GetAttributeValue(connectionStringNode, "name");
-										connectionString.ConnectionString = GetAttributeValue(connectionStringNode, "connectionString");
-										connectionString.ProviderName = GetAttributeValue(connectionStringNode, "providerName");
+										ConnectionStringSettings connectionString = new()
+										{
+											Name = GetAttributeValue(connectionStringNode, "name"),
+											ConnectionString = GetAttributeValue(connectionStringNode, "connectionString"),
+											ProviderName = GetAttributeValue(connectionStringNode, "providerName")
+										};
 
 										companyConfiguration.ConnectionStrings.Add(connectionString);
 									}

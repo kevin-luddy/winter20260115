@@ -4,10 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections.ObjectModel;
-
 namespace IES.ActionLogic.Core.Validation
 {
+	using System.Collections.ObjectModel;
 	using System.Collections.Generic;
 
 	/// <summary>

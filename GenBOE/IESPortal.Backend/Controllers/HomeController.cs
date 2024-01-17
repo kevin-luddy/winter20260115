@@ -30,7 +30,7 @@ namespace IESPortal.Backend.Controllers
 		/// <summary>
 		/// The security information.
 		/// </summary>
-		private ISecurityInformation securityInformation;
+		private readonly ISecurityInformation securityInformation;
 
 		/// <summary>
 		/// Offline Application loader

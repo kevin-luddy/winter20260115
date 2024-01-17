@@ -26,12 +26,12 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// RDSB Rate Code Xref Loader
         /// </summary>
-        private IRdsbRateCodeXrefLoader rdsbRateCodeXrefLoader;
+        private readonly IRdsbRateCodeXrefLoader rdsbRateCodeXrefLoader;
 
         /// <summary>
         /// RDSB Section Xref Loader
         /// </summary>
-        private IRdsbSectionXrefLoader rdsbSectionXrefLoader;
+        private readonly IRdsbSectionXrefLoader rdsbSectionXrefLoader;
 
         /// <summary>
         /// Default Constructor

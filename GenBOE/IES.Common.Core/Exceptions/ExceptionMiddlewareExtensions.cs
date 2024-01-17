@@ -1,15 +1,15 @@
-﻿using System.Data.Entity.Core;
-using System.Data.SqlClient;
-using System.Net;
-using IES.Common.Core.Utilities;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
-namespace IES.Common.Core.Exceptions
+﻿namespace IES.Common.Core.Exceptions
 {
+	using System.Data.Entity.Core;
+	using System.Data.SqlClient;
+	using System.Net;
+	using IES.Common.Core.Utilities;
+	using Microsoft.AspNetCore.Builder;
+	using Microsoft.AspNetCore.Diagnostics;
+	using Microsoft.AspNetCore.Http;
+	using Microsoft.Extensions.DependencyInjection;
+	using Microsoft.Extensions.Logging;
+
 	public static class ExceptionMiddlewareExtensions
 	{
 		//
@@ -58,7 +58,7 @@ namespace IES.Common.Core.Exceptions
 						string helpDeskLink = "If the error persists, please open a ticket with the Helpdesk at: ";
 						string supportLink = CommonUtilities.ServiceCentralLink();
 
-						helpDeskLink = helpDeskLink + supportLink;
+						helpDeskLink += supportLink;
 
 						string message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again.";
 

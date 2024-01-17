@@ -35,7 +35,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <summary>
 		/// The emailer
 		/// </summary>
-		private IIESEmailer emailer;
+		private readonly IIESEmailer emailer;
 
 		/// <summary>
 		/// Constructor

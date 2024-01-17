@@ -1,7 +1,7 @@
-﻿using System.Collections;
-
-namespace IES.Common.Core.Interfaces
+﻿namespace IES.Common.Core.Interfaces
 {
+	using System.Collections;
+
 	public interface ICacheDataLoader
 	{
 		/// <summary>

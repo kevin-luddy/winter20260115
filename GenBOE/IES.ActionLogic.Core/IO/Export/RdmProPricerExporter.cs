@@ -73,7 +73,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <summary>
 		/// prefix
 		/// </summary>
-		private string prefix = DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY);
+		private readonly string prefix = DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY);
 		#endregion
 
 		/// <summary>

@@ -37,17 +37,17 @@ namespace IESPortal.Backend.Controllers
         /// <summary>
         /// The admin controller logic
         /// </summary>
-        private IESPortalAdminControllerLogic adminControllerLogic;
+        private readonly IESPortalAdminControllerLogic adminControllerLogic;
 
         /// <summary>
         /// The banner mediator.
         /// </summary>
-        private BannerMediator bannerMediator;
+        private readonly BannerMediator bannerMediator;
 
         /// <summary>
         /// The security information.
         /// </summary>
-        private ISecurityInformation securityInformation;
+        private readonly ISecurityInformation securityInformation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminController"/> class.

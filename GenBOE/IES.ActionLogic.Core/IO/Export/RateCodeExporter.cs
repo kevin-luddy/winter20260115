@@ -64,7 +64,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		private static void PopulateRateCodes(RateGridModelView rates, SpreadsheetDocument spreadsheet)
 		{
 			// Create collections of strings for each row in the export file
-			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
+			ExcelExportWorksheet worksheet = new();
 
 			Collection<string> headers = GetHeaders();
 

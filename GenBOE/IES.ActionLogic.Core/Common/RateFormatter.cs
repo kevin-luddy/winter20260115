@@ -29,7 +29,7 @@ namespace IES.ActionLogic.Core.Common
 		/// <summary>
 		/// The lock object
 		/// </summary>
-		private object lockObject = new();
+		private readonly object lockObject = new();
 
 		/// <summary>
 		/// Default rate category

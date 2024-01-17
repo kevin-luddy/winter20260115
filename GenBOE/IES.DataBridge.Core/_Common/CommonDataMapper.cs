@@ -28,12 +28,12 @@ namespace IES.DataBridge.Common
         /// <summary>
         /// The rate detail loader
         /// </summary>
-        private IRateDetailLoader rateDetailLoader;
+        private readonly IRateDetailLoader rateDetailLoader;
 
         /// <summary>
         /// The cache data loader
         /// </summary>
-        private ICacheDataLoader cacheDataLoader;
+        private readonly ICacheDataLoader cacheDataLoader;
 
         /// <summary>
         /// Constructor with Common Data and Cache Data loader

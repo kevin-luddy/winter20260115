@@ -4,10 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Newtonsoft.Json;
-
 namespace IES.DataBridge.ModelViews
 {
+	using Newtonsoft.Json;
+
 	/// <summary>
 	/// The Model View used for ProPricer mappings.
 	/// </summary>

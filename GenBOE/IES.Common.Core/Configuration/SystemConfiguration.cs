@@ -4,11 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Configuration;
-using IES.Common.Core.Enums;
-
 namespace IES.Common.Core.Configuration
 {
+	using System.Configuration;
+	using IES.Common.Core.Enums;
+
 	/// <summary>
 	/// Singleton that stores system configurations from web.config
 	/// </summary>

@@ -3,14 +3,14 @@
 //     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net;
-using HtmlAgilityPack;
-using IES.Common.Core.Models;
-
 namespace IES.Common.Core.Utilities
 {
+	using System.Drawing;
+	using System.Drawing.Imaging;
+	using System.Net;
+	using HtmlAgilityPack;
+	using IES.Common.Core.Models;
+
 	/// <summary>
 	/// Utilities for image conversion and manipulation
 	/// </summary>
@@ -150,14 +150,18 @@ namespace IES.Common.Core.Utilities
 				byte[] inbuffer = Convert.FromBase64String(base64String);
 
 				// copy binary into memory
-				msin = new MemoryStream(inbuffer);
-				msin.Position = 0;
+				msin = new MemoryStream(inbuffer)
+				{
+					Position = 0
+				};
 
 				// convert to a bitmap image
 				using (Bitmap bmp = new(Image.FromStream(msin)))
 				{
-					msout = new MemoryStream();
-					msout.Position = 0;
+					msout = new MemoryStream
+					{
+						Position = 0
+					};
 
 					// now convert the image to the designated format ...
 					bmp.Save(msout, format);
@@ -210,8 +214,10 @@ namespace IES.Common.Core.Utilities
 				byte[] inbuffer = Convert.FromBase64String(emailImageInfo.Base64String);
 
 				// copy binary into memory
-				msin = new MemoryStream(inbuffer);
-				msin.Position = 0;
+				msin = new MemoryStream(inbuffer)
+				{
+					Position = 0
+				};
 
 				// convert to a bitmap image
 				Bitmap bmp;

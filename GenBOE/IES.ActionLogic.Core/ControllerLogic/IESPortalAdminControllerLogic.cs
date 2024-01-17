@@ -31,17 +31,17 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <summary>
 		/// PTM Pick List Mapper
 		/// </summary>
-		private IPickListMapper ptmPickListMapper;
+		private readonly IPickListMapper ptmPickListMapper;
 
 		/// <summary>
 		/// BOE Pick List Mapper
 		/// </summary>
-		private IPickListMapper boePickListMapper;
+		private readonly IPickListMapper boePickListMapper;
 
 		/// <summary>
 		/// Offline Application Loader
 		/// </summary>
-		private IOfflineApplicationLoader offlineApplicationLoader;
+		private readonly IOfflineApplicationLoader offlineApplicationLoader;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IESPortalAdminControllerLogic"/> class.

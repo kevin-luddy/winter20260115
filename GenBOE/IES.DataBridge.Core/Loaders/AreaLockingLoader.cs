@@ -22,17 +22,17 @@ namespace IES.DataBridge.Loaders
         /// <summary>
         /// Cache Object
         /// </summary>
-        private ICacheService cache;
+        private readonly ICacheService cache;
 
         /// <summary>
         /// Number of seconds to store lock in cache
         /// </summary>
-        private int secondsToCache = Convert.ToInt32(ConfigurationManager.AppSettings["EditLockTimeoutExpirationMinutes"]) * 60;
+        private readonly int secondsToCache = Convert.ToInt32(ConfigurationManager.AppSettings["EditLockTimeoutExpirationMinutes"]) * 60;
 
         /// <summary>
         /// key for the cache
         /// </summary>
-        private string cacheKey = "AreaLock_";
+        private readonly string cacheKey = "AreaLock_";
 
         /// <summary>
         /// An object for locking items while modifying cache

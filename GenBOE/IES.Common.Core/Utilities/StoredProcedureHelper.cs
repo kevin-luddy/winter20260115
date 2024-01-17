@@ -50,9 +50,11 @@ namespace IES.Common.Core.Utilities
 			ICollection<KeyValuePair<int, DateTime?>> idToUpdateDateXref = new Dictionary<int, DateTime?>();
 
 			// create the table valued parameter for the stored procedure
-			SqlParameter parameter = new(paramName, dataTable);
-			parameter.SqlDbType = SqlDbType.Structured;
-			parameter.TypeName = typeName;
+			SqlParameter parameter = new(paramName, dataTable)
+			{
+				SqlDbType = SqlDbType.Structured,
+				TypeName = typeName
+			};
 
 			// execute the stored procedure with the data table 
 			string sql = string.Format("EXEC {0} {1};", procedureName, paramName);
