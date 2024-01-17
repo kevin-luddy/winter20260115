@@ -103,7 +103,7 @@ namespace IESPortal.Backend.Controllers
             DateTime tomorrow = DateTime.Now.AddDays(1);
             
             // Create a default banner if this is new
-            BannerModelView banner = new BannerModelView()
+            BannerModelView banner = new()
             {
                 StartDate = new DateTime(tomorrow.Year, tomorrow.Month, tomorrow.Day, 5, 0, 0),
                 HoursToShow = 17,
@@ -142,7 +142,7 @@ namespace IESPortal.Backend.Controllers
             }
 
             banner.Updateable = UpdateType.Deleted;
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+            using (TransactionScope scope = new(TransactionScopeOption.Required,
                 new TransactionOptions
                 {
                     IsolationLevel = IsolationLevel.Snapshot,
@@ -182,7 +182,7 @@ namespace IESPortal.Backend.Controllers
                 throw new GenValidationException("At least one Application must be selected.");
             }
 
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+            using (TransactionScope scope = new(TransactionScopeOption.Required,
                 new TransactionOptions
                 {
                     IsolationLevel = IsolationLevel.Snapshot,

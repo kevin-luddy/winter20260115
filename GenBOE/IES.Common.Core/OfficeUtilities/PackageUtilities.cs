@@ -79,7 +79,7 @@ namespace IES.Common.Core.OfficeUtilities
 					docBytes = Array.Empty<byte>();
 				}
 
-				mem.Write(docBytes, 0, (int)docBytes.Length);
+				mem.Write(docBytes, 0, docBytes.Length);
 
 				if (exportFormat != null)
 				{

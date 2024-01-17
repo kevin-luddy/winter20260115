@@ -1819,7 +1819,7 @@ namespace IES.Common.Core.OfficeUtilities
 			foreach (TableDefinitionPart tableDefPart in worksheetPart.TableDefinitionParts)
 			{
 				tableId++;
-				tableDefPart.Table.Id = (uint)tableId;
+				tableDefPart.Table.Id = tableId;
 				tableDefPart.Table.DisplayName = "CopiedTable" + tableId;
 				tableDefPart.Table.Name = "CopiedTable" + tableId;
 				tableDefPart.Table.Save();

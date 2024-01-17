@@ -258,7 +258,7 @@ namespace IES.Common.Core
 				return 0;
 			}
 
-			return (decimal)(endDate.Value.Subtract(startDate.Value).Days / CommonConstants.POP_MONTHS_DIVISOR);
+			return endDate.Value.Subtract(startDate.Value).Days / CommonConstants.POP_MONTHS_DIVISOR;
 		}
 
 		#endregion Date/Time methods

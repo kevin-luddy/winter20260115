@@ -82,8 +82,8 @@ namespace IESPortal.Backend.Controllers
         [HttpGet("[action]")]
         public ICollection<HeaderLink> GetHeaderLinks()
         {
-            List<HeaderLink> headerLinks = new List<HeaderLink>
-            {
+            List<HeaderLink> headerLinks = new()
+			{
                 new HeaderLink
                 {
                     Name = "IES",

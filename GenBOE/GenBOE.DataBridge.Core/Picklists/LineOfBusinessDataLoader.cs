@@ -34,9 +34,9 @@ namespace GenBOE.DataBridge.Core.Picklists
 		{
 			ICollection<PickListDto> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
-				using (GenBoeEntities gbe = new GenBoeEntities())
+				using (GenBoeEntities gbe = new())
 				{
 					toReturn = gbe.LineOfBusinesses.OrderBy(l => l.LineOfBusinessName)
 						.Select(x => new PickListDto()
@@ -62,13 +62,13 @@ namespace GenBOE.DataBridge.Core.Picklists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				if (dtoToDelete != null && !dtoToDelete.InUse)
 				{
 					toReturn = dtoToDelete.Id;
 
-					using (GenBoeEntities dbModel = new GenBoeEntities())
+					using (GenBoeEntities dbModel = new())
 					{
 						dbModel.deleteLOB(dtoToDelete.Id);
 					}
@@ -87,11 +87,11 @@ namespace GenBOE.DataBridge.Core.Picklists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				if (dtoToUpsert != null)
 				{
-					using (GenBoeEntities dbModel = new GenBoeEntities())
+					using (GenBoeEntities dbModel = new())
 					{
 						string text = dtoToUpsert.Text;
 

@@ -34,9 +34,9 @@ namespace GenBOE.DataBridge.Core.Picklists
 		{
 			ICollection<PickListDto> result = new List<PickListDto>();
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalClassLULoader.GetProposalTypes", Log))
+			using (StopwatchTimer sw = new("ProposalClassLULoader.GetProposalTypes", Log))
 			{
-				using (GenBoeEntities dbModel = new GenBoeEntities())
+				using (GenBoeEntities dbModel = new())
 				{
 					result = dbModel.ProposalClassLUs.Select(x => new PickListDto()
 					{
@@ -60,11 +60,11 @@ namespace GenBOE.DataBridge.Core.Picklists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				if (dtoToUpsert != null)
 				{
-					using (GenBoeEntities dbModel = new GenBoeEntities())
+					using (GenBoeEntities dbModel = new())
 					{
 						string text = dtoToUpsert.Text;
 
@@ -91,13 +91,13 @@ namespace GenBOE.DataBridge.Core.Picklists
 		{
 			int? toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new(Log))
 			{
 				if (dtoToDelete != null && !dtoToDelete.InUse)
 				{
 					toReturn = dtoToDelete.Id;
 
-					using (GenBoeEntities dbModel = new GenBoeEntities())
+					using (GenBoeEntities dbModel = new())
 					{
 						dbModel.deleteProposalClass(dtoToDelete.Id);
 					}

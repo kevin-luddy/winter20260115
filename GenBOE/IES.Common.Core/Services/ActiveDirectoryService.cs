@@ -644,7 +644,7 @@ namespace IES.Common.Core.Services
 													 EmployeeId = user.Properties.Contains("lmcEmployeeID") ? user.Properties["lmcEmployeeID"][0].ToString() : string.Empty,
 													 IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y" : null,
 													 IsSubcontractor = user.Properties.Contains("employeeType") ? user.Properties["employeeType"][0].ToString().ToUpper() != "E" : null
-												 }).ToList() as ICollection<UserData>;
+												 }).ToList();
 								}
 
 								allUsersAdded = true;
