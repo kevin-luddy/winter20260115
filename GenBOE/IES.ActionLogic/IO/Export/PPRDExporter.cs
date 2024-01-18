@@ -13,8 +13,10 @@ namespace IES.ActionLogic.IO.Export
 	using System.IO;
 	using System.Linq;
 	using System.Net.Http;
-	using System.Web;
-	using Common;
+    using System.Threading.Tasks;
+    using System.Web;
+    using System.Web.Mvc;
+    using Common;
 	using DocumentFormat.OpenXml;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Wordprocessing;
@@ -38,20 +40,29 @@ namespace IES.ActionLogic.IO.Export
 		/// </summary>
 		private const string FIRST_SECTION_REFERENCE_NUMBER = "1.0";
 
-		/// <summary>
-		/// Generate a Word document containing the full PPRD.
-		/// </summary>
-		/// <param name="sections">Collection of Section MVs</param>
-		/// <param name="rates">Collection of RateDetail MVs</param>
-		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
-		/// <param name="serverFileName">Server path to new file to generate.</param>
-		/// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
-		/// <param name="revision">Revision modelview</param>
-		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
-		/// <param name="response">the web response object to write the file back to for user download</param>
-		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		public async void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel, bool? portionMarkingRequired)
+        private readonly ITokenService tokenService;
+
+		public PPRDExporter(
+			ITokenService tokenService
+			)
+		{
+			this.tokenService = tokenService;
+		}
+
+        /// <summary>
+        /// Generate a Word document containing the full PPRD.
+        /// </summary>
+        /// <param name="sections">Collection of Section MVs</param>
+        /// <param name="rates">Collection of RateDetail MVs</param>
+        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
+        /// <param name="serverFileName">Server path to new file to generate.</param>
+        /// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
+        /// <param name="revision">Revision modelview</param>
+        /// <param name="rateTableYears">Number of years to include in the rate tables</param>
+        /// <param name="response">the web response object to write the file back to for user download</param>
+        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        public async Task<ActionResult> ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel, bool? portionMarkingRequired)
 		{
 			if (response == null)
 			{
@@ -80,15 +91,17 @@ namespace IES.ActionLogic.IO.Export
 					{
 						// Make a post call to the Portion Marking API here
 						HttpClient httpClient = new HttpClient();
-						string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
-
-						var result = await httpClient.PostAsync(portionMarkingAPI + "/PortionMarkDocument", content);
+                        Utilities.AddAuthorizationHeader(httpClient, (await this.tokenService.GetToken()).AccessToken);
+                        string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
+                        var result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
 						result.EnsureSuccessStatusCode();
 
 						var postResponse = await result.Content.ReadAsStringAsync();
 					}
 				}
 			}
+
+			return null;
 		}
 
 		/// <summary>

@@ -8,8 +8,10 @@ namespace IES.ActionLogic.IO.Export
 {
 	using System.Collections.Generic;
 	using System.IO;
-	using System.Web;
-	using IES.DataBridge.ModelViews;
+    using System.Threading.Tasks;
+    using System.Web;
+    using System.Web.Mvc;
+    using IES.DataBridge.ModelViews;
 
 	/// <summary>
 	/// Interface for PPRD Exporter
@@ -29,7 +31,7 @@ namespace IES.ActionLogic.IO.Export
 		/// <param name="response">the web response object to write the file back to for user download</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel, bool? portionMarkingRequired);
+		Task<ActionResult> ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel, bool? portionMarkingRequired);
 
         /// <summary>
         /// Generate a Word document containing the RDD sections and rates.
