@@ -1521,14 +1521,8 @@ namespace GenBOE.Web.Controllers
 					{
 
 						BoeApproverResponseDTO boeApprover = allApproverResponses.FirstOrDefault(a => a.BoeID == boeMV.BoeID && a.ETIUserID == BoeApproverID);
-						int approvalID = boeApprover == null ? 0 : boeApprover.Id;
-
-						if (approvalID > 0)
-						{
-							// find the existing one
-							boeApprover = allApproverResponses.First(a => a.ETIUserID == BoeApproverID);
-						}
-						else
+						
+						if (boeApprover == null)
 						{
 							// create a new one
 							boeApprover = new BoeApproverResponseDTO();
@@ -1545,7 +1539,7 @@ namespace GenBOE.Web.Controllers
 					// if NOT a DELETE request && any approvers were deleted, mark them as such
 					if (!requestIsADelete && originalBoe.Id > 0)
 					{
-						ICollection<BoeApproverResponseDTO> approversThatWereRemoved = allApproverResponses.Where(approvers => !boeMV.Approvers.Contains(approvers.ETIUserID)).ToCollection<BoeApproverResponseDTO>();
+						ICollection<BoeApproverResponseDTO> approversThatWereRemoved = allApproverResponses.Where(approvers => approvers.BoeID == boeMV.BoeID && !boeMV.Approvers.Contains(approvers.ETIUserID)).ToCollection<BoeApproverResponseDTO>();
 
 						if (approversThatWereRemoved.Any())
 						{
