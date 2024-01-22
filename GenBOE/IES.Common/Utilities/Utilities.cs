@@ -758,6 +758,32 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		/// Private for Is BRC Enabled, used for unit testing
+		/// </summary>
+		private static bool? isBRCEnabled;
+
+		/// <summary>
+		/// Indicates whether BRC features are enabled
+		/// </summary>
+		public static bool IsBRCEnabledForSystem
+		{
+			get
+			{
+				if (isBRCEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableBRC"), out bool value);
+					isBRCEnabled = value;
+				}
+
+				return isBRCEnabled.Value;
+			}
+			internal set // be able to override for unit test purposes
+			{
+				isBRCEnabled = value;
+			}
+		}
+
+		/// <summary>
 		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
 		/// to not point at unclassified locations that are not accessible.
 		/// </summary>
