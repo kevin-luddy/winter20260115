@@ -212,6 +212,12 @@ namespace GenBOE.ActionLogic.Workspace
                         sb.AppendLine($"Rationale: {RTEUtilities.TurnHTMLIntoPlainText(moqType.Rationale)}");
                     }
 
+					if (Utilities.IsHistoricalReferenceExplanationRequired(workspace.CreationDate) 
+						&& (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative))
+					{
+						sb.AppendLine($"Provide an explanation of Why the Historical Reference was Selected: {RTEUtilities.TurnHTMLIntoPlainText(moqType.HistoricalReferenceExplanation)}");
+					}
+
                     if (moqType.SelectedMOQType != MOQType.NonLabor)
                     {
                         sb.AppendLine($"Skill Mix Rationale: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SkillMixRationale)}");

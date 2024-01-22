@@ -685,6 +685,7 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="EstimateTasks" Type="varchar(max)" />
           <Property Name="Rationale" Type="varchar(max)" />
           <Property Name="SkillMix" Type="varchar(max)" />
+          <Property Name="HistoricalReferenceExplanation" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="MOQTypeSelectionTableData">
           <Key>
@@ -5254,6 +5255,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="EstimateTasks" Type="varchar(max)" Mode="In" />
           <Parameter Name="Rationale" Type="varchar(max)" Mode="In" />
           <Parameter Name="SkillMix" Type="varchar(max)" Mode="In" />
+          <Parameter Name="HistoricalReferenceExplanation" Type="varchar(max)" Mode="In" />
         </Function>
         <Function Name="upsertMOQTypeSelectionTableData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MOQTypeSelectionTableDataId" Type="int" Mode="In" />
@@ -12275,6 +12277,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="EstimateTasks" Mode="In" Type="String" />
             <Parameter Name="Rationale" Mode="In" Type="String" />
             <Parameter Name="SkillMix" Mode="In" Type="String" />
+            <Parameter Name="HistoricalReferenceExplanation" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertMOQTypeSelectionTableData" ReturnType="Collection(Int32)">
             <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
@@ -13789,6 +13792,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A" FromRole="MOQTypeSelection" ToRole="BOETaskElement" />
           <NavigationProperty Name="MOQTypeLU" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__32C688C3" FromRole="MOQTypeSelection" ToRole="MOQTypeLU" />
           <NavigationProperty Name="MOQTypeSelectionTableDatas" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelection" ToRole="MOQTypeSelectionTableData" />
+          <Property Name="HistoricalReferenceExplanation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK__MOQTypeSe__TaskI__31D2648A">
           <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
@@ -16084,6 +16088,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="MOQTypeSelections">
             <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelection">
               <MappingFragment StoreEntitySet="MOQTypeSelection">
+                <ScalarProperty Name="HistoricalReferenceExplanation" ColumnName="HistoricalReferenceExplanation" />
                 <ScalarProperty Name="CERName" ColumnName="CERName" />
                 <ScalarProperty Name="SkillMix" ColumnName="SkillMix" />
                 <ScalarProperty Name="Rationale" ColumnName="Rationale" />

@@ -561,6 +561,7 @@ namespace GenBOE.Web.Controllers
             ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
             ViewData["SAPWorkspaceBeforeCutoff"] = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
+			ViewData["HistoricalReferenceExplanationIsRequired"] = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
 
 			ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
 
