@@ -109,7 +109,7 @@
 			ConfigureSerilog(builder.Host, builder.Services, builder.Configuration, builder.Configuration.GetConnectionString(connectionString));
 			builder.Services.AddSingleton(Log.Logger);
 			ConfigureHealthChecks(builder.Services, connectionString);
-			ConfigureCors(builder.Services);
+			ConfigureCors(builder.Services, builder.Configuration);
 
 			builder.Services.AddControllers().AddJsonOptions(options =>
 			{
@@ -232,10 +232,17 @@
 		/// Should be called from Startup.ConfigureServices
 		/// </summary>
 		/// <param name="services">Services which we are configuring</param>
-		protected virtual void ConfigureCors(IServiceCollection services)
+		protected virtual void ConfigureCors(IServiceCollection services, IConfiguration configuration)
 		{
+			string allowedOrigins = configuration["AllowedOrigins"];
+			if (string.IsNullOrWhiteSpace(allowedOrigins))
+			{
+				allowedOrigins = "https://*.lmco.com";
+			}
+
+			string[] origins = allowedOrigins.Split(",");
 			services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
-					 builder.WithOrigins("https://*.lmco.com")
+					 builder.WithOrigins(origins)
 							 .AllowAnyMethod()
 							 .AllowAnyHeader()
 							 .AllowCredentials()));
