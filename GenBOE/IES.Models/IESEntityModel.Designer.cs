@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\Users\e403038\source\IES\GenBOE\IES.Models\IESEntityModel.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Users\twilson3\Documents\repos\IES\GenBOE\IES.Models\IESEntityModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

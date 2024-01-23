@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <Configurations>Debug;Release;ReleaseTFSCore</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
+    <ProjectReference Include="..\IES.Models.Standard\IES.Models.Standard.csproj" />
+  </ItemGroup>
+
+</Project>
