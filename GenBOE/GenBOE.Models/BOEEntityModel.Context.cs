@@ -5272,7 +5272,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteMOQTypeSelectionTableData", mOQTypeSelectionTableDataIdParameter, updateDTParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelection(Nullable<int> mOQTypeSelectionId, Nullable<int> taskId, Nullable<int> mOQTypeSelection, Nullable<System.DateTime> updateDT, Nullable<int> order, string cERName, string hoursDescription, string subjectMatterExpert, string hoursLogicAndAssumptions, string durationLogicAndAssumptions, string estimateTasks, string rationale, string skillMix)
+        public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelection(Nullable<int> mOQTypeSelectionId, Nullable<int> taskId, Nullable<int> mOQTypeSelection, Nullable<System.DateTime> updateDT, Nullable<int> order, string cERName, string hoursDescription, string subjectMatterExpert, string hoursLogicAndAssumptions, string durationLogicAndAssumptions, string estimateTasks, string rationale, string skillMix, string historicalReferenceExplanation)
         {
             var mOQTypeSelectionIdParameter = mOQTypeSelectionId.HasValue ?
                 new ObjectParameter("MOQTypeSelectionId", mOQTypeSelectionId) :
@@ -5326,7 +5326,11 @@ namespace GenBOE.Models
                 new ObjectParameter("SkillMix", skillMix) :
                 new ObjectParameter("SkillMix", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelection", mOQTypeSelectionIdParameter, taskIdParameter, mOQTypeSelectionParameter, updateDTParameter, orderParameter, cERNameParameter, hoursDescriptionParameter, subjectMatterExpertParameter, hoursLogicAndAssumptionsParameter, durationLogicAndAssumptionsParameter, estimateTasksParameter, rationaleParameter, skillMixParameter);
+            var historicalReferenceExplanationParameter = historicalReferenceExplanation != null ?
+                new ObjectParameter("HistoricalReferenceExplanation", historicalReferenceExplanation) :
+                new ObjectParameter("HistoricalReferenceExplanation", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelection", mOQTypeSelectionIdParameter, taskIdParameter, mOQTypeSelectionParameter, updateDTParameter, orderParameter, cERNameParameter, hoursDescriptionParameter, subjectMatterExpertParameter, hoursLogicAndAssumptionsParameter, durationLogicAndAssumptionsParameter, estimateTasksParameter, rationaleParameter, skillMixParameter, historicalReferenceExplanationParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelectionTableData(Nullable<int> mOQTypeSelectionTableDataId, Nullable<int> mOQTypeSelectionId, Nullable<System.DateTime> updateDT, Nullable<int> order, string tableName, string repositoryName, string queryType, Nullable<System.DateTime> dateOfReport, string historicalProgramName, string contractNumber, string wbsElement, Nullable<System.DateTime> periodOfPerformanceStartDate, Nullable<System.DateTime> periodOfPerformanceEndDate, Nullable<decimal> totalWbsHours, string additionalQueryFilters, Nullable<decimal> totalRelevantHoursAfterQueryFilters)

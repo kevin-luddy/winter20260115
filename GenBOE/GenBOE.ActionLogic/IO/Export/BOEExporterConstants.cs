@@ -330,6 +330,7 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string Container_SME = "SMEContainer";
         internal const string Container_MOQTypeRationale = "MOQTypeRationaleContainer";
         internal const string Container_SkillMix = "SkillMixContainer";
+		internal const string Container_HistoricalRefExp = "HistoricalRefExplanationContainer";
         internal const string FieldName_MOQTypeSelectionTitle = "MOQTypeSelectionTitle";
         internal const string FieldName_MOQTypeSelectionLabel = "MOQTypeSelectionLabel";
         internal const string FieldName_MOQTypeSelection = "MOQTypeSelection";
@@ -349,6 +350,7 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_SMETasks = "SMETasks";
         internal const string FieldName_Rationale = "Rationale";
         internal const string FieldName_SkillMix = "SkillMix";
+		internal const string FieldName_HistoricalRefExp = "HistoricalRefExplanation";
         internal const string FieldName_TableName = "TableName";
         internal const string FieldName_RepositoryName = "RepositoryName";
         internal const string FieldName_QueryType = "QueryType";

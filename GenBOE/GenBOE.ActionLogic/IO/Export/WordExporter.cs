@@ -407,6 +407,7 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             _ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
             _ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
+			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
             if (moqTypeContainerTemplate != null)
             {
@@ -426,12 +427,13 @@ namespace GenBOE.ActionLogic.IO.Export
                     SdtElement smeContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SME);
                     SdtElement moqTypeTableContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Table_MOQType);
                     SdtElement rationaleContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_MOQTypeRationale);
-                    SdtElement skillMixContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SkillMix);
+					SdtElement skillMixContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SkillMix);
+					SdtElement historicalRefExpContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_HistoricalRefExp);
 
-                    #endregion
+					#endregion
 
-                    // populate unique fields and remove unused fields for MOQ Type                    
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeSelection),
+					// populate unique fields and remove unused fields for MOQ Type                    
+					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeSelection),
                         moqType.SelectedMOQType.GetDescription());
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeDescription),
                         this.GetMoqTypeDescription(moqType.SelectedMOQType, laborTaskElement.MOQTypes.Count > 1));
@@ -571,7 +573,21 @@ namespace GenBOE.ActionLogic.IO.Export
                         WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_Rationale);
                     }
 
-                    if (moqType.SelectedMOQType != MOQType.NonLabor)
+					if (Utilities.IsHistoricalReferenceExplanationRequired(exportInputs.Workspace.CreationDate) && (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative))
+					{
+						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp),
+							moqType.HistoricalReferenceExplanation, ref counters, true);
+					}
+					else if (customExport)
+					{
+						this.RemoveElement(historicalRefExpContainer);
+					}
+					else
+					{
+						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
+					}
+
+					if (moqType.SelectedMOQType != MOQType.NonLabor)
                     {
                         WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
                             moqType.SkillMixRationale, ref counters, true);

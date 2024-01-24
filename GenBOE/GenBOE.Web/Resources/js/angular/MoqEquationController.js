@@ -219,6 +219,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				InitializeRTE('SmeTaskEstimates_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
 				InitializeRTE('Rationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
 				InitializeRTE('SkillMixRationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
+				InitializeRTE('HistoricalReferenceExplanation_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
 			}
 
 			if ($scope.model.IsReadOnly && $scope.model.ShouldMoqReadOnlyBeReversed) {
@@ -315,7 +316,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				break;
 			case 'Skill Mix Rationale':
 				return 'Need to provide a narrative which documents the source and rationale as to why the proposed skill mix was selected. Remember: If based on actuals and not the exact same labor mix, a summary table of the historical labor mix is required. Click the grey question mark for additional information and suggested format.';
-
+				break;
+			case 'Historical Reference Explanation':
+				return 'Please provide a brief explanation why the selected historical reference is a good/reasonable basis for the BOE being written.';
+				break;
 		}
 	}
 
@@ -402,6 +406,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				InitializeRTE('SmeTaskEstimates_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
 				InitializeRTE('Rationale_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
 				InitializeRTE('SkillMixRationale_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+				InitializeRTE('HistoricalReferenceExplanation_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
 			});
 
 			$timeout(function () { $scope.sortingInProgress = false; }, 0);

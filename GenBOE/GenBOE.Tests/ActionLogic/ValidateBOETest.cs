@@ -1659,7 +1659,8 @@ namespace GenBOE.Tests.ActionLogic
                 SmeTaskEstimates = "test task estimates",
                 Rationale = "test rationale",
                 SkillMixRationale = "test skill mix",
-                BoeId = 4,
+				HistoricalReferenceExplanation = "test historical reference explanation",
+				BoeId = 4,
                 TableData = new Collection<MoqTableData>()
                 {
                     moqTableData
@@ -3368,8 +3369,9 @@ namespace GenBOE.Tests.ActionLogic
                         }
                     },
                 Rationale = "Test Rationale",
-                SkillMixRationale = "Test Skill Mix"
-            };
+                SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
+			};
 
             WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
@@ -3430,7 +3432,8 @@ namespace GenBOE.Tests.ActionLogic
 						}
 					},
 				Rationale = "Test Rationale",
-				SkillMixRationale = "Test Skill Mix"
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
@@ -3482,7 +3485,8 @@ namespace GenBOE.Tests.ActionLogic
 						}
 					},
 				Rationale = "Test Rationale",
-				SkillMixRationale = "Test Skill Mix"
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
@@ -3532,8 +3536,9 @@ namespace GenBOE.Tests.ActionLogic
                         }
                     },
                 Rationale = "Test Rationale",
-                SkillMixRationale = "Test Skill Mix"
-            };
+                SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
+			};
 
             WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
@@ -3594,7 +3599,8 @@ namespace GenBOE.Tests.ActionLogic
 						}
 					},
 				Rationale = "Test Rationale",
-				SkillMixRationale = "Test Skill Mix"
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
@@ -3646,8 +3652,9 @@ namespace GenBOE.Tests.ActionLogic
 						}
                     },
                 Rationale = "Test Rationale",
-                SkillMixRationale = "Test Skill Mix"
-            };
+                SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
+			};
 
             WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
@@ -3698,7 +3705,8 @@ namespace GenBOE.Tests.ActionLogic
 						}
 					},
 				Rationale = "Test Rationale",
-				SkillMixRationale = "Test Skill Mix"
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
@@ -3788,8 +3796,9 @@ namespace GenBOE.Tests.ActionLogic
 						}
                     },
                 Rationale = "Test Rationale",
-                SkillMixRationale = "Test Skill Mix"
-            };
+                SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
+			};
 
             WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
             FullWorkspace ws = new FullWorkspace(workspace);
@@ -3846,7 +3855,8 @@ namespace GenBOE.Tests.ActionLogic
 						}
 					},
 				Rationale = "Test Rationale",
-				SkillMixRationale = "Test Skill Mix"
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
@@ -3910,7 +3920,8 @@ namespace GenBOE.Tests.ActionLogic
 						}
 					},
 				Rationale = "Test Rationale",
-				SkillMixRationale = "Test Skill Mix"
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
@@ -3968,7 +3979,8 @@ namespace GenBOE.Tests.ActionLogic
 						}
 					},
 				Rationale = "Test Rationale",
-				SkillMixRationale = "Test Skill Mix"
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
@@ -4012,6 +4024,101 @@ namespace GenBOE.Tests.ActionLogic
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
 			Assert.IsTrue(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask, specifically rules for HistoricalReferenceExplanation
+		/// Note: Assumes start date of feature of 1/1/2024 (in GenBOE.Tests app.config)
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_HistoricalReferenceExplanation()
+		{
+			// SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create MOQ Table with blank HistoricalReferenceExplanation (blank after the start date)
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = string.Empty
+			};
+
+			// create ws with creation date after the feature start date
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2024, 1, 2) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsTrue(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask, specifically rules for HistoricalReferenceExplanation before the feature start date
+		/// Note: Assumes start date of feature of 1/1/2024 (in GenBOE.Tests app.config)
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_HistoricalReferenceExplanation_BeforeFeatureStart()
+		{
+			// SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create MOQ Table with blank HistoricalReferenceExplanation
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = string.Empty
+			};
+
+			// create ws with creation date before the feature start date
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2023, 1, 2) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// Assert no results because field is not required before the start date
+			Assert.IsFalse(result.Any());
 		}
 	}
 }

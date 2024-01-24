@@ -39,6 +39,7 @@ namespace IES.Common
         private static object lockObject = new object();
         private static DateTime? sapSpaceStartDate;
         private static DateTime? oneLmxStartDate;
+		private static DateTime? historicalReferenceExplanationStartDate;
 
 		/// <summary>
 		/// 1LMX boundary time
@@ -49,13 +50,13 @@ namespace IES.Common
 			{
 				if (!oneLmxStartDate.HasValue)
 				{
-					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("OneLmxStartDate"), out DateTime sapTime))
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("OneLmxStartDate"), out DateTime startDate))
 					{
 						oneLmxStartDate = DateTime.MaxValue;
 					}
 					else
 					{
-						oneLmxStartDate = sapTime.Normalize();
+						oneLmxStartDate = startDate.Normalize();
 					}
 				}
 
@@ -85,6 +86,29 @@ namespace IES.Common
                 return sapSpaceStartDate.Value;
             }
         }
+
+		/// <summary>
+		/// Date to begin using Historical Reference Explanation
+		/// </summary>
+		public static DateTime HistoricalReferenceExplanationStartDate
+		{
+			get
+			{
+				if (!historicalReferenceExplanationStartDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("HistoricalReferenceExplanationStartDate"), out DateTime startDate))
+					{
+						historicalReferenceExplanationStartDate = DateTime.MaxValue;
+					}
+					else
+					{
+						historicalReferenceExplanationStartDate = startDate;
+					}
+				}
+
+				return historicalReferenceExplanationStartDate.Value;
+			}
+		}
 
 		/// <summary>
 		/// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.
@@ -775,6 +799,16 @@ namespace IES.Common
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Is HistoricalReferenceExplanation required and displayed
+		/// </summary>
+		/// <param name="workspaceCreationDate">workspace creation date</param>
+		/// <returns>True if workspace creation date after the start date for Historical Reference Explanation</returns>
+		public static bool IsHistoricalReferenceExplanationRequired(DateTime? workspaceCreationDate)
+		{
+			return workspaceCreationDate.HasValue && workspaceCreationDate.Value.Date >= HistoricalReferenceExplanationStartDate.Date;
 		}
 	}
 }

@@ -49,6 +49,7 @@ AS
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
+**		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -1140,6 +1141,7 @@ INSERT INTO [version].[MOQTypeSelection]
 [EstimateTasks],
 [Rationale],
 [SkillMix],
+[HistoricalReferenceExplanation],
 [VersionId]
 )
 SELECT M.[MOQTypeSelectionId],
@@ -1155,6 +1157,7 @@ M.[DurationLogicAndAssumptions],
 M.[EstimateTasks],
 M.[Rationale],
 M.[SkillMix],
+M.[HistoricalReferenceExplanation],
 @VersionID
 FROM [dbo].[MOQTypeSelection] M
 INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID

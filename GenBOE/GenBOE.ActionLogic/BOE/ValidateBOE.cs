@@ -769,8 +769,16 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                     errorMessages.AddRange(this.ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id));
                                 }
                             });
+
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+
+							if((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+								&& Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate))
+							{
+								ValidateRequiredField(moqType.SelectedMOQType, moqType.HistoricalReferenceExplanation, "Provide an explanation of Why the Historical Reference was Selected", ws.RteSizeLimit, errorMessages);
+							}
+
                             break;
                         case (MOQType.CostEstimatingRelationships):
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
