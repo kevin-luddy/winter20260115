@@ -195,7 +195,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <returns>String with illegal characters replaced</returns>
 		private static string StripIllegalFileNameCharacters(string target, string replacementValue=".")
         {
-			char[] illegalCharacters = new[] { ' ', ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '-', '%', '#', '$', '&', ')', '(', '!', ',', ':', '{', '}', '`', '~', '^', '/','<', '>' };
+			char[] illegalCharacters = new[] { ' ', ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '-', '%', '#', '$', '&', ')', '(', '!', ',', ':', ';', '{', '}', '`', '~', '^', '/','<', '>' };
 			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
 
 			return string.Join(replacementValue, cleanedParts);
