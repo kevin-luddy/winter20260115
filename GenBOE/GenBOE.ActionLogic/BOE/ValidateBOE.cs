@@ -773,7 +773,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 
-							if(Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate))
+							if((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+								&& Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate))
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.HistoricalReferenceExplanation, "Provide an explanation of Why the Historical Reference was Selected", ws.RteSizeLimit, errorMessages);
 							}
