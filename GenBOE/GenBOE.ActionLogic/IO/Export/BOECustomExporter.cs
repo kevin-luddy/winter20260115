@@ -32,10 +32,10 @@ namespace GenBOE.ActionLogic.IO.Export
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
 
-    /// <summary>
-    /// Used for exporting a BOE to a pre-formatted Work template
-    /// </summary>
-    [ExcludeFromCodeCoverage]
+	/// <summary>
+	/// Used for exporting a BOE to a pre-formatted Work template
+	/// </summary>
+	[ExcludeFromCodeCoverage]
     public class BOECustomExporter : WordExporter, IBOECustomExporter
     {
         #region Constants
@@ -108,7 +108,8 @@ namespace GenBOE.ActionLogic.IO.Export
             if (exportFormat == null) { throw new ArgumentNullException(nameof(exportFormat)); }
             _ = ws ?? throw new ArgumentNullException(nameof(ws));
 
-            // setup the response correctly with BufferOutput since this is going to be awhile...
+			// setup the response correctly with BufferOutput since this is going to be awhile...
+			fileNameToDisplayToBrowser = Utilities.StripIllegalFileNameCharacters(fileNameToDisplayToBrowser);
             Response.ContentType = BOEExporterConstants.ContentType_DOCX;
             Response.Clear();
             Response.BufferOutput = true;  // why would we want this buffered?
@@ -5897,7 +5898,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 workSpace,
                 response,
                 components,
-                returnFilename,
+				Utilities.StripIllegalFileNameCharacters(returnFilename),
                 exportFormat,
                 ExportBOEToWordFileStream);
         }

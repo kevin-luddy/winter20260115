@@ -20,10 +20,10 @@ namespace IES.Common
     using Microsoft.Net.Http.Headers;
     using PickList;
 
-    /// <summary>
-    /// Utility/helper methods that need a class to sit in
-    /// </summary>
-    public static class Utilities
+	/// <summary>
+	/// Utility/helper methods that need a class to sit in
+	/// </summary>
+	public static class Utilities
     {
         /// <summary>
         /// The business hours start time.
@@ -632,19 +632,33 @@ namespace IES.Common
             return text;
         }
 
-        /// <summary>
-        /// Replaces spaces with underscores and removes invalid file name characters
-        /// </summary>
-        /// <param name="filename">Filename to clean</param>
-        /// <returns>Filename with only valid characters</returns>
-        public static string CleanFileName(string filename)
+		/// <summary>
+		/// Removes characters that cause issues when present in file names; Some may look like duplicates, but they actually aren't
+		/// </summary>
+		/// <param name="target">String to be cleaned</param>
+		/// <param name="replacementValue">Character to replace the illegal characters with. Defaults to "."</param>
+		/// <returns>String with illegal characters replaced</returns>
+		public static string StripIllegalFileNameCharacters(string target, string replacementValue = ".")
+		{
+			char[] illegalCharacters = new[] { ' ', ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '-', '%', '#', '$', '&', ')', '(', '!', ',', ':', ';', '{', '}', '`', '~', '^', '/', '<', '>' };
+			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
+
+			return string.Join(replacementValue, cleanedParts);
+		}
+
+		/// <summary>
+		/// Replaces spaces with underscores and removes invalid file name characters
+		/// </summary>
+		/// <param name="filename">Filename to clean</param>
+		/// <returns>Filename with only valid characters</returns>
+		public static string CleanFileName(string filename)
         {
             if(filename==null)
             {
                 throw new ArgumentNullException(nameof(filename));
             }
 
-            return string.Concat(filename.Replace(' ', '_').Split(Path.GetInvalidFileNameChars()));
+            return StripIllegalFileNameCharacters(string.Concat(filename.Replace(' ', '_').Split(Path.GetInvalidFileNameChars())));
         }
 
         /// <summary>
