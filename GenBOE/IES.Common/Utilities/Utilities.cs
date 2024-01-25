@@ -640,6 +640,11 @@ namespace IES.Common
 		/// <returns>String with illegal characters replaced</returns>
 		public static string StripIllegalFileNameCharacters(string target, string replacementValue = ".")
 		{
+			if(string.IsNullOrEmpty(target))
+			{
+				throw new ArgumentNullException("target");
+			}
+			
 			char[] illegalCharacters = new[] { ' ', ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '-', '%', '#', '$', '&', ')', '(', '!', ',', ':', ';', '{', '}', '`', '~', '^', '/', '<', '>' };
 			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
 
