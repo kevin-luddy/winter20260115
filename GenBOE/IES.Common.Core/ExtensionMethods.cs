@@ -16,6 +16,7 @@ namespace IES.Common.Core
 	using System.Reflection;
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
+	using System.Text.Json;
 	using System.Text.RegularExpressions;
 	using IES.Common.Core.Attributes;
 	using IES.Common.Core.Constants;
@@ -454,14 +455,8 @@ namespace IES.Common.Core
 				return default;
 			}
 
-			IFormatter formatter = new BinaryFormatter();
-			Stream stream = new MemoryStream();
-			using (stream)
-			{
-				formatter.Serialize(stream, source);
-				stream.Seek(0, SeekOrigin.Begin);
-				return (T)formatter.Deserialize(stream);
-			}
+			string serializedObject = JsonSerializer.Serialize(source, typeof(T));
+			return JsonSerializer.Deserialize<T>(serializedObject);
 		}
 
 		/// <summary>

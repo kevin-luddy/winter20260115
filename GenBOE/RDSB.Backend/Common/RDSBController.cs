@@ -219,8 +219,8 @@ namespace RDSB.Backend.Common
         [NonAction]
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-			//IdentitySwap.IdentitySwappingForTesting.SwapIdentity("IsIdentitySwappingAllowed", "ActiveDirectoryPath", 
-			//	"ADGroupsAllowedToSwapIdentity", context.HttpContext);
+			IdentitySwap.IdentitySwappingForTesting.SwapIdentity("IsIdentitySwappingAllowed", "ActiveDirectoryPath",
+				"ADGroupsAllowedToSwapIdentity", context.HttpContext);
 
 			if (context != null)
             {

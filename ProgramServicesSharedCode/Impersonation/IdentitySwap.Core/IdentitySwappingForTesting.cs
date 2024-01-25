@@ -245,7 +245,7 @@ namespace IdentitySwap
             bool result = false;
             try
             {
-                if (IsIdentitySwappingAllowed(keyForWhetherWeShouldProceed, keyForADPath, keyForAllowedGroups))
+                if (IsIdentitySwappingAllowed(keyForWhetherWeShouldProceed, keyForADPath, keyForAllowedGroups, httpContext))
                 {
                     result = SwapIdentity(keyForADPath, httpContext);
                 }
@@ -263,7 +263,7 @@ namespace IdentitySwap
         /// </summary>
         /// <param name="keyForWhetherWeShouldProceed">A key in web.config appSetting's section that indicates whether impersonation should happen</param>
         /// <returns>True or false, indicating if impersonation should happen</returns>
-        public static bool IsIdentitySwappingAllowed(string keyForWhetherWeShouldProceed, string keyForADPath, string keyForAllowedGroups)
+        public static bool IsIdentitySwappingAllowed(string keyForWhetherWeShouldProceed, string keyForADPath, string keyForAllowedGroups, HttpContext httpContext)
         {
             bool result = false;
 
@@ -273,7 +273,8 @@ namespace IdentitySwap
 
                 if(shouldWeProceed != null && shouldWeProceed.ToLower() == bool.TrueString.ToLower())
                 {
-                    string currentNtidWithDomain = Thread.CurrentPrincipal.Identity.Name;
+                    IPrincipal principal = Thread.CurrentPrincipal ?? httpContext.User;
+					string currentNtidWithDomain = principal.Identity.Name;
 
                     // We want to check the dictionary first; if it contains the record already, then we do not need to try AD again, but return whatever we found last time
                     if (UsersWithGroupsAllowedToSwapIdentity.ContainsKey(currentNtidWithDomain))
