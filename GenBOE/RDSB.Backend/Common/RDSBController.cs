@@ -206,8 +206,6 @@ namespace RDSB.Backend.Common
                     }
                 }
             }
-
-            // TODO TIW this.ViewBag.ReadOnly = readOnly ? "true" : "false";
         }
 
         #region Events

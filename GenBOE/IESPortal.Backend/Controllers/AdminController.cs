@@ -124,7 +124,7 @@ namespace IESPortal.Backend.Controllers
         /// <param name="id">The identifier.</param>
         /// <returns>Json result of the deletion.</returns>
         [HttpPost("[action]")]
-		public IActionResult DeleteBanner(int id)
+		public bool DeleteBanner(int id)
         {
             this.InitializeAction("DeleteBanner");
             BannerModelView banner = this.bannerMediator.GetById(id);
@@ -147,7 +147,7 @@ namespace IESPortal.Backend.Controllers
                 scope.Complete();
             }
 
-            return new JsonResult(new { Status = true }); // TEST TODO TIW  this.Json(new { Status = true });
+            return true;
 		}
 
         /// <summary>
@@ -269,13 +269,13 @@ namespace IESPortal.Backend.Controllers
 		/// <param name="pickListType">Type of the pick list.</param>
 		/// <returns>success/failure</returns>
 		[HttpGet("[action]")]
-		public IActionResult FixPickListErrors(PickListEnum pickListType)
+		public bool FixPickListErrors(PickListEnum pickListType)
         {
             this.InitializeAction(IESWebConstants.ACTION_SAVE_MANAGE_PICK_LISTS);
 
             this.adminControllerLogic.FixPickListErrors(pickListType);
 
-            return new JsonResult(true); // TEST TODO TIW this.Json(true);
+            return true;
 		}
 
 		/// <summary>
@@ -285,7 +285,7 @@ namespace IESPortal.Backend.Controllers
 		/// <param name="dataToSave">Pick List items to save</param>
 		/// <returns>success/failure</returns>
 		[HttpPost("[action]")]
-		public IActionResult SaveManagePickLists(PickListEnum pickListType, ICollection<PickListModelView> dataToSave)
+		public bool SaveManagePickLists(PickListEnum pickListType, ICollection<PickListModelView> dataToSave)
         {
             this.InitializeAction(IESWebConstants.ACTION_SAVE_MANAGE_PICK_LISTS);
             if (dataToSave == null || !dataToSave.Any())
@@ -310,7 +310,7 @@ namespace IESPortal.Backend.Controllers
 
             this.adminControllerLogic.SavePickListItems(pickListType, dataToSave);
 
-            return new JsonResult(true); // TEST TODO TIW this.Json(true);
+            return true;
 		}
     }
 }

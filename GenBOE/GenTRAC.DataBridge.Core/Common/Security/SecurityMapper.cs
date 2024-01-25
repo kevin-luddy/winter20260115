@@ -97,7 +97,8 @@ namespace GenTRAC.DataBridge.Core.Common.Security
                 string key = CacheConstants.ROLES_FOR_USER + inUserNtid;
                 IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser;
 
-                // TODO TIW if this is a save action, permissions should be cleared from cache
+                // TODO FUTURE if PTM ever goes .Net 6+
+				// if this is a save action, permissions should be cleared from cache
                 //bool isSaveAction = false;
                 //if (HttpContext.Current != null && HttpContext.Current.Items.Contains(CacheConstants.SAVE_PERMISSIONS_ACTION))
                 //{
@@ -112,19 +113,19 @@ namespace GenTRAC.DataBridge.Core.Common.Security
                 {
                     rolesForUser = this.securityUserAuthorizationsDataLoader.GetPermissionsForUser(user);
 
-                    //TODO TIW if (!isSaveAction)
-                    //{
-                        this.cache.Add(key, rolesForUser, 3); // cache for 3 seconds
+					//TODO FUTURE if (!isSaveAction)
+					//{
+					this.cache.Add(key, rolesForUser, 3); // cache for 3 seconds
                     //}
                 }
 
-				//TODO TIW if (isSaveAction)
-				//{
+				// TODO FUTURE if (isSaveAction)
+				// {
 				//	// clear memory cache on a save
 				//	this.cache.Remove(key);
-    //            }
+				// }
 
-                return rolesForUser;
+				return rolesForUser;
             }
         }
     }
