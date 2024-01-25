@@ -32,7 +32,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var perfOrgList =
+					PerformingOrgListDTO perfOrgList =
                        (from p in gbe.PerformingOrganizationLists
                         where p.PerformingOrganizationListID == inPerfOrgListID
                         select new PerformingOrgListDTO

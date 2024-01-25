@@ -63,7 +63,7 @@ namespace GenTRAC.Tests.Objects
             this.parChecklistConteMapper = new Mock<IChecklistContentMapper>();
             this.pprChecklistContentMapper = new Mock<IChecklistContentMapper>();
 
-            var retriever = new Retriever(
+            Retriever retriever = new Retriever(
                 this.userMapper.Object,
                 this.proposalPermissionsMapper.Object,
                 this.proposalChecklistLoader.Object,
@@ -85,7 +85,7 @@ namespace GenTRAC.Tests.Objects
         [TestMethod]
         public void O_GetCurrentUserTest()
         {
-            var sut = this.CreateSystem();
+            Retriever sut = this.CreateSystem();
 
             UserDTO currentUser = new UserDTO()
             {
@@ -98,7 +98,7 @@ namespace GenTRAC.Tests.Objects
 
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(currentUser);
 
-            var result = sut.GetCurrentUser();
+            UserDTO result = sut.GetCurrentUser();
 
             DtoAssertHelpers.AssertDtos(currentUser, result);
         }
@@ -109,7 +109,7 @@ namespace GenTRAC.Tests.Objects
         [TestMethod]
         public void O_GetProposalPermissions()
         {
-            var sut = this.CreateSystem();
+            Retriever sut = this.CreateSystem();
 
             int proposalID = 515;
 
@@ -123,7 +123,7 @@ namespace GenTRAC.Tests.Objects
 
             this.proposalPermissionsMapper.Setup(x => x.GetProposalPermissionsByProposalId(proposalID)).Returns(new Collection<ProposalPermissionDto> { permissions });
 
-            var result = sut.GetProposalPermissions(proposalID);
+            ICollection<ProposalPermissionDto> result = sut.GetProposalPermissions(proposalID);
 
             DtoAssertHelpers.AssertDtos(result.First(), permissions);
         }
@@ -136,7 +136,7 @@ namespace GenTRAC.Tests.Objects
         [TestMethod]
         public void O_GetProposalChecklistTest()
         {
-            var sut = this.CreateSystem();
+            Retriever sut = this.CreateSystem();
 
             int proposalID = 44;
             List<ProposalChecklistDto> testProposalChecklists = new List<ProposalChecklistDto>
@@ -150,7 +150,7 @@ namespace GenTRAC.Tests.Objects
             };
 
             this.proposalChecklistLoader.Setup(x => x.GetByProposalIds(new Collection<int> { proposalID })).Returns(testProposalChecklists);
-            var result = sut.GetProposalChecklists(proposalID);
+            ICollection<ProposalChecklistDto> result = sut.GetProposalChecklists(proposalID);
 
             DtoAssertHelpers.AssertDtos(testProposalChecklists.First(), result.First());
         }
@@ -161,7 +161,7 @@ namespace GenTRAC.Tests.Objects
         [TestMethod]
         public void O_GetPPRChecklistContentTest()
         {
-            var sut = this.CreateSystem();
+            Retriever sut = this.CreateSystem();
 
             int proposalID = 44;
             int checklistID = 32;
@@ -174,7 +174,7 @@ namespace GenTRAC.Tests.Objects
             checklistContent.Content.Add(content3);
 
             this.pprChecklistContentMapper.Setup(x => x.GetChecklistByProposalId(proposalID)).Returns(checklistContent);
-            var result = sut.GetPPRChecklistContent(proposalID);
+            ChecklistContentDto result = sut.GetPPRChecklistContent(proposalID);
 
             DtoAssertHelpers.AssertDtos(checklistContent, result);
         }
@@ -185,7 +185,7 @@ namespace GenTRAC.Tests.Objects
         [TestMethod]
         public void O_GetPARChecklistContentTest()
         {
-            var sut = this.CreateSystem();
+            Retriever sut = this.CreateSystem();
 
             int proposalID = 44;
             int checklistID = 32;
@@ -198,7 +198,7 @@ namespace GenTRAC.Tests.Objects
             checklistContent.Content.Add(content3);
 
             this.parChecklistConteMapper.Setup(x => x.GetChecklistByProposalId(proposalID)).Returns(checklistContent);
-            var result = sut.GetPARChecklistContent(proposalID);
+            ChecklistContentDto result = sut.GetPARChecklistContent(proposalID);
 
             DtoAssertHelpers.AssertDtos(checklistContent, result);
         }
@@ -209,7 +209,7 @@ namespace GenTRAC.Tests.Objects
         [TestMethod]
         public void O_GetAllChecklistSaveInfo()
         {
-            var sut = this.CreateSystem();
+            Retriever sut = this.CreateSystem();
 
             int proposalID = 515;
 
@@ -227,7 +227,7 @@ namespace GenTRAC.Tests.Objects
 
             this.proposalChecklistLoader.Setup(x => x.GetAllChecklistSaveInfo(proposalID)).Returns(saveInfo);
 
-            var result = sut.GetAllChecklistSaveInfo(proposalID);
+            ICollection<ProposalChecklistSaveInfo> result = sut.GetAllChecklistSaveInfo(proposalID);
 
             DtoAssertHelpers.AssertDtos(saveEntry, result.First());
         }

@@ -31,6 +31,7 @@ namespace RDSB.Backend.Controllers
 	/// RDSB Data API Controller - used to serve up RDSB data for ACV (or other applications as needed)
 	/// </summary>
 	[AllowAnonymous]
+	[Route("api/RdsbDataApi")]
 	public class RdsbDataApiController : IESController
 	{
 		#region Properties & Ctor

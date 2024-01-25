@@ -90,7 +90,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(exportInputs));
             }
 
-            var toReturn = new ExcelExportWorksheet("Workspace Identification");
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("Workspace Identification");
 
             WorkspaceDTO workspace = exportInputs.Workspace;
 

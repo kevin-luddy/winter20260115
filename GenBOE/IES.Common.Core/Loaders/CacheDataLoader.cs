@@ -42,7 +42,7 @@ namespace IES.Common.Core.Loaders
 		/// <param name="inCacheProxy">The cache repository</param>
 		/// <param name="inSecondsToCacheItems">Seconds to cache items in the cache.
 		/// -1 indicates infinite which will allow .net to garbage collect as needed.</param>
-		public CacheDataLoader(ILogger logger, ICacheService inCacheProxy, int inSecondsToCacheItems)
+		public CacheDataLoader(ILogger<CacheDataLoader> logger, ICacheService inCacheProxy, int inSecondsToCacheItems = 120)
 		{
 			_log = logger;
 			_CacheProxy = inCacheProxy;

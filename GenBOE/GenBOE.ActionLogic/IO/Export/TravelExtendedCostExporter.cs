@@ -64,9 +64,9 @@ namespace GenBOE.ActionLogic.IO.Export
             IReadOnlyCollection<WorkspaceHistoryDTO> workspaceHistory = inWorkspace.WorkspaceHistory;
 
 
-            var workspaceName = workspace.WorkspaceName;
-            var workspaceTrackingNumber = workspace.TrackingNumber;
-            var travelRatesDate = DateTime.Now.ToString();
+			string workspaceName = workspace.WorkspaceName;
+			string workspaceTrackingNumber = workspace.TrackingNumber;
+			string travelRatesDate = DateTime.Now.ToString();
             if (workspace.WorkspaceState == WorkspaceState.Closed)
             {
                 travelRatesDate = (from r in workspaceHistory
@@ -85,7 +85,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 travelRatesDate = DateTime.Now.ToString();
             }
-            var submittalDate = DateTime.Now.ToString();
+			string submittalDate = DateTime.Now.ToString();
 
             firstSheet.Add("Proposal Name: " + workspaceName, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Extended Cost Report");
             firstSheet.Add("Proposal Tracking Number: " + workspaceTrackingNumber);
@@ -114,8 +114,8 @@ namespace GenBOE.ActionLogic.IO.Export
                             ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
 
             Collection<TravelExtendedRow> allRows = new Collection<TravelExtendedRow>();
-            // Bulk load all travel data for the workspace.
-            var boes = inWorkspace.Boes;
+			// Bulk load all travel data for the workspace.
+			IReadOnlyCollection<FullBoe> boes = inWorkspace.Boes;
             HashSet<ClinDTO> allClins = new HashSet<ClinDTO>(inWorkspace.Clins);
             HashSet<WbsDTO> allWbs = new HashSet<WbsDTO>(inWorkspace.WbsElements);
             HashSet<TravelDTO> allTravels = new HashSet<TravelDTO>(inWorkspace.Travels);
@@ -127,7 +127,7 @@ namespace GenBOE.ActionLogic.IO.Export
             HashSet<MiscTravelRateDTO> allMiscTravelRates = new HashSet<MiscTravelRateDTO>(this.miscTravelRateDTOLoader.GetByIds(allTravelTrips.Select(i => i.MiscTravelRateID).ToCollection<int>(), workspace));
 
 
-            foreach (var boe in boes)
+            foreach (FullBoe boe in boes)
             {
                 ICollection<TravelDTO> travelCollection = allTravels.Where(i => i.BoeID == boe.Id).ToCollection<TravelDTO>();
 

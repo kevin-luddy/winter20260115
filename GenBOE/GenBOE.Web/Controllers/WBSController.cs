@@ -224,7 +224,7 @@ namespace GenBOE.Web.Controllers
         private ICollection<int> GetWbsUsedInBoes(FullWorkspace ws)
         {
             ICollection<int> toReturn = new Collection<int>();
-            foreach(var boe in ws.Boes)
+            foreach(FullBoe boe in ws.Boes)
             {
                 if(boe.WBSID != null)
                 {
@@ -519,9 +519,9 @@ namespace GenBOE.Web.Controllers
                     // If the file was successfully parsed, add the results to the genBOE database
                     Collection<ImportedWbs> importResults = _WbsImporter.ImportWBSFromExcelFile(Request.Files[0].InputStream, ws);
 
-                    var updatedWBSs = importResults.Where(w => w.ImportTypes.Contains(WbsImportResult.UpdateWbs)).ToList();
+					List<ImportedWbs> updatedWBSs = importResults.Where(w => w.ImportTypes.Contains(WbsImportResult.UpdateWbs)).ToList();
 
-                    var cache = new VariableCircularReferenceCheckerCache();
+					VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
                     foreach (ImportedWbs updatedWBS in updatedWBSs)
                     {
                         if (updatedWBS.Id > 0)
@@ -591,8 +591,8 @@ namespace GenBOE.Web.Controllers
                 ViewData["ERRORS_OCCURRED"] = true;
             }
 
-            var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
-            var dataToSave = from m in theModelViews
+			JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
+			IEnumerable<ImportWbsResultsModelView> dataToSave = from m in theModelViews
                              where m.ImportType == (int)WbsImportResult.CreateWbs || m.ImportType == (int)WbsImportResult.UpdateWbs || m.ImportType == (int)WbsImportResult.CreateBoe || m.ImportType == (int)WbsImportResult.DeleteWbs
                              select m;
             ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
@@ -617,19 +617,19 @@ namespace GenBOE.Web.Controllers
 
             if (importResults != null)
             {
-                var newWbsResults = from x in importResults
+				IEnumerable<ImportWbsResultsModelView> newWbsResults = from x in importResults
                                     where x.ImportType == (int)WbsImportResult.CreateWbs
                                     select x;
 
-                var updatedWbsResults = from x in importResults
+				IEnumerable<ImportWbsResultsModelView> updatedWbsResults = from x in importResults
                                         where x.ImportType == (int)WbsImportResult.UpdateWbs
                                         select x;
 
-                var boesToCreate = from x in importResults
+				IEnumerable<ImportWbsResultsModelView> boesToCreate = from x in importResults
                                    where x.ImportType == (int)WbsImportResult.CreateBoe
                                    select x;
 
-                var deletedWbsResults = from x in importResults
+				IEnumerable<ImportWbsResultsModelView> deletedWbsResults = from x in importResults
                                         where x.ImportType == (int)WbsImportResult.DeleteWbs
                                         select x;
 
@@ -675,9 +675,9 @@ namespace GenBOE.Web.Controllers
                     wbssToSave.Add(oldWbs);
                 }
 
-                // Check for circular references before saving
-                var cache = new VariableCircularReferenceCheckerCache();
-                foreach (var updatedWBS in wbssToSave)
+				// Check for circular references before saving
+				VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
+                foreach (WbsDTO updatedWBS in wbssToSave)
                 {
                     if (updatedWBS.Id > 0)
                     {
@@ -852,7 +852,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Add rows to be deleted to the "Import WBS" page displayed to the user.
-            foreach (var checkRow in wbsDTOs)
+            foreach (FullWbs checkRow in wbsDTOs)
             {
                 if (!(ssIds.Contains((checkRow.Id).ToString())))
                 {

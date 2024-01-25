@@ -51,12 +51,12 @@ namespace GenTRAC.Web.Controllers.Unity
                 string x = requestContext.HttpContext.Request.Url.ToString();
                 string y = string.Empty, z = string.Empty;
 
-                foreach (var key in requestContext.RouteData.Values.Keys)
+                foreach (string key in requestContext.RouteData.Values.Keys)
                 {
                     y += "{" + key.ToString() + "} ";
                 }
 
-                foreach (var value in requestContext.RouteData.Values.Values)
+                foreach (object value in requestContext.RouteData.Values.Values)
                 {
                     if (value != null)
                     {
@@ -85,7 +85,7 @@ namespace GenTRAC.Web.Controllers.Unity
                 and prevent it from writing to the log file */
                 !requestContext.HttpContext.Request.ContentType.StartsWith("multipart/form-data", StringComparison.CurrentCultureIgnoreCase))
             {
-                var bytes = new byte[requestContext.HttpContext.Request.InputStream.Length];
+				byte[] bytes = new byte[requestContext.HttpContext.Request.InputStream.Length];
                 requestContext.HttpContext.Request.InputStream.Read(bytes, 0, bytes.Length);
                 requestContext.HttpContext.Request.InputStream.Position = 0;
                 string content = Encoding.ASCII.GetString(bytes);

@@ -6,6 +6,9 @@
     <Nullable>disable</Nullable>
     <Configurations>Debug;Release;ReleaseTFSCore</Configurations>
     <AnalysisLevel>6.0-recommended</AnalysisLevel>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>

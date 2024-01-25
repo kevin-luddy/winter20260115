@@ -20,12 +20,7 @@ namespace GenTRAC.DataBridge.DTO
     /// </summary>
     public class ProposalLoader : DataLoader<ProposalDto>, IProposalLoader
     {
-        /// <summary>
-        /// Gets or sets the Permission Loader.
-        /// </summary>
-        private IProposalPermissionLoader PermissionLoader { get; set; }
-
-        /// <summary>
+		/// <summary>
         /// The next generation number
         /// </summary>
         private static int? nextGenerationNumber;
@@ -74,15 +69,6 @@ namespace GenTRAC.DataBridge.DTO
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProposalLoader"/> class.
-        /// </summary>
-        /// <param name="permissionLoader">The permission loader.</param>
-        public ProposalLoader(IProposalPermissionLoader permissionLoader) : this()
-        {
-            this.PermissionLoader = permissionLoader;
-        }
-
-        /// <summary>
         /// Returns all Proposal IDs from the DB
         /// </summary>
         /// <returns>Proposal Ids</returns>
@@ -95,8 +81,8 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    // select the Proposal IDs from the database
-                    var resultLinq = from x in dbModel.Proposals
+					// select the Proposal IDs from the database
+					IQueryable<int> resultLinq = from x in dbModel.Proposals
                                      select x.ProposalID;
 
                     toReturn = resultLinq.ToArray();
@@ -671,7 +657,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    var completed = (from p in dbModel.Proposals
+					int completed = (from p in dbModel.Proposals
                                      where p.ProposalID == inProposalId
                                      select p.ProposalStatusID).First();
 
@@ -803,7 +789,7 @@ namespace GenTRAC.DataBridge.DTO
 
             using (genTRACEntities dbModel = new genTRACEntities())
             {
-                var proposals = dbModel.Proposals;
+				System.Data.Entity.DbSet<Proposal> proposals = dbModel.Proposals;
 
                 // If another proposal has this title and the ids don't match, then it's a different proposal
                 bool otherProposalHaveThisTitle = proposals.Where(x => (x.ProposalTitle.ToLower() == proposalTitle.ToLower())
@@ -1839,8 +1825,8 @@ namespace GenTRAC.DataBridge.DTO
 
             using (genTRACEntities dbModel = new genTRACEntities())
             {
-                // select the Proposal IDs from the database
-                var forecastedTracking = from x in dbModel.Proposals
+				// select the Proposal IDs from the database
+				IQueryable<string> forecastedTracking = from x in dbModel.Proposals
                                          where x.ForecastedTrackingID.StartsWith(currentYear)
                                          select x.ForecastedTrackingID;
 

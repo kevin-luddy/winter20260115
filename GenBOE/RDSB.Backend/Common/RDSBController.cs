@@ -20,6 +20,7 @@ namespace RDSB.Backend.Common
 	using IES.Common.Core.Security;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
+	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Mvc.Controllers;
 	using Microsoft.AspNetCore.Mvc.Filters;
@@ -28,7 +29,7 @@ namespace RDSB.Backend.Common
 	/// <summary>
 	/// RDSB base controller
 	/// </summary>
-	public class RDSBController : IES.Common.Core.IESController, IActionFilter
+	public abstract class RDSBController : IES.Common.Core.IESController, IActionFilter
 	{
         #region Variables
 
@@ -68,10 +69,15 @@ namespace RDSB.Backend.Common
         /// </summary>
         private readonly IWhosOnlineLoader whosOnlineLoader;
 
-        /// <summary>
-        /// Gets current user information
-        /// </summary>
-        private UserData ActiveUser
+		/// <summary>
+		/// HttpContext accessor
+		/// </summary>
+		private readonly IHttpContextAccessor contextAccessor;
+
+		/// <summary>
+		/// Gets current user information
+		/// </summary>
+		private UserData ActiveUser
         {
             get { return this.AdUtils.GetUserByQualifiedAccount(this.securityInformation.ActiveUserNTID, false); }
         }
@@ -90,12 +96,14 @@ namespace RDSB.Backend.Common
         public RDSBController(ISecurityInformation securityInformation, 
 			ISecurityMapper securityMapper, 
 			IActiveDirectoryService adUtils, IWhosOnlineLoader whosOnlineLoader,
-			ILogger logger) : base(logger, securityInformation)
+			ILogger logger, IHttpContextAccessor contextAccessor) : base(logger, securityInformation)
         {
 			this.SecurityMapper = securityMapper;
             this.AdUtils = adUtils;
             this.whosOnlineLoader = whosOnlineLoader;
-        }
+			this.contextAccessor = contextAccessor;
+
+		}
         #endregion
 
         /// <summary>
@@ -157,7 +165,6 @@ namespace RDSB.Backend.Common
             //                              read only access(set ReadOnly flag that can be accessed on the page),
             //                              full access
             bool authorizationFound = false;
-            // TODO TIW bool readOnly = true;
             if (authorizationRequired != SecurityAuthorization.None)
             {
                 if (proposalId == null)
@@ -189,18 +196,12 @@ namespace RDSB.Backend.Common
                         }
                     }
 
-                    if (authorization >= authorizationRequired)
-                    {
-                        authorizationFound = true;
-
-                        if (authorization is SecurityAuthorization.ReadUpdate or SecurityAuthorization.CreateReadUpdateDelete)
-                        {
-                            readOnly = false;
-                        }
-                    }
-
-                    if (!authorizationFound)
-                    {
+					if (authorization >= authorizationRequired)
+					{
+						authorizationFound = true;
+					}
+					else
+					{
                         throw new AuthorizationException(functionName + " was not authorized");
                     }
                 }
@@ -218,8 +219,10 @@ namespace RDSB.Backend.Common
         [NonAction]
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            // TODO TIW IdentitySwap.IdentitySwappingForTesting.SwapIdentity("IsIdentitySwappingAllowed", "ActiveDirectoryPath", "ADGroupsAllowedToSwapIdentity");
-            if (context != null)
+			//IdentitySwap.IdentitySwappingForTesting.SwapIdentity("IsIdentitySwappingAllowed", "ActiveDirectoryPath", 
+			//	"ADGroupsAllowedToSwapIdentity", context.HttpContext);
+
+			if (context != null)
             {
 				ControllerActionDescriptor descriptor = context.ActionDescriptor as ControllerActionDescriptor;
 				// Check to see if we have a dictionary for the controller. If we do, get it. If not, throw an exception

@@ -31,7 +31,6 @@ namespace GenBOE.Tests.ActionLogic
     {
 
         private BOEOtherDirectCostControllerLogic otherDirectCostControllerLogic;
-        private Mock<IOtherDirectCostDTODataLoader> otherDirectCostDTOLoader;
         private Mock<IPermissionsDTODataLoader> _perissionsDtoDataLoader;
         private Mock<ICommonDataMapper> _commonDataMapper;
 
@@ -42,7 +41,6 @@ namespace GenBOE.Tests.ActionLogic
         [TestInitialize]
         public void Initialize()
         {
-            this.otherDirectCostDTOLoader = new Mock<IOtherDirectCostDTODataLoader>();
             this.otherDirectCostControllerLogic = new BOEOtherDirectCostControllerLogic();
             _perissionsDtoDataLoader = new Mock<IPermissionsDTODataLoader>();
             _commonDataMapper = new Mock<ICommonDataMapper>();

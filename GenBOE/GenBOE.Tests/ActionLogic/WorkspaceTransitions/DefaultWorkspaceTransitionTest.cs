@@ -23,8 +23,8 @@ namespace GenBOE.Tests.ActionLogic
         {
             int workspaceID = 1;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
             workspaceLoader.Setup(x => x.GetById(workspaceID)).Returns(new WorkspaceDTO { Id=workspaceID, WorkspaceName = "Workspace ONE Test" });
@@ -38,8 +38,8 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void DefaultWorkspaceTransitionValidateTest()
         {
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
             DefaultWorkspaceTransition sut = new DefaultWorkspaceTransition(emailer.Object,

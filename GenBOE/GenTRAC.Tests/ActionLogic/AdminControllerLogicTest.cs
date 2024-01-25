@@ -178,7 +178,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetManagePermissionsModelViewTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             ManagePermissionsModelView model = sut.GetManagePermissionsModelView();
 
@@ -192,7 +192,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetManagePermissionsGridModelViewTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             Collection<SystemPermissionDto> permissionsFromMapper = new Collection<SystemPermissionDto>();
 
@@ -268,7 +268,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_SaveUserPermissionRolesTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             int userId = 10;
             int deleteUserId = 11;
@@ -381,7 +381,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidatePermissionsDataTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             Collection<SystemPermissionDto> permissionsFromMapper = new Collection<SystemPermissionDto>();
 
@@ -531,7 +531,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_BreakdownGroup_Test()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             this.htmlHelper.Setup(x => x.BreakdownGroup(5)).Returns("<ul><li>Item</li></ul>");
 
@@ -544,7 +544,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_AdminInactiveLineOfBusinessTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             PickListDto lineOfBusiness1 = new PickListDto()
             {
@@ -591,7 +591,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetManageProposalInfoDetailsViewTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
 
@@ -681,7 +681,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetManageProposalInfoDetailsViewLegacyTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
 
@@ -771,7 +771,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_SaveManageProposalInfoTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
 
@@ -854,7 +854,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void C_SaveManageProposalInfoInvalidTransitionTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
 
@@ -884,7 +884,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateManageProposalInfoTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
 
@@ -952,7 +952,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetValidStateTransitions()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
 
@@ -1152,7 +1152,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetProposalIdByTrackingNumberTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             string trackingNumber = "00-00000";
             int proposalId = 15;
             this.proposalLoader.Setup(x => x.GetIdByTrackingNumber(trackingNumber)).Returns(proposalId);
@@ -1167,7 +1167,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateBulkArchiveRequest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1188,7 +1188,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateBulkArchiveRequestStartDateLater()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1210,7 +1210,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateBulkArchiveRequestEmptyDates()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1231,7 +1231,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateBulkArchiveRequestNullDates()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1252,7 +1252,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateBulkArchiveRequestBadDateFormats()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1273,7 +1273,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateBulkArchiveRequestBadStartDateFormat()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1295,7 +1295,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_SearchBulkArchiveTestDatesSpecified()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1318,7 +1318,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_SearchBulkArchiveTestNoDates()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1339,7 +1339,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_SearchBulkArchiveTestOnlyStartDate()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1361,7 +1361,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ApplyBulkArchiveTestBothDates()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1384,7 +1384,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ApplyBulkArchiveTestNoDates()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1405,7 +1405,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ApplyBulkArchiveTestOnlyStartDate()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             BulkArchiveModelView model = new BulkArchiveModelView()
             {
@@ -1428,7 +1428,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetBulkArchiveModelView()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> lineOfBusinessSelectItems = new List<PickListDto>();
 
@@ -1442,7 +1442,7 @@ namespace GenTRAC.Tests
 
             this.orgStructureMapper.Setup(x => x.GetAllLinesOfBusiness()).Returns(lineOfBusinessSelectItems);
 
-            var result = sut.GetBulkArchiveModelView();
+            BulkArchiveModelView result = sut.GetBulkArchiveModelView();
 
             Assert.AreEqual(2, result.LineOfBusinessOptions.Count());
             Assert.AreEqual("All", result.LineOfBusinessOptions.ElementAt(0).Text);
@@ -1458,9 +1458,9 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetProgramAreasForLineOfBusinessForBulkArchive_NullInput()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
-            var result = sut.GetProgramAreasForLineOfBusinessForBulkArchive(null);
+            string result = sut.GetProgramAreasForLineOfBusinessForBulkArchive(null);
 
             Assert.AreEqual(0, result.Count());
         }
@@ -1472,11 +1472,11 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetProgramAreasForLineOfBusinessForBulkArchive_AllInput()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
-            var result = sut.GetProgramAreasForLineOfBusinessForBulkArchive("All");
+            string result = sut.GetProgramAreasForLineOfBusinessForBulkArchive("All");
 
-            var expectedValue = string.Format("<option value=\"{0}\">{1}</option>", 0, "All");
+            string expectedValue = string.Format("<option value=\"{0}\">{1}</option>", 0, "All");
 
             Assert.AreEqual(expectedValue, result);
         }
@@ -1488,7 +1488,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetProgramAreasForLineOfBusinessForBulkArchive_SingleLineOfBusiness()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
 
             IList<PickListDto> programAreaDtoList = new List<PickListDto>();
 
@@ -1518,7 +1518,7 @@ namespace GenTRAC.Tests
             expectedResult.Append(string.Format("<option value=\"{0}\">{1}</option>",
                         programAreaDto.Id, programAreaDto.Text));
 
-            var result = sut.GetProgramAreasForLineOfBusinessForBulkArchive("1");
+            string result = sut.GetProgramAreasForLineOfBusinessForBulkArchive("1");
 
             Assert.AreEqual(expectedResult.ToString(), result);
         }    
@@ -1532,7 +1532,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_GetManagePermissionsGridPagedModelView_ExceptionTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.GetManagePermissionsGridModelView(null);
         }
 
@@ -1543,7 +1543,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidatePermissionsToSave_ExceptionTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.ValidatePermissionsToSave(null);
         }
 
@@ -1554,7 +1554,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveManageProposalInfo_ExceptionTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.SaveManageProposalInfo(1, null);
         }
 
@@ -1565,7 +1565,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateManageProposalInfo_ExceptionTest1()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.ValidateManageProposalInfo(null, new List<ValidationMessage>());
         }
 
@@ -1576,7 +1576,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateManageProposalInfo_ExceptionTest2()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.ValidateManageProposalInfo(new ManageProposalInfoDetailsView(), null);
         }
 
@@ -1587,7 +1587,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateBulkArchiveRequestNullModel_ExceptionTest1()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.ValidateBulkArchiveRequest(null, new List<ValidationMessage>());
         }
 
@@ -1598,7 +1598,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateBulkArchiveRequestNullModel_ExceptionTest2()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.ValidateBulkArchiveRequest(new BulkArchiveModelView(), null);
         }
 
@@ -1609,7 +1609,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SearchBulkArchive_ExceptionTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.SearchBulkArchive(null);
         }
 
@@ -1620,7 +1620,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ApplyBulkArchive_ExceptionTest()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.ApplyBulkArchive(null);
         }
 
@@ -1681,7 +1681,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateProposalDelete_EX1()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             sut.ValidateDeleteProposal(1, null);
         }
 
@@ -1691,7 +1691,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateProposalDelete_EX2()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 
             sut.ValidateDeleteProposal(null, validationErrors);
@@ -1706,7 +1706,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateProposalDelete_InvalidProposalId()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             List<ValidationMessage> validationErrors = new List<ValidationMessage>();
             sut.ValidateDeleteProposal(9999, validationErrors);
 
@@ -1720,7 +1720,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateProposalDelete_LinkedRdsbDocument()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             string trackingNumber1 = "18-11111";
             string trackingNumber2 = "18-22222";
             int? proposalId = 5;
@@ -1762,7 +1762,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateProposalDelete_LinkedBoeWorkspace()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             string trackingNumber1 = "18-11111";
             int? proposalId = 5;
             List<ValidationMessage> validationErrors = new List<ValidationMessage>();
@@ -1803,7 +1803,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateProposalDelete_LinkedRdsbDocumentAndBoeWorkspace()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             string trackingNumber1 = "18-11111";
             int? proposalId = 5;
             List<ValidationMessage> validationErrors = new List<ValidationMessage>();
@@ -1845,7 +1845,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_ValidateProposalDelete_HappyPath()
         {
-            var sut = this.CreateSystem();
+            AdminControllerLogic sut = this.CreateSystem();
             string trackingNumber1 = "18-11111";
             string trackingNumber2 = "18-22222";
             int? proposalId = 5;

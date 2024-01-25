@@ -47,7 +47,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 		private readonly Mock<IMSTMetricLoader> _mstMetricLoader = new Mock<IMSTMetricLoader>();
 		private readonly Mock<ICustomFieldValueDTODataLoader> _customFieldValueDTODataLoader = new Mock<ICustomFieldValueDTODataLoader>();
-		private readonly Mock<IResourceDTODataLoader> _resourceDTODataLoader = new Mock<IResourceDTODataLoader>();
 		private readonly Mock<IBOESummary> _boeSummary = new Mock<IBOESummary>();
 		private readonly Mock<IUserDTODataLoader> _userLoader = new Mock<IUserDTODataLoader>();
 		private readonly Mock<IActiveDirectoryUtilities> _ADUtils = new Mock<IActiveDirectoryUtilities>();
@@ -165,21 +164,21 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void GetCreateBOEHeaderMVTest()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 			DoGetCreateBOEHeaderMVTest(sut, CompanyConfiguration.ISGS);
 		}
 
 		[TestMethod]
 		public void GetCreateBOEHeaderMVTestSpaceSystems()
 		{
-			var sut = this.CreateSystemSpaceSystems();
+			BOEControllerLogic sut = this.CreateSystemSpaceSystems();
 			DoGetCreateBOEHeaderMVTest(sut, CompanyConfiguration.SpaceSystems);
 		}
 
 		[TestMethod]
 		public void GetCreateBOEHeaderMVTestMST()
 		{
-			var sut = this.CreateSystemMST();
+			BOEControllerLogic sut = this.CreateSystemMST();
 			DoGetCreateBOEHeaderMVTest(sut, CompanyConfiguration.MST);
 		}
 
@@ -187,7 +186,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void GetCreateBOEHeaderMVExceptionTest1()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 			sut.GetCreateBOEHeaderMV(null, null);
 		}
 
@@ -195,7 +194,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void GetCreateBOEHeaderMVExceptionTest1SpaceSystems()
 		{
-			var sut = this.CreateSystemSpaceSystems();
+			BOEControllerLogic sut = this.CreateSystemSpaceSystems();
 			sut.GetCreateBOEHeaderMV(null, null);
 		}
 
@@ -203,7 +202,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void GetCreateBOEHeaderMVExceptionTest1MST()
 		{
-			var sut = this.CreateSystemMST();
+			BOEControllerLogic sut = this.CreateSystemMST();
 			sut.GetCreateBOEHeaderMV(null, null);
 		}
 
@@ -214,7 +213,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void ShowHistoricMetricCheckISGS()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 			Collection<int> boeids = new Collection<int>() { 1, 2, 3 };
 
 			bool result = sut.ShowHistoricMetricCheck(boeids);
@@ -224,7 +223,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void ShowHistoricMetricCheckMST()
 		{
-			var sut = this.CreateSystemMST();
+			BOEControllerLogic sut = this.CreateSystemMST();
 			Collection<int> boeids = new Collection<int>() { 1, 2, 3 };
 			Collection<int> nullboeids = new Collection<int>() { 4, 5, 6 };
 			Collection<MSTMetricDetailsDTO> hmDTOs = new Collection<MSTMetricDetailsDTO>() { new MSTMetricDetailsDTO() };
@@ -245,7 +244,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void BOEAdvancedSearchResultsTest()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissionsLoader.Object);
@@ -331,7 +330,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void BOEQuickSearchResultsTest()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissionsLoader.Object);
@@ -437,7 +436,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void BOEProjectMapAdvancedSearchResultsTest()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissionsLoader.Object);
@@ -522,7 +521,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void BOEProjectMapQuickSearchResultsTest()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissionsLoader.Object);
@@ -608,7 +607,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void BOESearchResultsThresholdTest()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissionsLoader.Object);
@@ -679,7 +678,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void BOEAdvancedSearchModelViewPopulateCompanySpecificPropertiesISGS()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 			BOEAdvancedSearchModelView theModel = new BOEAdvancedSearchModelView();
 			BOEAdvancedSearchModelView theModelNull = null;
 
@@ -694,7 +693,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void BOEAdvancedSearchModelViewPopulateCompanySpecificPropertiesSSC()
 		{
-			var sut = this.CreateSystemSpaceSystems();
+			BOEControllerLogic sut = this.CreateSystemSpaceSystems();
 			BOEAdvancedSearchModelView theModel = new BOEAdvancedSearchModelView();
 			BOEAdvancedSearchModelView theModelNull = null;
 
@@ -709,7 +708,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void BOEAdvancedSearchModelViewPopulateCompanySpecificPropertiesMST()
 		{
-			var sut = this.CreateSystemMST();
+			BOEControllerLogic sut = this.CreateSystemMST();
 			BOEAdvancedSearchModelView theModel = new BOEAdvancedSearchModelView();
 			BOEAdvancedSearchModelView theModelNull = null;
 
@@ -726,10 +725,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void ReOrderTaskElementTest()
 		{
-			var retriever = new Mock<IRetriever>();
-			var commonDataMapper = new Mock<ICommonDataMapper>();
-			var permissionsLoader = new Mock<IPermissionsDTODataLoader>();
-			var factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
+			Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
+			Mock<IPermissionsDTODataLoader> permissionsLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
@@ -898,10 +897,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void ReOrderTaskElement_NullTest()
 		{
-			var retriever = new Mock<IRetriever>();
-			var commonDataMapper = new Mock<ICommonDataMapper>();
-			var permissionsLoader = new Mock<IPermissionsDTODataLoader>();
-			var factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
+			Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
+			Mock<IPermissionsDTODataLoader> permissionsLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
@@ -1015,8 +1014,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		{
 			BOEControllerLogic sut = this.CreateSystem();
 
-			var retriever = new Mock<IRetriever>();
-			var factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -1092,8 +1091,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		{
 			BOEControllerLogic sut = this.CreateSystem();
 
-			var retriever = new Mock<IRetriever>();
-			var factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -1165,8 +1164,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		{
 			BOEControllerLogic sut = this.CreateSystem();
 
-			var retriever = new Mock<IRetriever>();
-			var factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -1237,8 +1236,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		{
 			BOEControllerLogic sut = this.CreateSystem();
 
-			var retriever = new Mock<IRetriever>();
-			var factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -1284,25 +1283,25 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		/// <returns></returns>
 		public Mock<ValidationFactory> CreateValidationFactoryMock()
 		{
-			var workspaceUniqueNameValidator = new Mock<Validator>();
-			var workspaceUniqueShortnameValidator = new Mock<Validator>();
-			var workspaceCostVolumeLeadNotGroupValidator = new Mock<Validator>();
-			var boeTaskIdUniqueValidator = new Mock<Validator>();
-			var boeDateRangeValidator = new Mock<Validator>();
-			var wbsUniqueNumberValidator = new Mock<Validator>();
-			var resourceUniqueIDValidator = new Mock<Validator>();
-			var performingOrgUniqueIDValidator = new Mock<Validator>();
-			var wbsRenumberValidator = new Mock<Validator>();
-			var boeWBSMoveValidator = new Mock<Validator>();
-			var boeCLINMoveValidator = new Mock<Validator>();
-			var boeMaterialExistsforWbsValidator = new Mock<Validator>();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
-			var resourceUniqueDescValidator = new Mock<Validator>();
-			var workspaceCostVolumeLeadNotSubcontractorValidator = new Mock<Validator>();
+			Mock<Validator> workspaceUniqueNameValidator = new Mock<Validator>();
+			Mock<Validator> workspaceUniqueShortnameValidator = new Mock<Validator>();
+			Mock<Validator> workspaceCostVolumeLeadNotGroupValidator = new Mock<Validator>();
+			Mock<Validator> boeTaskIdUniqueValidator = new Mock<Validator>();
+			Mock<Validator> boeDateRangeValidator = new Mock<Validator>();
+			Mock<Validator> wbsUniqueNumberValidator = new Mock<Validator>();
+			Mock<Validator> resourceUniqueIDValidator = new Mock<Validator>();
+			Mock<Validator> performingOrgUniqueIDValidator = new Mock<Validator>();
+			Mock<Validator> wbsRenumberValidator = new Mock<Validator>();
+			Mock<Validator> boeWBSMoveValidator = new Mock<Validator>();
+			Mock<Validator> boeCLINMoveValidator = new Mock<Validator>();
+			Mock<Validator> boeMaterialExistsforWbsValidator = new Mock<Validator>();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<Validator> resourceUniqueDescValidator = new Mock<Validator>();
+			Mock<Validator> workspaceCostVolumeLeadNotSubcontractorValidator = new Mock<Validator>();
 
 
 
-			var validationFactoyMock = new Mock<ValidationFactory>(workspaceUniqueNameValidator.Object,
+			Mock<ValidationFactory> validationFactoyMock = new Mock<ValidationFactory>(workspaceUniqueNameValidator.Object,
 				 workspaceUniqueShortnameValidator.Object,
 				 workspaceCostVolumeLeadNotGroupValidator.Object,
 				 boeTaskIdUniqueValidator.Object,
@@ -1327,12 +1326,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOEWBSCircularReference_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -1414,12 +1413,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOEClinCircularReference_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorClinMove = new Mock<BOECLINMoveValidator>(circularReference.Object, Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOECLINMoveValidator> validatorClinMove = new Mock<BOECLINMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -1498,12 +1497,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOEMaterial_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -1593,12 +1592,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOEMaterialExist_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -1683,12 +1682,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOEMultiBOE_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -1780,12 +1779,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOEMultiBOEWithWBSClin_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -1869,12 +1868,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageNoMultiBOEWbsClin_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -1962,12 +1961,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageAuthorApproverAssigned_Removed_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2050,12 +2049,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageAuthorApproverReAssigned_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2149,12 +2148,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageAuthorApproverStateTransitionFail_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2250,12 +2249,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageAuthorApproverAssigned_NoApproverTest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2348,12 +2347,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageAuthorApproverAssigned_NoAuthorTest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2445,12 +2444,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageAuthorApproverAssigned_AuthorApproverFailTest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BoeLaborCostElementExistsValidator> validatorCost = new Mock<BoeLaborCostElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2545,14 +2544,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOE_NullWSTest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
 
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2585,14 +2584,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOE_NullBoeTest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
 
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2625,14 +2624,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOE_NullPermissionsTest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
 
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2665,14 +2664,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOE_NullBOEStateTest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
 
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2705,14 +2704,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOE_NullValidationTest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
 
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2745,14 +2744,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void ValidateSaveManageBOE_NullWSBOETest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
 
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
@@ -2787,14 +2786,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void RemoveMultiBOEReferenceWorkspaceVar_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
 
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IVariableCircularReferenceChecker), _variableCircularReferenceChecker.Object);
@@ -2812,7 +2811,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), _validator.Object);
 			#endregion
 			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO>();
-			var varSelectBOEToSum = new Mock<VariableSelectBOEtoSumCalculation>();
+			Mock<VariableSelectBOEtoSumCalculation> varSelectBOEToSum = new Mock<VariableSelectBOEtoSumCalculation>();
 			WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO()
 			{
 				Id = 1,
@@ -2856,14 +2855,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void RemoveMultiBOEReferenceWorkspaceVar_TestNull_WS()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
 
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IVariableCircularReferenceChecker), _variableCircularReferenceChecker.Object);
@@ -2881,7 +2880,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), _validator.Object);
 			#endregion
 			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO>();
-			var varSelectBOEToSum = new Mock<VariableSelectBOEtoSumCalculation>();
+			Mock<VariableSelectBOEtoSumCalculation> varSelectBOEToSum = new Mock<VariableSelectBOEtoSumCalculation>();
 			WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO()
 			{
 				Id = 1,
@@ -2918,14 +2917,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void RemoveMultiBOEReferenceWorkspaceVar_TestNull_workspaceVariablesAffectedByMulti()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
 
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IVariableCircularReferenceChecker), _variableCircularReferenceChecker.Object);
@@ -2943,7 +2942,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), _validator.Object);
 			#endregion
 			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO>();
-			var varSelectBOEToSum = new Mock<VariableSelectBOEtoSumCalculation>();
+			Mock<VariableSelectBOEtoSumCalculation> varSelectBOEToSum = new Mock<VariableSelectBOEtoSumCalculation>();
 			WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO()
 			{
 				Id = 1,
@@ -2977,13 +2976,13 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void RemoveMultiBOEReferenceTaskVar_Test()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IVariableCircularReferenceChecker), _variableCircularReferenceChecker.Object);
@@ -3044,13 +3043,13 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		public void RemoveMultiBOEReferenceTaskVar_TestNull()
 		{
 			BOEControllerLogic sut = this.CreateSystem();
-			var workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
-			var circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
-			var validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
+			Mock<IWorkspaceVariableDTODataLoader> workspacevardto = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<VariableCircularReferenceChecker> circularReference = new Mock<VariableCircularReferenceChecker>(workspacevardto.Object);
+			Mock<BOEWBSMoveValidator> validatorWBSMove = new Mock<BOEWBSMoveValidator>(circularReference.Object, Factory.Object);
 
-			var validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
-			var validationFactoyMock = CreateValidationFactoryMock();
-			var boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<BOEMaterialElementExistsValidator> validatorMaterials = new Mock<BOEMaterialElementExistsValidator>(Factory.Object);
+			Mock<ValidationFactory> validationFactoyMock = CreateValidationFactoryMock();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
 			#region InitializeUnity
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(Validator), boeMaterialElementExistsValidator.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IVariableCircularReferenceChecker), _variableCircularReferenceChecker.Object);
@@ -3254,7 +3253,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		/// </summary>
 		public void ValidateBOEHeaderCustomFields_ValidNonSummary_Test()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
@@ -3320,7 +3319,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		/// </summary>
 		public void ValidateBOEHeaderCustomFields_InvalidNonSummary_Test()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
@@ -3385,7 +3384,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		/// </summary>
 		public void ValidateBOEHeaderOpenEndedCustomFields_InvalidNonSummary_Test()
 		{
-			var sut = this.CreateSystem();
+			BOEControllerLogic sut = this.CreateSystem();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
@@ -3435,7 +3434,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[TestMethod]
 		public void CalculateTotalCostTravel_Test()
 		{
-			var sut = this.CreateSystemMST();
+			BOEControllerLogic sut = this.CreateSystemMST();
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), Factory.Object);
 

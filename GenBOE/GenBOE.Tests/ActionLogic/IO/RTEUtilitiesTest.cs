@@ -488,7 +488,7 @@ namespace GenBOE.Tests.ActionLogic.IO
             ICollection<string> fontFamilies = RTEUtilities.GetFontFamiliesBasedOnElementXml(innerXml);
 
             Assert.IsTrue(fontSize.HasValue);
-            Assert.IsTrue(fontSize.Value == (decimal)12);
+            Assert.IsTrue(fontSize.Value == 12);
 
             Assert.IsTrue(fontFamilies.Count == 1);
             Assert.IsTrue(fontFamilies.ElementAt(0) == "Times New Roman");

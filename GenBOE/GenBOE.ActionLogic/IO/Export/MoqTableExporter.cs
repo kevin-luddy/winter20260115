@@ -58,7 +58,7 @@ namespace GenBOE.ActionLogic.IO.Export
         private void DuplicateCustomFieldColumns(string templateFileLocation, FullWorkspace ws)
         {
             ICollection<string> moqTableCustomFieldNames = new Collection<string>();
-            foreach(var cf in ws.CustomFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
+            foreach(CustomFieldDTO cf in ws.CustomFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
             {
                 if (cf.CustomFieldRequired)
                 {

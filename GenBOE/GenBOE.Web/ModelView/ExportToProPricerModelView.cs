@@ -74,20 +74,20 @@ namespace GenBOE.Web.ModelView
             if (Scope == ProPricerScope.System)
             {
 
-                var customTaskNames = (from t in Tasks
+				string[] customTaskNames = (from t in Tasks
                                     where !string.IsNullOrWhiteSpace(t.CustomFieldName)
                                     select t.CustomFieldName.ToUpper()).ToArray();
 
-                var customResourceNames = (from r in Resources
+				string[] customResourceNames = (from r in Resources
                                          where !string.IsNullOrWhiteSpace(r.CustomFieldName)
                                          select r.CustomFieldName.ToUpper()).ToArray();
 
-                // Get distinct Names for all custom fields USED in the format
-                var customFieldNamesInFormat = customTaskNames.Union(customResourceNames).Distinct();
+				// Get distinct Names for all custom fields USED in the format
+				IEnumerable<string> customFieldNamesInFormat = customTaskNames.Union(customResourceNames).Distinct();
 
-                // For each custom field used in the format, get the matching custom field in this workspace.
-                // Match using custom field name, BOE display, Task display and Labor Type display.
-                var matchingCustomFields = (from c in customFieldNamesInFormat
+				// For each custom field used in the format, get the matching custom field in this workspace.
+				// Match using custom field name, BOE display, Task display and Labor Type display.
+				Dictionary<string, CustomFieldDTO> matchingCustomFields = (from c in customFieldNamesInFormat
                                             from a in availableCustomFields
                                             where c.Equals(a.CustomFieldName, StringComparison.CurrentCultureIgnoreCase)
                                             select new
@@ -97,8 +97,8 @@ namespace GenBOE.Web.ModelView
                                             }
                                            ).ToDictionary(m => m.CustomFieldName, m => m.MatchingDTO);
 
-                // Names of custom fields that ARE in the workspace
-                var matchingCustomFieldNames = matchingCustomFields.Select(a => a.Value.CustomFieldName.ToUpper());
+				// Names of custom fields that ARE in the workspace
+				IEnumerable<string> matchingCustomFieldNames = matchingCustomFields.Select(a => a.Value.CustomFieldName.ToUpper());
 
                 // Names of custom fields used in the format, that aren't available in the workspace
                 InvalidCustomFields = new Collection<string>(customFieldNamesInFormat.Except(matchingCustomFieldNames).ToArray());
@@ -107,7 +107,7 @@ namespace GenBOE.Web.ModelView
                 // field IDs to the corresponding IDs of fields in this workspace
                 if (InvalidCustomFields.Count == 0)
                 {
-                    foreach (var task in Tasks)
+                    foreach (ProPricerTasks task in Tasks)
                     {
                         if (!string.IsNullOrWhiteSpace(task.CustomFieldName))
                         {
@@ -115,7 +115,7 @@ namespace GenBOE.Web.ModelView
                         }
                     }
 
-                    foreach (var resource in Resources)
+                    foreach (ProPricerResources resource in Resources)
                     {
                         if (!string.IsNullOrWhiteSpace(resource.CustomFieldName))
                         {
@@ -149,7 +149,7 @@ namespace GenBOE.Web.ModelView
                 throw new ArgumentNullException(nameof(task));
             }
 
-            var toReturn = ((int)task.Task).ToString();
+			string toReturn = ((int)task.Task).ToString();
 
             if (task.CustomFieldID.HasValue)
             {
@@ -171,7 +171,7 @@ namespace GenBOE.Web.ModelView
                 throw new ArgumentNullException(nameof(resource));
             }
 
-            var toReturn = ((int)resource.Resource).ToString();
+			string toReturn = ((int)resource.Resource).ToString();
 
             if (resource.CustomFieldID.HasValue)
             {
@@ -214,9 +214,9 @@ namespace GenBOE.Web.ModelView
         {
             get
             {
-                var toReturn = new Collection<string>();
+				Collection<string> toReturn = new Collection<string>();
 
-                var orderedTasks = from t in Tasks
+				IEnumerable<string> orderedTasks = from t in Tasks
                                    orderby t.ListOrder
                                    select GetFormattedCustomFieldID(t);
 
@@ -234,9 +234,9 @@ namespace GenBOE.Web.ModelView
         {
             get
             {
-                var toReturn = new Collection<string>();
+				Collection<string> toReturn = new Collection<string>();
 
-                var orderedResources = from r in Resources
+				IEnumerable<string> orderedResources = from r in Resources
                                        orderby r.ListOrder
                                        select GetFormattedCustomFieldID(r);
 
@@ -254,9 +254,9 @@ namespace GenBOE.Web.ModelView
         {
             get
             {
-                var toReturn = new Collection<string>();
+				Collection<string> toReturn = new Collection<string>();
 
-                var orderedTasks = from t in Tasks
+				IEnumerable<string> orderedTasks = from t in Tasks
                                    orderby t.ListOrder
                                    select GetFormattedCustomFieldID(t, true);
 
@@ -274,9 +274,9 @@ namespace GenBOE.Web.ModelView
         {
             get
             {
-                var toReturn = new Collection<string>();
+				Collection<string> toReturn = new Collection<string>();
 
-                var orderedResources = from r in Resources
+				IEnumerable<string> orderedResources = from r in Resources
                                        orderby r.ListOrder
                                        select GetFormattedCustomFieldID(r, true);
 

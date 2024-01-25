@@ -41,7 +41,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SaveProposalChecklistAsPricerAndGetProposalByID()
         {
-            var sut = this.CreateSystem();
+			ProposalChecklistLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
 
@@ -175,7 +175,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SaveProposalChecklistAsPeerReviewerAndGetProposalByID()
         {
-            var sut = this.CreateSystem();
+			ProposalChecklistLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
             ProposalChecklistDto proposalChecklist = this.testData.SaveChecklistAsPricer(proposal.Id);
@@ -252,7 +252,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetChecklistsByIds()
         {
-            var sut = this.CreateSystem();
+			ProposalChecklistLoader sut = this.CreateSystem();
 
             ProposalDto proposal1 = this.testData.GetProposal();
             ProposalChecklistDto checklist1 = this.testData.SaveChecklistAsPricer(proposal1.Id);
@@ -272,7 +272,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllChecklistSaveInfoTest()
         {
-            var sut = this.CreateSystem();
+			ProposalChecklistLoader sut = this.CreateSystem();
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
             ICollection<ProposalChecklistSaveInfo> saveInfo = sut.GetAllChecklistSaveInfo(proposal.Id);
 
@@ -304,7 +304,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_UnlockChecklistTest()
         {
-            var sut = this.CreateSystem();
+			ProposalChecklistLoader sut = this.CreateSystem();
             IProposalLoader proposalLoader = new ProposalLoader();
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
             ProposalChecklistDto checklist = this.testData.SaveChecklistAsPricer(proposal.Id);
@@ -407,7 +407,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetPPRResponsesTest()
         {
-            var sut = this.CreateSystem();
+			ProposalChecklistLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
             List<ChecklistResponseItem> responses = sut.GetPPRResponses(proposal.Id).ToList();
@@ -426,7 +426,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetPARResponsesTest()
         {
-            var sut = this.CreateSystem();
+			ProposalChecklistLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
             List<ChecklistResponseItem> responses = sut.GetPARResponses(proposal.Id).ToList();
@@ -445,7 +445,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalSubmitDateTest()
         {
-            var sut = this.CreateSystem();
+			ProposalChecklistLoader sut = this.CreateSystem();
 
             ProposalDto proposal1 = this.testData.GetProposal(true);
             ProposalDto proposal2 = this.testData.GetProposal(true);
@@ -504,7 +504,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_DeleteProposalChecklist()
         {
-            var sut = this.CreateSystem();
+			ProposalChecklistLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
 

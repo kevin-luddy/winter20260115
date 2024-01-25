@@ -131,9 +131,9 @@ namespace GenBOE.ActionLogic.IO.Import
 
                 if (row.ContainsKey(idColumn))
                 {
-                    // find out if the resource we're importing already exists given it's Name and List ID
-                    // if it does, grab the resource ID. if not, its new
-                    var res = resourcesForListId.FirstOrDefault(x => x.ResourceName == row[idColumn]);
+					// find out if the resource we're importing already exists given it's Name and List ID
+					// if it does, grab the resource ID. if not, its new
+					ResourceDTO res = resourcesForListId.FirstOrDefault(x => x.ResourceName == row[idColumn]);
 
                     if (res != null)
                     {

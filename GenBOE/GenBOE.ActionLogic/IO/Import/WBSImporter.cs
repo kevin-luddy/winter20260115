@@ -173,20 +173,20 @@ namespace GenBOE.ActionLogic.IO.Import
             // For each Dictionary object (representing imported row data)
             foreach (Dictionary<string, string> row in allRows)
             {
-                var currentWBSs = (from r in allCurrentWBSs
+				WbsDTO[] currentWBSs = (from r in allCurrentWBSs
                                    where (row.ContainsKey(wbsIDColumn) && r.Id.ToString() != row[wbsIDColumn].Trim()) ||
                                      (!row.ContainsKey(wbsIDColumn))
                                    select r).ToArray();
 
-                var uniqueWbsNumberLinqResultsFromSpreadsheet = (from r in allRows
+				Dictionary<string, string>[] uniqueWbsNumberLinqResultsFromSpreadsheet = (from r in allRows
                                                                  where row.ContainsKey(wbsPaddedNumber) && r.ContainsKey(wbsPaddedNumber) && r[wbsPaddedNumber].IsEquivalentTo(row[wbsPaddedNumber])
                                                                  select r).ToArray();
 
-                var uniqueWbsNumberLinqResultsFromDatabase = (from r in currentWBSs
+				WbsDTO[] uniqueWbsNumberLinqResultsFromDatabase = (from r in currentWBSs
                                                               where row.ContainsKey(wbsPaddedNumber) && r.WbsPaddedNumber.IsEquivalentTo(row[wbsPaddedNumber])
                                                               select r).ToArray();
 
-                var uniqueWbsIDLinqResults = (from r in allRows
+				Dictionary<string, string>[] uniqueWbsIDLinqResults = (from r in allRows
                                              where row.ContainsKey(wbsIDColumn) && r.ContainsKey(wbsIDColumn) && r[wbsIDColumn] == row[wbsIDColumn]
                                              select r).ToArray();
 
@@ -355,7 +355,7 @@ namespace GenBOE.ActionLogic.IO.Import
                 }                
             }
 
-            var toTruncate = from t in toReturn
+			IEnumerable<ImportedWbs> toTruncate = from t in toReturn
                              where !string.IsNullOrEmpty(t.WbsTitle) && 
                                 t.WbsTitle.Length > 100 && 
                                 (t.ImportTypes.Contains(WbsImportResult.UpdateWbs) || 

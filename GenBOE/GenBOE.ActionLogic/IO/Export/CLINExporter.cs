@@ -39,9 +39,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(clinDTOs));
             }
 
-            var toReturn = string.Empty;
+			string toReturn = string.Empty;
 
-            var worksheet = this.GetExcelExportWorksheet(clinDTOs, contractTypes);
+			ExcelExportWorksheet worksheet = this.GetExcelExportWorksheet(clinDTOs, contractTypes);
 
             // Pass the rows to the generic Excel exporter
             toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);            
@@ -64,11 +64,11 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(clinDTOs));
             }
 
-            var toReturn = new ExcelExportWorksheet();
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet();
 
             if (clinDTOs.Count > 0)
             {
-                foreach (var clin in clinDTOs)
+                foreach (FullClin clin in clinDTOs)
                 {
                     toReturn.Add(
                         clin.Id.ToString(),

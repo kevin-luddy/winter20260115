@@ -68,7 +68,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public ProposalLoader(ILogger logger) : base(logger)
+		public ProposalLoader(ILogger<ProposalLoader> logger) : base(logger)
 		{
 		}
 

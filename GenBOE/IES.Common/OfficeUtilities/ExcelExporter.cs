@@ -239,14 +239,14 @@ namespace IES.Common.OfficeUtilities
                     rowIndex = (int)startRow;
                 }
 
-                var originalRows = sheetData.Descendants<Row>().ToList();
+				List<Row> originalRows = sheetData.Descendants<Row>().ToList();
 
                 // Iterate over rows of data and append each as an Excel Row object
                 foreach (ICollection<string> row in worksheetData)
                 {
-                    var originalRow = originalRows.FirstOrDefault(r => r.RowIndex == rowIndex);
+					Row originalRow = originalRows.FirstOrDefault(r => r.RowIndex == rowIndex);
 
-                    var newRow = ExcelUtilities.CreateExcelContentRow(document, rowIndex, columnStyles, originalRow, row.ToArray());
+					Row newRow = ExcelUtilities.CreateExcelContentRow(document, rowIndex, columnStyles, originalRow, row.ToArray());
 
                     if (originalRow != null)
                     {
@@ -279,7 +279,7 @@ namespace IES.Common.OfficeUtilities
             if (worksheetPart != null)
             {
                 SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-                var allRows = sheetData.Descendants<Row>().ToList();
+				List<Row> allRows = sheetData.Descendants<Row>().ToList();
 
                 uint rowIndex = startRow;
 
@@ -458,7 +458,7 @@ namespace IES.Common.OfficeUtilities
             }
             // Add names
             DefinedNames definedNames = spreadsheet.WorkbookPart.Workbook.GetFirstChild<DefinedNames>();
-            foreach (var newDefinedName in newDefinedNames)
+            foreach (KeyValuePair<string, string> newDefinedName in newDefinedNames)
             {
                 definedNames.AppendChild(new DefinedName() { Name = newDefinedName.Key, Text = newDefinedName.Value });
             }

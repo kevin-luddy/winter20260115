@@ -41,8 +41,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
             string toReturn = string.Empty;
 
-            // Create collections of strings for each row in the export file
-            var worksheet = new ExcelExportWorksheet();
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
 
             if (origins.Any())
             {

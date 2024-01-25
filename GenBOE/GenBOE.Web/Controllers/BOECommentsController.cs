@@ -67,7 +67,7 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "DisplayBOEComments", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
-            var currentUserID = ws.CurrentActiveUser.UserID;
+			int currentUserID = ws.CurrentActiveUser.UserID;
 
             ViewData["BOEID"] = boeID;
             ViewData["CurrentUserID"] = currentUserID;

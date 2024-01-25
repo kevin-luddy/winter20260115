@@ -52,14 +52,14 @@ namespace GenBOE.ActionLogic.IO.Export
 
             string toReturn = null;
 
-            var allPerformingOrgs = inWorkspace.PerformingOrgsForWsList;
-            var allResourceTypes = inResourceLoader.GetByListIdAndElementOfCost(inWorkspace.ResourceListID, ElementOfCostType.ODC);
-            var allCurves = inCommonMapper.getOdcSpreadCurve();
+			IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs = inWorkspace.PerformingOrgsForWsList;
+			ICollection<ResourceDTO> allResourceTypes = inResourceLoader.GetByListIdAndElementOfCost(inWorkspace.ResourceListID, ElementOfCostType.ODC);
+			Collection<OtherDirectCostSpreadCurveModelView> allCurves = inCommonMapper.getOdcSpreadCurve();
 
             int maxAutoFillRows = Math.Max(allCurves.Count, Math.Max(allPerformingOrgs.Count, allResourceTypes.Count));
 
-            // Create collections of strings for each row in the export file
-            var optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
 
             for (int i = 0; i < maxAutoFillRows; i++)
             {
@@ -70,7 +70,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     );
             }
 
-            var firstWorksheet = new ExcelExportWorksheet();
+			ExcelExportWorksheet firstWorksheet = new ExcelExportWorksheet();
 
             if (inODCElement != null)
             {

@@ -394,16 +394,16 @@ namespace GenTRAC.ActionLogic
 
 			if (fullProposalDto != null)
 			{
-				var pprData = fullProposalDto.ProposalChecklistPPRData;
+				ChecklistContentDto pprData = fullProposalDto.ProposalChecklistPPRData;
 
 				if (pprData != null)
 				{
-					var checklistContent = pprData;
+					ChecklistContentDto checklistContent = pprData;
 
 					ICollection<ChecklistContentItem> sortedChecklistContent = (from c in checklistContent.Content
 																				where c.TextType == ChecklistTextType.Question
 																				select c).ToList();
-					var contentID = sortedChecklistContent.OrderBy(x => x.SortOrder).Select(x => x.Id).FirstOrDefault();
+					int contentID = sortedChecklistContent.OrderBy(x => x.SortOrder).Select(x => x.Id).FirstOrDefault();
 					return contentID;
 				}
 			}
@@ -554,7 +554,7 @@ namespace GenTRAC.ActionLogic
 					(checklistGeneralInfo.IsPTMChecklistUIEnabled == false ||
 					 (checklistGeneralInfo.IsPTMChecklistUIEnabled == true && fullProposal.IsCCPDRequired.HasValue && fullProposal.IsCCPDRequired.Value == true)))
 				{
-					var questions = from q in checklistPPRDocumentData.ChecklistRows
+					IEnumerable<ChecklistRowModelView> questions = from q in checklistPPRDocumentData.ChecklistRows
 									where q.RowType == ChecklistTextType.Question && q.PricerResponse == ChecklistResponseOption.NotSet
 									select q;
 					if (questions.Any())
@@ -714,7 +714,7 @@ namespace GenTRAC.ActionLogic
 			if (checklistPARDocumentData.ShowChecklistResponse == ShowChecklistResponse.Pricer)
 			{
 				// verify that all PAR questions have been answered
-				var pricerQuestions = from q in checklistPARDocumentData.ChecklistRows
+				IEnumerable<ChecklistRowModelView> pricerQuestions = from q in checklistPARDocumentData.ChecklistRows
 									  where q.RowType == ChecklistTextType.Question && !string.IsNullOrEmpty(q.SubmissionItem) && q.PricerResponse == ChecklistResponseOption.NotSet
 									  select q;
 				if (pricerQuestions.Any())
@@ -811,7 +811,7 @@ namespace GenTRAC.ActionLogic
 			}
 			else if (checklistPARDocumentData.ShowChecklistResponse == ShowChecklistResponse.Peer)
 			{
-				var peerQuestions = from q in checklistPARDocumentData.ChecklistRows
+				IEnumerable<ChecklistRowModelView> peerQuestions = from q in checklistPARDocumentData.ChecklistRows
 									where q.RowType == ChecklistTextType.Question && q.PeerResponse == ChecklistResponseOption.NotSet
 									select q;
 				if (peerQuestions.Any())
@@ -956,14 +956,14 @@ namespace GenTRAC.ActionLogic
 			model.ProposalID = fullProposalDto.Id;
 
 			// even though a collection is returned, we know that one proposal can only contain one of these dtos
-			var pprData = fullProposalDto.ProposalChecklistPPRData;
-			var proposalChecklist = fullProposalDto.ProposalChecklistData;
+			ChecklistContentDto pprData = fullProposalDto.ProposalChecklistPPRData;
+			ICollection<ProposalChecklistDto> proposalChecklist = fullProposalDto.ProposalChecklistData;
 			ProposalChecklistSaveInfo pricerSaveInfo = null;
 			if (pprData != null)
 			{
 				if (proposalChecklist != null && proposalChecklist.Any())
 				{
-					var generalChecklistData = proposalChecklist.First();
+					ProposalChecklistDto generalChecklistData = proposalChecklist.First();
 					model.ProposalChecklistID = generalChecklistData.Id;
 					model.ProposalID = generalChecklistData.ProposalID;
 					model.UpdateDate = generalChecklistData.UpdateDate;
@@ -992,7 +992,7 @@ namespace GenTRAC.ActionLogic
 				}
 
 				// get content and associate responses with each content
-				foreach (var content in sortedChecklistContent)
+				foreach (ChecklistContentItem content in sortedChecklistContent)
 				{
 					ChecklistRowModelView row = new ChecklistRowModelView();
 					row.RowType = content.TextType;
@@ -1002,7 +1002,7 @@ namespace GenTRAC.ActionLogic
 					row.ColumnOrder = content.ColumnOrder;
 					row.SubmissionItem = content.SubmissionItem;
 
-					var responses = (from p in propCheck
+					List<ChecklistResponseItem> responses = (from p in propCheck
 									 where p.ChecklistContentId == content.Id
 									 select p).ToList();
 
@@ -1331,7 +1331,7 @@ namespace GenTRAC.ActionLogic
 			}
 
 			// even though a collection is returned, we know that one proposal can only contain one of these dtos
-			var checklists = fullProposalDto.ProposalChecklistData;
+			ICollection<ProposalChecklistDto> checklists = fullProposalDto.ProposalChecklistData;
 
 			if (checklists != null && checklists.Any())
 			{
@@ -1472,7 +1472,7 @@ namespace GenTRAC.ActionLogic
 			{
 				if (proposalChecklist != null && proposalChecklist.Any())
 				{
-					var generalChecklistData = proposalChecklist.First();
+					ProposalChecklistDto generalChecklistData = proposalChecklist.First();
 					model.ProposalChecklistID = generalChecklistData.Id;
 					model.ProposalID = generalChecklistData.ProposalID;
 					model.UpdateDate = generalChecklistData.UpdateDate;
@@ -1573,7 +1573,7 @@ namespace GenTRAC.ActionLogic
 				row.SubmissionItem = content.SubmissionItem;
 				row.YesOnly = content.YesOnly;
 
-				var responses = (from p in propCheck
+				List<ChecklistResponseItem> responses = (from p in propCheck
 								 where p.ChecklistContentId == content.Id
 								 select p).ToList();
 
@@ -1599,7 +1599,7 @@ namespace GenTRAC.ActionLogic
 
 				if (checklistVersion >= ValidationConstants.ChecklistValidationConstants.CANNED_RESPONSE_CHECKLIST_VERSION)
 				{
-					foreach (var response in content.CannedResponses)
+					foreach (KeyValuePair<int, string> response in content.CannedResponses)
 					{
 						row.CannedResponses.Add(response.Key, response.Value);
 					}

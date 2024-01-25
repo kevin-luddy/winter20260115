@@ -82,8 +82,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="allLegacyResources">All of the Sikorsky Legacy Resources.</param>
         private static void PopulateResources(IReadOnlyCollection<ProjectMapModelView> projectMapData, SpreadsheetDocument spreadsheet, ProjectMapType projectMapType, bool isOffloaded, ICommonDataMapper commonDataMapper, IDictionary<int, SikorskyLegacyResourceDTO> allLegacyResources)
         {
-            // Create collections of strings for each row in the export file
-            var worksheet = new ExcelExportWorksheet();
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
             bool isProjectMap = projectMapType == ProjectMapType.NonTimePhasedProjectMap || projectMapType == ProjectMapType.TimePhasedProjectMap;
             bool nonTimePhased = projectMapType != ProjectMapType.TimePhasedProjectMap;
 

@@ -40,7 +40,7 @@ namespace GenTRAC.Tests.DAL.Loader
         /// <returns>loader</returns>
         private ProposalLoader CreateSystem()
         {
-            return new ProposalLoader(new ProposalPermissionLoader());
+            return new ProposalLoader();
         }
 
         /// <summary>

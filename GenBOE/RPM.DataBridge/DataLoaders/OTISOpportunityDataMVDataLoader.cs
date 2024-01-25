@@ -58,10 +58,10 @@ namespace RPM.DataBridge.DataLoaders
             using (StreamReader r = new StreamReader(fileName))
             {
                 json = r.ReadToEnd();
-                var datalist = JsonConvert.DeserializeObject<RootObject>(json);
+                RootObject datalist = JsonConvert.DeserializeObject<RootObject>(json);
                 foreach (OppCollection otis_JSON_Opp in datalist.OppCollection)
                 {
-                    var otis = this.GetOtisOpp(otis_JSON_Opp);
+                    OTISOpportunityModelView otis = this.GetOtisOpp(otis_JSON_Opp);
                     dataModelView.Opportunities.Add(otis);
                 }
             }
@@ -98,11 +98,11 @@ namespace RPM.DataBridge.DataLoaders
                     json = wc.DownloadString(uri);
                 }
 
-                var datalist = JsonConvert.DeserializeObject<RootObject>(json);
+                RootObject datalist = JsonConvert.DeserializeObject<RootObject>(json);
 
                 foreach (OppCollection otis_JSON_Opp in datalist.OppCollection)
                 {
-                    var otis = this.GetOtisOpp(otis_JSON_Opp);
+                    OTISOpportunityModelView otis = this.GetOtisOpp(otis_JSON_Opp);
                     dataModelView.Opportunities.Add(otis);
                 }
 

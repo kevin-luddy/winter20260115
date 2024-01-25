@@ -71,7 +71,7 @@ namespace GenBOE.Dtos
                     // Level Curve is Spread Curve 3
                     if (manipulatedRequest.ManipulatedCurve == SpreadCurves.SpreadCurve3 || manipulatedRequest.ManipulatedCurve == SpreadCurves.Level)
                     {
-                        CurveValues = SpreadFlat((manipulatedRequest.AmountToSpread / (decimal)manipulatedRequest.NumOfMonths), CurveValues, manipulatedRequest.FirstMonth, manipulatedRequest.LastMonth);
+                        CurveValues = SpreadFlat((manipulatedRequest.AmountToSpread / manipulatedRequest.NumOfMonths), CurveValues, manipulatedRequest.FirstMonth, manipulatedRequest.LastMonth);
                         CurveValues = Smooth(manipulatedRequest.AmountToSpread, CurveValues, manipulatedRequest.FirstMonth, manipulatedRequest.LastMonth, decimalPlacesAllowed);
                         if (manipulatedRequest.HourSpread < 0)
                         {
@@ -596,7 +596,7 @@ namespace GenBOE.Dtos
         {
             decimal[] toReturn = new decimal[firstRoundResult.LastMonth];
 
-            toReturn = SpreadFlat((firstRoundResult.AmountToSpread / (decimal)firstRoundResult.NumOfMonths), toReturn, firstRoundResult.FirstMonth, firstRoundResult.LastMonth);
+            toReturn = SpreadFlat((firstRoundResult.AmountToSpread / firstRoundResult.NumOfMonths), toReturn, firstRoundResult.FirstMonth, firstRoundResult.LastMonth);
             toReturn = Smooth(firstRoundResult.AmountToSpread, toReturn, firstRoundResult.FirstMonth, firstRoundResult.LastMonth, decimalPlacesAllowed);
 
             ArrayList curveValueList = new ArrayList(toReturn);

@@ -163,7 +163,7 @@ namespace GenTRAC.Tests.ActionLogic
             mockFile.Setup(x => x.FileName).Returns("UnallowableFileType.exe");
             mockFile.Setup(x => x.ContentLength).Returns(SiteMasterUtilities.MaxFileSize.Value + 1);
 
-            var errors = sut.ValidateFileTypeAndSize(mockFile.Object, SiteMasterUtilities.AllowedFileTypes, SiteMasterUtilities.MaxFileSize);
+            ICollection<string> errors = sut.ValidateFileTypeAndSize(mockFile.Object, SiteMasterUtilities.AllowedFileTypes, SiteMasterUtilities.MaxFileSize);
 
             Assert.AreEqual(2, errors.Count, 
                 "File is larger than MaxFileSize and the extension is not in AllowedFileTypes 2 errors should be returned");
@@ -178,7 +178,7 @@ namespace GenTRAC.Tests.ActionLogic
             PostSubmittalAttachmentsControllerLogic sut = this.CreateSystem();
             this.CreateOtherAttachments(SiteMasterUtilities.MaxOtherFileCount);
 
-            var errors = sut.ValidateOtherFileCount(1, new AttachmentDto() { AttachmentType = AttachmentType.Other, Id = -1 }, SiteMasterUtilities.MaxOtherFileCount);
+            ICollection<string> errors = sut.ValidateOtherFileCount(1, new AttachmentDto() { AttachmentType = AttachmentType.Other, Id = -1 }, SiteMasterUtilities.MaxOtherFileCount);
 
             Assert.AreEqual(1, errors.Count, "MaxOtherFileCount exceeded, but validation did not fail for the new 'Other' attachment.");
         }
@@ -192,7 +192,7 @@ namespace GenTRAC.Tests.ActionLogic
             PostSubmittalAttachmentsControllerLogic sut = this.CreateSystem();
             this.CreateOtherAttachments(SiteMasterUtilities.MaxOtherFileCount - 1);
 
-            var errors = sut.ValidateOtherFileCount(1, new AttachmentDto() { AttachmentType = AttachmentType.Other, Id = -1 }, SiteMasterUtilities.MaxOtherFileCount);
+            ICollection<string> errors = sut.ValidateOtherFileCount(1, new AttachmentDto() { AttachmentType = AttachmentType.Other, Id = -1 }, SiteMasterUtilities.MaxOtherFileCount);
 
             Assert.AreEqual(0, errors.Count, "Validation failed for a new 'Other' file without exceeding the MaxOtherFileCount.");
         }
@@ -206,7 +206,7 @@ namespace GenTRAC.Tests.ActionLogic
             PostSubmittalAttachmentsControllerLogic sut = this.CreateSystem();
             this.CreateOtherAttachments(SiteMasterUtilities.MaxOtherFileCount);
 
-            var errors = sut.ValidateOtherFileCount(1, new AttachmentDto() { AttachmentType = AttachmentType.CostKickOffPackage, Id = -1 }, SiteMasterUtilities.MaxOtherFileCount);
+            ICollection<string> errors = sut.ValidateOtherFileCount(1, new AttachmentDto() { AttachmentType = AttachmentType.CostKickOffPackage, Id = -1 }, SiteMasterUtilities.MaxOtherFileCount);
 
             Assert.AreEqual(0, errors.Count, "Validation failed for a standard attachment type due to exceeding the MaxOtherFileCount.  Validation should only fail for this reason for files with a type of 'Other'.");
         }

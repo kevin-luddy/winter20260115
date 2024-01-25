@@ -32,8 +32,8 @@ namespace GenBOE.Tests.ActionLogic.WorkspaceTransitions
             int workspaceID = 1;
             string workspaceName = "Workspace ONE Test";
 
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             
             FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO { WorkspaceName = workspaceName, Id = workspaceID });
 
@@ -53,8 +53,8 @@ namespace GenBOE.Tests.ActionLogic.WorkspaceTransitions
             int workspaceID = 1;
             string workspaceName = "Workspace ONE Test";
 
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO { WorkspaceName = workspaceName, Id = workspaceID });
 
             LockedToWorkingTransition sut = new LockedToWorkingTransition(emailer.Object, workspaceLoader.Object);

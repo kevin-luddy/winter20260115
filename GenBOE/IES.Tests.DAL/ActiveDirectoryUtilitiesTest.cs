@@ -200,7 +200,7 @@ namespace IES.Tests
         {
             ActiveDirectoryUtilities sut = new ActiveDirectoryUtilities(30);
 
-            var result = sut.GetAdGroupUsers("EBS.EstimationInitiative.DevTeam");
+			ICollection<UserData> result = sut.GetAdGroupUsers("EBS.EstimationInitiative.DevTeam");
 
             Assert.IsTrue(result.Count > 0);
             Assert.IsNotNull(result.Select(x => x.Ntid == "a-wilsot"));

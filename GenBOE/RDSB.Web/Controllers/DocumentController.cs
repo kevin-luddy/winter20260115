@@ -50,7 +50,9 @@ namespace RDSB.Web.Controllers
         /// <param name="adUtils">Active Directory Utilities</param>
         /// <param name="whosOnlineLoader">Who's Online Loader</param>
         /// <param name="rateDetailLoader">Rate Loader</param>
-        public DocumentController(ISecurityInformation securityInformation, ISecurityMapper securityMapper, IDocumentControllerLogic documentControllerLogic, IActiveDirectoryUtilities adUtils, IWhosOnlineLoader whosOnlineLoader, IRateDetailLoader rateDetailLoader)
+        public DocumentController(ISecurityInformation securityInformation, ISecurityMapper securityMapper, 
+			IDocumentControllerLogic documentControllerLogic, IActiveDirectoryUtilities adUtils, 
+			IWhosOnlineLoader whosOnlineLoader, IRateDetailLoader rateDetailLoader)
             : base(securityInformation, securityMapper, adUtils, whosOnlineLoader)
         {
             this.documentControllerLogic = documentControllerLogic;

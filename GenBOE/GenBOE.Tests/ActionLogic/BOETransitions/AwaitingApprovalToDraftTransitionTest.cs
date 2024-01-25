@@ -26,9 +26,9 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
         [TestMethod]
         public void ValidateTestFail()
         {
-            var emailer = new Mock<IBoeEmailer>();
-            var commonMapper = new Mock<ICommonDataMapper>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<ICommonDataMapper> commonMapper = new Mock<ICommonDataMapper>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
             Mock<IWorkspaceDTODataLoader> workspaceDataLoader = new Mock<IWorkspaceDTODataLoader>();
 
             BoeDTO myboe = new BoeDTO { WorkspaceID = 2 };
@@ -55,9 +55,9 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
         [TestMethod]
         public void ValidateTestPass()
         {
-            var emailer = new Mock<IBoeEmailer>();
-            var commonMapper = new Mock<ICommonDataMapper>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<ICommonDataMapper> commonMapper = new Mock<ICommonDataMapper>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
             Mock<IWorkspaceDTODataLoader> workspaceDataLoader = new Mock<IWorkspaceDTODataLoader>();
 
             BoeDTO myboe = new BoeDTO { WorkspaceID = 2 };

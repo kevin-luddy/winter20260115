@@ -71,8 +71,8 @@ namespace GenBOE.ActionLogic.Reporting
 
             string toReturn = "";
 
-            // Create all rows for the export file
-            var worksheet = new ExcelExportWorksheet();
+			// Create all rows for the export file
+			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
             worksheet.AddRange(from boe in modelView.Rows
                                select new Collection<string>
                                {
@@ -184,21 +184,21 @@ namespace GenBOE.ActionLogic.Reporting
                 // authors
                 row.Authors = "-";
 
-                var boeAuthors = authorsForBoes.Where(x => x.BOEId == boe.Id).ToCollection();
+				Collection<PermissionsDTO> boeAuthors = authorsForBoes.Where(x => x.BOEId == boe.Id).ToCollection();
                 if (boeAuthors.Any())
                 {
-                    var authors = from author in boeAuthors
+					IEnumerable<string> authors = from author in boeAuthors
                                   where author.Role == Role.Author
                                   select usersForBoe.First(x => x.UserID == author.ETIUserId).DisplayName;
 
-                    var subAuthors = from author in boeAuthors
+					IEnumerable<string> subAuthors = from author in boeAuthors
                                                where author.Role == Role.SubcontractorAuthor
                                                select usersForBoe.First(x => x.UserID == author.ETIUserId).DisplayName + " (Sub)";
 
 
-                    var combinedAuthors = authors.Union(subAuthors);  // combine the authors lists
+					IEnumerable<string> combinedAuthors = authors.Union(subAuthors);  // combine the authors lists
 
-                    var allAuthors = combinedAuthors.OrderBy(x => x).Distinct().ToList();
+					List<string> allAuthors = combinedAuthors.OrderBy(x => x).Distinct().ToList();
 
                     row.Authors = allAuthors.Count > 0 ? string.Join("<br/>", allAuthors.Select(x => x)) : string.Empty;
                 }
@@ -232,7 +232,7 @@ namespace GenBOE.ActionLogic.Reporting
                 }
                 else
                 {
-                    var testIfNoneExists = boeHistory.Where(x => x.NewValue == startState).Select(x => x.Date).ToList();
+					List<DateTime> testIfNoneExists = boeHistory.Where(x => x.NewValue == startState).Select(x => x.Date).ToList();
                     if (testIfNoneExists.None())
                     {
                         startState = allBOEStates[(int)BOEState.Draft].BOEState; // some data doesn't start at 0 (None), but instead starts at state 1 (Draft)
@@ -273,7 +273,7 @@ namespace GenBOE.ActionLogic.Reporting
                 // if you don't use this logic, you can get false positives with just counting "Approved"
                 stateOfInterest = allBOEStates[(int)BOEState.Approved].BOEState;
 
-                var approvedHistory = boeHistory.Where(x => x.OldValue == allBOEStates[(int)BOEState.AwaitingApproval].BOEState && x.NewValue == BOEState.Approved.ToString()).Select(x => x).ToList();
+				List<BOEHistoryDTO> approvedHistory = boeHistory.Where(x => x.OldValue == allBOEStates[(int)BOEState.AwaitingApproval].BOEState && x.NewValue == BOEState.Approved.ToString()).Select(x => x).ToList();
                 row.NumTimesInApproved = this.ComputeNumberOfTimesInState(approvedHistory, stateOfInterest).ToString();
 
                 // # times authors reassigned

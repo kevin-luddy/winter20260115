@@ -449,11 +449,11 @@ namespace IES.Common
                 throw new ArgumentNullException(nameof(modelStateDictionary));
             }
 
-            var errors = new Collection<ValidationMessage>();
+			Collection<ValidationMessage> errors = new Collection<ValidationMessage>();
 
-            foreach (var state in modelStateDictionary)
+            foreach (KeyValuePair<string, ModelState> state in modelStateDictionary)
             {
-                foreach (var error in state.Value.Errors)
+                foreach (ModelError error in state.Value.Errors)
                 {
                     if (!string.IsNullOrEmpty(error.ErrorMessage))
                     {

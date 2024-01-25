@@ -78,7 +78,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             if (duplicateRequest == null) { throw new ArgumentNullException(nameof(duplicateRequest)); }
             if (inSourceBOE == null) { throw new ArgumentNullException(nameof(inSourceBOE)); }
 
-            foreach (var task in duplicateRequest)
+            foreach (KeyValuePair<int, int> task in duplicateRequest)
             {
                 // Make the specified number of duplicates for the task
                 for (int i = 1; i <= task.Value; i++)
@@ -119,10 +119,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 // Copy all trips within the task
                 if (travelDuplicate.TravelTrips.Any())
                 {
-                    var travelTripsToSave = new Collection<TravelTripType>();
+					Collection<TravelTripType> travelTripsToSave = new Collection<TravelTripType>();
 
                     int NewTravelTripID = -1;
-                    foreach (var travelTrip in travelDuplicate.TravelTrips)
+                    foreach (TravelTripType travelTrip in travelDuplicate.TravelTrips)
                     {
                         travelTrip.TravelTripID = NewTravelTripID;
                         travelTrip.Updateable = UpdateType.Upsert;
@@ -143,9 +143,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 // Copy all MSTtrips within the task
                 if (travelDuplicate.MSTTravelTrips.Any())
                 {
-                    var mstTravelTripsToSave = new Collection<MSTTravelTripType>();
+					Collection<MSTTravelTripType> mstTravelTripsToSave = new Collection<MSTTravelTripType>();
                     int NewTravelTripID = -1;
-                    foreach (var mstTravelTrip in travelDuplicate.MSTTravelTrips)
+                    foreach (MSTTravelTripType mstTravelTrip in travelDuplicate.MSTTravelTrips)
                     {
                         mstTravelTrip.Id = NewTravelTripID;
                         mstTravelTrip.Updateable = UpdateType.Upsert;

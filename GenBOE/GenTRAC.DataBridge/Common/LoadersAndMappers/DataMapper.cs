@@ -119,7 +119,7 @@ namespace GenTRAC.DataBridge.Common
                 }
 
                 GetDtosByIdsDelegate<TDtoType> cacheDelegate = new GetDtosByIdsDelegate<TDtoType>(this.DataLoader.GetByIds);
-                var tempResult = this.CacheLoader.GetData(cacheDelegate, this.CacheKeyForGetById, cacheKeyToIDDictionary);
+				System.Collections.ICollection tempResult = this.CacheLoader.GetData(cacheDelegate, this.CacheKeyForGetById, cacheKeyToIDDictionary);
 
                 if (tempResult != null)
                 {

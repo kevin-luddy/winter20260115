@@ -49,5 +49,11 @@
   <ItemGroup>
     <Folder Include="Templates\Export\" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <Reference Include="IdentitySwap.Core">
+      <HintPath>..\core_libraries\IdentitySwap.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>

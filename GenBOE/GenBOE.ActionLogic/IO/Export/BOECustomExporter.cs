@@ -38,12 +38,6 @@ namespace GenBOE.ActionLogic.IO.Export
     [ExcludeFromCodeCoverage]
     public class BOECustomExporter : WordExporter, IBOECustomExporter
     {
-        #region Constants
-
-        private const string PERFORMING_ORG_FOR_MATERIAL_BOE = "MTRL";
-
-        #endregion
-
         #region Fields
 
         protected Logger _log { get; private set; } 
@@ -518,14 +512,14 @@ namespace GenBOE.ActionLogic.IO.Export
                     boe.DataSource = null;
                     boeExportModelView.BOEDescription = null;
                     boeExportModelView.DataSource = null;
-                    foreach (var te in boeExportModelView.TaskElements)
+                    foreach (BOEExportTaskElement te in boeExportModelView.TaskElements)
                     {
                         te.BOETaskDesc = null;
                         te.MOQText = null;
                         // Do not null out taskElementLabors, they are needed if the MOQ Equation uses a Sum Of Variable
                     }
                     
-                    foreach (var te in taskElementCollection)
+                    foreach (BoeTaskElementDTO te in taskElementCollection)
                     {
                         te.Description = null;
                         te.MOQText = null;
@@ -592,16 +586,6 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             // return with no changes - Additional Query Filters included by default for non-custom exports for RMS
             return selectedComponents;
-        }
-
-        /// <summary>
-        /// Checks if given month is October, November, or December
-        /// </summary>
-        /// <param name="month">Month as an int</param>
-        /// <returns>True if October, November, or December, otherwise false</returns>
-        private bool IsMonthOctNovDec(int month)
-        {
-            return month == 10 || month == 11 || month == 12;
         }
 
         #endregion
@@ -2232,7 +2216,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                 // need to pull the string from the equation instead of what is stored in the DB since variable names are always stored in UpperCase
                                 string variableNameWithCorrectCap = s.ToString().Trim(new char[] { '<', '>' });
 
-                                var workspaceVariableValue = workspacevar.WorkspaceVariableValue;
+								decimal workspaceVariableValue = workspacevar.WorkspaceVariableValue;
                                 MoqToDisplay = MoqToDisplay.Replace(MoqToDisplay, Regex.Replace(MoqToDisplay, variableReplacementRegex, Convert.ToDecimal(workspaceVariableValue).ToString("0.#######") + " " + variableNameWithCorrectCap, RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT));
 
                             }
@@ -3413,7 +3397,7 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             IDictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> resourceCustomFields = new Dictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>>();
 
-            foreach (var resourceCustomFieldIdMapping in customFieldValueIdMappings)
+            foreach (KeyValuePair<int, ICollection<KeyValuePair<int, int>>> resourceCustomFieldIdMapping in customFieldValueIdMappings)
             {
                 int resourceId = resourceCustomFieldIdMapping.Key;
                 ICollection<KeyValuePair<int, int>> idPairs = resourceCustomFieldIdMapping.Value;
@@ -4295,7 +4279,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 bool hasCost = false;
 
-                foreach (var rollupRowData in rollupData)
+                foreach (ResourceSummaryRowData rollupRowData in rollupData)
                 {
                     // create a new summary data row in the table
                     TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
@@ -4493,8 +4477,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (alias != null)
             {
-                // Get the Element that encapsulates the current alias
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+				// Get the Element that encapsulates the current alias
+				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 // If the current element is not null, populate it with the appropriate data
                 if (element != null)
@@ -4518,7 +4502,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (alias != null)
             {
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 if (element != null)
                 {
@@ -4582,7 +4566,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 if (revCodeCustomField != null)
                 {
-                    var revcode = (from v in workspaceCustomFieldValues
+					CustomFieldValueDTO revcode = (from v in workspaceCustomFieldValues
                                    from c in boeTaskElement.CustomFieldValueContainers
                                    where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == revCodeCustomField.Id
                                    select v).FirstOrDefault();
@@ -4597,7 +4581,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 if (taskSegregationCustomField != null)
                 {
-                    var TaskSegregation = (from v in workspaceCustomFieldValues
+					CustomFieldValueDTO TaskSegregation = (from v in workspaceCustomFieldValues
                                            from c in boeTaskElement.CustomFieldValueContainers
                                            where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == taskSegregationCustomField.Id
                                            select v).FirstOrDefault();
@@ -4707,15 +4691,15 @@ namespace GenBOE.ActionLogic.IO.Export
                     boeExportLabor.ExportFields[BOEExporterConstants.FieldName_SpreadCurve] =
                         laborType.SpreadCurveID.HasValue ? allSpreadCurves[(int)laborType.SpreadCurveID.Value].SpreadCurveName.Replace("Hours", FullObjectHelper.HoursLabel(exportInputs.Workspace)) : string.Empty;
 
-                    // Get Skill Level Value for current Resource Type
-                    var skillLevelCustomField = (from c in exportInputs.CustomFields
+					// Get Skill Level Value for current Resource Type
+					CustomFieldDTO skillLevelCustomField = (from c in exportInputs.CustomFields
                                                  where c.CustomFieldName.Equals(BOEExporterConstants.CustomFieldName_SkillLevel, StringComparison.CurrentCultureIgnoreCase) &&
                                                  c.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay
                                                  select c).FirstOrDefault();
 
                     if (skillLevelCustomField != null)
                     {
-                        var skillLevel = (from v in workspaceCustomFieldValues
+						CustomFieldValueDTO skillLevel = (from v in workspaceCustomFieldValues
                                           from c in laborType.CustomFieldValueContainers
                                           where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == skillLevelCustomField.Id
                                           select v).FirstOrDefault();
@@ -4726,15 +4710,15 @@ namespace GenBOE.ActionLogic.IO.Export
                         }
                     }
 
-                    // Get Site Value for current Resource Type
-                    var siteCustomField = (from c in exportInputs.CustomFields
+					// Get Site Value for current Resource Type
+					CustomFieldDTO siteCustomField = (from c in exportInputs.CustomFields
                                            where c.CustomFieldName.Equals(BOEExporterConstants.CustomFieldName_Site, StringComparison.CurrentCultureIgnoreCase) &&
                                            c.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay
                                            select c).FirstOrDefault();
 
                     if (siteCustomField != null)
                     {
-                        var site = (from v in workspaceCustomFieldValues
+						CustomFieldValueDTO site = (from v in workspaceCustomFieldValues
                                     from c in laborType.CustomFieldValueContainers
                                     where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == siteCustomField.Id
                                     select v).FirstOrDefault();
@@ -4745,15 +4729,15 @@ namespace GenBOE.ActionLogic.IO.Export
                         }
                     }
 
-                    // Get Skill Mix Value for current Resource Type
-                    var skillMixCustomField = (from c in exportInputs.CustomFields
+					// Get Skill Mix Value for current Resource Type
+					CustomFieldDTO skillMixCustomField = (from c in exportInputs.CustomFields
                                                where c.CustomFieldName.Equals(BOEExporterConstants.CustomFieldName_SkillMix, StringComparison.CurrentCultureIgnoreCase) &&
                                                c.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay
                                                select c).FirstOrDefault();
 
                     if (skillMixCustomField != null)
                     {
-                        var skillMix = (from v in workspaceCustomFieldValues
+						CustomFieldValueDTO skillMix = (from v in workspaceCustomFieldValues
                                         from c in laborType.CustomFieldValueContainers
                                         where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == skillMixCustomField.Id
                                         select v).FirstOrDefault();
@@ -4960,7 +4944,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         " Day(s) in " +
                         travelTrip.TripDate.ToString(BOEExporterConstants.DATE_FORMAT_MONTH_YEAR);
 
-                    var resource = travelResources.FirstOrDefault(r => r.Segment == travelTrip.Segment);
+					ResourceDTO resource = travelResources.FirstOrDefault(r => r.Segment == travelTrip.Segment);
 
                     if (resource != null)
                     {
@@ -5010,7 +4994,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 this._log.Info("Exporting - BOECustomExporter - ProcessMaterialsTasks - materials tasks begin");
             }
 
-            foreach (var materialsElement in exportInputs.Materials.Where(x => x.BoeID == boe.Id).ToList())
+            foreach (MaterialDTO materialsElement in exportInputs.Materials.Where(x => x.BoeID == boe.Id).ToList())
             {
                 BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
                 boeExportTaskElement.BoeID = boe.Id;
@@ -5282,7 +5266,7 @@ namespace GenBOE.ActionLogic.IO.Export
                  from f in e.ODCTypes
                  from g in f.ODCSpreads
                  where g.ODCSpreadDate.HasValue && g.ODCSpreadDate.Value.Year == year && g.ODCSpreadDate.Value.Month == month
-                 select ((decimal)g.CostSpreadValue.Value) / 100m).Sum() +
+                 select g.CostSpreadValue.Value / 100m).Sum() +
                     (from e in labors
                      where (e.ElementType == BOEExportTaskElementType.Travel || e.ElementType == BOEExportTaskElementType.Material) &&
                      DateTime.Parse(e.ExportFields[BOEExporterConstants.FieldName_TaskTypeDate]).Year == year &&
@@ -5304,7 +5288,7 @@ namespace GenBOE.ActionLogic.IO.Export
             decimal sum =
                 (from e in odcSpreads
                  where e.ODCSpreadDate.HasValue && e.ODCSpreadDate.Value.Year == year && e.ODCSpreadDate.Value.Month == month
-                 select ((decimal)e.CostSpreadValue.Value) / 100m).Sum();
+                 select e.CostSpreadValue.Value / 100m).Sum();
 
             return sum;
         }
@@ -5383,7 +5367,7 @@ namespace GenBOE.ActionLogic.IO.Export
             DateRange TravelElementsDateRange = this.GetODCTravelDateRange(null, TravelElements, useGfy);
             if (TravelElementsDateRange.StartDate.HasValue && TravelElementsDateRange.EndDate.HasValue)
             {
-                var TravelTrips = TravelElements.SelectMany(x => x.TravelTrips).ToList();
+				List<TravelTripType> TravelTrips = TravelElements.SelectMany(x => x.TravelTrips).ToList();
                 var TravelGroups = from f in TravelTrips
                                    group f by new
                                    {
@@ -5804,22 +5788,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
             return toReturn;
 
-        }
-
-        private DateRange GetMaterialTaskDateRange(Collection<MaterialDTO> materialElementCollection)
-        {
-            Tuple<MaterialDTO, MaterialDTO> earliestAndLatestMaterial = WordUtilities.GetEarliestAndLatestItems(materialElementCollection, x => x.StartDate.HasValue, x => x.StartDate.Value, x => x.EndDate.HasValue, x => x.EndDate.Value);
-            MaterialDTO Earliest = earliestAndLatestMaterial.Item1;
-            MaterialDTO Latest = earliestAndLatestMaterial.Item2;
-
-            if (Earliest != null && Latest != null)
-            {
-                return new DateRange(Earliest.StartDate, Latest.EndDate);
-            }
-            else
-            {
-                return new DateRange();
-            }
         }
 
         /// <summary>

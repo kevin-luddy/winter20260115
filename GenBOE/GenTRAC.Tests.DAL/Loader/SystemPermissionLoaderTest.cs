@@ -41,7 +41,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllTest()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionLoader sut = this.CreateSystem();
 
             UserDTO currentUser = this.testData.GetUser(true);
 
@@ -74,14 +74,14 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetIdsByUserIdTest()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionLoader sut = this.CreateSystem();
 
             UserDTO user = this.testData.GetUser(true);
 
-            // create permission
-            var permission = this.testData.GetPermission(true, new SystemPermissionDto { Id = -1, Updateable = UpdateType.Upsert, UserId = user.Id, Role = PtmRole.Viewer, LineOfBusinessIDs = new List<int> { 10, 11} });
+			// create permission
+			SystemPermissionDto permission = this.testData.GetPermission(true, new SystemPermissionDto { Id = -1, Updateable = UpdateType.Upsert, UserId = user.Id, Role = PtmRole.Viewer, LineOfBusinessIDs = new List<int> { 10, 11} });
 
-            var result = sut.GetIdsByUserId(user.Id);
+			ICollection<int> result = sut.GetIdsByUserId(user.Id);
 
             Assert.IsTrue(result.Contains(permission.Id));
         }
@@ -92,7 +92,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SavePermissionsAndGetPermissionsByIdAdmin()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionLoader sut = this.CreateSystem();
 
             UserDTO user = this.testData.GetUser(true);
 
@@ -132,7 +132,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SavePermissionsAndGetPermissionsByIdProposalSetupAdmin()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionLoader sut = this.CreateSystem();
 
             UserDTO user = this.testData.GetUser(true);
 
@@ -176,7 +176,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [ExpectedException(typeof(NotImplementedException))]
         public void L_UpsertNotImplementedTest()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionLoader sut = this.CreateSystem();
 
             SystemPermissionDto newPermissions = new SystemPermissionDto()
             {
@@ -200,7 +200,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [ExpectedException(typeof(GeneralAppException))]
         public void L_UpsertWrongRoleTest()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionLoader sut = this.CreateSystem();
 
             SystemPermissionDto newPermissions = new SystemPermissionDto()
             {
@@ -219,7 +219,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [ExpectedException(typeof(GeneralAppException))]
         public void L_DeleteWrongRoleTest()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionLoader sut = this.CreateSystem();
 
             SystemPermissionDto newPermissions = new SystemPermissionDto()
             {

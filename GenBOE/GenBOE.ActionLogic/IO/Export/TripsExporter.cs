@@ -71,9 +71,9 @@ namespace GenBOE.ActionLogic.IO.Export
 
             int maxRows = miscTravelRates.Count;
 
-            // Create collections of strings for each row in the export file
-            var optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
-            var firstWorksheet = new ExcelExportWorksheet();
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
+			ExcelExportWorksheet firstWorksheet = new ExcelExportWorksheet();
 
             for (int i = 0; i < maxRows; i++)
             {

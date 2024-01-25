@@ -92,12 +92,12 @@ namespace GenBOE.ActionLogic.ModelView
                     this.SubcontractorAuthors = SubcontractorAuthorIDs;
                 }
 
-                // Create a combined list of Author and SubcontractorAuthor display names.
-                // Append "(Sub)" to each subcontractor author in the collection.
-                var authorDisplayNames = (from x in inUserDTOs
+				// Create a combined list of Author and SubcontractorAuthor display names.
+				// Append "(Sub)" to each subcontractor author in the collection.
+				System.Collections.Generic.IEnumerable<string> authorDisplayNames = (from x in inUserDTOs
                                           where this.Authors.Contains(x.UserID)
                                           select x.DisplayName);
-                var subcontractorAuthorDisplayNames = (from x in inUserDTOs
+				System.Collections.Generic.IEnumerable<string> subcontractorAuthorDisplayNames = (from x in inUserDTOs
                                                        where this.SubcontractorAuthors.Contains(x.UserID)
                                                        select x.DisplayName + CommonConstants.SUBCONTRACTOR_AUTHOR_SUFFIX);
                 this.AuthorsDisplayNames = new Collection<string>((authorDisplayNames.Union(subcontractorAuthorDisplayNames)

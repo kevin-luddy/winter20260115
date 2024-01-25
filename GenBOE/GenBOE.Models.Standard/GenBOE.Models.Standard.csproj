@@ -4,6 +4,8 @@
     <TargetFramework>netstandard2.1</TargetFramework>
 	  <Nullable>disable</Nullable>
 	  <Configurations>Debug;Release;ReleaseTFSCore</Configurations>
+	  <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+	  <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <ItemGroup>

@@ -538,7 +538,7 @@ namespace IES.DataBridge.Loaders
             // Get section titles
             if (addresses.Any())
             {
-                foreach (var addressIterator in addresses)
+                foreach (Section addressIterator in addresses)
                 {
                     SectionAddressParentModelView address = new SectionAddressParentModelView
                     {

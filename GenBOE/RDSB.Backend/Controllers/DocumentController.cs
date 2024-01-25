@@ -21,6 +21,7 @@ namespace RDSB.Backend.Controllers
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Hosting;
+	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Logging;
 	using RDSB.Backend.Common;
@@ -28,6 +29,7 @@ namespace RDSB.Backend.Controllers
 	/// <summary>
 	/// Controller for Document Section
 	/// </summary>
+	[Route("api/Document")]
 	public class DocumentController : RDSBController
     {
         /// <summary>
@@ -57,8 +59,8 @@ namespace RDSB.Backend.Controllers
 		public DocumentController(ISecurityInformation securityInformation, ISecurityMapper securityMapper, 
 			IDocumentControllerLogic documentControllerLogic, IActiveDirectoryService adUtils, 
 			IWhosOnlineLoader whosOnlineLoader, IRateDetailLoader rateDetailLoader, IWebHostEnvironment webHostEnvironment,
-			ILogger logger)
-            : base(securityInformation, securityMapper, adUtils, whosOnlineLoader, logger)
+			ILogger<DocumentController> logger, IHttpContextAccessor httpContextAccessor)
+            : base(securityInformation, securityMapper, adUtils, whosOnlineLoader, logger, httpContextAccessor)
         {
             this.documentControllerLogic = documentControllerLogic;
             this.rateDetailLoader = rateDetailLoader;

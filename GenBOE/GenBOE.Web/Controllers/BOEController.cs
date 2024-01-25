@@ -309,7 +309,7 @@ namespace GenBOE.Web.Controllers
 
 			ViewData["DISABLE_ALLOCATED_LABOR"] = false;
 
-			var disableAddButtons = CheckPermissions(SecurityPage.BOELaborGrid, workspaceObject, boeID) != SecurityAuthorization.CreateReadUpdateDelete;
+			bool disableAddButtons = CheckPermissions(SecurityPage.BOELaborGrid, workspaceObject, boeID) != SecurityAuthorization.CreateReadUpdateDelete;
 
 			if (disableAddButtons)
 			{
@@ -317,7 +317,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			//create a var for list items
-			var orderOfTaskElements = new Collection<SelectListItem>();
+			Collection<SelectListItem> orderOfTaskElements = new Collection<SelectListItem>();
 			//get a list of each task element.
 			foreach (GenericTaskElementGridRow row in theModelView.TaskElements)
 			{
@@ -1497,18 +1497,18 @@ namespace GenBOE.Web.Controllers
 						}
 					}
 
-					var Approvers = boePermissionsLookup[originalBoe.Id].Where(x => x.Role == Role.Approver).Select(x => x).ToArray();
-					var approversRemoved = (from removedApprover in Approvers
+					PermissionsDTO[] Approvers = boePermissionsLookup[originalBoe.Id].Where(x => x.Role == Role.Approver).Select(x => x).ToArray();
+					bool approversRemoved = (from removedApprover in Approvers
 	where !boeMV.Approvers.Contains(removedApprover.ETIUserId)
 	select removedApprover).Any();
 
-					var approversAdded = (from addedApprover in boeMV.Approvers
+					bool approversAdded = (from addedApprover in boeMV.Approvers
 										  where !(Approvers.Select(a => a.ETIUserId).Contains(addedApprover))
 										  select addedApprover).Any();
 
 					if (approversRemoved || approversAdded)
 					{
-						var oldApprovers = from oldApprover in Approvers
+						IEnumerable<UserDTO> oldApprovers = from oldApprover in Approvers
 										   select this.UserLoader.GetUserByID(oldApprover.ETIUserId);
 
 						ApproversChangeDictionary[originalBoe.Id] = new Collection<UserDTO>(oldApprovers.ToArray());
@@ -1596,7 +1596,7 @@ namespace GenBOE.Web.Controllers
 							// if all approvers have approved, change state to Approved
 							if (oldBoe.State == boe.State && boe.State == BOEState.AwaitingApproval)
 							{
-								var responses = boeApproverResponsesToPotentiallySave.Where(x => x.BoeID == boe.Id && x.Updateable != UpdateType.Deleted);
+								IEnumerable<BoeApproverResponseDTO> responses = boeApproverResponsesToPotentiallySave.Where(x => x.BoeID == boe.Id && x.Updateable != UpdateType.Deleted);
 
 								if (responses.Any() && responses.Count(x => x.ApproverResponse == ApproverReponseType.Approved) ==
 									responses.Count())
@@ -1778,7 +1778,7 @@ namespace GenBOE.Web.Controllers
 					BoeIdsEffectedByDelete.RemoveAll(x => boeIdsToBeDeleted.Contains(x));
 
 					// Save approvers for existing BOEs so they can be copied correctly in the mediator.
-					var boeApproversToSave = boeApproverResponsesToPotentiallySave.Where(x => x.BoeID > 0 && x.Updateable != UpdateType.None).ToArray();
+					BoeApproverResponseDTO[] boeApproversToSave = boeApproverResponsesToPotentiallySave.Where(x => x.BoeID > 0 && x.Updateable != UpdateType.None).ToArray();
 					if (boeApproversToSave.Any())
 					{
 						this._BoeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
@@ -2719,7 +2719,7 @@ namespace GenBOE.Web.Controllers
 						ICollection<PermissionsDTO> Authors = permissionData.Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).ToArray();
 						ICollection<PermissionsDTO> BoeApprovers = permissionData.Where(x => x.Role == Role.Approver).ToArray();
 
-						var userIds = Authors.Select(x => x.ETIUserId).Union(BoeApprovers.Select(x => x.ETIUserId)).Distinct().ToCollection();
+						Collection<int> userIds = Authors.Select(x => x.ETIUserId).Union(BoeApprovers.Select(x => x.ETIUserId)).Distinct().ToCollection();
 						ICollection<UserDTO> userData = this.UserLoader.GetByIds(userIds);
 
 						bool authorsRemoved = false;
@@ -2738,23 +2738,23 @@ namespace GenBOE.Web.Controllers
 
 						if (authorsRemoved || authorsAdded)
 						{
-							var oldAuthors = from oldAuthor in Authors
+							IEnumerable<UserDTO> oldAuthors = from oldAuthor in Authors
 	 select userData.First(x => x.UserID == oldAuthor.ETIUserId);
 
 							AuthorsChangeDictionary[boe.Id] = new Collection<UserDTO>(oldAuthors.ToArray());
 						}
 
-						var approversRemoved = (from removedApprover in BoeApprovers
+						bool approversRemoved = (from removedApprover in BoeApprovers
 		where !boeImportResult.ApproverIDs.Contains(removedApprover.ETIUserId)
 		select removedApprover).Any();
 
-						var approversAdded = (from addedApprover in boeImportResult.ApproverIDs
+						bool approversAdded = (from addedApprover in boeImportResult.ApproverIDs
 	  where !(BoeApprovers.Select(a => a.ETIUserId).Contains(addedApprover))
 	  select addedApprover).Any();
 
 						if (approversRemoved || approversAdded)
 						{
-							var oldApprovers = from oldApprover in BoeApprovers
+							IEnumerable<UserDTO> oldApprovers = from oldApprover in BoeApprovers
 	   select userData.First(x => x.UserID == oldApprover.ETIUserId);
 
 							ApproversChangeDictionary[boe.Id] = new Collection<UserDTO>(oldApprovers.ToArray());
@@ -2818,7 +2818,7 @@ namespace GenBOE.Web.Controllers
 				}
 
 				// Check for circular references before saving
-				var cache = new VariableCircularReferenceCheckerCache();
+				VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
 
 				Collection<FullClin> clinsForBoesToSave = ws.Clins.Where(z => boesToSave.Where(x => x.CLINID.HasValue).Select(x => x.CLINID.Value).Contains(z.Id)).ToCollection();
 				Collection<FullWbs> wbsElementsForBoesToSave = ws.WbsElements.Where(z => boesToSave.Where(x => x.WBSID.HasValue).Select(x => x.WBSID.Value).Contains(z.Id)).ToCollection();
@@ -2833,7 +2833,7 @@ namespace GenBOE.Web.Controllers
 				{
 					if (updatedBOE.Id > 0)
 					{
-						var circularReferenceFound = false;
+						bool circularReferenceFound = false;
 
 						if (updatedBOE.WBSID.HasValue)
 						{
@@ -2921,7 +2921,7 @@ namespace GenBOE.Web.Controllers
 					}
 
 					// Save approvers for existing BOEs so they can be copied correctly in the mediator.
-					var boeApproversToSave = boeApproverResponses.Where(x => x.BoeID > 0).ToArray();
+					BoeApproverResponseDTO[] boeApproversToSave = boeApproverResponses.Where(x => x.BoeID > 0).ToArray();
 					this._BoeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
 
 					// Need to see if we need to create a WS level role for the user (if the permissions are being granted via a group)
@@ -2999,7 +2999,7 @@ namespace GenBOE.Web.Controllers
 					}
 
 					// get the unique BOE IDs from boeTaskElementsToRecalculate so we can set their state back to Draft
-					var BoeIDsToCheck = new Collection<int>(boeTaskElementsToRecalculate.Where(x => x.BoeID > 0).Select(x => x.BoeID).ToList());
+					Collection<int> BoeIDsToCheck = new Collection<int>(boeTaskElementsToRecalculate.Where(x => x.BoeID > 0).Select(x => x.BoeID).ToList());
 					ICollection<FullBoe> fullBoes = this.Factory.CreateFullBoes(BoeIDsToCheck);
 
 					foreach (FullBoe boe in fullBoes)
@@ -3256,7 +3256,7 @@ namespace GenBOE.Web.Controllers
 
 			_ControllerLogic.ReOrderTaskElementOrder(ws, boeObject, theModelView);
 
-			var toReturn = Json(new { Status = true });
+			JsonResult toReturn = Json(new { Status = true });
 
 
 			// Finalize Action
@@ -3348,7 +3348,7 @@ namespace GenBOE.Web.Controllers
 				this._BoeLaborControllerLogic.ProcessAllVariableDependencies(boeID, ws);
 			}
 
-			var toReturn = Json(new { Status = true });
+			JsonResult toReturn = Json(new { Status = true });
 
 			// Finalize Action
 			FinalizeAction(_log, "SaveDuplicateTaskElements", sw);

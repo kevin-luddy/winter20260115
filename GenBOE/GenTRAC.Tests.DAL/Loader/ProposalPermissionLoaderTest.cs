@@ -41,7 +41,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllProposalPermissions()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionLoader sut = this.CreateSystem();
 
             ProposalDto currentProposal = this.testData.GetProposal();
             UserDTO currentUser = this.testData.GetUser(true);
@@ -73,7 +73,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SavePermissionsAndGetPermissionsById()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal();
             UserDTO user = this.testData.GetUser(true);
@@ -116,7 +116,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetIdsByUserIdTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
             UserDTO user = this.testData.GetUser(true);
@@ -125,7 +125,7 @@ namespace GenTRAC.Tests.DAL.Loader
             this.testData.GetProposalPermission(true, new ProposalPermissionDto { ProposalID = proposal.Id, Id = -1, Updateable = UpdateType.Upsert, UserId = user.Id, Role = PtmRole.Pricer, ResourceType = ResourceType.NotSet });
             this.testData.GetProposalPermission(true, new ProposalPermissionDto { ProposalID = proposal.Id, Id = -1, Updateable = UpdateType.Upsert, UserId = user.Id, Role = PtmRole.CaptureManager, ResourceType = ResourceType.NotSet });
 
-            var result = sut.GetIdsByUserId(user.Id);
+			ICollection<int> result = sut.GetIdsByUserId(user.Id);
 
             Assert.AreEqual(2, result.Count);
         }
@@ -136,7 +136,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetIdsByProposalIdTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
             UserDTO user = this.testData.GetUser(true);
@@ -145,7 +145,7 @@ namespace GenTRAC.Tests.DAL.Loader
             this.testData.GetProposalPermission(true, new ProposalPermissionDto { ProposalID = proposal.Id, Id = -1, Updateable = UpdateType.Upsert, UserId = user.Id, Role = PtmRole.Pricer, ResourceType = ResourceType.NotSet });
             this.testData.GetProposalPermission(true, new ProposalPermissionDto { ProposalID = proposal.Id, Id = -1, Updateable = UpdateType.Upsert, UserId = user.Id, Role = PtmRole.AdditionalPricingResource1, ResourceType = ResourceType.Strategist });
 
-            var result = sut.GetIdsByProposalId(proposal.Id);
+			ICollection<int> result = sut.GetIdsByProposalId(proposal.Id);
 
             Assert.AreEqual(2, result.Count);
         }
@@ -156,7 +156,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetIdsForHomeProposalGrid()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionLoader sut = this.CreateSystem();
 
             ProposalDto proposal1 = this.testData.GetProposal(true);
             ProposalDto proposal2 = this.testData.GetProposal(true);
@@ -183,7 +183,7 @@ namespace GenTRAC.Tests.DAL.Loader
             ProposalPermissionDto backupPricer2 =
                 this.testData.GetProposalPermission(true, new ProposalPermissionDto { ProposalID = proposal2.Id, Id = -1, Updateable = UpdateType.Upsert, UserId = user.Id, Role = PtmRole.BackupPricer });
 
-            var result = sut.GetIdsForHomeProposalGrid(ids);
+			ICollection<int> result = sut.GetIdsForHomeProposalGrid(ids);
 
             // verify only pricers, capture managers, and peers returned
             Assert.AreEqual(6, result.Count);
@@ -203,7 +203,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_DeleteIdsByProposalIdTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
             UserDTO user = this.testData.GetUser(true);
@@ -256,7 +256,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_DeleteProposalPermissionsTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
             UserDTO user = this.testData.GetUser(true);
@@ -312,7 +312,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [ExpectedException(typeof(ArgumentNullException))]
         public void L_DeleteProposalPermissionsExceptionTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionLoader sut = this.CreateSystem();
 
             sut.Delete(null);
         }
