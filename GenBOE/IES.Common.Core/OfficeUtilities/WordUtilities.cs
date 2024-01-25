@@ -561,11 +561,11 @@ namespace IES.Common.Core.OfficeUtilities
 						OpenXmlElement child = childElements[i];
 						bool removeChild = true;
 
-						if (child is SdtContentBlock || child is SdtContentRun || child is SdtContentCell || child is SdtContentRow)
+						if (child is SdtContentBlock or SdtContentRun or SdtContentCell or SdtContentRow)
 						{
 							insertionPoint = MoveChildrenAfterInsertionPoint(child, insertionPoint);
 						}
-						else if (child is SdtProperties || child is SdtEndCharProperties)
+						else if (child is SdtProperties or SdtEndCharProperties)
 						{
 							// skip
 							removeChild = false;
@@ -668,15 +668,15 @@ namespace IES.Common.Core.OfficeUtilities
                      */
 					if (parent.HasChildren)
 					{
-						if (parent.ChildElements.Any(child => (!(child is ParagraphProperties) &&
-							!(child is RunProperties) &&
-							!(child is SdtProperties) &&
-							!(child is SdtEndCharProperties) &&
-							!(child is TableCellProperties) &&
-							!(child is TableProperties) &&
-							!(child is TableRowProperties) &&
-							!(child is TableStyleProperties) &&
-							!(child is CustomXmlProperties))))
+						if (parent.ChildElements.Any(child => (child is not ParagraphProperties and
+							not RunProperties and
+							not SdtProperties and
+							not SdtEndCharProperties and
+							not TableCellProperties and
+							not TableProperties and
+							not TableRowProperties and
+							not TableStyleProperties and
+							not CustomXmlProperties)))
 						{
 							// this child is valid content - need parent
 						}
@@ -733,7 +733,7 @@ namespace IES.Common.Core.OfficeUtilities
 			ICollection<TableCell> allTableCells = xmlDocument.Descendants<TableCell>().ToList();
 			foreach (TableCell tableCell in allTableCells)
 			{
-				if (!(tableCell.LastChild is Paragraph))
+				if (tableCell.LastChild is not Paragraph)
 				{
 					tableCell.AppendChild<Paragraph>(new Paragraph());
 				}
@@ -754,7 +754,7 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			// Note: This can be resolved once/up-front because insertion points are always sibling nodes
-			bool isEventualParentParagraph = (insertionPoint.Parent != null && insertionPoint.Parent is Paragraph);
+			bool isEventualParentParagraph = (insertionPoint.Parent is not null and Paragraph);
 
 			OpenXmlElement[] childElements = parent.ChildElements.ToArray();
 			int totalChildElements = childElements.Length;

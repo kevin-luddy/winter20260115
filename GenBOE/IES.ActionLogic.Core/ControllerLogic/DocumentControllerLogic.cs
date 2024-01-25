@@ -22,6 +22,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.OfficeUtilities;
 	using IES.DataBridge.ModelViews;
 	using IO.Export;
 	using Microsoft.AspNetCore.Mvc;
@@ -215,8 +216,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="proposalId">The proposal identifier.</param>
 		public void DeleteDocument(int proposalId)
 		{
-			ProposalDto proposal;
-			DocumentGridModelView model = RetrieveDocumentByProposalId(proposalId, out proposal);
+			DocumentGridModelView model = RetrieveDocumentByProposalId(proposalId, out ProposalDto proposal);
 			model.Updateable = UpdateType.Deleted;
 
 			try
@@ -322,8 +322,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <returns>The document associated with the proposal, null if not found.</returns>
 		public DocumentGridModelView RetrieveDocumentByProposalId(int proposalId)
 		{
-			ProposalDto proposal;
-			return RetrieveDocumentByProposalId(proposalId, out proposal);
+			return RetrieveDocumentByProposalId(proposalId, out _);
 		}
 
 		/// <summary>
@@ -600,7 +599,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			string clientFileName = string.Format("{0}_{1}_{2}-{3}.docx", modelView.TrackingNumber, modelView.ProposalTitle, modelView.StartYear, modelView.EndYear).Replace(",", "_");
 
 			Stream stream = GenerateRDD(proposalId, serverFileName, modelView, null, true, portionMarkingRequired);
-			return new FileStreamResult(stream, PPRDExporterConstants.CONTENTTYPE_DOCX)
+			return new FileStreamResult(stream, ExportFileDownloadBase.ContentType_DOCX)
 			{
 				FileDownloadName = clientFileName
 			};
@@ -741,7 +740,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			foreach (SectionModelView section in sections)
 			{
 				// If only getting required sections, make sure they're also not internal just in case
-				if (!onlyRequiredSections || section.IsRdsbRequired && (!section.IsInternalSection ?? true))
+				if (!onlyRequiredSections || (section.IsRdsbRequired && (!section.IsInternalSection ?? true)))
 				{
 					ids.Add(section.Id);
 				}
@@ -902,8 +901,8 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <returns>A collection of addresses</returns>
 		public ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId)
 		{
-			ICollection<SectionAddressModelView> sections = new List<SectionAddressModelView>();
-			sections = sectionLoader.GetAddresses(ptmTrackingId);
+			_ = new List<SectionAddressModelView>();
+			ICollection<SectionAddressModelView> sections = sectionLoader.GetAddresses(ptmTrackingId);
 
 			return sections;
 		}

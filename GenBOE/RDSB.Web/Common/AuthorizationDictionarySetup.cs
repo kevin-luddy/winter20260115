@@ -59,7 +59,7 @@ namespace RDSB.Web.Common
             // TODO - Add Admin Actions as needed
             // AddActionToController(IESWebConstants.Action.ADMIN_SOME_OPERATION, SecurityAuthorization.Read, adminControllerActions);
 
-            result.Add(IES.Common.IESWebConstants.CONTROLLER_ADMIN.ToLower(), adminControllerActions);
+            result.Add(IES.Common.Core.Constants.IESWebConstants.CONTROLLER_ADMIN.ToLower(), adminControllerActions);
         }
 
         /// <summary>
@@ -70,19 +70,19 @@ namespace RDSB.Web.Common
         {
             Dictionary<string, SecurityAuthorization> documentControllerActions = new Dictionary<string, SecurityAuthorization>();
 
-            AddActionToController(IES.Common.IESWebConstants.ACTION_INDEX_DOCUMENT, SecurityAuthorization.None, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_EDIT_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_SAVE_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_DELETE_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_PUBLISH_DOCUMENT, SecurityAuthorization.Read, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_SHOW_WHOS_ONLINE, SecurityAuthorization.None, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_GET_WHOS_ONLINE, SecurityAuthorization.None, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_GET_PROPOSALS_FOR_NEW_DOCUMENT, SecurityAuthorization.None, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_SAVE_NEW_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_GET_RATE_CODES_FOR_REVISION, SecurityAuthorization.None, documentControllerActions);
-            AddActionToController(IES.Common.IESWebConstants.ACTION_GET_SECTIONS_FOR_REVISION, SecurityAuthorization.None, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_INDEX_DOCUMENT, SecurityAuthorization.None, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_EDIT_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_SAVE_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_DELETE_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_PUBLISH_DOCUMENT, SecurityAuthorization.Read, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_SHOW_WHOS_ONLINE, SecurityAuthorization.None, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_GET_WHOS_ONLINE, SecurityAuthorization.None, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_GET_PROPOSALS_FOR_NEW_DOCUMENT, SecurityAuthorization.None, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_SAVE_NEW_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_GET_RATE_CODES_FOR_REVISION, SecurityAuthorization.None, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_GET_SECTIONS_FOR_REVISION, SecurityAuthorization.None, documentControllerActions);
 
-            result.Add(IES.Common.IESWebConstants.CONTROLLER_DOCUMENT.ToLower(), documentControllerActions);
+            result.Add(IES.Common.Core.Constants.IESWebConstants.CONTROLLER_DOCUMENT.ToLower(), documentControllerActions);
         }
 
         #endregion

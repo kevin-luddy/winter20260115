@@ -157,7 +157,7 @@
 			}
 
 			string id;
-			if (value == null || value == "$" || value == "%")
+			if (value is null or "$" or "%")
 			{
 				// skip currency, percent symbols
 				id = string.Empty;

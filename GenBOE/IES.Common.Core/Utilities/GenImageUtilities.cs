@@ -227,10 +227,8 @@ namespace IES.Common.Core.Utilities
 				}
 				else  // if height and width are specified, then apply them when creating the image (bitmap) object
 				{
-					int width;
-					int height;
 
-					if (int.TryParse(emailImageInfo.Height, out height) && int.TryParse(emailImageInfo.Width, out width))
+					if (int.TryParse(emailImageInfo.Height, out int height) && int.TryParse(emailImageInfo.Width, out int width))
 					{
 						bmp = new Bitmap(Image.FromStream(msin), new Size(width, height));
 					}

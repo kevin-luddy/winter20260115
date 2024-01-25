@@ -203,19 +203,14 @@ namespace IES.ActionLogic.Core.IO.Export
 		#region MIME Constants
 
 		/// <summary>
-		/// DOCX content type constant
-		/// </summary>
-		internal const string CONTENTTYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-
-		/// <summary>
 		/// Content header name constant
 		/// </summary>
-		internal const string CONTENT_HEADER_NAME = "Content-Disposition";
+		public const string CONTENT_HEADER_NAME = "Content-Disposition";
 
 		/// <summary>
 		/// Content header format string constant
 		/// </summary>
-		internal const string CONTENT_HEADER_FORMAT_STRING = "attachment;filename={0}";
+		public const string CONTENT_HEADER_FORMAT_STRING = "attachment;filename={0}";
 
 		#endregion
 

@@ -28,11 +28,6 @@ namespace IESPortal.Backend.Controllers
         private readonly BannerMediator bannerMediator;
 
 		/// <summary>
-		/// The security information.
-		/// </summary>
-		private readonly ISecurityInformation securityInformation;
-
-		/// <summary>
 		/// Offline Application loader
 		/// </summary>
 		private readonly IOfflineApplicationLoader offlineApplicationLoader;
@@ -48,9 +43,8 @@ namespace IESPortal.Backend.Controllers
 		/// <param name="securityInformation">The security information.</param>
 		/// <param name="bannerMediator">The banner mediator.</param>
 		public HomeController(ILogger<HomeController> logger, IConfiguration configuration, ISecurityInformation securityInformation, BannerMediator bannerMediator, IOfflineApplicationLoader offlineApplicationLoader) 
-            : base(logger)
+            : base(logger, securityInformation)
         {
-			this.securityInformation = securityInformation;
             this.configuration = configuration;
             this.bannerMediator = bannerMediator;
             this.offlineApplicationLoader = offlineApplicationLoader;

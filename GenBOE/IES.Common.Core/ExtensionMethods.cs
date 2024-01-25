@@ -43,8 +43,8 @@ namespace IES.Common.Core
 		/// <returns>True, if the items are equivalent; false, if not</returns>
 		public static bool IsEquivalentTo(this string str, string value)
 		{
-			if (string.IsNullOrWhiteSpace(str) && string.IsNullOrWhiteSpace(value) ||
-				str != null && value != null && str.Trim().ToLower() == value.Trim().ToLower())
+			if ((string.IsNullOrWhiteSpace(str) && string.IsNullOrWhiteSpace(value)) ||
+				(str != null && value != null && str.Trim().ToLower() == value.Trim().ToLower()))
 			{
 				return true;
 			}
@@ -596,8 +596,7 @@ namespace IES.Common.Core
 		/// <returns>true if string can be date, false if not</returns>
 		public static bool IsValidDate(this string date)
 		{
-			DateTime dateCheck;
-			bool isValidDate = DateTime.TryParse(date, out dateCheck);
+			bool isValidDate = DateTime.TryParse(date, out _);
 			return isValidDate;
 
 		}

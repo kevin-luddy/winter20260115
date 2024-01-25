@@ -90,14 +90,14 @@ namespace IES.Common.Core.Models
 			{
 				throw new ArgumentException("other can't be null");
 			}
-			if (startDate.HasValue && other.EndDate.HasValue &&
-				other.EndDate.Value < startDate.Value ||
-				endDate.HasValue && other.StartDate.HasValue &&
-				other.StartDate.Value > endDate.Value ||
-				other.StartDate.HasValue && endDate.HasValue &&
-				endDate.Value < other.StartDate.Value ||
-				other.EndDate.HasValue && startDate.HasValue &&
-				startDate.Value > other.EndDate.Value)
+			if ((startDate.HasValue && other.EndDate.HasValue &&
+				other.EndDate.Value < startDate.Value) ||
+				(endDate.HasValue && other.StartDate.HasValue &&
+				other.StartDate.Value > endDate.Value) ||
+				(other.StartDate.HasValue && endDate.HasValue &&
+				endDate.Value < other.StartDate.Value) ||
+				(other.EndDate.HasValue && startDate.HasValue &&
+				startDate.Value > other.EndDate.Value))
 			{
 				return false;
 			}

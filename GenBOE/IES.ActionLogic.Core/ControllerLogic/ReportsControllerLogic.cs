@@ -123,10 +123,9 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			}
 
 			// Get Revision MV
-			int revisonId;
 			RevisionModelView revisionMV;
 
-			if (int.TryParse(id, out revisonId))
+			if (int.TryParse(id, out int revisonId))
 			{
 				revisionMV = RevisionMediator.GetById(revisonId);
 			}
@@ -170,10 +169,9 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			}
 
 			// Get Revision MV
-			int revisonId;
 			RevisionModelView revision;
 
-			if (int.TryParse(id, out revisonId))
+			if (int.TryParse(id, out int revisonId))
 			{
 				revision = RevisionMediator.GetById(revisonId);
 			}
