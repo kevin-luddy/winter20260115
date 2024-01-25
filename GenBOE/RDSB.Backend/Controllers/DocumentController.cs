@@ -9,7 +9,9 @@ namespace RDSB.Backend.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.IO;
 	using System.Linq;
+	using System.Reflection;
 	using System.Transactions;
 	using GenTRAC.DataBridge.Core.Common.Security;
 	using GenTRAC.DataBridge.Core.DTO.Proposal;
@@ -178,8 +180,7 @@ namespace RDSB.Backend.Controllers
 			IActionResult result = new EmptyResult();
             try
             {
-				string serverFileName = System.IO.Path.Combine(this.webHostEnvironment.WebRootPath, "~/Templates/Export/PPRDTemplate.docx");
-				
+				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/PPRDTemplate.docx");
 				this.documentControllerLogic.GenerateRDD(id, serverFileName, portionMarkingRequired);
             }
             catch (GeneralAppException e)

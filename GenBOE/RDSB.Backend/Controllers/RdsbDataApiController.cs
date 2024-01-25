@@ -12,6 +12,7 @@ namespace RDSB.Backend.Controllers
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Reflection;
 	using GenTRAC.DataBridge.Core.Common.Security;
 	using IES.ActionLogic.Core.ControllerLogic;
 	using IES.Common.Core;
@@ -123,8 +124,9 @@ namespace RDSB.Backend.Controllers
 				}
 
 				// perform export
-				string serverFileName = System.IO.Path.Combine(this.webHostEnvironment.WebRootPath, "~/Templates/Export/PPRDTemplate.docx");
+				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/PPRDTemplate.docx");
 				Stream stream = this.documentControllerLogic.GenerateRDD(proposalId, serverFileName, null, parentSectionNumber, false, portionMarkingRequired);
+				stream.Position = 0;
 				return new FileStreamResult(stream, ExportFileDownloadBase.ContentType_DOCX)
 				{
 					FileDownloadName = $"RDSB-Export-ProposalId{proposalId}.docx"

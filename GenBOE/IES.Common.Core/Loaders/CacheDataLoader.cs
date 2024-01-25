@@ -189,6 +189,7 @@ namespace IES.Common.Core.Loaders
 			// make a clone of the object if directed to do so
 			if (toReturn != null && inUseClone)
 			{
+				//object casted = Convert.ChangeType(toReturn, inLoaderMethod.Method.ReturnType);
 				toReturn = toReturn.DeepClone();
 			}
 

@@ -71,7 +71,7 @@ namespace RDSB.Backend.Common
             Dictionary<string, SecurityAuthorization> documentControllerActions = new();
 
             AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_INDEX_DOCUMENT, SecurityAuthorization.None, documentControllerActions);
-            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_EDIT_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
+            AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_GET_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
             AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_SAVE_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
             AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_DELETE_DOCUMENT, SecurityAuthorization.CreateReadUpdateDelete, documentControllerActions);
             AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_PUBLISH_DOCUMENT, SecurityAuthorization.Read, documentControllerActions);

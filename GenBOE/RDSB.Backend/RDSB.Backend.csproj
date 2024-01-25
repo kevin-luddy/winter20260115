@@ -18,7 +18,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx" />
+	  <Content Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="logs\ReadMe.txt" />
 	  <Content Include="parameters.xml" />
 	</ItemGroup>

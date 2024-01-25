@@ -149,9 +149,9 @@ namespace IES.Common.Core.Constants
 		public readonly static string ACTION_INDEX_DOCUMENT = "GetDocuments";
 
 		/// <summary>
-		/// The action name for editing a Document.
+		/// The action name for getting a Document.
 		/// </summary>
-		public readonly static string ACTION_EDIT_DOCUMENT = "Edit";
+		public readonly static string ACTION_GET_DOCUMENT = "getdetailmodelview";
 
 		/// <summary>
 		/// The action name for saving a Document.

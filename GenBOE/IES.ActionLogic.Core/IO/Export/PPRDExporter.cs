@@ -69,6 +69,7 @@ namespace IES.ActionLogic.Core.IO.Export
 
 			Stream stream = new MemoryStream(32000);
 			Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream);
+			stream.Position = 0;
 			return new FileStreamResult(stream, ExportFileDownloadBase.ContentType_DOCX)
 			{
 				FileDownloadName = clientFileName

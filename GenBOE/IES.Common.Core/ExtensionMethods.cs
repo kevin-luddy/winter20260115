@@ -437,12 +437,12 @@ namespace IES.Common.Core
 		}
 
 		/// <summary>
-		/// Makes a deep copy of a Serializable object using the <see cref="BinaryFormatter"/>
+		/// Makes a deep copy of a Serializable object using the <see cref="JsonSerializer"/>
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="source">The object to deep copy</param>
 		/// <returns>The copied object</returns>
-		public static T DeepClone<T>(this T source) // where T: ISerializable
+		public static T DeepClone<T>(this T source) where T: class 
 		{
 			if (!typeof(T).IsSerializable)
 			{
@@ -455,8 +455,16 @@ namespace IES.Common.Core
 				return default;
 			}
 
-			string serializedObject = JsonSerializer.Serialize(source, typeof(T));
-			return JsonSerializer.Deserialize<T>(serializedObject);
+			Type S = source.GetType();
+
+			if (S == typeof(object))
+			{
+				throw new NotSupportedException();
+			}
+
+			string serializedObject = JsonSerializer.Serialize(source, S);
+			object deserializedObject = JsonSerializer.Deserialize(serializedObject, S);
+			return deserializedObject as T;
 		}
 
 		/// <summary>

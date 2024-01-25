@@ -599,6 +599,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			string clientFileName = string.Format("{0}_{1}_{2}-{3}.docx", modelView.TrackingNumber, modelView.ProposalTitle, modelView.StartYear, modelView.EndYear).Replace(",", "_");
 
 			Stream stream = GenerateRDD(proposalId, serverFileName, modelView, null, true, portionMarkingRequired);
+			stream.Position = 0;
 			return new FileStreamResult(stream, ExportFileDownloadBase.ContentType_DOCX)
 			{
 				FileDownloadName = clientFileName
