@@ -105,6 +105,12 @@ namespace IES.Common.Core.Utilities
 		{
 			string token = this.httpContextAccessor.HttpContext.Request.Headers["IES_Authorization"];
 
+			if (string.IsNullOrWhiteSpace(token))
+			{
+				// this may be pulled from the regular Authorization Header by Swagger
+				token = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+			}
+
 			// Authenticate the call, and pull out the user's ntid.
 			string ntid = GetNtidIfTokenIsValid(token);
 

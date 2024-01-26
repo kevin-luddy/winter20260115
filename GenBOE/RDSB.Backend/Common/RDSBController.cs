@@ -70,11 +70,6 @@ namespace RDSB.Backend.Common
         private readonly IWhosOnlineLoader whosOnlineLoader;
 
 		/// <summary>
-		/// HttpContext accessor
-		/// </summary>
-		private readonly IHttpContextAccessor contextAccessor;
-
-		/// <summary>
 		/// Gets current user information
 		/// </summary>
 		private UserData ActiveUser
@@ -82,26 +77,25 @@ namespace RDSB.Backend.Common
             get { return this.AdUtils.GetUserByQualifiedAccount(this.securityInformation.ActiveUserNTID, false); }
         }
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="securityInformation">The security information.</param>
-        /// <param name="securityMapper">The security mapper.</param>
-        /// <param name="adUtils">Active Directory Utilities</param>
-        /// <param name="whosOnlineLoader">Who's Online Loader</param>
-        public RDSBController(ISecurityInformation securityInformation, 
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="securityInformation">The security information.</param>
+		/// <param name="securityMapper">The security mapper.</param>
+		/// <param name="adUtils">Active Directory Utilities</param>
+		/// <param name="whosOnlineLoader">Who's Online Loader</param>
+		protected RDSBController(ISecurityInformation securityInformation, 
 			ISecurityMapper securityMapper, 
 			IActiveDirectoryService adUtils, IWhosOnlineLoader whosOnlineLoader,
-			ILogger logger, IHttpContextAccessor contextAccessor) : base(logger, securityInformation)
+			ILogger logger) : base(logger, securityInformation)
         {
 			this.SecurityMapper = securityMapper;
             this.AdUtils = adUtils;
             this.whosOnlineLoader = whosOnlineLoader;
-			this.contextAccessor = contextAccessor;
 
 		}
         #endregion
@@ -255,7 +249,7 @@ namespace RDSB.Backend.Common
 		/// Determine if Who's Online button should show
 		/// </summary>
 		/// <returns>True if should show button, False if not</returns>
-		[HttpPost("[action]")]
+		[HttpGet("[action]")]
 		public bool CanViewWhosOnline()
         {
             bool toReturn = false;
@@ -277,7 +271,7 @@ namespace RDSB.Backend.Common
 		/// Gets data for Who's Online
 		/// </summary>
 		/// <returns>Who's Online data</returns>
-		[HttpPost("[action]")]
+		[HttpGet("[action]")]
 		public ICollection<WhosOnlineModelView> GetWhosOnline()
         {
             ICollection<WhosOnlineModelView> whosOnline = this.whosOnlineLoader.GetWhosOnlineData(ApplicationName.RDSB.GetDescription());

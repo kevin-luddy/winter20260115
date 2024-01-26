@@ -523,7 +523,7 @@ namespace IES.DataBridge.Loaders
                 if (rdmRevision.HasValue)
                 {
                     SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
-                    allSections = context.Sections.Select(x =>
+                    allSections = context.Sections.Where(x => x.RevisionID == rdmRevision.Value).Select(x =>
                         new SectionAddressParentModelView
                         {
                             Id = x.ID,

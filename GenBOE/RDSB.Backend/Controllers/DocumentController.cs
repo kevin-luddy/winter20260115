@@ -22,7 +22,6 @@ namespace RDSB.Backend.Controllers
 	using IES.Common.Core.Interfaces;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
-	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Logging;
@@ -45,11 +44,6 @@ namespace RDSB.Backend.Controllers
         private readonly IRateDetailLoader rateDetailLoader;
 
 		/// <summary>
-		/// Web Host Environment
-		/// </summary>
-		private readonly IWebHostEnvironment webHostEnvironment;
-
-		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="securityInformation">The security information.</param>
@@ -60,13 +54,12 @@ namespace RDSB.Backend.Controllers
 		/// <param name="rateDetailLoader">Rate Loader</param>
 		public DocumentController(ISecurityInformation securityInformation, ISecurityMapper securityMapper, 
 			IDocumentControllerLogic documentControllerLogic, IActiveDirectoryService adUtils, 
-			IWhosOnlineLoader whosOnlineLoader, IRateDetailLoader rateDetailLoader, IWebHostEnvironment webHostEnvironment,
-			ILogger<DocumentController> logger, IHttpContextAccessor httpContextAccessor)
-            : base(securityInformation, securityMapper, adUtils, whosOnlineLoader, logger, httpContextAccessor)
+			IWhosOnlineLoader whosOnlineLoader, IRateDetailLoader rateDetailLoader, 
+			ILogger<DocumentController> logger)
+            : base(securityInformation, securityMapper, adUtils, whosOnlineLoader, logger)
         {
             this.documentControllerLogic = documentControllerLogic;
             this.rateDetailLoader = rateDetailLoader;
-			this.webHostEnvironment = webHostEnvironment;
         }
 
 		/// <summary>
@@ -177,11 +170,11 @@ namespace RDSB.Backend.Controllers
 		[HttpGet("[action]")]
 		public IActionResult Publish(int id, bool portionMarkingRequired)
         {
-			IActionResult result = new EmptyResult();
+			IActionResult result;
             try
             {
 				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/PPRDTemplate.docx");
-				this.documentControllerLogic.GenerateRDD(id, serverFileName, portionMarkingRequired);
+				result = this.documentControllerLogic.GenerateRDD(id, serverFileName, portionMarkingRequired);
             }
             catch (GeneralAppException e)
             {

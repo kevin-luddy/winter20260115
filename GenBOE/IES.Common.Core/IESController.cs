@@ -25,7 +25,7 @@ namespace IES.Common.Core
 	using Microsoft.Extensions.Logging;
 
 	[ApiController, Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-	public class IESController : ControllerBase, IActionFilter
+	public abstract class IESController : ControllerBase, IActionFilter
 	{
 		/// <summary>
 		/// The logger.
@@ -37,7 +37,7 @@ namespace IES.Common.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IESController"/> class.
 		/// </summary>
-		public IESController(ILogger logger, ISecurityInformation securityInformation)
+		protected IESController(ILogger logger, ISecurityInformation securityInformation)
 		{
 			log = logger;
 			this.securityInformation = securityInformation;

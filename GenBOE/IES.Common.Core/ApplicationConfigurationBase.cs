@@ -18,6 +18,7 @@
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.DependencyModel;
 	using Microsoft.Extensions.Hosting;
+	using Microsoft.OpenApi.Models;
 	using Newtonsoft.Json.Serialization;
 	using Serilog;
 	using Serilog.Settings.Configuration;
@@ -122,7 +123,30 @@
 
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
-			builder.Services.AddSwaggerGen();
+			builder.Services.AddSwaggerGen(opt =>
+			{
+				// Add using bearer token with Swagger
+				OpenApiSecurityScheme securityScheme = new()
+				{
+					Name = "JWT Authentication",
+					Description = "Enter JWT Bearer token **_only_**",
+					In = ParameterLocation.Header,
+					Type = SecuritySchemeType.Http,
+					Scheme = "bearer", // must be lower case
+					BearerFormat = "JWT",
+					Reference = new OpenApiReference
+					{
+						Id = "Bearer", // JwtBearerDefaults.AuthenticationScheme
+						Type = ReferenceType.SecurityScheme
+					}
+				};
+
+				opt.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+				opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+				{
+					{ securityScheme, Array.Empty<string>() }
+				});
+			});
 		}
 
 		/// <summary>

@@ -9,6 +9,7 @@ namespace IES.DataBridge.Loaders
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using DocumentFormat.OpenXml.Spreadsheet;
 	using IES.Common.Core;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
@@ -528,7 +529,7 @@ namespace IES.DataBridge.Loaders
 				if (rdmRevision.HasValue)
 				{
 					SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
-					allSections = context.Sections.Select(x =>
+					allSections = context.Sections.Where(x => x.RevisionID == rdmRevision.Value).Select(x =>
 						new SectionAddressParentModelView
 						{
 							Id = x.ID,
