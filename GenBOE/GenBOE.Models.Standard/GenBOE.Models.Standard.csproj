@@ -44,7 +44,6 @@
     <Compile Include="..\GenBOE.Models\BOEStateHistory.cs" Link="BOEStateHistory.cs" />
     <Compile Include="..\GenBOE.Models\BOEStateLU.cs" Link="BOEStateLU.cs" />
     <Compile Include="..\GenBOE.Models\BOETaskElement.cs" Link="BOETaskElement.cs" />
-    <Compile Include="..\GenBOE.Models\BOETaskElement1.cs" Link="BOETaskElement1.cs" />
     <Compile Include="..\GenBOE.Models\BOETaskElementCustomFieldValueXREF.cs" Link="BOETaskElementCustomFieldValueXREF.cs" />
     <Compile Include="..\GenBOE.Models\BOETaskElementMetricDetailXREF.cs" Link="BOETaskElementMetricDetailXREF.cs" />
     <Compile Include="..\GenBOE.Models\BOETaskElementWorkspaceVariableXREF.cs" Link="BOETaskElementWorkspaceVariableXREF.cs" />
