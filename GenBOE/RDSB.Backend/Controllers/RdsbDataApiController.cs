@@ -53,23 +53,17 @@ namespace RDSB.Backend.Controllers
 		private readonly IDocumentControllerLogic documentControllerLogic;
 
 		/// <summary>
-		/// Web Host Environment
-		/// </summary>
-		private readonly IWebHostEnvironment webHostEnvironment;
-
-		/// <summary>
 		/// ctor
 		/// </summary>
 		/// <param name="securityMapper">PTM Security Mapper</param>
 		/// <param name="tokenHandler">Token Handling</param>
 		/// <param name="documentControllerLogic">Document COntroller Logic</param>
 		public RdsbDataApiController(ISecurityMapper securityMapper, TokenHandling tokenHandler, IDocumentControllerLogic documentControllerLogic,
-			ILogger<RdsbDataApiController> logger, IWebHostEnvironment webHostEnvironment, ISecurityInformation securityInformation) : base(logger, securityInformation)
+			ILogger<RdsbDataApiController> logger, ISecurityInformation securityInformation) : base(logger, securityInformation)
 		{
 			this.securityMapper = securityMapper;
 			this.tokenHandler = tokenHandler;
 			this.documentControllerLogic = documentControllerLogic;
-			this.webHostEnvironment = webHostEnvironment;
 		}
 
 		#endregion

@@ -12,6 +12,7 @@ namespace IES.Common.Core.Utilities
 	using System.Linq;
 	using System.Security.Principal;
 	using System.Threading;
+	using IES.Common.Core.Configuration;
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.IdentityModel.Protocols;
@@ -26,7 +27,7 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Auth Domain
 		/// </summary>
-		private static readonly string AuthDomain = ConfigurationManager.AppSettings["oAuthDomain"];
+		private static readonly string AuthDomain = ConfigurationUtilities.GetAppSetting("Federation:Authority");
 
 		/// <summary>
 		/// This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
