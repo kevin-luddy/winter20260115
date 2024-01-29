@@ -74,11 +74,6 @@
 
                     <div id="errorMessage"></div>
 
-                    <div class="buttons inline css3pie-position-fix" style="line-height: 28px;">
-                        <button id="ImportExportButton-WorkspaceHome" data-ng-if="isWorkingState" data-ng-click="toggleImportExport()" data-ng-disabled="isLoading" data-ng-show="!isReadOnly" type="button" class="ies-action css3pie-position-fix">Import/Export BOEs</button>
-                        &nbsp; <!-- need line-height and nbsp to ensure div still occupies some real estate when button is hidden -->
-                    </div>
-
                     <div id="noteMessage" data-ng-show="isDataFiltered()">You are viewing filtered data. <a data-ng-click="clearAllFilters()">Click here</a> to reset all your filters.</div>
 
                     <div id="WorkspaceHome-SearchRow" class="search-box float-right">

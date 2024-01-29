@@ -208,7 +208,8 @@ namespace GenBOE.DataBridge.DTO
                             dtoToUpsert.WBSID,
                             dtoToUpsert.CLINID,
                             dtoToUpsert.CanOffload,
-                            dtoToUpsert.LaborTypeOrder).FirstOrDefault(); 
+                            dtoToUpsert.LaborTypeOrder,
+							null).FirstOrDefault(); 
                     }
                 }
 

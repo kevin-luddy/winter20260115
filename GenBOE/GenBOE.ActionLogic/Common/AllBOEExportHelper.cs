@@ -171,9 +171,9 @@ namespace GenBOE.ActionLogic.Common
 		{
 			string outFileName = string.Empty;
 
-			boeTitle = StripIllegalFileNameCharacters(boeTitle);
-			wbsNumber = StripIllegalFileNameCharacters(wbsNumber);
-			clin = StripIllegalFileNameCharacters(clin);
+			boeTitle = Utilities.StripIllegalFileNameCharacters(boeTitle);
+			wbsNumber = Utilities.StripIllegalFileNameCharacters(wbsNumber);
+			clin = Utilities.StripIllegalFileNameCharacters(clin);
 
 			if (exportSortOrder == SystemSettingConstants.EXPORT_SORT_WBS)
 			{
@@ -187,18 +187,5 @@ namespace GenBOE.ActionLogic.Common
 			return outFileName;
 		}
 
-		/// <summary>
-		/// Removes characters that cause issues when present in file names; Some may look like duplicates, but they actually aren't
-		/// </summary>
-		/// <param name="target">String to be cleaned</param>
-		/// <param name="replacementValue">Character to replace the illegal characters with. Defaults to "."</param>
-		/// <returns>String with illegal characters replaced</returns>
-		private static string StripIllegalFileNameCharacters(string target, string replacementValue=".")
-        {
-			char[] illegalCharacters = new[] { ' ', ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '-', '%', '#', '$', '&', ')', '(', '!', ',', ':', ';', '{', '}', '`', '~', '^', '/','<', '>' };
-			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
-
-			return string.Join(replacementValue, cleanedParts);
-		}
 	}
 }
