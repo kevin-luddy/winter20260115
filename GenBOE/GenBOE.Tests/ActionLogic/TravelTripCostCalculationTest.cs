@@ -28,11 +28,11 @@ namespace GenBOE.Tests.ActionLogic
 
         public void BL_CalculateTravelCost_SegmentLMSI()
         {
-            var tripLoader = new Mock<ITripDTODataLoader>();
-            var MiscRateLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var EscRateLoader = new Mock<IEscalationRatesDTOLoader>();
-            var PerDiemLoader = new Mock<IPerDiemDTODataLoader>();
-            var sut = new TravelTripCostCalculation();
+			Mock<ITripDTODataLoader> tripLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> MiscRateLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<IEscalationRatesDTOLoader> EscRateLoader = new Mock<IEscalationRatesDTOLoader>();
+			Mock<IPerDiemDTODataLoader> PerDiemLoader = new Mock<IPerDiemDTODataLoader>();
+			TravelTripCostCalculation sut = new TravelTripCostCalculation();
 
             WorkspaceDTO workspaceDto = new WorkspaceDTO();
             workspaceDto.Id = 1;
@@ -64,7 +64,7 @@ namespace GenBOE.Tests.ActionLogic
         public void BL_CalculateTravelCost_SegmentNonLMSI()
         {
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new TravelTripCostCalculation();
+			TravelTripCostCalculation sut = new TravelTripCostCalculation();
 
             Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
@@ -104,7 +104,7 @@ namespace GenBOE.Tests.ActionLogic
             //<add key="MIECostUpdateActivationDate" value="01/01/2012"/>
             //<add key ="MIECostUpdateTripDate" value="07/01/2012"/>
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new TravelTripCostCalculation();
+			TravelTripCostCalculation sut = new TravelTripCostCalculation();
 
             WorkspaceDTO workspaceDto = new WorkspaceDTO();
             workspaceDto.Id = 1;
@@ -142,7 +142,7 @@ namespace GenBOE.Tests.ActionLogic
             //<add key="MIECostUpdateActivationDate" value="01/01/2012"/>
             //<add key ="MIECostUpdateTripDate" value="07/01/2012"/>
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new TravelTripCostCalculation();
+			TravelTripCostCalculation sut = new TravelTripCostCalculation();
 
             WorkspaceDTO workspaceDto = new WorkspaceDTO();
             workspaceDto.Id = 1;
@@ -183,7 +183,7 @@ namespace GenBOE.Tests.ActionLogic
             //<add key="MIECostUpdateActivationDate" value="01/01/2012"/>
             //<add key ="MIECostUpdateTripDate" value="07/01/2012"/>
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new TravelTripCostCalculation();
+			TravelTripCostCalculation sut = new TravelTripCostCalculation();
 
             WorkspaceDTO workspaceDto = new WorkspaceDTO();
             workspaceDto.Id = 1;
@@ -223,7 +223,7 @@ namespace GenBOE.Tests.ActionLogic
             //<add key="MIECostUpdateActivationDate" value="01/01/2012"/>
             //<add key ="MIECostUpdateTripDate" value="07/01/2012"/>
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new TravelTripCostCalculation();
+			TravelTripCostCalculation sut = new TravelTripCostCalculation();
 
             WorkspaceDTO workspaceDto = new WorkspaceDTO();
             workspaceDto.Id = 1;
@@ -282,7 +282,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetWorkspaceHistoryByWorkspaceId(wsid)).Returns(workspaceHistory);
 
-            var sut = new TravelTripCostCalculation();
+			TravelTripCostCalculation sut = new TravelTripCostCalculation();
 
             TripDTO trip = new TripDTO { TripID = 1, PerDiemID = 1, Fare = 1230.25m, MiscTravelRateID = 1, RentalCarRate = 32 };
             PerDiemDTO perDiem = new PerDiemDTO { Id = 1, HotelRate = 75, MIERate = 20.5m };
@@ -337,7 +337,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetWorkspaceHistoryByWorkspaceId(wsid)).Returns(workspaceHistory);
 
-            var sut = new TravelTripCostCalculation();
+			TravelTripCostCalculation sut = new TravelTripCostCalculation();
 
             TripDTO trip = new TripDTO { TripID = 1, PerDiemID = 1, Fare = 1230.25m, MiscTravelRateID = 1, RentalCarRate = 32 };
             PerDiemDTO perDiem = new PerDiemDTO { Id = 1, HotelRate = 75, MIERate = 20.5m };

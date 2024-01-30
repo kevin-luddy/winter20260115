@@ -147,8 +147,8 @@ namespace GenBOE.ActionLogic
                     boeTaskElementsToRecalculate.AddRange(this._BoeTaskElementRecalculation.RecalculateLaborWithWBS(wbsObject, VariableType.Workspace, ws));
                 }
 
-                // get the unique BOE IDs from boeTaskElementsToRecalculate so we can set their state back to Draft
-                var BoeIDsToCheck = new Collection<int>(boeTaskElementsToRecalculate.Where(x => x.BoeID > 0).Select(x => x.BoeID).ToList());
+				// get the unique BOE IDs from boeTaskElementsToRecalculate so we can set their state back to Draft
+				Collection<int> BoeIDsToCheck = new Collection<int>(boeTaskElementsToRecalculate.Where(x => x.BoeID > 0).Select(x => x.BoeID).ToList());
 
                 ICollection<FullBoe> boes = ws.Boes.Where(x => BoeIDsToCheck.Contains(x.Id)).ToList();
                 //get all the boes that need to be sent back to draft.

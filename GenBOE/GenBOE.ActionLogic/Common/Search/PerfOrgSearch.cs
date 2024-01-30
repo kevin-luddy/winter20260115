@@ -37,8 +37,8 @@ namespace GenBOE.ActionLogic.Common.Search
                 // Get the global performing orgs
                 Collection<PerformingOrgDTO> globalPerformingOrgs = this.perfOrgLoader.GetGlobalPerformingOrgs();
 
-                // search through the global performing org list
-                var SearchList = from p in globalPerformingOrgs
+				// search through the global performing org list
+				System.Collections.Generic.IEnumerable<PerformingOrgDTO> SearchList = from p in globalPerformingOrgs
                                  where p.PerformingOrgName.ToLower().Contains(inSearchText.ToLower()) || p.PerformingOrgDesc.ToLower().Contains(inSearchText.ToLower())
                                  select p;
 

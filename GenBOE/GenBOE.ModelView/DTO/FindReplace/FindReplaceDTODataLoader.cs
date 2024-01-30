@@ -43,7 +43,7 @@ namespace GenBOE.DataBridge.DTO
                 List<getBOEForFindReplace_Result> spResults = (from x in gbe.getBOEForFindReplace(searchWithPadding, inWorkspaceId)
                                  select x).ToList();
 
-                foreach (var resultRow in spResults)
+                foreach (getBOEForFindReplace_Result resultRow in spResults)
                 {
                     if (resultRow.BOEDescriptionOccurrences.HasValue && resultRow.BOEDescriptionOccurrences > 0
                         && !ProcessedBOEIDs.Contains(resultRow.BOEID.Value))

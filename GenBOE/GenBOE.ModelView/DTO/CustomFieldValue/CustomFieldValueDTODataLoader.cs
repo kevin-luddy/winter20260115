@@ -138,8 +138,8 @@ namespace GenBOE.DataBridge.DTO
                                     {
                                         TaskElementID = c.BOETaskElementID,
                                         ContainerID = c.BTECFVID,
-                                        CustomFieldValueID = (int)c.CustomFieldValueID
-                                    }).ToList();
+                                        CustomFieldValueID = c.CustomFieldValueID
+									}).ToList();
 
                     foreach (var item in response)
                     {
@@ -218,8 +218,8 @@ namespace GenBOE.DataBridge.DTO
                                     {
                                         BOELaborTypeID = c.BOELaborTypeID,
                                         ContainerID = c.BLTCFVID,
-                                        CustomFieldValueID = (int)c.CustomFieldValueID
-                                    }).ToList();
+                                        CustomFieldValueID = c.CustomFieldValueID
+									}).ToList();
 
                     foreach (var item in response)
                     {
@@ -258,8 +258,8 @@ namespace GenBOE.DataBridge.DTO
                                     {
                                         TaskElementID = c.TravelTripTaskElementID,
                                         ContainerID = c.TTECFVID,
-                                        CustomFieldValueID = (int)c.CustomFieldValueID
-                                    }).ToList();
+                                        CustomFieldValueID = c.CustomFieldValueID
+									}).ToList();
 
                     foreach (var item in response)
                     {
@@ -297,8 +297,8 @@ namespace GenBOE.DataBridge.DTO
                                     {
                                         TaskElementID = c.TravelTripID,
                                         ContainerID = c.TCFVID,
-                                        CustomFieldValueID = (int)c.CustomFieldValueID
-                                    }).ToList();
+                                        CustomFieldValueID = c.CustomFieldValueID
+									}).ToList();
 
                     foreach (var item in response)
                     {
@@ -336,8 +336,8 @@ namespace GenBOE.DataBridge.DTO
                                     {
                                         ResourceID = c.BOELaborTypeID,
                                         ContainerID = c.BLTCFVID,
-                                        CustomFieldValueID = (int)c.CustomFieldValueID
-                                    }).ToList();
+                                        CustomFieldValueID = c.CustomFieldValueID
+									}).ToList();
 
                     foreach (var item in response)
                     {

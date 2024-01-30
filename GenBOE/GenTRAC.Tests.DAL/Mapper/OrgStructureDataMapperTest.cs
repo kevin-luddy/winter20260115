@@ -54,16 +54,16 @@ namespace GenTRAC.Tests.DAL.Mappers
         [TestMethod]
         public void M_GetAllLineOfBusinesssTest()
         {
-            var sut = this.CreateSystem();
+			OrgStructureDataMapper sut = this.CreateSystem();
 
-            // test data
-            var pl1 = new PickListDto()
+			// test data
+			PickListDto pl1 = new PickListDto()
             {
                 Id = 0,
                 Text = "Civil",
                 IsActive = true
             };
-            var pl2 = new PickListDto()
+			PickListDto pl2 = new PickListDto()
             {
                 Id = 10,
                 Text = "Defense",
@@ -74,7 +74,7 @@ namespace GenTRAC.Tests.DAL.Mappers
 
             this.lineOfBusinessDataLoader.Setup(x => x.GetPickListValues()).Returns(prodLines);
 
-            var result = sut.GetAllLinesOfBusiness();
+			ICollection<PickListDto> result = sut.GetAllLinesOfBusiness();
 
             Assert.AreEqual(prodLines.Count, result.Count);
             DtoAssertHelpers.AssertDtos(pl1, result.ElementAt(0));
@@ -87,10 +87,10 @@ namespace GenTRAC.Tests.DAL.Mappers
         [TestMethod]
         public void M_GetLineOfBusinessByIdTest()
         {
-            var sut = this.CreateSystem();
+			OrgStructureDataMapper sut = this.CreateSystem();
 
-            // test data
-            var pl1 = new PickListDto()
+			// test data
+			PickListDto pl1 = new PickListDto()
             {
                 Id = 0,
                 Text = "Civil",
@@ -99,7 +99,7 @@ namespace GenTRAC.Tests.DAL.Mappers
 
             this.lineOfBusinessDataLoader.Setup(x => x.GetById(pl1.Id)).Returns(pl1);
 
-            var result = sut.GetLineOfBusinessById(pl1.Id);
+			PickListDto result = sut.GetLineOfBusinessById(pl1.Id);
 
             DtoAssertHelpers.AssertDtos(pl1, result);
         }
@@ -110,16 +110,16 @@ namespace GenTRAC.Tests.DAL.Mappers
         [TestMethod]
         public void M_GetLineOfBusinessByIdMultipleTest()
         {
-            var sut = this.CreateSystem();
+			OrgStructureDataMapper sut = this.CreateSystem();
 
-            // test data
-            var pl1 = new PickListDto()
+			// test data
+			PickListDto pl1 = new PickListDto()
             {
                 Id = 0,
                 Text = "Civil",
                 IsActive = true
             };
-            var pl2 = new PickListDto()
+			PickListDto pl2 = new PickListDto()
             {
                 Id = 10,
                 Text = "Defense",
@@ -130,7 +130,7 @@ namespace GenTRAC.Tests.DAL.Mappers
 
             this.lineOfBusinessDataLoader.Setup(x => x.GetByIds(lineOfBusinessIds)).Returns(linesOfBusiness);
 
-            var result = sut.GetLineOfBusinessById(lineOfBusinessIds);
+			ICollection<PickListDto> result = sut.GetLineOfBusinessById(lineOfBusinessIds);
 
             Assert.AreEqual(2, result.Count);
             DtoAssertHelpers.AssertDtos(pl1, result.Where(x => x.Id == pl1.Id).First());
@@ -143,17 +143,17 @@ namespace GenTRAC.Tests.DAL.Mappers
         [TestMethod]
         public void M_GetAllProgramAreaTest()
         {
-            var sut = this.CreateSystem();
+			OrgStructureDataMapper sut = this.CreateSystem();
 
-            // test data
-            var programArea1 = new PickListDto()
+			// test data
+			PickListDto programArea1 = new PickListDto()
             {
                 Id = 0,
                 Text = "Civil PA",
                 IsActive = true,
                 ParentIds = new int[] { 2 }
             };
-            var programArea2 = new PickListDto()
+			PickListDto programArea2 = new PickListDto()
             {
                 Id = 1,
                 Text = "Defense PA",
@@ -165,7 +165,7 @@ namespace GenTRAC.Tests.DAL.Mappers
 
             this.programAreaDataLoader.Setup(x => x.GetPickListValues()).Returns(programAreas);
 
-            var result = sut.GetAllProgramAreas();
+			ICollection<PickListDto> result = sut.GetAllProgramAreas();
 
             Assert.AreEqual(programAreas.Count, result.Count);
             DtoAssertHelpers.AssertDtos(programArea1, result.ElementAt(0));
@@ -178,10 +178,10 @@ namespace GenTRAC.Tests.DAL.Mappers
         [TestMethod]
         public void M_GetProgramAreaByIdTest()
         {
-            var sut = this.CreateSystem();
+			OrgStructureDataMapper sut = this.CreateSystem();
 
-            // test data
-            var programArea1 = new PickListDto()
+			// test data
+			PickListDto programArea1 = new PickListDto()
             {
                 Id = 0,
                 Text = "Civil PA",
@@ -191,7 +191,7 @@ namespace GenTRAC.Tests.DAL.Mappers
 
             this.programAreaDataLoader.Setup(x => x.GetById(programArea1.Id)).Returns(programArea1);
 
-            var result = sut.GetProgramAreaById(programArea1.Id);
+			PickListDto result = sut.GetProgramAreaById(programArea1.Id);
 
             DtoAssertHelpers.AssertDtos(programArea1, result);
         }
@@ -202,17 +202,17 @@ namespace GenTRAC.Tests.DAL.Mappers
         [TestMethod]
         public void M_GetProgramAreaByIdMultipleTest()
         {
-            var sut = this.CreateSystem();
+			OrgStructureDataMapper sut = this.CreateSystem();
 
-            // test data
-            var programArea1 = new PickListDto()
+			// test data
+			PickListDto programArea1 = new PickListDto()
             {
                 Id = 0,
                 Text = "Civil PA",
                 IsActive = true,
                 ParentIds = new int[] { 2 }
             };
-            var programArea2 = new PickListDto()
+			PickListDto programArea2 = new PickListDto()
             {
                 Id = 1,
                 Text = "Defense PA",
@@ -224,7 +224,7 @@ namespace GenTRAC.Tests.DAL.Mappers
 
             this.programAreaDataLoader.Setup(x => x.GetByIds(programAreaIds)).Returns(programAreas);
 
-            var result = sut.GetProgramAreaById(programAreaIds);
+			ICollection<PickListDto> result = sut.GetProgramAreaById(programAreaIds);
 
             Assert.AreEqual(2, result.Count);
             DtoAssertHelpers.AssertDtos(programArea1, result.Where(x => x.Id == programArea1.Id).First());
@@ -237,7 +237,7 @@ namespace GenTRAC.Tests.DAL.Mappers
         [TestMethod]
         public void M_GetProgramAreaHtmlOptionsForLineOfBusinessTest()
         {
-            var sut = this.CreateSystem();
+			OrgStructureDataMapper sut = this.CreateSystem();
 
             PickListDto lineOfBusiness = new PickListDto()
             {
@@ -294,43 +294,43 @@ namespace GenTRAC.Tests.DAL.Mappers
         [TestMethod]
         public void M_GetProgramAreaDynamicHelpTextTest()
         {
-            var sut = this.CreateSystem();
+			OrgStructureDataMapper sut = this.CreateSystem();
 
-            // test data
-            var pl1 = new PickListDto()
+			// test data
+			PickListDto pl1 = new PickListDto()
             {
                 Id = 0,
                 Text = "Civil",
                 IsActive = true
             };
-            var pl2 = new PickListDto()
+			PickListDto pl2 = new PickListDto()
             {
                 Id = 10,
                 Text = "Defense",
                 IsActive = true
             };
-            var programArea1 = new PickListDto()
+			PickListDto programArea1 = new PickListDto()
             {
                 Id = 0,
                 Text = "C - DEF",
                 IsActive = true,
                 ParentIds = new int[] { 0 }
             };
-            var programArea2 = new PickListDto()
+			PickListDto programArea2 = new PickListDto()
             {
                 Id = 1,
                 Text = "C - ABC",
                 IsActive = true,
                 ParentIds = new int[] { 0 }
             };
-            var programArea3 = new PickListDto()
+			PickListDto programArea3 = new PickListDto()
             {
                 Id = 2,
                 Text = "D - ABC",
                 IsActive = true,
                 ParentIds = new int[] { 10 }
             };
-            var programArea4 = new PickListDto()
+			PickListDto programArea4 = new PickListDto()
             {
                 Id = 3,
                 Text = "D - DEF",

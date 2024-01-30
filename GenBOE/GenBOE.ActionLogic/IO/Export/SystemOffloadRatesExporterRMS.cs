@@ -66,8 +66,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="spreadsheet">The spreadsheet.</param>
         private static void PopulateRates(ICollection<OffloadRatesDTO> offloadRates, SpreadsheetDocument spreadsheet)
         {
-            // Create collections of strings for each row in the export file
-            var worksheet = new ExcelExportWorksheet();
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
 
             if (offloadRates.Any())
             {

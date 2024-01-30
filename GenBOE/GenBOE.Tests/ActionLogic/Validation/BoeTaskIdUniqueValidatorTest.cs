@@ -25,8 +25,8 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void BoeTaskIdUniqueValidator_IsValid()
         {
-            var factory = new Mock<IFullObjectFactory>();
-            var retriever = new Mock<IRetriever>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), new Mock<ICommonDataMapper>().Object);
@@ -72,8 +72,8 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void BoeTaskIdUniqueValidator_InvalidParameterTest()
         {
-            var factory = new Mock<IFullObjectFactory>();
-            var retriever = new Mock<IRetriever>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
@@ -116,7 +116,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(ArgumentNullException))]
         public void BoeTaskIdUniqueValidator_NullIsValidTest()
         {
-            var factory = new Mock<IFullObjectFactory>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
             BoeTaskIDUniqueValidator sut = new BoeTaskIDUniqueValidator(factory.Object);
             sut.isValid(null, new Collection<Dictionary<string, string>>());

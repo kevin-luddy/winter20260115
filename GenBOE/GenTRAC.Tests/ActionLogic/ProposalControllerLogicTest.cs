@@ -266,7 +266,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_SaveNewProposalTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 25;
             ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
@@ -335,7 +335,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void SaveNewProposalTest_NewRevision()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 1;
             ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
@@ -438,7 +438,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalEmptyListsTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
             ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
@@ -476,7 +476,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_SaveNewProposalWithUserInfoNtIdsTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 25;
             ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
@@ -545,7 +545,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_SaveNewProposalWithUserInfoNtIdsValidationTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -591,7 +591,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalFormatsTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -631,7 +631,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalUniqueProposalConstraintViolated()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -670,7 +670,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalUniqueProposalConstraintNotViolated()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -702,7 +702,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalUniqueProposalConstraintWithNullProposalTitle()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -733,7 +733,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidatePricerAndPeerReviewerConstraintViolated()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -808,7 +808,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidatePricerAndPeerReviewerConstraintNotViolated()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -885,7 +885,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidatePricerAndPeerReviewerConstraintWithNullProposalPricer()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -1062,7 +1062,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidatePricerAndPeerReviewerConstraintWithNullPermissions()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -1123,7 +1123,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidatePricerAndPeerReviewerConstraintWithNullFullProposalDto()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -1167,7 +1167,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void _ValidatePricerAndLobManagerNotSame()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -1216,7 +1216,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidatePricerAndPeerReviewerWithNoPeerReviewer()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -1288,7 +1288,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalUpdateProposal()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -1325,7 +1325,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalConditionalFailuresTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
             ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
@@ -1369,7 +1369,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalSuccessTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
             ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
@@ -1408,7 +1408,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalForecastedFailureAnticipatedDeliveryTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
             ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
@@ -1447,7 +1447,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateProposalSscRoleRequiredTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
@@ -1481,7 +1481,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetDataForProposalInformationTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 5;
 
@@ -1666,7 +1666,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetDataForProposalGeneralInformationTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 5;
 
@@ -1818,7 +1818,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetDataForProposalUserInformationTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 5;
 
@@ -1989,7 +1989,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_IsNewPricerTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
 
@@ -2064,7 +2064,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ProposalInactiveLineOfBusinessTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             PickListDto lineOfBusiness1 = new PickListDto()
             {
@@ -2127,7 +2127,7 @@ namespace GenTRAC.Tests.ActionLogic
         /// </summary>
         public void C_ProposalInactiveProgramAreaTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 5;
 
@@ -2190,7 +2190,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_SavedProposalInactiveLineOfBusinessTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 5;
 
@@ -2243,7 +2243,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_IsProposalReadOnlyTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
             PtmRole outRole;
@@ -2303,7 +2303,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_AddDeletePermissionsTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
 
@@ -2406,7 +2406,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetProgramAreasForLineOfBusinessTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             string programAreaHtml = "html";
             int lineOfBusiness = 5;
@@ -2424,8 +2424,8 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_TryValidateProposalGeneralInformationModelView()
         {
-            var validationResults = new List<ValidationResult>();
-            var generalInfo = new ProposalGeneralInformationModelView()
+            List<ValidationResult> validationResults = new List<ValidationResult>();
+            ProposalGeneralInformationModelView generalInfo = new ProposalGeneralInformationModelView()
             {
                 ProposalID = 1,
                 LineOfBusiness = "Good Business",
@@ -2439,8 +2439,8 @@ namespace GenTRAC.Tests.ActionLogic
             };
 
             // Validator.TryValidateObject returns true if the validation succeeds
-            var ctx = new ValidationContext(generalInfo, null, null);
-            var result = Validator.TryValidateObject(generalInfo, ctx, validationResults, true);
+            ValidationContext ctx = new ValidationContext(generalInfo, null, null);
+            bool result = Validator.TryValidateObject(generalInfo, ctx, validationResults, true);
             Assert.IsTrue(result);
 
             // Exceed the lenght constraints for the following 5 Gen'l Info variables.
@@ -2474,7 +2474,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateGeneralInfoTypes_NullProposalGeneralInformationModelView()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ICollection<ValidationMessage> validationList = new Collection<ValidationMessage>();
 
             sut.ValidateGeneralInfoTypes(null, validationList, false);
@@ -2487,7 +2487,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateGeneralInfoType_NullValidationMessage()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView();
 
             sut.ValidateGeneralInfoTypes(proposalGeneralInfo, null, false);
@@ -2499,7 +2499,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateGeneralInfoRegularExpressions()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
 
             ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
@@ -2626,7 +2626,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateUserTypesCompletedProposalTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 5;
             List<ValidationMessage> validationErrors = new List<ValidationMessage>();
@@ -2742,7 +2742,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateUserTypesFailedValidationTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 5;
             List<ValidationMessage> validationErrors = new List<ValidationMessage>();
@@ -2809,7 +2809,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateUserTypesIncompleteProposalTest()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
 
             int? proposalId = 5;
             List<ValidationMessage> validationErrors = new List<ValidationMessage>();
@@ -2999,7 +2999,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveNewProposal_ExceptionTest1()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             sut.SaveProposal(null, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), new ProposalCommentsModelView(), null);
         }
 
@@ -3010,7 +3010,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveNewProposal_ExceptionTest2()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             sut.SaveProposal(new ProposalInformationModelView(), null, new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), new ProposalCommentsModelView(), null);
         }
 
@@ -3021,7 +3021,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveNewProposal_ExceptionTest3()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), new ProposalCommentsModelView(), null);
         }
 
@@ -3032,7 +3032,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveNewProposal_ExceptionTest4()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), null, null, new ProposalCommentsModelView(), null);
         }
 
@@ -3043,7 +3043,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveNewProposal_ExceptionTest5()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), null, null);
         }
 
@@ -3054,7 +3054,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateProposal_ExceptionTest1()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             sut.ValidateProposal(null, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), new List<ValidationMessage>(), false);
         }
 
@@ -3065,7 +3065,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateProposal_ExceptionTest2()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             sut.ValidateProposal(new ProposalInformationModelView(), null, new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), new List<ValidationMessage>(), false);
         }
 
@@ -3076,7 +3076,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateProposal_ExceptionTest4()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             sut.ValidateProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(),
                 null, null, new List<ValidationMessage>(), false);
         }
@@ -3088,7 +3088,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateProposal_ExceptionTest5()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             sut.ValidateProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), null, false);
         }
 
@@ -3100,7 +3100,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void ValidateSavingCertificationTimeline()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3135,7 +3135,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
         public void ValidateSavingCertificationTimeline_ex1()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3163,7 +3163,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void ValidateCompletingCertificationTimeline()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3192,7 +3192,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
         public void ValidateCompletingCertificationTimeline_ex1()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3221,7 +3221,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
         public void ValidateCompletingCertificationTimeline_ex2()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3250,7 +3250,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
         public void ValidateCompletingCertificationTimeline_ex3()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3279,7 +3279,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
         public void ValidateCompletingCertificationTimeline_ex4()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3308,7 +3308,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
         public void ValidateCompletingCertificationTimeline_ex5()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3338,7 +3338,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
         public void ValidateCompletingCertificationTimeline_ex6()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3370,7 +3370,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
         public void ValidateCompletingCertificationTimelineCertificationNotRequired_ex2()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
@@ -3401,7 +3401,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void ValidateCompletingCertificationTimelineCertificationNotRequired_2()
         {
-            var sut = this.CreateSystem();
+            ProposalControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,

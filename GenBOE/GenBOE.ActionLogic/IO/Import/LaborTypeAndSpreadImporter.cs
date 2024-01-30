@@ -91,7 +91,7 @@ namespace GenBOE.ActionLogic.IO.Import
                 Collection<ImportedLaborType> importResults;
 
                 // Open the document as read-only.
-                using (var document = SpreadsheetDocument.Open(inExcelFileStream, false))
+                using (SpreadsheetDocument document = SpreadsheetDocument.Open(inExcelFileStream, false))
                 {
                     // add column header "identifiers" for each spread-month-data column
                     List<string> columnsToRetrieve = this.REQUIRED_COLUMNS.Union(FindSpreadDatesHeaders(inTaskElement)).ToList();
@@ -148,7 +148,7 @@ namespace GenBOE.ActionLogic.IO.Import
                     }
                     else
                     {
-                        var allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, IMPORT_TAB, requiredColumns.ToArray(), allColumns);
+						ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, IMPORT_TAB, requiredColumns.ToArray(), allColumns);
 
                         // Turn each row into a DTO object and return the collection
                         importResults = this.CreateImportedLaborTypes(allRows, inTaskElement, inWorkspace, newOnly, workspaceCustomFields, isMulti, isOffload);
@@ -512,7 +512,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
             if (isAnyCustomFields)
             {
-                foreach (var container in inImportedBOELaborType.CustomFieldValueContainers)
+                foreach (CustomFieldValueContainer container in inImportedBOELaborType.CustomFieldValueContainers)
                 {
                     // Get the original update date
                     CustomFieldValueContainer original = inExistingBOELaborType.CustomFieldValueContainers.FirstOrDefault(c => c.ContainerID == container.ContainerID);
@@ -1097,7 +1097,7 @@ namespace GenBOE.ActionLogic.IO.Import
                     }
                 }
 
-                var originalLaborSpreads = (existingResource != null) ? existingResource.LaborSpreads : new Collection<ResourceSpreadDto>();
+				Collection<ResourceSpreadDto> originalLaborSpreads = (existingResource != null) ? existingResource.LaborSpreads : new Collection<ResourceSpreadDto>();
                 VerifyTotalSumOfResource(toReturn.ImportedLaborSpreads, originalLaborSpreads, toReturn.SpreadType);
             }
 

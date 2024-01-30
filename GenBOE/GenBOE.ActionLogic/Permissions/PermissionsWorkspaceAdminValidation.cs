@@ -32,12 +32,12 @@ namespace GenBOE.ActionLogic.Permissions
         public bool ValidateWorkspaceAdmin(int inWorkspaceID)
         {
             bool multipleAdmins = false;
-            
-            var linqResults = (from p in this._permissionsDTOLoader.GetWorkspacePermissions(inWorkspaceID)
+
+			System.Collections.Generic.List<Dtos.PermissionsDTO> linqResults = (from p in this._permissionsDTOLoader.GetWorkspacePermissions(inWorkspaceID)
                                where p.Role == Role.WorkspaceAdmin
                                select p).ToList();
 
-            var groups = linqResults.Where(x => x.NTID.Contains(".")).ToList();
+			System.Collections.Generic.List<Dtos.PermissionsDTO> groups = linqResults.Where(x => x.NTID.Contains(".")).ToList();
 
             int nullGroupCount = linqResults.Except(groups).Select(x => x.NTID).Count();
 

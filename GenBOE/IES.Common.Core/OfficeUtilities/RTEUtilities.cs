@@ -502,8 +502,7 @@ namespace IES.Common.Core.OfficeUtilities
 
 			string sizeElementValue = GetValueFromXml(innerXml, pickedElement, "\"");
 
-			decimal decimalSize;
-			if (decimal.TryParse(sizeElementValue, out decimalSize)) { result = decimalSize / 2; }
+			if (decimal.TryParse(sizeElementValue, out decimal decimalSize)) { result = decimalSize / 2; }
 
 			return result;
 		}
@@ -565,8 +564,7 @@ namespace IES.Common.Core.OfficeUtilities
 
 			SpacingDetailsForRTEWordExports spacingOptions = new();
 
-			int value;
-			if (int.TryParse(aboveSpacing, out value)) { spacingOptions.Above = value; }
+			if (int.TryParse(aboveSpacing, out int value)) { spacingOptions.Above = value; }
 			if (int.TryParse(belowSpacing, out value)) { spacingOptions.Below = value; }
 			if (int.TryParse(lineIndent, out value)) { spacingOptions.FirstLineIndent = value; }
 

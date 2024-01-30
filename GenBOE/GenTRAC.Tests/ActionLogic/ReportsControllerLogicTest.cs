@@ -206,7 +206,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(proposalLogMv.LeadEstimatorList.Any());
             Assert.IsTrue(proposalLogMv.YearsList.Any());
 
-            var programAreas = from p in proposalLogMv.LOBList
+            IEnumerable<SelectListItem> programAreas = from p in proposalLogMv.LOBList
                        where p.Text.Contains(lineOfBusiness.Text)
                        select p;
             Assert.IsTrue(programAreas.Any());
@@ -233,7 +233,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             Collection<SelectListItem> list = sut.GetProgramAreasList();
 
-            var programAreas = from p in list
+            IEnumerable<SelectListItem> programAreas = from p in list
                                where p.Text.Contains(programArea.Text)
                        select p;
             Assert.IsTrue(programAreas.Any());
@@ -258,7 +258,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             Collection<SelectListItem> list = sut.GetLOBList();
 
-            var lobs = from l in list
+            IEnumerable<SelectListItem> lobs = from l in list
                        where l.Text.Contains(lob.Text)
                        select l;
 
@@ -806,7 +806,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(proposalLogMv.ProgramAreaList.Any());
             Assert.IsTrue(proposalLogMv.CustomerTypeList.Any());
 
-            var programAreas = from p in proposalLogMv.ProgramAreaList
+            IEnumerable<SelectListItem> programAreas = from p in proposalLogMv.ProgramAreaList
                        where p.Text.Contains(programArea.Text)
                        select p;
             Assert.IsTrue(programAreas.Any());

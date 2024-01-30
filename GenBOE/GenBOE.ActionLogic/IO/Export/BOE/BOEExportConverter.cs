@@ -306,7 +306,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
             if (boeSegregationCustomField != null)
             {
-                var boeSegregation = (from v in workspaceCustomFieldValues
+				CustomFieldValueDTO boeSegregation = (from v in workspaceCustomFieldValues
                                       from c in boe.CustomFieldValueContainers
                                       where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == boeSegregationCustomField.Id
                                       select v).FirstOrDefault();
@@ -322,7 +322,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
             if (boePwsCustomField != null)
             {
-                var boePws = (from v in workspaceCustomFieldValues
+				CustomFieldValueDTO boePws = (from v in workspaceCustomFieldValues
                               from c in boe.CustomFieldValueContainers
                               where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == boePwsCustomField.Id
                               select v).FirstOrDefault();
@@ -451,7 +451,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
                 if (revCodeCustomField != null)
                 {
-                    var revcode = (from v in workspaceCustomFieldValues
+					CustomFieldValueDTO revcode = (from v in workspaceCustomFieldValues
                                    from c in boeTaskElement.CustomFieldValueContainers
                                    where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == revCodeCustomField.Id
                                    select v).FirstOrDefault();
@@ -467,7 +467,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
                 if (taskSegregationCustomField != null)
                 {
-                    var taskSegregation = (from v in workspaceCustomFieldValues
+					CustomFieldValueDTO taskSegregation = (from v in workspaceCustomFieldValues
                                            from c in boeTaskElement.CustomFieldValueContainers
                                            where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == taskSegregationCustomField.Id
                                            select v).FirstOrDefault();
@@ -593,7 +593,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                     }
                     else
                     {
-                        var skillLevel = (from v in workspaceCustomFieldValues
+						CustomFieldValueDTO skillLevel = (from v in workspaceCustomFieldValues
                                           from c in laborType.CustomFieldValueContainers
                                           where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == skillLevelCustomField.Id
                                           select v).FirstOrDefault();
@@ -614,7 +614,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                     }
                     else
                     {
-                        var site = (from v in workspaceCustomFieldValues
+						CustomFieldValueDTO site = (from v in workspaceCustomFieldValues
                                     from c in laborType.CustomFieldValueContainers
                                     where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == siteCustomField.Id
                                     select v).FirstOrDefault();
@@ -635,7 +635,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                     }
                     else
                     {
-                        var skillMix = (from v in workspaceCustomFieldValues
+						CustomFieldValueDTO skillMix = (from v in workspaceCustomFieldValues
                                         from c in laborType.CustomFieldValueContainers
                                         where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == skillMixCustomField.Id
                                         select v).FirstOrDefault();
@@ -656,7 +656,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                     }
                     else
                     {
-                        var stot = (from v in workspaceCustomFieldValues
+						CustomFieldValueDTO stot = (from v in workspaceCustomFieldValues
                                     from c in laborType.CustomFieldValueContainers
                                     where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == stotCustomField.Id
                                     select v).FirstOrDefault();
@@ -699,7 +699,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                     }
                     else
                     {
-                        var rateBOE = (from v in workspaceCustomFieldValues
+						CustomFieldValueDTO rateBOE = (from v in workspaceCustomFieldValues
                                        from c in laborType.CustomFieldValueContainers
                                        where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == laborTypeRateBOECustomField.Id
                                        select v).FirstOrDefault();
@@ -768,7 +768,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                         }
                         else
                         {
-                            var company = (from v in workspaceCustomFieldValues
+							CustomFieldValueDTO company = (from v in workspaceCustomFieldValues
                                            from c in laborType.CustomFieldValueContainers
                                            where v.CustomFieldValueID == c.CustomFieldValueID && v.CustomFieldID == laborTypeCompanyCustomField.Id
                                            select v).FirstOrDefault();
@@ -980,9 +980,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                     boeExportLabor.ExportFields[BOEExporter.FieldName_LaborTypeCost] = boeExportLabor.Cost.Value.ToString("C0", this.CurrencyFormatter);
                     boeExportLabor.ExportFields[BOEExporter.FieldName_TravelTripID] = travelTrip.TravelTripID.ToString();
 
-                    var systemTrip = exportInputs.FullWorkspace.GetTripById(travelTrip.SystemTripID);
-                    var departureLocation = exportInputs.FullWorkspace.GetLocationById(systemTrip.DepartureLocationID);
-                    var destinationLocation = exportInputs.FullWorkspace.GetLocationById(systemTrip.DestinationLocationID);
+					TripDTO systemTrip = exportInputs.FullWorkspace.GetTripById(travelTrip.SystemTripID);
+					LocationDTO departureLocation = exportInputs.FullWorkspace.GetLocationById(systemTrip.DepartureLocationID);
+					LocationDTO destinationLocation = exportInputs.FullWorkspace.GetLocationById(systemTrip.DestinationLocationID);
 
                     boeExportLabor.ExportFields[BOEExporter.FieldName_TaskTypeDescription] =
                         departureLocation.LocationName +
@@ -999,7 +999,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                         " Day(s) in " +
                         travelTrip.TripDate.ToString("MM/yyyy");
 
-                    var resource = travelResources.FirstOrDefault(r => r.Segment == travelTrip.Segment);
+					ResourceDTO resource = travelResources.FirstOrDefault(r => r.Segment == travelTrip.Segment);
 
                     if (resource != null)
                     {

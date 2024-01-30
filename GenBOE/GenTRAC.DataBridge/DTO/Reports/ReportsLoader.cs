@@ -42,8 +42,8 @@ namespace GenTRAC.DataBridge.DTO.Reports
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    // get user ids that match the pricer type
-                    var resultLinq = from x in dbModel.ProposalUserRoles
+					// get user ids that match the pricer type
+					IQueryable<int> resultLinq = from x in dbModel.ProposalUserRoles
                                      where x.RoleID == (int)PtmRole.Pricer
                                      select x.UserID;
 
@@ -67,11 +67,11 @@ namespace GenTRAC.DataBridge.DTO.Reports
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    // get all proposal's date created
-                    var dates = from x in dbModel.Proposals
+					// get all proposal's date created
+					IQueryable<System.DateTime?> dates = from x in dbModel.Proposals
                                      select x.DateCreated;
 
-                    var years = dates.Select(x => x.Value.Year);
+					IQueryable<int> years = dates.Select(x => x.Value.Year);
 
                     toReturn = years.Distinct().OrderBy(x => x).ToList();
                 }

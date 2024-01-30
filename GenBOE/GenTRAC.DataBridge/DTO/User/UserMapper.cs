@@ -98,8 +98,8 @@ namespace GenTRAC.DataBridge.DTO
 
                 if (allUserIDs != null && allUserIDs.Any())
                 {
-                    // go through mapper so we take advantage of cache
-                    var allMembers = this.GetDtos(allUserIDs);
+					// go through mapper so we take advantage of cache
+					ICollection<UserDTO> allMembers = this.GetDtos(allUserIDs);
                     toReturn = allMembers.OrderBy(x => x.DisplayName).ToArray();
                 }
             }
@@ -213,7 +213,7 @@ namespace GenTRAC.DataBridge.DTO
                         else
                         {
                             // need to provide a transaction for the save
-                            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
                             {
                                 (this as IInternalDataMapper<UserDTO>).Save(new UserDTO
                                 {
@@ -311,8 +311,8 @@ namespace GenTRAC.DataBridge.DTO
 
                 if (allGroupUserIDs != null && allGroupUserIDs.Any())
                 {
-                    // go through mapper so we take advantage of cache
-                    var allMembers = this.GetDtos(allGroupUserIDs);
+					// go through mapper so we take advantage of cache
+					ICollection<UserDTO> allMembers = this.GetDtos(allGroupUserIDs);
                     toReturn = allMembers.OrderBy(x => x.DisplayName).ToArray();
                 }
             }
@@ -328,8 +328,8 @@ namespace GenTRAC.DataBridge.DTO
         virtual public ICollection<UserDTO> GetUserDtosByUserIds(ICollection<int> userIds)
         {
             ICollection<UserDTO> toReturn = null;
-            // go through mapper so we take advantage of cache
-            var allMembers = this.GetDtos(userIds);
+			// go through mapper so we take advantage of cache
+			ICollection<UserDTO> allMembers = this.GetDtos(userIds);
             toReturn = allMembers.OrderBy(x => x.DisplayName).ToArray();
             return toReturn;
         }

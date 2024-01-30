@@ -99,8 +99,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			modelView.FirstSelectedRevision = modelView.AvailableVersions.First(x => x.Id == firstSelectedRevision.Id);
 
-			int selectedVersionNumber;
-			int.TryParse(firstSelectedRevision.Revision, out selectedVersionNumber);
+			int.TryParse(firstSelectedRevision.Revision, out int selectedVersionNumber);
 
 			modelView.SelectedVersionNumber = selectedVersionNumber;
 			modelView.SelectedVersionNumberDisplay = wipRevision != null && wipRevision.Id == firstSelectedRevision.Id
@@ -111,8 +110,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			modelView.AvailableCompareToVersions = new List<RevisionOptionModelView>();
 			foreach (RevisionOptionModelView version in modelView.AvailableVersions)
 			{
-				int versionNumber;
-				int.TryParse(version.Revision, out versionNumber);
+				int.TryParse(version.Revision, out int versionNumber);
 				if (versionNumber < selectedVersionNumber)
 				{
 					modelView.AvailableCompareToVersions.Add(new RevisionOptionModelView()
@@ -147,8 +145,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new ArgumentException("Could not find specified revision");
 			}
 
-			int previousVersionNumber;
-			int.TryParse(secondSelectedRevision.Revision, out previousVersionNumber);
+			int.TryParse(secondSelectedRevision.Revision, out int previousVersionNumber);
 
 			modelView.PreviousVersionNumber = previousVersionNumber;
 			modelView.PreviousVersionNumberDisplay = string.Format("Revision {0}", modelView.PreviousVersionNumber);
@@ -183,13 +180,13 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			// Rates have match for at least one of the categories.
 			List<RateDetailModelView> backwardLookingRates = rates.Where(r =>
-				r.RateCategory == RateCategory.Fccom || r.RateCategory == RateCategory.Fringe ||
-				r.RateCategory == RateCategory.GA || r.RateCategory == RateCategory.Overhead).ToList();
+				r.RateCategory is RateCategory.Fccom or RateCategory.Fringe or
+				RateCategory.GA or RateCategory.Overhead).ToList();
 
 			// Rates do not have a match for any of the categories.
 			List<RateDetailModelView> forwardLookingRates = rates.Where(r =>
-				r.RateCategory != RateCategory.Fccom && r.RateCategory != RateCategory.Fringe &&
-				r.RateCategory != RateCategory.GA && r.RateCategory != RateCategory.Overhead).ToList();
+				r.RateCategory is not RateCategory.Fccom and not RateCategory.Fringe and
+				not RateCategory.GA and not RateCategory.Overhead).ToList();
 
 			// Backward looking rates check from (publishYear - RATE_TABLE_YEARS_TO_DISPLAY_BACKWARD_LOOKING_ADJUSTMENT) through (publishYear + RATE_TABLE_YEARS_TO_DISPLAY).
 			// Forward looking rates check from (publishYear) through (publishYear + RATE_TABLE_YEARS_TO_DISPLAY).
@@ -215,7 +212,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			{
 				// If all values are 0 or null for a given year range, validation fails.
 				if (rate.Values.Where(v => v.Year >= startYear && v.Year <= startYear + yearsToValidate)
-					.All(w => w.Value == null || w.Value == 0))
+					.All(w => w.Value is null or 0))
 				{
 					toReturn.Add(rate.RateCode);
 				}

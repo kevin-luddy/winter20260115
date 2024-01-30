@@ -26,9 +26,9 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void SyncUpdateUsers()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var userMapper = new Mock<IUserMapper>();
-            var userMediator = new Mock<IUserMediator>();
+            Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+            Mock<IUserMapper> userMapper = new Mock<IUserMapper>();
+            Mock<IUserMediator> userMediator = new Mock<IUserMediator>();
 
             UserDTO joesmith = new UserDTO
             {

@@ -52,7 +52,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 				{
 					DateTime day = DateTime.Now;
 					// if we don't have the next generation number cached or if this is the start of a new year retrieve the next number from the DB
-					if (nextGenerationNumber == null || day.Month == 1 && day.Day == 1)
+					if (nextGenerationNumber == null || (day.Month == 1 && day.Day == 1))
 					{
 						nextGenerationNumber = RetrieveNextGenerationNumber();
 					}
@@ -68,7 +68,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public ProposalLoader(ILogger logger) : base(logger)
+		public ProposalLoader(ILogger<ProposalLoader> logger) : base(logger)
 		{
 		}
 
@@ -412,8 +412,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 								HasLinkedDocument = entity.DocumentId.HasValue,
 								IsForecastProposal = entity.ProposalClass == CommonConstants.PROPOSAL_CLASS_FORECASTED,
 								HasWriteAccessToLinkedDocument = proposalIdsWithWriteAccess.Contains(entity.ProposalID),
-								IsCommercialCustomer = entity.CustomerTypeId == (int)CustomerType.Commercial ||
-													   entity.CustomerTypeId == (int)CustomerType.InternationalCommercial,
+								IsCommercialCustomer = entity.CustomerTypeId is ((int)CustomerType.Commercial) or
+													   ((int)CustomerType.InternationalCommercial),
 								HasOrIsRevision = entity.HasOrIsRevision == 1
 							}).ToList();
 				}
@@ -660,8 +660,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 									 select p.ProposalStatusID).First();
 
 					// as long as the proposal is not in progress, grab the approval completed date
-					if (completed == (int)ProposalStatus.Completed || completed == (int)ProposalStatus.PendingCertification || completed == (int)ProposalStatus.Revised
-						|| completed == (int)ProposalStatus.PendingAward || completed == (int)ProposalStatus.Lost)
+					if (completed is ((int)ProposalStatus.Completed) or ((int)ProposalStatus.PendingCertification) or ((int)ProposalStatus.Revised)
+						or ((int)ProposalStatus.PendingAward) or ((int)ProposalStatus.Lost))
 					{
 						toReturn = (from c in dbModel.ProposalChecklistCompletes
 									where c.ProposalID == inProposalId
@@ -1534,12 +1534,12 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 								&& x.Proposals.CertificationDate > featureStartDate
 							// Overall filtering - Mod date missing, proposal not marked as lost, proposal was completed after the feature was deployed
 							&&
-								(x.Proposals.CertificationDate != null
+								((x.Proposals.CertificationDate != null
 									&& x.Proposals.ModExecutedLastEmailed == null
-									&& x.Proposals.CertificationDate <= initialSendThreshold
+									&& x.Proposals.CertificationDate <= initialSendThreshold)
 							 // initial send logic
-							 || x.Proposals.ModExecutedLastEmailed != null
-									&& lastSentThreshold >= x.Proposals.ModExecutedLastEmailed
+							 || (x.Proposals.ModExecutedLastEmailed != null
+									&& lastSentThreshold >= x.Proposals.ModExecutedLastEmailed)
 								)) // re-send logic
 						.ToList();
 
@@ -1944,7 +1944,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 				{
 					result = "Certification In Progress";
 				}
-				else if (proposalStatus == ProposalStatus.PendingAward || proposalStatus == ProposalStatus.Lost || proposalStatus == ProposalStatus.Completed)
+				else if (proposalStatus is ProposalStatus.PendingAward or ProposalStatus.Lost or ProposalStatus.Completed)
 				{
 					result = "Certification Completed: " + certificationTimelineCompleted?.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
 				}

@@ -25,9 +25,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             // TODO: Add constructor logic here
             //
         }
-        private Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
-        private Mock<BOEStateMachine> boeStateMachine = new Mock<BOEStateMachine>();
-        private Mock<IBoeMediator> boeMediator = new Mock<IBoeMediator>();
         private Mock<RMSZoneTravelRatesFeesDataLoader> zoneTravelRatesFeesLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
         private Mock<IOffloadRatesDTOLoader> offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
 

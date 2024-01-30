@@ -154,8 +154,8 @@ namespace IES.DataBridge.ModelViews
 		/// <returns>Will return true if this section contains content</returns>
 		public bool IsSectionContent()
 		{
-			return this.ContentType == SectionContentType.Text ||
-				   this.ContentType == SectionContentType.RateTable || this.ContentType == SectionContentType.Address;
+			return this.ContentType is SectionContentType.Text or
+				   SectionContentType.RateTable or SectionContentType.Address;
 		}
 
 		/// <summary>

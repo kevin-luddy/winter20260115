@@ -251,7 +251,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 
             foreach (int x in VarIDs)
             {
-                var tasks = this.RecalculateLaborWithVariable(x, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
+				Collection<BoeTaskElementDTO> tasks = this.RecalculateLaborWithVariable(x, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
 
                 // add the task elements only if they do not exist in the current list
                 TaskElements.AddRange(from t in tasks
@@ -397,7 +397,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 
             foreach (int x in TaskVarIDs)
             {
-                var tasks = this.RecalculateLaborWithVariable(x, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
+				Collection<BoeTaskElementDTO> tasks = this.RecalculateLaborWithVariable(x, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
                 
                 // add the task elements only if they do not exist in the current list
                 TaskElements.AddRange(from t in tasks
@@ -411,7 +411,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
             FullWbs parentWBS = this.GetParentWBS(wbsToCheck, fullWorkspace);
             if (parentWBS != null)
             {
-                var returnWBS = this.RecalculateLaborWithWBS(parentWBS, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
+				List<BoeTaskElementDTO> returnWBS = this.RecalculateLaborWithWBS(parentWBS, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
                 // add the task elements only if they do not exist in the current list
                 TaskElements.AddRange(from t in returnWBS
                                       where !(from p in TaskElements
@@ -526,7 +526,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
                 }
                 else if (labortype.SpreadCurveID != SpreadCurves.DiscreteHours)
                 {
-                    var PercentSpread = 0m;
+					decimal PercentSpread = 0m;
                     decimal ValueSpread = 0;
 
                     if (boeTaskElement.TaskElementType.Equals(TaskElementType.Labor))
@@ -723,7 +723,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
             // recalculate the labor types that contain the task variable ID
             foreach (int x in VarIDs)
             {
-                var returnTaskVar = this.RecalculateLaborWithVariable(x, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
+				Collection<BoeTaskElementDTO> returnTaskVar = this.RecalculateLaborWithVariable(x, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
 
                 // add the task elements only if they do not exist in the current list
                 TaskElements.AddRange(from t in returnTaskVar
@@ -740,7 +740,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
                                                     where c.Id == boe.CLINID
                                                     select c).First();
 
-                var returnClin = this.RecalculateLaborWithClin(this._Factory.CreateFullClin(clinAssociatedWithBoe), variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
+				List<BoeTaskElementDTO> returnClin = this.RecalculateLaborWithClin(this._Factory.CreateFullClin(clinAssociatedWithBoe), variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
 
                 // add the task elements only if they do not exist in the current list
                 TaskElements.AddRange(from t in returnClin
@@ -755,7 +755,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
             {
                 FullWbs wbsAssociatedWithBoe = fullWorkspace.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
 
-                var returnWBS = this.RecalculateLaborWithWBS(wbsAssociatedWithBoe, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
+				List<BoeTaskElementDTO> returnWBS = this.RecalculateLaborWithWBS(wbsAssociatedWithBoe, variableType, fullWorkspace, incomingBoeTaskElements, incomingWorkspaceVariables);
 
                 // add the task elements only if they do not exist in the current list
                 TaskElements.AddRange(from t in returnWBS

@@ -36,11 +36,11 @@ namespace IES.Common.Core.Utilities
 				throw new ArgumentException("T must be of type System.Enum");
 			}
 
-			int comparison = 0;
-
 			int aval = Convert.ToInt32(a);
 			int bval = Convert.ToInt32(b);
 
+
+			int comparison;
 			if (enumType == typeof(PtmRole))
 			{
 				PtmRole arole = (PtmRole)aval;
@@ -63,7 +63,7 @@ namespace IES.Common.Core.Utilities
 							break;
 						case PtmRole.PeerReviewer:
 						case PtmRole.ProposalSetupAdmin:
-							comparison = brole == PtmRole.Admin || brole == PtmRole.Pricer ? -1 : 1;
+							comparison = brole is PtmRole.Admin or PtmRole.Pricer ? -1 : 1;
 							break;
 						default:
 							comparison = -1;
@@ -118,7 +118,7 @@ namespace IES.Common.Core.Utilities
 			foreach (object item in Enum.GetValues(enumType))
 			{
 				// If this is an active item OR if it is an inactive item that is still selected, add it to the list.
-				if (item.IsActive() || item != null && item.Equals(selectedItem))
+				if (item.IsActive() || (item != null && item.Equals(selectedItem)))
 				{
 					items.Add(new SelectListItem() { Text = item.GetDescription(), Value = (int)item == 0 && required ? string.Empty : ((int)item).ToString() });
 				}

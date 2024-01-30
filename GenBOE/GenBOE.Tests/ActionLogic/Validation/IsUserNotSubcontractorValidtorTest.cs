@@ -47,7 +47,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(InvalidCastException))]
         public void IsUserNotSubcontractorValidator_InvalidParameterTest()
         {
-            var securityInformation = new Mock<ISecurityInformation>();
+			Mock<ISecurityInformation> securityInformation = new Mock<ISecurityInformation>();
             Mock<IUserDTODataLoader> userDataLoader = new Mock<IUserDTODataLoader>();
 
             IsUserNotSubcontractorValidator sut = new IsUserNotSubcontractorValidator(securityInformation.Object, userDataLoader.Object);
@@ -63,7 +63,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(ArgumentNullException))]
         public void IsUserNotSubcontractorValidtor_NullParameterTest()
         {
-            var securityInformation = new Mock<ISecurityInformation>();
+			Mock<ISecurityInformation> securityInformation = new Mock<ISecurityInformation>();
             Mock<IUserDTODataLoader> userDataLoader = new Mock<IUserDTODataLoader>();
             IsUserNotSubcontractorValidator sut = new IsUserNotSubcontractorValidator(securityInformation.Object, userDataLoader.Object);
             sut.validation(null, new Collection<Dictionary<string, string>>());

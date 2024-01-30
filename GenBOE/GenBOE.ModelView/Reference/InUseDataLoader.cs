@@ -64,8 +64,8 @@ namespace GenBOE.DataBridge.Reference
                 // call getWorkspaceResourceInUseFlagByResourceID SP to determine if workspace resource is in use
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var result = gbe.getWorkspaceResourceInUseFlagByResourceID(inID, inResourceListID);
-                    var a = (from r in result
+					System.Data.Entity.Core.Objects.ObjectResult<int?> result = gbe.getWorkspaceResourceInUseFlagByResourceID(inID, inResourceListID);
+					int? a = (from r in result
                              select r).First();
 
                     if (a == 1)
@@ -93,8 +93,8 @@ namespace GenBOE.DataBridge.Reference
                 // call getResourceInUseFlagBySystemResourceID SP to determine if system resource is in use
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var result = gbe.getResourceInUseFlagBySystemResourceID(inID);
-                    var a = (from r in result
+					System.Data.Entity.Core.Objects.ObjectResult<int?> result = gbe.getResourceInUseFlagBySystemResourceID(inID);
+					int? a = (from r in result
                              select r).FirstOrDefault();
 
                     if (a == 1)
@@ -123,7 +123,7 @@ namespace GenBOE.DataBridge.Reference
                 {
                     gbe.Database.CommandTimeout = 450;
 
-                    var ResourceIDsList = gbe.getResourceInUseFlagByResourceListID(inResourceListID).Select(x => x.Value);
+					IEnumerable<int> ResourceIDsList = gbe.getResourceInUseFlagByResourceListID(inResourceListID).Select(x => x.Value);
 
                     toReturn = new HashSet<int>(from x in ResourceIDsList select x);
 
@@ -181,7 +181,7 @@ namespace GenBOE.DataBridge.Reference
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var ResourceIDsList = gbe.getSystemResourceInUseFlag().Select(x => x.Value);
+					IEnumerable<int> ResourceIDsList = gbe.getSystemResourceInUseFlag().Select(x => x.Value);
 
                     toReturn = new HashSet<int>(from x in ResourceIDsList select x);
                 }
@@ -205,7 +205,7 @@ namespace GenBOE.DataBridge.Reference
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var PerfOrgIDsList = gbe.getPerformingOrganizationInUseFlagByPerformingOrganizationListID(inPerfOrgListID).Select(x => x.Value);
+					IEnumerable<int> PerfOrgIDsList = gbe.getPerformingOrganizationInUseFlagByPerformingOrganizationListID(inPerfOrgListID).Select(x => x.Value);
 
                     toReturn = new HashSet<int>(from x in PerfOrgIDsList select x);
                 }

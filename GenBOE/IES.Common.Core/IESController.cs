@@ -15,6 +15,7 @@ namespace IES.Common.Core
 	using System.Web;
 	using Exceptions;
 	using IES.Common.Core.Configuration;
+	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Authentication.Negotiate;
 	using Microsoft.AspNetCore.Authorization;
@@ -24,19 +25,35 @@ namespace IES.Common.Core
 	using Microsoft.Extensions.Logging;
 
 	[ApiController, Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-	public class IESController : ControllerBase, IActionFilter
+	public abstract class IESController : ControllerBase, IActionFilter
 	{
 		/// <summary>
 		/// The logger.
 		/// </summary>
-		protected ILogger log;
+		protected readonly ILogger log;
+
+		/// <summary>
+		/// Security Information
+		/// </summary>
+		protected readonly ISecurityInformation securityInformation;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IESController"/> class.
 		/// </summary>
-		public IESController(ILogger logger)
+		protected IESController(ILogger logger, ISecurityInformation securityInformation)
 		{
 			log = logger;
+			this.securityInformation = securityInformation;
+		}
+
+		/// <summary>
+		/// Get User Info
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet("[action]")]
+		public string GetUserInfo()
+		{
+			return this.securityInformation.ActiveUserNTID;
 		}
 
 		/// <summary>
@@ -91,13 +108,12 @@ namespace IES.Common.Core
 		{
 			string resultingSrc = src;
 
-			Uri uri;
 
 			if (src.StartsWith("data:"))
 			{
 				resultingSrc = src.Replace(' ', '+');  // replace spaces with plus-sign to ensure valid base-64 syntax
 			}
-			else if (Uri.TryCreate(src, UriKind.RelativeOrAbsolute, out uri))
+			else if (Uri.TryCreate(src, UriKind.RelativeOrAbsolute, out Uri uri))
 			{
 				try
 				{
@@ -276,7 +292,7 @@ namespace IES.Common.Core
 		}
 
 		[NonAction]
-		public void OnActionExecuting(ActionExecutingContext context)
+		public virtual void OnActionExecuting(ActionExecutingContext context)
 		{
 			if (context != null)
 			{
@@ -287,7 +303,7 @@ namespace IES.Common.Core
 		}
 
 		[NonAction]
-		public void OnActionExecuted(ActionExecutedContext context)
+		public virtual void OnActionExecuted(ActionExecutedContext context)
 		{
 			if (context != null)
 			{

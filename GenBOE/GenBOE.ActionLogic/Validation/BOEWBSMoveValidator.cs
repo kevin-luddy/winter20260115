@@ -48,7 +48,7 @@ namespace GenBOE.ActionLogic.Validation
                 throw new InvalidCastException("value");
             }
 
-            var valueToValidate = Convert.ToInt32(value);
+			int valueToValidate = Convert.ToInt32(value);
 
             Dictionary<String, String> data = inData != null && inData.Count > 0 ? inData.First<Dictionary<String, String>>() : null;
 
@@ -61,11 +61,11 @@ namespace GenBOE.ActionLogic.Validation
                 string boeID;
                 if (data.TryGetValue("BoeID", out boeID))
                 {
-                    var boeIDInt = Convert.ToInt32(boeID);
+					int boeIDInt = Convert.ToInt32(boeID);
 
                     if (boeIDInt > 0 && valueToValidate > 0)
                     {
-                        var cache = new VariableCircularReferenceCheckerCache();
+						VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
 
                         FullBoe boe = this.factory.CreateFullBoe(boeIDInt);
                         FullWorkspace ws = boe.Workspace;
@@ -130,7 +130,7 @@ namespace GenBOE.ActionLogic.Validation
                     throw new ArgumentException("data['Workspace']");
                 }
 
-                var cache = new VariableCircularReferenceCheckerCache();
+				VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
 
                 FullWbs wbs = this.factory.CreateFullWbs(valueToValidate);
 

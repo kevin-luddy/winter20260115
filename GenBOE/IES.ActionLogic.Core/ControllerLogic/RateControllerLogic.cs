@@ -109,9 +109,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new GenValidationException("Revision not found.");
 			}
 
-			ICollection<OptionModelView> commercialBurdenPoolOptions;
-			ICollection<OptionModelView> governmentBurdenPoolOptions;
-			burdenPoolLoader.GetBurdenPoolOptions(revision.Id, out commercialBurdenPoolOptions, out governmentBurdenPoolOptions);
+			burdenPoolLoader.GetBurdenPoolOptions(revision.Id, out ICollection<OptionModelView> commercialBurdenPoolOptions, out ICollection<OptionModelView> governmentBurdenPoolOptions);
 
 			RateGridModelView model = new()
 			{
@@ -262,7 +260,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 							// If the rounded value does not equal the actual value, we have too many decimal places.
 							if (decimal.Round((decimal)rateYear.Value, rdmv.RatePrecision) != rateYear.Value ||
-								rateYear.Value < 0 && !isNonLaborEscalation)
+								(rateYear.Value < 0 && !isNonLaborEscalation))
 							{
 								string validationString = string.Format(isNonLaborEscalation ? RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR_ALLOW_NEGATIVE : RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR,
 																		rdmv.RateCode, rateYear.Year, rateYear.Value, rdmv.RateCategoryDescription, rdmv.RatePrecision);
@@ -412,11 +410,11 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		{
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 
-			bool commercialBurdenPoolSet = rateDetailModelView.CommercialBurdenPoolId != null && rateDetailModelView.CommercialBurdenPoolId > 0;
-			bool governmentBurdenPoolSet = rateDetailModelView.GovernmentBurdenPoolId != null && rateDetailModelView.GovernmentBurdenPoolId > 0;
-			bool rateTypeSet = rateDetailModelView.RateType != null && rateDetailModelView.RateType != RateType.NotSet;
-			bool disclosureTypeSet = rateDetailModelView.DisclosureType != null && rateDetailModelView.DisclosureType != DisclosureType.None;
-			bool resourceTypeSet = rateDetailModelView.ResourceType != null && rateDetailModelView.ResourceType != DirectRateMappingResourceType.None;
+			bool commercialBurdenPoolSet = rateDetailModelView.CommercialBurdenPoolId is not null and > 0;
+			bool governmentBurdenPoolSet = rateDetailModelView.GovernmentBurdenPoolId is not null and > 0;
+			bool rateTypeSet = rateDetailModelView.RateType is not null and not RateType.NotSet;
+			bool disclosureTypeSet = rateDetailModelView.DisclosureType is not null and not DisclosureType.None;
+			bool resourceTypeSet = rateDetailModelView.ResourceType is not null and not DirectRateMappingResourceType.None;
 
 			// if nothing is entered or all values have been cleared by user, nothing to validate
 			if (!commercialBurdenPoolSet && !governmentBurdenPoolSet &&
@@ -569,61 +567,61 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <returns>True if any of the extended Resource Classes (i.e. 1-9) are populated without a corresponding Rate Description; False otherwise.</returns>
 		private bool IsAnyResourceClassMissingCorrespondingRateDescription(RateDetailModelView rateDetailModelView)
 		{
-			return string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription) && IsResourceClassPopulated(rateDetailModelView.ResourceClass, rateDetailModelView.ResourceClassId) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription1) && IsResourceClassPopulated(rateDetailModelView.ResourceClass1, rateDetailModelView.ResourceClassId1) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription2) && IsResourceClassPopulated(rateDetailModelView.ResourceClass2, rateDetailModelView.ResourceClassId2) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription3) && IsResourceClassPopulated(rateDetailModelView.ResourceClass3, rateDetailModelView.ResourceClassId3) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription4) && IsResourceClassPopulated(rateDetailModelView.ResourceClass4, rateDetailModelView.ResourceClassId4) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription5) && IsResourceClassPopulated(rateDetailModelView.ResourceClass5, rateDetailModelView.ResourceClassId5) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription6) && IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription7) && IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription8) && IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription9) && IsResourceClassPopulated(rateDetailModelView.ResourceClass9, rateDetailModelView.ResourceClassId9) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription11) && IsResourceClassPopulated(rateDetailModelView.ResourceClass11, rateDetailModelView.ResourceClassId11) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription12) && IsResourceClassPopulated(rateDetailModelView.ResourceClass12, rateDetailModelView.ResourceClassId12) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription13) && IsResourceClassPopulated(rateDetailModelView.ResourceClass13, rateDetailModelView.ResourceClassId13) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription14) && IsResourceClassPopulated(rateDetailModelView.ResourceClass14, rateDetailModelView.ResourceClassId14) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription15) && IsResourceClassPopulated(rateDetailModelView.ResourceClass15, rateDetailModelView.ResourceClassId15) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription21) && IsResourceClassPopulated(rateDetailModelView.ResourceClass21, rateDetailModelView.ResourceClassId21) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription22) && IsResourceClassPopulated(rateDetailModelView.ResourceClass22, rateDetailModelView.ResourceClassId22) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription23) && IsResourceClassPopulated(rateDetailModelView.ResourceClass23, rateDetailModelView.ResourceClassId23) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription24) && IsResourceClassPopulated(rateDetailModelView.ResourceClass24, rateDetailModelView.ResourceClassId24) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription25) && IsResourceClassPopulated(rateDetailModelView.ResourceClass25, rateDetailModelView.ResourceClassId25) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription31) && IsResourceClassPopulated(rateDetailModelView.ResourceClass31, rateDetailModelView.ResourceClassId31) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription32) && IsResourceClassPopulated(rateDetailModelView.ResourceClass32, rateDetailModelView.ResourceClassId32) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription33) && IsResourceClassPopulated(rateDetailModelView.ResourceClass33, rateDetailModelView.ResourceClassId33) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription34) && IsResourceClassPopulated(rateDetailModelView.ResourceClass34, rateDetailModelView.ResourceClassId34) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription35) && IsResourceClassPopulated(rateDetailModelView.ResourceClass35, rateDetailModelView.ResourceClassId35) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription41) && IsResourceClassPopulated(rateDetailModelView.ResourceClass41, rateDetailModelView.ResourceClassId41) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription42) && IsResourceClassPopulated(rateDetailModelView.ResourceClass42, rateDetailModelView.ResourceClassId42) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription43) && IsResourceClassPopulated(rateDetailModelView.ResourceClass43, rateDetailModelView.ResourceClassId43) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription44) && IsResourceClassPopulated(rateDetailModelView.ResourceClass44, rateDetailModelView.ResourceClassId44) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription45) && IsResourceClassPopulated(rateDetailModelView.ResourceClass45, rateDetailModelView.ResourceClassId45) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription51) && IsResourceClassPopulated(rateDetailModelView.ResourceClass51, rateDetailModelView.ResourceClassId51) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription52) && IsResourceClassPopulated(rateDetailModelView.ResourceClass52, rateDetailModelView.ResourceClassId52) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription53) && IsResourceClassPopulated(rateDetailModelView.ResourceClass53, rateDetailModelView.ResourceClassId53) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription54) && IsResourceClassPopulated(rateDetailModelView.ResourceClass54, rateDetailModelView.ResourceClassId54) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription55) && IsResourceClassPopulated(rateDetailModelView.ResourceClass55, rateDetailModelView.ResourceClassId55) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription61) && IsResourceClassPopulated(rateDetailModelView.ResourceClass61, rateDetailModelView.ResourceClassId61) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription62) && IsResourceClassPopulated(rateDetailModelView.ResourceClass62, rateDetailModelView.ResourceClassId62) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription63) && IsResourceClassPopulated(rateDetailModelView.ResourceClass63, rateDetailModelView.ResourceClassId63) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription64) && IsResourceClassPopulated(rateDetailModelView.ResourceClass64, rateDetailModelView.ResourceClassId64) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription65) && IsResourceClassPopulated(rateDetailModelView.ResourceClass65, rateDetailModelView.ResourceClassId65) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription71) && IsResourceClassPopulated(rateDetailModelView.ResourceClass71, rateDetailModelView.ResourceClassId71) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription72) && IsResourceClassPopulated(rateDetailModelView.ResourceClass72, rateDetailModelView.ResourceClassId72) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription73) && IsResourceClassPopulated(rateDetailModelView.ResourceClass73, rateDetailModelView.ResourceClassId73) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription74) && IsResourceClassPopulated(rateDetailModelView.ResourceClass74, rateDetailModelView.ResourceClassId74) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription75) && IsResourceClassPopulated(rateDetailModelView.ResourceClass75, rateDetailModelView.ResourceClassId75) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription81) && IsResourceClassPopulated(rateDetailModelView.ResourceClass81, rateDetailModelView.ResourceClassId81) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription82) && IsResourceClassPopulated(rateDetailModelView.ResourceClass82, rateDetailModelView.ResourceClassId82) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription83) && IsResourceClassPopulated(rateDetailModelView.ResourceClass83, rateDetailModelView.ResourceClassId83) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription84) && IsResourceClassPopulated(rateDetailModelView.ResourceClass84, rateDetailModelView.ResourceClassId84) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription85) && IsResourceClassPopulated(rateDetailModelView.ResourceClass85, rateDetailModelView.ResourceClassId85) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription91) && IsResourceClassPopulated(rateDetailModelView.ResourceClass91, rateDetailModelView.ResourceClassId91) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription92) && IsResourceClassPopulated(rateDetailModelView.ResourceClass92, rateDetailModelView.ResourceClassId92) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription93) && IsResourceClassPopulated(rateDetailModelView.ResourceClass93, rateDetailModelView.ResourceClassId93) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription94) && IsResourceClassPopulated(rateDetailModelView.ResourceClass94, rateDetailModelView.ResourceClassId94) ||
-				   string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription95) && IsResourceClassPopulated(rateDetailModelView.ResourceClass95, rateDetailModelView.ResourceClassId95);
+			return (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription) && IsResourceClassPopulated(rateDetailModelView.ResourceClass, rateDetailModelView.ResourceClassId)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription1) && IsResourceClassPopulated(rateDetailModelView.ResourceClass1, rateDetailModelView.ResourceClassId1)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription2) && IsResourceClassPopulated(rateDetailModelView.ResourceClass2, rateDetailModelView.ResourceClassId2)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription3) && IsResourceClassPopulated(rateDetailModelView.ResourceClass3, rateDetailModelView.ResourceClassId3)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription4) && IsResourceClassPopulated(rateDetailModelView.ResourceClass4, rateDetailModelView.ResourceClassId4)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription5) && IsResourceClassPopulated(rateDetailModelView.ResourceClass5, rateDetailModelView.ResourceClassId5)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription6) && IsResourceClassPopulated(rateDetailModelView.ResourceClass6, rateDetailModelView.ResourceClassId6)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription7) && IsResourceClassPopulated(rateDetailModelView.ResourceClass7, rateDetailModelView.ResourceClassId7)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription8) && IsResourceClassPopulated(rateDetailModelView.ResourceClass8, rateDetailModelView.ResourceClassId8)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription9) && IsResourceClassPopulated(rateDetailModelView.ResourceClass9, rateDetailModelView.ResourceClassId9)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription11) && IsResourceClassPopulated(rateDetailModelView.ResourceClass11, rateDetailModelView.ResourceClassId11)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription12) && IsResourceClassPopulated(rateDetailModelView.ResourceClass12, rateDetailModelView.ResourceClassId12)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription13) && IsResourceClassPopulated(rateDetailModelView.ResourceClass13, rateDetailModelView.ResourceClassId13)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription14) && IsResourceClassPopulated(rateDetailModelView.ResourceClass14, rateDetailModelView.ResourceClassId14)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription15) && IsResourceClassPopulated(rateDetailModelView.ResourceClass15, rateDetailModelView.ResourceClassId15)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription21) && IsResourceClassPopulated(rateDetailModelView.ResourceClass21, rateDetailModelView.ResourceClassId21)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription22) && IsResourceClassPopulated(rateDetailModelView.ResourceClass22, rateDetailModelView.ResourceClassId22)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription23) && IsResourceClassPopulated(rateDetailModelView.ResourceClass23, rateDetailModelView.ResourceClassId23)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription24) && IsResourceClassPopulated(rateDetailModelView.ResourceClass24, rateDetailModelView.ResourceClassId24)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription25) && IsResourceClassPopulated(rateDetailModelView.ResourceClass25, rateDetailModelView.ResourceClassId25)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription31) && IsResourceClassPopulated(rateDetailModelView.ResourceClass31, rateDetailModelView.ResourceClassId31)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription32) && IsResourceClassPopulated(rateDetailModelView.ResourceClass32, rateDetailModelView.ResourceClassId32)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription33) && IsResourceClassPopulated(rateDetailModelView.ResourceClass33, rateDetailModelView.ResourceClassId33)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription34) && IsResourceClassPopulated(rateDetailModelView.ResourceClass34, rateDetailModelView.ResourceClassId34)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription35) && IsResourceClassPopulated(rateDetailModelView.ResourceClass35, rateDetailModelView.ResourceClassId35)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription41) && IsResourceClassPopulated(rateDetailModelView.ResourceClass41, rateDetailModelView.ResourceClassId41)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription42) && IsResourceClassPopulated(rateDetailModelView.ResourceClass42, rateDetailModelView.ResourceClassId42)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription43) && IsResourceClassPopulated(rateDetailModelView.ResourceClass43, rateDetailModelView.ResourceClassId43)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription44) && IsResourceClassPopulated(rateDetailModelView.ResourceClass44, rateDetailModelView.ResourceClassId44)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription45) && IsResourceClassPopulated(rateDetailModelView.ResourceClass45, rateDetailModelView.ResourceClassId45)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription51) && IsResourceClassPopulated(rateDetailModelView.ResourceClass51, rateDetailModelView.ResourceClassId51)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription52) && IsResourceClassPopulated(rateDetailModelView.ResourceClass52, rateDetailModelView.ResourceClassId52)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription53) && IsResourceClassPopulated(rateDetailModelView.ResourceClass53, rateDetailModelView.ResourceClassId53)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription54) && IsResourceClassPopulated(rateDetailModelView.ResourceClass54, rateDetailModelView.ResourceClassId54)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription55) && IsResourceClassPopulated(rateDetailModelView.ResourceClass55, rateDetailModelView.ResourceClassId55)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription61) && IsResourceClassPopulated(rateDetailModelView.ResourceClass61, rateDetailModelView.ResourceClassId61)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription62) && IsResourceClassPopulated(rateDetailModelView.ResourceClass62, rateDetailModelView.ResourceClassId62)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription63) && IsResourceClassPopulated(rateDetailModelView.ResourceClass63, rateDetailModelView.ResourceClassId63)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription64) && IsResourceClassPopulated(rateDetailModelView.ResourceClass64, rateDetailModelView.ResourceClassId64)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription65) && IsResourceClassPopulated(rateDetailModelView.ResourceClass65, rateDetailModelView.ResourceClassId65)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription71) && IsResourceClassPopulated(rateDetailModelView.ResourceClass71, rateDetailModelView.ResourceClassId71)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription72) && IsResourceClassPopulated(rateDetailModelView.ResourceClass72, rateDetailModelView.ResourceClassId72)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription73) && IsResourceClassPopulated(rateDetailModelView.ResourceClass73, rateDetailModelView.ResourceClassId73)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription74) && IsResourceClassPopulated(rateDetailModelView.ResourceClass74, rateDetailModelView.ResourceClassId74)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription75) && IsResourceClassPopulated(rateDetailModelView.ResourceClass75, rateDetailModelView.ResourceClassId75)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription81) && IsResourceClassPopulated(rateDetailModelView.ResourceClass81, rateDetailModelView.ResourceClassId81)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription82) && IsResourceClassPopulated(rateDetailModelView.ResourceClass82, rateDetailModelView.ResourceClassId82)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription83) && IsResourceClassPopulated(rateDetailModelView.ResourceClass83, rateDetailModelView.ResourceClassId83)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription84) && IsResourceClassPopulated(rateDetailModelView.ResourceClass84, rateDetailModelView.ResourceClassId84)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription85) && IsResourceClassPopulated(rateDetailModelView.ResourceClass85, rateDetailModelView.ResourceClassId85)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription91) && IsResourceClassPopulated(rateDetailModelView.ResourceClass91, rateDetailModelView.ResourceClassId91)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription92) && IsResourceClassPopulated(rateDetailModelView.ResourceClass92, rateDetailModelView.ResourceClassId92)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription93) && IsResourceClassPopulated(rateDetailModelView.ResourceClass93, rateDetailModelView.ResourceClassId93)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription94) && IsResourceClassPopulated(rateDetailModelView.ResourceClass94, rateDetailModelView.ResourceClassId94)) ||
+				   (string.IsNullOrWhiteSpace(rateDetailModelView.RateDescription95) && IsResourceClassPopulated(rateDetailModelView.ResourceClass95, rateDetailModelView.ResourceClassId95));
 		}
 
 		/// <summary>
@@ -715,7 +713,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <returns>True if Resource Class is populated; False otherwise.</returns>
 		private bool IsResourceClassPopulated(string resourceClass, int? resourceClassId)
 		{
-			return !string.IsNullOrWhiteSpace(resourceClass) || resourceClassId.HasValue && resourceClassId.Value > 0;
+			return !string.IsNullOrWhiteSpace(resourceClass) || (resourceClassId.HasValue && resourceClassId.Value > 0);
 		}
 
 		/// <summary>
@@ -1233,7 +1231,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		{
 			bool string1Null = string.IsNullOrWhiteSpace(string1);
 			bool string2Null = string.IsNullOrWhiteSpace(string2);
-			return string1Null && string2Null || !string1Null && !string2Null && string1.Trim().Equals(string2.Trim());
+			return (string1Null && string2Null) || (!string1Null && !string2Null && string1.Trim().Equals(string2.Trim()));
 		}
 
 		/// <summary>
@@ -1244,7 +1242,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <returns>true, if both ids are null/not set, or both are equal</returns>
 		private bool IsNullableIdPropertyEquivalent(int? id1, int? id2)
 		{
-			return (!id1.HasValue || id1 == 0) && (!id2.HasValue || id2 == 0) || id1.HasValue && id2.HasValue && id1.Value == id2.Value;
+			return ((!id1.HasValue || id1 == 0) && (!id2.HasValue || id2 == 0)) || (id1.HasValue && id2.HasValue && id1.Value == id2.Value);
 		}
 	}
 }

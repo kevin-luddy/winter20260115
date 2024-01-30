@@ -292,20 +292,20 @@ namespace GenBOE.Tests.ActionLogic.Validation
         /// </summary>
         private ValidationFactory GetValidationFactory()
         {
-            var workspaceUniqueNameValidator = new Mock<Validator>();
-            var workspaceUniqueShortnameValidator = new Mock<Validator>();
-            var workspaceCostVolumeLeadNotGroupValidator = new Mock<Validator>();
-            var boeTaskIdUniqueValidator = new Mock<Validator>();
-            var boeDateRangeValidator = new Mock<Validator>();
-            var resourceUniqueIDValidator = new Mock<Validator>();
-            var performingOrgUniqueIDValidator = new Mock<Validator>();
-            var wbsRenumberValidator = new Mock<Validator>();
-            var boeWBSMoveValidator = new Mock<Validator>();
-            var boeCLINMoveValidator = new Mock<Validator>();
-            var boeMaterialExistsforWbsValidator = new Mock<Validator>();
-            var boeMaterialElementExistsValidator = new Mock<Validator>();
-            var resourceUniqueDescValidator = new Mock<Validator>();
-            var workspaceCostVolumeLeadNotSubcontractorValidator = new Mock<Validator>();
+			Mock<Validator> workspaceUniqueNameValidator = new Mock<Validator>();
+			Mock<Validator> workspaceUniqueShortnameValidator = new Mock<Validator>();
+			Mock<Validator> workspaceCostVolumeLeadNotGroupValidator = new Mock<Validator>();
+			Mock<Validator> boeTaskIdUniqueValidator = new Mock<Validator>();
+			Mock<Validator> boeDateRangeValidator = new Mock<Validator>();
+			Mock<Validator> resourceUniqueIDValidator = new Mock<Validator>();
+			Mock<Validator> performingOrgUniqueIDValidator = new Mock<Validator>();
+			Mock<Validator> wbsRenumberValidator = new Mock<Validator>();
+			Mock<Validator> boeWBSMoveValidator = new Mock<Validator>();
+			Mock<Validator> boeCLINMoveValidator = new Mock<Validator>();
+			Mock<Validator> boeMaterialExistsforWbsValidator = new Mock<Validator>();
+			Mock<Validator> boeMaterialElementExistsValidator = new Mock<Validator>();
+			Mock<Validator> resourceUniqueDescValidator = new Mock<Validator>();
+			Mock<Validator> workspaceCostVolumeLeadNotSubcontractorValidator = new Mock<Validator>();
 
             ValidationFactory vf = new ValidationFactory(
                 workspaceUniqueNameValidator.Object,

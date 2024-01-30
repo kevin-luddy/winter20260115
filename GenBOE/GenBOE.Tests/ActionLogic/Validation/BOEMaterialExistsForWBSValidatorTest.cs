@@ -19,7 +19,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void BOEMaterialExistsForWBS_IsValid()
         {
-            var wbsLoader = new Mock<WbsDTODataLoader>();
+			Mock<WbsDTODataLoader> wbsLoader = new Mock<WbsDTODataLoader>();
             BOEMaterialExistsForWBSValidator sut = new BOEMaterialExistsForWBSValidator(wbsLoader.Object);
 
             wbsLoader.Setup(x => x.IsWbsTiedToMaterialBoeAndClin(1, 1, 1)).Returns(true);

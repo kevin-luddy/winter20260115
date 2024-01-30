@@ -39,11 +39,11 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             int boeID = 1;
             int workspaceID = this.Workspace.Id;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var secInfoLoader = new Mock<ISecurityInformation>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<ISecurityInformation> secInfoLoader = new Mock<ISecurityInformation>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
 
             Mock<IWorkspaceDTODataLoader> workspaceDataLoader = new Mock<IWorkspaceDTODataLoader>();
 
@@ -77,11 +77,11 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             int boeID = 1;
             int workspaceID = 1;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var secInfoLoader = new Mock<ISecurityInformation>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<ISecurityInformation> secInfoLoader = new Mock<ISecurityInformation>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
             Mock<IWorkspaceDTODataLoader> workspaceDataLoader = new Mock<IWorkspaceDTODataLoader>();
 
             BoeDTO boe = new BoeDTO
@@ -134,11 +134,11 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             int boeID = 1;
             int workspaceID = 1;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var secInfoLoader = new Mock<ISecurityInformation>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<ISecurityInformation> secInfoLoader = new Mock<ISecurityInformation>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
             Mock<IWorkspaceDTODataLoader> workspaceDataLoader = new Mock<IWorkspaceDTODataLoader>();
 
             PermissionsDTO permission = new PermissionsDTO {WorkspaceId = 1,ETIUserId = 1,Role = Role.Approver};
@@ -169,11 +169,11 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             int boeID = 1;
             int workspaceID = 1;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var secInfoLoader = new Mock<ISecurityInformation>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<ISecurityInformation> secInfoLoader = new Mock<ISecurityInformation>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
             Mock<IWorkspaceDTODataLoader> workspaceDataLoader = new Mock<IWorkspaceDTODataLoader>();
 
             UserDTO author = new UserDTO { UserID = 3, NTID = "mrauthor" };

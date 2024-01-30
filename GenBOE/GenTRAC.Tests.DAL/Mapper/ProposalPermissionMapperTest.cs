@@ -50,22 +50,22 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetProposalPermissionsByProposalIdTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionMapper sut = this.CreateSystem();
 
             int proposalId = 1;
 
-            var permissionsDto1 = new ProposalPermissionDto() { Id = 1 };
-            var permissionsDto2 = new ProposalPermissionDto() { Id = 2 };
-            var permissionsDto3 = new ProposalPermissionDto() { Id = 3 };
-            var permissionsDto4 = new ProposalPermissionDto() { Id = 4 };
-            var permissionsDto5 = new ProposalPermissionDto() { Id = 5 };
+			ProposalPermissionDto permissionsDto1 = new ProposalPermissionDto() { Id = 1 };
+			ProposalPermissionDto permissionsDto2 = new ProposalPermissionDto() { Id = 2 };
+			ProposalPermissionDto permissionsDto3 = new ProposalPermissionDto() { Id = 3 };
+			ProposalPermissionDto permissionsDto4 = new ProposalPermissionDto() { Id = 4 };
+			ProposalPermissionDto permissionsDto5 = new ProposalPermissionDto() { Id = 5 };
 
             List<int> permissionIds = new List<int>() { 1, 2, 3, 4, 5 };
 
             this.proposalPermissionsLoader.Setup(x => x.GetIdsByProposalId(proposalId)).Returns(permissionIds);
             this.proposalPermissionsLoader.Setup(x => x.GetByIds(permissionIds)).Returns(new List<ProposalPermissionDto>() { permissionsDto1, permissionsDto2, permissionsDto3, permissionsDto4, permissionsDto5 });
 
-            var result = sut.GetProposalPermissionsByProposalId(proposalId);
+			ICollection<ProposalPermissionDto> result = sut.GetProposalPermissionsByProposalId(proposalId);
 
             Assert.AreEqual(permissionsDto1, result.ElementAt(0));
             Assert.AreEqual(permissionsDto2, result.ElementAt(1));
@@ -80,23 +80,23 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetProposalPermissionsByUserIdTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionMapper sut = this.CreateSystem();
 
             int proposalId = 1;
             int userId = 2;
 
-            var permissionsDto1 = new ProposalPermissionDto() { Id = 1, UserId = 1 };
-            var permissionsDto2 = new ProposalPermissionDto() { Id = 2, UserId = 1 };
-            var permissionsDto3 = new ProposalPermissionDto() { Id = 3, UserId = 2 };
-            var permissionsDto4 = new ProposalPermissionDto() { Id = 4, UserId = 2 };
-            var permissionsDto5 = new ProposalPermissionDto() { Id = 5, UserId = 2 };
+			ProposalPermissionDto permissionsDto1 = new ProposalPermissionDto() { Id = 1, UserId = 1 };
+			ProposalPermissionDto permissionsDto2 = new ProposalPermissionDto() { Id = 2, UserId = 1 };
+			ProposalPermissionDto permissionsDto3 = new ProposalPermissionDto() { Id = 3, UserId = 2 };
+			ProposalPermissionDto permissionsDto4 = new ProposalPermissionDto() { Id = 4, UserId = 2 };
+			ProposalPermissionDto permissionsDto5 = new ProposalPermissionDto() { Id = 5, UserId = 2 };
 
             List<int> permissionIds = new List<int>() { 1, 2, 3, 4, 5 };
 
             this.proposalPermissionsLoader.Setup(x => x.GetIdsByProposalId(proposalId)).Returns(permissionIds);
             this.proposalPermissionsLoader.Setup(x => x.GetByIds(permissionIds)).Returns(new List<ProposalPermissionDto>() { permissionsDto1, permissionsDto2, permissionsDto3, permissionsDto4, permissionsDto5 });
 
-            var result = sut.GetProposalPermissionsByUserId(proposalId, userId);
+			ICollection<ProposalPermissionDto> result = sut.GetProposalPermissionsByUserId(proposalId, userId);
 
             Assert.AreEqual(permissionsDto3, result.ElementAt(0));
             Assert.AreEqual(permissionsDto4, result.ElementAt(1));
@@ -109,7 +109,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetProposalPermissionByIdTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionMapper sut = this.CreateSystem();
 
             ProposalPermissionDto proposalPermissionsDto = new ProposalPermissionDto()
             {
@@ -132,7 +132,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetByUserIdTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionMapper sut = this.CreateSystem();
 
             int userId = 14;
 
@@ -147,7 +147,7 @@ namespace GenTRAC.Tests.DAL.Mapper
 
             this.proposalPermissionsLoader.Setup(x => x.GetIdsByUserId(userId)).Returns(new List<int>() { proposalPermissionsDto.Id });
             this.proposalPermissionsLoader.Setup(x => x.GetByIds(new List<int>() { proposalPermissionsDto.Id })).Returns(new List<ProposalPermissionDto>() { proposalPermissionsDto });
-            var toTest = sut.GetByUserId(userId);
+			ICollection<ProposalPermissionDto> toTest = sut.GetByUserId(userId);
 
             DtoAssertHelpers.AssertDtos(proposalPermissionsDto, toTest.FirstOrDefault());
 
@@ -161,7 +161,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_SaveProposalPermissionTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionMapper sut = this.CreateSystem();
 
             ProposalPermissionDto permissionsDtoBefore = new ProposalPermissionDto()
             {
@@ -181,8 +181,8 @@ namespace GenTRAC.Tests.DAL.Mapper
 
             this.proposalPermissionsLoader.Setup(x => x.Save(permissionsDtoBefore)).Returns(permissionsDtoAfter.Id);
             this.proposalPermissionsLoader.Setup(x => x.GetById(permissionsDtoAfter.Id)).Returns(permissionsDtoAfter);
-            
-            var actual = ((IInternalProposalPermissionMapper)sut).Save(permissionsDtoBefore);
+
+			int? actual = ((IInternalProposalPermissionMapper)sut).Save(permissionsDtoBefore);
 
             Assert.AreEqual(permissionsDtoAfter.Id, actual);
         }
@@ -193,7 +193,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_DeleteProposalPermissionIdsByProposalIdTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionMapper sut = this.CreateSystem();
 
             int proposalId = 15;
             sut.DeleteIdsByProposalId(proposalId);
@@ -207,7 +207,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_DeleteProposalPermissionsTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionMapper sut = this.CreateSystem();
 
             ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>();
             sut.Delete(permissions);
@@ -224,7 +224,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [ExpectedException(typeof(ArgumentNullException))]
         public void M_SaveProposalPermissionExceptionTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionMapper sut = this.CreateSystem();
 
             ((IInternalProposalPermissionMapper)sut).Save(null);
         }
@@ -236,7 +236,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [ExpectedException(typeof(ArgumentNullException))]
         public void M_DeleteProposalPermissionsExceptionTest()
         {
-            var sut = this.CreateSystem();
+			ProposalPermissionMapper sut = this.CreateSystem();
 
             sut.Delete(null);
         }

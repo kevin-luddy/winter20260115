@@ -1722,7 +1722,7 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_PROPRICER_EXPORT_FORMAT, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
-            var toReturn = Json(new { Status = true });
+			JsonResult toReturn = Json(new { Status = true });
 
             ProPricerDTO dto = inModelView.GetAssociatedDTO();
 
@@ -1731,9 +1731,9 @@ namespace GenBOE.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    // Validate Format
-                    var validator = new SystemExportToProPricerFormatValidator(this.proPricerDTODataLoader);
-                    var validationerrors = validator.validation(dto, (Collection<Dictionary<string, string>>)null);
+					// Validate Format
+					SystemExportToProPricerFormatValidator validator = new SystemExportToProPricerFormatValidator(this.proPricerDTODataLoader);
+					Collection<string> validationerrors = validator.validation(dto, (Collection<Dictionary<string, string>>)null);
 
                     if (validationerrors.Count != 0)
                     {
@@ -1742,7 +1742,7 @@ namespace GenBOE.Web.Controllers
                 }
             }
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
                 this.proPricerDTODataLoader.SaveSystemProPricerExport(dto);
                 scope.Complete();
@@ -1773,9 +1773,9 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_PROPRICER_EXPORT_CUSTOM_FIELD, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
-            var toReturn = Json(new { Status = true });
+			JsonResult toReturn = Json(new { Status = true });
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
                 this.proPricerDTODataLoader.SaveSystemProPricerCustomField(originalName, updatedName);
                 scope.Complete();
@@ -1803,7 +1803,7 @@ namespace GenBOE.Web.Controllers
 
             if (inFormatsToDelete.Count() > 0)
             {
-                foreach (var format in inFormatsToDelete)
+                foreach (ExportToProPricerModelView format in inFormatsToDelete)
                 {
                     // Save each deleted format
                     if (format.Deleted)
@@ -2511,7 +2511,7 @@ namespace GenBOE.Web.Controllers
                     {
                         Collection<Dictionary<string, string>> validationData = new Collection<Dictionary<string, string>>();
                         validationData.Add(new Dictionary<string, string>() {
-                            {"ResourceListID", ((ResourceDTODataLoader)_ResourceDTODataLoader).GlobalListID.ToString() },
+                            {"ResourceListID", _ResourceDTODataLoader.GlobalListID.ToString() },
                             {"ResourceID", resource.ResourceID.ToString() }
                         });
                         Validator validator = ValidationFactory.Instance.getValidator(ValidationType.ResourceUniqueID);
@@ -3050,7 +3050,7 @@ namespace GenBOE.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                ResourceListDTO resourceListDTO = _ResourceListDTODataLoader.GetResourceList(((ResourceDTODataLoader)_ResourceDTODataLoader).GlobalListID);
+                ResourceListDTO resourceListDTO = _ResourceListDTODataLoader.GetResourceList(_ResourceDTODataLoader.GlobalListID);
                 if (resourceListDTO == null)
                 { 
                     resourceListDTO = new ResourceListDTO();
@@ -3223,7 +3223,7 @@ namespace GenBOE.Web.Controllers
                         {
                             Collection<Dictionary<string, string>> validationData = new Collection<Dictionary<string, string>>();
                             validationData.Add(new Dictionary<string, string>() {
-                            {"ResourceListID", ((ResourceDTODataLoader)_ResourceDTODataLoader).GlobalListID.ToString() },
+                            {"ResourceListID", _ResourceDTODataLoader.GlobalListID.ToString() },
                             {"ResourceID", resource.Id.ToString() }
                             });
                             Validator validator = ValidationFactory.Instance.getValidator(ValidationType.ResourceUniqueID);

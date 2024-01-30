@@ -53,7 +53,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetByIdTest()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
 
             UserDTO toReturn = new UserDTO()
             {
@@ -64,7 +64,7 @@ namespace GenTRAC.Tests.DAL.Mapper
 
             this.cacheLoader.Setup(x => x.GetData(It.IsAny<GetDtoByIdDelegate>(), new object[] { toReturn.Id }, CacheConstants.USER + toReturn.Id)).Returns(toReturn);
 
-            var result = sut.GetById(toReturn.Id);
+			UserDTO result = sut.GetById(toReturn.Id);
 
             Assert.AreEqual(toReturn, result);
         }
@@ -75,7 +75,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetAllTest()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
 
             List<UserDTO> userCollection = new List<UserDTO>()
             {
@@ -94,7 +94,7 @@ namespace GenTRAC.Tests.DAL.Mapper
             this.userLoader.Setup(x => x.GetAllIds()).Returns(allUserIds);
             this.cacheLoader.Setup(x => x.GetData(It.IsAny<GetDtosByIdsDelegate<UserDTO>>(), CacheConstants.USER, It.IsAny<Dictionary<string, int>>())).Returns(userCollection);
 
-            var result = sut.GetAll();
+			ICollection<UserDTO> result = sut.GetAll();
 
             Assert.IsTrue(result.Where(x => x.Id == userCollection[0].Id).FirstOrDefault() != null);
             Assert.IsTrue(result.Where(x => x.Id == userCollection[1].Id).FirstOrDefault() != null);
@@ -106,13 +106,13 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetAllIdsTest()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
 
             List<int> allUserIds = new List<int>() { 3, 4, 5, 6, 7, 8, 9 };
 
             this.userLoader.Setup(x => x.GetAllIds()).Returns(allUserIds);
 
-            var result = sut.GetAllIds();
+			ICollection<int> result = sut.GetAllIds();
 
             for (int i = 0; i < allUserIds.Count; i++)
             {
@@ -142,7 +142,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetUsersOnlineTest()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
 
             UsersOnlineDTO expectedResult = new UsersOnlineDTO()
             {
@@ -164,7 +164,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_UpdateUsersStatusTest()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
             string trackingNumber = "2014-00075";
             IES.Common.UserData user = new IES.Common.UserData()
             {
@@ -194,7 +194,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetUserByNtidAndDomainTest()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
 
             string userntid = "moquser";
             this.securityInformation.Setup(x => x.ActiveUserNTID).Returns(userntid);
@@ -214,13 +214,13 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_UserExistsTest()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
 
-            var notFoundUserId = 0;
+			int notFoundUserId = 0;
             string notFoundUser = "notFoundUsr";
             this.userLoader.Setup(x => x.UserExists(notFoundUser, out notFoundUserId)).Returns(false);
 
-            var foundUserId = 1;
+			int foundUserId = 1;
             string foundUser = "foundUsr";
             this.userLoader.Setup(x => x.UserExists(foundUser, out foundUserId)).Returns(true);
 
@@ -252,7 +252,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetAllGroups()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
 
             ICollection<int> groupIDs = new Collection<int> { 3, 4 };
             List<UserDTO> userCollection = new List<UserDTO>()
@@ -294,10 +294,10 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_WarmCacheUser()
         {
-            var cacheProxy = new Mock<ICache>();
+			Mock<ICache> cacheProxy = new Mock<ICache>();
 
             this.CreateSystem();
-            var sut = new CacheWarmingUserMapper(
+			CacheWarmingUserMapper sut = new CacheWarmingUserMapper(
                 this.userLoader.Object,
                 this.cacheLoader.Object,
                 this.securityInformation.Object,
@@ -336,7 +336,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [ExpectedException(typeof(ArgumentNullException))]
         public void M_GetByUserData_ExceptionTest()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
             sut.GetByUserData(null);
         }
 
@@ -347,7 +347,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [ExpectedException(typeof(ArgumentNullException))]
         public void M_GetByNtid_ExceptionTest1()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
             sut.GetByNtid(null);
         }
 
@@ -358,7 +358,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [ExpectedException(typeof(ArgumentNullException))]
         public void M_GetByNtid_ExceptionTest2()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
             sut.GetByNtid(string.Empty);
         }
 
@@ -385,7 +385,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetUserDtosByUserIdsTest()
         {
-            var sut = this.CreateSystem();
+			UserMapper sut = this.CreateSystem();
 
             List<UserDTO> userCollection = new List<UserDTO>()
             {
@@ -406,7 +406,7 @@ namespace GenTRAC.Tests.DAL.Mapper
             this.userLoader.Setup(x => x.GetAllIds()).Returns(allUserIds);
             this.cacheLoader.Setup(x => x.GetData(It.IsAny<GetDtosByIdsDelegate<UserDTO>>(), CacheConstants.USER, It.IsAny<Dictionary<string, int>>())).Returns(userCollection);
 
-            var result = sut.GetUserDtosByUserIds(allUserIds);
+			ICollection<UserDTO> result = sut.GetUserDtosByUserIds(allUserIds);
 
             Assert.IsTrue(result.Where(x => x.Id == userCollection[0].Id).FirstOrDefault() != null);
             Assert.IsTrue(result.Where(x => x.Id == userCollection[1].Id).FirstOrDefault() != null);

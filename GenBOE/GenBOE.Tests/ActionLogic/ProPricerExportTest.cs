@@ -326,7 +326,7 @@ namespace GenBOE.Tests.ActionLogic
 
             workspace.IsUsingEquivalentPerson = true;
 
-            var beforeTest = System.Configuration.ConfigurationManager.AppSettings["ShowEquivalentPersonsOption"];
+			string beforeTest = System.Configuration.ConfigurationManager.AppSettings["ShowEquivalentPersonsOption"];
             System.Configuration.ConfigurationManager.AppSettings["ShowEquivalentPersonsOption"] = "true";
             FullObjectHelper.RefreshEPForTests();
 
@@ -401,8 +401,8 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -532,8 +532,8 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -650,8 +650,8 @@ namespace GenBOE.Tests.ActionLogic
                 }
             }
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -1046,8 +1046,8 @@ namespace GenBOE.Tests.ActionLogic
                 }
             }
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -1173,8 +1173,8 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
             workspace.UsingTemplateBOE = false;
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -1445,8 +1445,8 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
             workspace.UsingTemplateBOE = false;
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -1539,8 +1539,8 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -1601,8 +1601,8 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -1663,8 +1663,8 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
             
@@ -1776,8 +1776,8 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -1904,8 +1904,8 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -1936,7 +1936,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
         public void BL_ExportPropricer_BadInput1()
         {
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
             ProPricerExporter expReport = new ProPricerExporter(TripCalculate.Object, null, this.retriever.Object, this.commonDataMapper.Object);
             expReport.ExportProPricer(null, new FullWorkspace());
         }
@@ -1944,7 +1944,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
         public void BL_ExportPropricer_BadInput2()
         {
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
             ProPricerExporter expReport = new ProPricerExporter(TripCalculate.Object, null, this.retriever.Object, this.commonDataMapper.Object);
             expReport.ExportProPricer(new ProPricerDTO(), null);
         }
@@ -2047,8 +2047,8 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO>());
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
@@ -2281,8 +2281,8 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
-            var TripCalculate = new Mock<TravelTripCostCalculation>();
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 

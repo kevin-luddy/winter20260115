@@ -76,8 +76,7 @@ namespace IES.Common.Core.Services
 		/// <returns>Token</returns>
 		public async Task<Token> GetToken()
 		{
-			Token token = null;
-
+			Token token;
 			if (!cache.Contains(CACHE_KEY_TOKEN))
 			{
 				token = await CreateToken();
@@ -97,8 +96,6 @@ namespace IES.Common.Core.Services
 		/// <returns>New token</returns>
 		private async Task<Token> CreateToken()
 		{
-			Token token = null;
-
 			List<KeyValuePair<string, string>> postData = new();
 			postData.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
 			postData.Add(new KeyValuePair<string, string>("client_id", clientId));
@@ -109,6 +106,7 @@ namespace IES.Common.Core.Services
 
 			HttpResponseMessage response = _client.PostAsync("/as/token.oauth2", content).Result;
 
+			Token token;
 			if (response.IsSuccessStatusCode)
 			{
 				string responseBody = await response.Content.ReadAsStringAsync();

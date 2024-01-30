@@ -252,7 +252,7 @@ namespace GenBOE.DataBridge.DTO
 
                         // Call Execute to bulk delete the entities
                         StoredProcedureHelper.ExecuteTableValueProcedure(
-                            gbe as DbContext,
+                            gbe,
                             sumDataTableToDelete,
                             "deleteOrdinaryVariableResourceTypeviaTableParameter",
                             "@SumOfBOE_OrdinaryVariableXREF",
@@ -280,7 +280,7 @@ namespace GenBOE.DataBridge.DTO
 
                         // Call Execute to bulk insert the entities
                         StoredProcedureHelper.ExecuteTableValueProcedure(
-                            gbe as DbContext,
+                            gbe,
                             sumDataTableToInsert,
                             "insertOrdinaryVariableResourceTypeviaTableParameter",
                             "@SumOfBOE_OrdinaryVariableXREF",

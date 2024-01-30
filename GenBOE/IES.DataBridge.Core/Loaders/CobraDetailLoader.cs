@@ -149,7 +149,7 @@ namespace IES.DataBridge.Loaders
                 throw new ArgumentNullException(nameof(dtosToSave));
             }
 
-            if (dtosToSave.Any(d => d.Updateable == UpdateType.None || d.Updateable == UpdateType.Deleted))
+            if (dtosToSave.Any(d => d.Updateable is UpdateType.None or UpdateType.Deleted))
             {
                 throw new ArgumentException("One or more COBRA Details has UpdateType of None or Deleted.", nameof(dtosToSave));
             }

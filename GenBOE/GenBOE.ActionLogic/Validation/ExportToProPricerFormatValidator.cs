@@ -38,7 +38,7 @@ namespace GenBOE.ActionLogic.Validation
                 throw new InvalidCastException("value");
             }
 
-            var dataToValidate = (ProPricerDTO)value;
+			ProPricerDTO dataToValidate = (ProPricerDTO)value;
 
             if (!dataToValidate.WorkspaceID.HasValue || dataToValidate.WorkspaceID < 0)
             {
@@ -47,8 +47,8 @@ namespace GenBOE.ActionLogic.Validation
 
             FullWorkspace workspace = this._factory.CreateFullWorkspace(dataToValidate.WorkspaceID.Value);
 
-            // Validate unique format name
-            var duplicateFormatNames = (from f in workspace.ProPricerExports
+			// Validate unique format name
+			bool duplicateFormatNames = (from f in workspace.ProPricerExports
                                         where f.ExportID != dataToValidate.ExportID &&
                                               f.Scope == dataToValidate.Scope &&
                                               f.FormatName.Trim().Equals(dataToValidate.FormatName.Trim(), StringComparison.CurrentCultureIgnoreCase)

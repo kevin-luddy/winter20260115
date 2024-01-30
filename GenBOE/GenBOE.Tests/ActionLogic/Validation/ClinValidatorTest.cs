@@ -28,10 +28,10 @@ namespace GenBOE.Tests.ActionLogic.Validation
         public void CLINValidator_IsValid()
         {
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);            
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            // Set Up CLINs
-            var clins = new Collection<FullClin>
+			// Set Up CLINs
+			Collection<FullClin> clins = new Collection<FullClin>
             {
                 new FullClin { Id = 1, WorkspaceID = wsid, StartDate = Convert.ToDateTime("03/2010"), EndDate = Convert.ToDateTime("10/2010"), ClinNumber = "34", ClinTitle = "Clin34", ClinPaddedNumber = "00000000000000000034??" },
                 new FullClin { Id = 2, WorkspaceID = wsid, StartDate = Convert.ToDateTime("03/2009"), EndDate = Convert.ToDateTime("10/2021"), ClinNumber = "35", ClinTitle = "Clin35", ClinPaddedNumber = "00000000000000000035??" },
@@ -47,8 +47,8 @@ namespace GenBOE.Tests.ActionLogic.Validation
             this.factory.Setup(x => x.CreateFullWorkspace(wsid)).Returns(new FullWorkspace(workspaceDto));
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(wsid)).Returns(clins);
 
-            // Act and Assert
-            var sut = new CLINValidator(factory.Object);
+			// Act and Assert
+			CLINValidator sut = new CLINValidator(factory.Object);
 
             // Unique number and valid dates
             Assert.IsTrue(sut.isValid(new FullClin(clins[0]), null));
@@ -72,8 +72,8 @@ namespace GenBOE.Tests.ActionLogic.Validation
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            // Set Up CLINs
-            var clins = new Collection<FullClin>
+			// Set Up CLINs
+			Collection<FullClin> clins = new Collection<FullClin>
             {
                 new FullClin { Id = 1, WorkspaceID = wsid, StartDate = Convert.ToDateTime("03/2010"), EndDate = Convert.ToDateTime("10/2010"), ClinNumber = "34", ClinTitle = "Clin34", ClinPaddedNumber = "00000000000000000034??" },
                 new FullClin { Id = 2, WorkspaceID = wsid, StartDate = Convert.ToDateTime("03/2011"), EndDate = Convert.ToDateTime("10/2011"), ClinNumber = "35", ClinTitle = "Clin35", ClinPaddedNumber = "00000000000000000035??" },
@@ -93,8 +93,8 @@ namespace GenBOE.Tests.ActionLogic.Validation
             this.factory.Setup(x => x.CreateFullWorkspace(wsid)).Returns(new FullWorkspace(workspaceDto));
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(wsid)).Returns(clins);
 
-            // Act and Assert
-            var sut = new CLINValidator(factory.Object);
+			// Act and Assert
+			CLINValidator sut = new CLINValidator(factory.Object);
 
             // Unique number and valid dates
             Assert.IsTrue(sut.validation(new FullClin(clins[0]), (Collection<Dictionary<string, string>>)null).Count == 0);
@@ -128,7 +128,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            var sut = new CLINValidator(factory.Object);
+			CLINValidator sut = new CLINValidator(factory.Object);
             sut.isValid(null, null);
         }
 

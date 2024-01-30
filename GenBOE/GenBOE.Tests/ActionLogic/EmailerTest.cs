@@ -62,16 +62,16 @@ namespace GenBOE.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
         public void SendBOEAuthorsWBSUpdatedTest()
         {
-            //OUTPUT: We should see 2 emails sent to 2 different authors with a different list of approvers for each (1 shared approver)
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			//OUTPUT: We should see 2 emails sent to 2 different authors with a different list of approvers for each (1 shared approver)
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
@@ -192,17 +192,17 @@ namespace GenBOE.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
         public void SendBOEAuthorsAndApproversWBSUpdatedTest()
         {
-            //OUTPUT: We should see 2 emails sent to 2 different authors with a different list of approvers for each (1 shared approver)
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			//OUTPUT: We should see 2 emails sent to 2 different authors with a different list of approvers for each (1 shared approver)
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
@@ -330,17 +330,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendBOESubmittedForReviewTest()
         {
-            //OUTPUT: We should see 1 email sent to 2 reviewers
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			//OUTPUT: We should see 1 email sent to 2 reviewers
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
@@ -417,17 +417,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendBOECLINWBSChangedTest()
         {
-            //OUTPUT: We should see 1 email sent to 2 authors
+			//OUTPUT: We should see 1 email sent to 2 authors
 
-            var secInfo = new Mock<ISecurityInformation>();
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
 
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
 
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
 
@@ -522,18 +522,18 @@ namespace GenBOE.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
         public void SendAuthorsEmailOpenedForEditTest()
         {
-            // OUTPUT : 1 email to author with the approvers CCed detailing the workspace/boe
+			// OUTPUT : 1 email to author with the approvers CCed detailing the workspace/boe
 
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -628,20 +628,20 @@ namespace GenBOE.Tests.ActionLogic
 
         private void SendEmail(bool inDoCC)
         {
-            // test sending an email successfully ... 
-            // includes using replacement tokens
+			// test sending an email successfully ... 
+			// includes using replacement tokens
 
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
             
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permLoader.Object);
@@ -683,19 +683,19 @@ namespace GenBOE.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentException))]
         public void SendEmailInvalidTokensBody()
         {
-            // attempt to send an email with invalid string tokens in the body
-            // (should fail before getting very far)
+			// attempt to send an email with invalid string tokens in the body
+			// (should fail before getting very far)
 
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -741,16 +741,16 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permLoader.Object);
@@ -786,18 +786,18 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendBOEAuthorsEmailOpenedForEdit()
         {
-            // OUTPUT : 1 email to all authors detailing the boe
+			// OUTPUT : 1 email to all authors detailing the boe
 
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -875,18 +875,18 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendBOEAuthorRespondedToComment()
         {
-            // An email is sent to each user who has entered a comment that the Author has responded to.  “View comments and responses” should be a hyperlink that directly opens the BOE comments.
+			// An email is sent to each user who has entered a comment that the Author has responded to.  “View comments and responses” should be a hyperlink that directly opens the BOE comments.
 
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
@@ -957,16 +957,16 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendBOEApproversAuthorApproverApproved()
         {
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -1039,16 +1039,16 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendBOEApproversAuthorApproverRejected()
         {
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
@@ -1125,18 +1125,18 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendApproverEmailBOEAwaitingApprovalTest()
         {
-            // OUTPUT : 1 email to all approvers detailing the boe is awaiting approval
+			// OUTPUT : 1 email to all approvers detailing the boe is awaiting approval
 
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -1202,17 +1202,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendWorkspaceAdminEmailAllBOEsApprovedTest()
         {
-            //OUTPUT email to all workspace admins if all BOEs have been approved
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			//OUTPUT email to all workspace admins if all BOEs have been approved
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -1271,16 +1271,16 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendBOEAuthorChangedTest()
         {
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
@@ -1353,16 +1353,16 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendBOEApproversChangedTest()
         {
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
@@ -1442,15 +1442,15 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
 
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permLoader.Object);
@@ -1470,7 +1470,7 @@ namespace GenBOE.Tests.ActionLogic
             };
 
             UserDTO author = new UserDTO { DisplayName = "author dillahunty", UserID = 5, EmailAddress = "author.dillahunty@lmco.com" };
-            var completeListOfUsers = new Collection<UserDTO>()
+			Collection<UserDTO> completeListOfUsers = new Collection<UserDTO>()
             {
                 approverArray[0],
                 approverArray[1],
@@ -1537,16 +1537,16 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
 
@@ -1606,16 +1606,16 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendWorkspaceRestoredEmail()
         {
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -1701,19 +1701,19 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SendBOEAuthorReviewerCommentedEmail()
         {
-            // OUTPUT : we should see 1 email sent to 1 address, 1 author.  
-            // there are 3 authors total defined but 1 is the same author and this tests the 'distinct' call
+			// OUTPUT : we should see 1 email sent to 1 address, 1 author.  
+			// there are 3 authors total defined but 1 is the same author and this tests the 'distinct' call
 
-            
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -1789,18 +1789,18 @@ namespace GenBOE.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), TestMethod]
         public void SendBOEAuthorsApproversInUseResourceUpdated()
         {
-            // OUTPUT : we should see 1 email sent to 1 address, 1 author.  
-            // there are 3 authors total defined but 1 is the same author and this tests the 'distinct' call
+			// OUTPUT : we should see 1 email sent to 1 address, 1 author.  
+			// there are 3 authors total defined but 1 is the same author and this tests the 'distinct' call
 
-            var secInfo = new Mock<ISecurityInformation>();
-            
-            var userLoader = new Mock<IUserDTODataLoader>();
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
-            var boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
-            
-            var dataFetcher = new Mock<IDataFetchingScheduler>();
-            var boeLoader = new Mock<IBoeDTODataLoader>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<ISecurityInformation> secInfo = new Mock<ISecurityInformation>();
+
+			Mock<IUserDTODataLoader> userLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOECommentDTODataLoader> boeCommentLoader = new Mock<IBOECommentDTODataLoader>();
+
+			Mock<IDataFetchingScheduler> dataFetcher = new Mock<IDataFetchingScheduler>();
+			Mock<IBoeDTODataLoader> boeLoader = new Mock<IBoeDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             commonDataMapper.Setup(x => x.GetEmails()).Returns(realMapper.GetEmails());
             workspaceLoader.Setup(x => x.GetWorkspaceEmailOverrides(1)).Returns(new Collection<WorkspaceEmailOverrideDTO>());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IWorkspaceDTODataLoader), workspaceLoader.Object);

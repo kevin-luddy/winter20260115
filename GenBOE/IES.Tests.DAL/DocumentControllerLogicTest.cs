@@ -545,7 +545,7 @@ namespace IES.Tests
         [TestMethod]
         public void DocumentLoaderSave()
         {
-            var sut = CreateSutLoader();
+			IDocumentLoader sut = CreateSutLoader();
             IList<RevisionModelView> revisions = this.revisionLoader.GetAll().Where(r => r.DatePublished.HasValue).OrderByDescending(r => r.DatePublished).ToList();
             RevisionModelView latestRevision = revisions.First();
 
@@ -639,7 +639,7 @@ namespace IES.Tests
                 Id = -1
             };
 
-            var sut = CreateSutLoader();
+			IDocumentLoader sut = CreateSutLoader();
             int? docId;
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
             {
@@ -661,7 +661,7 @@ namespace IES.Tests
                 Id = -1
             };
 
-            var sut = CreateSutLoader();
+			IDocumentLoader sut = CreateSutLoader();
             int? docId;
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
             {

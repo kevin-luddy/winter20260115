@@ -44,9 +44,9 @@ namespace IES.Common
             }
 
             controllerContext.HttpContext.Request.InputStream.Position = 0;
-            var stream = controllerContext.RequestContext.HttpContext.Request.InputStream;
-            var readStream = new StreamReader(stream, Encoding.UTF8);
-            var json = readStream.ReadToEnd();
+			Stream stream = controllerContext.RequestContext.HttpContext.Request.InputStream;
+			StreamReader readStream = new StreamReader(stream, Encoding.UTF8);
+			string json = readStream.ReadToEnd();
             return JsonConvert.DeserializeObject(json, bindingContext.ModelType);
         }
     }

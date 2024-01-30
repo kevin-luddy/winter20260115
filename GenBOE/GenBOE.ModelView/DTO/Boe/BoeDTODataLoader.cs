@@ -582,7 +582,7 @@ namespace GenBOE.DataBridge.DTO
                 {
                     int toReturn = -1;
 
-                    var resultsLinq = (from b in gbe.WBS_CLIN_BOE_XREF
+					WBS_CLIN_BOE_XREF resultsLinq = (from b in gbe.WBS_CLIN_BOE_XREF
                                        where
                                        ((wbsID.HasValue && b.WBSID == wbsID) ||
                                         ((wbsID == null || !wbsID.HasValue) && !b.WBSID.HasValue)) &&

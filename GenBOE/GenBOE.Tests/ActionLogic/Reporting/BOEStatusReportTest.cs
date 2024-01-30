@@ -62,7 +62,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void GetResourceTypesToBeSummedTest()
         {
-            var boeStatusReport = CreateSystem();
+			BOEStatusReport boeStatusReport = CreateSystem();
             Collection<int> resourceTypes = boeStatusReport.GetResourceTypesToBeSummed();
             Assert.AreEqual(6, resourceTypes.Count);
         }
@@ -70,7 +70,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void GetResourceTypesToBeSummedTestSpaceSystems()
         {
-            var boeStatusReport = CreateSystemSpaceSystems();
+			BOEStatusReport boeStatusReport = CreateSystemSpaceSystems();
             Collection<int> resourceTypes = boeStatusReport.GetResourceTypesToBeSummed();
             Assert.AreEqual(3, resourceTypes.Count);
         }

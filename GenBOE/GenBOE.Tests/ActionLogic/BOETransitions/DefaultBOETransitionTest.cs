@@ -25,8 +25,8 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
         [TestMethod]
         public void DefaultWorkspaceTransitionActionTest()
         {
-            var emailer = new Mock<IBoeEmailer>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
 
             DefaultBOETransition sut = new DefaultBOETransition(emailer.Object, boeApproverLoader.Object);
             sut.Action(this.factory.Object.CreateFullBoe(1), new FullWorkspace(this.Workspace), BOEState.None, BOEState.Unassigned);
@@ -35,11 +35,11 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
         [TestMethod]
         public void DefaultWorkspaceTransitionValidationTest()
         {
-            Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();   
-            var emailer = new Mock<IBoeEmailer>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
-            var retriever = new Mock<IRetriever>();
-            var permloader = new Mock<IPermissionsDTODataLoader>();
+            Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
+			Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);

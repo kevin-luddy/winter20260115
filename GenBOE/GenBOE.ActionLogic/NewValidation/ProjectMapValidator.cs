@@ -373,7 +373,7 @@ namespace GenBOE.ActionLogic.NewValidation
                     //generate validation messages for each invalid record
                     foreach (var duplicate in duplicates)
                     {
-                        foreach (var row in duplicate)
+                        foreach (ProjectMapModelView row in duplicate)
                         {
                             this.ValidationMessages.Add(new ValidationMessage
                             {
@@ -409,7 +409,7 @@ namespace GenBOE.ActionLogic.NewValidation
                     //generate validation messages for each invalid record
                     foreach (var duplicate in duplicates)
                     {
-                        foreach (var row in duplicate)
+                        foreach (ProjectMapModelView row in duplicate)
                         {
                             this.ValidationMessages.Add(new ValidationMessage
                             {
@@ -445,7 +445,7 @@ namespace GenBOE.ActionLogic.NewValidation
                     //generate validation messages for each invalid record
                     foreach (var duplicate in duplicates)
                     {
-                        foreach (var row in duplicate)
+                        foreach (ProjectMapModelView row in duplicate)
                         {
                             this.ValidationMessages.Add(new ValidationMessage
                             {
@@ -481,7 +481,7 @@ namespace GenBOE.ActionLogic.NewValidation
                     //generate validation messages for each invalid record
                     foreach (var duplicate in duplicates)
                     {
-                        foreach (var row in duplicate)
+                        foreach (ProjectMapModelView row in duplicate)
                         {
                             this.ValidationMessages.Add(new ValidationMessage
                             {

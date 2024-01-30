@@ -27,7 +27,7 @@ namespace GenBOE.ActionLogic.ModelView
 
         public bool isSortingRequested()
         {
-            var toReturn = this.SortChanged;
+			bool toReturn = this.SortChanged;
 
             if (toReturn)
             {

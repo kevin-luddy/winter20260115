@@ -164,8 +164,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
             List<BOESummaryGridModelView> summaryResults;
 
             ICollection<BoeTaskElementDTO> taskElementCollection = exportInputs.TaskElements.Where(t => t.BoeID == boe.Id).ToList();
-            
-                var result = from boeResourceHours in
+
+			IEnumerable<BOESummaryGridModelView> result = from boeResourceHours in
                                  (from task in taskElementCollection
                                   from boeResource in task.taskElementLabors
                                   where boeResource.ResourceID.HasValue
@@ -206,7 +206,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         {
             ICollection<OtherDirectCostDTO> odcElements = exportInputs.Odcs.Where(x => x.BoeID == boe.Id).ToList();
 
-            var result = from boeODCCost in
+			IEnumerable<BOESummaryGridModelView> result = from boeODCCost in
                              (from task in odcElements
                               from boeResource in task.ODCTypes
                               where boeResource.ResourceID.HasValue
@@ -240,7 +240,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         {
             ICollection<TravelDTO> travelElements = exportInputs.Travels.Where(x => x.BoeID == boe.Id).ToList();
 
-            var result = from boeODCCost in
+			IEnumerable<BOESummaryGridModelView> result = from boeODCCost in
                              (from task in travelElements
                               from boeResource in task.TravelTrips
                               select new
@@ -253,7 +253,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                          select new BOESummaryGridModelView
                          {
                              LaborType = groupedBoeLaborTypes.Key,
-                             TotalCost = (decimal)(groupedBoeLaborTypes.Sum(boeLaborType => boeLaborType.Cost)),
+                             TotalCost = groupedBoeLaborTypes.Sum(boeLaborType => boeLaborType.Cost),
                              Category = ElementOfCostType.Travel,
                              BOEID = boe.Id,
                              RollupCount = groupedBoeLaborTypes.Count(),
@@ -287,7 +287,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
             Dictionary<int, decimal> perDiemEscalationRates = rates.ToDictionary(x => x.Year, y => y.PerDiemRate);
             Dictionary<int, decimal> miscEscalationRates = rates.ToDictionary(x => x.Year, y => y.MiscRate);
 
-            foreach (var travelTask in travelElements) // need indiv. cost for each trip for summing by resourceid 
+            foreach (TravelDTO travelTask in travelElements) // need indiv. cost for each trip for summing by resourceid 
             {
                 foreach (MSTTravelTripType rmsTrip in travelTask.MSTTravelTrips)
                 {
@@ -316,7 +316,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 }
             }
 
-            var result = (from rmsTravelTrips in
+			List<BOESummaryGridModelView> result = (from rmsTravelTrips in
                              (from task in travelElements
                               from boeResource in task.MSTTravelTrips
                               select new
@@ -348,7 +348,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         private List<BOESummaryGridModelView> GetRMSAirZoneTravel(BoeDTO boe, BOEExportInputs exportInputs)
         {
             ICollection<TravelDTO> travelElements = exportInputs.Travels.Where(x => x.BoeID == boe.Id).ToList();
-            var result = (from rmsTravelTrips in
+			List<BOESummaryGridModelView> result = (from rmsTravelTrips in
                              (from task in travelElements
                               from boeResource in task.MSTTravelTrips.Where(t => t.ModeID == MSTTravelMode.ZoneAirfare)
                               select new
@@ -382,7 +382,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         private List<BOESummaryGridModelView> GetRMSDomZoneTravel(BoeDTO boe, BOEExportInputs exportInputs)
         {
             ICollection<TravelDTO> travelElements = exportInputs.Travels.Where(x => x.BoeID == boe.Id).ToList();
-            var result = (from rmsTravelTrips in
+			List<BOESummaryGridModelView> result = (from rmsTravelTrips in
                              (from task in travelElements
                               from boeResource in task.MSTTravelTrips.Where(t => t.ModeID == MSTTravelMode.ZoneNoAirfare)
                               select new
@@ -417,7 +417,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         {
             if (laborType.ResourceID.HasValue)
             {
-                var resource = resourcesFromDb.FirstOrDefault(x => x.Id == laborType.ResourceID.Value);
+				ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == laborType.ResourceID.Value);
 
                 if (resource != null)
                 {
@@ -445,7 +445,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         {
             if (odcType.ResourceID.HasValue)
             {
-                var resource = resourcesFromDb.FirstOrDefault(x => x.Id == odcType.ResourceID.Value);
+				ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == odcType.ResourceID.Value);
 
                 if (resource != null)
                 {

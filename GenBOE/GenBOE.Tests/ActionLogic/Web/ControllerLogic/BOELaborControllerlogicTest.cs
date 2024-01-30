@@ -1839,8 +1839,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 					Assert.AreEqual(expectedLabor.UpdateDate, resultLabor.UpdateDate);
 					Assert.AreEqual(expectedLabor.PercentSpreadLocked, resultLabor.PercentSpreadLocked);
 					Assert.AreEqual(expectedLabor.HourSpreadLocked, resultLabor.HourSpreadLocked);
-					Assert.AreEqual(expectedLabor.WBSID > (int?)0 ? expectedLabor.WBSID : null, resultLabor.WBSID);
-					Assert.AreEqual(expectedLabor.CLINID > (int?)0 ? expectedLabor.CLINID : null, resultLabor.CLINID);
+					Assert.AreEqual(expectedLabor.WBSID > 0 ? expectedLabor.WBSID : null, resultLabor.WBSID);
+					Assert.AreEqual(expectedLabor.CLINID > 0 ? expectedLabor.CLINID : null, resultLabor.CLINID);
 					Assert.AreEqual(UpdateType.Upsert, resultLabor.Updateable);
 					Assert.AreEqual(expectedLabor.StartDate, resultLabor.StartDate.Value.ToString("MM/yyyy"));
 					Assert.AreEqual(expectedLabor.EndDate, resultLabor.EndDate.Value.ToString("MM/yyyy"));
@@ -2317,7 +2317,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQTypes()
 		{
-			var sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystem();
 			ICollection<MOQType> result = sut.GetMOQTypes();
 			Assert.AreEqual(9, result.Count(), "The number of MOQTypes returned is incorrect.");
 			Assert.IsTrue(result.Contains(MOQType.Standard), "The MOQType.Standard was not found in the collection.");
@@ -2334,7 +2334,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQTypesSSC()
 		{
-			var sut = CreateSystemSSC();
+			BOELaborControllerLogic sut = CreateSystemSSC();
 			ICollection<MOQType> result = sut.GetMOQTypes();
 			Assert.AreEqual(9, result.Count(), "The number of MOQTypes returned is incorrect.");
 			Assert.IsTrue(result.Contains(MOQType.SSCAnalogySimilarTo), "The MOQType.SSCAnalogySimilarTo was not found in the collection.");
@@ -2351,7 +2351,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQTypesMST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			ICollection<MOQType> result = sut.GetMOQTypes();
 			Assert.AreEqual(8, result.Count(), "The number of MOQTypes returned is incorrect.");
 			Assert.IsTrue(result.Contains(MOQType.MSTHistoricalPerformance), "The MOQType.MSTHistoricalPerformance was not found in the collection.");
@@ -2369,7 +2369,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQTypesHelpText()
 		{
-			var sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystem();
 			String result = sut.GetMOQTypesHelpText();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_TYPES_HELP_TEXT_ISGS, result, "The MOQ Types help text for IS&GS is incorrect.");
 		}
@@ -2377,7 +2377,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQTypesHelpTextSSC()
 		{
-			var sut = CreateSystemSSC();
+			BOELaborControllerLogic sut = CreateSystemSSC();
 			String result = sut.GetMOQTypesHelpText();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_TYPES_HELP_TEXT_SPACE_SYSTEMS, result, "The MOQ Types help text for SSC is incorrect.");
 		}
@@ -2385,7 +2385,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQTypesHelpTextMST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			String result = sut.GetMOQTypesHelpText();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_TYPES_HELP_TEXT_MST, result, "The MOQ Types help text for MST is incorrect.");
 		}
@@ -2395,7 +2395,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQEquationLabel()
 		{
-			var sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystem();
 			String result = sut.GetMOQEquationLabel();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_EQUATION_LABEL, result, "The MOQ equation label for IS&GS is incorrect.");
 		}
@@ -2403,7 +2403,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQEquationLabelSSC()
 		{
-			var sut = CreateSystemSSC();
+			BOELaborControllerLogic sut = CreateSystemSSC();
 			String result = sut.GetMOQEquationLabel();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_EQUATION_LABEL, result, "The MOQ equation label for SSC is incorrect.");
 		}
@@ -2411,7 +2411,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQEquationLabelMST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			String result = sut.GetMOQEquationLabel();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_EQUATION_LABEL, result, "The MOQ equation label for MST is incorrect.");
 		}
@@ -2421,7 +2421,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQTextLabel()
 		{
-			var sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystem();
 			String result = sut.GetMOQTextLabel();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_TEXT_LABEL, result, "The MOQ text label for IS&GS is incorrect.");
 		}
@@ -2429,7 +2429,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQTextLabelSSC()
 		{
-			var sut = CreateSystemSSC();
+			BOELaborControllerLogic sut = CreateSystemSSC();
 			String result = sut.GetMOQTextLabel();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS, result, "The MOQ text label for SSC is incorrect.");
 		}
@@ -2437,7 +2437,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQTextLabelMST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			String result = sut.GetMOQTextLabel();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS, result, "The MOQ text label for MST is incorrect.");
 		}
@@ -2449,7 +2449,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMetricSearchDialogParameters()
 		{
-			var sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystem();
 			LaborTaskModelView modelView = new LaborTaskModelView();
 			sut.GetMetricSearchDialogParameters(modelView);
 			Assert.AreEqual(modelView.MetricsSearchDialogParameters.DialogTitle, string.Empty, "The Metric Search Dialog title is incorrect for IS&GS.");
@@ -2463,7 +2463,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMetricSearchDialogParametersMST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			LaborTaskModelView modelView = new LaborTaskModelView();
 			MSTMetricSearchCriteriaDTO searchCriteria = new MSTMetricSearchCriteriaDTO
 			{
@@ -2489,7 +2489,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMetricByTaskElementIds2MST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			MOQEquationModelView result = new MOQEquationModelView();
 			MSTMetricDetailsDTO dto = new MSTMetricDetailsDTO()
 
@@ -2524,7 +2524,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void GetMetricByTaskElementIdsException2MST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			MOQEquationModelView theModel = new MOQEquationModelView();
 			sut.GetMetricByTaskElementIds(null, theModel);
 		}
@@ -2534,7 +2534,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQEquationModelView()
 		{
-			var sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystem();
 			BoeTaskElementDTO te = new BoeTaskElementDTO();
 			te.Id = 1;
 			te.TaskTitle = "My Task Title";
@@ -2549,7 +2549,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void GetMOQEquationModelViewMST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			BoeTaskElementDTO te = new BoeTaskElementDTO()
 			{
 				Id = 1,
@@ -2590,7 +2590,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void SaveHistoricalMetricsToTaskElementMST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			int taskElementID = 1;
 			Collection<int> metricIDs = new Collection<int>() { 1, 2, 3 };
 
@@ -2605,7 +2605,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void OverrideReadOnlySSC()
 		{
-			var sut = CreateSystemSSC();
+			BOELaborControllerLogic sut = CreateSystemSSC();
 
 			WorkspaceDTO wsDto = new WorkspaceDTO();
 			wsDto.WorkspaceState = WorkspaceState.Locked;
@@ -2681,7 +2681,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void OverrideReadOnlyExceptionSSC()
 		{
-			var sut = CreateSystemSSC();
+			BOELaborControllerLogic sut = CreateSystemSSC();
 
 			BoeDTO boeDto = new BoeDTO();
 			boeDto.Id = 1;
@@ -2695,7 +2695,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void OverrideReadOnlyException2SSC()
 		{
-			var sut = CreateSystemSSC();
+			BOELaborControllerLogic sut = CreateSystemSSC();
 
 			WorkspaceDTO wsDto = new WorkspaceDTO();
 			wsDto.WorkspaceState = WorkspaceState.Locked;
@@ -2707,7 +2707,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void OverrideReadOnlyMST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			WorkspaceDTO wsDto = new WorkspaceDTO();
 			wsDto.WorkspaceState = WorkspaceState.Locked;
@@ -2782,7 +2782,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void OverrideReadOnlyExceptionMST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			BoeDTO boeDto = new BoeDTO();
 			boeDto.Id = 1;
@@ -2796,7 +2796,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void OverrideReadOnlyException2MST()
 		{
-			var sut = CreateSystemMST();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			WorkspaceDTO wsDto = new WorkspaceDTO();
 			wsDto.WorkspaceState = WorkspaceState.Locked;

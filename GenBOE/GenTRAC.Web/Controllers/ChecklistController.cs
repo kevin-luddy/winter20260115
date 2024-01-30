@@ -120,7 +120,7 @@ namespace GenTRAC.Web.Controllers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
         public JsonResult SaveChecklist(int proposalId, ChecklistGeneralInformationModelView checklistGeneralInfo, ChecklistProposalPricingDataModelView checklistProposalPricingData, ChecklistProposalPricingReviewDocumentModelView checklistPPRDocumentData, ChecklistProposalAdequacyReviewDocumentModelView checklistPARDocumentData)
         {
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
             {
                 List<ValidationMessage> validationErrors = HttpContext.Items["ValidationErrors"] as List<ValidationMessage>;
 

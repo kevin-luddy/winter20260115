@@ -22,7 +22,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [TestMethod]
         public void IsValidTest()
         {
-            var sut = CreateSystem();
+			StartEndDateValidationAttribute sut = CreateSystem();
 
             Dictionary<Tuple<string, string>, bool> expectedResults = new Dictionary<Tuple<string, string>, bool>()
             {
@@ -70,7 +70,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentNullException))]
         public void IsValidExceptionTest1()
         {
-            var sut = CreateSystem();
+			StartEndDateValidationAttribute sut = CreateSystem();
 
             sut.IsValid(null);
         }
@@ -79,7 +79,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void IsValidExceptionTest2()
         {
-            var sut = CreateSystem();
+			StartEndDateValidationAttribute sut = CreateSystem();
             sut.StartDate = "Invalid Property";
 
             sut.IsValid(new StartEndDateValidationAttributeModelView() { StartDate = "01/2011", EndDate = "12/2011" });
@@ -89,7 +89,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void IsValidExceptionTest3()
         {
-            var sut = CreateSystem();
+			StartEndDateValidationAttribute sut = CreateSystem();
             sut.EndDate = "Invalid Property";
 
             sut.IsValid(new StartEndDateValidationAttributeModelView() { StartDate = "01/2011", EndDate = "12/2011" });
@@ -99,7 +99,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void IsValidExceptionTest4()
         {
-            var sut = CreateSystem();
+			StartEndDateValidationAttribute sut = CreateSystem();
             sut.IsValid(new StartEndDateValidationAttributeModelView() { StartDate = "15/15/2011", EndDate = "12/2011" });
         }
 
@@ -107,7 +107,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void IsValidExceptionTest5()
         {
-            var sut = CreateSystem();
+			StartEndDateValidationAttribute sut = CreateSystem();
             sut.StartDate = "InvalidDataType";
             sut.IsValid(new StartEndDateValidationAttributeModelView() { InvalidDataType = new List<int>(), EndDate = "12/2011" });
         }
@@ -116,7 +116,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void IsValidExceptionTest6()
         {
-            var sut = CreateSystem();
+			StartEndDateValidationAttribute sut = CreateSystem();
             sut.IsValid(new StartEndDateValidationAttributeModelView() { StartDate = "01/2011", EndDate = "15/15/2011" });
         }
 
@@ -124,7 +124,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void IsValidExceptionTest7()
         {
-            var sut = CreateSystem();
+			StartEndDateValidationAttribute sut = CreateSystem();
             sut.EndDate = "InvalidDataType";
             sut.IsValid(new StartEndDateValidationAttributeModelView() { StartDate = "01/2011", InvalidDataType = new List<int>() });
         }

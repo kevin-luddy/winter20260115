@@ -343,8 +343,7 @@ namespace IES.Common.Core.OfficeUtilities
 			{
 				if (lengths.ContainsKey(name.Name))
 				{
-					int length;
-					lengths.TryGetValue(name.Name, out length);
+					lengths.TryGetValue(name.Name, out int length);
 
 					if (length > 1)
 					{

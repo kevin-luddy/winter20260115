@@ -61,9 +61,9 @@ namespace GenBOE.ActionLogic
             // Get all comments and responses for the current BOE
             ICollection<BOECommentDTO> allComments = this.boeCommentDTOLoader.GetByBoeId(boeID);
 
-            // Get all comments that do not reference any reviewer comments. This
-            // will be the set of reviewer comments.
-            var reviewerComments = from reviewerComment in allComments
+			// Get all comments that do not reference any reviewer comments. This
+			// will be the set of reviewer comments.
+			IEnumerable<BOECommentDTO> reviewerComments = from reviewerComment in allComments
                                    where reviewerComment.BOEResponseToCommentID == null
                                    select reviewerComment;
 
@@ -159,7 +159,7 @@ namespace GenBOE.ActionLogic
                     comment.WbsTitle = boe.Wbs == null ? string.Empty : boe.Wbs.WbsTitle;
                     comment.BOEAuthors = string.Join("; ", boeAuthors.Select(x => x.DisplayName));
                     comment.CommenterRole = boePermission.Role.ToString();
-                    comment.ReviewerCommentUpdateDT = ((DateTime)comment.ReviewerCommentUpdateDT).AddHours(Convert.ToInt32(ConfigurationUtilities.GetAppSetting("DatabaseESTOffset")));
+                    comment.ReviewerCommentUpdateDT = comment.ReviewerCommentUpdateDT.AddHours(Convert.ToInt32(ConfigurationUtilities.GetAppSetting("DatabaseESTOffset")));
                     if (DateTime.Compare(comment.AuthorResponseUpdateDT.GetValueOrDefault(), DateTime.MinValue) == 0)
                     {
                         comment.AuthorResponseUpdateDT = null;

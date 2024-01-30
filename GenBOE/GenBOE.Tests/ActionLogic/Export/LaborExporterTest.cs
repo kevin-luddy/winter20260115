@@ -822,7 +822,7 @@ namespace GenBOE.Tests.ActionLogic.Import
         public void LaborExport_EPs()
         {
 
-            var beforeTest = System.Configuration.ConfigurationManager.AppSettings["ShowEquivalentPersonsOption"];
+			string beforeTest = System.Configuration.ConfigurationManager.AppSettings["ShowEquivalentPersonsOption"];
             System.Configuration.ConfigurationManager.AppSettings["ShowEquivalentPersonsOption"] = "true";
             FullObjectHelper.RefreshEPForTests();
             TestTaskElement(this.CreateExistingHoursTaskElement(), isEP: true);
@@ -929,7 +929,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                     for (int i = 0; i < rows.Count; i++)
                     {
                         Dictionary<string, string> row = rows[i];
-                        var laborResource = taskElementDTO.taskElementLabors[i];
+						ResourceTypeDto laborResource = taskElementDTO.taskElementLabors[i];
 
                         Assert.AreEqual(laborResource.Id, int.Parse(row[LaborTypeAndSpreadImporter.LABOR_TYPE_ID_COL]));
                         ICollection<ResourceDTO> resourcelist = CreateLaborResources();

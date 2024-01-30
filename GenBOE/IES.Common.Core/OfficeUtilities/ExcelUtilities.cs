@@ -456,8 +456,7 @@ namespace IES.Common.Core.OfficeUtilities
 					// parsing it as a double removes the issue
 					if (!textOnly)
 					{
-						double temp;
-						if (Double.TryParse(toReturn, out temp)) { toReturn = temp.ToString(); }
+						if (Double.TryParse(toReturn, out double temp)) { toReturn = temp.ToString(); }
 					}
 				}
 			}
@@ -500,11 +499,10 @@ namespace IES.Common.Core.OfficeUtilities
 				// If the style of the cell was found, we'll check for a number format
 				if (cellFormat != null)
 				{
-					double numericalValue;
 
 					// If the cell contains a formattable number and is not to be interpreted only as text, we'll continue. Parsing with double because Excel stores numbers as floating point but displays
 					// the number rounded when the floating point number spans many decimal places. By using double it will return the number you see in the spreadsheet. 
-					if (Double.TryParse(toReturn, out numericalValue) && !textOnly)
+					if (Double.TryParse(toReturn, out double numericalValue) && !textOnly)
 					{
 						UInt32Value numberFormatID = (cellFormat as CellFormat).NumberFormatId;
 
@@ -582,9 +580,9 @@ namespace IES.Common.Core.OfficeUtilities
 							else
 							{
 								NumberingFormat numberingFormat = (from NumberingFormat n in stylesheet.NumberingFormats
-													   where n.NumberFormatId.HasValue &&
-															 n.NumberFormatId.Value == numberFormatID
-													   select n).FirstOrDefault();
+																   where n.NumberFormatId.HasValue &&
+																		 n.NumberFormatId.Value == numberFormatID
+																   select n).FirstOrDefault();
 
 								if (numberingFormat != null && numberingFormat.FormatCode.HasValue)
 								{
@@ -820,10 +818,9 @@ namespace IES.Common.Core.OfficeUtilities
 				for (int ndx = 0; ndx < values.Length; ndx++)
 				{
 					uint? style = null;
-					uint styleIndex;
 
 					// Get the style defined on the column header
-					if (columnStyles.TryGetValue((uint)(ndx + 1), out styleIndex))
+					if (columnStyles.TryGetValue((uint)(ndx + 1), out uint styleIndex))
 					{
 						style = styleIndex;
 					}
@@ -870,17 +867,15 @@ namespace IES.Common.Core.OfficeUtilities
 			else
 			{
 				// check the data type of the cell content to apply basic formatting
-				decimal numericalValue;
-				int intValue;
 
 				// Note: if datetime check was the first check, a string number such as "121.09" would actually return true so check for numbers first
 
-				if (int.TryParse(value, out intValue))
+				if (int.TryParse(value, out _))
 				{
 					cell.CellValue = new CellValue(value);
 					cell.DataType = CellValues.Number;
 				}
-				else if (decimal.TryParse(value, out numericalValue))
+				else if (decimal.TryParse(value, out _))
 				{
 					cell.CellValue = new CellValue(value);
 					cell.DataType = CellValues.Number;
@@ -1336,7 +1331,9 @@ namespace IES.Common.Core.OfficeUtilities
 			File.Copy(templateFileLocation, toReturn);
 
 			// Make sure that the copied template is writable
-			FileInfo copiedFileInfo = new(toReturn)
+			_ = new
+			// Make sure that the copied template is writable
+			FileInfo(toReturn)
 			{
 				IsReadOnly = false
 			};
@@ -1669,12 +1666,11 @@ namespace IES.Common.Core.OfficeUtilities
 				Comments comments = commentsPart.Comments;
 
 				Match commentRowIndexMatch;
-				uint commentRowIndex;
 
 				foreach (Comment comment in comments.CommentList)
 				{
 					commentRowIndexMatch = commentRowIndexRegex.Match(comment.Reference.Value);
-					if (commentRowIndexMatch.Success && uint.TryParse(commentRowIndexMatch.Value, out commentRowIndex) && commentRowIndex >= rowIndex)
+					if (commentRowIndexMatch.Success && uint.TryParse(commentRowIndexMatch.Value, out uint commentRowIndex) && commentRowIndex >= rowIndex)
 					{
 						// if being deleted, comment needs to be removed or moved up
 						if (isDeletedRow)

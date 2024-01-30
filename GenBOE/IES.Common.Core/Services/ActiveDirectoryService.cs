@@ -11,7 +11,6 @@ namespace IES.Common.Core.Services
 	using System.Collections.ObjectModel;
 	using System.DirectoryServices;
 	using System.Linq;
-	using System.Security.AccessControl;
 	using System.Security.Principal;
 	using System.Text;
 	using System.Threading;
