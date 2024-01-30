@@ -25,7 +25,6 @@ namespace IES.Common.Core.Utilities
 			PropertyInfo[] properties = typeToReflectOn.GetProperties(binding);
 			bool all = (options & PropertyReflectionOptions.All) != 0;
 			bool ignoreIndexer = (options & PropertyReflectionOptions.IgnoreIndexer) != 0;
-			_ = (options & PropertyReflectionOptions.IgnoreEnumerable) != 0;
 			foreach (PropertyInfo property in properties)
 			{
 				if (!all)

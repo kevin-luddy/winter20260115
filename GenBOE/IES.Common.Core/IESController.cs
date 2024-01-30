@@ -32,6 +32,9 @@ namespace IES.Common.Core
 		/// </summary>
 		protected readonly ILogger log;
 
+		/// <summary>
+		/// Security Information
+		/// </summary>
 		protected readonly ISecurityInformation securityInformation;
 
 		/// <summary>
