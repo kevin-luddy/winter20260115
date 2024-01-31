@@ -104,19 +104,20 @@ namespace IES.ActionLogic.IO.Export
 			return null;
 		}
 
-		/// <summary>
-		/// Generate a Word document containing the RDD sections and rates.
-		/// </summary>
-		/// <param name="sections">Collection of Section MVs</param>
-		/// <param name="rates">Collection of RateDetail MVs</param>
-		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
-		/// <param name="serverFileName">Server path to new file to generate.</param>
-		/// <param name="revision">Revision modelview</param>
-		/// <param name="rddDocument">The RDD document to use for creation.</param>
-		/// <param name="stream">the stream to write the file back to for user download</param>
-		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true)
+        /// <summary>
+        /// Generate a Word document containing the RDD sections and rates.
+        /// </summary>
+        /// <param name="sections">Collection of Section MVs</param>
+        /// <param name="rates">Collection of RateDetail MVs</param>
+        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
+        /// <param name="serverFileName">Server path to new file to generate.</param>
+        /// <param name="revision">Revision modelview</param>
+        /// <param name="rddDocument">The RDD document to use for creation.</param>
+        /// <param name="stream">the stream to write the file back to for user download</param>
+        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        public async Task<ActionResult> ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool? portionMarkingRequired, bool includeDocumentDetails = true)
 		{
 			if (stream == null)
 			{
@@ -128,7 +129,29 @@ namespace IES.ActionLogic.IO.Export
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
 			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream);
-		}
+
+            if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
+            {
+                byte[] byteArray = File.ReadAllBytes(serverFileName);
+                ByteArrayContent content = new ByteArrayContent(byteArray);
+                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
+
+                stream.Write(byteArray, 0, (int)byteArray.Length);
+                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(stream, true))
+                {
+                    // Make a post call to the Portion Marking API here
+                    HttpClient httpClient = new HttpClient();
+                    Utilities.AddAuthorizationHeader(httpClient, (await this.tokenService.GetToken()).AccessToken);
+                    string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
+                    var result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
+                    result.EnsureSuccessStatusCode();
+
+                    var postResponse = await result.Content.ReadAsStringAsync();
+                }
+            }
+
+            return null;
+        }
 
         #region Populate Methods
 
