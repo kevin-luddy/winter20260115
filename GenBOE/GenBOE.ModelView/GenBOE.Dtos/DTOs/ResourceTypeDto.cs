@@ -244,7 +244,7 @@ namespace GenBOE.Dtos
 
             set
             {
-                this.AddOrDelete = (!value.HasValue ? null : (value.Value ? (string)"A" : "D"));
+                this.AddOrDelete = (!value.HasValue ? null : (value.Value ? "A" : "D"));
             }
         }
 

@@ -65,6 +65,7 @@ namespace GenBOE.DataBridge.DTO
                                     SmeTaskEstimates = m.EstimateTasks,
                                     Rationale = m.Rationale,
                                     SkillMixRationale = m.SkillMix,
+									HistoricalReferenceExplanation = m.HistoricalReferenceExplanation,
                                     BoeId = t.BOEID
                                 }).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
 
@@ -109,7 +110,8 @@ namespace GenBOE.DataBridge.DTO
                                     SmeTaskEstimates = m.EstimateTasks,
                                     Rationale = m.Rationale,
                                     SkillMixRationale = m.SkillMix,
-                                    BoeId = t.BOEID
+									HistoricalReferenceExplanation = m.HistoricalReferenceExplanation,
+									BoeId = t.BOEID
                                 }).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
@@ -152,7 +154,8 @@ namespace GenBOE.DataBridge.DTO
                                     SmeTaskEstimates = m.EstimateTasks,
                                     Rationale = m.Rationale,
                                     SkillMixRationale = m.SkillMix,
-                                    BoeId = t.BOEID
+									HistoricalReferenceExplanation = m.HistoricalReferenceExplanation,
+									BoeId = t.BOEID
                                 }).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
@@ -214,7 +217,8 @@ namespace GenBOE.DataBridge.DTO
                 {
                     toReturn = gbe.upsertMOQTypeSelection(dtoToUpsert.Id, dtoToUpsert.TaskId, (int)dtoToUpsert.SelectedMOQType, dtoToUpsert.UpdateDate, 
                         dtoToUpsert.Order, dtoToUpsert.CerName, dtoToUpsert.DescriptionHoursRequired, dtoToUpsert.SmeReason, 
-                        dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale).FirstOrDefault();
+                        dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale, 
+						dtoToUpsert.HistoricalReferenceExplanation).FirstOrDefault();
 
                     foreach(MoqTableData table in dtoToUpsert.TableData.Where(x => x.DateOfReport.Date != DateTime.MinValue.Date))
                     {

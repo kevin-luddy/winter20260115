@@ -29,7 +29,7 @@ namespace GenTRAC.Tests.Mediator
         [TestMethod]
         public void B_SaveUser()
         {
-            var sut = this.CreateSystem();
+            UserMediator sut = this.CreateSystem();
 
             UserDTO userToSave = new UserDTO()
             {
@@ -38,7 +38,7 @@ namespace GenTRAC.Tests.Mediator
 
             this.userMapper.Setup(x => x.Save(userToSave)).Returns(userToSave.Id);
 
-            var result = sut.SaveUser(userToSave);
+            int? result = sut.SaveUser(userToSave);
             Assert.AreEqual(userToSave.Id, result);
         }
 
@@ -51,7 +51,7 @@ namespace GenTRAC.Tests.Mediator
         [ExpectedException(typeof(ArgumentNullException))]
         public void B_SaveUser_Exception()
         {
-            var sut = this.CreateSystem();
+            UserMediator sut = this.CreateSystem();
 
             sut.SaveUser(null);
         }

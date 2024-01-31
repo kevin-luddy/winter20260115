@@ -178,13 +178,13 @@ namespace IES.ActionLogic.ControllerLogic
             // Get the published year - use current year if not published.
             int publishYear = revision.DatePublished?.Year ?? DateTime.Now.Year;
 
-            // Rates have match for at least one of the categories.
-            var backwardLookingRates = rates.Where(r =>
+			// Rates have match for at least one of the categories.
+			List<RateDetailModelView> backwardLookingRates = rates.Where(r =>
                 r.RateCategory == RateCategory.Fccom || r.RateCategory == RateCategory.Fringe ||
                 r.RateCategory == RateCategory.GA || r.RateCategory == RateCategory.Overhead).ToList();
 
-            // Rates do not have a match for any of the categories.
-            var forwardLookingRates = rates.Where(r =>
+			// Rates do not have a match for any of the categories.
+			List<RateDetailModelView> forwardLookingRates = rates.Where(r =>
                 r.RateCategory != RateCategory.Fccom && r.RateCategory != RateCategory.Fringe &&
                 r.RateCategory != RateCategory.GA && r.RateCategory != RateCategory.Overhead).ToList();
 

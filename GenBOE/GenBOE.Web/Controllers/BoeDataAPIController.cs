@@ -357,7 +357,7 @@ namespace GenBOE.Web.Controllers
 
 				HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 
-				string fileName = string.Format("genBOE-Export-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty);
+				string fileName = Utilities.StripIllegalFileNameCharacters(string.Format("genBOE-Export-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty));
 
 				MemoryStream stream = new MemoryStream();
 

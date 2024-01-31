@@ -20,10 +20,10 @@ namespace IES.Common
     using Microsoft.Net.Http.Headers;
     using PickList;
 
-    /// <summary>
-    /// Utility/helper methods that need a class to sit in
-    /// </summary>
-    public static class Utilities
+	/// <summary>
+	/// Utility/helper methods that need a class to sit in
+	/// </summary>
+	public static class Utilities
     {
         /// <summary>
         /// The business hours start time.
@@ -39,6 +39,7 @@ namespace IES.Common
         private static object lockObject = new object();
         private static DateTime? sapSpaceStartDate;
         private static DateTime? oneLmxStartDate;
+		private static DateTime? historicalReferenceExplanationStartDate;
 
 		/// <summary>
 		/// 1LMX boundary time
@@ -49,13 +50,13 @@ namespace IES.Common
 			{
 				if (!oneLmxStartDate.HasValue)
 				{
-					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("OneLmxStartDate"), out DateTime sapTime))
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("OneLmxStartDate"), out DateTime startDate))
 					{
 						oneLmxStartDate = DateTime.MaxValue;
 					}
 					else
 					{
-						oneLmxStartDate = sapTime.Normalize();
+						oneLmxStartDate = startDate.Normalize();
 					}
 				}
 
@@ -85,6 +86,29 @@ namespace IES.Common
                 return sapSpaceStartDate.Value;
             }
         }
+
+		/// <summary>
+		/// Date to begin using Historical Reference Explanation
+		/// </summary>
+		public static DateTime HistoricalReferenceExplanationStartDate
+		{
+			get
+			{
+				if (!historicalReferenceExplanationStartDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("HistoricalReferenceExplanationStartDate"), out DateTime startDate))
+					{
+						historicalReferenceExplanationStartDate = DateTime.MaxValue;
+					}
+					else
+					{
+						historicalReferenceExplanationStartDate = startDate;
+					}
+				}
+
+				return historicalReferenceExplanationStartDate.Value;
+			}
+		}
 
 		/// <summary>
 		/// Create static Regex object for NewLine - to remove all possible version of a new line.. <br>, <br />, <br > and so on.
@@ -425,11 +449,11 @@ namespace IES.Common
                 throw new ArgumentNullException(nameof(modelStateDictionary));
             }
 
-            var errors = new Collection<ValidationMessage>();
+			Collection<ValidationMessage> errors = new Collection<ValidationMessage>();
 
-            foreach (var state in modelStateDictionary)
+            foreach (KeyValuePair<string, ModelState> state in modelStateDictionary)
             {
-                foreach (var error in state.Value.Errors)
+                foreach (ModelError error in state.Value.Errors)
                 {
                     if (!string.IsNullOrEmpty(error.ErrorMessage))
                     {
@@ -632,19 +656,38 @@ namespace IES.Common
             return text;
         }
 
-        /// <summary>
-        /// Replaces spaces with underscores and removes invalid file name characters
-        /// </summary>
-        /// <param name="filename">Filename to clean</param>
-        /// <returns>Filename with only valid characters</returns>
-        public static string CleanFileName(string filename)
+		/// <summary>
+		/// Removes characters that cause issues when present in file names; Some may look like duplicates, but they actually aren't
+		/// </summary>
+		/// <param name="target">String to be cleaned</param>
+		/// <param name="replacementValue">Character to replace the illegal characters with. Defaults to "."</param>
+		/// <returns>String with illegal characters replaced</returns>
+		public static string StripIllegalFileNameCharacters(string target, string replacementValue = ".")
+		{
+			if(string.IsNullOrEmpty(target))
+			{
+				throw new ArgumentNullException("target");
+			}
+			
+			char[] illegalCharacters = new[] { ' ', ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '-', '%', '#', '$', '&', ')', '(', '!', ',', ':', ';', '{', '}', '`', '~', '^', '/', '<', '>' };
+			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
+
+			return string.Join(replacementValue, cleanedParts);
+		}
+
+		/// <summary>
+		/// Replaces spaces with underscores and removes invalid file name characters
+		/// </summary>
+		/// <param name="filename">Filename to clean</param>
+		/// <returns>Filename with only valid characters</returns>
+		public static string CleanFileName(string filename)
         {
             if(filename==null)
             {
                 throw new ArgumentNullException(nameof(filename));
             }
 
-            return string.Concat(filename.Replace(' ', '_').Split(Path.GetInvalidFileNameChars()));
+            return StripIllegalFileNameCharacters(string.Concat(filename.Replace(' ', '_').Split(Path.GetInvalidFileNameChars())));
         }
 
         /// <summary>
@@ -734,6 +777,32 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		/// Private for Is BRC Enabled, used for unit testing
+		/// </summary>
+		private static bool? isBRCEnabled;
+
+		/// <summary>
+		/// Indicates whether BRC features are enabled
+		/// </summary>
+		public static bool IsBRCEnabledForSystem
+		{
+			get
+			{
+				if (isBRCEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableBRC"), out bool value);
+					isBRCEnabled = value;
+				}
+
+				return isBRCEnabled.Value;
+			}
+			internal set // be able to override for unit test purposes
+			{
+				isBRCEnabled = value;
+			}
+		}
+
+		/// <summary>
 		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
 		/// to not point at unclassified locations that are not accessible.
 		/// </summary>
@@ -749,6 +818,16 @@ namespace IES.Common
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Is HistoricalReferenceExplanation required and displayed
+		/// </summary>
+		/// <param name="workspaceCreationDate">workspace creation date</param>
+		/// <returns>True if workspace creation date after the start date for Historical Reference Explanation</returns>
+		public static bool IsHistoricalReferenceExplanationRequired(DateTime? workspaceCreationDate)
+		{
+			return workspaceCreationDate.HasValue && workspaceCreationDate.Value.Date >= HistoricalReferenceExplanationStartDate.Date;
 		}
 	}
 }

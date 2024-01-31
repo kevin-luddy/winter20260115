@@ -27,9 +27,9 @@ namespace GenTRAC.Tests.DAL.Common
         [TestMethod]
         public void GetRolesforLoggedInUserTest()
         {
-            var userAuthDL = new Mock<ISecurityUserAuthorizationsDataLoader>();
-            var securityInformation = new Mock<IES.Common.ISecurityInformation>();
-            var userDTOMapper = new Mock<IUserMapper>();
+			Mock<ISecurityUserAuthorizationsDataLoader> userAuthDL = new Mock<ISecurityUserAuthorizationsDataLoader>();
+			Mock<ISecurityInformation> securityInformation = new Mock<IES.Common.ISecurityInformation>();
+			Mock<IUserMapper> userDTOMapper = new Mock<IUserMapper>();
             securityInformation.Setup(x => x.ActiveUserNTID).Returns("testuser");
             UserDTO user = new UserDTO();
             user.Id = 21;

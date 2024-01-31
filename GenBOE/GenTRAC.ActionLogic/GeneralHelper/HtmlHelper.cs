@@ -47,13 +47,13 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         {
             StringBuilder toReturn = new StringBuilder();
 
-            var group = this.userMapper.GetById(groupId);
+			UserDTO group = this.userMapper.GetById(groupId);
 
-            var users = this.adUtils.GetAdGroupUsers(group.Ntid);
+			System.Collections.Generic.ICollection<UserData> users = this.adUtils.GetAdGroupUsers(group.Ntid);
 
             toReturn.Append("<ul>");
 
-            foreach (var user in users.OrderBy(x => x.DisplayName, SortOrder.Ascending))
+            foreach (UserData user in users.OrderBy(x => x.DisplayName, SortOrder.Ascending))
             {
                 toReturn.Append("<li>");
                 toReturn.Append(user.DisplayName);

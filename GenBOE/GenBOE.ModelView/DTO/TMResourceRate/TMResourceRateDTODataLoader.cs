@@ -158,7 +158,7 @@ namespace GenBOE.DataBridge.DTO
             // Upsert SP
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var resultsLinq = gbe.upsertTMResourceRate(
+				System.Data.Entity.Core.Objects.ObjectResult<int?> resultsLinq = gbe.upsertTMResourceRate(
                         dtoToUpsert.ResourceRateID,
                         dtoToUpsert.WorkspaceID,
                         dtoToUpsert.ResourceID,

@@ -124,7 +124,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetDataForChecklistGeneralInformationTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
             int checklistID = 7;
@@ -210,7 +210,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_SaveChecklistWithPeerReviewerUserNtIdTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int userId = 10;
             int proposalId = 5;
@@ -250,7 +250,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetDataForChecklistProposalPricingDataTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
             int checklistID = 7;
@@ -327,7 +327,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetDataForChecklistProposalPricingDataTest_2()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
 
@@ -371,8 +371,8 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_RunPricingValidationTest()
         {
-            var validationResults = new List<ValidationResult>();
-            var checkList = new ChecklistProposalPricingDataModelView()
+            List<ValidationResult> validationResults = new List<ValidationResult>();
+            ChecklistProposalPricingDataModelView checkList = new ChecklistProposalPricingDataModelView()
             {
                 ProposalID = 1,
                 ProposalChecklistID = 1,
@@ -389,8 +389,8 @@ namespace GenTRAC.Tests.ActionLogic
                 ROSPercent = "-99.99"
             };
 
-            var ctx = new ValidationContext(checkList, null, null);
-            var result = Validator.TryValidateObject(checkList, ctx, validationResults, true);
+            ValidationContext ctx = new ValidationContext(checkList, null, null);
+            bool result = Validator.TryValidateObject(checkList, ctx, validationResults, true);
             Assert.IsTrue(result);
 
             validationResults = new List<ValidationResult>();
@@ -430,8 +430,8 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_RunPARRowResponseValidationTest()
         {
-            var validationResults = new List<ValidationResult>();
-            var rowResponse = new ChecklistRowModelView()
+            List<ValidationResult> validationResults = new List<ValidationResult>();
+            ChecklistRowModelView rowResponse = new ChecklistRowModelView()
             {
                 RowType = ChecklistTextType.PricerComment,
                 PeerResponse = ChecklistResponseOption.NotSet,
@@ -449,8 +449,8 @@ namespace GenTRAC.Tests.ActionLogic
                                    "01234567890123456789012345678901234567890123456789"
             };
 
-            var ctx = new ValidationContext(rowResponse, null, null);
-            var result = Validator.TryValidateObject(rowResponse, ctx, validationResults, true);
+            ValidationContext ctx = new ValidationContext(rowResponse, null, null);
+            bool result = Validator.TryValidateObject(rowResponse, ctx, validationResults, true);
             Assert.IsTrue(result);
 
             validationResults = new List<ValidationResult>();
@@ -485,7 +485,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_SaveChecklistTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
             int checklistID = 7;
@@ -596,7 +596,7 @@ namespace GenTRAC.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Pricer"), TestMethod]
         public void C_GetDataForChecklistPPRDocumentTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
             int checklistID = 7;
@@ -676,10 +676,10 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(pprData.PPRPricerComment, pprPricerComment);
 
             // verify rows
-            var rows = pprData.ChecklistRows;
+            ICollection<ChecklistRowModelView> rows = pprData.ChecklistRows;
 
             // verify first row
-            var row1 = (from r in rows
+            ChecklistRowModelView row1 = (from r in rows
                         where r.SortOrder == content1.SortOrder
                         select r).First();
             Assert.AreEqual(row1.DisplayText, content1.Text);
@@ -688,7 +688,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(row1.PricerResponse, ChecklistResponseOption.NotSet);
 
             // verify second row
-            var row2 = (from r in rows
+            ChecklistRowModelView row2 = (from r in rows
                         where r.SortOrder == content2.SortOrder
                         select r).First();
             Assert.AreEqual(row2.DisplayText, content2.Text);
@@ -704,7 +704,7 @@ namespace GenTRAC.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Pricer"), TestMethod]
         public void C_GetDataForChecklistPPRDocumentTest_WhenChecklistNull()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
             int checklistID = 7;
@@ -762,10 +762,10 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(pprData.ChecklistRows.Any());
 
             // verify rows
-            var rows = pprData.ChecklistRows;
+            ICollection<ChecklistRowModelView> rows = pprData.ChecklistRows;
 
             // verify first row
-            var row1 = (from r in rows
+            ChecklistRowModelView row1 = (from r in rows
                         where r.SortOrder == content1.SortOrder
                         select r).First();
             Assert.AreEqual(row1.DisplayText, content1.Text);
@@ -774,7 +774,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(row1.PricerResponse, ChecklistResponseOption.NotSet);
 
             // verify second row
-            var row2 = (from r in rows
+            ChecklistRowModelView row2 = (from r in rows
                         where r.SortOrder == content2.SortOrder
                         select r).First();
             Assert.AreEqual(row2.DisplayText, content2.Text);
@@ -789,7 +789,7 @@ namespace GenTRAC.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Pricer"), TestMethod]
         public void C_GetDataForChecklistPARDocumentTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
             int checklistID = 7;
@@ -949,9 +949,9 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsFalse(parData.ShowExportButton);
 
             // verify rows
-            var rows = parData.ChecklistRows;
+            ICollection<ChecklistRowModelView> rows = parData.ChecklistRows;
             // verify first row
-            var row1 = (from r in rows
+            ChecklistRowModelView row1 = (from r in rows
                         where r.SortOrder == parContent1.SortOrder
                         select r).First();
             Assert.AreEqual(row1.DisplayText, parContent1.Text);
@@ -960,7 +960,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(row1.PricerResponse, ChecklistResponseOption.NotSet);
 
             // verify second row
-            var row2 = (from r in rows
+            ChecklistRowModelView row2 = (from r in rows
                         where r.SortOrder == parContent2.SortOrder
                         select r).First();
             Assert.AreEqual(row2.DisplayText, parContent2.Text);
@@ -1008,7 +1008,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetDataForChecklistPARDocumentTest_WhenChecklistNull()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
             int checklistID = 7;
@@ -1098,10 +1098,10 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(parData.ChecklistRows.Any());
 
             // verify rows
-            var rows = parData.ChecklistRows;
+            ICollection<ChecklistRowModelView> rows = parData.ChecklistRows;
 
             // verify first row
-            var row1 = (from r in rows
+            ChecklistRowModelView row1 = (from r in rows
                         where r.SortOrder == content1.SortOrder
                         select r).First();
             Assert.AreEqual(row1.DisplayText, content1.Text);
@@ -1110,7 +1110,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(row1.PricerResponse, ChecklistResponseOption.NotSet);
 
             // verify second row
-            var row2 = (from r in rows
+            ChecklistRowModelView row2 = (from r in rows
                         where r.SortOrder == content2.SortOrder
                         select r).First();
             Assert.AreEqual(row2.DisplayText, content2.Text);
@@ -1127,7 +1127,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ValidateChecklistTest_SaveAsPricer()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             int proposalId = 5;
             int checklistID = 7;
             int peerReviewerID = 12;
@@ -1225,7 +1225,7 @@ namespace GenTRAC.Tests.ActionLogic
             sut.ValidateChecklist(checklistGeneralInfo, checklistProposalPricingData, checklistPPRData, checklistPARData, false, validationMessages);
 
             Assert.IsTrue(validationMessages.Any());
-            var validationIssues = (from v in validationMessages
+            List<string> validationIssues = (from v in validationMessages
                                     select v.ValidationIssue).ToList();
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.SUBMITTAL_DATE_FORMAT));
 
@@ -1254,7 +1254,7 @@ namespace GenTRAC.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), TestMethod]
         public void C_ValidateChecklistTest_SubmitAsPricer_Legacy()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             int proposalId = 5;
             int checklistID = 7;
             string pprPricerComment = "ppr Pricer Comment";
@@ -1384,7 +1384,7 @@ namespace GenTRAC.Tests.ActionLogic
             sut.ValidateChecklist(checklistGeneralInfo, checklistProposalPricingData, checklistPPRData, checklistPARData, true, validationMessages);
 
             Assert.IsTrue(validationMessages.Any());
-            var validationIssues = (from v in validationMessages
+            List<string> validationIssues = (from v in validationMessages
                                     select v.ValidationIssue).ToList();
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ALL_PAR_MUST_BE_ANSWERED));
@@ -1521,7 +1521,7 @@ namespace GenTRAC.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), TestMethod]
         public void C_ValidateChecklistTest_SubmitAsPricer()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             int proposalId = 5;
             int checklistID = 7;
             string pprPricerComment = "ppr Pricer Comment";
@@ -1652,7 +1652,7 @@ namespace GenTRAC.Tests.ActionLogic
             sut.ValidateChecklist(checklistGeneralInfo, checklistProposalPricingData, checklistPPRData, checklistPARData, true, validationMessages);
 
             Assert.IsTrue(validationMessages.Any());
-            var validationIssues = (from v in validationMessages
+            List<string> validationIssues = (from v in validationMessages
                                     select v.ValidationIssue).ToList();
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ALL_PAR_MUST_BE_ANSWERED));
@@ -1799,7 +1799,7 @@ namespace GenTRAC.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), TestMethod]
         public void C_ValidateChecklistTest_SubmitAsPricer_PTM()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             int proposalId = 5;
             int checklistID = 9;
             string pprPricerComment = "ppr Pricer Comment";
@@ -1932,7 +1932,7 @@ namespace GenTRAC.Tests.ActionLogic
             sut.ValidateChecklist(checklistGeneralInfo, checklistProposalPricingData, checklistPPRData, checklistPARData, true, validationMessages);
 
             Assert.IsTrue(validationMessages.Any());
-            var validationIssues = (from v in validationMessages
+            List<string> validationIssues = (from v in validationMessages
                                     select v.ValidationIssue).ToList();
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ALL_PAR_MUST_BE_ANSWERED));
@@ -2212,7 +2212,7 @@ namespace GenTRAC.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
         public void C_IsProposalChecklistReadOnlyTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
             PtmRole outRole;
@@ -2328,7 +2328,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ShouldChecklisSectionsBeDisplayed_PrePTMChecklist_CCPD_Yes_Test()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
             int checklistID = 33;
@@ -2476,7 +2476,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ShouldChecklisSectionsBeDisplayed_PrePTMChecklist_CCPD_No_Test()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
             int checklistID = 33;
@@ -2624,7 +2624,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ShouldChecklisSectionsBeDisplayed_PTMChecklist_CCPD_Yes_Test()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
             int checklistID = 33;
@@ -2667,7 +2667,7 @@ namespace GenTRAC.Tests.ActionLogic
             responses.Add(response2);
             responses.Add(response3);
 
-            var checklistChangeToPTMtVersion = Convert.ToInt32(ConfigurationManager.AppSettings[Constants.CHECKLIST_CHANGE_TO_PTM_VERSION]);
+            int checklistChangeToPTMtVersion = Convert.ToInt32(ConfigurationManager.AppSettings[Constants.CHECKLIST_CHANGE_TO_PTM_VERSION]);
             ChecklistContentDto checklistContent = new ChecklistContentDto()
             {
                 Version = checklistChangeToPTMtVersion,
@@ -2771,7 +2771,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ShouldChecklisSectionsBeDisplayed_PTMChecklist_CCPD_No_Test()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 15;
             int checklistID = 33;
@@ -2814,7 +2814,7 @@ namespace GenTRAC.Tests.ActionLogic
             responses.Add(response2);
             responses.Add(response3);
 
-            var checklistChangeToPTMtVersion = Convert.ToInt32(ConfigurationManager.AppSettings[Constants.CHECKLIST_CHANGE_TO_PTM_VERSION]);
+            int checklistChangeToPTMtVersion = Convert.ToInt32(ConfigurationManager.AppSettings[Constants.CHECKLIST_CHANGE_TO_PTM_VERSION]);
             ChecklistContentDto checklistContent = new ChecklistContentDto()
             {
                 Version = checklistChangeToPTMtVersion,
@@ -2915,7 +2915,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetPPRQuestion1ContentIdTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             int proposalId = 33;
             int checklistId = 4300;
             ProposalDto proposal = new ProposalDto()
@@ -2962,7 +2962,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetPPRQuestion1ResponseTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             int proposalId = 33;
             int checklistId = 4300;
             ProposalDto proposal = new ProposalDto()
@@ -3015,7 +3015,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetChecklistVersionTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
             int checklistID = 7;
@@ -3093,7 +3093,7 @@ namespace GenTRAC.Tests.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2241:Provide correct arguments to formatting methods"), TestMethod]
         public void PopulatePARChecklistSSRSParametersTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
 
             PARChecklistModelView model = new PARChecklistModelView()
             {
@@ -3122,7 +3122,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveChecklist_ExceptionTest1()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.SaveChecklist(null, new ChecklistProposalPricingDataModelView(), new ChecklistProposalPricingReviewDocumentModelView(), new ChecklistProposalAdequacyReviewDocumentModelView(), false);
         }
 
@@ -3133,7 +3133,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveChecklist_ExceptionTest2()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.SaveChecklist(new ChecklistGeneralInformationModelView(), null, new ChecklistProposalPricingReviewDocumentModelView(), new ChecklistProposalAdequacyReviewDocumentModelView(), false);
         }
 
@@ -3144,7 +3144,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveChecklist_ExceptionTest3()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.SaveChecklist(new ChecklistGeneralInformationModelView(), new ChecklistProposalPricingDataModelView(), null, new ChecklistProposalAdequacyReviewDocumentModelView(), false);
         }
 
@@ -3155,7 +3155,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_SaveChecklist_ExceptionTest4()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.SaveChecklist(new ChecklistGeneralInformationModelView(), new ChecklistProposalPricingDataModelView(), new ChecklistProposalPricingReviewDocumentModelView(), null, false);
         }
 
@@ -3166,7 +3166,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateChecklist_ExceptionTest1()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.ValidateChecklist(null, new ChecklistProposalPricingDataModelView(), new ChecklistProposalPricingReviewDocumentModelView(), new ChecklistProposalAdequacyReviewDocumentModelView(), false, new Collection<ValidationMessage>());
         }
 
@@ -3177,7 +3177,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateChecklist_ExceptionTest2()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.ValidateChecklist(new ChecklistGeneralInformationModelView(), null, new ChecklistProposalPricingReviewDocumentModelView(), new ChecklistProposalAdequacyReviewDocumentModelView(), false, new Collection<ValidationMessage>());
         }
 
@@ -3188,7 +3188,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateChecklist_ExceptionTest3()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.ValidateChecklist(new ChecklistGeneralInformationModelView(), new ChecklistProposalPricingDataModelView(), null, new ChecklistProposalAdequacyReviewDocumentModelView(), false, new Collection<ValidationMessage>());
         }
 
@@ -3199,7 +3199,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateChecklist_ExceptionTest4()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.ValidateChecklist(new ChecklistGeneralInformationModelView(), new ChecklistProposalPricingDataModelView(), new ChecklistProposalPricingReviewDocumentModelView(), null, false, new Collection<ValidationMessage>());
         }
 
@@ -3210,7 +3210,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_ValidateChecklist_ExceptionTest5()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.ValidateChecklist(new ChecklistGeneralInformationModelView(), new ChecklistProposalPricingDataModelView(), new ChecklistProposalPricingReviewDocumentModelView(), new ChecklistProposalAdequacyReviewDocumentModelView(), false, null);
         }
 
@@ -3221,7 +3221,7 @@ namespace GenTRAC.Tests.ActionLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_PopulatePARChecklistSSRSParameters_ExceptionTest()
         {
-            var sut = this.CreateSystem();
+            ChecklistControllerLogic sut = this.CreateSystem();
             sut.PopulatePARChecklistSSRSParameters(null);
         }
 

@@ -26,7 +26,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void TestComputeTimeInOneStateOpenEnded()
         {
-            var _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
 
             WorkspaceActivityReport sut = new WorkspaceActivityReport(_IPermissionsDTOLoader.Object);
 
@@ -45,7 +45,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void TestComputeTimeInTwoStates()
         {
-            var _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
 
             WorkspaceActivityReport sut = new WorkspaceActivityReport(_IPermissionsDTOLoader.Object);
 
@@ -66,7 +66,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void TestComputeTimeInTwoInterestedStatesWithMixedOthers()
         {
-            var _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
 
             WorkspaceActivityReport sut = new WorkspaceActivityReport(_IPermissionsDTOLoader.Object);
 
@@ -93,7 +93,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void TestComputeTimeInThreeInterestedStatesWithMixedOthersOpenEnded()
         {
-            var _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
 
             WorkspaceActivityReport sut = new WorkspaceActivityReport(_IPermissionsDTOLoader.Object);
 
@@ -122,7 +122,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void ComputeNumberOfTimesInStateTest()
         {
-            var _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
 
             WorkspaceActivityReport sut = new WorkspaceActivityReport(_IPermissionsDTOLoader.Object);
 
@@ -153,10 +153,10 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void GenerateReportTest()
         {
-            var _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _IPermissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
             Mock<ICommonDataMapper> mockCommonDataMapper = new Mock<ICommonDataMapper>();
-            var factory = new Mock<IFullObjectFactory>();
-            var retriever = new Mock<IRetriever>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), mockCommonDataMapper.Object);

@@ -75,8 +75,8 @@ namespace GenBOE.ActionLogic.Reporting
 
             List<BOEStatusReportModelView> toSortAndReturn = new List<BOEStatusReportModelView>();
 
-            // Get all BOEs in the Workspace
-            var allBOEsInWorkspace = exportInputs.Boes;
+			// Get all BOEs in the Workspace
+			IReadOnlyCollection<BoeDTO> allBOEsInWorkspace = exportInputs.Boes;
             IDictionary<int,BOEStateModelView> boeStates = this.commonDataMapper.getBOEStatesDictionary();
 
             HashSet<PermissionsDTO> permissionsAssociatedWithBoes = new HashSet<PermissionsDTO>(this.permissionsLoader.GetBOEPermissions(allBOEsInWorkspace.Select(x => x.Id).Distinct().ToList()));
@@ -153,26 +153,26 @@ namespace GenBOE.ActionLogic.Reporting
                 modelView.IsMultiClinWbs = boe.IsMultiClinWbs;
                 modelView.WorkspaceID = exportInputs.Workspace.Id;
 
-                // Set User Data
-                var boeAuthors = authorsForBoes.Where(x => x.BOEId == boe.Id).ToCollection();
+				// Set User Data
+				Collection<PermissionsDTO> boeAuthors = authorsForBoes.Where(x => x.BOEId == boe.Id).ToCollection();
                 if (boeAuthors.Any())
                 {
-                    var authors = from author in boeAuthors
+					IEnumerable<string> authors = from author in boeAuthors
                                   where author.Role == Role.Author
                                   select usersForBoe.First(x => x.UserID == author.ETIUserId).DisplayName;
 
-                    var subcontractorAuthors = from author in boeAuthors
+					IEnumerable<string> subcontractorAuthors = from author in boeAuthors
                                                where author.Role == Role.SubcontractorAuthor
                                                select usersForBoe.First(x => x.UserID == author.ETIUserId).DisplayName + " (Sub)";
 
-                    var allAuthors = authors.Union(subcontractorAuthors).OrderBy(x => x).Distinct().ToList();
+					List<string> allAuthors = authors.Union(subcontractorAuthors).OrderBy(x => x).Distinct().ToList();
                     modelView.Authors = new Collection<string>(allAuthors.ToArray());
                 }
 
-                var boeApprovers = approversForBoes.Where(x => x.BOEId == boe.Id).ToCollection();
+				Collection<PermissionsDTO> boeApprovers = approversForBoes.Where(x => x.BOEId == boe.Id).ToCollection();
                 if (boeApprovers.Any())
                 {
-                    var approvers = from approver in boeApprovers
+					IEnumerable<string> approvers = from approver in boeApprovers
                                     select usersForBoe.First(x => x.UserID == approver.ETIUserId).DisplayName;
 
                     modelView.Approvers = new Collection<string>(approvers.ToArray());
@@ -216,8 +216,8 @@ namespace GenBOE.ActionLogic.Reporting
 
             if (statusReport.Any())
             {
-                // Create all rows for the export file
-                var worksheet = this.GetExcelExportWorksheet(statusReport, reportID, exportInputs);
+				// Create all rows for the export file
+				ExcelExportWorksheet worksheet = this.GetExcelExportWorksheet(statusReport, reportID, exportInputs);
 
                 // Pass the rows to the generic Excel exporter
                 toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, true, new List<ExcelExportWorksheet> { worksheet }, new int?[] { 1 });
@@ -246,7 +246,7 @@ namespace GenBOE.ActionLogic.Reporting
                 throw new ArgumentNullException(nameof(exportInputs));
             }
 
-            var toReturn = new ExcelExportWorksheet();
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet();
             string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
             string hoursLabel = "Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
             switch (reportID)
@@ -257,7 +257,7 @@ namespace GenBOE.ActionLogic.Reporting
 
                     if (statusReport.Any())
                     {
-                        var allWBS = exportInputs.WbsElements;
+						IReadOnlyCollection<WbsDTO> allWBS = exportInputs.WbsElements;
 
                         var boesGroupedByWBS = from w in allWBS
                                                orderby w.WbsPaddedNumber
@@ -288,7 +288,7 @@ namespace GenBOE.ActionLogic.Reporting
                                         this.GetResourceTypesToBeSummed(), data).ToString(hoursFormatString));
                             }
 
-                            foreach (var boe in wbs.BOEs)
+                            foreach (BOEStatusReportModelView boe in wbs.BOEs)
                             {
                                 toReturn.Add(
                                     Utilities.FormatNumberTitleString(boe.WBSNumber, boe.WBSTitle, " "),
@@ -314,7 +314,7 @@ namespace GenBOE.ActionLogic.Reporting
                     
                     if (statusReport.Count > 0)
                     {
-                        var allClin = exportInputs.Clins;
+						IReadOnlyCollection<ClinDTO> allClin = exportInputs.Clins;
 
                         var boesGroupedByClin = from c in allClin
                                                 orderby c.ClinPaddedNumber
@@ -339,7 +339,7 @@ namespace GenBOE.ActionLogic.Reporting
                                     CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + clin.BOEs.Sum(b => b.TotalHours).ToString(hoursFormatString),
                                     CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, clin.BOEs.Sum(b => b.TotalCost)));
 
-                                foreach (var boe in clin.BOEs)
+                                foreach (BOEStatusReportModelView boe in clin.BOEs)
                                 {
                                     toReturn.Add(
                                         clin.CLINTitle,

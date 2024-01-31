@@ -26,7 +26,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [TestMethod]
         public void LSHV_IsValidTestWithDefaultPrecisions()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
 
             Dictionary<Tuple<string, bool>, bool> expectedResults = new Dictionary<Tuple<string, bool>, bool>()
             {
@@ -67,7 +67,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [TestMethod]
         public void LSHV_IsHoursValidWithPrecision()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
 
             Dictionary<Tuple<string, bool>, bool> expectedResults = new Dictionary<Tuple<string, bool>, bool>()
             {
@@ -96,7 +96,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [TestMethod]
         public void LSHV_IsCostsValidWithPrecision()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
 
             Dictionary<Tuple<string, bool>, bool> expectedResults = new Dictionary<Tuple<string, bool>, bool>()
             {
@@ -126,7 +126,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentNullException))]
         public void LSHV_IsValidExceptionTest1()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
 
             sut.IsValid(null);
         }
@@ -135,7 +135,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void LSHV_IsValidExceptionTest2()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
             sut.LaborSpreadValue = "Invalid Property";
             sut.IsValid(new LaborSpreadCostValidationAttributeModelView() { LaborSpreadValue = "1234", IsSpreadTypeCost = false });
         }
@@ -144,7 +144,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void LSHV_IsValidExceptionTest3()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
             sut.IsSpreadTypeCost = "Invalid Property";
             sut.IsValid(new LaborSpreadCostValidationAttributeModelView() { LaborSpreadValue = "1234", IsSpreadTypeCost = false });
         }
@@ -153,7 +153,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void LSHV_IsValidExceptionTest4()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
             sut.IsValid(new LaborSpreadCostValidationAttributeModelView() { LaborSpreadValue = "1234ab", IsSpreadTypeCost = false, ResourceDecimalPrecision = "1" });
         }
 
@@ -161,7 +161,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void LSHV_IsValidExceptionTest5()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
             sut.IsValid(new LaborSpreadCostValidationAttributeModelView() { LaborSpreadValue = string.Empty, IsSpreadTypeCost = false });
         }
 
@@ -169,7 +169,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void LSHV_IsValidExceptionTest6()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
             sut.LaborSpreadValue = "InvalidDataType";
             sut.IsValid(new LaborSpreadCostValidationAttributeModelView() { InvalidDataType = new List<int>(), IsSpreadTypeCost = false });
         }
@@ -177,7 +177,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [TestMethod]
         public void LSHV_IsValidNoExceptionTest7()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
             sut.IsValid(new LaborSpreadCostValidationAttributeModelView() {  });
         }
 
@@ -185,7 +185,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ValidationAttributes
         [ExpectedException(typeof(ArgumentException))]
         public void LSHV_IsValidExceptionTest8()
         {
-            var sut = CreateSystem();
+			LaborSpreadHoursValidationAttribute sut = CreateSystem();
             sut.IsSpreadTypeCost = "InvalidDataType";
             sut.IsValid(new LaborSpreadCostValidationAttributeModelView() { LaborSpreadValue = "1234", InvalidDataType = new List<int>() });
         }

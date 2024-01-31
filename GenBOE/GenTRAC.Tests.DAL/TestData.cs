@@ -339,8 +339,8 @@ namespace GenTRAC.Tests.DAL
             {
                 foreach (UserDTO user in this.userCollection)
                 {
-                    // get the current update time
-                    var toDelete = this.userLoader.GetById(user.Id);
+					// get the current update time
+					UserDTO toDelete = this.userLoader.GetById(user.Id);
 
                     // delete
                     if (toDelete != null)
@@ -945,8 +945,8 @@ namespace GenTRAC.Tests.DAL
             {
                 foreach (SystemPermissionDto permission in this.permissionsCollection)
                 {
-                    // get the current update time
-                    var toDelete = this.systemPermissionsLoader.GetById(permission.Id);
+					// get the current update time
+					SystemPermissionDto toDelete = this.systemPermissionsLoader.GetById(permission.Id);
 
                     // delete
                     if (toDelete != null)
@@ -1069,8 +1069,8 @@ namespace GenTRAC.Tests.DAL
             {
                 foreach (ProposalPermissionDto permission in this.proposalPermissionsCollection)
                 {
-                    // get the current update time
-                    var toDelete = this.proposalPermissionsLoader.GetById(permission.Id);
+					// get the current update time
+					ProposalPermissionDto toDelete = this.proposalPermissionsLoader.GetById(permission.Id);
 
                     // delete
                     if (toDelete != null)

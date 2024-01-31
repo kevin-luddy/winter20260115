@@ -28,8 +28,8 @@ namespace GenTRAC.Tests.ViewModels
         /// <returns>n</returns>
         public static IList<ValidationResult> Validate(object model)
         {
-            var results = new List<ValidationResult>();
-            var validationContext = new ValidationContext(model, null, null);
+            List<ValidationResult> results = new List<ValidationResult>();
+            ValidationContext validationContext = new ValidationContext(model, null, null);
             Validator.TryValidateObject(model, validationContext, results, true);
             if (model is IValidatableObject)
             {

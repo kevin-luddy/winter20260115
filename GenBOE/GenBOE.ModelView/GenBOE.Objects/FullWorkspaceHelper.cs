@@ -159,15 +159,15 @@ namespace GenBOE.Objects
                 throw new ArgumentException("Workspace id of the WBS does NOT match the workspace argument.", nameof(wbs));
             }
 
-            // Get all workspace variables that are currently summing the WBS
-            var workspaceVariablesReferencingWBS = (from w in workspace.WorkspaceVariables
+			// Get all workspace variables that are currently summing the WBS
+			IEnumerable<WorkspaceVariableDTO> workspaceVariablesReferencingWBS = (from w in workspace.WorkspaceVariables
                                                     where w.ValueType == VarValueType.SumOfBOEs
                                                     from s in w.SelectedBOEsToSum
                                                     where s.WBSID.HasValue && s.WBSID.Value == wbs.Id
                                                     select w).Distinct();
 
-            // Get all ordinary variables that are currently summing the WBS
-            var ordinaryVariablesReferencingWBS = (from b in workspace.Boes
+			// Get all ordinary variables that are currently summing the WBS
+			IEnumerable<OrdinaryVariableDto> ordinaryVariablesReferencingWBS = (from b in workspace.Boes
                                                    from t in workspace.TaskElements.Where(x => x.BoeID == b.Id)
                                                    from o in t.OrdinaryVariables
                                                    where o.ValueType == VarValueType.SumOfBOEs
@@ -175,8 +175,8 @@ namespace GenBOE.Objects
                                                    where s.WBSID.HasValue && s.WBSID.Value == wbs.Id
                                                    select o).Distinct();
 
-            // Get all BOEs that are referencing any of the variables in the two above collections
-            var originBOEsToCheck = (from w in workspaceVariablesReferencingWBS
+			// Get all BOEs that are referencing any of the variables in the two above collections
+			List<int> originBOEsToCheck = (from w in workspaceVariablesReferencingWBS
                                      from b in FullWorkspaceHelper.GetBOEIDsUsingWorkspaceVarID(workspace, w.Id)
                                      select b).Union((from o in ordinaryVariablesReferencingWBS
                                                       select o.BoeID)).ToList();
@@ -297,7 +297,7 @@ namespace GenBOE.Objects
                                        where o.BoeID == idOfBoeBeingDeleted
                                        select te.BoeID).Distinct().ToList();
 
-            var workspaceVarsUsedByBOE = (from x in workspace.WorkspaceVariables
+			IEnumerable<int> workspaceVarsUsedByBOE = (from x in workspace.WorkspaceVariables
                                                 from s in x.SelectedBOEsToSum
                                                 where s.BoeID == idOfBoeBeingDeleted
                                                 select x.Id).Distinct();
@@ -569,8 +569,8 @@ namespace GenBOE.Objects
                                                                   where s.CLINID.HasValue && s.CLINID.Value == clin.Id
                                                                   select w.Id).Distinct().ToCollection();
 
-            // Get all ordinary variables that are currently summing the WBS
-            var ordinaryVariablesReferencingCLIN = (from b in workspace.Boes
+			// Get all ordinary variables that are currently summing the WBS
+			IEnumerable<OrdinaryVariableDto> ordinaryVariablesReferencingCLIN = (from b in workspace.Boes
                                                     from t in workspace.TaskElements.Where(x => x.BoeID == b.Id)
                                                     from o in t.OrdinaryVariables
                                                     where o.ValueType == VarValueType.SumOfBOEs
@@ -578,7 +578,7 @@ namespace GenBOE.Objects
                                                     where s.CLINID.HasValue && s.CLINID.Value == clin.Id
                                                     select o).Distinct();
 
-            var originBOEsToCheck = (from w in workspaceVariablesReferencingCLIN
+			List<int> originBOEsToCheck = (from w in workspaceVariablesReferencingCLIN
                                      from b in FullWorkspaceHelper.GetBOEIDsUsingWorkspaceVarID(workspace, w)
                                      select b).Union((from o in ordinaryVariablesReferencingCLIN
                                                       select o.BoeID)).ToList();

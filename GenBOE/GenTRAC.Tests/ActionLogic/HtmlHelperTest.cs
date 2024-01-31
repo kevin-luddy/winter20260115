@@ -51,7 +51,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void B_BreakdownGroup_Test()
         {
-            var sut = this.CreateSystem();
+            HtmlHelper sut = this.CreateSystem();
 
             UserDTO group = new UserDTO() { Id = 15, Ntid = "test.group", DisplayName = "Group" };
 
@@ -62,7 +62,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetById(group.Id)).Returns(group);
             this.adUtils.Setup(x => x.GetAdGroupUsers(group.Ntid)).Returns(new List<UserData>() { user1, user2, user3 });
 
-            var result = sut.BreakdownGroup(group.Id);
+            string result = sut.BreakdownGroup(group.Id);
 
             string expectedHtml = "<ul><li>User1</li><li>User2</li><li>User3</li></ul>";
 

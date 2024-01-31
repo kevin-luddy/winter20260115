@@ -63,9 +63,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(exportInputs));
             }
 
-            var toReturn = new ExcelExportWorksheet("Workspace Identification");
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("Workspace Identification");
 
-            var workspace = exportInputs.Workspace;
+			Dtos.WorkspaceDTO workspace = exportInputs.Workspace;
 
             toReturn.Add(this.sEmpty, workspace.WorkspaceName);
             toReturn.Add(this.sEmpty, workspace.Description);

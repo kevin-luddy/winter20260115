@@ -397,8 +397,8 @@ namespace GenBOE.ActionLogic.Common.MOQ
             Collection<string> constants = new Collection<string>();
             Collection<string> unitsDesignators = new Collection<string>();
 
-            // Get all operands in this equation portion
-            var allOperands = GetAllOperands(inputEquation);
+			// Get all operands in this equation portion
+			ICollection<string> allOperands = GetAllOperands(inputEquation);
 
             // Check for no operands in this portion of the equation. If any portion of the equation has
             // no operands, then we'll thow an error. However, if we are in a portion of the equation that
@@ -688,7 +688,7 @@ namespace GenBOE.ActionLogic.Common.MOQ
                             toValidate));
                 }
 
-                var commaCount = regexFindCommas.Matches(toValidate).Count;
+				int commaCount = regexFindCommas.Matches(toValidate).Count;
 
                 if (commaCount > 0)
                 {
@@ -701,7 +701,7 @@ namespace GenBOE.ActionLogic.Common.MOQ
                                 toValidate));
                     }
 
-                    var matches = regexValidCommaPlacement.Matches(toValidate);
+					MatchCollection matches = regexValidCommaPlacement.Matches(toValidate);
                     if (matches.Count != commaCount)
                     {
                         // Throw an exception with a specific message if invalid commas are present

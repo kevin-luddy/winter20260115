@@ -59,7 +59,7 @@ namespace GenBOE.ActionLogic.BLL
             ICollection<BoeDTO> boesToSave = inModifiedBOECollection;
 
             int currentUserID = workspace.CurrentActiveUser.UserID;
-            foreach (var boe in boesToSave)
+            foreach (BoeDTO boe in boesToSave)
             {
                 boe.UpdatedByUserId = currentUserID;
             }

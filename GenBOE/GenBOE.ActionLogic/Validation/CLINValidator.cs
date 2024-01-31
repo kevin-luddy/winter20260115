@@ -44,11 +44,11 @@ namespace GenBOE.ActionLogic.Validation
 
             FullWorkspace workspace = this.factory.CreateFullWorkspace(dataToValidate.WorkspaceID);
 
-            // Get all CLINs in the workspace
-            var existingCLINs = workspace.Clins;
+			// Get all CLINs in the workspace
+			IReadOnlyCollection<FullClin> existingCLINs = workspace.Clins;
 
-            // Validate unique CLIN number
-            var duplicateCLINNumbers = (from c in existingCLINs
+			// Validate unique CLIN number
+			bool duplicateCLINNumbers = (from c in existingCLINs
                                         where c.Id != dataToValidate.Id &&
                                               c.ClinPaddedNumber.Equals(_clinDTODataLoader.PadClinNumber(dataToValidate.ClinNumber))
                                         select c).Any();

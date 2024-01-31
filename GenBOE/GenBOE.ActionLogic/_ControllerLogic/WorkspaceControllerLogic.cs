@@ -462,7 +462,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				ICollection<CustomFieldValueDTO> allCustomFieldValues = this.customFieldValueLoader.GetCustomFieldValueDTOsByCustomFieldIds(customFields.Select(i => i.Id).ToCollection<int>());
 				foreach (CustomFieldDTO customField in customFields)
 				{
-					var newModelView = new BOECustomFieldsGridModelView(customField)
+					BOECustomFieldsGridModelView newModelView = new BOECustomFieldsGridModelView(customField)
 					{
 						inUse = allCustomFieldValues.Any(c => c.CustomFieldID == customField.Id && c.CustomFieldValueInUseFlag)
 					};
@@ -542,7 +542,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICollection<TMResourceRateDTO> currentWorkspaceRates = this.tmResourceRateLoader.GetByWorkspaceId(workspace.Id)
 				.Where(x => x.ResourceRateID != currentResourceRateID && x.ResourceID == resourceID).ToArray();
 
-			foreach (var resourceRate in currentWorkspaceRates)
+			foreach (TMResourceRateDTO resourceRate in currentWorkspaceRates)
 			{
 				if (resourceRate.StartDate.HasValue && resourceRate.EndDate.HasValue)
 				{

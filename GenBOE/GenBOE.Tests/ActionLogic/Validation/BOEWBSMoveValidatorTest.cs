@@ -220,7 +220,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
             //Value Declarations
             FullWbs value = new FullWbs(new WbsDTO() { Id = 1 });
             Collection<Dictionary<string, object>> inData = new Collection<Dictionary<string, object>>(){
-                new Dictionary<string, object>() { {"Boe", (FullBoe)null}, {"Workspace", (FullWorkspace)null } }};
+                new Dictionary<string, object>() { {"Boe", null }, {"Workspace", null } }};
 
             BOEWBSMoveValidator sut = new BOEWBSMoveValidator(_VariableCircularReferenceChecker.Object, factory.Object);
 
@@ -239,7 +239,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
             //Value Declarations
             FullWbs value = new FullWbs(new WbsDTO() { Id = 1 });
             Collection<Dictionary<string, object>> inData = new Collection<Dictionary<string, object>>(){
-                new Dictionary<string, object>() { {"Boe", new FullBoe()}, {"Workspace", (FullWorkspace)null } }};
+                new Dictionary<string, object>() { {"Boe", new FullBoe()}, {"Workspace", null } }};
 
             BOEWBSMoveValidator sut = new BOEWBSMoveValidator(_VariableCircularReferenceChecker.Object, factory.Object);
 

@@ -68,8 +68,8 @@ namespace GenBOE.ActionLogic.IO.Import
 
             foreach (BoeDTO boe in importedBoeData)
             {
-                //check if an update should be performed
-                var originalImportedBoe = allImportData.ImportedBoes.FirstOrDefault(b => b.Id == boe.Id);
+				//check if an update should be performed
+				WorkofflineImportedBoe originalImportedBoe = allImportData.ImportedBoes.FirstOrDefault(b => b.Id == boe.Id);
                 if (originalImportedBoe != null && originalImportedBoe.ImportTypes.Contains(BoeImportResult.UpdateBoe))
                 {
                     BoeDTO modifiedBoe = this._boeMerge.MergeBoeWithData(boe);

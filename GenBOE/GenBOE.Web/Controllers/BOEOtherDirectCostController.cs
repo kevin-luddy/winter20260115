@@ -144,8 +144,8 @@ namespace GenBOE.Web.Controllers
 
                 theModelViews = theModelViews.OrderBy(teOrder => teOrder.BOETaskElementOrder).ThenBy(teOrder => teOrder.ODCID).ToCollection();
 
-                //create a var for list items
-                var orderOfTaskElements = new Collection<SelectListItem>();
+				//create a var for list items
+				Collection<SelectListItem> orderOfTaskElements = new Collection<SelectListItem>();
                 //get a list of each task element.
                 foreach (BOEOtherDirectCostGridModelView row in theModelViews)
                 {
@@ -374,8 +374,8 @@ namespace GenBOE.Web.Controllers
             ViewData["BOEStartDate"] = boe.StartDate.ToString("MM/yyyy");
             ViewData["BOEEndDate"] = boe.EndDate.ToString("MM/yyyy");
 
-            // Perform Action
-            var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
+			// Perform Action
+			JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
             LinkedList<ODCSpreadDetailModelView> returnData = new LinkedList<ODCSpreadDetailModelView>();
 
             if (odcElementID.HasValue)

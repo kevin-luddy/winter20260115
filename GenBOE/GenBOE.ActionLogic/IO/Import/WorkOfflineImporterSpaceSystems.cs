@@ -46,8 +46,8 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 UserDTO activeUser = workspace.CurrentActiveUser;
 
-                // retrieve the list of authors on the BOE
-                var WSAdminList = from x in workspace.WorkspacePermissions
+				// retrieve the list of authors on the BOE
+				System.Collections.Generic.IEnumerable<int> WSAdminList = from x in workspace.WorkspacePermissions
                                   where x.Role == Role.WorkspaceAdmin
                                   select x.ETIUserId;
 

@@ -40,7 +40,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SearchBulkArchiveTest()
         {
-            var sut = this.CreateSystem();
+			IBulkArchiveLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
 
@@ -76,7 +76,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SearchBulkArchiveTest_SearchCriteria()
         {
-            var sut = this.CreateSystem();
+			IBulkArchiveLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
 
@@ -245,7 +245,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SearchBulkArchiveTest_VerifyCanceledProposalsNotCounted()
         {
-            var sut = this.CreateSystem();
+			IBulkArchiveLoader sut = this.CreateSystem();
 
             DateTime startDate = DateTime.Today.AddDays(-5);
             DateTime endDate = DateTime.Today.AddDays(5);
@@ -281,7 +281,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SearchBulkArchiveTest_LineOfBusinessWithAllProgramArea()
         {
-            var sut = this.CreateSystem();
+			IBulkArchiveLoader sut = this.CreateSystem();
 
             DateTime startDate = DateTime.Today.AddDays(-5);
             DateTime endDate = DateTime.Today.AddDays(5);
@@ -323,7 +323,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_ApplyBulkArchiveTest()
         {
-            var sut = this.CreateSystem();
+			IBulkArchiveLoader sut = this.CreateSystem();
 
             // both dates
             DateTime startDate = DateTime.Today.AddDays(-5);
@@ -466,7 +466,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_ApplyBulkArchiveTest_NoneArchivedSinceAddingIneligibleStatusProposals()
         {
-            var sut = this.CreateSystem();
+			IBulkArchiveLoader sut = this.CreateSystem();
 
             DateTime startDate = DateTime.Today.AddDays(-50);
             int lineOfBusiness = 10;

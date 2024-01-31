@@ -68,7 +68,7 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 return false;
             }
-            var index = mystring.LastIndexOf(NumberFormatInfo.CurrentInfo.NumberDecimalSeparator);
+			int index = mystring.LastIndexOf(NumberFormatInfo.CurrentInfo.NumberDecimalSeparator);
             if (index == -1)
             {
                 return true;
@@ -97,7 +97,7 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 return false;
             }
-            var index = mystring.LastIndexOf(NumberFormatInfo.CurrentInfo.NumberDecimalSeparator);
+			int index = mystring.LastIndexOf(NumberFormatInfo.CurrentInfo.NumberDecimalSeparator);
             if (index == -1)
             {
                 return true;

@@ -36,6 +36,7 @@ CREATE TYPE [dbo].[TT_BOELaborType] AS TABLE(
 	[CLINID] [int] NULL,
 	[CanOffload] bit NULL,
 	[LaborSortId] [int] NOT NULL,
+	[BRCResourceID] [int] NULL,
 	[OrderID] [int] NOT NULL
 );
 GO
@@ -91,6 +92,7 @@ AS
 **      6/24/16     twilson3            Fix In-Use Flag for Custom Fields
 **		4/2/18		ranzalon			BOEJ-3268 - Update for Open Ended Custom Fields
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		1/23/24		e302876			    PROPH-1484 - New column BRCResourceID
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -263,6 +265,7 @@ AS
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
 **		9/15/20		ranzalon			BOEJ-4825 - Added MOQTypeSelectionId
 **		12/8/2020	ranzalon			BOEJ-4972 - Removed MOQTypeSelectionId
+**		1/23/24		e302876			    PROPH-1484 - New column BRCResourceID
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -285,6 +288,7 @@ SET
 	[WBSID]	= T.WBSID,
 	[CLINID] = T.CLINID,
 	[CanOffload] = T.CanOffload,
+	[BRCResourceID] = T.BRCResourceID,
 	[LaborSortId] = T.LaborSortId
 FROM [dbo].[BOELaborType] L
 	INNER JOIN @BOELaborType T ON 
@@ -324,6 +328,7 @@ AS
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
 **		9/15/20		ranzalon			BOEJ-4825 - Added MOQTypeSelectionId
 **		12/8/2020	ranzalon			BOEJ-4972 - Removed MOQTypeSelectionId
+**		1/23/24		e302876			    PROPH-1484 - New column BRCResourceID
 *******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -347,6 +352,7 @@ AS
 		[CLINID] [int] NULL,
 		[CanOffload] bit NULL,
 		[LaborSortId] [int] NOT NULL,
+		[BRCResourceID] [int] NULL,
 		[OrderID] [int] NOT NULL
 	)
 	DECLARE @BOELaborTypeID [int],
@@ -365,6 +371,7 @@ AS
 		@CLINID [int],
 		@CanOffload bit,
 		@LaborSortId [int],
+		@BRCResourceID [int],
 		@OrderID [int]
 	DECLARE @InsertedItem AS Table (Id int)
 
@@ -388,6 +395,7 @@ AS
 				@CLINID = CLINID,
 				@CanOffload = CanOffload,
 				@LaborSortId = LaborSortId,
+				@BRCResourceID = BRCResourceID,
 				@OrderID = OrderID
 			FROM @TT_BOELaborType
 			WHERE BOELaborTypeID < 0
@@ -412,6 +420,7 @@ AS
 				   ,[CLINID]
 				   ,[CanOffload]
 				   ,[LaborSortId]
+				   ,[BRCResourceID]
 				   )
 			 OUTPUT inserted.BOELaborTypeID INTO @InsertedItem
 			 VALUES
@@ -431,7 +440,8 @@ AS
 					@WBSID,
 					@CLINID,
 					@CanOffload,
-					@LaborSortId) 
+					@LaborSortId,
+					@BRCResourceID) 
 
 			SELECT @BOELaborTypeID = Id FROM @InsertedItem
 	

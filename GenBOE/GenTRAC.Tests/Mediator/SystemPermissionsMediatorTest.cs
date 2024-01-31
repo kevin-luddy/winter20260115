@@ -56,8 +56,8 @@ namespace GenTRAC.Tests.Mediator
             this.permissionsMapper.Setup(x => x.Save(groupPermission)).Returns(groupPermission.Id);
             this.permissionsMapper.Setup(x => x.GetById(groupPermission.Id)).Returns(groupPermission);
 
-            var result = sut.SavePermissionDto(toSave);
-            var groupResult = sut.SavePermissionDto(groupPermission);
+            SystemPermissionDto result = sut.SavePermissionDto(toSave);
+            SystemPermissionDto groupResult = sut.SavePermissionDto(groupPermission);
 
             Assert.AreEqual(toSave, result);
             Assert.AreEqual(groupPermission, groupResult);
@@ -87,7 +87,7 @@ namespace GenTRAC.Tests.Mediator
             this.permissionsMapper.Setup(x => x.Save(toSave)).Returns(toSave.Id);
             this.permissionsMapper.Setup(x => x.GetById(toSave.Id)).Returns(toSave);
 
-            var result = sut.SavePermissionDtos(allPermissionsToSave);
+            System.Collections.Generic.ICollection<SystemPermissionDto> result = sut.SavePermissionDtos(allPermissionsToSave);
 
             DtoAssertHelpers.AssertDtos(result.First(), toSave);
         }

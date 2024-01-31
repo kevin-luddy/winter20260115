@@ -67,8 +67,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void TestComputeTimeInOneStateOpenEnded()
         {
-            var _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
-            var _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
+			Mock<IBOEHistoryDTODataLoader> _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
+			Mock<IUserDTODataLoader> _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
 
             BOEActivityReport sut = new BOEActivityReport(_IBOEHistoryDTODataLoader.Object, _IUserDTODataLoader.Object, commonDataMapper.Object);
 
@@ -85,8 +85,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void TestComputeTimeInTwoStates()
         {
-            var _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
-            var _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
+			Mock<IBOEHistoryDTODataLoader> _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
+			Mock<IUserDTODataLoader> _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
 
             BOEActivityReport sut = new BOEActivityReport(_IBOEHistoryDTODataLoader.Object, _IUserDTODataLoader.Object, commonDataMapper.Object);
 
@@ -103,8 +103,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void TestComputeTimeInTwoInterestedStatesWithMixedOthers()
         {
-            var _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
-            var _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
+			Mock<IBOEHistoryDTODataLoader> _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
+			Mock<IUserDTODataLoader> _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
 
             BOEActivityReport sut = new BOEActivityReport(_IBOEHistoryDTODataLoader.Object, _IUserDTODataLoader.Object, commonDataMapper.Object);
 
@@ -127,8 +127,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void TestComputeTimeInThreeInterestedStatesWithMixedOthersOpenEnded()
         {
-            var _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
-            var _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
+			Mock<IBOEHistoryDTODataLoader> _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
+			Mock<IUserDTODataLoader> _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
 
             BOEActivityReport sut = new BOEActivityReport(_IBOEHistoryDTODataLoader.Object, _IUserDTODataLoader.Object, commonDataMapper.Object);
 
@@ -153,8 +153,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [TestMethod]
         public void ComputeNumberOfTimesInStateTest()
         {
-            var _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
-            var _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
+			Mock<IBOEHistoryDTODataLoader> _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
+			Mock<IUserDTODataLoader> _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
 
             BOEActivityReport sut = new BOEActivityReport(_IBOEHistoryDTODataLoader.Object, _IUserDTODataLoader.Object, commonDataMapper.Object);
 
@@ -181,9 +181,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
         public void GenerateReportTest()
         {
-            var _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
-            var _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
-            var _PermissionsLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IBOEHistoryDTODataLoader> _IBOEHistoryDTODataLoader = new Mock<IBOEHistoryDTODataLoader>();
+			Mock<IUserDTODataLoader> _IUserDTODataLoader = new Mock<IUserDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _PermissionsLoader = new Mock<IPermissionsDTODataLoader>();
             Mock<IRetriever> retriever = new Mock<IRetriever>();
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 

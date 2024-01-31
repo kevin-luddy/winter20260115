@@ -308,14 +308,14 @@ namespace GenBOE.Web.Controllers
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            // Initialize Action
-            var sw = InitializeAction(_log, "DisplayVariableBOESumByWBS", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, "DisplayVariableBOESumByWBS", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
             ViewData["SumVariableResourceTypes"] = _CommonDataMapper.GetSumVariableResourceTypes();
             ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
 
-            // Return the View using the generated ModelViews
-            var toReturn = View(WebConstants.VIEW_VARIABLE_BOE_SUM_BY_WBS,
+			// Return the View using the generated ModelViews
+			ViewResult toReturn = View(WebConstants.VIEW_VARIABLE_BOE_SUM_BY_WBS,
                                 DisplayVariableBOESumByWBSModelViews(
                                     workspace,
                                     boeID));
@@ -337,11 +337,11 @@ namespace GenBOE.Web.Controllers
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            // Initialize Action
-            var sw = InitializeAction(_log, "RefreshVariableBOESumByWBS", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, "RefreshVariableBOESumByWBS", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
-            // Return the View using the generated ModelViews
-            var toReturn = Json(RefreshVariableBOESumByWBSModelViews(ws, resourceTypes));
+			// Return the View using the generated ModelViews
+			JsonResult toReturn = Json(RefreshVariableBOESumByWBSModelViews(ws, resourceTypes));
 
             // Finalize Action
             FinalizeAction(_log, "RefreshVariableBOESumByWBS", sw);
@@ -462,11 +462,11 @@ namespace GenBOE.Web.Controllers
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            // Initialize Action
-            var sw = InitializeAction(_log, "RefreshVariableBOESumByCLIN", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, boeID);
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, "RefreshVariableBOESumByCLIN", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, boeID);
 
-            // Return the View using the generated ModelViews
-            var toReturn = Json(RefreshVariableBOESumByCLINModelViews(ws, resourceTypes));
+			// Return the View using the generated ModelViews
+			JsonResult toReturn = Json(RefreshVariableBOESumByCLINModelViews(ws, resourceTypes));
 
             // Finalize Action
             FinalizeAction(_log, "RefreshVariableBOESumByCLIN", sw);
@@ -557,10 +557,11 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "DisplayMOQEquationField", SecurityPage.MOQEquationField, SecurityAuthorization.Read, ws, boeID);
 
-            var theModelView = CreateMOQModelView(ws, boe, taskElementID);
+			MOQEquationModelView theModelView = CreateMOQModelView(ws, boe, taskElementID);
             ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
             ViewData["SAPWorkspaceBeforeCutoff"] = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
+			ViewData["HistoricalReferenceExplanationIsRequired"] = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
 
 			ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
 
@@ -929,21 +930,21 @@ namespace GenBOE.Web.Controllers
                 if (count >= 2)
                 {
 
-                    // only need to worry about sum of boe workspace variables
-                    var allWorkspaceVariables = ws.WorkspaceVariables.Where(x => x.ValueType == VarValueType.SumOfBOEs).Select(y => y);
+					// only need to worry about sum of boe workspace variables
+					IEnumerable<WorkspaceVariableDTO> allWorkspaceVariables = ws.WorkspaceVariables.Where(x => x.ValueType == VarValueType.SumOfBOEs).Select(y => y);
 
                     // if there are no workspace variables, then no circular references checks are necessary
                     if (allWorkspaceVariables.Any())
                     {
                         foreach (string variable in result)
                         {
-                            var c = (from a in allWorkspaceVariables
+							WorkspaceVariableDTO c = (from a in allWorkspaceVariables
                                      where a.WorkspaceVariableName.ToUpper() == variable.ToUpper()
                                      select a).FirstOrDefault();
 
                             if (c != null)
                             {
-                                var circularReferenceCache = new VariableCircularReferenceCheckerCache();
+								VariableCircularReferenceCheckerCache circularReferenceCache = new VariableCircularReferenceCheckerCache();
                                 bool createsCR = _VariableCircularReferenceChecker.WorkspaceVariableCreatesCircularReference(circularReferenceCache, boeID, c, ws);
                                 if (createsCR)
                                 {
@@ -1059,7 +1060,7 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "ImportLaborTypeAndSpread", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
-            var toReturn = Json(new { Status = false });
+			JsonResult toReturn = Json(new { Status = false });
 
             /** Valid Model Check */
             if (ModelState.IsValid && (importResults != null))
@@ -1359,7 +1360,7 @@ namespace GenBOE.Web.Controllers
 
             this._BoeLaborControllerLogic.ReOrderLaborTypeOrder(ws, taskElement, modelView);
 
-            var toReturn = Json(new { Status = true });
+			JsonResult toReturn = Json(new { Status = true });
 
             // Finalize Action
             FinalizeAction(_log, "SaveReorderLaborTypes", sw);
@@ -1579,8 +1580,8 @@ namespace GenBOE.Web.Controllers
 
             if (importSpreadResults != null)
             {
-                // Get EXISTING UPDATED Labor Spreads from the imported data
-                var updatedLaborSpreads = from x in importSpreadResults
+				// Get EXISTING UPDATED Labor Spreads from the imported data
+				IEnumerable<ImportLaborSpreadModelView> updatedLaborSpreads = from x in importSpreadResults
                                           where x.ImportTypes.Contains((int)LaborSpreadImportResult.UpdateSpread)
                                           select x;
 
@@ -1892,16 +1893,16 @@ namespace GenBOE.Web.Controllers
         /// <returns>model view</returns>
         private ICollection<VariableBOESumByWBSModelView> DisplayVariableBOESumByWBSModelViews(string workspace, int? boeID)
         {
-            var toReturn = new Collection<VariableBOESumByWBSModelView>();
+			Collection<VariableBOESumByWBSModelView> toReturn = new Collection<VariableBOESumByWBSModelView>();
 
             // Get the workspace for the given short name
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            // Get all WBSs for the specified workspace
-            var WBSs = ws.WbsElementsNoMultiWbs;
+			// Get all WBSs for the specified workspace
+			IReadOnlyCollection<FullWbs> WBSs = ws.WbsElementsNoMultiWbs;
 
-            // Get all BOEs in the workspace
-            var BOEs = ws.Boes.Where(b => !b.IsMultiClinWbs);
+			// Get all BOEs in the workspace
+			IEnumerable<FullBoe> BOEs = ws.Boes.Where(b => !b.IsMultiClinWbs);
 
 
             // Associate each BOE with its WBS
@@ -1915,12 +1916,12 @@ namespace GenBOE.Web.Controllers
                                    WBS = w
                                }).ToList();
 
-            var clipping = false;
-            var clippingWBSNumberPrefix = string.Empty;
+			bool clipping = false;
+			string clippingWBSNumberPrefix = string.Empty;
             IDictionary<int, BOEStateModelView> boeStates = this._CommonDataMapper.getBOEStatesDictionary();
 
             // Iterate over each WBS in the workspace
-            foreach (var WBS in WBSs)
+            foreach (FullWbs WBS in WBSs)
             {
                 // Get all BOEs for the current WBS
                 var boesForWBS = from b in boesForWBSs
@@ -1937,8 +1938,8 @@ namespace GenBOE.Web.Controllers
                 {
                     if (!boesForWBS.Any())
                     {
-                        // Create a ModelView to represent the summary WBS row in the View's table
-                        var modelView = new VariableBOESumByWBSModelView
+						// Create a ModelView to represent the summary WBS row in the View's table
+						VariableBOESumByWBSModelView modelView = new VariableBOESumByWBSModelView
                         {
                             WBSID = WBS.Id,
                             WBSLevel = WBS.Level,
@@ -1956,8 +1957,8 @@ namespace GenBOE.Web.Controllers
                         clipping = true;
                         clippingWBSNumberPrefix = WBS.WbsNumber + '.';
 
-                        // Get the WBS row that these BOEs will be nested under
-                        var modelViewToAppend = (from m in toReturn
+						// Get the WBS row that these BOEs will be nested under
+						VariableBOESumByWBSModelView modelViewToAppend = (from m in toReturn
 	     where m.WBSLevel < WBS.Level &&
 	           WBS.WbsNumber.StartsWith(m.WBSNumber + ".", StringComparison.CurrentCultureIgnoreCase)
 	     select m).LastOrDefault();
@@ -1965,8 +1966,8 @@ namespace GenBOE.Web.Controllers
                         // Iterate over each BOE for the current WBS
                         foreach (var boeForWBS in boesForWBS)
                         {
-                            // Create a ModelView to represent the nested BOE in the View's table
-                            var nestedModelView = new VariableBOESumBOEElement
+							// Create a ModelView to represent the nested BOE in the View's table
+							VariableBOESumBOEElement nestedModelView = new VariableBOESumBOEElement
                             {
                                 BOEID = boeForWBS.BOE.Id,
                                 BOEStatus = boeStates[(int)boeForWBS.BOE.State].BOEState,
@@ -1981,7 +1982,7 @@ namespace GenBOE.Web.Controllers
                             // get shown at the root of the View.
                             if (modelViewToAppend == null)
                             {
-                                var invisibleModelView = new VariableBOESumByWBSModelView
+								VariableBOESumByWBSModelView invisibleModelView = new VariableBOESumByWBSModelView
                                 {
                                     WBSID = -1,
                                     WBSNumber = WBS.WbsNumber,
@@ -2015,18 +2016,18 @@ namespace GenBOE.Web.Controllers
         /// <returns>model view</returns>
         private ICollection<VariableBOESumByWBSModelView> RefreshVariableBOESumByWBSModelViews(FullWorkspace ws, ICollection<SumVariableResourceType> resourceTypes)
         {
-            var toReturn = new Collection<VariableBOESumByWBSModelView>();
+			Collection<VariableBOESumByWBSModelView> toReturn = new Collection<VariableBOESumByWBSModelView>();
 
             if (resourceTypes == null)
             {
                 resourceTypes = new List<SumVariableResourceType>();
             }
 
-            // Get all WBSs for the specified workspace
-            var WBSs = ws.WbsElementsNoMultiWbs;
+			// Get all WBSs for the specified workspace
+			IReadOnlyCollection<FullWbs> WBSs = ws.WbsElementsNoMultiWbs;
 
-            // Get all BOEs in the workspace
-            var BOEs = ws.Boes.Where(b => !b.IsMultiClinWbs);
+			// Get all BOEs in the workspace
+			IEnumerable<FullBoe> BOEs = ws.Boes.Where(b => !b.IsMultiClinWbs);
 
             // Associate each BOE with its WBS
 
@@ -2040,12 +2041,12 @@ namespace GenBOE.Web.Controllers
                                    WBS = w
                                }).ToList();
 
-            var clipping = false;
-            var clippingWBSNumberPrefix = string.Empty;
+			bool clipping = false;
+			string clippingWBSNumberPrefix = string.Empty;
 
             // Iterate over each WBS in the workspace
 
-            foreach (var WBS in WBSs)
+            foreach (FullWbs WBS in WBSs)
             {
                 // Get all BOEs for the current WBS
                 var boesForWBS = from b in boesForWBSs
@@ -2064,8 +2065,8 @@ namespace GenBOE.Web.Controllers
                     {
                         DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
                         data.FillData(new List<OrdinaryVariableDto>() { new OrdinaryVariableDto() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { WBSID = WBS.Id } } } }, null, ws);
-                        // Create a ModelView to represent the summary WBS row in the View's table
-                        var modelView = new VariableBOESumByWBSModelView
+						// Create a ModelView to represent the summary WBS row in the View's table
+						VariableBOESumByWBSModelView modelView = new VariableBOESumByWBSModelView
                         {
                             WBSID = WBS.Id,
 
@@ -2086,8 +2087,8 @@ namespace GenBOE.Web.Controllers
                         clipping = true;
                         clippingWBSNumberPrefix = WBS.WbsNumber + '.';
 
-                        // Get the WBS row that these BOEs will be nested under
-                        var modelViewToAppend = (from m in toReturn
+						// Get the WBS row that these BOEs will be nested under
+						VariableBOESumByWBSModelView modelViewToAppend = (from m in toReturn
 	     where m.WBSLevel < WBS.Level &&
 	           WBS.WbsNumber.StartsWith(m.WBSNumber + ".", StringComparison.CurrentCultureIgnoreCase)
 	     select m).LastOrDefault();
@@ -2099,8 +2100,8 @@ namespace GenBOE.Web.Controllers
                             data.FillData(new List<OrdinaryVariableDto>() { new OrdinaryVariableDto() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { BoeID = boeForWBS.BOE.Id } } } },
                                 new List<WorkspaceVariableDTO>() { new WorkspaceVariableDTO() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { BoeID = boeForWBS.BOE.Id } } } }, ws);
 
-                            // Create a ModelView to represent the nested BOE in the View's table
-                            var nestedModelView = new VariableBOESumBOEElement
+							// Create a ModelView to represent the nested BOE in the View's table
+							VariableBOESumBOEElement nestedModelView = new VariableBOESumBOEElement
                             {
                                 BOEID = boeForWBS.BOE.Id,
                                 BOETotal = _VariableSelectBOEtoSumCalculation.GetTotalBasedOnBoeID(boeForWBS.BOE.Id, new Collection<int>(resourceTypes.Select(r => (int)r).ToArray()), data)
@@ -2112,7 +2113,7 @@ namespace GenBOE.Web.Controllers
                             // get shown at the root of the View.
                             if (modelViewToAppend == null)
                             {
-                                var invisibleModelView = new VariableBOESumByWBSModelView
+								VariableBOESumByWBSModelView invisibleModelView = new VariableBOESumByWBSModelView
                                 {
                                     WBSID = boeForWBS.BOE.WBSID.HasValue ? boeForWBS.BOE.WBSID.Value : -1,
                                     WorkspaceDecimalPrecision = ws.DecimalPrecision
@@ -2226,7 +2227,7 @@ namespace GenBOE.Web.Controllers
                 throw new ArgumentNullException(nameof(copyTaskElement));
             }
 
-            var inUseWorkspaceVariables = (from wID in copyTaskElement.WorkspaceVariableIDs
+			List<WorkspaceVariableDTO> inUseWorkspaceVariables = (from wID in copyTaskElement.WorkspaceVariableIDs
                                            from workspaceVariable in workspace.WorkspaceVariables
                                            where workspaceVariable.Id == wID
                                            select workspaceVariable).ToList();
@@ -2243,7 +2244,7 @@ namespace GenBOE.Web.Controllers
                 BoeTaskElementDTO destinationTaskElement = this.Factory.CreateTaskElement(destinationTaskElementId, workspace.DecimalPrecision, workspace.CostDecimalPrecision);
                 if (destinationTaskElement.OrdinaryVariables.Any())
                 {
-                    var taskOrdinaryVariables = new List<OrdinaryVariableDto>(copyTaskElement.OrdinaryVariables);
+					List<OrdinaryVariableDto> taskOrdinaryVariables = new List<OrdinaryVariableDto>(copyTaskElement.OrdinaryVariables);
                     foreach (OrdinaryVariableDto ordinaryVariable in destinationTaskElement.OrdinaryVariables)
                     {
                         OrdinaryVariableDto match = taskOrdinaryVariables.FirstOrDefault(v => v.OrdinaryVariableName == ordinaryVariable.OrdinaryVariableName);
@@ -2276,14 +2277,14 @@ namespace GenBOE.Web.Controllers
 
         private MOQEquationModelView CreateMOQModelView(FullWorkspace ws, FullBoe boe, int taskElementID)
         {
-            var theModelView = new MOQEquationModelView();
+			MOQEquationModelView theModelView = new MOQEquationModelView();
 
             if (taskElementID > 0)
             {
                 BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
                 SetMOQEquationViewData(ws, boe.Id, taskElement.MOQType);
                 DataRelationshipVerifier.VerifyDataRelation(taskElement, boe.Id);
-                var inUseWorkspaceVariables = (from wID in taskElement.WorkspaceVariableIDs
+				List<WorkspaceVariableDTO> inUseWorkspaceVariables = (from wID in taskElement.WorkspaceVariableIDs
 	   from workspaceVariable in ws.WorkspaceVariables
 	   where workspaceVariable.Id == wID
 	   select workspaceVariable).ToList();

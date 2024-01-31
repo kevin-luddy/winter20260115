@@ -86,7 +86,7 @@ namespace GenBOE.ActionLogic
 
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            foreach (var inPermission in inPermissions)
+            foreach (SavePermissionModelView inPermission in inPermissions)
             {
                 inPermission.WorkspaceId = ws.Id;
             }
@@ -112,7 +112,7 @@ namespace GenBOE.ActionLogic
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
-                foreach (var inPermission in inPermissions)
+                foreach (SavePermissionModelView inPermission in inPermissions)
                 {
                     // Seperate nt ids
                     String[] tempids = inPermission.EntityIds[0].Split(';');

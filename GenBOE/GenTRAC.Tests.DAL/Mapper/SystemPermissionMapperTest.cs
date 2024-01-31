@@ -49,7 +49,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetPermissionByIdTest()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionMapper sut = this.CreateSystem();
 
             SystemPermissionDto systemPermissionDto = new SystemPermissionDto()
             {
@@ -71,7 +71,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetSystemPermissions()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionMapper sut = this.CreateSystem();
 
             SystemPermissionDto systemPermissionDto1 = new SystemPermissionDto()
             {
@@ -99,7 +99,7 @@ namespace GenTRAC.Tests.DAL.Mapper
             this.systemPermissionsLoader.Setup(x => x.GetAllIds()).Returns(new List<int>() { systemPermissionDto1.Id, systemPermissionDto2.Id, systemPermissionDto3.Id });
             this.systemPermissionsLoader.Setup(x => x.GetByIds(new List<int>() { systemPermissionDto1.Id, systemPermissionDto2.Id, systemPermissionDto3.Id })).Returns(new List<SystemPermissionDto>() { systemPermissionDto1, systemPermissionDto2, systemPermissionDto3 });
 
-            var toTest = sut.GetSystemPermissions();
+			ICollection<SystemPermissionDto> toTest = sut.GetSystemPermissions();
 
             Assert.AreEqual(3, toTest.Count);
             DtoAssertHelpers.AssertDtos(systemPermissionDto1, toTest.Where(x => x.Id == systemPermissionDto1.Id).FirstOrDefault());
@@ -113,7 +113,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetByUserIdTest()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionMapper sut = this.CreateSystem();
 
             int userId = 14;
 
@@ -127,7 +127,7 @@ namespace GenTRAC.Tests.DAL.Mapper
             this.systemPermissionsLoader.Setup(x => x.GetIdsByUserId(userId)).Returns(new List<int>() { systemPermissionDto.Id });
             this.systemPermissionsLoader.Setup(x => x.GetByIds(new List<int>() { systemPermissionDto.Id })).Returns(new List<SystemPermissionDto>() { systemPermissionDto });
 
-            var toTest = sut.GetByUserId(userId);
+			ICollection<SystemPermissionDto> toTest = sut.GetByUserId(userId);
 
             DtoAssertHelpers.AssertDtos(systemPermissionDto, toTest.FirstOrDefault());
 
@@ -141,7 +141,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_SavePermissionTest()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionMapper sut = this.CreateSystem();
 
             SystemPermissionDto systemPermissionBefore = new SystemPermissionDto()
             {
@@ -159,7 +159,7 @@ namespace GenTRAC.Tests.DAL.Mapper
 
             this.systemPermissionsLoader.Setup(x => x.Save(systemPermissionBefore)).Returns(systemPermissionAfter.Id);
 
-            var actual = ((IInternalSystemPermissionMapper)sut).Save(systemPermissionBefore);
+			int? actual = ((IInternalSystemPermissionMapper)sut).Save(systemPermissionBefore);
             Assert.AreEqual(systemPermissionAfter.Id, actual);
         }
 
@@ -172,7 +172,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [ExpectedException(typeof(ArgumentNullException))]
         public void M_SavePermissionsTest_Exception()
         {
-            var sut = this.CreateSystem();
+			SystemPermissionMapper sut = this.CreateSystem();
             ((IInternalSystemPermissionMapper)sut).Save(null);
         }
         #endregion Exception Test

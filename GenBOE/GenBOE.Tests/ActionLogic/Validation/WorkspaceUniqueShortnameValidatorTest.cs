@@ -21,7 +21,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void WorkspaceUniqueShortnameValidator_IsValid()
         {
-            var wsLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> wsLoader = new Mock<IWorkspaceDTODataLoader>();
 
             WorkspaceUniqueShortnameValidator sut = new WorkspaceUniqueShortnameValidator(wsLoader.Object);
 
@@ -46,7 +46,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(InvalidCastException))]
         public void WorkspaceUniqueShortnameValidator_InvalidParameterTest()
         {
-            var wsLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> wsLoader = new Mock<IWorkspaceDTODataLoader>();
             WorkspaceUniqueShortnameValidator sut = new WorkspaceUniqueShortnameValidator(wsLoader.Object);
 
             decimal[] test = { 3.14m, 6.77m };
@@ -60,7 +60,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(ArgumentNullException))]
         public void WorkspaceUniqueShortnameValidator_NullParameterTest()
         {
-            var wsLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> wsLoader = new Mock<IWorkspaceDTODataLoader>();
             WorkspaceUniqueShortnameValidator sut = new WorkspaceUniqueShortnameValidator(wsLoader.Object);
             sut.validation(null, new Collection<Dictionary<string, string>>());
         }

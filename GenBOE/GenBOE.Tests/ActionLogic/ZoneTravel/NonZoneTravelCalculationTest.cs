@@ -203,7 +203,7 @@ namespace GenBOE.Tests.ActionLogic.ZoneTravel
             };
 
             Assert.AreEqual((decimal)300.3, calc.TotalAirfare);
-            Assert.AreEqual((decimal)0, calc.TotalCarRental);
+            Assert.AreEqual(0, calc.TotalCarRental);
             Assert.AreEqual((decimal)668.1, calc.TotalPerDiem);
             Assert.AreEqual((decimal)987.33, Math.Round(calc.TotalTravelAgencyFee, 2));
             Assert.AreEqual((decimal)1955.73, calc.TotalTripCost);
@@ -226,8 +226,8 @@ namespace GenBOE.Tests.ActionLogic.ZoneTravel
                 MiscEscalationRates = EscalationRates
             };
 
-            Assert.AreEqual((decimal)0, calc.TotalAirfare);
-            Assert.AreEqual((decimal)0, calc.TotalCarRental);
+            Assert.AreEqual(0, calc.TotalAirfare);
+            Assert.AreEqual(0, calc.TotalCarRental);
             Assert.AreEqual((decimal)1113.5, calc.TotalPerDiem);
             Assert.AreEqual((decimal)9.33, Math.Round(calc.TotalTravelAgencyFee, 2));
             Assert.AreEqual((decimal)4021.73, Math.Round(calc.TotalTripCost, 2));

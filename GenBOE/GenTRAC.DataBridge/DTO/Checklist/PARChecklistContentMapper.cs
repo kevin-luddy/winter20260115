@@ -57,7 +57,7 @@ namespace GenTRAC.DataBridge.DTO
 
                 // load checklist id
                 GetIdByIdDelegate cacheIdDelegate = new GetIdByIdDelegate(this.DataLoader.GetChecklistIdByProposalId);
-                var tempId = this.CacheLoader.GetData(cacheIdDelegate, new object[] { proposalId }, idKey);
+				object tempId = this.CacheLoader.GetData(cacheIdDelegate, new object[] { proposalId }, idKey);
 
                 if (tempId != null)
                 {
@@ -66,7 +66,7 @@ namespace GenTRAC.DataBridge.DTO
                     // now load checklist content
                     string contentKey = CacheConstants.PAR_CHECKLIST_CONTENT_BY_ID + id;
                     GetDtoByIdDelegate cacheContentDelegate = new GetDtoByIdDelegate(this.DataLoader.GetChecklistByProposalId);
-                    var tempResult = this.CacheLoader.GetData(cacheContentDelegate, new object[] { proposalId }, contentKey);
+					object tempResult = this.CacheLoader.GetData(cacheContentDelegate, new object[] { proposalId }, contentKey);
 
                     if (tempResult != null)
                     {

@@ -96,7 +96,7 @@ namespace GenTRAC.ActionLogic.ControllerLogic
 
             using (StopwatchTimer sw = new IES.Common.StopwatchTimer("CompletionControllerLogic.SetProposalStatusComplete", this.log))
             {
-                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
                 {
                     FullProposal fullProposal = await this.contractsLogic.GetFullProposalAsync(proposalId);
                     fullProposal.ProposalStatus = ProposalStatus.Completed;

@@ -34,7 +34,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetPPRChecklistContentByProposalIDTest()
         {
-            var sut = this.CreatePPRSystem();
+			IChecklistContentMapper sut = this.CreatePPRSystem();
 
             this.GetChecklistContentByProposalID(sut);
         }
@@ -45,7 +45,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_GetPARChecklistContentByProposalIDTest()
         {
-            var sut = this.CreatePARSystem();
+			IChecklistContentMapper sut = this.CreatePARSystem();
 
             this.GetChecklistContentByProposalID(sut);
         }

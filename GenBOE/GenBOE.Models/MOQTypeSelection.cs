@@ -33,6 +33,7 @@ namespace GenBOE.Models
         public string Rationale { get; set; }
         public string SkillMix { get; set; }
         public string CERName { get; set; }
+        public string HistoricalReferenceExplanation { get; set; }
     
         public virtual BOETaskElement BOETaskElement { get; set; }
         public virtual MOQTypeLU MOQTypeLU { get; set; }

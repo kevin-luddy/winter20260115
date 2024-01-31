@@ -108,7 +108,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_Test_Save_LevelofCommitment()
         {
-            var sut = this.CreateSut();
+			IPickListMapper sut = this.CreateSut();
 
             this.proposalClassLoader.Setup(x => x.Save(It.IsAny<PickListDto>())).Verifiable();
 
@@ -123,7 +123,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_Test_Save_ProposalType()
         {
-            var sut = this.CreateSut();
+			IPickListMapper sut = this.CreateSut();
 
             this.proposalLuLoader.Setup(x => x.Save(It.IsAny<PickListDto>())).Verifiable();
 
@@ -138,7 +138,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         [TestMethod]
         public void M_Test_Save_TypeOfRequest()
         {
-            var sut = this.CreateSut();
+			IPickListMapper sut = this.CreateSut();
 
             this.typeOfRequestLuLoader.Setup(x => x.Save(It.IsAny<PickListDto>())).Verifiable();
 
@@ -158,7 +158,7 @@ namespace GenTRAC.Tests.DAL.Mapper
 
             this.typeOfRequestLuLoader.Setup(x => x.GetPickListValues()).Returns(dataFromLoader);
 
-            var actualData = sut.GetPickListValues(PickListEnum.TypeOfRequest);
+			PickListGridMV actualData = sut.GetPickListValues(PickListEnum.TypeOfRequest);
 
             Assert.AreSame(dataFromLoader, actualData.PickLists);
         }
@@ -174,7 +174,7 @@ namespace GenTRAC.Tests.DAL.Mapper
 
             this.proposalClassLoader.Setup(x => x.GetPickListValues()).Returns(dataFromLoader);
 
-            var actualData = sut.GetPickListValues(PickListEnum.ProposalClass);
+			PickListGridMV actualData = sut.GetPickListValues(PickListEnum.ProposalClass);
 
             Assert.AreSame(dataFromLoader, actualData.PickLists);
         }
@@ -190,7 +190,7 @@ namespace GenTRAC.Tests.DAL.Mapper
 
             this.proposalLuLoader.Setup(x => x.GetPickListValues()).Returns(dataFromLoader);
 
-            var actualData = sut.GetPickListValues(PickListEnum.ProposalType);
+			PickListGridMV actualData = sut.GetPickListValues(PickListEnum.ProposalType);
 
             Assert.AreSame(dataFromLoader, actualData.PickLists);
         }
@@ -221,23 +221,23 @@ namespace GenTRAC.Tests.DAL.Mapper
             IPickListMapper sut = new PtmPickListMapper(null, null, null, null, null, new ContractTypeLULoader(), new ContractTypeGroupLULoader());
             ProposalControllerLogic logic = this.CreateSystem(sut);
             int contractTypeGroup = 1; // ContractTypeGroup.CP;
-            string contractTypeHtml = logic.GetContractTypesForContractTypeGroup(((int)contractTypeGroup).ToString(), true);
+            string contractTypeHtml = logic.GetContractTypesForContractTypeGroup(contractTypeGroup.ToString(), true);
             this.AssertContractTypeHtml(contractTypeGroup, contractTypeHtml, sut);
 
             contractTypeGroup = 2; // ContractTypeGroup.FP;
-            contractTypeHtml = logic.GetContractTypesForContractTypeGroup(((int)contractTypeGroup).ToString(), true);
+            contractTypeHtml = logic.GetContractTypesForContractTypeGroup(contractTypeGroup.ToString(), true);
             this.AssertContractTypeHtml(contractTypeGroup, contractTypeHtml, sut);
 
             contractTypeGroup = 5; // ContractTypeGroup.IWTA;
-            contractTypeHtml = logic.GetContractTypesForContractTypeGroup(((int)contractTypeGroup).ToString(), true);
+            contractTypeHtml = logic.GetContractTypesForContractTypeGroup(contractTypeGroup.ToString(), true);
             this.AssertContractTypeHtml(contractTypeGroup, contractTypeHtml, sut);
 
             contractTypeGroup = 3; // ContractTypeGroup.Hybrid;
-            contractTypeHtml = logic.GetContractTypesForContractTypeGroup(((int)contractTypeGroup).ToString(), true);
+            contractTypeHtml = logic.GetContractTypesForContractTypeGroup(contractTypeGroup.ToString(), true);
             this.AssertContractTypeHtml(contractTypeGroup, contractTypeHtml, sut);
 
             contractTypeGroup = 3; // ContractTypeGroup.Hybrid;
-            string nonIDIQcontractTypeHtml = logic.GetContractTypesForContractTypeGroup(((int)contractTypeGroup).ToString(), false);
+            string nonIDIQcontractTypeHtml = logic.GetContractTypesForContractTypeGroup(contractTypeGroup.ToString(), false);
             Assert.AreNotEqual(contractTypeHtml, nonIDIQcontractTypeHtml);
         }
 

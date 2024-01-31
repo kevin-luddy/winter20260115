@@ -1,0 +1,190 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+	  <Nullable>disable</Nullable>
+	  <Configurations>Debug;Release;ReleaseTFSCore</Configurations>
+	  <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+	  <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<EntityDeploy Include="..\GenBOE.Models\BOEEntityModel.edmx" Link="BOEEntityModel.edmx">
+		<Generator>EntityModelCodeGenerator</Generator>
+		<LastGenOutput>BOEEntityModel.Designer.cs</LastGenOutput>
+	</EntityDeploy>
+    <Compile Include="..\GenBOE.Models\BOE.cs" Link="BOE.cs" />
+    <Compile Include="..\GenBOE.Models\BOE1.cs" Link="BOE1.cs" />
+    <Compile Include="..\GenBOE.Models\BOEApproval.cs" Link="BOEApproval.cs" />
+    <Compile Include="..\GenBOE.Models\BOEApprovalHistory.cs" Link="BOEApprovalHistory.cs" />
+    <Compile Include="..\GenBOE.Models\BOEComment.cs" Link="BOEComment.cs" />
+    <Compile Include="..\GenBOE.Models\BOECommentHistory.cs" Link="BOECommentHistory.cs" />
+    <Compile Include="..\GenBOE.Models\BOECopyMetric.cs" Link="BOECopyMetric.cs" />
+    <Compile Include="..\GenBOE.Models\BOECopySource.cs" Link="BOECopySource.cs" />
+    <Compile Include="..\GenBOE.Models\BOECopyTarget.cs" Link="BOECopyTarget.cs" />
+    <Compile Include="..\GenBOE.Models\BOECustomFieldValueXREF.cs" Link="BOECustomFieldValueXREF.cs" />
+    <Compile Include="..\GenBOE.Models\BoeDatabaseVersion.cs" Link="BoeDatabaseVersion.cs" />
+    <Compile Include="..\GenBOE.Models\BOEEntityModel.Context.cs" Link="BOEEntityModel.Context.cs" />
+    <Compile Include="..\GenBOE.Models\BOEEntityModel.cs" Link="BOEEntityModel.cs" />
+    <Compile Include="..\GenBOE.Models\BOEEntityModel.Designer.cs" Link="BOEEntityModel.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BOEEntityModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="..\GenBOE.Models\BOEFormIBOE.cs" Link="BOEFormIBOE.cs" />
+    <Compile Include="..\GenBOE.Models\BOEFormIBOECLINsXREF.cs" Link="BOEFormIBOECLINsXREF.cs" />
+    <Compile Include="..\GenBOE.Models\BOEFormIBOEResourcesXREF.cs" Link="BOEFormIBOEResourcesXREF.cs" />
+    <Compile Include="..\GenBOE.Models\BOEFormPBOE.cs" Link="BOEFormPBOE.cs" />
+    <Compile Include="..\GenBOE.Models\BOEFormPBOECLINsXREF.cs" Link="BOEFormPBOECLINsXREF.cs" />
+    <Compile Include="..\GenBOE.Models\BOEFormPBOEResourcesXREF.cs" Link="BOEFormPBOEResourcesXREF.cs" />
+    <Compile Include="..\GenBOE.Models\BOELaborSpread.cs" Link="BOELaborSpread.cs" />
+    <Compile Include="..\GenBOE.Models\BOELaborType.cs" Link="BOELaborType.cs" />
+    <Compile Include="..\GenBOE.Models\BOELaborTypeCustomFieldValueXREF.cs" Link="BOELaborTypeCustomFieldValueXREF.cs" />
+    <Compile Include="..\GenBOE.Models\BOEPotentialRole.cs" Link="BOEPotentialRole.cs" />
+    <Compile Include="..\GenBOE.Models\BOEStateHistory.cs" Link="BOEStateHistory.cs" />
+    <Compile Include="..\GenBOE.Models\BOEStateLU.cs" Link="BOEStateLU.cs" />
+    <Compile Include="..\GenBOE.Models\BOETaskElement.cs" Link="BOETaskElement.cs" />
+    <Compile Include="..\GenBOE.Models\BOETaskElementCustomFieldValueXREF.cs" Link="BOETaskElementCustomFieldValueXREF.cs" />
+    <Compile Include="..\GenBOE.Models\BOETaskElementMetricDetailXREF.cs" Link="BOETaskElementMetricDetailXREF.cs" />
+    <Compile Include="..\GenBOE.Models\BOETaskElementWorkspaceVariableXREF.cs" Link="BOETaskElementWorkspaceVariableXREF.cs" />
+    <Compile Include="..\GenBOE.Models\BOEUserRole.cs" Link="BOEUserRole.cs" />
+    <Compile Include="..\GenBOE.Models\BOEUserRoleHistory.cs" Link="BOEUserRoleHistory.cs" />
+    <Compile Include="..\GenBOE.Models\CLIN.cs" Link="CLIN.cs" />
+    <Compile Include="..\GenBOE.Models\CLIN1.cs" Link="CLIN1.cs" />
+    <Compile Include="..\GenBOE.Models\ContractTypeLU.cs" Link="ContractTypeLU.cs" />
+    <Compile Include="..\GenBOE.Models\CostElementLU.cs" Link="CostElementLU.cs" />
+    <Compile Include="..\GenBOE.Models\CustomField.cs" Link="CustomField.cs" />
+    <Compile Include="..\GenBOE.Models\CustomFieldDisplayLU.cs" Link="CustomFieldDisplayLU.cs" />
+    <Compile Include="..\GenBOE.Models\CustomFieldValue.cs" Link="CustomFieldValue.cs" />
+    <Compile Include="..\GenBOE.Models\ELMAH_Error.cs" Link="ELMAH_Error.cs" />
+    <Compile Include="..\GenBOE.Models\EmailLU.cs" Link="EmailLU.cs" />
+    <Compile Include="..\GenBOE.Models\ETIGroup.cs" Link="ETIGroup.cs" />
+    <Compile Include="..\GenBOE.Models\ETIuser.cs" Link="ETIuser.cs" />
+    <Compile Include="..\GenBOE.Models\FieldLU.cs" Link="FieldLU.cs" />
+    <Compile Include="..\GenBOE.Models\getBOEForFindReplace_Result.cs" Link="getBOEForFindReplace_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getBOEHistoryLog_Result.cs" Link="getBOEHistoryLog_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getBOEIDByWorkspaceAdvancedSearch_Result.cs" Link="getBOEIDByWorkspaceAdvancedSearch_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getBOEIDByWorkspaceQuickSearch_Result.cs" Link="getBOEIDByWorkspaceQuickSearch_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getBOEIDForProjectMapAdvancedSearch_Result.cs" Link="getBOEIDForProjectMapAdvancedSearch_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getBOEIDForProjectMapQuickSearch_Result.cs" Link="getBOEIDForProjectMapQuickSearch_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getBOEPermissions_Result.cs" Link="getBOEPermissions_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getLaborSpread_Result.cs" Link="getLaborSpread_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getLaborType_Result.cs" Link="getLaborType_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getOrdinaryVariableByTaskElementID_Result.cs" Link="getOrdinaryVariableByTaskElementID_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getProjectMapIDForProjectMapAdvancedSearch_Result.cs" Link="getProjectMapIDForProjectMapAdvancedSearch_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getProjectMapIDForProjectMapQuickSearch_Result.cs" Link="getProjectMapIDForProjectMapQuickSearch_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getWorkspaceHistoryLog_Result.cs" Link="getWorkspaceHistoryLog_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getWorkspacePermissions_Result.cs" Link="getWorkspacePermissions_Result.cs" />
+    <Compile Include="..\GenBOE.Models\getWorkspaceVariableByTaskElementID_Result.cs" Link="getWorkspaceVariableByTaskElementID_Result.cs" />
+    <Compile Include="..\GenBOE.Models\LineOfBusiness.cs" Link="LineOfBusiness.cs" />
+    <Compile Include="..\GenBOE.Models\Location.cs" Link="Location.cs" />
+    <Compile Include="..\GenBOE.Models\MaterialTaskElement.cs" Link="MaterialTaskElement.cs" />
+    <Compile Include="..\GenBOE.Models\MessageConfirmation.cs" Link="MessageConfirmation.cs" />
+    <Compile Include="..\GenBOE.Models\MetricDetail.cs" Link="MetricDetail.cs" />
+    <Compile Include="..\GenBOE.Models\MileageReimbursementRate.cs" Link="MileageReimbursementRate.cs" />
+    <Compile Include="..\GenBOE.Models\MOQTypeLU.cs" Link="MOQTypeLU.cs" />
+    <Compile Include="..\GenBOE.Models\MOQTypeSelection.cs" Link="MOQTypeSelection.cs" />
+    <Compile Include="..\GenBOE.Models\MOQTypeSelectionTableData.cs" Link="MOQTypeSelectionTableData.cs" />
+    <Compile Include="..\GenBOE.Models\MoqTypeTableCustomFieldValueXREF.cs" Link="MoqTypeTableCustomFieldValueXREF.cs" />
+    <Compile Include="..\GenBOE.Models\MSTTravelModeLU.cs" Link="MSTTravelModeLU.cs" />
+    <Compile Include="..\GenBOE.Models\MSTTravelNonzoneFeesAndCost.cs" Link="MSTTravelNonzoneFeesAndCost.cs" />
+    <Compile Include="..\GenBOE.Models\MSTTravelTrip.cs" Link="MSTTravelTrip.cs" />
+    <Compile Include="..\GenBOE.Models\MSTTravelTripCustomFieldValueXREF.cs" Link="MSTTravelTripCustomFieldValueXREF.cs" />
+    <Compile Include="..\GenBOE.Models\MSTZoneTravelDestination.cs" Link="MSTZoneTravelDestination.cs" />
+    <Compile Include="..\GenBOE.Models\MSTZoneTravelOrigin.cs" Link="MSTZoneTravelOrigin.cs" />
+    <Compile Include="..\GenBOE.Models\MSTZoneTravelResource.cs" Link="MSTZoneTravelResource.cs" />
+    <Compile Include="..\GenBOE.Models\ODCSpread.cs" Link="ODCSpread.cs" />
+    <Compile Include="..\GenBOE.Models\ODCTaskElement.cs" Link="ODCTaskElement.cs" />
+    <Compile Include="..\GenBOE.Models\ODCType.cs" Link="ODCType.cs" />
+    <Compile Include="..\GenBOE.Models\OrdinaryVariable.cs" Link="OrdinaryVariable.cs" />
+    <Compile Include="..\GenBOE.Models\OrdinaryVariableSumVariableResourceTypeXREF.cs" Link="OrdinaryVariableSumVariableResourceTypeXREF.cs" />
+    <Compile Include="..\GenBOE.Models\OutputFormatTemplate.cs" Link="OutputFormatTemplate.cs" />
+    <Compile Include="..\GenBOE.Models\OutputFormatTemplateWorkspaceXREF.cs" Link="OutputFormatTemplateWorkspaceXREF.cs" />
+    <Compile Include="..\GenBOE.Models\PerDiem.cs" Link="PerDiem.cs" />
+    <Compile Include="..\GenBOE.Models\PerformingOrganization.cs" Link="PerformingOrganization.cs" />
+    <Compile Include="..\GenBOE.Models\PerformingOrganizationList.cs" Link="PerformingOrganizationList.cs" />
+    <Compile Include="..\GenBOE.Models\ProjectMap.cs" Link="ProjectMap.cs" />
+    <Compile Include="..\GenBOE.Models\ProjectMapSpread.cs" Link="ProjectMapSpread.cs" />
+    <Compile Include="..\GenBOE.Models\ProjectMapTypeLU.cs" Link="ProjectMapTypeLU.cs" />
+    <Compile Include="..\GenBOE.Models\ProposalClassLU.cs" Link="ProposalClassLU.cs" />
+    <Compile Include="..\GenBOE.Models\ProposalStatusLU.cs" Link="ProposalStatusLU.cs" />
+    <Compile Include="..\GenBOE.Models\ProPricerCompanyLU.cs" Link="ProPricerCompanyLU.cs" />
+    <Compile Include="..\GenBOE.Models\ProPricerCustomFieldSelectionLU.cs" Link="ProPricerCustomFieldSelectionLU.cs" />
+    <Compile Include="..\GenBOE.Models\ProPricerCustomFieldXREF.cs" Link="ProPricerCustomFieldXREF.cs" />
+    <Compile Include="..\GenBOE.Models\ProPricerExport.cs" Link="ProPricerExport.cs" />
+    <Compile Include="..\GenBOE.Models\ProPricerFieldLU.cs" Link="ProPricerFieldLU.cs" />
+    <Compile Include="..\GenBOE.Models\ProPricerFieldXREF.cs" Link="ProPricerFieldXREF.cs" />
+    <Compile Include="..\GenBOE.Models\ProPricerTypeLU.cs" Link="ProPricerTypeLU.cs" />
+    <Compile Include="..\GenBOE.Models\RateTypeLU.cs" Link="RateTypeLU.cs" />
+    <Compile Include="..\GenBOE.Models\ReportLU.cs" Link="ReportLU.cs" />
+    <Compile Include="..\GenBOE.Models\Resource.cs" Link="Resource.cs" />
+    <Compile Include="..\GenBOE.Models\ResourceList.cs" Link="ResourceList.cs" />
+    <Compile Include="..\GenBOE.Models\RoleLU.cs" Link="RoleLU.cs" />
+    <Compile Include="..\GenBOE.Models\RteTemplate.cs" Link="RteTemplate.cs" />
+    <Compile Include="..\GenBOE.Models\RteTemplateAnswer.cs" Link="RteTemplateAnswer.cs" />
+    <Compile Include="..\GenBOE.Models\RteTemplateQuestion.cs" Link="RteTemplateQuestion.cs" />
+    <Compile Include="..\GenBOE.Models\RteTemplateSource.cs" Link="RteTemplateSource.cs" />
+    <Compile Include="..\GenBOE.Models\SearchCategoryLU.cs" Link="SearchCategoryLU.cs" />
+    <Compile Include="..\GenBOE.Models\SegmentLU.cs" Link="SegmentLU.cs" />
+    <Compile Include="..\GenBOE.Models\SikorskyLegacyResource.cs" Link="SikorskyLegacyResource.cs" />
+    <Compile Include="..\GenBOE.Models\SortByLU.cs" Link="SortByLU.cs" />
+    <Compile Include="..\GenBOE.Models\SplitString_Result.cs" Link="SplitString_Result.cs" />
+    <Compile Include="..\GenBOE.Models\SpreadCurveLU.cs" Link="SpreadCurveLU.cs" />
+    <Compile Include="..\GenBOE.Models\SpreadTypeLU.cs" Link="SpreadTypeLU.cs" />
+    <Compile Include="..\GenBOE.Models\SumOfBOE_OrdinaryVariableXREF.cs" Link="SumOfBOE_OrdinaryVariableXREF.cs" />
+    <Compile Include="..\GenBOE.Models\SumOfBOE_WorkspaceVariableXREF.cs" Link="SumOfBOE_WorkspaceVariableXREF.cs" />
+    <Compile Include="..\GenBOE.Models\SumVariableResourceTypeLU.cs" Link="SumVariableResourceTypeLU.cs" />
+    <Compile Include="..\GenBOE.Models\SystemOffloadRate.cs" Link="SystemOffloadRate.cs" />
+    <Compile Include="..\GenBOE.Models\SystemProPricerCustomFieldXREF.cs" Link="SystemProPricerCustomFieldXREF.cs" />
+    <Compile Include="..\GenBOE.Models\SystemProPricerExport.cs" Link="SystemProPricerExport.cs" />
+    <Compile Include="..\GenBOE.Models\SystemProPricerFieldXREF.cs" Link="SystemProPricerFieldXREF.cs" />
+    <Compile Include="..\GenBOE.Models\SystemSetting.cs" Link="SystemSetting.cs" />
+    <Compile Include="..\GenBOE.Models\SystemUserRole.cs" Link="SystemUserRole.cs" />
+    <Compile Include="..\GenBOE.Models\TaskElementTypeLU.cs" Link="TaskElementTypeLU.cs" />
+    <Compile Include="..\GenBOE.Models\TMResourceRate.cs" Link="TMResourceRate.cs" />
+    <Compile Include="..\GenBOE.Models\TravelEscalationRate.cs" Link="TravelEscalationRate.cs" />
+    <Compile Include="..\GenBOE.Models\TravelMiscRate.cs" Link="TravelMiscRate.cs" />
+    <Compile Include="..\GenBOE.Models\TravelTrip.cs" Link="TravelTrip.cs" />
+    <Compile Include="..\GenBOE.Models\TravelTripCustomFieldValueXREF.cs" Link="TravelTripCustomFieldValueXREF.cs" />
+    <Compile Include="..\GenBOE.Models\TravelTripTaskElement.cs" Link="TravelTripTaskElement.cs" />
+    <Compile Include="..\GenBOE.Models\TravelTripTaskElementCustomFieldValueXREF.cs" Link="TravelTripTaskElementCustomFieldValueXREF.cs" />
+    <Compile Include="..\GenBOE.Models\Trip.cs" Link="Trip.cs" />
+    <Compile Include="..\GenBOE.Models\UserAccessReport.cs" Link="UserAccessReport.cs" />
+    <Compile Include="..\GenBOE.Models\UserLog.cs" Link="UserLog.cs" />
+    <Compile Include="..\GenBOE.Models\ValueTypeLU.cs" Link="ValueTypeLU.cs" />
+    <Compile Include="..\GenBOE.Models\WBS_CLIN_BOE_XREF.cs" Link="WBS_CLIN_BOE_XREF.cs" />
+    <Compile Include="..\GenBOE.Models\WBS_CLIN_BOE_XREF1.cs" Link="WBS_CLIN_BOE_XREF1.cs" />
+    <Compile Include="..\GenBOE.Models\WorkBreakdownStructure.cs" Link="WorkBreakdownStructure.cs" />
+    <Compile Include="..\GenBOE.Models\WorkBreakdownStructure1.cs" Link="WorkBreakdownStructure1.cs" />
+    <Compile Include="..\GenBOE.Models\Workspace.cs" Link="Workspace.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceContractTypeXREF.cs" Link="WorkspaceContractTypeXREF.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceCopyMetric.cs" Link="WorkspaceCopyMetric.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceEmailXREF.cs" Link="WorkspaceEmailXREF.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceLockedPerDiem.cs" Link="WorkspaceLockedPerDiem.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceLockedTravelEscalationRate.cs" Link="WorkspaceLockedTravelEscalationRate.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceLockedTravelMiscRate.cs" Link="WorkspaceLockedTravelMiscRate.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceLockedTrip.cs" Link="WorkspaceLockedTrip.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceOffloadRate.cs" Link="WorkspaceOffloadRate.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspacePerformingOrganization.cs" Link="WorkspacePerformingOrganization.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceResource.cs" Link="WorkspaceResource.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceRestoreLog.cs" Link="WorkspaceRestoreLog.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceRMSTravelEscalationRate.cs" Link="WorkspaceRMSTravelEscalationRate.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceRMSTravelNonzoneFeesAndCost.cs" Link="WorkspaceRMSTravelNonzoneFeesAndCost.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceStateHistory.cs" Link="WorkspaceStateHistory.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceStateLU.cs" Link="WorkspaceStateLU.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceUserRole.cs" Link="WorkspaceUserRole.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceUserXREF.cs" Link="WorkspaceUserXREF.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceVariable.cs" Link="WorkspaceVariable.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceVariableSumVariableResourceTypeXREF.cs" Link="WorkspaceVariableSumVariableResourceTypeXREF.cs" />
+    <Compile Include="..\GenBOE.Models\WorkspaceVersion.cs" Link="WorkspaceVersion.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+	</ItemGroup>
+
+</Project>

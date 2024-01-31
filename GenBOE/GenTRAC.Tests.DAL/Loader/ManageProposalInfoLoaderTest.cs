@@ -40,7 +40,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SaveProposalInfo()
         {
-            var sut = this.CreateSystem();
+			IManageProposalInfoLoader sut = this.CreateSystem();
 
             IProposalLoader proposalLoader = new ProposalLoader();
             IProposalChecklistLoader proposalChecklistLoader = new ProposalChecklistLoader();

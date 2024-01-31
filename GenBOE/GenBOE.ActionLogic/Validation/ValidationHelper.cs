@@ -45,7 +45,7 @@ namespace GenBOE.ActionLogic.Validation
                         {"WbsID", inWbsID.ToString() }
                     });
 
-                var validatorResponse = ValidationFactory.Instance.getValidator(ValidationType.WBSRenumber).validation(inWBSNumber, validationData);
+			Collection<string> validatorResponse = ValidationFactory.Instance.getValidator(ValidationType.WBSRenumber).validation(inWBSNumber, validationData);
 
                 if (validatorResponse.Count > 0)
                 {

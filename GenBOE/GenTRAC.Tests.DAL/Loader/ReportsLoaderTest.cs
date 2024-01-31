@@ -37,7 +37,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalYears()
         {
-            var sut = this.CreateSystem();
+			ReportsLoader sut = this.CreateSystem();
 
             // crete a proposal so we know there is at least one year in the system
             this.testData.GetProposal(inCreateNew: true);

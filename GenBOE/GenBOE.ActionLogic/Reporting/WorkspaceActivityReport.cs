@@ -64,8 +64,8 @@ namespace GenBOE.ActionLogic.Reporting
                     " since the scheduled proposal submittal (" + submittalDate.Value.ToString("MM/dd/yyyy") + ")";
             }
 
-            // number of days in initialization
-            var historyDTOs = inWorkspace.WorkspaceHistory; 
+			// number of days in initialization
+			IReadOnlyCollection<WorkspaceHistoryDTO> historyDTOs = inWorkspace.WorkspaceHistory; 
 
             TimeSpan timeInState = this.ComputeTimeSpan(historyDTOs, WorkspaceState.Initialization);
             toReturn.DaysInInitialization = timeInState.TotalDays.ToString(this.ONE_DECIMAL);
@@ -139,8 +139,8 @@ namespace GenBOE.ActionLogic.Reporting
             // number of times export to ProPricer
             toReturn.NumberOfTimesExportedToProPricer = inWorkspace.NumberOfTimesExportedToProPricer.ToString();
 
-            // Number of BOEs
-            var boes = inWorkspace.Boes;
+			// Number of BOEs
+			IReadOnlyCollection<FullBoe> boes = inWorkspace.Boes;
             toReturn.NumberOfBOEs = boes.Count.ToString();
 
             // Number of BOEs in Unassigned state
@@ -160,13 +160,13 @@ namespace GenBOE.ActionLogic.Reporting
             //    - get the total number of users in the workspace admin role
             List<PermissionsDTO> workspacePermissions = this._PermissionsDTOLoader.GetWorkspacePermissions(inWorkspace.Id).ToList();
 
-            var admins = (from p in workspacePermissions
+			IEnumerable<int> admins = (from p in workspacePermissions
                           where p.Role == Role.WorkspaceAdmin
                           select p.ETIUserId).Distinct();
 
             toReturn.NumberOfAdministrators = admins.Count().ToString();
 
-            var boeIds = boes.Select(x => x.Id).ToList();
+			List<int> boeIds = boes.Select(x => x.Id).ToList();
             
             List<PermissionsDTO> boePermissions = this._PermissionsDTOLoader.GetBOEPermissions(boeIds.ToCollection()).ToList();
             List<PermissionsDTO> allAuthorInfo = (from auth in boePermissions 
@@ -191,9 +191,9 @@ namespace GenBOE.ActionLogic.Reporting
             int numberOfSubcontractorAuthors = allSubcontractorAuthorInfo.Select(x => x.ETIUserId).Distinct().Count();
             toReturn.NumberOfAuthors = (numberOfAuthors + numberOfSubcontractorAuthors).ToString();
 
-            // number of reviewers
-            //    - get the total number of users in the workspace reviewer role
-            var reviewers = (from r in workspacePermissions where r.Role == Role.WorkspaceReviewer select r).Select(x => x.ETIUserId).Distinct();
+			// number of reviewers
+			//    - get the total number of users in the workspace reviewer role
+			IEnumerable<int> reviewers = (from r in workspacePermissions where r.Role == Role.WorkspaceReviewer select r).Select(x => x.ETIUserId).Distinct();
             
             toReturn.NumberOfReviewers = reviewers.Count().ToString();
 

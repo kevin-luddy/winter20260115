@@ -45,7 +45,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 		[TestMethod]
 		public void CopyMOQTypesOldFiscalWeek()
 		{
-			var sut = CreateSUT();
+			BOECopier sut = CreateSUT();
 			Utilities.IsSAPEnabledForSystem = true;
 			List<MoqTypeSelection> moqTypesToCopy = new List<MoqTypeSelection>
 			{
@@ -83,7 +83,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 		[TestMethod]
 		public void CopyMOQTypesNewFiscalWeek()
 		{
-			var sut = CreateSUT();
+			BOECopier sut = CreateSUT();
 			Utilities.IsSAPEnabledForSystem = true;
 
 			List<MoqTypeSelection> moqTypesToCopy = new List<MoqTypeSelection>
@@ -120,7 +120,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 		[TestMethod]
 		public void CopyMOQTypesOldFiscalWeekSameWorkspace()
 		{
-			var sut = CreateSUT();
+			BOECopier sut = CreateSUT();
 			Utilities.IsSAPEnabledForSystem = true;
 
 			List<MoqTypeSelection> moqTypesToCopy = new List<MoqTypeSelection>

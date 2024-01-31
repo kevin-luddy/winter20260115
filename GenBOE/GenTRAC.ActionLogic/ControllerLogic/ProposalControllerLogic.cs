@@ -510,7 +510,7 @@ namespace GenTRAC.ActionLogic
 		/// <param name="isForecasted">Whether this is a Forecast Proposal.</param>
 		internal void SaveProposalUsers(ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, int proposalId, ProposalPermissionDto pricerPermission, bool isForecasted)
 		{
-			var fullProposalDto = this.GetFullProposalDto(proposalId);
+			FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
 
 			ICollection<ProposalPermissionDto> permissionsToAdd = new List<ProposalPermissionDto>();
 			ICollection<ProposalPermissionDto> permissionsToDelete = new List<ProposalPermissionDto>();
@@ -2277,7 +2277,7 @@ namespace GenTRAC.ActionLogic
 			FullProposal fullProposal = this.GetFullProposalDto(proposalId);
 			if (fullProposal != null)
 			{
-				var parData = fullProposal.ProposalChecklistPARData;
+				ChecklistContentDto parData = fullProposal.ProposalChecklistPARData;
 
 				if (ProposalChecklistType.InternationalCommercial.IsActive() &&
 					(parData.ChecklistType == ProposalChecklistType.InternationalCommercial && newProposalChecklistType != ProposalChecklistType.InternationalCommercial ||
@@ -2560,7 +2560,7 @@ namespace GenTRAC.ActionLogic
 				this.ValidateCertification(proposalId, model, false);
 				ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, false);
 
-				using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
 				{
 					this.ProposalMediator.SaveProposal(proposal);
 					scope.Complete();
@@ -2712,7 +2712,7 @@ namespace GenTRAC.ActionLogic
 				this.ValidateCertification(proposalId, model, true);
 				ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, true);
 
-				using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
 				{
 					this.ProposalMediator.SaveProposal(proposal);
 					scope.Complete();

@@ -16,9 +16,9 @@ namespace IES.Common.OfficeUtilities
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using HtmlAgilityPack;
-    using NotesFor.HtmlToOpenXml;
+	using NotesFor.HtmlToOpenXml;
 
-    public static class RTEUtilities
+	public static class RTEUtilities
     {
         // Regex that will match an element (with some optional styles) that contains nothing but whitespace as it's "content", or InnerText
         private static string regexToRemoveEmptyElement =
@@ -385,7 +385,7 @@ namespace IES.Common.OfficeUtilities
         /// <returns>A collection of images ready for further processing</returns>
         private static ICollection<ImageDataForMhtml> ProcessImagesForMhtml(TextWriter writer, string html)
         {
-            var imagesForProcessing = new List<ImageDataForMhtml>();
+			List<ImageDataForMhtml> imagesForProcessing = new List<ImageDataForMhtml>();
 
             // here is a sample of a base64 encoded image
             // <img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==\" alt=\"Red dot\" >
@@ -404,7 +404,7 @@ namespace IES.Common.OfficeUtilities
             int imageStartIndex;
             int imageCounter = 0;
 
-            var compare = CultureInfo.CurrentCulture.CompareInfo;
+			CompareInfo compare = CultureInfo.CurrentCulture.CompareInfo;
 
             // continue while there is another image
             while ((imageStartIndex = compare.IndexOf(html, IMAGE_TAG_START, searchStartIndex, CompareOptions.IgnoreCase)) >= 0)

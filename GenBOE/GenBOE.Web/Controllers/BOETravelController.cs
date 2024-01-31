@@ -176,8 +176,8 @@ namespace GenBOE.Web.Controllers
                     theModelViews = theModelViews.OrderBy(teOrder => teOrder.BOETaskElementOrder).ThenBy(teOrder => teOrder.TravelID).ToCollection();
                 }
 
-                //create a var for list items
-                var orderOfTaskElements = new Collection<SelectListItem>();
+				//create a var for list items
+				Collection<SelectListItem> orderOfTaskElements = new Collection<SelectListItem>();
                 //get a list of each task element.
                 foreach (BOETravelGridModelView row in theModelViews)
                 {
@@ -349,7 +349,7 @@ namespace GenBOE.Web.Controllers
             }
 
             HashSet<PerDiemDTO> allPerdiems = new HashSet<PerDiemDTO>(_PerDiemLoader.GetByIds(allDestinations.Select(i => i.Item2).ToCollection<int>()));
-            foreach (var destination in allDestinations)
+            foreach (Tuple<int, int> destination in allDestinations)
             {
                 SelectListItem destinationLocation = new SelectListItem();
                 destinationLocation.Text = destinationLocations.First(l => l.Id == destination.Item1).LocationName;
@@ -513,7 +513,7 @@ namespace GenBOE.Web.Controllers
 
             _TravelControllerLogic.ReOrderTaskElementOrder(boeObject, theModelView);
 
-            var toReturn = Json(new { Status = true });
+			JsonResult toReturn = Json(new { Status = true });
 
 
             // Finalize Action
@@ -832,9 +832,9 @@ namespace GenBOE.Web.Controllers
                             // now that we know the travel task date changed and no trips were picked up, make sure there were no previously saved trips we need to check
                             ICollection<TravelTripType> savedTravelTrips = this.Factory.CreateTravel(travelDTO.Id).TravelTrips;
 
-                            var savedTripIDs = savedTravelTrips.Select(x => x.TravelTripID);
-                            var toSaveTripIDs = travelDTO.TravelTrips.Select(x => x.TravelTripID);
-                            var tripIDsToCheck = savedTripIDs.Except(toSaveTripIDs);
+							IEnumerable<int> savedTripIDs = savedTravelTrips.Select(x => x.TravelTripID);
+							IEnumerable<int> toSaveTripIDs = travelDTO.TravelTrips.Select(x => x.TravelTripID);
+							IEnumerable<int> tripIDsToCheck = savedTripIDs.Except(toSaveTripIDs);
 
                             if (tripIDsToCheck.Count() != 0)
                             {
@@ -951,10 +951,10 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var allLocations = _LocationDTODataLoader.GetAllLocations().ToArray();
-            var allMiscTravelRates = miscTravelLoader.GetAll().ToArray();
-            var allTrips = _tripDTODataLoader.GetAllTrips().ToArray();
-            var allPerDiemDTOs = _PerDiemLoader.GetAllPerDiem().ToArray();
+			LocationDTO[] allLocations = _LocationDTODataLoader.GetAllLocations().ToArray();
+			MiscTravelRateDTO[] allMiscTravelRates = miscTravelLoader.GetAll().ToArray();
+			TripDTO[] allTrips = _tripDTODataLoader.GetAllTrips().ToArray();
+			PerDiemDTO[] allPerDiemDTOs = _PerDiemLoader.GetAllPerDiem().ToArray();
 
             HashSet<int> allDepartures = string.IsNullOrEmpty(departure) ?
                 new HashSet<int>(allTrips.Select(x => x.DepartureLocationID).Distinct()) :
@@ -974,8 +974,8 @@ namespace GenBOE.Web.Controllers
                 new HashSet<int>(allTrips.Select(x => x.MiscTravelRateID)) :
                 new HashSet<int>(allMiscTravelRates.Where(x => x.MiscTravelRateMode.IsEquivalentTo(mode)).Select(x => x.Id));
 
-            // find all matches
-            var filteredTrips = (from x in allTrips
+			// find all matches
+			TripDTO[] filteredTrips = (from x in allTrips
                                  where allModes.Contains(x.MiscTravelRateID) &&
                                     allDepartures.Contains(x.DepartureLocationID) &&
                                     allDestinations.Contains(x.DestinationLocationID) &&
@@ -1124,10 +1124,10 @@ namespace GenBOE.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var allLocations = _LocationDTODataLoader.GetAllLocations().ToArray();
-                var allMiscTravelRates = miscTravelLoader.GetAll().ToArray();
-                var allTrips = _tripDTODataLoader.GetAllTrips().ToArray();
-                var allPerDiemDTOs = _PerDiemLoader.GetAllPerDiem().ToArray();
+				LocationDTO[] allLocations = _LocationDTODataLoader.GetAllLocations().ToArray();
+				MiscTravelRateDTO[] allMiscTravelRates = miscTravelLoader.GetAll().ToArray();
+				TripDTO[] allTrips = _tripDTODataLoader.GetAllTrips().ToArray();
+				PerDiemDTO[] allPerDiemDTOs = _PerDiemLoader.GetAllPerDiem().ToArray();
 
                 HashSet<int> allDepartures = string.IsNullOrEmpty(inTrip.DepartureName) ?
                     new HashSet<int>(allTrips.Select(x => x.DepartureLocationID).Distinct()) :
@@ -1145,7 +1145,7 @@ namespace GenBOE.Web.Controllers
                     new HashSet<int>(allTrips.Select(x => x.MiscTravelRateID)) :
                     new HashSet<int>(allMiscTravelRates.Where(x => x.MiscTravelRateMode.IsEquivalentTo(inTrip.Mode)).Select(x => x.Id));
 
-                var trips = (from x in allTrips
+				IEnumerable<TripDTO> trips = (from x in allTrips
                              where allDepartures.Contains(x.DepartureLocationID) &&
                              allDestinations.Contains(x.DestinationLocationID) &&
                              allModes.Contains(x.MiscTravelRateID) &&
