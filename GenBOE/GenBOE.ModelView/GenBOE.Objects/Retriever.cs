@@ -549,11 +549,6 @@ namespace GenBOE.Objects
 			return this.ResourceLoader.GetByListId(resourceListId);
 		}
 
-		public ICollection<BusinessResourceCodeDTO> GetBusinessResourceCodesByBusinessResourceCodeListId(int businessResourceCodeListId)
-		{
-			return this.B
-		}
-
 		/// <summary>
 		/// Returns resources based on Resource Ids
 		/// </summary>

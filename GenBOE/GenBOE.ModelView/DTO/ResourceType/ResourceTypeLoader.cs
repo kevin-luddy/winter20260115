@@ -12,13 +12,13 @@ namespace GenBOE.DataBridge.DTO
     using System.Linq;
     using IES.Common;
     using GenBOE.Models;
-    using GenBOE.Dtos;
+    using GenBOE.Dtos.DTOs;
     using static IES.Common.Constants;
 
-    /// <summary>
-    /// Resource Type Loader
-    /// </summary>
-    public class ResourceTypeLoader : BulkDataLoader<ResourceTypeDto, BOELaborType>, IResourceTypeLoader
+	/// <summary>
+	/// Resource Type Loader
+	/// </summary>
+	public class ResourceTypeLoader : BulkDataLoader<ResourceTypeDto, BOELaborType>, IResourceTypeLoader
     {
         /// <summary>
         /// Constructor

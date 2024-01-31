@@ -12,7 +12,6 @@ namespace CopyWorkspace
     using System.Linq;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.DataBridge.DTO;
-	using GenBOE.DataBridge.GenBOE.Dtos.DTOs;
 	using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
@@ -121,7 +120,7 @@ namespace CopyWorkspace
 
         public bool CopyWorkspace(FullWorkspace workspaceToCopy, FullWorkspace newWorkspace, Collection<FullBoe> BOEToCopy,
             bool copyPermissions, bool copyTasks, bool copyLaborSpreads, ICollection<PermissionsDTO> boePotentialPermissionsWorkspaceToCopy, IDictionary<int, ICollection<BoeApproverResponseDTO>> approvers,
-            ICollection<ResourceDTO> resourcesToCopy, ICollection<BusinessResourceCodeDTO> ICollection<CustomFieldValueDTO> customFieldValuesToCopy, ICollection<BoeTaskElementDTO> tasks, ICollection<TravelDTO> travelElements,
+            ICollection<ResourceDTO> resourcesToCopy, ICollection<CustomFieldValueDTO> customFieldValuesToCopy, ICollection<BoeTaskElementDTO> tasks, ICollection<TravelDTO> travelElements,
             ICollection<PerformingOrgDTO> performingOrgsToCopy, ICollection<BOEFormIBOEDTO> iboes, ICollection<BOEFormPBOEDTO> pboes, IDictionary<int, int> mappedUserIds, ICollection<UserDTO> users)
         {
             if (workspaceToCopy == null)
@@ -168,7 +167,6 @@ namespace CopyWorkspace
 
             Dictionary<int, int> performingOrgMapping = new Dictionary<int, int>();
             Dictionary<int, int> resourceMapping = new Dictionary<int, int>();
-			Dictionary<int, int> businessResourceCodeMapping = new Dictionary<int, int>();
 
 			if (copyLaborSpreads)
             {
@@ -176,9 +174,7 @@ namespace CopyWorkspace
                 performingOrgMapping = this.CopyPerformingOrganizations(newWorkspace, performingOrgsToCopy);
                 Console.WriteLine("Copying Resources");
                 resourceMapping = this.CopyResources(newWorkspace, resourcesToCopy);
-				Console.WriteLine("Copying Business Resource Codes");
-				businessResourceCodeMapping = this.CopyBusinessResourceCodes(newWorkspace, businessResourceCodesToCopy);
-            }
+			}
 
             if (copyTasks)
             {
@@ -1080,12 +1076,11 @@ namespace CopyWorkspace
         /// <param name="customFieldValueIDMapping">Custom Field Value Id Mapping</param>
         /// <param name="copyLaborSpreads">Copy Labor Spreads?</param>
         /// <param name="Resources">Resources</param>
-		/// <param name="BusinessResourceCodes">Business Resource Codes</param>
         /// <param name="perfOrgs">Performing Orgs</param>
         /// <returns>Boolean indicating whether there was any bad data that the user should be notified about</returns>
         private bool CopyTasks(Dictionary<int, int> boeIDMapping, Dictionary<int, int> wbsIDMapping, Dictionary<int, int> clinIDMapping,
             Dictionary<int, int> variableIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping, bool copyLaborSpreads, 
-			Dictionary<int, int> Resources, Dictionary<int, int> BusinessResourceCodes, Dictionary<int, int> perfOrgs)
+			Dictionary<int, int> Resources, Dictionary<int, int> perfOrgs)
         {
             bool finishedCorrectly = true;
 
@@ -1217,19 +1212,6 @@ namespace CopyWorkspace
                         {
                             finishedCorrectly = false;
                         }
-
-						if (laborType.BusinessResourceCodeID.HasValue)
-						{
-							if (BusinessResourceCodes.ContainsKey(laborType.BusinessResourceCodeID.Value))
-							{
-								laborType.BusinessResourceCodeID = BusinessResourceCodes[laborType.BusinessResourceCodeID.Value];
-							}
-							else
-							{
-								finishedCorrectly = false;
-								Console.WriteLine("Could not find Business Resource Code with ID " + laborType.BusinessResourceCodeID.Value + " for boeId " + newBoeID.ToString() + " labor type id " + laborType.Id);
-							}
-						}
 
                         if (laborType.PerformingOrgID.HasValue)
                         {
