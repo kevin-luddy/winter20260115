@@ -179,7 +179,7 @@ namespace CopyWorkspace
             if (copyTasks)
             {
                 Console.WriteLine("Copying Tasks");
-                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, businessResourceCodeMapping, performingOrgMapping) && finishedCorrectly;
+                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping) && finishedCorrectly;
                 Console.WriteLine("Copying Travel");
                 finishedCorrectly = this.CopyTravelTasks(newWorkspace, BOEIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, ClinIDMapping, WBSIDMapping, performingOrgMapping, resourceMapping) && finishedCorrectly;
             }

@@ -1,4 +1,4 @@
-﻿namespace GenBOE.DataBridge.GenBOE.Dtos.DTOs
+﻿namespace GenBOE.Dtos
 {
 	using IES.Common;
 	using IES.Common.Interfaces;
@@ -22,6 +22,24 @@
 			RateType = RateType.NotSet;
 			CalculatedSegment = SegmentType.None;
 			isSystemBusinessResourceCode = false;
+		}
+
+		public BusinessResourceCodeDTO(ResourceDTO resource)
+		{
+			if (resource != null) 
+			{
+				Id = resource.Id;
+				BusinessResourceCodeName = resource.ResourceName;
+				BusinessResourceCodeDesc = resource.ResourceDesc;
+				LaborType = resource.LaborType;
+				SegRegion = resource.SegRegion;
+				BurdenPool = resource.BurdenPool;
+				ElementOfCost = resource.ElementOfCost;
+				Segment = resource.Segment;
+				RateType = resource.RateType;
+				CalculatedSegment = resource.CalculatedSegment;
+				isSystemBusinessResourceCode = resource.isSystemResource;
+			}
 		}
 
 		public string BusinessResourceCodeName { get; set; }

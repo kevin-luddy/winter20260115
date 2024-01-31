@@ -12,7 +12,7 @@ namespace GenBOE.DataBridge.DTO
     using System.Linq;
     using IES.Common;
     using GenBOE.Models;
-    using GenBOE.Dtos.DTOs;
+    using GenBOE.Dtos;
     using static IES.Common.Constants;
 
 	/// <summary>

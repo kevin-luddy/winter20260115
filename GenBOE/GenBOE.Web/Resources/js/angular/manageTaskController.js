@@ -77,7 +77,7 @@
 
     /** Resources and Performing Orgs **/
 	$scope.ResourceModels = BOEDetails.WSResources;
-	$scope.BusinessResourceCodeModels = BOEDetails.WSBusinessResourceCodes;
+	$scope.BusinessResourceCodeModels = BOEDetails.WSResources;
     $scope.PerfOrgModels = angular.copy(BOEDetails.WSPerfOrgs);
 
     $scope.isExporting = false;

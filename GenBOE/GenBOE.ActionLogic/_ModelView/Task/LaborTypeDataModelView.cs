@@ -12,7 +12,6 @@ namespace GenBOE.ActionLogic.ModelView
     using System.Linq;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.ValidationAttributes;
-	using GenBOE.DataBridge.GenBOE.Dtos.DTOs;
 	using GenBOE.Dtos;
     using IES.Common;
 
@@ -70,6 +69,7 @@ namespace GenBOE.ActionLogic.ModelView
         {
             if (inBoeLaborType == null) { throw new ArgumentNullException(nameof(inBoeLaborType)); }
             if (inResource == null) { throw new ArgumentNullException(nameof(inResource)); }
+			if (inBusinessResourceCode == null) { throw new ArgumentNullException(nameof(inBusinessResourceCode)); }
             if (perfOrg == null)
             {
                 throw new ArgumentNullException(nameof(perfOrg));

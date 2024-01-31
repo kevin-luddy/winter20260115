@@ -12,7 +12,6 @@ namespace GenBOE.Objects
 	using System.Linq;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
-	using GenBOE.DataBridge.GenBOE.Dtos.DTOs;
 	using GenBOE.Dtos;
 	using IES.Common;
 	using IES.Common.classes;

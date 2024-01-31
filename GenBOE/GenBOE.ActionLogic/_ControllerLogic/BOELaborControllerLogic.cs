@@ -473,7 +473,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     foreach (ResourceTypeDto missing in missingLabors)
                     {
                         this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-                        LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new PerformingOrgDTO());
+                        LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new BusinessResourceCodeDTO(), new PerformingOrgDTO());
                         toDelete.Deleted = true;
                         modelView.LaborTypesData.Add(toDelete);
                     }
@@ -2102,13 +2102,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     resource = resourcesFromDb.First(x => x.Id == labor.ResourceID.Value);
                 }
 
+				BusinessResourceCodeDTO businessResourceCode = new BusinessResourceCodeDTO();
+				if (labor.BusinessResourceCodeID != null)
+				{
+					businessResourceCode = new BusinessResourceCodeDTO(resourcesFromDb.First(x => x.Id == labor.BusinessResourceCodeID.Value));
+				}
+
                 PerformingOrgDTO perfOrg = new PerformingOrgDTO();
                 if (labor.PerformingOrgID != null)
                 {
                     perfOrg = performingOrgsFromDb.First(x => x.Id == labor.PerformingOrgID.Value);
                 }
 
-                LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, perfOrg);
+                LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg);
 
                 ICollection<CustomFieldSelectionModelView> laborCustomFieldSelection = new Collection<CustomFieldSelectionModelView>();
                 ICollection<CustomFieldValueContainer> laborCustomFieldValues = labor.CustomFieldValueContainers;
