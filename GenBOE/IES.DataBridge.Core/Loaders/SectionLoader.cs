@@ -9,6 +9,7 @@ namespace IES.DataBridge.Loaders
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using DocumentFormat.OpenXml.Spreadsheet;
 	using IES.Common.Core;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
@@ -528,7 +529,7 @@ namespace IES.DataBridge.Loaders
 				if (rdmRevision.HasValue)
 				{
 					SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
-					allSections = context.Sections.Select(x =>
+					allSections = context.Sections.Where(x => x.RevisionID == rdmRevision.Value).Select(x =>
 						new SectionAddressParentModelView
 						{
 							Id = x.ID,
@@ -600,7 +601,7 @@ namespace IES.DataBridge.Loaders
         private string GetSectionTitle(SectionAddressParentModelView address, IList<SectionAddressParentModelView> allSections)
         {
             string title = string.Empty;
-            SectionAddressParentModelView parentSection = allSections.Where(x => x.Id == address.ParentID).FirstOrDefault();
+            SectionAddressParentModelView parentSection = allSections.FirstOrDefault(x => x.Id == address.ParentID);
             if (parentSection.ParentID == null)
             {
                 title = parentSection.Title;
@@ -635,8 +636,8 @@ namespace IES.DataBridge.Loaders
 
 					casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
 					nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
-					adequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequate.HasValue && x.IsDisclosureStatementAdequate.Value == true) ? true : false;
-					noncomplianceNotification = flatSections.Any(x => x.NonComplianceNotification.HasValue && x.NonComplianceNotification.Value == true) ? true : false;
+					adequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequate.HasValue && x.IsDisclosureStatementAdequate.Value) ? true : false;
+					noncomplianceNotification = flatSections.Any(x => x.NonComplianceNotification.HasValue && x.NonComplianceNotification.Value) ? true : false;
 				}
 			}
 

@@ -26,8 +26,8 @@ namespace GenBOE.Tests.ActionLogic.CustomFields
         [TestMethod]
         public void RestorePerfOrg()
         {
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
-            var inUseLoader = new Mock<IInUseDataLoader>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IInUseDataLoader> inUseLoader = new Mock<IInUseDataLoader>();
 
             // the default list to use
             Collection<PerformingOrgDTO> DefaultPerfOrgs = new Collection<PerformingOrgDTO> {
@@ -49,8 +49,8 @@ namespace GenBOE.Tests.ActionLogic.CustomFields
                 new PerformingOrgDTO{Id=7, PerformingOrgName="PerfOrg7", PerformingOrgDesc="Perf Org 7"}
             };
 
-            var factory = new Mock<IFullObjectFactory>();
-            var retriever = new Mock<IRetriever>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -65,7 +65,7 @@ namespace GenBOE.Tests.ActionLogic.CustomFields
             HashSet<int> returnedIDs = new HashSet<int> { 1 };
             inUseLoader.Setup(x => x.GetWorkspacePerfOrgIDsInUseByPerfOrgListID(workspace.PerfOrgListID)).Returns(returnedIDs);
 
-            var sut = new RestoreDefaultOptions(inUseLoader.Object, workspaceLoader.Object, perfOrgLoader.Object);
+			RestoreDefaultOptions sut = new RestoreDefaultOptions(inUseLoader.Object, workspaceLoader.Object, perfOrgLoader.Object);
 
             RestoreOptionData optionsRestored = sut.RestorePerfOrg(ws);
 

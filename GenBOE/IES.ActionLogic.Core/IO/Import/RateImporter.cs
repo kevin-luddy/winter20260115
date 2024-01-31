@@ -96,7 +96,6 @@ namespace IES.ActionLogic.Core.IO.Import
 												if (int.TryParse(columnName, out year))
 												{
 													RateYearModelView newRateYearMV = new();
-													decimal newValue;
 													newRateYearMV.Year = year;
 
 													// check the cell's format to make sure it is not accounting
@@ -107,7 +106,7 @@ namespace IES.ActionLogic.Core.IO.Import
 
 													string cellValue = ExcelUtilities.GetCellValue(cell, sharedStringItems, stylesheet);
 													cellValue = cellValue.Replace("$", string.Empty);
-													if (!string.IsNullOrEmpty(cellValue) && decimal.TryParse(cellValue, out newValue))
+													if (!string.IsNullOrEmpty(cellValue) && decimal.TryParse(cellValue, out decimal newValue))
 													{
 														// If the excel precision blew up, round the number.
 														string newValueString = newValue.ToString();

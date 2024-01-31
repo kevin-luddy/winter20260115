@@ -53,8 +53,8 @@ namespace GenBOE.Tests.ActionLogic
             FullWorkspace workspace = new FullWorkspace(workspaceDto);
             FullBoe boe = new FullBoe(Boe1);
 
-            var ResourceLoader = new Mock<IResourceDTODataLoader>();
-            var TravelTripCostCalculator = new Mock<TravelTripCostCalculation>();
+			Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
+			Mock<TravelTripCostCalculation> TravelTripCostCalculator = new Mock<TravelTripCostCalculation>();
 
             ResourceTypeDto labor = new ResourceTypeDto { ResourceID = Resource.Id, BoeID = Boe1.Id, Id = 1, ValueSpread = 200 };
             BoeTaskElementDTO task = new BoeTaskElementDTO { Id = 1, BoeID = Boe1.Id, taskElementLabors = new Collection<ResourceTypeDto> { labor }, TaskElementType = IES.Common.TaskElementType.Labor };
@@ -148,7 +148,7 @@ namespace GenBOE.Tests.ActionLogic
             travel.MSTTravelTrips.Add(trip3);
             travel.MSTTravelTrips.Add(trip4);
 
-            var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(workspaceRMSTravelNonzoneFeesandCosts);
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(workspaceRMSEscalationRates);
             retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, false)).Returns(new Collection<TravelDTO>() { travel });
@@ -157,8 +157,8 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boe });
-            
-            var sut = new BOESummary(TravelTripCostCalculator.Object, rmsTripCalculate.Object);
+
+			BOESummary sut = new BOESummary(TravelTripCostCalculator.Object, rmsTripCalculate.Object);
             BOEExportInputs exportInputs = new BOEExportInputs(boe, workspace);
             ICollection<BOESummaryGridModelView> views = sut.GetBOESummaryGridModelViews(boe, exportInputs, false); 
             Assert.IsTrue(views.Count > 0, "No view returned");

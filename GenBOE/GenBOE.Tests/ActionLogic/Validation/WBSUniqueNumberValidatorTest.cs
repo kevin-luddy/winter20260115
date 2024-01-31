@@ -20,7 +20,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void WBSUniqueNumberValidator_IsValid()
         {
-            var wbsLoader = new Mock<IWbsDTODataLoader>();
+			Mock<IWbsDTODataLoader> wbsLoader = new Mock<IWbsDTODataLoader>();
             WBSUniqueNumberValidator sut = new WBSUniqueNumberValidator(wbsLoader.Object);
 
             wbsLoader.Setup(x => x.IsWbsNumberUnique("1", 1, -1)).Returns(false);
@@ -67,7 +67,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(ArgumentNullException))]
         public void WBSUniqueNumberValidator_NullValueTest()
         {
-            var wbsLoader = new Mock<IWbsDTODataLoader>();
+			Mock<IWbsDTODataLoader> wbsLoader = new Mock<IWbsDTODataLoader>();
             WBSUniqueNumberValidator sut = new WBSUniqueNumberValidator(wbsLoader.Object);
 
             // Test again excluding "current" workspace
@@ -87,7 +87,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(InvalidCastException))]
         public void WBSUniqueNumberValidator_InvalidCastTest()
         {
-            var wbsLoader = new Mock<IWbsDTODataLoader>();
+			Mock<IWbsDTODataLoader> wbsLoader = new Mock<IWbsDTODataLoader>();
             WBSUniqueNumberValidator sut = new WBSUniqueNumberValidator(wbsLoader.Object);
 
             // Test again excluding "current" workspace

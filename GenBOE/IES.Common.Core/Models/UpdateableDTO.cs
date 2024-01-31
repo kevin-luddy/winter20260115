@@ -47,8 +47,7 @@ namespace IES.Common.Core.Models
 			}
 			set
 			{
-				long val;
-				if (long.TryParse(value, out val))
+				if (long.TryParse(value, out long val))
 				{
 					UpdateDate = new DateTime(val);
 				}

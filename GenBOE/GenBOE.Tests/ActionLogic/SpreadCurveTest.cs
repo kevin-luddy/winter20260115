@@ -46,7 +46,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_1()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end  = Convert.ToDateTime("08/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve1;
@@ -76,7 +76,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_1_Int64()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("08/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve1;
@@ -106,7 +106,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_2()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("12/2010");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve2;
@@ -135,8 +135,8 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void CurveTest_3()
         {
-            // Spread Curve ID = 3
-            var sut = new Collection<ResourceSpreadDto>();
+			// Spread Curve ID = 3
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
            DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("08/2011"); // should produce 12 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve3;
@@ -166,7 +166,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_4()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("09/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve4;
@@ -196,7 +196,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_5()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("09/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve5;
@@ -226,7 +226,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_6()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("10/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve6;
@@ -256,7 +256,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_7()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("11/2011");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve7;
@@ -286,7 +286,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_8()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("03/2010");
             DateTime end = Convert.ToDateTime("03/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve8;
@@ -316,7 +316,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_9()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("05/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve9;
@@ -346,7 +346,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_10()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("12/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve10;
@@ -376,7 +376,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_11()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("12/2013");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve11;
@@ -405,7 +405,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_12()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("03/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve12;
@@ -435,7 +435,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_13()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("11/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve13;
@@ -465,7 +465,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_14()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("01/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve14;
@@ -495,7 +495,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_15()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("12/2011");
             DateTime end = Convert.ToDateTime("12/2014");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve15;
@@ -524,7 +524,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_16()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve16;
@@ -554,7 +554,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_17()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve17;
@@ -583,7 +583,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_18()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve18;
@@ -612,7 +612,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_19()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("09/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve19;
@@ -642,7 +642,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_20()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("07/2010");
             DateTime end = Convert.ToDateTime("07/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve20;
@@ -671,7 +671,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_21()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("12/2010");
             DateTime end = Convert.ToDateTime("11/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve21;
@@ -701,7 +701,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_22()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve22;
@@ -730,7 +730,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_23()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("09/2015");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve23;
@@ -759,7 +759,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_24()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve24;
@@ -788,7 +788,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_25()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("01/2011");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve25;
@@ -817,7 +817,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_26()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("10/2010");
             DateTime end = Convert.ToDateTime("04/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve26;
@@ -846,7 +846,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_27()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("11/2010");
             DateTime end = Convert.ToDateTime("12/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve27;
@@ -875,7 +875,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_28()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve28;
@@ -904,7 +904,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_29()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2013");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve29;
@@ -932,7 +932,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_30()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve30;
@@ -960,7 +960,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_31()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("07/2011");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve31;
@@ -988,7 +988,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_32()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("06/2010");
             DateTime end = Convert.ToDateTime("06/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve32;
@@ -1016,7 +1016,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_33()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("03/2010");
             DateTime end = Convert.ToDateTime("05/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve33;
@@ -1045,7 +1045,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_34()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve34;
@@ -1073,7 +1073,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_35()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("11/2010");
             DateTime end = Convert.ToDateTime("03/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve35;
@@ -1101,7 +1101,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_36()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve36;
@@ -1129,7 +1129,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_37()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("09/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve37;
@@ -1157,7 +1157,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_38()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve38;
@@ -1185,7 +1185,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_39()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("12/2010");
             DateTime end = Convert.ToDateTime("12/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve39;
@@ -1214,7 +1214,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_40()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve40;
@@ -1243,7 +1243,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_41()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("01/2011");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve41;
@@ -1272,7 +1272,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_42()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("02/2010");
             DateTime end = Convert.ToDateTime("02/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve42;
@@ -1301,7 +1301,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_43()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("08/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve43;
@@ -1330,7 +1330,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_44()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("04/2010");
             DateTime end = Convert.ToDateTime("03/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve44;
@@ -1359,7 +1359,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_45()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("04/2012"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve45;
@@ -1388,7 +1388,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_46()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("04/2012"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve46;
@@ -1416,7 +1416,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_47()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("11/2010");
             DateTime end = Convert.ToDateTime("11/2011"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve47;
@@ -1445,7 +1445,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_48()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("04/2008");
             DateTime end = Convert.ToDateTime("04/2012"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve48;
@@ -1474,7 +1474,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_49()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("09/2010");
             DateTime end = Convert.ToDateTime("09/2013"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve49;
@@ -1503,7 +1503,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_50()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2012"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve50;
@@ -1532,7 +1532,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_51()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2012"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve51;
@@ -1609,7 +1609,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_52()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2012"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve52;
@@ -1652,7 +1652,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_53()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2012"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve53;
@@ -1719,7 +1719,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void NoHourSpread_SpreadBL()
         {
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2012"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve50;
@@ -1746,7 +1746,7 @@ namespace GenBOE.Tests.ActionLogic
         public void NegativeCurveTest_3()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2015"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve3;
@@ -1774,7 +1774,7 @@ namespace GenBOE.Tests.ActionLogic
         public void NegativeCurveTest_50()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2015"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve50;
@@ -1802,7 +1802,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_51Negative()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2015"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve51;
@@ -1830,7 +1830,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_52Negative()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2015"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve52;
@@ -1858,7 +1858,7 @@ namespace GenBOE.Tests.ActionLogic
         public void CurveTest_53Negative()
         {
 
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2015"); // should produce 20 months
             SpreadCurves CurveID = SpreadCurves.SpreadCurve53;
@@ -1885,7 +1885,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SpreadCurveOverHourSpread()
         {
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("01/2011");
             DateTime end = Convert.ToDateTime("12/2015");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve26;
@@ -1914,7 +1914,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SpreadCurveOverNegativeHourSpread()
         {
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("01/2011");
             DateTime end = Convert.ToDateTime("12/2015");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve46;
@@ -1943,7 +1943,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SpreadWithDecimalPrecision_1()
         {
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("01/2011");
             DateTime end = Convert.ToDateTime("12/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve3; // level
@@ -1984,7 +1984,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SpreadWithDecimalPrecision_2()
         {
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("01/2011");
             DateTime end = Convert.ToDateTime("12/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve3; // level
@@ -2025,7 +2025,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SpreadWithDecimalPrecision_3()
         {
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("01/2011");
             DateTime end = Convert.ToDateTime("12/2011");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve3; // level
@@ -2068,7 +2068,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SpreadWithDecimalPrecision_Curve51()
         {
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve51;
@@ -2124,7 +2124,7 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void SpreadWithDecimalPrecision_Curve52()
         {
-            var sut = new Collection<ResourceSpreadDto>();
+			Collection<ResourceSpreadDto> sut = new Collection<ResourceSpreadDto>();
             DateTime start = Convert.ToDateTime("05/2010");
             DateTime end = Convert.ToDateTime("05/2012");
             SpreadCurves CurveID = SpreadCurves.SpreadCurve52;

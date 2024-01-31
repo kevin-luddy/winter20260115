@@ -66,7 +66,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var resultsLinq = from w in 
+					System.Collections.Generic.IEnumerable<int> resultsLinq = from w in 
                                           gbe.getWorkspaceIDByWorkspaceAdvancedSearch(name, desc, inWorkspaceSearch.ProposalSubmitStartDate, inWorkspaceSearch.ProposalSubmitEndDate, rfp, costVolumeLead, (int?)inWorkspaceSearch.ProjectMapType)
                                           select w.Value;
                     

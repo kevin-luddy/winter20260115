@@ -140,8 +140,8 @@ namespace GenBOE.Web.Controllers
                 // Perform Action
                 Collection<BOETravelGridModelView> theModelViews = zoneTravelControllerLogic.GetTravelGridModelViews(boeID, ws.DecimalPrecision, ws.Id, escalationRates);
 
-                //create a var for list items
-                var orderOfTaskElements = new Collection<SelectListItem>();
+				//create a var for list items
+				Collection<SelectListItem> orderOfTaskElements = new Collection<SelectListItem>();
                 //get a list of each task element.
                 foreach (BOETravelGridModelView row in theModelViews)
                 {
@@ -342,7 +342,7 @@ namespace GenBOE.Web.Controllers
             _TravelControllerLogic.ReOrderTaskElementOrder(boeObject, theModelView);
 
 
-            var toReturn = Json(new { Status = true });
+			JsonResult toReturn = Json(new { Status = true });
 
 
             // Finalize Action
@@ -387,9 +387,9 @@ namespace GenBOE.Web.Controllers
                         costs.Add(inputs.TravelTripID.ToString(), inputs.Cost);
                     }
                 }
-            }    
+            }
 
-            var toReturn = Json(new { Status = true, result = costs, errors = ValidationMessages });
+			JsonResult toReturn = Json(new { Status = true, result = costs, errors = ValidationMessages });
 
             // Finalize Action
             FinalizeAction(_log, "VerifyAndCalculateZoneTravelTrip", sw);

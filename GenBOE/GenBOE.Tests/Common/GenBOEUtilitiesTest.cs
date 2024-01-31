@@ -12,14 +12,14 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void CloneTest()
         {
-            var toClone = new TestObject
+			TestObject toClone = new TestObject
             {
                 Attribute1 = 1,
                 Attribute2 = 2,
                 Attribute3 = 3
             };
 
-            var result = GenBOEUtilities.Clone(toClone);
+			TestObject result = GenBOEUtilities.Clone(toClone);
 
             Assert.AreEqual(toClone.Attribute1, result.Attribute1);
             Assert.AreEqual(toClone.Attribute2, result.Attribute2);
@@ -90,14 +90,14 @@ namespace GenBOE.Tests.Common
         [ExpectedException(typeof(ArgumentException))]
         public void Clone_Exception1()
         {
-            var toClone = new NonSerializableTestObject
+			NonSerializableTestObject toClone = new NonSerializableTestObject
             {
                 Attribute1 = 1,
                 Attribute2 = 2,
                 Attribute3 = 3
             };
 
-            var result = GenBOEUtilities.Clone(toClone);
+			NonSerializableTestObject result = GenBOEUtilities.Clone(toClone);
 
             Assert.AreEqual(toClone.Attribute1, result.Attribute1);
             Assert.AreEqual(toClone.Attribute2, result.Attribute2);

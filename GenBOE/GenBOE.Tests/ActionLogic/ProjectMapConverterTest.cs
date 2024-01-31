@@ -220,7 +220,7 @@ namespace GenBOE.Tests.ActionLogic
         public static ProjectMapModelView[] GetProjectMapModelViews()
         {
 
-            var projectMapRows = new[]
+			ProjectMapModelView[] projectMapRows = new[]
             {
                 new ProjectMapModelView { ClassOfCost= "DNR", LegacyID = 1, WbsNumber = "4.01.06.01", CostCenter = "P", ActivityID = "BSW1023", ActivityName = "A/C #1 - Conduct MDSC Review & Resolve Issues - Pre Instrumentation", WbsElementTitle = "Development Test Reviews", InitialResource = "R", StartDate = DateTime.Parse("1/15/2019"), EndDate = DateTime.Parse("2/1/2019"), Clin = "0001", SowNumber = "MOT", SowTitle = "TEST READINESS REVIEW (TRR), DEVELOPMENT TEST AWR", Task = "Flight Test Engineers - Special Projects (4043WWC) are to conduct and participate in Sikorsky\'s Model Development Safety Committee (MDSC) Review.  This review is pre-instrumentation.  This is to review the SANG program\'s overview (presentation), Test Plans, and safety data before a flight release can be provided for the Development Test (DT) program.", Hours = 6, Dollars = 0, Rationale = "Flight Test Engineers - Special Projects (4043WWC) are to participate.", CamName = "Stange, B.", Category = "ENG", Offload = true, AddDelete = "D", TieredPercentage = 2.3m},
                 new ProjectMapModelView { ClassOfCost= "DNR", LegacyID = 2, WbsNumber = "4.01.06.01", CostCenter = "P", ActivityID = "BSW1023", ActivityName = "A/C #1 - Conduct MDSC Review & Resolve Issues - Pre Instrumentation", WbsElementTitle = "Development Test Reviews", InitialResource = "R", StartDate = DateTime.Parse("01/15/2019"), EndDate = DateTime.Parse("02/01/2019"), Clin = "0001", SowNumber = "MOT", SowTitle = "TEST READINESS REVIEW (TRR), DEVELOPMENT TEST AWR", Task = "Flight Test Engineers - Special Projects (4043WWC) are to conduct and participate in Sikorsky\'s Model Development Safety Committee (MDSC) Review.  This review is pre-instrumentation.  This is to review the SANG program\'s overview (presentation), Test Plans, and safety data before a flight release can be provided for the Development Test (DT) program.", Hours = 6, Dollars = 0, Rationale = "Flight Test Engineers - Special Projects (4043WWC) are to participate.", CamName = "Stange, B.", Category = "ENG", TieredPercentage = 3.4m},
@@ -230,7 +230,7 @@ namespace GenBOE.Tests.ActionLogic
             };
 
             Random rand = new Random(5);
-            foreach (var mv in projectMapRows)
+            foreach (ProjectMapModelView mv in projectMapRows)
             {
                 mv.StartDate = mv.StartDate.Normalize();
                 mv.EndDate = mv.EndDate.Normalize();

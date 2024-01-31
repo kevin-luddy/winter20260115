@@ -180,8 +180,7 @@ namespace IES.Common.Core.Utilities
 				{
 					foreach (PropertyInfo property in properties)
 					{
-						object value = null;
-						matchingProperty = GetNestedProperty(propertyName, property.GetValue(source.First(), null), property.PropertyType, out value);
+						matchingProperty = GetNestedProperty(propertyName, property.GetValue(source.First(), null), property.PropertyType, out object value);
 						if (matchingProperty != null)
 						{
 							nestedValues.Add(propertyName + "0", value);

@@ -57,8 +57,8 @@ namespace GenTRAC.Tests.Mediator
             this.proposalPermissionsMapper.Setup(x => x.Save(groupPermission)).Returns(groupPermission.Id);
             this.proposalPermissionsMapper.Setup(x => x.GetById(groupPermission.Id)).Returns(groupPermission);
 
-            var result = sut.SaveProposalPermissionDto(toSave);
-            var groupResult = sut.SaveProposalPermissionDto(groupPermission);
+            ProposalPermissionDto result = sut.SaveProposalPermissionDto(toSave);
+            ProposalPermissionDto groupResult = sut.SaveProposalPermissionDto(groupPermission);
 
             Assert.AreEqual(toSave, result);
             Assert.AreEqual(groupPermission, groupResult);
@@ -88,7 +88,7 @@ namespace GenTRAC.Tests.Mediator
             this.proposalPermissionsMapper.Setup(x => x.Save(toSave)).Returns(toSave.Id);
             this.proposalPermissionsMapper.Setup(x => x.GetById(toSave.Id)).Returns(toSave);
 
-            var result = sut.SaveProposalPermissionDtos(allPermissionsToSave);
+            ICollection<ProposalPermissionDto> result = sut.SaveProposalPermissionDtos(allPermissionsToSave);
 
             DtoAssertHelpers.AssertDtos(result.First(), toSave);
         }

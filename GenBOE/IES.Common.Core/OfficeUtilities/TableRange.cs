@@ -136,8 +136,8 @@ namespace IES.Common.Core.OfficeUtilities
 
 			char[] chars = name.ToUpper().ToCharArray();
 
-			return (long)(Math.Pow(26, chars.Length - 1)) *
-				(System.Convert.ToInt32(chars[0]) - 64) +
+			return ((long)(Math.Pow(26, chars.Length - 1)) *
+				(System.Convert.ToInt32(chars[0]) - 64)) +
 				((chars.Length > 2) ? GetColumnNumber(name.Substring(1, name.Length - 1)) :
 				((chars.Length == 2) ? (System.Convert.ToInt32(chars[chars.Length - 1]) - 64) : 0));
 		}
@@ -151,14 +151,12 @@ namespace IES.Common.Core.OfficeUtilities
 		public static String GetColumnName(long number)
 		{
 			StringBuilder retVal = new();
-			int x = 0;
-
 			for (int n = (int)(Math.Log(25 * (number + 1)) / Math.Log(26)) - 1; n >= 0; n--)
 			{
-				x = (int)((Math.Pow(26, (n + 1)) - 1) / 25 - 1);
+				int x = (int)(((Math.Pow(26, (n + 1)) - 1) / 25) - 1);
 				if (number > x)
 				{
-					retVal.Append(System.Convert.ToChar((int)(((number - x - 1) / Math.Pow(26, n)) % 26 + 65)));
+					retVal.Append(System.Convert.ToChar((int)((((number - x - 1) / Math.Pow(26, n)) % 26) + 65)));
 				}
 			}
 

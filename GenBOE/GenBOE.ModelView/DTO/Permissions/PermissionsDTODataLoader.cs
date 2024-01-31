@@ -95,7 +95,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var boeUsers = from role in gbe.BOEUserRoles
+					IQueryable<PermissionsDTO> boeUsers = from role in gbe.BOEUserRoles
                                    from boe in gbe.BOEs
                                    where boe.BOEID == role.BOEID
                                    select new PermissionsDTO
@@ -128,7 +128,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var boeUsers = from role in gbe.BOEPotentialRoles
+					IQueryable<PermissionsDTO> boeUsers = from role in gbe.BOEPotentialRoles
                                    select new PermissionsDTO
                                    {
                                        PermissionId = role.BOEPotentialRoleID,
@@ -159,7 +159,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var wsRoles = from wr in gbe.WorkspaceUserRoles
+					IQueryable<PermissionsDTO> wsRoles = from wr in gbe.WorkspaceUserRoles
                                   where inWorkspaceId == wr.WorkspaceID
                                   select new PermissionsDTO
                                   {
@@ -192,7 +192,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var wsRoles = from wr in gbe.WorkspaceUserRoles
+					IQueryable<PermissionsDTO> wsRoles = from wr in gbe.WorkspaceUserRoles
                                   join b in gbe.BOEs on wr.WorkspaceID equals b.WorkspaceID
                                   where b.BOEID == inBoeId
                                   select new PermissionsDTO
@@ -226,7 +226,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var systemRoles = from sr in gbe.SystemUserRoles
+					IQueryable<PermissionsDTO> systemRoles = from sr in gbe.SystemUserRoles
                                       select new PermissionsDTO
                                       {
                                           PermissionId = sr.SystemUserRoleID,
@@ -256,7 +256,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var systemRoles = from sr in gbe.SystemUserRoles
+					IQueryable<PermissionsDTO> systemRoles = from sr in gbe.SystemUserRoles
                                       select new PermissionsDTO
                                       {
                                           PermissionId = sr.SystemUserRoleID,
@@ -385,7 +385,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var boeUsers = from role in gbe.BOEUserRoles
+					IQueryable<PermissionsDTO> boeUsers = from role in gbe.BOEUserRoles
                                    join boe in gbe.BOEs on role.BOEID equals boe.BOEID
                                    where inBOEIds.Contains(role.BOEID)
                                    select new PermissionsDTO
@@ -420,7 +420,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var boeUsers = from role in gbe.BOEPotentialRoles
+					IQueryable<PermissionsDTO> boeUsers = from role in gbe.BOEPotentialRoles
                                    where role.WorkspaceID == inWorkspaceId
                                    select new PermissionsDTO
                                    {
@@ -575,8 +575,8 @@ namespace GenBOE.DataBridge.DTO
 
                         if (inPermission.Role != Role.SubcontractorAuthor)//Do not grant a subcontractor the WorkspaceUser role per User Story 16201
                         {
-                            // Grant the user WorkspaceUser if they don't already have it
-                            var currentWorkspaceUser = from p in GetWorkspacePermissions(inPermission.WorkspaceId.Value)
+						// Grant the user WorkspaceUser if they don't already have it
+						IEnumerable<PermissionsDTO> currentWorkspaceUser = from p in GetWorkspacePermissions(inPermission.WorkspaceId.Value)
                                                        where p.Role == Role.WorkspaceUser &&
                                                     p.ETIUserId == inPermission.ETIUserId
                                                        select p;

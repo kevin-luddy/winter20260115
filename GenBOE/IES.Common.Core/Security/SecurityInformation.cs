@@ -466,8 +466,8 @@ namespace IES.Common.Core.Security
 			bool isUserInGroups = false;
 
 			// Get a list of user group(s).
-			string[] groupNamesArray = null;
-			if (groupNames.Contains(","))
+			string[] groupNamesArray;
+			if (groupNames.Contains(','))
 			{
 				groupNamesArray = groupNames.Split(',');
 			}

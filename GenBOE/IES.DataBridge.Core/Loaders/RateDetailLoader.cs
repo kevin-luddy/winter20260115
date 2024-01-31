@@ -665,7 +665,7 @@ namespace IES.DataBridge.Loaders
 								}
 
 								currentRateYear.PercentChange = (currentRateYear.Value.HasValue && previousRateYear.Value.HasValue && previousRateYear.Value.Value != 0) ?
-																Math.Abs((currentRateYear.Value.Value / previousRateYear.Value.Value - 1) * 100) :
+																Math.Abs(((currentRateYear.Value.Value / previousRateYear.Value.Value) - 1) * 100) :
 																(decimal)0.01;
 							}
 						}

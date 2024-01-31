@@ -160,11 +160,9 @@ namespace IES.ActionLogic.Core.Common
 			string prefix = format[PREFIX];
 			string suffix = format[SUFFIX];
 
-			int precision;
-			int.TryParse(format[PRECISION], out precision);
+			int.TryParse(format[PRECISION], out int precision);
 
-			int multiplier;
-			if (!int.TryParse(format[MULTIPLIER], out multiplier))
+			if (!int.TryParse(format[MULTIPLIER], out int multiplier))
 			{
 				multiplier = 1;
 			}

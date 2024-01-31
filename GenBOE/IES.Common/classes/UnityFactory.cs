@@ -58,13 +58,13 @@ namespace IES.Common
                     StringBuilder y = new StringBuilder();
                     StringBuilder z = new StringBuilder();
 
-                    foreach (var key in requestContext.RouteData.Values.Keys)
+                    foreach (string key in requestContext.RouteData.Values.Keys)
                     {
                         y.Append("{");
                         y.Append(key == null ? "null" : key.ToString());
                         y.Append("} ");
                     }
-                    foreach (var value in requestContext.RouteData.Values.Values)
+                    foreach (object value in requestContext.RouteData.Values.Values)
                     {
                         z.Append("{");
                         z.Append(value == null ? "null" : value.ToString());
@@ -82,7 +82,7 @@ namespace IES.Common
                         and prevent it from writing to the log file */
                         !requestContext.HttpContext.Request.ContentType.StartsWith("multipart/form-data", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        var bytes = new byte[requestContext.HttpContext.Request.InputStream.Length];
+						byte[] bytes = new byte[requestContext.HttpContext.Request.InputStream.Length];
                         requestContext.HttpContext.Request.InputStream.Read(bytes, 0, bytes.Length);
                         requestContext.HttpContext.Request.InputStream.Position = 0;
                         string content = Encoding.ASCII.GetString(bytes);

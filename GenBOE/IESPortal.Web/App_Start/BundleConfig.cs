@@ -38,8 +38,8 @@
             bundles.Add(new StyleBundle("~/Content/appOfflineCss").Include(
                 "~/Content/app-offline.css"));
 
-            // bootstrap always has to be in front of jquery ui for dialog css to work correctly!!
-            var bundle = new ScriptBundle("~/bundles/adminJquery").Include(
+			// bootstrap always has to be in front of jquery ui for dialog css to work correctly!!
+			Bundle bundle = new ScriptBundle("~/bundles/adminJquery").Include(
                 "~/Scripts/jquery-{version}.js",
                 "~/Scripts/bootstrap.js",
                 "~/Scripts/jquery-ui-{version}.js",

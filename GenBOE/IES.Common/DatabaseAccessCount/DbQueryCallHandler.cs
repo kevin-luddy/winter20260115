@@ -47,7 +47,7 @@ namespace IES.Common
             // get the request
             if (HttpContext.Current != null)
             {
-                var requestItems = HttpContext.Current.Items;
+				System.Collections.IDictionary requestItems = HttpContext.Current.Items;
 
                 // increment db calls
                 if (requestItems.Contains(DbQueryConstants.CURRENT_QUERIES))

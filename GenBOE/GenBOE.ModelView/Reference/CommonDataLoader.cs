@@ -459,7 +459,7 @@ namespace GenBOE.DataBridge.Common
             string toReturn = string.Empty;
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var resultLinq = (from l in gbe.Resources
+				string resultLinq = (from l in gbe.Resources
                                   where l.ResourceID == inResourceID
                                   select l.ResourceName).First();
                 toReturn = resultLinq;

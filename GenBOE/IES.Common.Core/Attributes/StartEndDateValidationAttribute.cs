@@ -134,7 +134,7 @@ namespace IES.Common.Core.Attributes
 						validationContext.ObjectType.Name));
 			}
 
-			bool result = startDate < endDate || startDate == endDate && CanBeEqual;
+			bool result = startDate < endDate || (startDate == endDate && CanBeEqual);
 			return result;
 		}
 

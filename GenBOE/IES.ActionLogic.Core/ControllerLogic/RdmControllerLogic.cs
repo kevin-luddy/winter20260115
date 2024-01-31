@@ -245,7 +245,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			// Next, check RDM Admin or RDM COBRA Admin specific operations
 			bool isCobraAdminAction = IsCobraAdminAction(controllerName, functionName);
-			if (IsRDMAdminUser && !isCobraAdminAction || IsRDMCobraAdminUser && isCobraAdminAction)
+			if ((IsRDMAdminUser && !isCobraAdminAction) || (IsRDMCobraAdminUser && isCobraAdminAction))
 			{
 				return true;
 			}
@@ -262,8 +262,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <returns>true if Viewer action; false otherwise.</returns>
 		private bool IsViewerAction(string controllerName, string functionName)
 		{
-			List<string> viewerActions;
-			return ViewerControllerActionDictionary.TryGetValue(controllerName.ToLower(), out viewerActions) && viewerActions.Contains(functionName.ToLower());
+			return ViewerControllerActionDictionary.TryGetValue(controllerName.ToLower(), out List<string> viewerActions) && viewerActions.Contains(functionName.ToLower());
 		}
 
 		/// <summary>
@@ -274,8 +273,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <returns>true if COBRA Admin action; false otherwise.</returns>
 		private bool IsCobraAdminAction(string controllerName, string functionName)
 		{
-			List<string> cobraAdminActions;
-			return CobraAdminControllerActionDictionary.TryGetValue(controllerName.ToLower(), out cobraAdminActions) && cobraAdminActions.Contains(functionName.ToLower());
+			return CobraAdminControllerActionDictionary.TryGetValue(controllerName.ToLower(), out List<string> cobraAdminActions) && cobraAdminActions.Contains(functionName.ToLower());
 		}
 
 		/// <summary>
@@ -286,8 +284,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <returns>true if this action is allowed for a regular or COBRA admin; false otherwise.</returns>
 		private bool IsCommonAdminAction(string controllerName, string functionName)
 		{
-			List<string> commonAdminActions;
-			return CommonAdminControllerActionDictionary.TryGetValue(controllerName.ToLower(), out commonAdminActions) && commonAdminActions.Contains(functionName.ToLower());
+			return CommonAdminControllerActionDictionary.TryGetValue(controllerName.ToLower(), out List<string> commonAdminActions) && commonAdminActions.Contains(functionName.ToLower());
 		}
 
 		/// <summary>

@@ -49,7 +49,7 @@ namespace GenBOE.DataBridge.DTO
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
 
-                    var mileRate = (from o in gbe.MileageReimbursementRates
+					MileReimbursementRateDTO mileRate = (from o in gbe.MileageReimbursementRates
                                     select new MileReimbursementRateDTO
                                     {
                                         MileReimbursementRate = o.RatePerMile,

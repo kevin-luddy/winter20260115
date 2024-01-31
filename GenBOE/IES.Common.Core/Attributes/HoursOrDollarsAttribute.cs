@@ -40,8 +40,8 @@ namespace IES.Common.Core.Attributes
 			}
 
 			ProjectMapModelView model = validationContext.ObjectInstance as ProjectMapModelView;
-			if ((model.Dollars ?? 0) == 0 && (model.Hours ?? 0) == 0 ||
-				model.Dollars.HasValue && model.Dollars != 0 && model.Hours.HasValue && model.Hours != 0)
+			if (((model.Dollars ?? 0) == 0 && (model.Hours ?? 0) == 0) ||
+				(model.Dollars.HasValue && model.Dollars != 0 && model.Hours.HasValue && model.Hours != 0))
 			{
 				return new ValidationResult(ErrorMessage);
 			}

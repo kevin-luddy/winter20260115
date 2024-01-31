@@ -146,12 +146,12 @@ namespace IES.Common.Core.Constants
 		/// <summary>
 		/// The action name for the Document index page
 		/// </summary>
-		public readonly static string ACTION_INDEX_DOCUMENT = "Index";
+		public readonly static string ACTION_INDEX_DOCUMENT = "GetDocuments";
 
 		/// <summary>
-		/// The action name for editing a Document.
+		/// The action name for getting a Document.
 		/// </summary>
-		public readonly static string ACTION_EDIT_DOCUMENT = "Edit";
+		public readonly static string ACTION_GET_DOCUMENT = "getdetailmodelview";
 
 		/// <summary>
 		/// The action name for saving a Document.
@@ -187,6 +187,11 @@ namespace IES.Common.Core.Constants
 		/// The action name for getting the sections for the selected revision on the edit document page
 		/// </summary>
 		public readonly static string ACTION_GET_SECTIONS_FOR_REVISION = "GetSectionsForRevision";
+
+		/// <summary>
+		/// The action name for getting the User Info
+		/// </summary>
+		public readonly static string ACTION_GET_INFO = "GetUserInfo";
 
 		#endregion
 

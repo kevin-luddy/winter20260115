@@ -82,10 +82,10 @@ namespace GenTRAC.Tests.Objects
             this.retriever.Setup(x => x.GetPPRChecklistContent(proposal.Id)).Returns(checklistPPRContent);
             this.retriever.Setup(x => x.GetPARChecklistContent(proposal.Id)).Returns(checklistPARContent);
 
-            var currentUser = proposal.CurrentUser;
+            UserDTO currentUser = proposal.CurrentUser;
             currentUser = proposal.CurrentUser;
 
-            var permissions = proposal.Permissions;
+            ICollection<ProposalPermissionDto> permissions = proposal.Permissions;
             permissions = proposal.Permissions;
 
             DtoAssertHelpers.AssertDtos(currentUserDto, currentUser);
@@ -96,7 +96,7 @@ namespace GenTRAC.Tests.Objects
             }
 
             // checklist tests
-            var checklists = proposal.ProposalChecklistData;
+            ICollection<ProposalChecklistDto> checklists = proposal.ProposalChecklistData;
             checklists = proposal.ProposalChecklistData;
 
             for (int i = 0; i < checklists.Count; i++)
@@ -104,12 +104,12 @@ namespace GenTRAC.Tests.Objects
                 DtoAssertHelpers.AssertDtos(proposalChecklists[i], checklists.ElementAt(i));
             }
 
-            var pprChecklistData = proposal.ProposalChecklistPPRData;
+            ChecklistContentDto pprChecklistData = proposal.ProposalChecklistPPRData;
             pprChecklistData = proposal.ProposalChecklistPPRData;
 
             DtoAssertHelpers.AssertDtos(checklistPPRContent, pprChecklistData);
 
-            var parChecklistData = proposal.ProposalChecklistPARData;
+            ChecklistContentDto parChecklistData = proposal.ProposalChecklistPARData;
             parChecklistData = proposal.ProposalChecklistPARData;
 
             DtoAssertHelpers.AssertDtos(checklistPARContent, parChecklistData);

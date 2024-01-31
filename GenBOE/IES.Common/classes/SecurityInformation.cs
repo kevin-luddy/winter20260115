@@ -221,7 +221,7 @@ namespace IES.Common
             {
                 return "<none>";
             }
-            var toReturn = from role in inRoles select role.ToString();
+			System.Collections.Generic.IEnumerable<string> toReturn = from role in inRoles select role.ToString();
 
             return String.Join(",", toReturn.ToArray());
         }

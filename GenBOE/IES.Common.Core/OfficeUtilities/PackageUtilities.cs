@@ -38,8 +38,7 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 			if (!string.IsNullOrEmpty(versionString))
 			{
-				int tempId;
-				bool parsed = Int32.TryParse(versionString, out tempId);
+				bool parsed = Int32.TryParse(versionString, out int tempId);
 				if (parsed)
 				{
 					parentTemplateId = tempId;

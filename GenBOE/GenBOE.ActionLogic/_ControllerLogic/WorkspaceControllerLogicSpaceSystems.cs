@@ -151,7 +151,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			SortedDictionary<string, Tuple<bool, int>> resources = new SortedDictionary<string, Tuple<bool, int>>();
 
 			// get resources that allow mapping
-			var nonMappableResources = (from x in workspace.ResourcesForWsResourceListId
+			ResourceDTO[] nonMappableResources = (from x in workspace.ResourcesForWsResourceListId
 										where (x.ElementOfCost == ElementOfCostType.Sub ||
 										x.ElementOfCost == ElementOfCostType.IWTA) &&
 										(x.RateType == RateType.Hours)

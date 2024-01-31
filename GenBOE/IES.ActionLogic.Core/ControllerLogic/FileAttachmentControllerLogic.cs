@@ -96,8 +96,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 				if (!string.IsNullOrWhiteSpace(row.Link))
 				{
-					Uri result;
-					if (!Uri.TryCreate(row.Link, UriKind.Absolute, out result))
+					if (!Uri.TryCreate(row.Link, UriKind.Absolute, out Uri result))
 					{
 						validationErrors.Add(new ValidationMessage($"Row has an invalid Url: {row.Link}"));
 					}

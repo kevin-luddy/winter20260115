@@ -59,7 +59,7 @@
 		</parameterentry>
 	</parameter>
 	<parameter name="IESPortalAdminGroups" description="doesn't matter" defaultvalue="__IES_PORTAL_ADMIN_GROUPS__" tags="">
-		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_PORTAS_ADMIN_GROUPS_">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_PORTAL_ADMIN_GROUPS_">
 		</parameterentry>
 	</parameter>
 	<parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
@@ -97,8 +97,16 @@
 		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
 		</parameterentry>
 	</parameter>
-	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__ActiveDirectoryPath__" tags="">
-		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
+	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+	<parameter name="genTracEntities" description="doesn't matter" defaultvalue="__genTracEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='genTracEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+	<parameter name="GenBoeEntities" description="doesn't matter" defaultvalue="__GenBoeEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='GenBoeEntities']/@connectionString">
 		</parameterentry>
 	</parameter>
 </parameters>

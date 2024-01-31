@@ -801,7 +801,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     ImportExportConstants.TASK_ENDDATE_CELL_ROW_OFFSET, ImportExportConstants.TASK_ENDDATE_CELL_COLUMN_OFFSET,
                     endDateDisplay, null, true, false);
 
-                var inUseWorkspaceVariables = (from wID in taskElement.WorkspaceVariableIDs
+				List<WorkspaceVariableDTO> inUseWorkspaceVariables = (from wID in taskElement.WorkspaceVariableIDs
                                               from workspaceVariable in workspace.WorkspaceVariables
                                               where workspaceVariable.Id == wID
                                               select workspaceVariable).ToList();

@@ -16,6 +16,7 @@ namespace IES.Common.Core
 	using System.Reflection;
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
+	using System.Text.Json;
 	using System.Text.RegularExpressions;
 	using IES.Common.Core.Attributes;
 	using IES.Common.Core.Constants;
@@ -43,8 +44,8 @@ namespace IES.Common.Core
 		/// <returns>True, if the items are equivalent; false, if not</returns>
 		public static bool IsEquivalentTo(this string str, string value)
 		{
-			if (string.IsNullOrWhiteSpace(str) && string.IsNullOrWhiteSpace(value) ||
-				str != null && value != null && str.Trim().ToLower() == value.Trim().ToLower())
+			if ((string.IsNullOrWhiteSpace(str) && string.IsNullOrWhiteSpace(value)) ||
+				(str != null && value != null && str.Trim().ToLower() == value.Trim().ToLower()))
 			{
 				return true;
 			}
@@ -436,12 +437,12 @@ namespace IES.Common.Core
 		}
 
 		/// <summary>
-		/// Makes a deep copy of a Serializable object using the <see cref="BinaryFormatter"/>
+		/// Makes a deep copy of a Serializable object using the <see cref="JsonSerializer"/>
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="source">The object to deep copy</param>
 		/// <returns>The copied object</returns>
-		public static T DeepClone<T>(this T source) // where T: ISerializable
+		public static T DeepClone<T>(this T source) where T: class 
 		{
 			if (!typeof(T).IsSerializable)
 			{
@@ -454,14 +455,16 @@ namespace IES.Common.Core
 				return default;
 			}
 
-			IFormatter formatter = new BinaryFormatter();
-			Stream stream = new MemoryStream();
-			using (stream)
+			Type S = source.GetType();
+
+			if (S == typeof(object))
 			{
-				formatter.Serialize(stream, source);
-				stream.Seek(0, SeekOrigin.Begin);
-				return (T)formatter.Deserialize(stream);
+				throw new NotSupportedException();
 			}
+
+			string serializedObject = JsonSerializer.Serialize(source, S);
+			object deserializedObject = JsonSerializer.Deserialize(serializedObject, S);
+			return deserializedObject as T;
 		}
 
 		/// <summary>
@@ -596,8 +599,7 @@ namespace IES.Common.Core
 		/// <returns>true if string can be date, false if not</returns>
 		public static bool IsValidDate(this string date)
 		{
-			DateTime dateCheck;
-			bool isValidDate = DateTime.TryParse(date, out dateCheck);
+			bool isValidDate = DateTime.TryParse(date, out _);
 			return isValidDate;
 
 		}

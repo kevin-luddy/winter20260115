@@ -182,8 +182,7 @@ namespace IES.ActionLogic.Core.IO.Export
 				// enforce well-formedness of table cell XML (i.e. must contain a paragraph)
 				if (parentElement is TableCell && !parentElement.Descendants<Paragraph>().Any())
 				{
-					TableRow row = parentElement.Parent as TableRow;
-					if (row != null && row.Descendants<TableCell>().Count() == 1)
+					if (parentElement.Parent is TableRow row && row.Descendants<TableCell>().Count() == 1)
 					{
 						row.Remove();  // if this is the only cell, then (because it is empty) just remove the entire row
 					}

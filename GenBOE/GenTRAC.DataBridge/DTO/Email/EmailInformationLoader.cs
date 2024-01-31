@@ -52,7 +52,7 @@ namespace GenTRAC.DataBridge.DTO
             this.Log = new IES.Common.Logger(typeof(EmailInformationLoader));
             // This Loader is called from the Emailer console app, so it does not have the Unity Container loaded for resolutions, have to new up any Loaders/mappers
             this.PermissionLoader = new ProposalPermissionLoader();
-            this.ProposalLoader = new ProposalLoader(this.PermissionLoader);
+            this.ProposalLoader = new ProposalLoader();
             this.UserLoader = new UserLoader();
             this.AttachmentLoader = new AttachmentLoader();
         }

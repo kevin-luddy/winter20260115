@@ -64,9 +64,9 @@ namespace GenBOE.Tests.ActionLogic
             OrdinaryVariableDto taskOrdinaryVar = new OrdinaryVariableDto { BoeID = this.Boe1.Id, Id = 2, OrdinaryVariableName = "BLAH", OrdinaryVariableValue = 500m, ValueType = VarValueType.SumOfBOEs, SortBOEBy = VarSortBOEBy.WBS, SelectedBOEsToSum = new Collection<SelectBOEsToSum> { new SelectBOEsToSum { BoeID = null, CLINID = this.Clin1.Id, WBSID = null } }, TaskElementId = boeTaskElement.Id };
             boeTaskElement.OrdinaryVariables = new Collection<OrdinaryVariableDto> { taskOrdinaryVar };
 
-            var _ResourceLoader = new Mock<IResourceDTODataLoader>();
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>(); 
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { 
                 (int)SumVariableResourceType.DSLabor, 
@@ -103,7 +103,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetFullWorkspaceById(this.Workspace.Id)).Returns(new FullWorkspace(this.Workspace));
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnCLINID(this.Clin1.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(0); //???
 
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             #region Setup Containers & mappers for the parser data grab
 
@@ -133,16 +133,16 @@ namespace GenBOE.Tests.ActionLogic
             OrdinaryVariableDto taskOrdinaryVar = new OrdinaryVariableDto { BoeID = this.Boe1.Id, Id = 2, OrdinaryVariableName = "BLAH", OrdinaryVariableValue = 500m, ValueType = VarValueType.SumOfBOEs, SortBOEBy = VarSortBOEBy.WBS, SelectedBOEsToSum = new Collection<SelectBOEsToSum> { new SelectBOEsToSum { BoeID = null, CLINID = null, WBSID = this.Wbs.Id } }, TaskElementId = boeTaskElement.Id };
             boeTaskElement.OrdinaryVariables = new Collection<OrdinaryVariableDto> { taskOrdinaryVar };
 
-            var OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
+			Mock<IOrdinaryVariableLoader> OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
             OrdinaryTaskElementLoader.Setup(x => x.GetById(taskOrdinaryVar.Id)).Returns(taskOrdinaryVar);
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
 
@@ -150,7 +150,7 @@ namespace GenBOE.Tests.ActionLogic
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnWBSID(this.Wbs.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(0);
 
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
 
@@ -174,16 +174,16 @@ namespace GenBOE.Tests.ActionLogic
             BoeTaskElementDTO boeTaskElement = new BoeTaskElementDTO { Id = 2, BoeID = this.Boe1.Id, MOQHoursEquation = "15000 + BLAH + 2", OrdinaryVariables = new Collection<OrdinaryVariableDto> { taskOrdinaryVar }, LaborTypeWarningFlag = false, taskElementLabors = new Collection<ResourceTypeDto> { boeLabor }, TaskElementType = TaskElementType.Labor };
             taskOrdinaryVar.TaskElementId = boeTaskElement.Id;
 
-            var OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
+			Mock<IOrdinaryVariableLoader> OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
             OrdinaryTaskElementLoader.Setup(x => x.GetById(taskOrdinaryVar.Id)).Returns(taskOrdinaryVar);
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
 
@@ -191,7 +191,7 @@ namespace GenBOE.Tests.ActionLogic
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnCLINID(clin.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(0); //???
 
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
 
@@ -218,23 +218,23 @@ namespace GenBOE.Tests.ActionLogic
             BoeTaskElementDTO boeTaskElement = new BoeTaskElementDTO { Id = 2, BoeID = boe2.Id, MOQHoursEquation = "15000 + BLAH + 2", OrdinaryVariables = new Collection<OrdinaryVariableDto> { taskOrdinaryVar }, LaborTypeWarningFlag = false, taskElementLabors = new Collection<ResourceTypeDto> { boeLabor }, TaskElementType = TaskElementType.Labor };
             taskOrdinaryVar.TaskElementId = boeTaskElement.Id;
 
-            var OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
+			Mock<IOrdinaryVariableLoader> OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
             OrdinaryTaskElementLoader.Setup(x => x.GetById(taskOrdinaryVar.Id)).Returns(taskOrdinaryVar);
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
             Mock<FullWorkspace> ws = new Mock<FullWorkspace>();
 
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnBoeID(boe.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(900);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
 
@@ -255,16 +255,16 @@ namespace GenBOE.Tests.ActionLogic
             BoeTaskElementDTO boeTaskElement = new BoeTaskElementDTO { Id = 2, BoeID = boe2.Id, MOQHoursEquation = "15000 + BLAH + 2", OrdinaryVariables = new Collection<OrdinaryVariableDto> { taskOrdinaryVar }, LaborTypeWarningFlag = false, taskElementLabors = new Collection<ResourceTypeDto> { boeLabor }, TaskElementType = TaskElementType.Labor };
             taskOrdinaryVar.TaskElementId = boeTaskElement.Id;
 
-            var OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
+			Mock<IOrdinaryVariableLoader> OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
             OrdinaryTaskElementLoader.Setup(x => x.GetById(taskOrdinaryVar.Id)).Returns(taskOrdinaryVar);
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
             Mock<FullWorkspace> ws = new Mock<FullWorkspace>();
@@ -277,16 +277,16 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), _ResourceLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
             BoeTaskElementDTO output = sut.RecalculateLaborWithTaskElement(boeTaskElement, VariableType.Task, ws.Object);
 
             Assert.AreEqual(output.LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
 
-            var spreads = from t in output.taskElementLabors
+			IEnumerable<ResourceSpreadDto> spreads = from t in output.taskElementLabors
                           from s in t.LaborSpreads
                           select s;
 
-            var LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
+			decimal? LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
             Assert.IsTrue(spreads.Count() == 1, "One LS did not come back");
             Assert.IsTrue(output.taskElementLabors.Count() == 1, "One LT did not come back");
 
@@ -329,25 +329,25 @@ namespace GenBOE.Tests.ActionLogic
             BoeTaskElementDTO boeTaskElementWBS = new BoeTaskElementDTO { Id = 4, BoeID = boe3.Id, MOQHoursEquation = "25000 + BAGS + 2", OrdinaryVariables = new Collection<OrdinaryVariableDto> { taskOrdinaryVarWBS }, LaborTypeWarningFlag = false, taskElementLabors = new Collection<ResourceTypeDto> { boeLaborWBS } };
             taskOrdinaryVarWBS.TaskElementId = boeTaskElementWBS.Id;
 
-            var OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
+			Mock<IOrdinaryVariableLoader> OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
             OrdinaryTaskElementLoader.Setup(x => x.GetById(taskOrdinaryVarClin.Id)).Returns(taskOrdinaryVarClin);
             OrdinaryTaskElementLoader.Setup(x => x.GetById(taskOrdinaryVarWBS.Id)).Returns(taskOrdinaryVarWBS);
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElementClin.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElementClin);
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElementWBS.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElementWBS);
 
-            var _ResourceLoader = new Mock<IResourceDTODataLoader>();
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnBoeID(boe.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(900);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             #region Setup Containers & mappers for the parser data grab
 
@@ -386,18 +386,18 @@ namespace GenBOE.Tests.ActionLogic
             BoeTaskElementDTO boeTaskElement = new BoeTaskElementDTO { Id = 2, BoeID = boe2.Id, MOQHoursEquation = "15000 + BLAH + 2 + BAGS", OrdinaryVariables = new Collection<OrdinaryVariableDto> { taskOrdinaryVar }, LaborTypeWarningFlag = false, taskElementLabors = new Collection<ResourceTypeDto> { boeLabor }, WorkspaceVariableIDs = new Collection<int> { workspaceVar.Id }, TaskElementType = TaskElementType.Labor };
             taskOrdinaryVar.TaskElementId = boeTaskElement.Id;
 
-            var OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
+			Mock<IOrdinaryVariableLoader> OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
             OrdinaryTaskElementLoader.Setup(x => x.GetById(taskOrdinaryVar.Id)).Returns(taskOrdinaryVar);
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
 
@@ -412,16 +412,16 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IBoeTaskElementDTODataLoader), BoeTaskElementLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
             BoeTaskElementDTO output = sut.RecalculateLaborWithTaskElement(boeTaskElement, VariableType.Task, ws.Object);
 
             Assert.AreEqual(output.LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
 
-            var spreads = from t in output.taskElementLabors
+			IEnumerable<ResourceSpreadDto> spreads = from t in output.taskElementLabors
                           from s in t.LaborSpreads
                           select s;
 
-            var LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
+			decimal? LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
             Assert.IsTrue(spreads.Count() == 1, "One LS did not come back");
             Assert.IsTrue(output.taskElementLabors.Count() == 1, "One LT did not come back");
 
@@ -444,22 +444,22 @@ namespace GenBOE.Tests.ActionLogic
             BoeTaskElementDTO boeTaskElement = new BoeTaskElementDTO { Id = 2, BoeID = this.Boe1.Id, MOQHoursEquation = "15000 + BLAH + 2", OrdinaryVariables = new Collection<OrdinaryVariableDto> { taskOrdinaryVar }, LaborTypeWarningFlag = false, taskElementLabors = new Collection<ResourceTypeDto> { boeLabor } };
             taskOrdinaryVar.TaskElementId = boeTaskElement.Id;
 
-            var OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
+			Mock<IOrdinaryVariableLoader> OrdinaryTaskElementLoader = new Mock<IOrdinaryVariableLoader>();
             OrdinaryTaskElementLoader.Setup(x => x.GetById(taskOrdinaryVar.Id)).Returns(taskOrdinaryVar);
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
 
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnWBSID(this.Wbs.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(0);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
 
@@ -488,13 +488,13 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
 
@@ -507,7 +507,7 @@ namespace GenBOE.Tests.ActionLogic
 
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnWBSID(this.Wbs.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(0);
 
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
             List<BoeTaskElementDTO> output = sut.RecalculateLaborWithWBS((FullWbs)this.Wbs, VariableType.Workspace, ws.Object);
             Assert.AreEqual(output.Count, 1, "None or more than 1 task element was found");
             Assert.AreEqual(output[0].LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
@@ -532,20 +532,20 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
 
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnCLINID(clin.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(0);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             #region Setup Containers & mappers for the parser data grab
 
@@ -584,13 +584,13 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
@@ -598,7 +598,7 @@ namespace GenBOE.Tests.ActionLogic
             Mock<FullWorkspace> ws = new Mock<FullWorkspace>();
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnBoeID(boe.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(900);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
 
@@ -627,13 +627,13 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.TSLabor };
 
             Mock<FullWorkspace> ws = new Mock<FullWorkspace>();
@@ -647,16 +647,16 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
 
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
             BoeTaskElementDTO output = sut.RecalculateLaborWithTaskElement(boeTaskElement, VariableType.Workspace, ws.Object);
 
             Assert.AreEqual(output.LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
 
-            var spreads = from t in output.taskElementLabors
+			IEnumerable<ResourceSpreadDto> spreads = from t in output.taskElementLabors
                           from s in t.LaborSpreads
                           select s;
 
-            var LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
+			decimal? LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
             Assert.IsTrue(spreads.Count() == 1, "One LS did not come back");
             Assert.IsTrue(output.taskElementLabors.Count() == 1, "One LT did not come back");
 
@@ -706,16 +706,16 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe2.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe3.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElementClin.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElementClin);
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElementWBS.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElementWBS);
 
-            var _ResourceLoader = new Mock<IResourceDTODataLoader>();
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVarClin.Id)).Returns(workspaceVarClin);
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVarWBS.Id)).Returns(workspaceVarWBS);
 
@@ -723,7 +723,7 @@ namespace GenBOE.Tests.ActionLogic
 
             VariableSelectBoeToSum.Setup(x => x.GetTotalBasedOnBoeID(boe.Id, SumVariableResourceTypes, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(900);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             // Make call
 
@@ -761,17 +761,17 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             VariableSelectBoeToSum.Setup(x => x.GetWorkspaceVarLabelTotal(workspaceVar, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(workspaceVar.WorkspaceVariableValue);
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
             IDictionary<int, ICollection<int>> aDict = new Dictionary<int, ICollection<int>>();
@@ -783,11 +783,11 @@ namespace GenBOE.Tests.ActionLogic
 
             Assert.AreEqual(output.LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
 
-            var spreads = from t in output.taskElementLabors
+			IEnumerable<ResourceSpreadDto> spreads = from t in output.taskElementLabors
                           from s in t.LaborSpreads
                           select s;
 
-            var LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum(); 
+			decimal? LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum(); 
             Assert.IsTrue(spreads.Count() == 2, "One LS did not come back");
             Assert.IsTrue(output.taskElementLabors.Count() == 2, "One LT did not come back");
 
@@ -834,18 +834,18 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Mock<FullWorkspace> ws = new Mock<FullWorkspace>();
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             VariableSelectBoeToSum.Setup(x => x.GetWorkspaceVarLabelTotal(workspaceVar, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(workspaceVar.WorkspaceVariableValue);
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
             IDictionary<int, ICollection<int>> aDict = new Dictionary<int, ICollection<int>>();
@@ -858,11 +858,11 @@ namespace GenBOE.Tests.ActionLogic
 
             Assert.AreEqual(output.LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
 
-            var spreads = from t in output.taskElementLabors
+			IEnumerable<ResourceSpreadDto> spreads = from t in output.taskElementLabors
                           from s in t.LaborSpreads
                           select s;
 
-            var LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
+			decimal? LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
             Assert.IsTrue(spreads.Count() == 10, "One LS did not come back");
             Assert.IsTrue(output.taskElementLabors.Count() == 10, "One LT did not come back");
             Assert.IsTrue(output.taskElementLabors[0].ValueSpread == 21, "value spread not right");
@@ -921,13 +921,13 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             VariableSelectBoeToSum.Setup(x => x.GetWorkspaceVarLabelTotal(workspaceVar, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(workspaceVar.WorkspaceVariableValue);
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -937,16 +937,16 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
 
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
             BoeTaskElementDTO output = sut.RecalculateLaborWithTaskElement(boeTaskElement, VariableType.Workspace, ws.Object);
 
             Assert.AreEqual(output.LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
 
-            var spreads = from t in output.taskElementLabors
+			IEnumerable<ResourceSpreadDto> spreads = from t in output.taskElementLabors
                           from s in t.LaborSpreads
                           select s;
 
-            var LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
+			decimal? LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
             Assert.IsTrue(spreads.Count() == 10, "One LS did not come back");
             Assert.IsTrue(output.taskElementLabors.Count() == 10, "One LT did not come back");
             Assert.IsTrue(output.taskElementLabors[0].ValueSpread == -21, "value spread not right");
@@ -1003,28 +1003,28 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Mock<FullWorkspace> ws = new Mock<FullWorkspace>();
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             VariableSelectBoeToSum.Setup(x => x.GetWorkspaceVarLabelTotal(workspaceVar, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(workspaceVar.WorkspaceVariableValue);
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
 
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
             BoeTaskElementDTO output = sut.RecalculateLaborWithTaskElement(boeTaskElement, VariableType.Workspace, ws.Object);
 
             Assert.AreEqual(output.LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
 
-            var spreads = from t in output.taskElementLabors
+			IEnumerable<ResourceSpreadDto> spreads = from t in output.taskElementLabors
                           from s in t.LaborSpreads
                           select s;
 
-            var LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
+			decimal? LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
             Assert.IsTrue(spreads.Count() == 10, "One LS did not come back");
             Assert.IsTrue(output.taskElementLabors.Count() == 10, "One LT did not come back");
             Assert.IsTrue(output.taskElementLabors[0].ValueSpread == -23, "value spread not right");
@@ -1058,8 +1058,8 @@ namespace GenBOE.Tests.ActionLogic
 
             ResourceSpreadDto boeLS = new ResourceSpreadDto { BoeID = boe2.Id, Id = 1, LaborSpreadDate = Convert.ToDateTime("04/20/2011"), LaborSpreadValue = 51 };
             ResourceSpreadDto boeLS2 = new ResourceSpreadDto { BoeID = boe2.Id, Id = 1, LaborSpreadDate = Convert.ToDateTime("05/20/2011"), LaborSpreadValue = 51 };
-            var OriginalPercentSpread = 50;
-            var NonLockedValue = 51;
+			int OriginalPercentSpread = 50;
+			int NonLockedValue = 51;
             ResourceTypeDto boeLabor = new ResourceTypeDto { SpreadType = IES.Common.SpreadType.Hours, BoeID = boe2.Id, Id = 2, SpreadCurveID = SpreadCurves.SpreadCurve13, ValueSpread = NonLockedValue, PercentSpread = OriginalPercentSpread, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id, StartDateValue = Convert.ToDateTime("04/20/2011"), EndDateValue = Convert.ToDateTime("04/20/2011"), LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, PercentSpreadLocked = true, HourSpreadLocked = false };
             ResourceTypeDto boeLabor2 = new ResourceTypeDto { SpreadType = IES.Common.SpreadType.Hours, BoeID = boe2.Id, Id = 3, SpreadCurveID = SpreadCurves.SpreadCurve16, ValueSpread = 51, PercentSpread = OriginalPercentSpread, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id, StartDateValue = Convert.ToDateTime("05/20/2011"), EndDateValue = Convert.ToDateTime("05/20/2011"), LaborSpreads = new Collection<ResourceSpreadDto> { boeLS2 }, PercentSpreadLocked = false, HourSpreadLocked = true };
             BoeTaskElementDTO boeTaskElement = new BoeTaskElementDTO { Id = 2, BoeID = boe2.Id, MOQHoursEquation = "50 + <WSVAR:2>", WorkspaceVariableIDs = WorkspaceVarIDs, LaborTypeWarningFlag = false, taskElementLabors = new Collection<ResourceTypeDto> { boeLabor, boeLabor2 }, TaskElementType = TaskElementType.Labor };
@@ -1067,17 +1067,17 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
- 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             VariableSelectBoeToSum.Setup(x => x.GetWorkspaceVarLabelTotal(workspaceVar, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(workspaceVar.WorkspaceVariableValue);
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
             IDictionary<int, ICollection<int>> aDict = new Dictionary<int, ICollection<int>>();
@@ -1090,17 +1090,17 @@ namespace GenBOE.Tests.ActionLogic
 
             Assert.AreEqual(output.LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
 
-            var spreads = from t in output.taskElementLabors
+			IEnumerable<ResourceSpreadDto> spreads = from t in output.taskElementLabors
                           from s in t.LaborSpreads
                           select s;
 
-            //moq total will be 109
-            // to begin with
-            // 1 LT is 51 value, percent spread locked
-            // 1 LT is 51 value, hour spread locked
-            // so 51 will remain for the second LT, and 55 will be changed for the first one
-            // no smoothing to occur
-            var LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
+			//moq total will be 109
+			// to begin with
+			// 1 LT is 51 value, percent spread locked
+			// 1 LT is 51 value, hour spread locked
+			// so 51 will remain for the second LT, and 55 will be changed for the first one
+			// no smoothing to occur
+			decimal? LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
             Assert.IsTrue(spreads.Count() == 2, "One LS did not come back");
             Assert.IsTrue(output.taskElementLabors.Count() == 2, "One LT did not come back");
             Assert.IsTrue(output.taskElementLabors.Where(x => x.Id == 3).Select(x => x.ValueSpread).First() == boeLabor2.ValueSpread, "The Value Spread changed which is not right");
@@ -1127,8 +1127,8 @@ namespace GenBOE.Tests.ActionLogic
 
             ResourceSpreadDto boeLS = new ResourceSpreadDto { BoeID = boe2.Id, Id = 1, LaborSpreadDate = Convert.ToDateTime("04/20/2011"), LaborSpreadValue = 51 };
             ResourceSpreadDto boeLS2 = new ResourceSpreadDto { BoeID = boe2.Id, Id = 1, LaborSpreadDate = Convert.ToDateTime("05/20/2011"), LaborSpreadValue = 51 };
-            var OriginalPercentSpread = 50;
-            var NonLockedValue = 51;
+			int OriginalPercentSpread = 50;
+			int NonLockedValue = 51;
             ResourceTypeDto boeLabor = new ResourceTypeDto { SpreadType = IES.Common.SpreadType.Hours, BoeID = boe2.Id, Id = 2, SpreadCurveID = SpreadCurves.SpreadCurve13, ValueSpread = NonLockedValue, PercentSpread = OriginalPercentSpread, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id, StartDateValue = Convert.ToDateTime("04/20/2011"), EndDateValue = Convert.ToDateTime("04/20/2011"), LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, PercentSpreadLocked = true, HourSpreadLocked = false };
             ResourceTypeDto boeLabor2 = new ResourceTypeDto { SpreadType = IES.Common.SpreadType.Hours, BoeID = boe2.Id, Id = 3, SpreadCurveID = SpreadCurves.SpreadCurve16, ValueSpread = 51, PercentSpread = OriginalPercentSpread, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id, StartDateValue = Convert.ToDateTime("05/20/2011"), EndDateValue = Convert.ToDateTime("05/20/2011"), LaborSpreads = new Collection<ResourceSpreadDto> { boeLS2 }, PercentSpreadLocked = false, HourSpreadLocked = true };
             BoeTaskElementDTO boeTaskElement = new BoeTaskElementDTO { Id = 2, BoeID = boe2.Id, MOQHoursEquation = "9000000050 + <WSVAR:2>", WorkspaceVariableIDs = WorkspaceVarIDs, LaborTypeWarningFlag = false, taskElementLabors = new Collection<ResourceTypeDto> { boeLabor, boeLabor2 }, TaskElementType = TaskElementType.Labor };
@@ -1136,18 +1136,18 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
 
             Mock<FullWorkspace> ws = new Mock<FullWorkspace>();
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             VariableSelectBoeToSum.Setup(x => x.GetWorkspaceVarLabelTotal(workspaceVar, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(workspaceVar.WorkspaceVariableValue);
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
             IDictionary<int, ICollection<int>> aDict = new Dictionary<int, ICollection<int>>();
@@ -1160,17 +1160,17 @@ namespace GenBOE.Tests.ActionLogic
 
             Assert.AreEqual(output.LaborTypeWarningFlag, true, "The LT Warning flag was not converted to true");
 
-            var spreads = from t in output.taskElementLabors
+			IEnumerable<ResourceSpreadDto> spreads = from t in output.taskElementLabors
                           from s in t.LaborSpreads
                           select s;
 
-            //moq total will be 9900000109
-            // to begin with
-            // 1 LT is 51 value, percent spread locked
-            // 1 LT is 51 value, hour spread locked
-            // so 51 will remain for the second LT, and 55 will be changed for the first one
-            // no smoothing to occur
-            var LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
+			//moq total will be 9900000109
+			// to begin with
+			// 1 LT is 51 value, percent spread locked
+			// 1 LT is 51 value, hour spread locked
+			// so 51 will remain for the second LT, and 55 will be changed for the first one
+			// no smoothing to occur
+			decimal? LTHourSpreadTotal = output.taskElementLabors.Select(t => t.ValueSpread).Sum();
             Assert.IsTrue(spreads.Count() == 2, "One LS did not come back");
             Assert.IsTrue(output.taskElementLabors.Count() == 2, "One LT did not come back");
             Assert.IsTrue(output.taskElementLabors.Where(x => x.Id == 3).Select(x => x.ValueSpread).First() == boeLabor2.ValueSpread, "The Value Spread changed which is not right");
@@ -1197,8 +1197,8 @@ namespace GenBOE.Tests.ActionLogic
 
             ResourceSpreadDto boeLS = new ResourceSpreadDto { BoeID = boe2.Id, Id = 1, LaborSpreadDate = Convert.ToDateTime("04/20/2011"), LaborSpreadValue = 51 };
             ResourceSpreadDto boeLS2 = new ResourceSpreadDto { BoeID = boe2.Id, Id = 1, LaborSpreadDate = Convert.ToDateTime("05/20/2011"), LaborSpreadValue = 51 };
-            var OriginalPercentSpread = 50;
-            var NonLockedValue = 51;
+			int OriginalPercentSpread = 50;
+			int NonLockedValue = 51;
             ResourceTypeDto boeLabor = new ResourceTypeDto { SpreadType = IES.Common.SpreadType.Hours, BoeID = boe2.Id, Id = 2, SpreadCurveID = SpreadCurves.SpreadCurve13, ValueSpread = NonLockedValue, PercentSpread = OriginalPercentSpread, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id, StartDateValue = Convert.ToDateTime("04/20/2011"), EndDateValue = Convert.ToDateTime("04/20/2011"), LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, PercentSpreadLocked = true, HourSpreadLocked = false };
             ResourceTypeDto boeLabor2 = new ResourceTypeDto { SpreadType = IES.Common.SpreadType.Hours, BoeID = boe2.Id, Id = 3, SpreadCurveID = SpreadCurves.SpreadCurve16, ValueSpread = 51, PercentSpread = OriginalPercentSpread, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id, StartDateValue = Convert.ToDateTime("05/20/2011"), EndDateValue = Convert.ToDateTime("05/20/2011"), LaborSpreads = new Collection<ResourceSpreadDto> { boeLS2 }, PercentSpreadLocked = false, HourSpreadLocked = true };
             BoeTaskElementDTO boeTaskElement = new BoeTaskElementDTO { Id = 2, BoeID = boe2.Id, MOQHoursEquation = "50 + <WSVAR:2>", WorkspaceVariableIDs = WorkspaceVarIDs, LaborTypeWarningFlag = false, taskElementLabors = new Collection<ResourceTypeDto> { boeLabor, boeLabor2 }, TaskElementType = TaskElementType.Labor };
@@ -1206,17 +1206,17 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTaskElement });
 
-            var BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
+			Mock<IBoeTaskElementDTODataLoader> BoeTaskElementLoader = new Mock<IBoeTaskElementDTODataLoader>();
             BoeTaskElementLoader.Setup(x => x.GetById(boeTaskElement.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTaskElement);
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> VariableSelectBoeToSum = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
             FullWorkspace ws = new FullWorkspace(this.Workspace);
-            var WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+			Mock<IWorkspaceVariableDTODataLoader> WorkspaceVariableLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             VariableSelectBoeToSum.Setup(x => x.GetWorkspaceVarLabelTotal(workspaceVar, It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(workspaceVar.WorkspaceVariableValue);
             WorkspaceVariableLoader.Setup(x => x.GetById(workspaceVar.Id)).Returns(workspaceVar);
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-            var sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
+			BoeTaskElementRecalculation sut = new BoeTaskElementRecalculation(VariableSelectBoeToSum.Object, factory.Object);
 
             Mock<IResourceDTODataLoader> _ResourceLoader = new Mock<IResourceDTODataLoader>();
 

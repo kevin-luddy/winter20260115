@@ -28,9 +28,9 @@ namespace GenBOE.Web.Common
             }
 
             Dictionary<string, ModelMetadata> d = new Dictionary<string, ModelMetadata>(StringComparer.OrdinalIgnoreCase);
-            foreach (var p in bindingContext.ModelMetadata.Properties)
+            foreach (ModelMetadata p in bindingContext.ModelMetadata.Properties)
             {
-                var propertyName = p.PropertyName;
+				string propertyName = p.PropertyName;
                 try
                 {
                     d.Add(propertyName, null);

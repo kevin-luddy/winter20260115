@@ -150,18 +150,17 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		public ICollection<ValidationMessage> ValidateRateYearConfiguration(string startYear, string endYear)
 		{
 			ICollection<ValidationMessage> validationErrors = new List<ValidationMessage>();
-			int startYearInt, endYearInt;
-			bool startYearResult = int.TryParse(startYear, out startYearInt);
-			bool endYearResult = int.TryParse(endYear, out endYearInt);
+			bool startYearResult = int.TryParse(startYear, out int startYearInt);
+			bool endYearResult = int.TryParse(endYear, out int endYearInt);
 			if (startYearResult && endYearResult)
 			{
-				if (startYearInt < AdminValidationConstants.RATE_YEAR_CONFIGURATION_MIN_YEAR || startYearInt > AdminValidationConstants.RATE_YEAR_CONFIGURATION_MAX_YEAR)
+				if (startYearInt is < AdminValidationConstants.RATE_YEAR_CONFIGURATION_MIN_YEAR or > AdminValidationConstants.RATE_YEAR_CONFIGURATION_MAX_YEAR)
 				{
 					validationErrors.Add(new ValidationMessage(string.Format(AdminValidationConstants.RATE_YEAR_CONFIGURATION_YEAR_OUT_OF_RANGE,
 						"Start", AdminValidationConstants.RATE_YEAR_CONFIGURATION_MIN_YEAR, AdminValidationConstants.RATE_YEAR_CONFIGURATION_MAX_YEAR)));
 				}
 
-				if (endYearInt < AdminValidationConstants.RATE_YEAR_CONFIGURATION_MIN_YEAR || endYearInt > AdminValidationConstants.RATE_YEAR_CONFIGURATION_MAX_YEAR)
+				if (endYearInt is < AdminValidationConstants.RATE_YEAR_CONFIGURATION_MIN_YEAR or > AdminValidationConstants.RATE_YEAR_CONFIGURATION_MAX_YEAR)
 				{
 					validationErrors.Add(new ValidationMessage(string.Format(AdminValidationConstants.RATE_YEAR_CONFIGURATION_YEAR_OUT_OF_RANGE,
 						"End", AdminValidationConstants.RATE_YEAR_CONFIGURATION_MIN_YEAR, AdminValidationConstants.RATE_YEAR_CONFIGURATION_MAX_YEAR)));

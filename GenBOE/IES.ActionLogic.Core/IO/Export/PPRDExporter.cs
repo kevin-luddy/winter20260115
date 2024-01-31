@@ -69,7 +69,8 @@ namespace IES.ActionLogic.Core.IO.Export
 
 			Stream stream = new MemoryStream(32000);
 			Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream);
-			return new FileStreamResult(stream, PPRDExporterConstants.CONTENTTYPE_DOCX)
+			stream.Position = 0;
+			return new FileStreamResult(stream, ExportFileDownloadBase.ContentType_DOCX)
 			{
 				FileDownloadName = clientFileName
 			};
@@ -279,8 +280,8 @@ namespace IES.ActionLogic.Core.IO.Export
 
 				// Separate out the child node elements
 				ICollection<SectionModelView> textAndTableMVs =
-					section.ChildNodes.Where(x => x.ContentType == SectionContentType.Text ||
-												  x.ContentType == SectionContentType.RateTable || x.ContentType == SectionContentType.Address)
+					section.ChildNodes.Where(x => x.ContentType is SectionContentType.Text or
+												  SectionContentType.RateTable or SectionContentType.Address)
 						.OrderBy(o => o.DisplayOrder).ToCollection();
 				ICollection<SectionModelView> subsectionMVs =
 					section.ChildNodes.Where(x => x.ContentType == SectionContentType.Section).ToCollection();

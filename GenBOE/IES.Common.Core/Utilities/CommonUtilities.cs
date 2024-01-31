@@ -141,10 +141,7 @@ namespace IES.Common.Core.Utilities
 		public static string FormatStringWithPrecision(decimal originalNumber, int? numberOfDecimalPlaces)
 		{
 			string format = GetFormattingString(numberOfDecimalPlaces);
-			string toReturn = "";
-
-			toReturn = originalNumber.ToString(format);
-
+			string toReturn = originalNumber.ToString(format);
 			return toReturn;
 		}
 
@@ -347,9 +344,8 @@ namespace IES.Common.Core.Utilities
 		/// <returns>Piwik Id for the site</returns>
 		public static int PiwikId()
 		{
-			int result;
 
-			if (!int.TryParse(ConfigurationUtilities.GetAppSetting("PiwikId"), out result))
+			if (!int.TryParse(ConfigurationUtilities.GetAppSetting("PiwikId"), out int result))
 			{
 				result = 0;
 			}
@@ -568,9 +564,9 @@ namespace IES.Common.Core.Utilities
 		{
 			bool withinBusinessHours = false;
 			DateTime currentTime = DateTime.Now;
-			if (currentTime.DayOfWeek != DayOfWeek.Saturday && currentTime.DayOfWeek != DayOfWeek.Sunday)
+			if (currentTime.DayOfWeek is not DayOfWeek.Saturday and not DayOfWeek.Sunday)
 			{
-				if (currentTime.Hour >= BUSINESS_HOURS_START && currentTime.Hour <= BUSINESS_HOURS_END)
+				if (currentTime.Hour is >= BUSINESS_HOURS_START and <= BUSINESS_HOURS_END)
 				{
 					withinBusinessHours = true;
 				}
@@ -596,8 +592,7 @@ namespace IES.Common.Core.Utilities
 		{
 			get
 			{
-				bool value = false;
-				bool.TryParse(ConfigurationUtilities.GetAppSetting("IsPTMIntegrated"), out value);
+				bool.TryParse(ConfigurationUtilities.GetAppSetting("IsPTMIntegrated"), out bool value);
 				return value && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
 			}
 		}

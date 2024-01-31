@@ -47,7 +47,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(perfOrgLoader));
             }
 
-            var toReturn = string.Empty;
+			string toReturn = string.Empty;
 
             // Create a new random file name in the specified directory
             toReturn = ExcelUtilities.CopyExcelTemplateFile(templateFileLocation);
@@ -60,20 +60,20 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
             }
 
-            // Create collections of strings for each row in the export file
-            var worksheet = new ExcelExportWorksheet();
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
 
-            // Create the first row in the file
-            var row = new Collection<string>();
+			// Create the first row in the file
+			Collection<string> row = new Collection<string>();
             row.Add(string.Empty);
 
             ICollection<ResourceDTO> resources = inResourceDTODataLoader.GetByIds(odcTypes.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList());
 
-            foreach (var odcType in odcTypes)
+            foreach (OtherDirectCostType odcType in odcTypes)
             {
                 if (odcType.ResourceID.HasValue)
                 {
-                    var resource = resources.First(x => x.Id == odcType.ResourceID.Value);
+					ResourceDTO resource = resources.First(x => x.Id == odcType.ResourceID.Value);
                     row.Add(resource.ResourceName);
                 }
                 else
@@ -90,11 +90,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
             HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(perfOrgLoader.GetByIds(odcTypes.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
 
-            foreach (var odcType in odcTypes)
+            foreach (OtherDirectCostType odcType in odcTypes)
             {
                 if (odcType.PerformingOrgID.HasValue)
                 {
-                    var performingOrg = perfOrgsFromDb.First(x => x.Id == odcType.PerformingOrgID.Value);
+					PerformingOrgDTO performingOrg = perfOrgsFromDb.First(x => x.Id == odcType.PerformingOrgID.Value);
                     row.Add(performingOrg.PerformingOrgName);
                 }
                 else
@@ -108,7 +108,7 @@ namespace GenBOE.ActionLogic.IO.Export
             // Create the third row in the file
             row = new Collection<string>();
             row.Add(string.Empty);
-            foreach (var odcType in odcTypes)
+            foreach (OtherDirectCostType odcType in odcTypes)
             {
                row.Add(((decimal)odcType.ODCSpreads.Sum(st => st.CostSpreadValue)/100).ToString());
             }
@@ -117,18 +117,18 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (odcTypes.Count > 0)
             {
-                var spreadStart = odcTypes.Min(l => l.StartDate).Value;
-                var spreadEnd = odcTypes.Max(l => l.EndDate).Value;
-                var spreadMonths = 12 * (spreadEnd.Year - spreadStart.Year) - spreadStart.Month + spreadEnd.Month + 1;
+				DateTime spreadStart = odcTypes.Min(l => l.StartDate).Value;
+				DateTime spreadEnd = odcTypes.Max(l => l.EndDate).Value;
+				int spreadMonths = 12 * (spreadEnd.Year - spreadStart.Year) - spreadStart.Month + spreadEnd.Month + 1;
 
-                var date = spreadStart;
-                for (var ndx = 0; ndx < spreadMonths; ndx++)
+				DateTime date = spreadStart;
+                for (int ndx = 0; ndx < spreadMonths; ndx++)
                 {
                     row = new Collection<string>();
                     row.Add(date.ToString("MM/yyyy"));
-                    foreach (var odcType in odcTypes)
+                    foreach (OtherDirectCostType odcType in odcTypes)
                     {
-                        var spread = (from s in odcType.ODCSpreads
+						OtherDirectCostSpread spread = (from s in odcType.ODCSpreads
                                       where s.ODCSpreadDate.Value.Month == date.Month &&
                                       s.ODCSpreadDate.Value.Year == date.Year
                                       select s).FirstOrDefault();
@@ -142,7 +142,7 @@ namespace GenBOE.ActionLogic.IO.Export
                             row.Add(string.Empty);
                         }
                     }
-                    var totalHoursForMonth = (from t in odcTypes
+					long? totalHoursForMonth = (from t in odcTypes
                                               from s in t.ODCSpreads
                                               where s.ODCSpreadDate.Value.Month == date.Month &&
                                               s.ODCSpreadDate.Value.Year == date.Year

@@ -29,7 +29,7 @@ namespace RDSB.Web
                 throw new ArgumentNullException(nameof(bundles));
             }
 
-            var bundle = new ScriptBundle("~/bundles/jquery").Include(
+			Bundle bundle = new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/bootstrap.js",
                         "~/Scripts/respond.js",

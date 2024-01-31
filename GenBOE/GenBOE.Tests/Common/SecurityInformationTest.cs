@@ -21,19 +21,19 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void GetRoleSecurityRolesAsStringsNULL()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new Mock<MemoryCache>();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
 
-            string returned = sut.GetRoleAsString((Collection<Role>)null);
+            string returned = sut.GetRoleAsString(null);
             Assert.AreEqual("<none>", returned);
         }
 
         [TestMethod]
         public void GetRoleSecurityRolesAsStringsEmpty()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new Mock<MemoryCache>();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
 
             Assert.AreEqual("", sut.GetRoleAsString(new Collection<Role>()));
@@ -42,8 +42,8 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void GetRoleSecurityRolesAsStringsValued()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new Mock<MemoryCache>();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
 
             Collection<Role> roles = new Collection<Role>();
@@ -57,13 +57,13 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void IsDomesticUserTest()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new Mock<MemoryCache>();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
 
             string ingroupdomestic = "mockindomestic";
 
-            var principalMock = new Mock<IPrincipal>();
+			Mock<IPrincipal> principalMock = new Mock<IPrincipal>();
             principalMock.Setup(x => x.IsInRole(ingroupdomestic)).Returns(false);
             principalMock.Setup(x => x.IsInRole(@"US\EBS.EstimationInitiative.DevTeam")).Returns(false);
 
@@ -170,7 +170,7 @@ namespace GenBOE.Tests.Common
             Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
             Mock<ICache> memCache = new Mock<ICache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
-            sut.IsSubcontractorUser((string)null, false);
+            sut.IsSubcontractorUser(null, false);
         }
 
         /// <summary>
@@ -245,8 +245,8 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void isRdmAdminUser_ById()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new MemoryCache();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			MemoryCache memCache = new MemoryCache();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache);
 
             memCache.ClearCache();
@@ -282,10 +282,10 @@ namespace GenBOE.Tests.Common
         [ExpectedException(typeof(ArgumentNullException))]
         public void isRdmAdminUser_ById_Exception_noName()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new Mock<MemoryCache>();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
-            sut.IsRdmAdminUser((string)null);
+            sut.IsRdmAdminUser(null);
         }
 
         [TestMethod]
@@ -331,8 +331,8 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void IsMemberOfADGroupInAppSettingsList_ById()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new MemoryCache();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			MemoryCache memCache = new MemoryCache();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache);
 
             memCache.ClearCache();
@@ -378,8 +378,8 @@ namespace GenBOE.Tests.Common
         [ExpectedException(typeof(ArgumentNullException))]
         public void IsMemberOfADGroupInAppSettingsList_ExceptionTest2()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new Mock<MemoryCache>();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
             sut.IsMemberOfADGroupInAppSettingsList(string.Empty, "RDMAdminGroups");   // empty user name
         }
@@ -388,8 +388,8 @@ namespace GenBOE.Tests.Common
         [ExpectedException(typeof(ArgumentNullException))]
         public void IsMemberOfADGroupInAppSettingsList_ExceptionTest3()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new Mock<MemoryCache>();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
             sut.IsMemberOfADGroupInAppSettingsList("employee", "");   // empty app config key
         }
@@ -398,8 +398,8 @@ namespace GenBOE.Tests.Common
         [ExpectedException(typeof(ArgumentException))]
         public void IsMemberOfADGroupInAppSettingsList_ExceptionTest4()
         {
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new Mock<MemoryCache>();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
             sut.IsMemberOfADGroupInAppSettingsList("employee", "missingADGroupList");   // empty or missing AD group list for app config key
         }

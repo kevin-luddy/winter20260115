@@ -40,8 +40,8 @@ namespace GenBOE.Tests.ActionLogic
             int workspaceID = 1;
             string workspaceName = "Workspace ONE Test";
 
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
 
             FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO { WorkspaceName = workspaceName, Id = workspaceID });
             Collection<FullBoe> boes = new Collection<FullBoe>()
@@ -69,8 +69,8 @@ namespace GenBOE.Tests.ActionLogic
 
             int workspaceID = 1;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
 
             FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO { Id = workspaceID });
             Collection<FullBoe> boes = new Collection<FullBoe>()
@@ -103,8 +103,8 @@ namespace GenBOE.Tests.ActionLogic
             // ensure that all BOEs at DRAFT or above result in a successful validation and empty validation error message
             int workspaceID = 1;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
 
             FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO { Id = workspaceID });
             Collection<FullBoe> boes = new Collection<FullBoe>()

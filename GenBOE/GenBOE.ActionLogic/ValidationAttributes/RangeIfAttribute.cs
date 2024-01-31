@@ -67,14 +67,14 @@ namespace GenBOE.ActionLogic.ValidationAttributes
                 throw new ArgumentNullException(nameof(validationContext));
             }
 
-            // get a reference to the property this validation depends upon
-            var containerType = validationContext.ObjectInstance.GetType();
-            var field = containerType.GetProperty(this.DependentProperty);
+			// get a reference to the property this validation depends upon
+			Type containerType = validationContext.ObjectInstance.GetType();
+			System.Reflection.PropertyInfo field = containerType.GetProperty(this.DependentProperty);
 
             if (field != null)
             {
-                // get the value of the dependent property
-                var dependentvalue = field.GetValue(validationContext.ObjectInstance, null);
+				// get the value of the dependent property
+				object dependentvalue = field.GetValue(validationContext.ObjectInstance, null);
 
                 // compare the value against the target value
                 if (dependentvalue != null && dependentvalue.Equals(true))

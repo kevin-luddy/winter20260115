@@ -416,7 +416,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					var tempWs = gbe.Workspaces.FirstOrDefault(x => x.WorkspaceID == wsId && x.RteSizeLimit.HasValue);
+					Workspace tempWs = gbe.Workspaces.FirstOrDefault(x => x.WorkspaceID == wsId && x.RteSizeLimit.HasValue);
 					rteSizeLimit = tempWs.RteSizeLimit;
 
 					data = tempWs.BOEs.Where(b => b.BOEDescription != null)
@@ -1107,7 +1107,7 @@ namespace GenBOE.DataBridge.DTO
 				string contractTypesList = null;
 				if (wsToSave.SelectedContractTypes != null)
 				{
-					contractTypesList = string.Join(",", wsToSave.SelectedContractTypes.Select(i => (int)i));
+					contractTypesList = string.Join(",", wsToSave.SelectedContractTypes.Select(i => i));
 				}
 
 				using (GenBoeEntities gbe = new GenBoeEntities())

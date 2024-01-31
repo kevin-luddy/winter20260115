@@ -643,7 +643,7 @@ namespace IES.Common.Core.Email
 		public override bool Equals(object obj)
 		{
 			bool equals = false;
-			if (obj != null && obj is EmailContent)
+			if (obj is not null and EmailContent)
 			{
 				EmailContent other = (EmailContent)obj;
 				if (other.Subject == Subject &&

@@ -20,7 +20,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void ResourceUniqueIDValidator_IsValid()
         {
-            var ResourceLoader = new Mock<IResourceDTODataLoader>();
+			Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
             ResourceUniqueIDValidator sut = new ResourceUniqueIDValidator(ResourceLoader.Object);
 
             ResourceLoader.Setup(x => x.IsResourceNameUnique("1", 1, -1)).Returns(false);
@@ -67,7 +67,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(ArgumentNullException))]
         public void WBSUniqueNumberValidator_NullValueTest()
         {
-            var ResourceLoader = new Mock<IResourceDTODataLoader>();
+			Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
             ResourceUniqueIDValidator sut = new ResourceUniqueIDValidator(ResourceLoader.Object);
 
             // Test again excluding "current" workspace
@@ -87,7 +87,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(InvalidCastException))]
         public void WBSUniqueNumberValidator_InvalidCastTest()
         {
-            var ResourceLoader = new Mock<IResourceDTODataLoader>();
+			Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
             ResourceUniqueIDValidator sut = new ResourceUniqueIDValidator(ResourceLoader.Object);
 
             // Test again excluding "current" workspace

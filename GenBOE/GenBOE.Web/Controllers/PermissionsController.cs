@@ -349,7 +349,7 @@ namespace GenBOE.Web.Controllers
                                                                                     select new PermissionsDTO
                                                                                     {
                                                                                         ETIUserId = permission.ETIUserId,
-                                                                                        Role = (Role)permission.Role,
+                                                                                        Role = permission.Role,
                                                                                         WorkspaceId = ws.Id,
                                                                                         UpdateDate = permission.UpdateDate
                                                                                     }).ToList();

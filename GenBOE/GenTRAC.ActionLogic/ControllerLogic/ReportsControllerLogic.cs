@@ -124,8 +124,8 @@ namespace GenTRAC.ActionLogic
             // set up Line Of Business
             model.LOBList = this.GetLOBList();
 
-            // set up lead estimators 
-            var pricerUserIDs = this.reportsLoader.GetPricerUserIds();
+			// set up lead estimators 
+			ICollection<int> pricerUserIDs = this.reportsLoader.GetPricerUserIds();
             ICollection<UserDTO> pricers = this.UserMapper.GetUserDtosByUserIds(pricerUserIDs);
             model.LeadEstimatorList = new Collection<SelectListItem>();
 
@@ -238,7 +238,7 @@ namespace GenTRAC.ActionLogic
 
                     if (!string.IsNullOrEmpty(reportParameters.SubmitStartDate) && !string.IsNullOrEmpty(reportParameters.SubmitEndDate))
                     {
-                        var dateFormatError = from v in inValidationErrors
+						IEnumerable<ValidationMessage> dateFormatError = from v in inValidationErrors
                                               where v.ValidationIssue.Contains(ValidationConstants.ProposalLogReportValidationConstants.SUBMIT_END_NOT_VALID_DATE_FORMAT) ||
                                               v.ValidationIssue.Contains(ValidationConstants.ProposalLogReportValidationConstants.SUBMIT_START_NOT_VALID_DATE_FORMAT)
                                               select v;
@@ -523,7 +523,7 @@ namespace GenTRAC.ActionLogic
             // if start and end date are populated and are in correct date formats, check the range is correct
             if (!string.IsNullOrEmpty(reportParameters.CreateStartDate) && !string.IsNullOrEmpty(reportParameters.CreateEndDate))
             {
-                var dateFormatError = from v in inValidationErrors
+				IEnumerable<ValidationMessage> dateFormatError = from v in inValidationErrors
                                       where v.ValidationIssue.Contains(ValidationConstants.ProposalActivityReportValidationConstants.CREATE_END_NOT_VALID_DATE_FORMAT) ||
                                       v.ValidationIssue.Contains(ValidationConstants.ProposalActivityReportValidationConstants.CREATE_START_NOT_VALID_DATE_FORMAT)
                                       select v;
@@ -731,7 +731,7 @@ namespace GenTRAC.ActionLogic
             // if start and end date are populated and are in correct date formats, check the range is correct
             if (!string.IsNullOrEmpty(reportParameters.StartDate) && !string.IsNullOrEmpty(reportParameters.EndDate))
             {
-                var dateFormatError = from v in inValidationErrors
+				IEnumerable<ValidationMessage> dateFormatError = from v in inValidationErrors
                                       where v.ValidationIssue.Contains(ValidationConstants.DfarsReportValidationConstants.END_DATE_INVALID_FORMAT) ||
                                       v.ValidationIssue.Contains(ValidationConstants.DfarsReportValidationConstants.START_DATE_INVALID_FORMAT)
                                       select v;
@@ -764,7 +764,7 @@ namespace GenTRAC.ActionLogic
                     if(!pa.ParentIds.Intersect(reportParameters.Lobs).Any())
                     {
                         ICollection<PickListDto> lobsForPA = new Collection<PickListDto>();
-                        foreach (var lobId in pa.ParentIds)
+                        foreach (int lobId in pa.ParentIds)
                         {
                             lobsForPA.Add(this.orgStructureMapper.GetLineOfBusinessById(lobId));
                         }
