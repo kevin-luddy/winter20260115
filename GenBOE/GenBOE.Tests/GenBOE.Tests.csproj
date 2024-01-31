@@ -171,7 +171,6 @@
     <Compile Include="ActionLogic\IO\RTEUtilitiesTest.cs" />
     <Compile Include="ActionLogic\IO\TrainingImporterTests.cs" />
     <Compile Include="AssertHelpers.cs" />
-    <Compile Include="ActionLogic\BLL\BoeMediatorTest.cs" />
     <Compile Include="ActionLogic\BOESummaryTest.cs" />
     <Compile Include="ActionLogic\BoeTaskElementRecalculationTest.cs" />
     <Compile Include="ActionLogic\BOETransitions\ApprovedToDraftTransitionTest.cs" />
@@ -388,6 +387,7 @@
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ActionLogic\BLL\" />
     <Folder Include="ActionLogic\ValidationAttributes\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
