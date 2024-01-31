@@ -76,7 +76,8 @@
     $scope.newId = -1;
 
     /** Resources and Performing Orgs **/
-    $scope.ResourceModels = BOEDetails.WSResources;
+	$scope.ResourceModels = BOEDetails.WSResources;
+	$scope.BusinessResourceCodeModels = BOEDetails.WSBusinessResourceCodes;
     $scope.PerfOrgModels = angular.copy(BOEDetails.WSPerfOrgs);
 
     $scope.isExporting = false;
@@ -1520,7 +1521,18 @@
         }
 
         return result;
-    }
+	}
+
+	$scope.isBusinessResouceCodeValid = function (input, models) {
+		result = true;
+
+		if (input === undefined || (typeof input === 'string' && (input.length === 0
+			|| models.filter(function (r) { return r.BusinessResourceCodeDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+			result = false;
+		}
+
+		return result;
+	}
 
     $scope.isPerfOrgValid = function(input, models) {
         result = true;
@@ -1558,7 +1570,36 @@
         } 
 
         $scope.checkIfNewRowNeeded(model);
-    };
+	};
+
+	$scope.BusinessResourceCodeSelected = function (item, model) {
+		$scope.setDirty();
+
+		if (item && item.BusinessResourceCodeDesc && item.BusinessResourceCodeDesc !== '') {
+			// Business Resource Code was selected
+			model.BusinessResourceCodeDescription = item.BusinessResourceCodeDesc;
+			model.BusinessResourceCodeName = item.BusinessResourceCodeName;
+			model.BusinessResourceCodeType = item.BusinessResourceCodeTypeCategory;
+
+			// Rate Type change
+			if (mode.RateType !== item.RateType) {
+				model.HourSpread = '0';
+				model.CostSpread = '0';
+				model.PercentSpread = '0';
+
+				// If the spread curve was discrete, the ID needs to be fixed
+				if (item.SpreadCurveID === undefined && model.SpreadCurveID < 2) {
+					model.SpreadCurveID = "-1";
+				}
+			}
+
+			model.RateType = item.RateType;
+			model.BusinessResourceCodeId = item.Id;
+			$scope.recalculateSpreads(model);
+		}
+
+		$scope.checkIfNewRowNeeded(model);
+	}
 
     $scope.perfOrgSelected = function (item, model) {
         $scope.setDirty();

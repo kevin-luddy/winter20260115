@@ -12,7 +12,8 @@ namespace CopyWorkspace
     using System.Configuration;
     using System.Linq;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.DataBridge.GenBOE.Dtos.DTOs;
+	using GenBOE.Dtos;
     using GenBOE.Models;
     using GenBOE.Objects;
     using IES.Common;
@@ -90,7 +91,8 @@ namespace CopyWorkspace
             IReadOnlyCollection<TravelDTO> Travels = ws.Travels;
             IReadOnlyCollection<TripDTO> TravelTrips = ws.TravelTrips;
             IReadOnlyCollection<ResourceDTO> ResourcesUsedInWsBoes = ws.ResourcesForWsResourceListId;
-            IReadOnlyCollection<CustomFieldDTO> CustomFields = ws.CustomFields;
+			IReadOnlyCollection<BusinessResourceCodeDTO> BusinessResourceCodesUsedInWsBoes = ws.BusinessResourceCodesForWsBusinessResourceCodeListId;
+			IReadOnlyCollection<CustomFieldDTO> CustomFields = ws.CustomFields;
             IDictionary<int, ICollection<BoeApproverResponseDTO>> approvers = new BoeApproverResponseDTODataLoader().GetByWorkspaceId(ws.Id);
             IReadOnlyCollection<CustomFieldValueDTO> CustomFieldValues = ws.CustomFieldValues;
             ICollection<PermissionsDTO> boePotentialPermissions = new PermissionsDTODataLoader(adUtils).GetBOEPotentialPermissionsForWorkspace(ws.Id);
@@ -116,7 +118,7 @@ namespace CopyWorkspace
             DatabaseWorkspaceCopier copier = GenBOEUnityContainer.Container.Resolve(typeof(DatabaseWorkspaceCopier)) as DatabaseWorkspaceCopier;
 
             copier.CopyWorkspace(ws, newWs, Boes.ToCollection(), true, true, true, boePotentialPermissions, approvers, ResourcesUsedInWsBoes.ToList(),
-                CustomFieldValues.ToList(), TaskElements.ToList(), Travels.ToList(), PerformingOrgsUsedInBoes.ToList(), iboes, pboes, mappedUserIds, users);
+				BusinessResourceCodesUsedInWsBoes, CustomFieldValues.ToList(), TaskElements.ToList(), Travels.ToList(), PerformingOrgsUsedInBoes.ToList(), iboes, pboes, mappedUserIds, users);
 
             Console.WriteLine("Done.");
         }

@@ -46,6 +46,7 @@ namespace GenBOE.DataBridge.DTO
                                         Id = laborType.BOELaborTypeID,
                                         PerformingOrgID = laborType.PerformingOrganizationID,
                                         ResourceID = laborType.ResourceID,
+										BusinessResourceCodeID = laborType.BRCResourceID,
                                         ValueSpread = laborType.ValueSpread,
                                         SpreadCurveIDValue = laborType.SpreadCurveID,
                                         PercentSpread = laborType.PercentSpread,

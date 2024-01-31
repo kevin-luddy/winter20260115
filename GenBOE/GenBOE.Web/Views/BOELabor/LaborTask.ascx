@@ -584,7 +584,8 @@
                                     <thead>
                                         <tr>
                                             <th class="element-of-cost">Element of Cost</th>
-                                            <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)*</th>
+                                            <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)&#10013;</th>
+											<th class="brc">Business Resource Code (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController, '<%:WebConstants.ACTION_DISPLAY_BUSINESS_RESOURCE_CODES%>'); return false;">View</a>)&#10013;</th>
                                             <th class="performing-org">Performing Org (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_PERF_ORGS%>'); return false;">View</a>)*</th>
                                             <% if (Model.BOEIsMulti) { %>
                                                 <th class="resource-wbs">WBS</th>
@@ -608,6 +609,14 @@
                                                     <input data-ng-if="!showDropdowns" tabindex ="{{tabindex + 1}}" type="text" data-ng-model="item.ResourceInput" placeholder="Select a resource" uib-typeahead="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="2" data-ng-change="resourceUpdated(item)" typeahead-on-select="resourceSelected($item, item)">
                                                 </div>
                                             </td>
+											<td class="business-resource-codes" data-ng-class="{inputError: isBusinessResourceCodeValid(item.BusinessResourceCodeInput, BusinessResourceCodeModels) === false && }">
+												<div class="business-resource-code-selection bootstrap">
+													<select data-ng-if="showDropdowns" tabindex ="{{tabindex + 1}}" data-ng-model="item.BusinessResourceCodeInput" data-ng-change="BusinessResourceCodeSelected(item.BusinessResourceCode, item)"
+														data-ng-options="businessResourceCode as businessResourceCode.BusinessResourceCodeDesc for businessResourceCode in BusinessResourceCodeModels | filter:{} | orderBy:'BusinessResourceCodeDesc'">
+													</select>
+													<input data-ng-if="!showDropdowns" tabindex ="{{tabindex + 1}}" type="text" data-ng-model="item.BusinessResourceCodeInput" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.BusinessResourceCodeDesc for businessResourceCode in BusinessResourceCodeModels | filter:{} | filter:{BusinessResourceCodeDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" data-ng-change="businessResourceCodeUpdated(item)" typeahead-on-select="businessResourceCodeSelected($item, item)">
+												</div>
+											</td>
                                             <td class="performing-org" data-ng-class="{inputError: isPerfOrgValid(item.PerfOrgInput, PerfOrgModels) === false && item.NewLaborType === false }">
                                                 <div class="perforg-selection bootstrap">
                                                     <select data-ng-if="showDropdowns" tabindex ="{{tabindex + 2}}" data-ng-model="item.PerfOrgInput" data-ng-change="perfOrgSelected(item.PerfOrgInput, item)"

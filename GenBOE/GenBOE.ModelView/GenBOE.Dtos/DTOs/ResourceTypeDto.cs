@@ -24,6 +24,7 @@ namespace GenBOE.Dtos
         {
             this.Id = -1;
             this.ResourceID = 0;
+			this.BusinessResourceCodeID = 0;
             this.PerformingOrgID = 0;
             this.spreadCurveIDField = null;
             this.PercentSpread = 0;
@@ -54,6 +55,7 @@ namespace GenBOE.Dtos
                 this.PercentSpread = inBOELaborType.PercentSpread;
                 this.PerformingOrgID = inBOELaborType.PerformingOrgID;
                 this.ResourceID = inBOELaborType.ResourceID;
+				this.BusinessResourceCodeID = inBOELaborType.BusinessResourceCodeID;
                 this.SpreadCurveID = inBOELaborType.SpreadCurveID;
                 this.StartDate = inBOELaborType.StartDate;
                 this.ValueSpread = inBOELaborType.ValueSpread;
@@ -72,6 +74,9 @@ namespace GenBOE.Dtos
 
         // the resource code ID
         public int? ResourceID { get; set; }
+
+		// the business resource code ID
+		public int? BusinessResourceCodeID { get; set; }
 
         // the performing organization ID
         public int? PerformingOrgID { get; set; }

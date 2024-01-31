@@ -14,6 +14,7 @@ namespace GenBOE.Objects
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.GenBOE.Dtos.DTOs;
 	using GenBOE.Dtos;
 	using IES.Common;
 	using IES.Common.classes;
@@ -52,8 +53,11 @@ namespace GenBOE.Objects
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 		protected ReadOnlyCollection<BoeTaskElementDTO> taskElements;
 		private ReadOnlyCollection<ResourceDTO> resourcesByListId;
+		private ReadOnlyCollection<BusinessResourceCodeDTO> businessResourceCodesByListId;
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 		protected ReadOnlyCollection<ResourceDTO> resourcesUsedInBoes;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+		protected ReadOnlyCollection<BusinessResourceCodeDTO> businessResourceCodesUsedInBoes;
 		private ReadOnlyCollection<ResourceDTO> systemLmLaborResources;
 		private ReadOnlyCollection<TravelDTO> travels;
 		private ReadOnlyCollection<CustomFieldDTO> customFields;
@@ -603,6 +607,26 @@ namespace GenBOE.Objects
 				}
 
 				return this.resourcesByListId;
+			}
+		}
+
+		public IReadOnlyCollection<BusinessResourceCodeDTO> BusinessResourceCodesForWsBusinessResourceCodeListId
+		{
+			get
+			{
+				if (this.businessResourceCodesByListId == null)
+				{
+					if (this.BusinessResourceCodeSorting == CustomFieldSorting.ID)
+					{
+						this.businessResourceCodesByListId = this.retriever.GetBusinessResourceCodesByBusinessResourceCodeListId(this.BusinessResourceCodeListID).OrderBy(r => r.BusinessResourceCodeName).ToList().AsReadOnly();
+					}
+					else
+					{
+						this.businessResourceCodesByListId = this.retriever.GetBusinessResourceCodesByBusinessResourceCodeListId(this.BusinessResourceCodeListID).OrderBy(r => r.BusinessResourceCodeDesc).ToList().AsReadOnly();
+					}
+				}
+
+				return this.businessResourceCodesByListId;
 			}
 		}
 

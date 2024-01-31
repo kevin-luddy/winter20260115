@@ -12,6 +12,7 @@ namespace GenBOE.Objects
 	using System.Linq;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.GenBOE.Dtos.DTOs;
 	using GenBOE.Dtos;
 	using IES.Common;
 	using IES.Common.classes;
@@ -546,6 +547,11 @@ namespace GenBOE.Objects
 		public ICollection<ResourceDTO> GetResourcesByResourceListId(int resourceListId)
 		{
 			return this.ResourceLoader.GetByListId(resourceListId);
+		}
+
+		public ICollection<BusinessResourceCodeDTO> GetBusinessResourceCodesByBusinessResourceCodeListId(int businessResourceCodeListId)
+		{
+			return this.B
 		}
 
 		/// <summary>

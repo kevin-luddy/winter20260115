@@ -324,7 +324,9 @@
                                     <thead>
                                         <tr>
                                             <th class="element-of-cost">Element of Cost</th>
-                                            <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)*</th>
+											<%-- This code: &#10013; is for display the Cross on the page --%>
+                                            <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)&#10013;</th>
+											<th class="business-resource-code">Business Resource Code (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController, '<%:WebConstants.ACTION_DISPLAY_BUSINESS_RESOURCE_CODES%>'); return false;">View</a>)&#10013;</th>
                                             <th class="performing-org">Performing Org (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_PERF_ORGS%>'); return false;">View</a>)*</th>
                                             <% if (Model.BOEIsMulti)
                                                {%>
@@ -341,6 +343,9 @@
                                             <td>
                                                 <div title="{{item.ResourceDescription}}">{{item.ResourceDescription}}</div>
                                             </td>
+											<td>
+												<div title="{{item.BusinessResourceDescription}}">{{item.BusinessResourceDescription}}</div>
+											</td>
                                             <td>
                                                 <div title="{{item.PerformingOrgName}}">{{item.PerformingOrgName}}</div>
                                             </td>

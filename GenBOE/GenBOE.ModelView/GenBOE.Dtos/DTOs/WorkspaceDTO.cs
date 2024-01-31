@@ -186,6 +186,11 @@ namespace GenBOE.Dtos
         /// </summary>
         public CustomFieldSorting ResourceSorting { get; set; }
 
+		/// <summary>
+		/// Gets or sets the business resource code sorting.
+		/// </summary>
+		public CustomFieldSorting BusinessResourceCodeSorting { get; set; }
+
         /// <summary>
         /// Gets or sets the perf org sorting.
         /// </summary>

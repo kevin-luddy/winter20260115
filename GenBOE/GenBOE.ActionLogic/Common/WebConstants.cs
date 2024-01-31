@@ -316,6 +316,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_INVALID_SUBMIT_FOR_APPROVAL = "DisplayInvalidSubmitForApproval";
 		public static readonly string ACTION_DISPLAY_LABOR_CURVES = "DisplayLaborCurves";
 		public static readonly string ACTION_DISPLAY_LABOR_RESOURCES = "DisplayResources";
+		public static readonly string ACTION_DISPLAY_BUSINESS_RESOURCE_CODES = "DisplayBusinessResourceCodes";
 		public static readonly string ACTION_DISPLAY_LABOR_PERF_ORGS = "DisplayPerfOrgs";
 		public static readonly string ACTION_DISPLAY_MANAGE_BOE = "DisplayManageBOE";
 		public static readonly string ACTION_DISPLAY_WORKSPACE_CALCULATE_ACTUALS = "DisplayWorkspaceCalculateActuals";

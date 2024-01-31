@@ -145,6 +145,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\BOESearchDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\BOESearchResultDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\BoeVersionDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BusinessResourceCodeDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\ClinDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldValueContainer.cs" />

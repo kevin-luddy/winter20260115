@@ -12,7 +12,8 @@ namespace GenBOE.ActionLogic.ModelView
     using System.Linq;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.ValidationAttributes;
-    using GenBOE.Dtos;
+	using GenBOE.DataBridge.GenBOE.Dtos.DTOs;
+	using GenBOE.Dtos;
     using IES.Common;
 
     /// <summary>
@@ -31,6 +32,10 @@ namespace GenBOE.ActionLogic.ModelView
             this.ResourceName = String.Empty;
             this.ResourceType = String.Empty;
             this.ResourceDescription = String.Empty;
+			this.BusinessResourceCodeID = 0;
+			this.BusinessResourceCodeName = string.Empty;
+			this.BusinessResourceCodeType = string.Empty;
+			this.BusinessResourceCodeDescription = string.Empty;
             this.PerformingOrgID = 0;
             this.PerformingOrgName = String.Empty;
             this.SpreadCurveID = SpreadCurves.DiscreteHours;
@@ -58,8 +63,9 @@ namespace GenBOE.ActionLogic.ModelView
         /// </summary>
         /// <param name="inBoeLaborType">The <see cref="ResourceTypeDto"/> object used to populate properties</param>
         /// <param name="inResource">The <see cref="ResourceDTO"/> object used to populate properties</param>
+		/// <param name="inBusinessResourceCode"> The <see cref="BusinessResourceCodeDTO"/> object used to populate properties</param>
         /// <param name="perfOrg">The <see cref="PerformingOrgDTO" /> object used to populate properties.</param>
-        public LaborTypeDataModelView(ResourceTypeDto inBoeLaborType, ResourceDTO inResource, PerformingOrgDTO perfOrg)
+        public LaborTypeDataModelView(ResourceTypeDto inBoeLaborType, ResourceDTO inResource, BusinessResourceCodeDTO inBusinessResourceCode, PerformingOrgDTO perfOrg)
             : this()
         {
             if (inBoeLaborType == null) { throw new ArgumentNullException(nameof(inBoeLaborType)); }
@@ -71,6 +77,7 @@ namespace GenBOE.ActionLogic.ModelView
             
             this.BOELaborTypeID = inBoeLaborType.Id;
             this.ResourceID = inBoeLaborType.ResourceID;
+			this.BusinessResourceCodeID = inBoeLaborType.BusinessResourceCodeID;
             this.PerformingOrgID = inBoeLaborType.PerformingOrgID;
             this.PerformingOrgName = perfOrg.PerformingOrgName;
             this.SpreadCurveID = inBoeLaborType.SpreadCurveID;
@@ -80,6 +87,9 @@ namespace GenBOE.ActionLogic.ModelView
             this.ResourceType = inResource.ResourceTypeCategory;
             this.ResourceDescription = inResource.ResourceDesc;
             this.RateType = inResource.RateType;
+			this.BusinessResourceCodeName = inBusinessResourceCode.BusinessResourceCodeName;
+			this.BusinessResourceCodeType = inBusinessResourceCode.BusinessResourceCodeTypeCategory;
+			this.BusinessResourceCodeDescription = inBusinessResourceCode.BusinessResourceCodeDesc;
             this.CanOffload = inBoeLaborType.CanOffload;
             this.TieredPercentage = inBoeLaborType.TieredPercentage;
             this.ElementOfCost = (int)inResource.ElementOfCost;
@@ -148,6 +158,26 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets/Sets ResourceDescription
         /// </summary>
         public string ResourceDescription { get; set; }
+
+		/// <summary>
+		/// Gets/Sets BusinessResourceCodeID
+		/// </summary>
+		public int? BusinessResourceCodeID { get; set; }
+
+		/// <summary>
+		/// Gets/Sets BusinessResourceCodeName
+		/// </summary>
+		public string BusinessResourceCodeName { get; set; }
+
+		/// <summary>
+		/// Gets/Sets BusinessResourceCodeType
+		/// </summary>
+		public string BusinessResourceCodeType { get; set; }
+
+		/// <summary>
+		/// Gets/Sets BusinessResourceCodeDescription
+		/// </summary>
+		public string BusinessResourceCodeDescription { get; set; }
 
         /// <summary>
         /// Gets/Sets PerformingOrgID

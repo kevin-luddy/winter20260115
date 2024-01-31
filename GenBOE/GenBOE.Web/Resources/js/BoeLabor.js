@@ -290,7 +290,7 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
         var name = 'Curves';
         var width = 840;
         var height = 560;
-        if (action.contains('Resource')) {
+        if (action.contains('Resource') || action.contains('BusinessResourceCodes')) {
             name = 'Resources';
             width = 770;
              height = 580;
