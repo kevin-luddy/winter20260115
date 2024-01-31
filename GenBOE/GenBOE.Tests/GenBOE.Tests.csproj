@@ -387,7 +387,6 @@
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ActionLogic\BLL\" />
     <Folder Include="ActionLogic\ValidationAttributes\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
