@@ -40,10 +40,10 @@ namespace IES.ActionLogic.IO.Export
 		/// </summary>
 		private const string FIRST_SECTION_REFERENCE_NUMBER = "1.0";
 
-        private readonly ITokenService tokenService;
+        private readonly TokenService tokenService;
 
 		public PPRDExporter(
-			ITokenService tokenService
+			TokenService tokenService
 			)
 		{
 			this.tokenService = tokenService;
