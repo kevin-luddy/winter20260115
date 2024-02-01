@@ -86,17 +86,17 @@ namespace IES.ActionLogic.IO.Export
 
 				using (MemoryStream stream = new MemoryStream())
 				{
-					stream.Write(byteArray, 0, (int)byteArray.Length);
+					stream.Write(byteArray, 0, byteArray.Length);
 					using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(stream, true))
 					{
 						// Make a post call to the Portion Marking API here
 						HttpClient httpClient = new HttpClient();
                         Utilities.AddAuthorizationHeader(httpClient, (await this.tokenService.GetToken()).AccessToken);
                         string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
-                        var result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
+                        HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
 						result.EnsureSuccessStatusCode();
 
-						var postResponse = await result.Content.ReadAsStringAsync();
+						string postResponse = await result.Content.ReadAsStringAsync();
 					}
 				}
 			}
@@ -136,17 +136,17 @@ namespace IES.ActionLogic.IO.Export
                 ByteArrayContent content = new ByteArrayContent(byteArray);
                 content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
 
-                stream.Write(byteArray, 0, (int)byteArray.Length);
+                stream.Write(byteArray, 0, byteArray.Length);
                 using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(stream, true))
                 {
                     // Make a post call to the Portion Marking API here
                     HttpClient httpClient = new HttpClient();
                     Utilities.AddAuthorizationHeader(httpClient, (await this.tokenService.GetToken()).AccessToken);
                     string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
-                    var result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
+                    HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
                     result.EnsureSuccessStatusCode();
 
-                    var postResponse = await result.Content.ReadAsStringAsync();
+                    string postResponse = await result.Content.ReadAsStringAsync();
                 }
             }
 
