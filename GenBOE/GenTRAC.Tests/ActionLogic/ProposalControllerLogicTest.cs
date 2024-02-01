@@ -189,7 +189,9 @@ namespace GenTRAC.Tests.ActionLogic
                         BackupContractsPOCNtId = "n22222",
                         ProposalMgrNtid = "n00000",
                         SupplyChainPOCMaterialsNtId = "n00000",
-                        SupplyChainPOCSubsNtId = "n00000"
+                        SupplyChainPOCMaterialsBackupNtId = "n00000",
+                        SupplyChainPOCSubsNtId = "n00000",
+                        SupplyChainPOCSubsBackupNtId = "n00000"
                     };
                 }
             }
@@ -306,7 +308,9 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid
+                SupplyChainPOCMaterialsBackupNtId = ntid,
+                SupplyChainPOCSubsNtId = ntid,
+                SupplyChainPOCSubsBackupNtId = ntid
             };
 
             ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
@@ -377,7 +381,9 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid
+                SupplyChainPOCMaterialsBackupNtId = ntid,
+                SupplyChainPOCSubsNtId = ntid,
+                SupplyChainPOCSubsBackupNtId = ntid
             };
 
             ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
@@ -515,7 +521,9 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid
+                SupplyChainPOCMaterialsBackupNtId = ntid,
+                SupplyChainPOCSubsNtId = ntid,
+                SupplyChainPOCSubsBackupNtId = ntid
             };
 
             ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
@@ -576,7 +584,9 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid
+                SupplyChainPOCMaterialsBackupNtId = ntid,
+                SupplyChainPOCSubsNtId = ntid,
+                SupplyChainPOCSubsBackupNtId = ntid
             };
 
             this.proposalLoader.Setup(x => x.IsProposalTitleUnique(It.IsAny<int>(), It.IsAny<string>())).Returns(true);
@@ -1389,8 +1399,10 @@ namespace GenTRAC.Tests.ActionLogic
             string ntid = "myNtid";
             ProposalUserInformationModelView proposalUserInfo = new ProposalUserInformationModelView()
             {
-                SupplyChainPOCSubsNtId = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
+                SupplyChainPOCMaterialsBackupNtId = ntid,
+                SupplyChainPOCSubsNtId = ntid,
+                SupplyChainPOCSubsBackupNtId = ntid,
                 AdditionalPricingResource1NtId = ntid,
                 AdditionalPricingResource1Type = ResourceType.Pricer,
                 AdditionalPricingResource2NtId = ntid,
@@ -1428,8 +1440,10 @@ namespace GenTRAC.Tests.ActionLogic
             string ntid = "myNtid";
             ProposalUserInformationModelView proposalUserInfo = new ProposalUserInformationModelView()
             {
-                SupplyChainPOCSubsNtId = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
+                SupplyChainPOCMaterialsBackupNtId = ntid,
+                SupplyChainPOCSubsNtId = ntid,
+                SupplyChainPOCSubsBackupNtId = ntid,
                 AdditionalPricingResource1NtId = ntid,
                 AdditionalPricingResource1Type = ResourceType.Pricer,
                 AdditionalPricingResource2NtId = ntid,
@@ -1842,6 +1856,8 @@ namespace GenTRAC.Tests.ActionLogic
 
             permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupPricer, ProposalID = proposal.Id });
             permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupContractsPOC, ProposalID = proposal.Id });
+            permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupMaterialLead, ProposalID = proposal.Id });
+            permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupSubcontractsLead, ProposalID = proposal.Id });
 
             permissions[(int)PtmRole.AdditionalPricingResource1 - 1].ResourceType = ResourceType.Pricer;
             permissions[(int)PtmRole.AdditionalPricingResource2 - 1].ResourceType = ResourceType.Strategist;
@@ -1872,7 +1888,9 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(user.DisplayName, proposalUserInfo.CostVolumeLeadDisplayName);
             Assert.AreEqual(user.DisplayName, proposalApprovalsInfo.LeadEstimatorDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCMaterialsDisplayName);
+            Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCMaterialsBackupDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCSubsDisplayName);
+            Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCSubsBackupDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.GenBoeWorkspaceCreatorDisplayName);
             Assert.AreEqual(user.Ntid, proposalUserInfo.AdditionalPricingResource1NtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.AdditionalPricingResource2NtId);
@@ -1883,7 +1901,9 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(user.Ntid, proposalUserInfo.CostVolumeLeadNtid);
             Assert.AreEqual(user.Ntid, proposalApprovalsInfo.LeadEstimatorNtid);
             Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCMaterialsNtId);
+            Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCMaterialsBackupNtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCSubsNtId);
+            Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCSubsBackupNtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.GenBoeWorkspaceCreatorNtid);
             Assert.AreEqual(ResourceType.Pricer, proposalUserInfo.AdditionalPricingResource1Type);
             Assert.AreEqual(ResourceType.Strategist, proposalUserInfo.AdditionalPricingResource2Type);
@@ -2734,6 +2754,33 @@ namespace GenTRAC.Tests.ActionLogic
             proposalUserInfo.GenBoeWorkspaceCreatorNtid = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.AreEqual(1, validationErrors.Count); // Role not required, so no additional errors should return
+
+            validationErrors.Clear();
+            // CASE: Material Lead and Backup are the same
+            proposalUserInfo.SupplyChainPOCMaterialsBackupNtId = user.Ntid;
+            sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
+            Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
+
+            proposalUserInfo.SupplyChainPOCMaterialsBackupNtId = user2.Ntid;
+            validationErrors.Clear();
+            // CASE: Subcontracts Lead and Backup are the same
+            proposalUserInfo.SupplyChainPOCSubsBackupNtId = user.Ntid;
+            sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
+            Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
+
+            proposalUserInfo.SupplyChainPOCSubsBackupNtId = user2.Ntid;
+            validationErrors.Clear();
+            // CASE: Backup Material Lead with no Material Lead
+            proposalUserInfo.SupplyChainPOCMaterialsNtId = null;
+            sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
+            Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_BACKUP_REQUIRES_LEAD));
+
+            proposalUserInfo.SupplyChainPOCMaterialsNtId = user.Ntid;
+            validationErrors.Clear();
+            // CASE: Backup Subcontracts Lead with no Material Lead
+            proposalUserInfo.SupplyChainPOCSubsNtId = null;
+            sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
+            Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD));
         }
 
         /// <summary>
@@ -2935,8 +2982,14 @@ namespace GenTRAC.Tests.ActionLogic
             userInfo.SupplyChainPOCMaterialsNtId = user.Ntid;
             userInfo.SupplyChainPOCSubsDisplayName = user.DisplayName;
 
+            userInfo.SupplyChainPOCMaterialsBackupNtId = user2.Ntid;
+            userInfo.SupplyChainPOCSubsBackupDisplayName = user2.DisplayName;
+
             userInfo.SupplyChainPOCSubsNtId = user.Ntid;
             userInfo.SupplyChainPOCSubsDisplayName = user.DisplayName;
+
+            userInfo.SupplyChainPOCSubsBackupNtId = user2.Ntid;
+            userInfo.SupplyChainPOCSubsBackupDisplayName = user2.DisplayName;
 
             userInfo.ContractsPOCNtId = user.Ntid;
             userInfo.ContractsPOCDisplayName = user.DisplayName;
@@ -3172,7 +3225,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto() { NegotiationsSubmitted = new DateTime(2022, 1, 1)});
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto() { NegotiationsSubmitted = new DateTime(2022, 1, 1) });
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {

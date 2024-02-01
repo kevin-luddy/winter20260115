@@ -403,15 +403,25 @@ namespace GenTRAC.ActionLogic.Validation
             /// </summary>
             public const string SUPPLY_CHAIN_POC_MATL_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Material Lead, or the user is not an LM, US based employee.";
 
-            /// <summary>
-            /// Subcontracts Lead invalid NTID
-            /// </summary>
-            public const string SUPPLY_CHAIN_POC_SUBS_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Subcontracts Lead, or the user is not an LM, US based employee.";
+			/// <summary>
+			/// Material Lead invalid NTID
+			/// </summary>
+			public const string SUPPLY_CHAIN_POC_MATL_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup Material Lead, or the user is not an LM, US based employee.";
 
-            /// <summary>
-            /// Backup Lead Estimator invalid NTID
-            /// </summary>
-            public const string BACKUP_PRICER_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup Lead Estimator, or the user is not an LM, US based employee.";
+			/// <summary>
+			/// Subcontracts Lead invalid NTID
+			/// </summary>
+			public const string SUPPLY_CHAIN_POC_SUBS_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Subcontracts Lead, or the user is not an LM, US based employee.";
+
+			/// <summary>
+			/// Subcontracts Lead invalid NTID
+			/// </summary>
+			public const string SUPPLY_CHAIN_POC_SUBS_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup Subcontracts Lead, or the user is not an LM, US based employee.";
+
+			/// <summary>
+			/// Backup Lead Estimator invalid NTID
+			/// </summary>
+			public const string BACKUP_PRICER_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup Lead Estimator, or the user is not an LM, US based employee.";
 
             /// <summary>
             /// Contracts Lead invalid NTID
@@ -444,13 +454,33 @@ namespace GenTRAC.ActionLogic.Validation
             /// </summary>
             public const string CONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "Contracts Lead and Backup Contracts Lead cannot be the same person.";
 
-            #endregion  Proposal User Info Section
-        }
+			/// <summary>
+			/// Material Lead and Backup cannot be the same person
+			/// </summary>
+			public const string MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "Material Lead and Backup Material Lead cannot be the same person.";
 
-        /// <summary>
-        /// Validation messages for Certification Timeline
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+			/// <summary>
+			/// Subcontracts Lead and Backup cannot be the same person
+			/// </summary>
+			public const string SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "Subcontracts Lead and Backup Subcontracts Lead cannot be the same person.";
+
+			/// <summary>
+			/// Cannot have Material Lead Backup without a Material Lead
+			/// </summary>
+			public const string MATERIAL_LEAD_BACKUP_REQUIRES_LEAD = USER_INFO_VALDIATION + "Material Lead is required if Backup Material Lead is populated.";
+
+			/// <summary>
+			/// Cannot have Material Lead Backup without a Material Lead
+			/// </summary>
+			public const string SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD = USER_INFO_VALDIATION + "Subcontracts Lead is required if Backup Subcontracts Lead is populated.";
+
+			#endregion  Proposal User Info Section
+		}
+
+		/// <summary>
+		/// Validation messages for Certification Timeline
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         public static class CertificationTimelineValidationConstants
         {
             /// <summary>
