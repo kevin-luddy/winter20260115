@@ -20,7 +20,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void ValueIsNotNumeric()
         {
-            var nv = CreateSystem();
+			IsNumericValidation nv = CreateSystem();
             string sValue;
 
             sValue = "123ValueIsNotANumericNumber";
@@ -35,7 +35,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void ValueIsNumeric()
         {
-            var nv = CreateSystem();
+			IsNumericValidation nv = CreateSystem();
             string sValue;
             
             sValue = "12345678901";
@@ -50,7 +50,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void ValueIsNotInteger()
         {
-            var nv = CreateSystem();
+			IsNumericValidation nv = CreateSystem();
             string sValue;
 
             sValue = "12345678901";
@@ -71,7 +71,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void ValueIsInteger()
         {
-            var nv = CreateSystem();
+			IsNumericValidation nv = CreateSystem();
             string sValue;
 
             sValue = "123";

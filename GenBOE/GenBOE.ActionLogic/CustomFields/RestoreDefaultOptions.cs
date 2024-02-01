@@ -64,7 +64,7 @@ namespace GenBOE.ActionLogic.CustomFields
 
                 // find the options that were added to the default Perf Org List but not in the current Perf Org List
                 Collection<RestoreOption> optionsAdded = new Collection<RestoreOption>();
-                var perfOrgsAdded =
+				List<RestoreOption> perfOrgsAdded =
                     (from p in defaultPerfOrgs
                     where !(from c in currentPerfOrgs
                             select c.PerformingOrgName).Contains(p.PerformingOrgName)
@@ -100,7 +100,7 @@ namespace GenBOE.ActionLogic.CustomFields
                 Collection<RestoreOptionChanged> optionsChanged = new Collection<RestoreOptionChanged>();
 
                 HashSet<int> perfOrgIDsInUse = this._InUseDataLoader.GetWorkspacePerfOrgIDsInUseByPerfOrgListID(inWorkspace.PerfOrgListID);
-                var perfOrgsChanged =
+				List<RestoreOptionChanged> perfOrgsChanged =
                     (from p in defaultPerfOrgs
                     from c in currentPerfOrgs
                     where c.PerformingOrgName == p.PerformingOrgName && (c.PerformingOrgDesc != p.PerformingOrgDesc) && perfOrgIDsInUse.Contains(c.Id) != true // don't bother checking if an in use has changed
@@ -131,7 +131,7 @@ namespace GenBOE.ActionLogic.CustomFields
 
                 // find the options that were deleted from the current Perf Org List because it was not in the default Perf Org List
                 Collection<RestoreOption> optionsDeleted = new Collection<RestoreOption>();
-                var perfOrgsDeleted =
+				List<RestoreOption> perfOrgsDeleted =
                     (from p in currentPerfOrgs
                     where !(from d in defaultPerfOrgs
                             select d.PerformingOrgName).Contains(p.PerformingOrgName) && perfOrgIDsInUse.Contains(p.Id) != true // don't bother checking if an in use has been deleted
@@ -161,7 +161,7 @@ namespace GenBOE.ActionLogic.CustomFields
                 // find the options that could not be edited because they are in use in the current Perf Org List
                 Collection<RestoreOption> optionsNotchanged = new Collection<RestoreOption>();
 
-                var PerfOrgsInUse = (from p in currentPerfOrgs
+				List<RestoreOption> PerfOrgsInUse = (from p in currentPerfOrgs
                                     where perfOrgIDsInUse.Contains(p.Id)
                                     select new RestoreOption
                                     {

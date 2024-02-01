@@ -22,7 +22,8 @@ CREATE PROCEDURE [dbo].[upsertMOQTypeSelection]
 	@DurationLogicAndAssumptions varchar(max),
 	@EstimateTasks varchar(max),
 	@Rationale varchar(max),
-	@SkillMix varchar(max)
+	@SkillMix varchar(max),
+	@HistoricalReferenceExplanation varchar(max)
 )
 AS
 /******************************************************************************
@@ -40,6 +41,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location field
+**		1/15/2024	ranzalon			PROPH-1070 - Added HistoricalReferenceExplanation
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -61,7 +63,8 @@ IF @MOQTypeSelectionId  < 0  /*Insert Record*/
 				[DurationLogicAndAssumptions],
 				[EstimateTasks],
 				[Rationale],
-				[SkillMix]
+				[SkillMix],
+				[HistoricalReferenceExplanation]
 		   )
      OUTPUT inserted.MOQTypeSelectionId INTO @MOQTypeSelectionTable
      VALUES
@@ -77,7 +80,8 @@ IF @MOQTypeSelectionId  < 0  /*Insert Record*/
 				@DurationLogicAndAssumptions,
 				@EstimateTasks,
 				@Rationale,
-				@SkillMix
+				@SkillMix,
+				@HistoricalReferenceExplanation
             ) 
             
 	SELECT @MOQTypeSelectionId = MOQTypeSelectionId FROM @MOQTypeSelectionTable
@@ -103,7 +107,8 @@ ELSE
 					[DurationLogicAndAssumptions] = @DurationLogicAndAssumptions,
 					[EstimateTasks] = @EstimateTasks,
 					[Rationale] = @Rationale,
-					[SkillMix] = @SkillMix
+					[SkillMix] = @SkillMix,
+					[HistoricalReferenceExplanation] = @HistoricalReferenceExplanation
 			WHERE
 				[MOQTypeSelectionId] = @MOQTypeSelectionId
 

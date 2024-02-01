@@ -48,7 +48,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
                 lock (CacheConstants.OPEN_XML_LOCK)
                 {
-                    memory.Write(byteArray, 0, (int)byteArray.Length);
+                    memory.Write(byteArray, 0, byteArray.Length);
 
                     // Create the document object in memory
                     using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(memory, true))
@@ -122,7 +122,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
                 lock (CacheConstants.OPEN_XML_LOCK)
                 {
-                    memory.Write(byteArray, 0, (int)byteArray.Length);
+                    memory.Write(byteArray, 0, byteArray.Length);
 
                     // Create the document object in memory
                     using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(memory, true))
@@ -173,7 +173,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
                 lock (CacheConstants.OPEN_XML_LOCK)
                 {
-                    memory.Write(byteArray, 0, (int)byteArray.Length);
+                    memory.Write(byteArray, 0, byteArray.Length);
 
                     // Create the document object in memory
                     using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(memory, true))
@@ -227,7 +227,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
                 lock (CacheConstants.OPEN_XML_LOCK)
                 {
-                    memory.Write(byteArray, 0, (int)byteArray.Length);
+                    memory.Write(byteArray, 0, byteArray.Length);
 
                     // Create the document object in memory
                     using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(memory, true))
@@ -270,7 +270,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
                 lock (CacheConstants.OPEN_XML_LOCK)
                 {
-                    memory.Write(byteArray, 0, (int)byteArray.Length);
+                    memory.Write(byteArray, 0, byteArray.Length);
 
                     // Create the document object in memory
                     using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(memory, true))
@@ -315,7 +315,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
                 lock (CacheConstants.OPEN_XML_LOCK)
                 {
-                    memory.Write(byteArray, 0, (int)byteArray.Length);
+                    memory.Write(byteArray, 0, byteArray.Length);
 
                     // Create the document object in memory
                     using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(memory, true))
@@ -353,7 +353,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
                 lock (CacheConstants.OPEN_XML_LOCK)
                 {
-                    memory.Write(byteArray, 0, (int)byteArray.Length);
+                    memory.Write(byteArray, 0, byteArray.Length);
 
                     // Create the document object in memory
                     using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(memory, true))
@@ -405,7 +405,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
                 lock (CacheConstants.OPEN_XML_LOCK)
                 {
-                    memory.Write(byteArray, 0, (int)byteArray.Length);
+                    memory.Write(byteArray, 0, byteArray.Length);
 
                     // Create the document object in memory
                     using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(memory, true))
@@ -441,7 +441,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
                 lock (CacheConstants.OPEN_XML_LOCK)
                 {
-                    memory.Write(byteArray, 0, (int)byteArray.Length);
+                    memory.Write(byteArray, 0, byteArray.Length);
 
                     // Create the document object in memory
                     using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(memory, true))
@@ -468,8 +468,8 @@ namespace GenBOE.Tests.ActionLogic.Export
         /// <returns>An Excel column name (i.e. A, B, C, etc)</returns>
         private string ParseColumnName(string cellName)
         {
-            // Create a regular expression to match the column name portion of the cell name.
-            var match = regexColumnName.Match(cellName);
+			// Create a regular expression to match the column name portion of the cell name.
+			Match match = regexColumnName.Match(cellName);
 
             // Return the column name
             return match.Value;
@@ -482,8 +482,8 @@ namespace GenBOE.Tests.ActionLogic.Export
         /// <returns>An Excel row index (i.e. 1, 2, 3, etc)</returns>
         private uint ParseRowIndex(string cellName)
         {
-            // Create a regular expression to match the row index portion the cell name.
-            var match = regexRowIndex.Match(cellName);
+			// Create a regular expression to match the row index portion the cell name.
+			Match match = regexRowIndex.Match(cellName);
 
             // Return the row index
             return uint.Parse(match.Value);

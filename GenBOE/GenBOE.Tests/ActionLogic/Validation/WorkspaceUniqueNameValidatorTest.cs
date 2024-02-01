@@ -22,7 +22,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void WorkspaceUniqueNameValidator_IsValid()
         {
-            var wsLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> wsLoader = new Mock<IWorkspaceDTODataLoader>();
             WorkspaceUniqueNameValidator sut = new WorkspaceUniqueNameValidator(wsLoader.Object);
 
             // setup workspaces
@@ -54,7 +54,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(InvalidCastException))]
         public void WorkspaceUniqueNameValidator_InvalidParameterTest()
         {
-            var wsLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> wsLoader = new Mock<IWorkspaceDTODataLoader>();
             WorkspaceUniqueNameValidator sut = new WorkspaceUniqueNameValidator(wsLoader.Object);
 
             decimal[] test = { 3.14m, 6.77m };
@@ -69,7 +69,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(ArgumentNullException))]
         public void WorkspaceUniqueNameValidator_NullParameterTest()
         {
-            var wsLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> wsLoader = new Mock<IWorkspaceDTODataLoader>();
             WorkspaceUniqueNameValidator sut = new WorkspaceUniqueNameValidator(wsLoader.Object);
             sut.validation(null, new Collection<Dictionary<string, string>>());
         }
@@ -78,7 +78,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [ExpectedException(typeof(ArgumentNullException))]
         public void WorkspaceUniqueNameValidator_NullIsValidTest()
         {
-            var wsLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IWorkspaceDTODataLoader> wsLoader = new Mock<IWorkspaceDTODataLoader>();
             WorkspaceUniqueNameValidator sut = new WorkspaceUniqueNameValidator(wsLoader.Object);
             sut.isValid(null, new Collection<Dictionary<string, string>>());
         }

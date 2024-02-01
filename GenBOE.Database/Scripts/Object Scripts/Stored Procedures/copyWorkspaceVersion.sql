@@ -46,6 +46,7 @@ AS
 **		3/1/23		twilson3			ACV-343 Update MOQ Column sizes
 **		3/20/23		Dusan				ACV-498: Updated MOQ Column size (Wbs Element due to prod issue)
 **      8/10/23     twilson             PROPH-1029 Investigate Project Spreads
+**		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1793,6 +1794,7 @@ BEGIN TRY
 		[DurationLogicAndAssumptions] [varchar](max) NULL,
 		[EstimateTasks] [varchar](max) NULL,
 		[Rationale] [varchar](max) NULL,
+		[HistoricalReferenceExplanation] [varchar](max) NULL,
 		[SkillMix] [varchar](max) NULL,
 		Processed bit,
 		NewMOQTypeSelectionId int,
@@ -1812,6 +1814,7 @@ BEGIN TRY
 		M.[DurationLogicAndAssumptions],
 		M.[EstimateTasks],
 		M.[Rationale],
+		M.[HistoricalReferenceExplanation],
 		M.[SkillMix],
 		0,
 		NULL,
@@ -1836,6 +1839,7 @@ BEGIN TRY
 				[DurationLogicAndAssumptions],
 				[EstimateTasks],
 				[Rationale],
+				[HistoricalReferenceExplanation],
 				[SkillMix]
 				)
 	SELECT NewTaskId,
@@ -1849,6 +1853,7 @@ BEGIN TRY
 		[DurationLogicAndAssumptions],
 		[EstimateTasks],
 		[Rationale],
+		[HistoricalReferenceExplanation],
 		[SkillMix]
 	FROM @MOQTypeSelection
 	WHERE MOQTypeSelectionId = @MOQTypeSelectionId

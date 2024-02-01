@@ -84,13 +84,41 @@
             }
         });
 
+		$('#supplyChainPOCMaterialsBackupDisplayName').lookupUser({
+			accountNameElementId: 'supplyChainPOCMaterialsBackupNtId',
+            accountNameInitial: '@Model.SupplyChainPOCMaterialsBackupNtId',
+            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(@Model.SupplyChainPOCMaterialsBackupDisplayName))',
+            enabled: true,
+            allowGroups: true,
+			fieldDisplayName: 'Supply Chain POC (Matl Backup)',
+            checkNameCallbackHandler: function (valid) {
+                if (valid) {
+                    ProposalIndexWidget.refreshModule();
+                }
+            }
+        });
+
         $('#supplyChainPOCSubsDisplayName').lookupUser({
             accountNameElementId: 'supplyChainPOCSubsNtId',
             accountNameInitial: '@Model.SupplyChainPOCSubsNtId',
             accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(Model.SupplyChainPOCSubsDisplayName))',
             enabled: true,
             allowGroups: true,
-            fieldDisplayName: 'Supply Chain POC(Subs)',
+            fieldDisplayName: 'Supply Chain POC (Subs)',
+            checkNameCallbackHandler: function (valid) {
+                if (valid) {
+                    ProposalIndexWidget.refreshModule();
+                }
+            }
+		});
+
+		$('#supplyChainPOCSubsBackupDisplayName').lookupUser({
+			accountNameElementId: 'supplyChainPOCSubsBackupNtId',
+            accountNameInitial: '@Model.SupplyChainPOCSubsBackupNtId',
+            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(Model.SupplyChainPOCSubsBackupDisplayName))',
+            enabled: true,
+            allowGroups: true,
+			fieldDisplayName: 'Supply Chain POC (Subs Backup)',
             checkNameCallbackHandler: function (valid) {
                 if (valid) {
                     ProposalIndexWidget.refreshModule();
@@ -180,98 +208,112 @@
 
 <div id="proposalUserInformationSection" class="composite module expanded full">
     <div class="module-header-data">User Information</div>
-    <div class="module-content-data expanded-content">
-        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_USER_INFO_FORM, name = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_USER_INFO_FORM }))
-        {
-            <a id="users"></a>
-            <div class="form-row">
-                <div class="form-label">Capture Manager *</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    <input id="captureManagerDisplayName" name="captureManagerDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Cost Volume Lead *</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    <input id="costVolumeLeadDisplayName" name="costVolumeLeadDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Additional Estimating Resource 1</div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.AdditionalPricingResource1Type, Model.AdditionalPricingResourceTypeList, new { name = "AdditionalPricingResource1Type" })
-                </div>
-                <div class="form-element">
-                    <input id="additionalPricingResource1DisplayName" name="additionalPricingResource1DisplayName" type="text" class="half" size="50" placeholder="NTID" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Additional Estimating Resource 2</div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.AdditionalPricingResource2Type, Model.AdditionalPricingResourceTypeList, new { name = "AdditionalPricingResource2Type" })
-                </div>
-                <div class="form-element">
-                    <input id="additionalPricingResource2DisplayName" name="additionalPricingResource2DisplayName" type="text" class="half" size="50" placeholder="NTID" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Backup Lead Estimator</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    <input id="backupPricerDisplayName" name="backupPricerDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">GenBOE Workspace Creator</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.GenBoeWorkspaceCreatorNtid, Model.GenBoeWorkspaceCreatorList, new { name = "GenBoeWorkspaceCreator", @class = "UserInformationDropDown"})
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Material Lead</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    <input id="supplyChainPOCMaterialsDisplayName" name="supplyChainPOCMaterialsDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Subcontracts Lead</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    <input id="supplyChainPOCSubsDisplayName" name="supplyChainPOCSubsDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Contracts Lead *</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.ContractsPOCNtId, Model.ContractLeadList, new { name = "ContractsPoc", @class = "UserInformationDropDown" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Backup Contracts Lead *</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.BackupContractsPOCNtId, Model.BackupContractLeadList, new { name = "BackupContractsPoc", @class = "UserInformationDropDown" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Tech Lead</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    <input id="techLeadDisplayName" name="techLeadDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">Proposal Mgr *</div>
-                <div class="form-element"></div>
-                <div class="form-element">
-                    <input id="proposalMgrDisplayName" name="proposalMgrDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-                </div>
-            </div>
-        }
-    </div>
+	<div class="module-content-data expanded-content">
+		@using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_USER_INFO_FORM, name = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_USER_INFO_FORM }))
+		{
+			<a id="users"></a>
+			<div class="form-row">
+				<div class="form-label">Capture Manager *</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					<input id="captureManagerDisplayName" name="captureManagerDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Cost Volume Lead *</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					<input id="costVolumeLeadDisplayName" name="costVolumeLeadDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Additional Estimating Resource 1</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.AdditionalPricingResource1Type, Model.AdditionalPricingResourceTypeList, new { name = "AdditionalPricingResource1Type" })
+				</div>
+				<div class="form-element">
+					<input id="additionalPricingResource1DisplayName" name="additionalPricingResource1DisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Additional Estimating Resource 2</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.AdditionalPricingResource2Type, Model.AdditionalPricingResourceTypeList, new { name = "AdditionalPricingResource2Type" })
+				</div>
+				<div class="form-element">
+					<input id="additionalPricingResource2DisplayName" name="additionalPricingResource2DisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Backup Lead Estimator</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					<input id="backupPricerDisplayName" name="backupPricerDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">GenBOE Workspace Creator</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.GenBoeWorkspaceCreatorNtid, Model.GenBoeWorkspaceCreatorList, new { name = "GenBoeWorkspaceCreator", @class = "UserInformationDropDown" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Material Lead</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					<input id="supplyChainPOCMaterialsDisplayName" name="supplyChainPOCMaterialsDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Backup Material Lead</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					<input id="supplyChainPOCMaterialsBackupDisplayName" name="supplyChainPOCMaterialsBackupDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Subcontracts Lead</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					<input id="supplyChainPOCSubsDisplayName" name="supplyChainPOCSubsDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Backup Subcontracts Lead</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					<input id="supplyChainPOCSubsBackupDisplayName" name="supplyChainPOCSubsBackupDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Contracts Lead *</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.ContractsPOCNtId, Model.ContractLeadList, new { name = "ContractsPoc", @class = "UserInformationDropDown" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Backup Contracts Lead *</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.BackupContractsPOCNtId, Model.BackupContractLeadList, new { name = "BackupContractsPoc", @class = "UserInformationDropDown" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Tech Lead</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					<input id="techLeadDisplayName" name="techLeadDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">Proposal Mgr *</div>
+				<div class="form-element"></div>
+				<div class="form-element">
+					<input id="proposalMgrDisplayName" name="proposalMgrDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+				</div>
+			</div>
+		}
+	</div>
 </div>

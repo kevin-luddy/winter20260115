@@ -1007,7 +1007,7 @@ namespace IES.DataBridge.Loaders
 					{
 						// Give ProPricerXref with negative ids new ids to prevent duplicates
 						int tempId = -1;
-						foreach (var proPricerXref in saveableProPricerXrefs)
+						foreach (ProPricerRateCodeXrefModelView proPricerXref in saveableProPricerXrefs)
 						{
 							if (proPricerXref.Id < 0)
 							{
@@ -1031,7 +1031,7 @@ namespace IES.DataBridge.Loaders
 					{
 						// Give Rate Years with negative ids new ids to prevent duplicates
 						int tempId = -1;
-						foreach (var rateYear in saveableRateYears)
+						foreach (RateYearModelView rateYear in saveableRateYears)
 						{
 							if (rateYear.Id < 0)
 							{

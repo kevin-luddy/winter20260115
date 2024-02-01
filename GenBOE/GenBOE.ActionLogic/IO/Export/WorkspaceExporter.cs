@@ -419,8 +419,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 ClinDTO boe_CLIN = allClins.FirstOrDefault(i => i.Id == boe.CLINID);
                 decimal boe_HoursSum = tasks.Sum(t => t.taskElementLabors.Where(l => l.SpreadType == SpreadType.Hours && l.ValueSpread.HasValue).Sum(l => l.ValueSpread.Value));
                 decimal boe_CostSum =
-                    (decimal)(tasks.Sum(t => t.taskElementLabors.Where(l => l.SpreadType == SpreadType.Cost && l.ValueSpread.HasValue).Sum(l => l.ValueSpread.Value)))
-                    + (((decimal)(odcs.Sum(odc => odc.ODCTypes.Sum(odcTypes => odcTypes.ODCSpreads.Sum(odcSpreads => odcSpreads.CostSpreadValue))))) / 100)
+					tasks.Sum(t => t.taskElementLabors.Where(l => l.SpreadType == SpreadType.Cost && l.ValueSpread.HasValue).Sum(l => l.ValueSpread.Value))
+					+ (((decimal)(odcs.Sum(odc => odc.ODCTypes.Sum(odcTypes => odcTypes.ODCSpreads.Sum(odcSpreads => odcSpreads.CostSpreadValue))))) / 100)
                     + travelElementsSum;
                 string boe_StartDate = boe.StartDate.ToString("MM/yyyy");
                 string boe_EndDate = boe.EndDate.ToString("MM/yyyy");
@@ -1926,8 +1926,8 @@ namespace GenBOE.ActionLogic.IO.Export
             decimal boe_HoursSum = laborTasks.Sum(t => t.taskElementLabors.Where(l => l.SpreadType == SpreadType.Hours && l.ValueSpread.HasValue).Sum(l => l.ValueSpread.Value));
 
             decimal boe_CostSum =
-                (decimal)(laborTasks.Sum(t => t.taskElementLabors.Where(l => l.SpreadType == SpreadType.Cost && l.ValueSpread.HasValue).Sum(l => l.ValueSpread.Value)))
-                + (((decimal)(ODCs.Sum(odc => odc.ODCTypes.Sum(odcTypes => odcTypes.ODCSpreads.Sum(odcSpreads => odcSpreads.CostSpreadValue))))) / 100);
+				laborTasks.Sum(t => t.taskElementLabors.Where(l => l.SpreadType == SpreadType.Cost && l.ValueSpread.HasValue).Sum(l => l.ValueSpread.Value))
+				+ (((decimal)(ODCs.Sum(odc => odc.ODCTypes.Sum(odcTypes => odcTypes.ODCSpreads.Sum(odcSpreads => odcSpreads.CostSpreadValue))))) / 100);
 
             row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe_HoursSum.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
             row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe_CostSum));

@@ -2134,7 +2134,7 @@ namespace GenBOE.Tests.ActionLogic.NewValidation
         [TestMethod]
         public void PMapImport_Valid_Bucketized_Spreads_Start_End_Dates()
         {
-            var projectMapRows = new[]
+			ProjectMapModelView[] projectMapRows = new[]
                 {this.GetValidProjectMapModelView(),this.GetValidProjectMapModelView()};
 
             projectMapRows[0].StartDate = DateTime.Parse("11/02/2018");
@@ -2188,7 +2188,7 @@ namespace GenBOE.Tests.ActionLogic.NewValidation
         [TestMethod]
         public void PMapImport_InValid_Bucketized_Spreads_Start_End_Dates()
         {
-            var projectMapRows = new[]
+			ProjectMapModelView[] projectMapRows = new[]
                 {this.GetValidProjectMapModelView(),
                 this.GetValidProjectMapModelView(),
                 this.GetValidProjectMapModelView()};

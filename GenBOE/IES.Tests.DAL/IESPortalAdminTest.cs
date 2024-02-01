@@ -69,7 +69,7 @@ namespace IES.Tests
         [TestMethod]
         public void C_GetPickListItems()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -105,7 +105,7 @@ namespace IES.Tests
         [TestMethod]
         public void C_ValidatePickListItemsTest()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -244,7 +244,7 @@ namespace IES.Tests
         [TestMethod]
         public void C_ValidatePickListItemsSingleParentTest()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -389,7 +389,7 @@ namespace IES.Tests
         [TestMethod]
         public void C_ValidatePickListItemsChildrenTest()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> childrenData = new List<PickListDto>()
             {
@@ -442,7 +442,7 @@ namespace IES.Tests
         [TestMethod]
         public void C_ValidatePickListItemsMultiParentTest()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -590,7 +590,7 @@ namespace IES.Tests
         [ExpectedException(typeof(GenValidationException))]
         public void ValidatePicklistsAcrossBOEPTM_Exception1()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -629,7 +629,7 @@ namespace IES.Tests
         [ExpectedException(typeof(GenValidationException))]
         public void ValidatePicklistsAcrossBOEPTM_Exception2()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -669,7 +669,7 @@ namespace IES.Tests
         [ExpectedException(typeof(GenValidationException))]
         public void ValidatePicklistsAcrossBOEPTM_Exception3()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -707,7 +707,7 @@ namespace IES.Tests
         [TestMethod]
         public void ValidatePicklistsAcrossBOEPTM_Missing1()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -742,7 +742,7 @@ namespace IES.Tests
         [TestMethod]
         public void ValidatePicklistsAcrossBOEPTM_Missing2()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -776,7 +776,7 @@ namespace IES.Tests
         [TestMethod]
         public void ValidatePicklistsAcrossBOEPTM_Missing3()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -811,7 +811,7 @@ namespace IES.Tests
         [TestMethod]
         public void ValidatePicklistsAcrossBOEPTM_Active()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {
@@ -853,7 +853,7 @@ namespace IES.Tests
         [TestMethod]
         public void ValidatePicklistsAcrossBOEPTM()
         {
-            var sut = this.CreateSystem();
+			IESPortalAdminControllerLogic sut = this.CreateSystem();
 
             ICollection<PickListDto> data = new List<PickListDto>()
             {

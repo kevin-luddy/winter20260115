@@ -63,7 +63,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var SystemSetting =
+					SystemSettingDTO SystemSetting =
                        (from r in gbe.SystemSettings
                         where r.Key == key
                         select new SystemSettingDTO

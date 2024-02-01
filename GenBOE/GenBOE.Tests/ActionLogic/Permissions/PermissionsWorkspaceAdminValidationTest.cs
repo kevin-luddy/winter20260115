@@ -23,7 +23,7 @@ namespace GenBOE.Tests.ActionLogic.Permissions
         public void ValidateWorkspaceAdminTest()
         {
 
-            var _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
             _permissionsDTOLoader.Setup(x => x.GetWorkspacePermissions(5)).
                 Returns(new Collection<PermissionsDTO>{ 
                             new PermissionsDTO { ETIUserId = 3 , NTID = "testuser1" , Role = Role.WorkspaceAdmin, WorkspaceId = 5 },
@@ -39,7 +39,7 @@ namespace GenBOE.Tests.ActionLogic.Permissions
         public void ValidateWorkspaceAdminTest_Fail()
         {
 
-            var _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
             _permissionsDTOLoader.Setup(x => x.GetWorkspacePermissions(5)).
                 Returns(new Collection<PermissionsDTO>{ 
                             new PermissionsDTO { ETIUserId = 4 , NTID = "test.group1" , Role = Role.WorkspaceAdmin, WorkspaceId = 5 }});
@@ -53,7 +53,7 @@ namespace GenBOE.Tests.ActionLogic.Permissions
         public void ValidateWorkspaceAdminTest_OneGroup()
         {
 
-            var _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
             _permissionsDTOLoader.Setup(x => x.GetWorkspacePermissions(5)).
                 Returns(new Collection<PermissionsDTO>{ 
                             new PermissionsDTO { ETIUserId = 4 , NTID="Test.Group", Role = Role.WorkspaceAdmin, WorkspaceId = 5 }});
@@ -67,7 +67,7 @@ namespace GenBOE.Tests.ActionLogic.Permissions
         public void ValidateWorkspaceAdminTest_NullGroup()
         {
 
-            var _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
             _permissionsDTOLoader.Setup(x => x.GetWorkspacePermissions(5)).
                 Returns(new Collection<PermissionsDTO>{ 
                             new PermissionsDTO { ETIUserId = 1, NTID = "testuser1" , Role = Role.WorkspaceAdmin, WorkspaceId = 5 },
@@ -83,7 +83,7 @@ namespace GenBOE.Tests.ActionLogic.Permissions
         public void ValidateWorkspaceAdminTest_MultipleGroups()
         {
 
-            var _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> _permissionsDTOLoader = new Mock<IPermissionsDTODataLoader>();
             _permissionsDTOLoader.Setup(x => x.GetWorkspacePermissions(5)).
                 Returns(new Collection<PermissionsDTO>{ 
                             new PermissionsDTO { ETIUserId = 1 , NTID="Test.Group1", Role = Role.WorkspaceAdmin, WorkspaceId = 5 },

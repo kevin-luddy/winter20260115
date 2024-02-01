@@ -43,8 +43,8 @@ namespace GenBOE.ActionLogic.IO.Export
             
             string toReturn = string.Empty;
 
-            // Create collections of strings for each row in the export file
-            var optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
 
             Collection<RateTypeModelView> allRateTypes = inCommonMapper.GetRateTypes();
             Collection<ElementOfCostTypeModelView> allElementOfCosts = inCommonMapper.GetElementOfCostTypes();           
@@ -60,8 +60,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     });
             }
 
-            // Create collections of strings for each row in the export file
-            var worksheet = new ExcelExportWorksheet();
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
 
             if (resources != null)
             {

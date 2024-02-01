@@ -377,11 +377,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         private Mock<IPermissionsDTODataLoader> permissionsLoader = new Mock<IPermissionsDTODataLoader>();
         private Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
         private Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-        private Mock<IBOEStateMachine> boeStateMachine = new Mock<IBOEStateMachine>();
-        private Mock<IBoeDTODataLoader> boeDtoDataLoader = new Mock<IBoeDTODataLoader>();
         private Mock<IBOEFormIBOEDTODataLoader> iboeFormDataLoader = new Mock<IBOEFormIBOEDTODataLoader>(MockBehavior.Loose);
         private Mock<IBOEFormPBOEDTODataLoader> pboeFormDataLoader = new Mock<IBOEFormPBOEDTODataLoader>(MockBehavior.Loose);
-        private Mock<IPerformingOrgDTODataLoader> performingOrgDTODataLoader = new Mock<IPerformingOrgDTODataLoader>();
         private Mock<IResourceDTODataLoader> resourceDTODataLoader = new Mock<IResourceDTODataLoader>();
         private Mock<ITMResourceRateDTODataLoader> tmResourceRateDTODataLoader = new Mock<ITMResourceRateDTODataLoader>();
         Mock<TMCalculator> _TMCalculator;
@@ -462,7 +459,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             iboeFormDataLoader.Setup(x => x.GetById(It.IsAny<int>())).Returns(new BOEFormIBOEDTO() { Id = 1, FormName = "1" }).Verifiable();
             iboeFormDataLoader.Setup(x => x.Save(It.IsAny<BOEFormIBOEDTO>())).Verifiable();
 
-            var mv = new BOEFormIBOEModelView(new BOEFormIBOEDTO()) { BOEFormId = 1 };
+			BOEFormIBOEModelView mv = new BOEFormIBOEModelView(new BOEFormIBOEDTO()) { BOEFormId = 1 };
             sut.SaveBOEFormIBOE(mv, It.IsInRange<int>(1, int.MaxValue, Range.Inclusive));
 
             iboeFormDataLoader.Verify(x => x.GetById( It.IsAny<int>()), Times.Once());
@@ -487,7 +484,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             pboeFormDataLoader.Setup(x => x.GetById(It.IsAny<int>())).Returns(new BOEFormPBOEDTO() { Id = 1, FormName = "1" });
             pboeFormDataLoader.Setup(x => x.Save(It.IsAny<BOEFormPBOEDTO>())).Verifiable();
 
-            var mv = new BOEFormPBOEModelView(new BOEFormPBOEDTO()) { BOEFormId = 1 };
+			BOEFormPBOEModelView mv = new BOEFormPBOEModelView(new BOEFormPBOEDTO()) { BOEFormId = 1 };
             sut.SaveBOEFormPBOE(mv, It.IsAny<int>());
 
             pboeFormDataLoader.Verify(x => x.GetById(It.IsAny<int>()), Times.Once());
@@ -503,7 +500,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             iboeFormDataLoader.Setup(x => x.Save(It.IsAny<BOEFormIBOEDTO>())).Verifiable();
 
-            var mv = new BOEFormIBOEModelView (    new BOEFormIBOEDTO()   );
+			BOEFormIBOEModelView mv = new BOEFormIBOEModelView (    new BOEFormIBOEDTO()   );
             sut.SaveBOEFormIBOE(mv, It.IsAny<int>());
 
             iboeFormDataLoader.Verify(x => x.Save(It.IsAny<BOEFormIBOEDTO>()), Times.Once());
@@ -518,7 +515,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             pboeFormDataLoader.Setup(x => x.Save(It.IsAny<BOEFormPBOEDTO>())).Verifiable();
 
-            var mv = new BOEFormPBOEModelView(new BOEFormPBOEDTO());
+			BOEFormPBOEModelView mv = new BOEFormPBOEModelView(new BOEFormPBOEDTO());
             sut.SaveBOEFormPBOE(mv, It.IsAny<int>());
 
             pboeFormDataLoader.Verify(x => x.Save(It.IsAny<BOEFormPBOEDTO>()), Times.Once());

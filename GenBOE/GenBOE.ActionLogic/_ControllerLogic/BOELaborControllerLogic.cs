@@ -367,7 +367,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             if (modelView != null)
             {
-                FullBoe boe = factory.CreateFullBoe((int)modelView.TaskElementData.BOEID);
+                FullBoe boe = factory.CreateFullBoe(modelView.TaskElementData.BOEID);
 
                 // Validate Task Data, ignoring deleted rows
                 validationErrors = this.ValidateLaborTaskDataLabor(ws, boe, modelView);
@@ -2074,7 +2074,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 MOQTypeTableCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.MoqTypeTable),
                 LaborCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes),
                 MOQTypes = boe.MoqTypeSelections.Where(x => x.TaskId == dto.Id).ToList()
-            };
+			};
 
             if (dto.CustomFieldValueContainers != null)
             {
@@ -2284,8 +2284,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         resourceToAdd.HourSpreadLocked = labor.HourSpreadLocked;
                         resourceToAdd.PercentSpreadLocked = labor.PercentSpreadLocked;
                     }
-                    resourceToAdd.WBSID = labor.WBSID > (int?)0 ? labor.WBSID : null;
-                    resourceToAdd.CLINID = labor.CLINID > (int?)0 ? labor.CLINID : null;
+                    resourceToAdd.WBSID = labor.WBSID > 0 ? labor.WBSID : null;
+                    resourceToAdd.CLINID = labor.CLINID > 0 ? labor.CLINID : null;
                     resourceToAdd.LaborTypeOrder = labor.LaborTypeOrder;
                     resourceToAdd.Updateable = UpdateType.Upsert;
 

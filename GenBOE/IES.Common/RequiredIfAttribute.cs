@@ -56,13 +56,13 @@ namespace IES.Common
 
         public override IEnumerable<ModelValidationResult> Validate(object container)
         {
-            // get a reference to the property this validation depends upon
-            var field = Metadata.ContainerType.GetProperty(Attribute.DependentUpon);
+			// get a reference to the property this validation depends upon
+			System.Reflection.PropertyInfo field = Metadata.ContainerType.GetProperty(Attribute.DependentUpon);
 
             if (field != null)
             {
-                // get the value of the dependent property
-                var value = field.GetValue(container, null);
+				// get the value of the dependent property
+				object value = field.GetValue(container, null);
 
                 // compare the value against the target value
                 if (value != null)

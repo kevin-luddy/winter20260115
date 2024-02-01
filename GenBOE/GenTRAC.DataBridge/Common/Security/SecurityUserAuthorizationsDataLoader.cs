@@ -50,7 +50,7 @@ namespace GenTRAC.DataBridge.Common.Security
             if (inUserDTO != null)
             {
                 this.log.Info("BEGIN GetPermissionsForUser for user " + inUserDTO.Ntid);
-                var groups = this.activeDirectoryUtilities.GetGroupsForUser(inUserDTO.Ntid);
+				ICollection<GroupData> groups = this.activeDirectoryUtilities.GetGroupsForUser(inUserDTO.Ntid);
                 List<string> groupNames = groups != null ? groups.Select(x => x.Ntid).ToList() : new List<string>();
                 groupNames.Add(inUserDTO.Ntid);
 

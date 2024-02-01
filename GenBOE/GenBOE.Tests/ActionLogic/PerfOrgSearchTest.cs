@@ -33,7 +33,7 @@ namespace GenBOE.Tests.ActionLogic
             };
             PerfOrgLoader.Setup(x=>x.GetGlobalPerformingOrgs()).Returns(DefaultPerfOrgs);
 
-            var sut = new PerfOrgSearch(PerfOrgLoader.Object);
+			PerfOrgSearch sut = new PerfOrgSearch(PerfOrgLoader.Object);
             Collection<PerformingOrgDTO> searchResults = sut.SearchDefaultPerfOrgs("GLOB");
             Collection<PerformingOrgDTO> searchResults2 = sut.SearchDefaultPerfOrgs("glob");
             Collection<PerformingOrgDTO> searchResults3 = sut.SearchDefaultPerfOrgs("GlOb");
@@ -59,7 +59,7 @@ namespace GenBOE.Tests.ActionLogic
             };
             PerfOrgLoader.Setup(x => x.GetGlobalPerformingOrgs()).Returns(DefaultPerfOrgs);
 
-            var sut = new PerfOrgSearch(PerfOrgLoader.Object);
+			PerfOrgSearch sut = new PerfOrgSearch(PerfOrgLoader.Object);
             Collection<PerformingOrgDTO> searchResults = sut.SearchDefaultPerfOrgs("BLAH");
 
             // BLAH was not found

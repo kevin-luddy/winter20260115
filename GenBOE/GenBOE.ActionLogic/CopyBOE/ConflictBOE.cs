@@ -37,7 +37,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public ICollection<BoesWithConflicts> CopyBOEConflicts(FullBoe sourceBOE, FullBoe destinationBOE, ICollection<int> selectedTaskElementsToCopy)
         {
-            var toReturn = new Collection<BoesWithConflicts>();
+			Collection<BoesWithConflicts> toReturn = new Collection<BoesWithConflicts>();
 
             if (sourceBOE == null)
             {
@@ -49,28 +49,28 @@ namespace GenBOE.ActionLogic.CopyBOE
                 throw new ArgumentNullException(nameof(destinationBOE));
             }
 
-            // BOE Copy
-            var destinationWorkspace = destinationBOE.Workspace;            
-            
-            // Get source task elements
-            var taskElementsToCopy = sourceBOE.TaskElements;
+			// BOE Copy
+			FullWorkspace destinationWorkspace = destinationBOE.Workspace;
+
+			// Get source task elements
+			IReadOnlyCollection<BoeTaskElementDTO> taskElementsToCopy = sourceBOE.TaskElements;
             // Only consider individual task elements to be copied.
             taskElementsToCopy = taskElementsToCopy.Where(id => selectedTaskElementsToCopy.Contains(id.Id)).ToCollection();
-            // Get collection of WS Vars in the destination workspace
-            var destinationWorkspaceVariables = destinationBOE.WorkspaceVariables;  
+			// Get collection of WS Vars in the destination workspace
+			IReadOnlyCollection<WorkspaceVariableDTO> destinationWorkspaceVariables = destinationBOE.WorkspaceVariables;  
 
-            foreach (var taskElementToCopy in taskElementsToCopy)
+            foreach (BoeTaskElementDTO taskElementToCopy in taskElementsToCopy)
             {
-                // Collection to track conflict results
-                var taskConflicts = new Collection<CopyBOEConflictResults>();
+				// Collection to track conflict results
+				Collection<CopyBOEConflictResults> taskConflicts = new Collection<CopyBOEConflictResults>();
                 // Get any workspace variables that are associated with the taskElementToCopy.
-                ICollection<WorkspaceVariableDTO> sourceTaskElementWorkspaceVariables = sourceBOE.WorkspaceVariables.Where(i => taskElementToCopy.WorkspaceVariableIDs.Contains(i.Id)).ToCollection<WorkspaceVariableDTO>();                
-                var conflictedWorkspaceVariables = this.GetWorkspaceVariableConflicts(sourceTaskElementWorkspaceVariables, destinationWorkspaceVariables);
-                var circularReferencedWorkspaceVariables = this.GetWorkspaceVariableCircularReferences(destinationBOE.Id, taskElementToCopy, sourceTaskElementWorkspaceVariables, destinationWorkspaceVariables, destinationWorkspace);
-                var circularReferencedOrdinaryVariables = this.GetOrdinaryVariableCircularReferences(destinationBOE.Id, taskElementToCopy, destinationWorkspaceVariables, destinationWorkspace);
-                var conflictedResources = this.GetResourceConflicts(taskElementToCopy, destinationWorkspace.ResourcesForWsResourceListId);
-                var conflictedPerformingOrgs = this.GetPerformingOrgConflicts(taskElementToCopy, destinationWorkspace.PerformingOrgsForWsList);
-                var uniqueTaskID = this.GetTaskIDUniqueness(taskElementToCopy, destinationBOE);
+                ICollection<WorkspaceVariableDTO> sourceTaskElementWorkspaceVariables = sourceBOE.WorkspaceVariables.Where(i => taskElementToCopy.WorkspaceVariableIDs.Contains(i.Id)).ToCollection<WorkspaceVariableDTO>();
+				ICollection<WorkspaceVariableDTO> conflictedWorkspaceVariables = this.GetWorkspaceVariableConflicts(sourceTaskElementWorkspaceVariables, destinationWorkspaceVariables);
+				ICollection<WorkspaceVariableDTO> circularReferencedWorkspaceVariables = this.GetWorkspaceVariableCircularReferences(destinationBOE.Id, taskElementToCopy, sourceTaskElementWorkspaceVariables, destinationWorkspaceVariables, destinationWorkspace);
+				ICollection<OrdinaryVariableDto> circularReferencedOrdinaryVariables = this.GetOrdinaryVariableCircularReferences(destinationBOE.Id, taskElementToCopy, destinationWorkspaceVariables, destinationWorkspace);
+				ICollection<ResourceDTO> conflictedResources = this.GetResourceConflicts(taskElementToCopy, destinationWorkspace.ResourcesForWsResourceListId);
+				ICollection<PerformingOrgDTO> conflictedPerformingOrgs = this.GetPerformingOrgConflicts(taskElementToCopy, destinationWorkspace.PerformingOrgsForWsList);
+				string uniqueTaskID = this.GetTaskIDUniqueness(taskElementToCopy, destinationBOE);
 
                 // Denote Workspace variable conflicts if there are any
                 if (conflictedWorkspaceVariables.Any() && !taskConflicts.Contains(CopyBOEConflictResults.WorkSpaceVariables))
@@ -142,8 +142,8 @@ namespace GenBOE.ActionLogic.CopyBOE
 
         private ICollection<ResourceDTO> GetResourceConflicts(BoeTaskElementDTO inTaskElement, IReadOnlyCollection<ResourceDTO> inDestinationResources)
         {
-            // Get resources used by the tasks that have matching resources in the new workspace
-            var distinctResourceIDs = (from r in inTaskElement.taskElementLabors
+			// Get resources used by the tasks that have matching resources in the new workspace
+			List<int> distinctResourceIDs = (from r in inTaskElement.taskElementLabors
                                        where r.ResourceID.HasValue
                                        select r.ResourceID.Value).Distinct().ToList();
 
@@ -185,13 +185,13 @@ namespace GenBOE.ActionLogic.CopyBOE
             IReadOnlyCollection<WorkspaceVariableDTO> inDestinationWorkspaceVariables,
             FullWorkspace workspace)
         {
-            var workspaceVariableNames = inTaskElementWorkspaceVariables.Select(i => i.WorkspaceVariableName.ToLower());
+			IEnumerable<string> workspaceVariableNames = inTaskElementWorkspaceVariables.Select(i => i.WorkspaceVariableName.ToLower());
 
-            var ordinaryVariableNames = inTaskElement.OrdinaryVariables.Select(o => o.OrdinaryVariableName.ToLower());
+			IEnumerable<string> ordinaryVariableNames = inTaskElement.OrdinaryVariables.Select(o => o.OrdinaryVariableName.ToLower());
 
-            var allVariableNames = workspaceVariableNames.Union(ordinaryVariableNames);
-            
-            var cache = new VariableCircularReferenceCheckerCache();
+			IEnumerable<string> allVariableNames = workspaceVariableNames.Union(ordinaryVariableNames);
+
+			VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
 
             return (from w in inDestinationWorkspaceVariables
                    where w.ValueType == VarValueType.SumOfBOEs &&
@@ -206,13 +206,13 @@ namespace GenBOE.ActionLogic.CopyBOE
             IReadOnlyCollection<WorkspaceVariableDTO> inDestinationWorkspaceVariables,
             FullWorkspace destinationWorkspace)
         {
-            var workspaceVariableNames = inDestinationWorkspaceVariables.Select(w => w.WorkspaceVariableName.ToLower());
+			IEnumerable<string> workspaceVariableNames = inDestinationWorkspaceVariables.Select(w => w.WorkspaceVariableName.ToLower());
 
-            var ordinaryVariables = from o in inTaskElement.OrdinaryVariables
+			IEnumerable<OrdinaryVariableDto> ordinaryVariables = from o in inTaskElement.OrdinaryVariables
                                     where !workspaceVariableNames.Contains(o.OrdinaryVariableName.ToLower())
                                     select o;
 
-            var cache = new VariableCircularReferenceCheckerCache();
+			VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
 
             return (from o in ordinaryVariables
                    where o.ValueType == VarValueType.SumOfBOEs && this._VariableCircularReferenceChecker.OrdinaryVariablesCreateCircularReference(cache, inDestinationBOEID, new Collection<OrdinaryVariableDto> { o }, destinationWorkspace).Any()
@@ -224,22 +224,22 @@ namespace GenBOE.ActionLogic.CopyBOE
             string taskID = string.Empty;
             if (inTaskElement.BOETaskID != null)
             {
-                var matchingTaskID = (from t in inDestinationBOE.TaskElements
+				bool matchingTaskID = (from t in inDestinationBOE.TaskElements
                                       where t.BOETaskID != null &&
                                             t.BOETaskID.Equals(inTaskElement.BOETaskID, StringComparison.CurrentCulture)
                                       select t).Any();
 
-                var matchingTaskIDForODC = (from t in inDestinationBOE.OtherDirectCosts
+				bool matchingTaskIDForODC = (from t in inDestinationBOE.OtherDirectCosts
                                             where t.TaskID != null &&
                                                   t.TaskID.Equals(inTaskElement.BOETaskID, StringComparison.CurrentCulture)
                                             select t).Any();
 
-                var matchingTaskIDForTravel = (from t in inDestinationBOE.Travels
+				bool matchingTaskIDForTravel = (from t in inDestinationBOE.Travels
                                                where t.TaskID != null &&
                                                      t.TaskID.Equals(inTaskElement.BOETaskID, StringComparison.CurrentCulture)
                                                select t).Any();
 
-                var matchingTaskIDForMaterial = (from t in inDestinationBOE.Materials
+				bool matchingTaskIDForMaterial = (from t in inDestinationBOE.Materials
                                                  where t.TaskID != null &&
                                                        t.TaskID.Equals(inTaskElement.BOETaskID, StringComparison.CurrentCulture)
                                                  select t).Any();

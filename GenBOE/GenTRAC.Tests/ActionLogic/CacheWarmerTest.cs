@@ -32,7 +32,7 @@ namespace GenTRAC.Tests.ActionLogic
         {
             this.userMapper = new Mock<ICacheWarmingMapper>();
 
-            var warmer = new CacheWarmer(this.userMapper.Object);
+            CacheWarmer warmer = new CacheWarmer(this.userMapper.Object);
             return warmer;
         }
 
@@ -44,7 +44,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void TestDoWarm()
         {
-            var warmer = this.CreateSystem();
+            CacheWarmer warmer = this.CreateSystem();
 
             warmer.DoWarmCache();
 

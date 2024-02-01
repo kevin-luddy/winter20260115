@@ -88,7 +88,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             ICollection<RteCustomTemplateSourceModelView> sources = CreateSources();
             ICollection<RTECustomTemplateQuestionAnswerModelView> answers = CreateAnswers();
-            var sut = CreateSystem();
+			GenBOEControllerLogic sut = CreateSystem();
 
             ICollection<ValidationMessage> messages = sut.ValidateRteAnswers(answers, sources, 2);
 
@@ -103,7 +103,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             ICollection<RteCustomTemplateSourceModelView> sources = CreateSources();
             ICollection<RTECustomTemplateQuestionAnswerModelView> answers = CreateAnswers();
-            var sut = CreateSystem();
+			GenBOEControllerLogic sut = CreateSystem();
             answers.First().AnswerText = null;
 
             ICollection<ValidationMessage> messages = sut.ValidateRteAnswers(answers, sources, 200);
@@ -119,7 +119,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             ICollection<RteCustomTemplateSourceModelView> sources = CreateSources();
             ICollection<RTECustomTemplateQuestionAnswerModelView> answers = CreateAnswers();
-            var sut = CreateSystem();
+			GenBOEControllerLogic sut = CreateSystem();
             
             ICollection<ValidationMessage> messages = sut.ValidateRteAnswers(answers, sources, 200);
 

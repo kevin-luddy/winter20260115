@@ -31,7 +31,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllUserIdsTest()
         {
-            var sut = this.CreateSystem();
+			UserLoader sut = this.CreateSystem();
 
             ICollection<int> beforeUserIDs = sut.GetAllIds();
             this.testData.GetUser(true);
@@ -46,7 +46,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllUsersTest()
         {
-            var sut = this.CreateSystem();
+			UserLoader sut = this.CreateSystem();
 
             UserDTO testUser = this.testData.GetUser();
 
@@ -66,7 +66,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SaveUserAndGetUserByID()
         {
-            var sut = this.CreateSystem();
+			UserLoader sut = this.CreateSystem();
 
             string userIdentifier = TestData.CreateRandomWord(4);
             UserDTO newUser = new UserDTO()
@@ -112,11 +112,11 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetUserByNtidAndDomainTest()
         {
-            var sut = this.CreateSystem();
+			UserLoader sut = this.CreateSystem();
 
             UserDTO newUser = this.testData.GetUser(true);
 
-            var toTest = sut.GetByNtid(newUser.Ntid);
+			UserDTO toTest = sut.GetByNtid(newUser.Ntid);
 
             Assert.AreEqual(newUser.Id, toTest.Id);
             Assert.AreEqual(newUser.DisplayName, toTest.DisplayName);
@@ -135,11 +135,11 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllGroupIds()
         {
-            var sut = this.CreateSystem();
+			UserLoader sut = this.CreateSystem();
 
             // create a group user
             this.testData.GetUser(true, null, true);
-            var toTest = sut.GetAllGroupIds();
+			ICollection<int> toTest = sut.GetAllGroupIds();
 
             Assert.IsTrue(toTest.Any());
         }
@@ -150,7 +150,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetUsersOnline()
         {
-            var sut = this.CreateSystem();
+			UserLoader sut = this.CreateSystem();
 
             UsersOnlineDTO expectedValue = new UsersOnlineDTO();
 
@@ -168,7 +168,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [ExpectedException(typeof(ArgumentNullException))]
         public void L_GetUserByNtid_Exception1()
         {
-            var sut = this.CreateSystem();
+			UserLoader sut = this.CreateSystem();
             sut.GetByNtid(null);
         }
 

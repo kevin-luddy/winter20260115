@@ -77,7 +77,7 @@ namespace IES.Common.OfficeUtilities
                     docBytes = new byte[0];
                 }
 
-                mem.Write(docBytes, 0, (int)docBytes.Length);
+                mem.Write(docBytes, 0, docBytes.Length);
 
                 if (exportFormat != null)
                 {

@@ -301,15 +301,23 @@ namespace GenTRAC.Tests.DAL.Loader
 
             this.testData.GetProposalPermission(true, permission);
 
-            permission.Role = PtmRole.SupplyChainPOCMatl;
+			permission.Role = PtmRole.SupplyChainPOCMatl;
 
-            this.testData.GetProposalPermission(true, permission);
+			this.testData.GetProposalPermission(true, permission);
 
-            permission.Role = PtmRole.SupplyChainPOCSubs;
+			permission.Role = PtmRole.BackupMaterialLead;
 
-            this.testData.GetProposalPermission(true, permission);
+			this.testData.GetProposalPermission(true, permission);
 
-            ICollection<EmailInformationDto> emails = sut.GetAllEmailsToBeSent(null);
+			permission.Role = PtmRole.SupplyChainPOCSubs;
+
+			this.testData.GetProposalPermission(true, permission);
+
+			permission.Role = PtmRole.BackupSubcontractsLead;
+
+			this.testData.GetProposalPermission(true, permission);
+
+			ICollection<EmailInformationDto> emails = sut.GetAllEmailsToBeSent(null);
 
             Assert.IsTrue(emails.Any(e => e.ProposalId == testProposal.Id && e.ProposalEmailType == EmailType.CertificationTimelineEmail));
         }

@@ -31,7 +31,7 @@ namespace GenBOE.ActionLogic.ValidationAttributes
 
         public override IEnumerable<ModelClientValidationRule> GetClientValidationRules()
         {
-            var rule = new ModelClientValidationRule
+			ModelClientValidationRule rule = new ModelClientValidationRule
             {
                 ErrorMessage = this._message,
                 ValidationType = "server"

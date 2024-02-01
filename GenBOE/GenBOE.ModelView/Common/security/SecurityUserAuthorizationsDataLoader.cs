@@ -45,10 +45,10 @@ namespace GenBOE.DataBridge.Common
             // Initialize result list with the "none" role, every user gets this.
             List<SecurityPermissionsResponse> permissionsToReturn = new List<SecurityPermissionsResponse> { new SecurityPermissionsResponse(Role.None, null, null) };
 
-            var groups = this.activeDirectoryUtilities.GetGroupsForUser(inUserNTID);
+			ICollection<GroupData> groups = this.activeDirectoryUtilities.GetGroupsForUser(inUserNTID);
             using (StopwatchTimer sw = new StopwatchTimer("GetPermissionsForUser for user " + inUserNTID, this._log))
             {
-                var groupNames = groups != null ? groups.Select(x => x.Ntid) : new List<string>();
+				IEnumerable<string> groupNames = groups != null ? groups.Select(x => x.Ntid) : new List<string>();
 
                 using (StopwatchTimer sw2 = new StopwatchTimer("DB call in GetPermissionsForUser for user " + inUserNTID, this._log))
                 {

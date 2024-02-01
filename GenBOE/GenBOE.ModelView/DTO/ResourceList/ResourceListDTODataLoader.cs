@@ -31,7 +31,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var resourceList =
+					ResourceListDTO resourceList =
                        (from r in gbe.ResourceLists
                         where r.ResourceListID == inResourceListID
                         select new ResourceListDTO

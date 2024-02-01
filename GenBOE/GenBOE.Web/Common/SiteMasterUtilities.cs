@@ -98,11 +98,13 @@ namespace GenBOE.Web.Common
 		/// <summary>
 		/// Sets the Cookie session on whether this ECI Banner should show up every browser session
 		/// </summary>
-		private static void CreateEciForbiddenCookie()
+		private static HttpCookie CreateEciForbiddenCookie()
 		{
 			HttpCookie cookie = HttpContext.Current.Request.Cookies[WebConstants.ECI_FORBIDDEN_BANNER] ?? new HttpCookie(WebConstants.ECI_FORBIDDEN_BANNER);
 			cookie.Values[WebConstants.ECI_FORBIDDEN_BANNER] = DateTime.Now.ToShortDateString();
 			HttpContext.Current.Response.Cookies.Add(cookie);
+
+			return cookie;
 		}
 
 		/// <summary>
@@ -121,8 +123,10 @@ namespace GenBOE.Web.Common
 				{
 					displayBanner = true;
 
-					CreateEciForbiddenCookie();
+					cookie = CreateEciForbiddenCookie();
 				}
+
+				cookie.Expires = DateTime.Now.AddMinutes(30.0);
 			}
 
 			return displayBanner;

@@ -93,12 +93,12 @@ namespace GenBOE.ActionLogic.Validation
                 return true;
             }
 
-            // Get all BOEs that are referenced by variables within task elements under
-            // the current BOE
-            var referencedBOEIDs = this.GetBOEIDsReferencedByBOEID(checkingBOE, inMemoryWorkspaceVariables, inMemoryWBS, inMemoryBOE, workspace);
+			// Get all BOEs that are referenced by variables within task elements under
+			// the current BOE
+			ICollection<int> referencedBOEIDs = this.GetBOEIDsReferencedByBOEID(checkingBOE, inMemoryWorkspaceVariables, inMemoryWBS, inMemoryBOE, workspace);
 
             // Recurse back into this function for each BOE referenced by the current BOE
-            foreach (var referencedBOEID in referencedBOEIDs)
+            foreach (int referencedBOEID in referencedBOEIDs)
             {
                 FullBoe refBoe = workspace.Boes.First(i => i.Id == referencedBOEID); 
                 // Recurse
@@ -137,11 +137,11 @@ namespace GenBOE.ActionLogic.Validation
             ICollection<WorkspaceVariableDTO> inMemoryWorkspaceVariables,
             FullWorkspace workspace)
         {
-            // Get all BOEs that reference the workspace variable
-            var originalBOEIDs = this._WorkspaceVariableDTODataLoader.GetBOEIDsUsingWorkspaceVarID(originalWorkspaceVariableID);
+			// Get all BOEs that reference the workspace variable
+			Collection<int> originalBOEIDs = this._WorkspaceVariableDTODataLoader.GetBOEIDsUsingWorkspaceVarID(originalWorkspaceVariableID);
 
             // Check each BOE recursively for circular references when adding a connection TO checkingBOEID
-            foreach (var originalBOEID in originalBOEIDs)
+            foreach (int originalBOEID in originalBOEIDs)
             {
                 if (this.BOECreatesCircularReferenceRecursive(workspace, cache, originalBOEID, checkingBOE, inMemoryWorkspaceVariables, null, null))
                 {
@@ -167,11 +167,11 @@ namespace GenBOE.ActionLogic.Validation
             OrdinaryVariableDto checkingOrdinaryVariable,
             FullWorkspace workspace)
         {
-            // Get all BOEs that the ordinary variable references
-            var referencedBOEIDs = this.GetBOEIDsReferencedByOrdinaryVariable(checkingOrdinaryVariable, workspace);
+			// Get all BOEs that the ordinary variable references
+			ICollection<int> referencedBOEIDs = this.GetBOEIDsReferencedByOrdinaryVariable(checkingOrdinaryVariable, workspace);
 
             // Check each BOE recursively for circular references
-            foreach (var referencedBOEID in referencedBOEIDs)
+            foreach (int referencedBOEID in referencedBOEIDs)
             {
                 FullBoe refBoe = workspace.Boes.FirstOrDefault(i => i.Id == referencedBOEID);
                 if (refBoe != null)
@@ -236,11 +236,11 @@ namespace GenBOE.ActionLogic.Validation
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
-            // Get all BOEs that the workspace variable references
-            var referencedBOEIDs = this.GetBOEIDsReferencedByWorkspaceVariable(checkingWorkspaceVariable, workspace);
+			// Get all BOEs that the workspace variable references
+			ICollection<int> referencedBOEIDs = this.GetBOEIDsReferencedByWorkspaceVariable(checkingWorkspaceVariable, workspace);
 
             // Check each BOE recursively for circular references
-            foreach (var referencedBOEID in referencedBOEIDs)
+            foreach (int referencedBOEID in referencedBOEIDs)
             {
                 FullBoe refBoe = workspace.Boes.First(i => i.Id == referencedBOEID); 
                 if (this.BOECreatesCircularReferenceRecursive(workspace, cache, originalBOEID, refBoe, null, null, null))
@@ -301,21 +301,21 @@ namespace GenBOE.ActionLogic.Validation
             // Only check if the saved WBS's Number is different from the one passed in
             if (wbs != null && !wbs.WbsNumber.Equals(newWBSNumber.Trim(), StringComparison.CurrentCultureIgnoreCase))
             {
-                // Get all BOEs directly in the WBS being renamed
-                var boesInWBS = ws.Boes.Where(x => x.WBSID == wbs.Id);
+				// Get all BOEs directly in the WBS being renamed
+				IEnumerable<FullBoe> boesInWBS = ws.Boes.Where(x => x.WBSID == wbs.Id);
 
-                // Get the new parent WBSs, after the rename
-                var newParentWBS = wbs.AllParentWbs;
+				// Get the new parent WBSs, after the rename
+				ICollection<FullWbs> newParentWBS = wbs.AllParentWbs;
 
-                // Get all BOEs that are referencing any of the variables in the two above collections
-                var originBOEIDsToCheck = (from w in newParentWBS
+				// Get all BOEs that are referencing any of the variables in the two above collections
+				IEnumerable<int> originBOEIDsToCheck = (from w in newParentWBS
                                            from b in this.GetAllBOEIDsReferencingWBS(w, ws)
                                            select b).Distinct();
 
                 // Check connections from each of the BOEs in the collection above, to each of the BOEs that are inside of the WBS being moved
-                foreach (var originBOEID in originBOEIDsToCheck)
+                foreach (int originBOEID in originBOEIDsToCheck)
                 {
-                    foreach (var destBoe in boesInWBS)
+                    foreach (FullBoe destBoe in boesInWBS)
                     {
                         // If any circular reference is found, return true
                         if (this.BOECreatesCircularReferenceRecursive(ws, cache, originBOEID, destBoe, null, inMemoryWBS, null))
@@ -346,12 +346,12 @@ namespace GenBOE.ActionLogic.Validation
                 throw new ArgumentNullException(nameof(workspace));
             }
 
-            var toReturn = new List<int>();
+			List<int> toReturn = new List<int>();
             
             if (checkingWorkspaceVariable != null)
             {
-                // Get all BOEs in the workspace
-                var checkingBOEs = workspace.Boes.Where(b=>!b.IsMultiClinWbs);
+				// Get all BOEs in the workspace
+				IEnumerable<FullBoe> checkingBOEs = workspace.Boes.Where(b=>!b.IsMultiClinWbs);
 
                 // If the variable is in use, we need to check the BOEs that are referencing it against each BOE
                 // in the workspace to find possible circular references.
@@ -359,7 +359,7 @@ namespace GenBOE.ActionLogic.Validation
                 {
                     // For each BOE in the workspace, check all of the BOEs that reference this variable against
                     // the BOE for circular references.
-                    foreach (var checkingBOE in checkingBOEs)
+                    foreach (FullBoe checkingBOE in checkingBOEs)
                     {
                         // If there are no circular references possible between the BOEs referencing this variable
                         // and the current BOE being checked, add that BOE to the return collection as valid.
@@ -393,13 +393,13 @@ namespace GenBOE.ActionLogic.Validation
                 throw new ArgumentNullException(nameof(ws));
             }
 
-            var toReturn = new List<int>();
+			List<int> toReturn = new List<int>();
 
-            // Get all BOEs in the workspace
-            var checkingBOEs = ws.Boes;
+			// Get all BOEs in the workspace
+			IReadOnlyCollection<FullBoe> checkingBOEs = ws.Boes;
 
             // If the variable is not in use, all BOEs in the Workspace are valid selections 
-            foreach (var boe in checkingBOEs)
+            foreach (FullBoe boe in checkingBOEs)
             {
                 toReturn.Add(boe.Id);
             }
@@ -427,17 +427,17 @@ namespace GenBOE.ActionLogic.Validation
             if (checkingWorkspaceVariables.Any())
             {
                 // Iterate over each workspace variable in the workspace
-                foreach (var checkingWorkspaceVariable in checkingWorkspaceVariables)
+                foreach (WorkspaceVariableDTO checkingWorkspaceVariable in checkingWorkspaceVariables)
                 {
                     // If the variable is in use, we need to check the BOEs that are referencing it against each BOE
                     // that it has selected to Sum.
                     if (checkingWorkspaceVariable.InUse && checkingWorkspaceVariable.Id > 0)
                     {
-                        // Get all BOEs referenced by this variable in its SelectedBOEsToSum collection
-                        var referencedBOEIDs = this.GetBOEIDsReferencedByWorkspaceVariable(checkingWorkspaceVariable, workspace);
+						// Get all BOEs referenced by this variable in its SelectedBOEsToSum collection
+						ICollection<int> referencedBOEIDs = this.GetBOEIDsReferencedByWorkspaceVariable(checkingWorkspaceVariable, workspace);
 
                         // For each referenced BOE
-                        foreach (var referencedBOEID in referencedBOEIDs)
+                        foreach (int referencedBOEID in referencedBOEIDs)
                         {
                             FullBoe refBoe = FullWorkspaceHelper.GetBoeById(workspace, referencedBOEID); 
 
@@ -487,11 +487,11 @@ namespace GenBOE.ActionLogic.Validation
             // Only check if the BOE's WBSID is different from the one passed in
             if (boe.WBSID.HasValue && boe.WBSID.Value != wbs.Id)
             {
-                // Get all parents of the WBS
-                var parentWBSs = wbs.AllParentWbs;
+				// Get all parents of the WBS
+				ICollection<FullWbs> parentWBSs = wbs.AllParentWbs;
 
-                // Get all BOEs that are referencing any of this WBS's parent WBSs
-                var originBOEIDsToCheck = (from w in parentWBSs
+				// Get all BOEs that are referencing any of this WBS's parent WBSs
+				IEnumerable<int> originBOEIDsToCheck = (from w in parentWBSs
                                            from b in this.GetAllBOEIDsReferencingWBS(w, ws)
                                            select b).Distinct();
 
@@ -499,7 +499,7 @@ namespace GenBOE.ActionLogic.Validation
                 originBOEIDsToCheck = originBOEIDsToCheck.Union(this.GetAllBOEIDsReferencingWBS(wbs, ws));
 
                 // Check all BOEs referencing the WBS against the given BOE for validity
-                foreach (var checkingBOE in originBOEIDsToCheck)
+                foreach (int checkingBOE in originBOEIDsToCheck)
                 {
                     // If any BOE creates a circular reference then this WBS is not valid for a move
                     if (this.BOECreatesCircularReferenceRecursive(boe.Workspace, cache, checkingBOE, boe, null, null, inMemoryBOE))
@@ -539,13 +539,13 @@ namespace GenBOE.ActionLogic.Validation
             // Only check if the BOE's CLINID is different from the one passed in, or if it's getting assigned for the first time
             if (Boe.CLINID != Clin.Id)
             {
-                // Get the CLIN
+				// Get the CLIN
 
-                // Get all BOEs that are referencing the current CLIN
-                var allBOEsReferencingCLIN = FullWorkspaceHelper.GetAllBOEIDsReferencingCLIN(workspace, Clin);
+				// Get all BOEs that are referencing the current CLIN
+				ICollection<int> allBOEsReferencingCLIN = FullWorkspaceHelper.GetAllBOEIDsReferencingCLIN(workspace, Clin);
 
                 // Check all BOEs referencing the CLIN against the given BOE for validity
-                foreach (var checkingBOE in allBOEsReferencingCLIN)
+                foreach (int checkingBOE in allBOEsReferencingCLIN)
                 {
                     // If any BOE creates a circular reference then this CLIN is not valid for a move
                     if (this.BOECreatesCircularReferenceRecursive(workspace, cache, checkingBOE, Boe, null, null, inMemoryBOE))
@@ -595,17 +595,17 @@ namespace GenBOE.ActionLogic.Validation
             // Get the BOE
             ICollection<BoeTaskElementDTO> boeTaskElements = workspace.TaskElements.Where(i => i.BoeID == boe.Id).ToCollection<BoeTaskElementDTO>();
 
-            // Get all Summed Task Ordinary Variables within the BOE
-            var ordinaryVariableBOEsToSum = (from t in boeTaskElements
+			// Get all Summed Task Ordinary Variables within the BOE
+			List<SelectBOEsToSum> ordinaryVariableBOEsToSum = (from t in boeTaskElements
                                             from v in t.OrdinaryVariables
                                             from s in v.SelectedBOEsToSum
                                             where v.ValueType == VarValueType.SumOfBOEs
                                             select s).ToList();
 
-            // Get all Summed Workspace Variables referenced by tasks within the BOE
-            var inMemoryWorkspaceVariableIDs = inMemoryWorkspaceVariables.Select(w => w.Id).Distinct();
+			// Get all Summed Workspace Variables referenced by tasks within the BOE
+			IEnumerable<int> inMemoryWorkspaceVariableIDs = inMemoryWorkspaceVariables.Select(w => w.Id).Distinct();
 
-            var dbWorkspaceVariableBOEsToSum = from t in boeTaskElements
+			IEnumerable<SelectBOEsToSum> dbWorkspaceVariableBOEsToSum = from t in boeTaskElements
                                              from w in t.WorkspaceVariableIDs
                                              where !inMemoryWorkspaceVariableIDs.Contains(w)
                                              from v in workspace.WorkspaceVariables.Where(i => i.Id == w) 
@@ -613,7 +613,7 @@ namespace GenBOE.ActionLogic.Validation
                                              from s in v.SelectedBOEsToSum
                                              select s;
 
-            var inMemoryWorkspaceVariableBOEsToSum = from t in boeTaskElements
+			IEnumerable<SelectBOEsToSum> inMemoryWorkspaceVariableBOEsToSum = from t in boeTaskElements
                                                      from w in t.WorkspaceVariableIDs
                                                      where inMemoryWorkspaceVariableIDs.Contains(w)
                                                      from v in inMemoryWorkspaceVariables.Where(wv => wv.Id == w)
@@ -621,13 +621,13 @@ namespace GenBOE.ActionLogic.Validation
                                                      from s in v.SelectedBOEsToSum
                                                      select s;
 
-            var workspaceVariableBOEsToSum = dbWorkspaceVariableBOEsToSum.Union(inMemoryWorkspaceVariableBOEsToSum).ToList();
-            
-            // Get distinct BOE IDs referenced by ordinary variables
-            var boesReferencedByOrinaryVariables = GetBOEIDsReferencedBySelectBOEsToSum(workspace, ordinaryVariableBOEsToSum, inMemoryWBS, inMemoryBOE);
-            
-            // Get distinct BOE IDs referenced by workspace variables
-            var boesReferencedByWorkspaceVariables = GetBOEIDsReferencedBySelectBOEsToSum(workspace, workspaceVariableBOEsToSum, inMemoryWBS, inMemoryBOE);
+			List<SelectBOEsToSum> workspaceVariableBOEsToSum = dbWorkspaceVariableBOEsToSum.Union(inMemoryWorkspaceVariableBOEsToSum).ToList();
+
+			// Get distinct BOE IDs referenced by ordinary variables
+			ICollection<int> boesReferencedByOrinaryVariables = GetBOEIDsReferencedBySelectBOEsToSum(workspace, ordinaryVariableBOEsToSum, inMemoryWBS, inMemoryBOE);
+
+			// Get distinct BOE IDs referenced by workspace variables
+			ICollection<int> boesReferencedByWorkspaceVariables = GetBOEIDsReferencedBySelectBOEsToSum(workspace, workspaceVariableBOEsToSum, inMemoryWBS, inMemoryBOE);
             
             // Combine the collections of BOE IDs and return distinct set of BOEs that are referenced by any
             // summed variable within the specified BOE.
@@ -641,15 +641,15 @@ namespace GenBOE.ActionLogic.Validation
         /// <returns>The IDs of all BOEs that are referencing this WBS through a summed variable</returns>
         private ICollection<int> GetAllBOEIDsReferencingWBS(FullWbs inWBS, FullWorkspace workspace)
         {
-            // Get all workspace variables that are currently summing the WBS
-            var workspaceVariablesReferencingWBS = (from w in workspace.WorkspaceVariables
+			// Get all workspace variables that are currently summing the WBS
+			IEnumerable<WorkspaceVariableDTO> workspaceVariablesReferencingWBS = (from w in workspace.WorkspaceVariables
                                                     where w.ValueType == VarValueType.SumOfBOEs
                                                     from s in w.SelectedBOEsToSum
                                                     where s.WBSID.HasValue && s.WBSID.Value == inWBS.Id
                                                     select w).Distinct();
 
-            // Get all ordinary variables that are currently summing the WBS
-            var ordinaryVariablesReferencingWBS = (from b in workspace.Boes
+			// Get all ordinary variables that are currently summing the WBS
+			IEnumerable<OrdinaryVariableDto> ordinaryVariablesReferencingWBS = (from b in workspace.Boes
                                                    from t in workspace.TaskElements.Where(x => x.BoeID == b.Id)
                                                    from o in t.OrdinaryVariables
                                                    where o.ValueType == VarValueType.SumOfBOEs
@@ -657,8 +657,8 @@ namespace GenBOE.ActionLogic.Validation
                                                    where s.WBSID.HasValue && s.WBSID.Value == inWBS.Id
                                                    select o).Distinct();
 
-            // Get all BOEs that are referencing any of the variables in the two above collections
-            var originBOEsToCheck = (from w in workspaceVariablesReferencingWBS
+			// Get all BOEs that are referencing any of the variables in the two above collections
+			IEnumerable<int> originBOEsToCheck = (from w in workspaceVariablesReferencingWBS
                                      from b in this._WorkspaceVariableDTODataLoader.GetBOEIDsUsingWorkspaceVarID(w.Id)
                                      select b).Union((from o in ordinaryVariablesReferencingWBS
                                                       select o.BoeID));
@@ -744,20 +744,20 @@ namespace GenBOE.ActionLogic.Validation
             {
                 throw new ArgumentException("Only one of the two in-memory collections (\"inMemoryWBS\" and \"inMemoryBOE\") should be defined");
             }
-            
-            // Get all explicitly summed WBS IDs on task or workspace variables
-            var distinctSummedWBS = selectBOEsToSum.Where(o => o.WBSID.HasValue);
 
-            // Get all explicitly summed CLIN IDs on task or workspace variables
-            var distinctSummedCLIN = selectBOEsToSum.Where(o => o.CLINID.HasValue);
+			// Get all explicitly summed WBS IDs on task or workspace variables
+			IEnumerable<SelectBOEsToSum> distinctSummedWBS = selectBOEsToSum.Where(o => o.WBSID.HasValue);
 
-            // Get all explicitly summed BOE IDs on task or workspace variables
-            var boesExplicitlyReferenced = selectBOEsToSum.Where(o => o.BoeID.HasValue).Select(v => v.BoeID.Value);
+			// Get all explicitly summed CLIN IDs on task or workspace variables
+			IEnumerable<SelectBOEsToSum> distinctSummedCLIN = selectBOEsToSum.Where(o => o.CLINID.HasValue);
+
+			// Get all explicitly summed BOE IDs on task or workspace variables
+			IEnumerable<int> boesExplicitlyReferenced = selectBOEsToSum.Where(o => o.BoeID.HasValue).Select(v => v.BoeID.Value);
 
             // Get BOEs referenced implicitly through explicit CLIN references on task or workspace variables
             List<ClinDTO> clinObjects = new List<ClinDTO>();
             HashSet<int> clinIds = new HashSet<int>();
-            foreach (var summedClin in distinctSummedCLIN)
+            foreach (SelectBOEsToSum summedClin in distinctSummedCLIN)
             {
                 ClinDTO clinToAdd = workspace.Clins.FirstOrDefault(c => c.Id == summedClin.CLINID.Value);
 
@@ -768,18 +768,18 @@ namespace GenBOE.ActionLogic.Validation
                 }
             }
 
-            var idsOfBoesImplicitlyReferencedByCLIN = (from b in workspace.Boes
+			IEnumerable<int> idsOfBoesImplicitlyReferencedByCLIN = (from b in workspace.Boes
                                                        where b.CLINID.HasValue && clinIds.Contains<int>(b.CLINID.Value) && !boesToCheck.Select(x => x.Id == b.Id).Any()
                                                        select b.Id).Distinct();
-            
-            // Get BOEs under the CLIN that were modified in-memory
-            var inMemoryBOEsImplicitlyReferencedByCLIN = from c in distinctSummedCLIN
+
+			// Get BOEs under the CLIN that were modified in-memory
+			IEnumerable<int> inMemoryBOEsImplicitlyReferencedByCLIN = from c in distinctSummedCLIN
                                                          from b in boesToCheck
                                                          where b.CLINID.HasValue &&
                                                          b.CLINID == c.CLINID
                                                          select b.Id;
-            
-            var boesImplicitlyReferencedByCLIN = idsOfBoesImplicitlyReferencedByCLIN.Concat(inMemoryBOEsImplicitlyReferencedByCLIN);
+
+			IEnumerable<int> boesImplicitlyReferencedByCLIN = idsOfBoesImplicitlyReferencedByCLIN.Concat(inMemoryBOEsImplicitlyReferencedByCLIN);
             
             // Get BOEs referenced implicitly through explicit WBS references on task or workspace variables
             ICollection<int> boesImplicitlyReferencedByWBS = new Collection<int>();
@@ -796,19 +796,19 @@ namespace GenBOE.ActionLogic.Validation
                 {
                     boes.AddRange(wbs.BoesWithNesting);
                 }
-                
-                var dbBOEsImplicitlyReferencedByWBS = boes.Where(b => !wbsesToCheck.Select(x => x.Id == b.WBSID).Any()).Select(x => x.Id);
-                
-                
-                // For modified summed WBSs, or child WBSs who have been modified to be under
-                // a summed WBS, get all direct child BOEs of the summed WBS                                      select b.Id;
-                var inMemoryBOEsImplicitlyReferencedByWBS = from w in distinctSummedWBS
+
+				IEnumerable<int> dbBOEsImplicitlyReferencedByWBS = boes.Where(b => !wbsesToCheck.Select(x => x.Id == b.WBSID).Any()).Select(x => x.Id);
+
+
+				// For modified summed WBSs, or child WBSs who have been modified to be under
+				// a summed WBS, get all direct child BOEs of the summed WBS                                      select b.Id;
+				IEnumerable<int> inMemoryBOEsImplicitlyReferencedByWBS = from w in distinctSummedWBS
                                                             from s in wbsesToCheck
                                                             where w.WBSID == s.Id || (FullWorkspaceHelper.GetAllParentWBS(wbsObject.First(x => x.Id == w.WBSID), workspace)).Select(x => x.Id).Contains(w.WBSID.Value)
                                                             from b in wbsObject.First(x => x.Id == w.WBSID).Boes
                                                             select b.Id;
-                
-                var inMemoryNestedBOEsImplicitlyReferencedByWBS = from w in distinctSummedWBS
+
+				IEnumerable<int> inMemoryNestedBOEsImplicitlyReferencedByWBS = from w in distinctSummedWBS
                                                                   from s in wbsesToCheck
                                                                   where w.WBSID == s.Id
                                                                   from b in FullWorkspaceHelper.GetBoesForWbsWithNesting(wbsObject.First(x => x.Id == w.WBSID), workspace)
@@ -826,15 +826,15 @@ namespace GenBOE.ActionLogic.Validation
                                                   select w).ToCollection();
 
 
-                // Get BOEs under the WBS that were not modified in-memory
-                var dbBOEsImplicitlyReferencedByWBS = from w in distinctSummedWBS
+				// Get BOEs under the WBS that were not modified in-memory
+				IEnumerable<int> dbBOEsImplicitlyReferencedByWBS = from w in distinctSummedWBS
                                                       where wbsObject.Any(x => x.Id == w.WBSID)
                                                       from b in FullWorkspaceHelper.GetBoesForWbsWithNesting(wbsObject.First(x => x.Id == w.WBSID), workspace)
                                                       where !boesToCheck.Select(x => x.Id == b.Id).Any()
                                                       select b.Id;
-                
-                // Get BOEs under the WBS that were modified in-memory
-                var inMemoryBOEsImplicitlyReferencedByWBS = from w in distinctSummedWBS
+
+				// Get BOEs under the WBS that were modified in-memory
+				IEnumerable<int> inMemoryBOEsImplicitlyReferencedByWBS = from w in distinctSummedWBS
                                                             from b in boesToCheck
                                                             where b.WBSID.HasValue &&
                                                                 // In-memory BOE is either directly part of a summed WBS, or one of its parent WBSs is summed

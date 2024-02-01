@@ -13,7 +13,7 @@ namespace GenBOE.Web.Common
                 throw new ArgumentNullException("Binding Context was null");
             }
 
-            var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
+			ValueProviderResult valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
             long value;
             return valueProviderResult == null || !long.TryParse(valueProviderResult.AttemptedValue, out value) ? base.BindModel(controllerContext, bindingContext) : value;

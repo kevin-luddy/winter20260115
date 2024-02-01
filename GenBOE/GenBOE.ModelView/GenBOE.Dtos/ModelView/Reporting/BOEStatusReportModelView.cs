@@ -162,15 +162,15 @@ namespace GenBOE.Dtos
 
             if (toReturn == 0)
             {
-                var thisAuthorString = String.Join("", this.Authors);
-                var otherAuthorString = String.Join("", otherModelView.Authors);
+				string thisAuthorString = String.Join("", this.Authors);
+				string otherAuthorString = String.Join("", otherModelView.Authors);
                 toReturn = thisAuthorString.CompareTo(otherAuthorString);
             }
             
             if (toReturn == 0)
             {
-                var thisApproverString = String.Join("", this.Approvers);
-                var otherApproverString = String.Join("", otherModelView.Approvers);
+				string thisApproverString = String.Join("", this.Approvers);
+				string otherApproverString = String.Join("", otherModelView.Approvers);
                 toReturn = thisApproverString.CompareTo(otherApproverString);
             }
 

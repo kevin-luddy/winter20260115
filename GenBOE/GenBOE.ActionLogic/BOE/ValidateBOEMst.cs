@@ -93,7 +93,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
             bool toReturn = false;
 
-            var historicalMetricsInUse = this.mstMetricsLoader.GetByTaskElementIds(boeTaskIds);
+			ICollection<MSTMetricDetailsDTO> historicalMetricsInUse = this.mstMetricsLoader.GetByTaskElementIds(boeTaskIds);
             if (historicalMetricsInUse != null &&
                 historicalMetricsInUse.Any() &&
                 !boe.HistoricMetricDisclosureChecked)
@@ -136,8 +136,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
             if (travelTaskElementMessages == null) { throw new ArgumentNullException(nameof(travelTaskElementMessages)); }
             if (TravelTypeMessages == null) { throw new ArgumentNullException(nameof(TravelTypeMessages)); }
 
-            // validate the travel Tasks
-            var travelTaskElements = ws.Travels.Where(x => x.BoeID == inBOE.Id);
+			// validate the travel Tasks
+			IEnumerable<TravelDTO> travelTaskElements = ws.Travels.Where(x => x.BoeID == inBOE.Id);
 
             List<int> escalationRateYears = this.zoneTravelRatesFeesLoader.getAllEscalationRatesByWorkspace(ws.Id).Select(x => x.Year).Distinct().ToList();
 

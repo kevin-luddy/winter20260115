@@ -2693,7 +2693,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOELaborSpread", bOELaborSpreadIDParameter, bOELaborTypeIDParameter, laborSpreadDateParameter, laborSpreadValueParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertBOELaborType(Nullable<int> bOELaborTypeID, Nullable<int> resourceID, Nullable<int> performingOrganizationID, Nullable<System.DateTime> bOELaborTypeStartDate, Nullable<System.DateTime> bOELaborTypeEndDate, Nullable<int> spreadCurveID, Nullable<decimal> percentSpread, Nullable<decimal> valueSpread, Nullable<int> bOETaskElementID, Nullable<int> spreadTypeID, Nullable<System.DateTime> updateDT, Nullable<bool> percentSpreadLocked, Nullable<bool> hourSpreadLocked, Nullable<int> wBSID, Nullable<int> cLINID, Nullable<bool> canOffload, Nullable<int> laborSortID)
+        public virtual ObjectResult<Nullable<int>> upsertBOELaborType(Nullable<int> bOELaborTypeID, Nullable<int> resourceID, Nullable<int> performingOrganizationID, Nullable<System.DateTime> bOELaborTypeStartDate, Nullable<System.DateTime> bOELaborTypeEndDate, Nullable<int> spreadCurveID, Nullable<decimal> percentSpread, Nullable<decimal> valueSpread, Nullable<int> bOETaskElementID, Nullable<int> spreadTypeID, Nullable<System.DateTime> updateDT, Nullable<bool> percentSpreadLocked, Nullable<bool> hourSpreadLocked, Nullable<int> wBSID, Nullable<int> cLINID, Nullable<bool> canOffload, Nullable<int> laborSortID, Nullable<int> bRCResourceID)
         {
             var bOELaborTypeIDParameter = bOELaborTypeID.HasValue ?
                 new ObjectParameter("BOELaborTypeID", bOELaborTypeID) :
@@ -2763,7 +2763,11 @@ namespace GenBOE.Models
                 new ObjectParameter("LaborSortID", laborSortID) :
                 new ObjectParameter("LaborSortID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOELaborType", bOELaborTypeIDParameter, resourceIDParameter, performingOrganizationIDParameter, bOELaborTypeStartDateParameter, bOELaborTypeEndDateParameter, spreadCurveIDParameter, percentSpreadParameter, valueSpreadParameter, bOETaskElementIDParameter, spreadTypeIDParameter, updateDTParameter, percentSpreadLockedParameter, hourSpreadLockedParameter, wBSIDParameter, cLINIDParameter, canOffloadParameter, laborSortIDParameter);
+            var bRCResourceIDParameter = bRCResourceID.HasValue ?
+                new ObjectParameter("BRCResourceID", bRCResourceID) :
+                new ObjectParameter("BRCResourceID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOELaborType", bOELaborTypeIDParameter, resourceIDParameter, performingOrganizationIDParameter, bOELaborTypeStartDateParameter, bOELaborTypeEndDateParameter, spreadCurveIDParameter, percentSpreadParameter, valueSpreadParameter, bOETaskElementIDParameter, spreadTypeIDParameter, updateDTParameter, percentSpreadLockedParameter, hourSpreadLockedParameter, wBSIDParameter, cLINIDParameter, canOffloadParameter, laborSortIDParameter, bRCResourceIDParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertBOELaborTypeCustomFieldValue(Nullable<int> bLTCFVID, Nullable<int> bOELaborTypeID, Nullable<int> customFieldID, Nullable<int> customFieldValueID, string customFieldValue, Nullable<System.DateTime> updateDT, Nullable<bool> isOpenEnded)
@@ -5272,7 +5276,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteMOQTypeSelectionTableData", mOQTypeSelectionTableDataIdParameter, updateDTParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelection(Nullable<int> mOQTypeSelectionId, Nullable<int> taskId, Nullable<int> mOQTypeSelection, Nullable<System.DateTime> updateDT, Nullable<int> order, string cERName, string hoursDescription, string subjectMatterExpert, string hoursLogicAndAssumptions, string durationLogicAndAssumptions, string estimateTasks, string rationale, string skillMix)
+        public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelection(Nullable<int> mOQTypeSelectionId, Nullable<int> taskId, Nullable<int> mOQTypeSelection, Nullable<System.DateTime> updateDT, Nullable<int> order, string cERName, string hoursDescription, string subjectMatterExpert, string hoursLogicAndAssumptions, string durationLogicAndAssumptions, string estimateTasks, string rationale, string skillMix, string historicalReferenceExplanation)
         {
             var mOQTypeSelectionIdParameter = mOQTypeSelectionId.HasValue ?
                 new ObjectParameter("MOQTypeSelectionId", mOQTypeSelectionId) :
@@ -5326,7 +5330,11 @@ namespace GenBOE.Models
                 new ObjectParameter("SkillMix", skillMix) :
                 new ObjectParameter("SkillMix", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelection", mOQTypeSelectionIdParameter, taskIdParameter, mOQTypeSelectionParameter, updateDTParameter, orderParameter, cERNameParameter, hoursDescriptionParameter, subjectMatterExpertParameter, hoursLogicAndAssumptionsParameter, durationLogicAndAssumptionsParameter, estimateTasksParameter, rationaleParameter, skillMixParameter);
+            var historicalReferenceExplanationParameter = historicalReferenceExplanation != null ?
+                new ObjectParameter("HistoricalReferenceExplanation", historicalReferenceExplanation) :
+                new ObjectParameter("HistoricalReferenceExplanation", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelection", mOQTypeSelectionIdParameter, taskIdParameter, mOQTypeSelectionParameter, updateDTParameter, orderParameter, cERNameParameter, hoursDescriptionParameter, subjectMatterExpertParameter, hoursLogicAndAssumptionsParameter, durationLogicAndAssumptionsParameter, estimateTasksParameter, rationaleParameter, skillMixParameter, historicalReferenceExplanationParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelectionTableData(Nullable<int> mOQTypeSelectionTableDataId, Nullable<int> mOQTypeSelectionId, Nullable<System.DateTime> updateDT, Nullable<int> order, string tableName, string repositoryName, string queryType, Nullable<System.DateTime> dateOfReport, string historicalProgramName, string contractNumber, string wbsElement, Nullable<System.DateTime> periodOfPerformanceStartDate, Nullable<System.DateTime> periodOfPerformanceEndDate, Nullable<decimal> totalWbsHours, string additionalQueryFilters, Nullable<decimal> totalRelevantHoursAfterQueryFilters)

@@ -439,8 +439,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (alias != null)
             {
-                // Get the Element that encapsulates the current alias
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+				// Get the Element that encapsulates the current alias
+				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 // If the current element is not null, populate it with the appropriate data
                 if (element != null)

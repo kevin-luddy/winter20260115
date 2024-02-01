@@ -22,8 +22,8 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void BoeLaborCostElementExists()
         {
-            var factory = new Mock<IFullObjectFactory>();
-            var retriever = new Mock<IRetriever>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);

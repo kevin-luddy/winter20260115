@@ -24,8 +24,8 @@ namespace GenBOE.Tests.ActionLogic
             int workspaceID = 1;
             string workspaceName = "Workspace ONE Test";
 
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 
             WorkspaceDTO workspace = new WorkspaceDTO { 

@@ -28,7 +28,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         {
             if (inBoeApprovers != null)
             {
-                var currentApprover = inBoeApprovers.FirstOrDefault(a => a.ETIUserID == currentUserID);
+				BoeApproverResponseDTO currentApprover = inBoeApprovers.FirstOrDefault(a => a.ETIUserID == currentUserID);
 
                 if (currentApprover != null)
                 {

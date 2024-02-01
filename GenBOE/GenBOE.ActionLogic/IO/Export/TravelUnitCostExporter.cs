@@ -60,9 +60,9 @@ namespace GenBOE.ActionLogic.IO.Export
 
             IReadOnlyCollection<WorkspaceHistoryDTO> workspaceHistory = workspace.WorkspaceHistory;
 
-            var workspaceName = workspace.WorkspaceName;
-            var workspaceTrackingNumber = workspace.TrackingNumber;
-            var travelRatesDate = DateTime.Now.ToString();
+			string workspaceName = workspace.WorkspaceName;
+			string workspaceTrackingNumber = workspace.TrackingNumber;
+			string travelRatesDate = DateTime.Now.ToString();
             if (workspace.WorkspaceState == WorkspaceState.Closed)
             {
                 travelRatesDate = (from r in workspaceHistory
@@ -81,7 +81,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 travelRatesDate = DateTime.Now.ToString();
             }
-            var submittalDate = DateTime.Now.ToString();
+			string submittalDate = DateTime.Now.ToString();
 
             firstSheet.Add("Proposal Name: " + workspaceName, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty, "Unit Cost Report");
             firstSheet.Add("Proposal Tracking Number: " + workspaceTrackingNumber);
@@ -119,12 +119,12 @@ namespace GenBOE.ActionLogic.IO.Export
             HashSet<EscalationRatesDTO> allEscalations = new HashSet<EscalationRatesDTO>(this._EscalationLoader.GetByWorkspace(workspace));
             HashSet<MiscTravelRateDTO> allMiscTravelRates = new HashSet<MiscTravelRateDTO>(this.miscTravelRateDTOLoader.GetByIds(allTravelTrips.Select(i => i.MiscTravelRateID).ToCollection<int>(), workspace));
 
-            foreach (var boe in workspace.Boes)
+            foreach (FullBoe boe in workspace.Boes)
             {
                 ICollection<TravelDTO> travelCollection = allTravels.Where(x => x.BoeID == boe.Id).ToCollection<TravelDTO>();
 
-                var boe_WBS = allWbs.FirstOrDefault(i => i.Id == boe.WBSID); 
-                var boe_CLIN = allClins.FirstOrDefault(i => i.Id == boe.CLINID);     
+				WbsDTO boe_WBS = allWbs.FirstOrDefault(i => i.Id == boe.WBSID);
+				ClinDTO boe_CLIN = allClins.FirstOrDefault(i => i.Id == boe.CLINID);     
 
                 foreach (TravelDTO travel in travelCollection)
                 {

@@ -1005,28 +1005,28 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.ResourceInfoAndSpreadTables))
                 {
-                    var orderedResources = laborTaskElement.taskElementLabors
+					List<BOEExportTaskElementLabor> orderedResources = laborTaskElement.taskElementLabors
                         .Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceID) &&
                         c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_PerformingOrgID))
                         .OrderBy(r => r.ExportFields[BOEExporterConstants.FieldName_ResourceID])
                         .ThenBy(p => p.ExportFields[BOEExporterConstants.FieldName_PerformingOrgID]).ToList();
 
-                    var LMLaborResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
+					List<BOEExportTaskElementLabor> LMLaborResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
                         && c.ExportFields[BOEExporterConstants.FieldName_LaborTypes] == ElementOfCostType.LMLabor.ToDescription()).ToList();
-                    var SubResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
+					List<BOEExportTaskElementLabor> SubResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
                         && c.ExportFields[BOEExporterConstants.FieldName_LaborTypes] == ElementOfCostType.Sub.ToString()).ToList();
-                    var IWTAResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
+					List<BOEExportTaskElementLabor> IWTAResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
                         && c.ExportFields[BOEExporterConstants.FieldName_LaborTypes] == ElementOfCostType.IWTA.ToString()).ToList();
-                    var TravelResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
+					List<BOEExportTaskElementLabor> TravelResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
                         && c.ExportFields[BOEExporterConstants.FieldName_LaborTypes] == ElementOfCostType.Travel.ToString()).ToList();
-                    var MaterialsResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
+					List<BOEExportTaskElementLabor> MaterialsResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
                         && c.ExportFields[BOEExporterConstants.FieldName_LaborTypes] == ElementOfCostType.Materials.ToString()).ToList();
-                    var ODCResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
+					List<BOEExportTaskElementLabor> ODCResources = orderedResources.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_LaborTypes)
                         && c.ExportFields[BOEExporterConstants.FieldName_LaborTypes] == ElementOfCostType.ODC.ToString()).ToList();
 
                     SdtElement currentInsertionPoint = laborResourceContainerTemplateElement;
                     
-                    foreach (var resourceElement in LMLaborResources)
+                    foreach (BOEExportTaskElementLabor resourceElement in LMLaborResources)
                     {
                         SdtElement laborResourceContainerElement = this.CloneContainerTemplate(laborResourceContainerTemplateElement);
 
@@ -1037,7 +1037,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionPoint.InsertAfterSelf(laborResourceContainerElement);
                         currentInsertionPoint = laborResourceContainerElement;
                     }
-                    foreach (var resourceElement in SubResources)
+                    foreach (BOEExportTaskElementLabor resourceElement in SubResources)
                     {
                         SdtElement laborResourceContainerElement = this.CloneContainerTemplate(laborResourceContainerTemplateElement);
 
@@ -1048,7 +1048,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionPoint.InsertAfterSelf(laborResourceContainerElement);
                         currentInsertionPoint = laborResourceContainerElement;
                     }
-                    foreach (var resourceElement in IWTAResources)
+                    foreach (BOEExportTaskElementLabor resourceElement in IWTAResources)
                     {
                         SdtElement laborResourceContainerElement = this.CloneContainerTemplate(laborResourceContainerTemplateElement);
 
@@ -1059,7 +1059,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionPoint.InsertAfterSelf(laborResourceContainerElement);
                         currentInsertionPoint = laborResourceContainerElement;
                     }
-                    foreach (var resourceElement in TravelResources)
+                    foreach (BOEExportTaskElementLabor resourceElement in TravelResources)
                     {
                         SdtElement laborResourceContainerElement = this.CloneContainerTemplate(laborResourceContainerTemplateElement);
 
@@ -1070,7 +1070,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionPoint.InsertAfterSelf(laborResourceContainerElement);
                         currentInsertionPoint = laborResourceContainerElement;
                     }
-                    foreach (var resourceElement in MaterialsResources)
+                    foreach (BOEExportTaskElementLabor resourceElement in MaterialsResources)
                     {
                         SdtElement laborResourceContainerElement = this.CloneContainerTemplate(laborResourceContainerTemplateElement);
 
@@ -1081,7 +1081,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionPoint.InsertAfterSelf(laborResourceContainerElement);
                         currentInsertionPoint = laborResourceContainerElement;
                     }
-                    foreach (var resourceElement in ODCResources)
+                    foreach (BOEExportTaskElementLabor resourceElement in ODCResources)
                     {
                         SdtElement laborResourceContainerElement = this.CloneContainerTemplate(laborResourceContainerTemplateElement);
 
@@ -1143,7 +1143,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.ResourceInfoAndSpreadTables))
                 {
-                    var orderedResources = odcTaskElement.taskElementLabors
+					IOrderedEnumerable<BOEExportTaskElementLabor> orderedResources = odcTaskElement.taskElementLabors
                         .Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceID)
                             && c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_PerformingOrgID))
                             .OrderBy(o => o.ExportFields[BOEExporterConstants.FieldName_ResourceID])
@@ -1153,7 +1153,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     SdtElement currentInsertionPoint = odcResourceContainerTemplateElement;
 
-                    foreach (var resourceElement in orderedResources)
+                    foreach (BOEExportTaskElementLabor resourceElement in orderedResources)
                     {
                         SdtElement odcResourceContainerElement = this.CloneContainerTemplate(odcResourceContainerTemplateElement);
 

@@ -438,7 +438,7 @@ namespace GenBOE.DataBridge.DTO
 					string clinList = string.Empty;
 					if (dtoToUpsert.ClinContractTypes != null && dtoToUpsert.ClinContractTypes.Any())
 					{
-						clinList = string.Join(",", dtoToUpsert.ClinContractTypes.Where(c => c.ContractType > 0).Select(c => c.ClinId.ToString() + ":" + ((int)c.ContractType).ToString()));
+						clinList = string.Join(",", dtoToUpsert.ClinContractTypes.Where(c => c.ContractType > 0).Select(c => c.ClinId.ToString() + ":" + c.ContractType.ToString()));
 					}
 
 					Ccopd ccopdValue = CreateCCOPDEnum(dtoToUpsert);

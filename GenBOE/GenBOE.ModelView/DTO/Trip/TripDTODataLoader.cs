@@ -96,14 +96,14 @@ namespace GenBOE.DataBridge.DTO
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
 
-                var allLocations = (from l in gbe.Locations
+				Location[] allLocations = (from l in gbe.Locations
                                    select l).ToArray();
 
-                var allTrip = (from t in gbe.Trips
+				Trip[] allTrip = (from t in gbe.Trips
                               select t).ToArray();
 
-                // PerDiem is where qualification is stored
-                var allPerDiem = (from p in gbe.PerDiems                                  
+				// PerDiem is where qualification is stored
+				PerDiem[] allPerDiem = (from p in gbe.PerDiems                                  
                                   select p).ToArray();
 
 
@@ -332,7 +332,7 @@ namespace GenBOE.DataBridge.DTO
                         Fare = entity.TransportationFare,
                         RTMiles = entity.RoundTripMiles,
                         FareUpdatedByUserID = entity.FareLastUpdateETIUserID,
-                        FareLastUpdatedDate =  GenBOEUtilities.AdjustDateTimePrecision((DateTime)entity.UpdateDT, DateTimePrecision.Day),
+                        FareLastUpdatedDate =  GenBOEUtilities.AdjustDateTimePrecision(entity.UpdateDT, DateTimePrecision.Day),
                         UpdateDate = entity.UpdateDT,
                         InUse = entity.TripInUse,
                         LastUsedDate = entity.LastUsedDT != null ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)entity.LastUsedDT, DateTimePrecision.Day) : entity.LastUsedDT,
@@ -377,7 +377,7 @@ namespace GenBOE.DataBridge.DTO
                         Fare = entity.TransportationFare,
                         RTMiles = entity.RoundTripMiles,
                         FareUpdatedByUserID = entity.FareLastUpdateETIUserID,
-                        FareLastUpdatedDate = GenBOEUtilities.AdjustDateTimePrecision((DateTime)entity.UpdateDT, DateTimePrecision.Day),
+                        FareLastUpdatedDate = GenBOEUtilities.AdjustDateTimePrecision(entity.UpdateDT, DateTimePrecision.Day),
                         UpdateDate = entity.UpdateDT,
                         InUse = entity.TripInUse,
                         LastUsedDate = entity.LastUsedDT != null ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)entity.LastUsedDT, DateTimePrecision.Day) : entity.LastUsedDT,
@@ -424,7 +424,7 @@ namespace GenBOE.DataBridge.DTO
                         Fare = entity.TransportationFare,
                         RTMiles = entity.RoundTripMiles,
                         FareUpdatedByUserID = entity.FareLastUpdateETIUserID,
-                        FareLastUpdatedDate = GenBOEUtilities.AdjustDateTimePrecision((DateTime)entity.UpdateDT, DateTimePrecision.Day),
+                        FareLastUpdatedDate = GenBOEUtilities.AdjustDateTimePrecision(entity.UpdateDT, DateTimePrecision.Day),
                         UpdateDate = entity.UpdateDT,
                         InUse = entity.TripInUse,
                         LastUsedDate = entity.LastUsedDT != null ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)entity.LastUsedDT, DateTimePrecision.Day) : entity.LastUsedDT,

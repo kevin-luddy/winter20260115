@@ -1208,7 +1208,7 @@ namespace IES.ActionLogic.ControllerLogic
 
 				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.ResourceType, (int?)importedRateCode.ResourceType) ||
 				existingRateCode.RevisionId != importedRateCode.RevisionId ||
-				!this.IsNullableIdPropertyEquivalent((int?)existingRateCode.Section, (int?)importedRateCode.Section);
+				!this.IsNullableIdPropertyEquivalent(existingRateCode.Section, importedRateCode.Section);
 		}
 
 		/// <summary>

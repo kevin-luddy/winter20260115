@@ -277,7 +277,7 @@ namespace GenBOE.DataBridge.DTO
                 // Get the misctravelrate Data
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var MiscRate = (from m in gbe.WorkspaceLockedTravelMiscRates
+					MiscTravelRateDTO MiscRate = (from m in gbe.WorkspaceLockedTravelMiscRates
                                     where m.TravelMiscRateID == inMiscTravelRateID && m.WorkspaceID == inWorkspaceID
                                     select new MiscTravelRateDTO
                                     {

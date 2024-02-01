@@ -253,7 +253,7 @@ namespace IES.Common
 				return 0;
 			}
 
-			return (decimal)(endDate.Value.Subtract(startDate.Value).Days / Constants.POP_MONTHS_DIVISOR);
+			return endDate.Value.Subtract(startDate.Value).Days / Constants.POP_MONTHS_DIVISOR;
 		}
 
 		#endregion Date/Time methods
@@ -756,7 +756,7 @@ namespace IES.Common
 		{
 			Type enumType = typeof(T);
 
-			T? enumValue = (T?)null;
+			T? enumValue = null;
 
 			if (enumType.IsEnum && !string.IsNullOrEmpty(description))
 			{
@@ -863,7 +863,7 @@ namespace IES.Common
 
 			if (!enumType.IsEnum || string.IsNullOrEmpty(value))
 			{
-				enumValue = (T?)null;
+				enumValue = null;
 			}
 			else if (Enum.IsDefined(enumType, value))
 			{
@@ -879,7 +879,7 @@ namespace IES.Common
 				}
 				else
 				{
-					enumValue = (T?)null;
+					enumValue = null;
 				}
 			}
 

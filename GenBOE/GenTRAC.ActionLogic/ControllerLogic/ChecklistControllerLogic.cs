@@ -25,12 +25,6 @@ namespace GenTRAC.ActionLogic
     public class ChecklistControllerLogic : GenTRACControllerLogic
     {
         /// <summary>
-        /// The logger
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        private IES.Common.Logger log = new IES.Common.Logger(typeof(ChecklistControllerLogic));
-
-        /// <summary>
         /// The name of the checklist general information data form, needed for validation
         /// </summary>
         public const string CHECKLIST_GENERAL_INFO_FORM = "checklistGeneralInfoForm";
@@ -90,8 +84,8 @@ namespace GenTRAC.ActionLogic
             ChecklistIndexModelView model = new ChecklistIndexModelView();
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
 
-            // while PPR and PAR each have a checklist version, they should be in sync
-            var pprData = fullProposalDto.ProposalChecklistPPRData;
+			// while PPR and PAR each have a checklist version, they should be in sync
+			ChecklistContentDto pprData = fullProposalDto.ProposalChecklistPPRData;
             model.Version = pprData.Version;
             model.IsReadOnly = this.IsProposalChecklistReadOnly(fullProposalDto);
 
@@ -176,7 +170,7 @@ namespace GenTRAC.ActionLogic
             {
                 FullProposal fullProposal = this.GetFullProposalDto(proposalId.Value);
 
-                var checklists = fullProposal.ProposalChecklistData;
+				System.Collections.Generic.ICollection<ProposalChecklistDto> checklists = fullProposal.ProposalChecklistData;
 
                 if (checklists != null && checklists.Any())
                 {

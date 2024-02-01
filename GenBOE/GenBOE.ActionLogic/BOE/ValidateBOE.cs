@@ -314,8 +314,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
             _ = ws ?? throw new ArgumentNullException(nameof(ws));
             _ = ValidationBOE ?? throw new ArgumentNullException(nameof(ValidationBOE));
 
-            // validate the travel Tasks
-            var travelTaskElements = ws.Travels.Where(x => x.BoeID == inBOE.Id).ToList();
+			// validate the travel Tasks
+			List<TravelDTO> travelTaskElements = ws.Travels.Where(x => x.BoeID == inBOE.Id).ToList();
             HashSet<TripDTO> trips = new HashSet<TripDTO>(this._TripDTODataLoader.GetByIds(travelTaskElements.SelectMany(t => t.TravelTrips).Select(i => i.SystemTripID).ToCollection()));
             HashSet<LocationDTO> departures = new HashSet<LocationDTO>(this._LocationDTODataLoader.GetByIds(trips.Select(i => i.DepartureLocationID).ToCollection()));
             HashSet<LocationDTO> destinations = new HashSet<LocationDTO>(this._LocationDTODataLoader.GetByIds(trips.Select(i => i.DestinationLocationID).ToCollection()));
@@ -360,8 +360,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                     bool isTripValid = true;
                     travelType = new ValidationBOELaborType();
 
-                    // validate LT Start/End Date
-                    var returnedMessages = this._ValidateTravelTripDate(travelTask, travel, ws, inBOE);
+					// validate LT Start/End Date
+					Collection<string> returnedMessages = this._ValidateTravelTripDate(travelTask, travel, ws, inBOE);
                     foreach (string message in returnedMessages)
                     {
                         TravelTypeMessages.Add(message);
@@ -454,8 +454,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 offloadRatesDtos = this.offloadRatesDTOLoader.GetByWorkspaceId(workspace.Id);
             }
 
-            // validate the Task Detail Elements
-            var boeTaskElements = workspace.TaskElements.Where(x => x.BoeID == inBOE.Id);
+			// validate the Task Detail Elements
+			IEnumerable<BoeTaskElementDTO> boeTaskElements = workspace.TaskElements.Where(x => x.BoeID == inBOE.Id);
             foreach (BoeTaskElementDTO boeTask in boeTaskElements)
             {
                 boeLabor = new ValidationBOELaborType();
@@ -606,8 +606,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 // Legacy MOQ Types
                 if (string.IsNullOrEmpty(boeTask.MOQText)) // if no data in the field itself
                 {
-                    // the field is valid if templates are being used, AND all required prompts are answered
-                    var taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ);
+					// the field is valid if templates are being used, AND all required prompts are answered
+					IEnumerable<RTECustomTemplateQuestionAnswerModelView> taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ);
                     if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
                     {
                         TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.MOQ_TEXT_REQUIRED));
@@ -769,8 +769,16 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                     errorMessages.AddRange(this.ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id));
                                 }
                             });
+
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+
+							if((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+								&& Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate))
+							{
+								ValidateRequiredField(moqType.SelectedMOQType, moqType.HistoricalReferenceExplanation, "Provide an explanation of Why the Historical Reference was Selected", ws.RteSizeLimit, errorMessages);
+							}
+
                             break;
                         case (MOQType.CostEstimatingRelationships):
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
@@ -837,8 +845,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
         {
             if (string.IsNullOrEmpty(boeTask.Description)) // if no data in the field itself
             {
-                // the field is valid if templates are being used, AND all required prompts are answered
-                var taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription);
+				// the field is valid if templates are being used, AND all required prompts are answered
+				IEnumerable<RTECustomTemplateQuestionAnswerModelView> taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription);
                 if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
                 {
                     TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.TASK_DESCRIPTION_REQUIRED));
@@ -975,8 +983,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
         private void _ValidateODC(FullBoe inBOE, FullWorkspace ws, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks odcTasks, ref Collection<string> OdcTaskElementMessages, ValidationBOELaborType odcType, ref Collection<string> OdcTypeMessages, ref decimal TotalLaborSpreadValue)
         {
-            // Validate Cost
-            var odcs = ws.Odcs.Where(x => x.BoeID == inBOE.Id);
+			// Validate Cost
+			IEnumerable<OtherDirectCostDTO> odcs = ws.Odcs.Where(x => x.BoeID == inBOE.Id);
             foreach (OtherDirectCostDTO odc in odcs)
             {
                 odcTasks = new ValidationBOETasks();
@@ -1007,7 +1015,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 }
 
                 TotalLaborSpreadValue = 0;
-                var resourcesFromTask = ws.ResourcesForWsResourceListId.Where(x => (odc.ODCTypes.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id));
+				IEnumerable<ResourceDTO> resourcesFromTask = ws.ResourcesForWsResourceListId.Where(x => (odc.ODCTypes.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id));
 
                 foreach (OtherDirectCostType type in odc.ODCTypes)
                 {
@@ -1302,7 +1310,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         {
             bool isTravelTripSegmentValid = true;
 
-            var travelResources = ws.ResourcesForWsResourceListId.Where(x => x.ElementOfCost == ElementOfCostType.Travel);
+			IEnumerable<ResourceDTO> travelResources = ws.ResourcesForWsResourceListId.Where(x => x.ElementOfCost == ElementOfCostType.Travel);
             Collection<int> wsTravelSegmentIDs = new Collection<int>();
 
             foreach (ResourceDTO travelResource in travelResources)
@@ -1385,8 +1393,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
             bool valid = !string.IsNullOrEmpty(boe.Description);
             if(!valid) // no data in the field itself
             {
-                // the field is valid if templates are being used, AND all required prompts are answered
-                var boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeDescription);
+				// the field is valid if templates are being used, AND all required prompts are answered
+				IEnumerable<RTECustomTemplateQuestionAnswerModelView> boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeDescription);
                 valid = boeTemplateWithPrompts.Any() && !boeTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText));
             }
 
@@ -1407,8 +1415,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
             bool valid = !string.IsNullOrEmpty(boe.DataSource);
             if (!valid) // no data in the field itself
             {
-                // the field is valid if templates are being used, AND all required prompts are answered
-                var boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeSources);
+				// the field is valid if templates are being used, AND all required prompts are answered
+				IEnumerable<RTECustomTemplateQuestionAnswerModelView> boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeSources);
                 valid = boeTemplateWithPrompts.Any() && !boeTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText));
             }
 

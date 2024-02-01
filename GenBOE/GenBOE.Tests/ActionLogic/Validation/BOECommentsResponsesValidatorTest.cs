@@ -19,8 +19,8 @@ namespace GenBOE.Tests.ActionLogic.Validation
     {
         [TestMethod]
         public void AllBOEAuthorCommentsResponses()
-        {           
-            var boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+        {
+			Mock<IBOECommentDTODataLoader> boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
 
             int boeID = 1;
             
@@ -33,7 +33,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             boeCommentDTODataLoader.Setup(x => x.GetByBoeId(boeID)).Returns(boeComments);
 
-            var sut = new BOECommentsResponsesValidator(boeCommentDTODataLoader.Object);
+			BOECommentsResponsesValidator sut = new BOECommentsResponsesValidator(boeCommentDTODataLoader.Object);
             bool validationResponse = sut.AllBOEAuthorCommentsResponses(boeID);
 
             Assert.IsTrue(validationResponse.Equals(false));
@@ -41,7 +41,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
             
             boeCommentDTODataLoader.Setup(x => x.GetByIds(new List<int>() { boeID })).Returns(boeComments);
 
-            var sut2 = new BOECommentsResponsesValidator(boeCommentDTODataLoader.Object);
+			BOECommentsResponsesValidator sut2 = new BOECommentsResponsesValidator(boeCommentDTODataLoader.Object);
             bool validationResponse2 = sut2.AllBOEAuthorCommentsResponses(boeID);
             validationResponse = sut2.AllBOEAuthorCommentsResponses(boeID);
 

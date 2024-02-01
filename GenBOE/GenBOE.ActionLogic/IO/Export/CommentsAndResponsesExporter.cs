@@ -35,9 +35,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(boeComments));
             }
 
-            var toReturn = string.Empty;
+			string toReturn = string.Empty;
 
-            var worksheet = this.GetExcelExportWorksheet(boeComments);
+			ExcelExportWorksheet worksheet = this.GetExcelExportWorksheet(boeComments);
 
             // Pass the rows to the generic Excel exporter
             toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);            
@@ -60,7 +60,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(boeComments));
             }
 
-            var toReturn = new ExcelExportWorksheet();
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet();
 
             if (boeComments.Count > 0)
             {

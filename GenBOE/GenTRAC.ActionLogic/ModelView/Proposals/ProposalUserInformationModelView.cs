@@ -70,30 +70,50 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// </summary>
         public ICollection<SelectListItem> AdditionalPricingResourceTypeList { get; set; }
 
-        /// <summary>
-        /// Gets or sets Supply Chain POC Materials Display Name
-        /// </summary>
-        public string SupplyChainPOCMaterialsDisplayName { get; set; }
+		/// <summary>
+		/// Gets or sets Supply Chain POC Materials Display Name
+		/// </summary>
+		public string SupplyChainPOCMaterialsDisplayName { get; set; }
 
-        /// <summary>
-        /// Gets or sets Supply Chain POC Materials NT id
-        /// </summary>
-        public string SupplyChainPOCMaterialsNtId { get; set; }
+		/// <summary>
+		/// Gets or sets Supply Chain POC Materials NT id
+		/// </summary>
+		public string SupplyChainPOCMaterialsNtId { get; set; }
 
-        /// <summary>
-        /// Gets or sets Supply Chain POC Subs Display Name
-        /// </summary>
-        public string SupplyChainPOCSubsDisplayName { get; set; }
+		/// <summary>
+		/// Gets or sets Supply Chain POC Materials Backup Display Name
+		/// </summary>
+		public string SupplyChainPOCMaterialsBackupDisplayName { get; set; }
 
-        /// <summary>
-        /// Gets or sets Supply Chain POC Subs NT id
-        /// </summary>
-        public string SupplyChainPOCSubsNtId { get; set; }
+		/// <summary>
+		/// Gets or sets Supply Chain POC Materials Backup NT id
+		/// </summary>
+		public string SupplyChainPOCMaterialsBackupNtId { get; set; }
 
-        /// <summary>
-        /// Gets or sets Contracts POC Display name
-        /// </summary>
-        public string ContractsPOCDisplayName { get; set; }
+		/// <summary>
+		/// Gets or sets Supply Chain POC Subs Display Name
+		/// </summary>
+		public string SupplyChainPOCSubsDisplayName { get; set; }
+
+		/// <summary>
+		/// Gets or sets Supply Chain POC Subs NT id
+		/// </summary>
+		public string SupplyChainPOCSubsNtId { get; set; }
+
+		/// <summary>
+		/// Gets or sets Supply Chain POC Subs Backup Display Name
+		/// </summary>
+		public string SupplyChainPOCSubsBackupDisplayName { get; set; }
+
+		/// <summary>
+		/// Gets or sets Supply Chain POC Subs Backup NT id
+		/// </summary>
+		public string SupplyChainPOCSubsBackupNtId { get; set; }
+
+		/// <summary>
+		/// Gets or sets Contracts POC Display name
+		/// </summary>
+		public string ContractsPOCDisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets Backup Contracts POC Display name

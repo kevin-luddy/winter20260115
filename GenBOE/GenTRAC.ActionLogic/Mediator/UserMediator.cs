@@ -42,8 +42,8 @@ namespace GenTRAC.ActionLogic.Mediator
                 throw new ArgumentNullException(nameof(inUser));
             }
 
-            // Save
-            var toReturn = this.userMapper.Save(inUser);
+			// Save
+			int? toReturn = this.userMapper.Save(inUser);
 
             // Post save business logic
 

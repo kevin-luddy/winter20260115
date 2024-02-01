@@ -128,7 +128,7 @@ namespace GenBOE.DataBridge.DTO
 
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
-				var resultsLinq = from c in gbe.MessageConfirmations
+				IQueryable<int> resultsLinq = from c in gbe.MessageConfirmations
 								  where c.ETIUserId == userID
 								  select c.MessageId;
 
@@ -149,7 +149,7 @@ namespace GenBOE.DataBridge.DTO
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
-				var resultsLinq = from c in gbe.ETIusers
+				IQueryable<int> resultsLinq = from c in gbe.ETIusers
 								  where c.NTID == inUserNTID.ToLower()
 								  select c.ETIUserID;
 
@@ -359,7 +359,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					var data = (from s in gbe.ETIusers
+					IQueryable<int> data = (from s in gbe.ETIusers
 								where ntids.Contains(s.NTID)
 								select s.ETIUserID);
 
@@ -425,7 +425,7 @@ namespace GenBOE.DataBridge.DTO
 					allResults.AddRange(resultLinqBOE);
 
 					// get the distinct list of user ids to return
-					var results = allResults.Distinct();
+					IEnumerable<int> results = allResults.Distinct();
 
 					if (results.Any())
 					{
