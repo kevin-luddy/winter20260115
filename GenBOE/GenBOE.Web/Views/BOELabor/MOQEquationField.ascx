@@ -373,6 +373,15 @@
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SmeTaskEstimates"></span>
             </div>
         </div>
+        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.HistoricalReferenceExplanationIsRequired && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)">
+	        <div class="form-label">
+		        <span>Provide an explanation of Why the Historical Reference was Selected: *</span>
+	        </div>
+            <div class="form-element">
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="HistoricalReferenceExplanation_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Historical Reference Explanation', moqType.SelectedMOQType)}}" data-ng-model="moqType.HistoricalReferenceExplanation"></textarea>
+                <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.HistoricalReferenceExplanation"></span>
+            </div>
+        </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.SME%>">
             <div class="form-label">
                 <span>Rationale: *</span>
@@ -390,16 +399,7 @@
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.Rationale"></span>
             </div>
         </div>
-		<div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.HistoricalReferenceExplanationIsRequired && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)">
-			<div class="form-label">
-				<span>Provide an explanation of Why the Historical Reference was Selected: *</span>
-			</div>
-            <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="HistoricalReferenceExplanation_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Historical Reference Explanation', moqType.SelectedMOQType)}}" data-ng-model="moqType.HistoricalReferenceExplanation"></textarea>
-                <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.HistoricalReferenceExplanation"></span>
-            </div>
-		</div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
+		<div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
             <div class="form-label">
                 <span>Skill Mix Rationale: *</span>
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalSkillMixSuffix);"></div>
