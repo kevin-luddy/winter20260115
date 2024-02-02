@@ -7,7 +7,8 @@
 namespace IES.ActionLogic.ControllerLogic
 {
     using System.Collections.Generic;
-    using System.Web;
+	using System.Threading.Tasks;
+	using System.Web;
     using System.Web.Mvc;
     using IES.Common.OfficeUtilities;
     using IES.DataBridge.ModelViews;
@@ -37,7 +38,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="serverFileName">Server File Name</param>
         /// <param name="httpResponse">HTTP response object</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        void GenerateFullPPRD(string id, string serverFileName, HttpResponseBase httpResponse, bool? portionMarkingRequired);
+        Task GenerateFullPPRD(string id, string serverFileName, HttpResponseBase httpResponse, bool? portionMarkingRequired);
 
         /// <summary>
         /// Generates a file containing revision data as JSON.

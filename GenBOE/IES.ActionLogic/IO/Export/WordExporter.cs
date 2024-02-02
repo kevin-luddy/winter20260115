@@ -7,11 +7,16 @@
 namespace IES.ActionLogic.IO.Export
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using System.Web.Mvc;
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
+    using IES.ActionLogic.Common;
     using IES.Common;
 
     /// <summary>
@@ -26,12 +31,13 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="templateFilePathFull">Full path to the Word template file</param>
         /// <param name="populateData">Method to populate data</param>
         /// <param name="stream">Stream into which to write the exported Word document.</param>
-        protected void Export(string templateFilePathFull, Action<WordprocessingDocument> populateData, Stream stream)
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        protected async Task Export(string templateFilePathFull, Action<WordprocessingDocument> populateData, Stream stream, bool? portionMarkingRequired, TokenService tokenService)
         {
             // open a copy of the Excel template file into memory
             byte[] byteArray = File.ReadAllBytes(templateFilePathFull);
 
-            this.Export(byteArray, populateData, stream);
+            await this.Export(byteArray, populateData, stream, portionMarkingRequired, tokenService);
         }
 
         /// <summary>
@@ -42,7 +48,7 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="populateData">Method to populate data</param>
         /// <param name="stream">Stream into which to write the exported Word document.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This is not an issue with MemoryStream, it allows multiple disposals")]
-        protected void Export(byte[] byteArray, Action<WordprocessingDocument> populateData, Stream stream)
+        protected async Task Export(byte[] byteArray, Action<WordprocessingDocument> populateData, Stream stream, bool? portionMarkingRequired, TokenService tokenService)
         {
             if (byteArray == null)
             {
@@ -58,6 +64,18 @@ namespace IES.ActionLogic.IO.Export
             new FileInfo(tempFilename).Attributes |= FileAttributes.Temporary;
             using (Stream documentStream = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 4096, FileOptions.DeleteOnClose))
             {
+                if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
+                {
+                    ByteArrayContent content = new ByteArrayContent(byteArray);
+                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
+                    HttpClient httpClient = new HttpClient();
+                    Utilities.AddAuthorizationHeader(httpClient, (await tokenService.GetToken()).AccessToken);
+                    string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
+                    HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
+                    result.EnsureSuccessStatusCode();
+                    byteArray = await result.Content.ReadAsByteArrayAsync();
+                }
+
                 documentStream.Write(byteArray, 0, byteArray.Length);
 
                 // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
@@ -77,8 +95,8 @@ namespace IES.ActionLogic.IO.Export
                     documentStream.Seek(0, SeekOrigin.Begin);
                     documentStream.CopyTo(stream);
                 }
-            }
-        }
+			}
+		}
 
         /// <summary>
         /// Save the document.

@@ -62,7 +62,7 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="response">the web response object to write the file back to for user download</param>
         /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        public async Task<ActionResult> ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel, bool? portionMarkingRequired)
+        public async Task ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel, bool? portionMarkingRequired)
 		{
 			if (response == null)
 			{
@@ -76,32 +76,7 @@ namespace IES.ActionLogic.IO.Export
 			response.Clear();
 			response.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
 
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, response.OutputStream);
-
-			if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
-			{
-				byte[] byteArray = File.ReadAllBytes(serverFileName);
-				ByteArrayContent content = new ByteArrayContent(byteArray);
-				content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
-
-				using (MemoryStream stream = new MemoryStream())
-				{
-					stream.Write(byteArray, 0, byteArray.Length);
-					using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(stream, true))
-					{
-						// Make a post call to the Portion Marking API here
-						HttpClient httpClient = new HttpClient();
-                        Utilities.AddAuthorizationHeader(httpClient, (await this.tokenService.GetToken()).AccessToken);
-                        string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
-                        HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
-						result.EnsureSuccessStatusCode();
-
-						string postResponse = await result.Content.ReadAsStringAsync();
-					}
-				}
-			}
-
-			return null;
+			await this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, response.OutputStream, portionMarkingRequired, tokenService);
 		}
 
         /// <summary>
@@ -128,27 +103,27 @@ namespace IES.ActionLogic.IO.Export
 
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream);
+			await this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream, portionMarkingRequired, tokenService);
 
-            if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
-            {
-                byte[] byteArray = File.ReadAllBytes(serverFileName);
-                ByteArrayContent content = new ByteArrayContent(byteArray);
-                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
+            //if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
+            //{
+            //    byte[] byteArray = File.ReadAllBytes(serverFileName);
+            //    ByteArrayContent content = new ByteArrayContent(byteArray);
+            //    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
 
-                stream.Write(byteArray, 0, byteArray.Length);
-                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(stream, true))
-                {
-                    // Make a post call to the Portion Marking API here
-                    HttpClient httpClient = new HttpClient();
-                    Utilities.AddAuthorizationHeader(httpClient, (await this.tokenService.GetToken()).AccessToken);
-                    string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
-                    HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
-                    result.EnsureSuccessStatusCode();
+            //    stream.Write(byteArray, 0, byteArray.Length);
+            //    using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(stream, true))
+            //    {
+            //        // Make a post call to the Portion Marking API here
+            //        HttpClient httpClient = new HttpClient();
+            //        Utilities.AddAuthorizationHeader(httpClient, (await this.tokenService.GetToken()).AccessToken);
+            //        string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
+            //        HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
+            //        result.EnsureSuccessStatusCode();
 
-                    string postResponse = await result.Content.ReadAsStringAsync();
-                }
-            }
+            //        string postResponse = await result.Content.ReadAsStringAsync();
+            //    }
+            //}
 
             return null;
         }

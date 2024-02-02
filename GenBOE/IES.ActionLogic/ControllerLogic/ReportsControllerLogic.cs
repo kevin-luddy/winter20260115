@@ -8,7 +8,8 @@ namespace IES.ActionLogic.ControllerLogic
 {
     using System;
     using System.Collections.Generic;
-    using System.Web;
+	using System.Threading.Tasks;
+	using System.Web;
     using System.Web.Mvc;
     using IES.ActionLogic.IO.Export;
     using IES.Common;
@@ -116,7 +117,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="serverFileName">Server File Name</param>
         /// <param name="httpResponse">HTTP response object</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        public void GenerateFullPPRD(string id, string serverFileName, HttpResponseBase httpResponse, bool? portionMarkingRequired)
+        public async Task GenerateFullPPRD(string id, string serverFileName, HttpResponseBase httpResponse, bool? portionMarkingRequired)
         {
             if (id == null)
             {
@@ -155,7 +156,7 @@ namespace IES.ActionLogic.ControllerLogic
             ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
             // TODO - RDM 1.0 - Update to allow user to select number of years
-            this.pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, httpResponse, refNumberPrefixLevel, portionMarkingRequired);
+           await this.pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, httpResponse, refNumberPrefixLevel, portionMarkingRequired);
         }
 
         /// <summary>
