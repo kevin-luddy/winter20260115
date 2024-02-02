@@ -64,37 +64,57 @@ namespace IES.ActionLogic.IO.Export
             new FileInfo(tempFilename).Attributes |= FileAttributes.Temporary;
             using (Stream documentStream = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 4096, FileOptions.DeleteOnClose))
             {
-                if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
-                {
-                    ByteArrayContent content = new ByteArrayContent(byteArray);
-                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
-                    HttpClient httpClient = new HttpClient();
-                    Utilities.AddAuthorizationHeader(httpClient, (await tokenService.GetToken()).AccessToken);
-                    string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
-                    HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
-                    result.EnsureSuccessStatusCode();
-                    byteArray = await result.Content.ReadAsByteArrayAsync();
-                }
+				if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
+				{
+					try
+					{
+						ByteArrayContent content = new ByteArrayContent(byteArray);
+						content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
+						HttpClient httpClient = new HttpClient();
+						Utilities.AddAuthorizationHeader(httpClient, (await tokenService.GetToken()).AccessToken);
+						string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
+						/*HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
+						//result.EnsureSuccessStatusCode();
+						byteArray = await result.Content.ReadAsByteArrayAsync();*/
+						Task<HttpResponseMessage> syncTest = Task.Run(() => httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content));
+						syncTest.Wait();
+						HttpResponseMessage response = syncTest.Result;
+						Task<byte[]> test = syncTest.Result.Content.ReadAsByteArrayAsync();
 
-                documentStream.Write(byteArray, 0, byteArray.Length);
+						byteArray = test.Result;
+					}
+					catch (Exception ex)
+					{
 
-                // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
-                lock (CacheConstants.OPEN_XML_LOCK)
-                {
-                    // Create the document object in memory
-                    using (WordprocessingDocument document = WordprocessingDocument.Open(documentStream, true))
-                    {
-                        // Call the worker method to load-in the data
-                        populateData(document);
+					}
+				}
 
-                        // Save all the changes
-                        this.SaveDocument(document);
-                    }
+				documentStream.Write(byteArray, 0, byteArray.Length);
 
-                    // write the document from the file into the caller's stream
-                    documentStream.Seek(0, SeekOrigin.Begin);
-                    documentStream.CopyTo(stream);
-                }
+				try
+				{
+					// synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
+					lock (CacheConstants.OPEN_XML_LOCK)
+					{
+						// Create the document object in memory
+						using (WordprocessingDocument document = WordprocessingDocument.Open(documentStream, true))
+						{
+							// Call the worker method to load-in the data
+							populateData(document);
+
+							// Save all the changes
+							this.SaveDocument(document);
+						}
+
+						// write the document from the file into the caller's stream
+						documentStream.Seek(0, SeekOrigin.Begin);
+						documentStream.CopyTo(stream);
+					}
+				}
+				catch (Exception ex)
+				{
+
+				}
 			}
 		}
 
