@@ -67,70 +67,58 @@ namespace IES.ActionLogic.IO.Export
             {
 				documentStream.Write(byteArray, 0, byteArray.Length);
 
-				try
+				// synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
+				lock (CacheConstants.OPEN_XML_LOCK)
 				{
-					// synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
-					lock (CacheConstants.OPEN_XML_LOCK)
+					// Create the document object in memory
+					using (WordprocessingDocument document = WordprocessingDocument.Open(documentStream, true))
 					{
-						// Create the document object in memory
-						using (WordprocessingDocument document = WordprocessingDocument.Open(documentStream, true))
-						{
-							//document.DeepClone()
-							// Call the worker method to load-in the data
-							populateData(document);
+						//document.DeepClone()
+						// Call the worker method to load-in the data
+						populateData(document);
 
-							// Save all the changes
-							this.SaveDocument(document);
-						}
+						// Save all the changes
+						this.SaveDocument(document);
+					}
 
-						// write the document from the file into the caller's stream
+					// write the document from the file into the caller's stream
+					if (!(portionMarkingRequired.HasValue && portionMarkingRequired.Value))
+					{
 						documentStream.Seek(0, SeekOrigin.Begin);
 						documentStream.CopyTo(stream);
 					}
-
-					if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
-					{
-						try
-						{
-							//ByteArrayContent content = new ByteArrayContent(byteArray);
-
-							ByteArrayContent content;
-							byte[] tempBytes;
-							using (MemoryStream memoryStream = new MemoryStream())
-							{
-								documentStream.Seek(0, SeekOrigin.Begin);
-								documentStream.CopyTo(memoryStream);
-								tempBytes = memoryStream.ToArray();
-								content = new ByteArrayContent(tempBytes);
-							}
-
-							content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
-							HttpClient httpClient = new HttpClient();
-							Utilities.AddAuthorizationHeader(httpClient, (await tokenService.GetToken()).AccessToken);
-							string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
-							/*HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
-							//result.EnsureSuccessStatusCode();
-							byteArray = await result.Content.ReadAsByteArrayAsync();*/
-							Task<HttpResponseMessage> syncAPICall = Task.Run(() => httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content));
-							syncAPICall.Wait();
-							HttpResponseMessage response = syncAPICall.Result;
-
-							// Deserialize the response because we're getting more than just the byte[] back
-							string allBytes = await response.Content.ReadAsStringAsync();
-							Result<byte[]> deserializedResult = JsonConvert.DeserializeObject<Result<byte[]>>(allBytes);
-
-							//stream.SetLength(0);
-							stream = new MemoryStream(deserializedResult.Data);
-						}
-						catch (Exception ex)
-						{
-
-						}
-					}
 				}
-				catch (Exception ex)
+
+				if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
 				{
 
+					ByteArrayContent content;
+					byte[] tempBytes;
+					using (MemoryStream memoryStream = new MemoryStream())
+					{
+						documentStream.Seek(0, SeekOrigin.Begin);
+						documentStream.CopyTo(memoryStream);
+						tempBytes = memoryStream.ToArray();
+						content = new ByteArrayContent(tempBytes);
+					}
+
+					content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
+					HttpClient httpClient = new HttpClient();
+					Utilities.AddAuthorizationHeader(httpClient, (await tokenService.GetToken()).AccessToken);
+					string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
+					Task<HttpResponseMessage> syncAPICall = Task.Run(() => httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content));
+					syncAPICall.Wait();
+					HttpResponseMessage response = syncAPICall.Result;
+
+					// Deserialize the entire response because we're getting more than just the byte[] back
+					string allBytes = await response.Content.ReadAsStringAsync();
+					Result<byte[]> deserializedResult = JsonConvert.DeserializeObject<Result<byte[]>>(allBytes);
+
+					// TO-DO: Check for any messages/failed Status from the API here
+
+					MemoryStream memStream = new MemoryStream(deserializedResult.Data);
+					memStream.Seek(0, SeekOrigin.Begin);
+					memStream.CopyTo(stream);
 				}
 			}
 		}

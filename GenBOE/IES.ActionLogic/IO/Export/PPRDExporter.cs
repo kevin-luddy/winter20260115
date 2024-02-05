@@ -105,26 +105,6 @@ namespace IES.ActionLogic.IO.Export
 
 			await this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream, portionMarkingRequired, tokenService);
 
-            //if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
-            //{
-            //    byte[] byteArray = File.ReadAllBytes(serverFileName);
-            //    ByteArrayContent content = new ByteArrayContent(byteArray);
-            //    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
-
-            //    stream.Write(byteArray, 0, byteArray.Length);
-            //    using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(stream, true))
-            //    {
-            //        // Make a post call to the Portion Marking API here
-            //        HttpClient httpClient = new HttpClient();
-            //        Utilities.AddAuthorizationHeader(httpClient, (await this.tokenService.GetToken()).AccessToken);
-            //        string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
-            //        HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
-            //        result.EnsureSuccessStatusCode();
-
-            //        string postResponse = await result.Content.ReadAsStringAsync();
-            //    }
-            //}
-
             return null;
         }
 
