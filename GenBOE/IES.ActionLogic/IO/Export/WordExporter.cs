@@ -18,11 +18,12 @@ namespace IES.ActionLogic.IO.Export
     using DocumentFormat.OpenXml.Wordprocessing;
     using IES.ActionLogic.Common;
     using IES.Common;
+	using Newtonsoft.Json;
 
-    /// <summary>
-    /// Word Exporter class containing export methods and other utilities
-    /// </summary>
-    public class WordExporter
+	/// <summary>
+	/// Word Exporter class containing export methods and other utilities
+	/// </summary>
+	public class WordExporter
     {
         /// <summary>
         /// Run the export: Read the Word template file into an in-memory OpenXml Wordprocessing document, call the designated data
@@ -64,31 +65,6 @@ namespace IES.ActionLogic.IO.Export
             new FileInfo(tempFilename).Attributes |= FileAttributes.Temporary;
             using (Stream documentStream = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 4096, FileOptions.DeleteOnClose))
             {
-				if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
-				{
-					try
-					{
-						ByteArrayContent content = new ByteArrayContent(byteArray);
-						content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
-						HttpClient httpClient = new HttpClient();
-						Utilities.AddAuthorizationHeader(httpClient, (await tokenService.GetToken()).AccessToken);
-						string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
-						/*HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
-						//result.EnsureSuccessStatusCode();
-						byteArray = await result.Content.ReadAsByteArrayAsync();*/
-						Task<HttpResponseMessage> syncTest = Task.Run(() => httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content));
-						syncTest.Wait();
-						HttpResponseMessage response = syncTest.Result;
-						Task<byte[]> test = syncTest.Result.Content.ReadAsByteArrayAsync();
-
-						byteArray = test.Result;
-					}
-					catch (Exception ex)
-					{
-
-					}
-				}
-
 				documentStream.Write(byteArray, 0, byteArray.Length);
 
 				try
@@ -99,6 +75,7 @@ namespace IES.ActionLogic.IO.Export
 						// Create the document object in memory
 						using (WordprocessingDocument document = WordprocessingDocument.Open(documentStream, true))
 						{
+							//document.DeepClone()
 							// Call the worker method to load-in the data
 							populateData(document);
 
@@ -109,6 +86,46 @@ namespace IES.ActionLogic.IO.Export
 						// write the document from the file into the caller's stream
 						documentStream.Seek(0, SeekOrigin.Begin);
 						documentStream.CopyTo(stream);
+					}
+
+					if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
+					{
+						try
+						{
+							//ByteArrayContent content = new ByteArrayContent(byteArray);
+
+							ByteArrayContent content;
+							byte[] tempBytes;
+							using (MemoryStream memoryStream = new MemoryStream())
+							{
+								documentStream.Seek(0, SeekOrigin.Begin);
+								documentStream.CopyTo(memoryStream);
+								tempBytes = memoryStream.ToArray();
+								content = new ByteArrayContent(tempBytes);
+							}
+
+							content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
+							HttpClient httpClient = new HttpClient();
+							Utilities.AddAuthorizationHeader(httpClient, (await tokenService.GetToken()).AccessToken);
+							string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
+							/*HttpResponseMessage result = await httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content);
+							//result.EnsureSuccessStatusCode();
+							byteArray = await result.Content.ReadAsByteArrayAsync();*/
+							Task<HttpResponseMessage> syncAPICall = Task.Run(() => httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content));
+							syncAPICall.Wait();
+							HttpResponseMessage response = syncAPICall.Result;
+
+							// Deserialize the response because we're getting more than just the byte[] back
+							string allBytes = await response.Content.ReadAsStringAsync();
+							Result<byte[]> deserializedResult = JsonConvert.DeserializeObject<Result<byte[]>>(allBytes);
+
+							//stream.SetLength(0);
+							stream = new MemoryStream(deserializedResult.Data);
+						}
+						catch (Exception ex)
+						{
+
+						}
 					}
 				}
 				catch (Exception ex)
