@@ -246,7 +246,7 @@ namespace GenTRAC.Web.Controllers
 		}
 
 		/// <summary>
-		/// Get Proposal Permissions for NLF
+		/// Get Proposal Permissions for NLF for the user retrieved from the authorization token
 		/// </summary>
 		/// <returns>Proposal Permissions for the current user</returns>
 		[HttpGet]
@@ -257,7 +257,6 @@ namespace GenTRAC.Web.Controllers
 			try
 			{
 				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
-				bool isAdmin = securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 
 				result.Data.Add(proposalLoader.GetProposalRolesForNlfByNtid(ntid));
 				result.IsSuccessful = true;
