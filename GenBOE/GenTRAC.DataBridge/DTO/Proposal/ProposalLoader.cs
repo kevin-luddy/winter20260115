@@ -2245,14 +2245,15 @@ namespace GenTRAC.DataBridge.DTO
 		public ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid)
 		{
 			ICollection<ProposalRoleDto> result = new Collection<ProposalRoleDto>();
+			ntid = ntid.ToLower();
 
-			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetEppProposalData", Log))
+			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalRolesForNlfByNtid", Log))
 			{
 				using (genTRACEntities dbModel = new genTRACEntities())
 				{
 					result = dbModel.Proposals.Where(x => x.ProposalClassLU.ProposalClass != Constants.PROPOSAL_CLASS_FORECASTED
-						&& x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid.ToLower()))
-						.SelectMany(x => x.ProposalUserRoles).Where(role => role.genTRACUser.NTID.ToLower() == ntid.ToLower()
+						&& x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid))
+						.SelectMany(x => x.ProposalUserRoles).Where(role => role.genTRACUser.NTID.ToLower() == ntid
 							&& (role.RoleID == (int)PtmRole.Pricer || role.RoleID == (int)PtmRole.BackupPricer
 								|| role.RoleID == (int)PtmRole.CostVolumeLead || role.RoleID == (int)PtmRole.SupplyChainPOCMatl
 								|| role.RoleID == (int)PtmRole.BackupMaterialLead || role.RoleID == (int)PtmRole.SupplyChainPOCSubs
