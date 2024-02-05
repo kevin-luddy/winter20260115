@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 ApplicationConfigurationBase config = new();
-config.ConfigureBasics<Program>(builder, "IESEntities");
+config.ConfigureBasics<Program>(builder, "IES_DATABASE");
 config.AddWindowsAuthentication(builder.Services, builder.Configuration);
 
 // Add Custom Services
