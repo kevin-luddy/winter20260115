@@ -12,6 +12,7 @@ namespace GenTRAC.Web.Controllers
 	using System.Web.Http;
 	using GenTRAC.DataBridge.Common.Security;
 	using GenTRAC.DataBridge.DTO;
+	using GenTRAC.DataBridge.DTO.Permission;
 	using GenTRAC.Objects;
 	using GenTRAC.Objects.FullObject;
 	using GenTRAC.Web.ModelView;
@@ -238,6 +239,33 @@ namespace GenTRAC.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occured returning PBOE data: {ex.Message}");
+				result.IsSuccessful = false;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get Proposal Permissions for NLF
+		/// </summary>
+		/// <returns>Proposal Permissions for the current user</returns>
+		[HttpGet]
+		public IESResponse<ICollection<ProposalRoleDto>> GetProposalPermissions()
+		{
+			IESResponse<ICollection<ProposalRoleDto>> result = new IESResponse<ICollection<ProposalRoleDto>>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+				bool isAdmin = securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
+
+				result.Data.Add(proposalLoader.GetProposalRolesForNlfByNtid(ntid));
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured returning Proposal Permissions: {ex.Message}");
 				result.IsSuccessful = false;
 			}
 

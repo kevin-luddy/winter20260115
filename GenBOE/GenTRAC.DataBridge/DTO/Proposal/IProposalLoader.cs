@@ -9,7 +9,8 @@ namespace GenTRAC.DataBridge.DTO
     using System;
     using System.Collections.Generic;
     using System.Web.Mvc;
-    using IES.Common;
+	using GenTRAC.DataBridge.DTO.Permission;
+	using IES.Common;
 
     /// <summary>
     /// proposal loader interface
@@ -223,5 +224,12 @@ namespace GenTRAC.DataBridge.DTO
 		/// <param name="proposalId">Proposal ID</param>
 		/// <returns>Header data for the proposal ID</returns>
 		AcvHeaderDataDto GetAcvHeaderDataByProposalId(int proposalId);
-    }
+
+		/// <summary>
+		/// Get Proposal Roles for the given user that are needed for NLF
+		/// </summary>
+		/// <param name="ntid">NTID</param>
+		/// <returns>Collection of Proposals and Roles for the user</returns>
+		ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid);
+	}
 }

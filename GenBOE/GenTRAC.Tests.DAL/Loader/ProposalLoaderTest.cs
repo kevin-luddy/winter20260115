@@ -9,14 +9,15 @@ namespace GenTRAC.Tests.DAL.Loader
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Transactions;
+	using System.Linq;
+	using System.Transactions;
     using ActionLogic;
     using ActionLogic.Email;
     using ActionLogic.Mediator;
     using DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
-    using GenTRAC.Models;
+	using GenTRAC.DataBridge.DTO.Permission;
+	using GenTRAC.Models;
     using IES.Common;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -1647,6 +1648,87 @@ namespace GenTRAC.Tests.DAL.Loader
 			Assert.AreEqual(testProposal.ProposalTitle, result.ProposalTitle);
 			Assert.AreEqual(testProposal.RFPNumber, result.RfpNumber);
 			Assert.AreEqual(testProposal.AnticipatedDeliveryDate, result.CostVolumeSubmittalDate);
+		}
+
+		/// <summary>
+		/// Test that GetProposalRolesForNlfByNtid returns results for each role
+		/// </summary>
+		[TestMethod]
+		public void GetProposalRolesForNlfByNtid_NonAdmin()
+		{
+			ProposalLoader sut = CreateSystem();
+
+			string leadEstimatorNtid;
+			string backupEstimatorNtid;
+			string costVolumeLeadNtid;
+			string materialLeadNtid;
+			string backupMaterialLeadNtid;
+			string subcontractsLeadNtid;
+			string backupSubcontractsLeadNtid;
+
+			using (genTRACEntities dbModel = new genTRACEntities())
+			{
+				leadEstimatorNtid = GetNtidWithRole(PtmRole.Pricer, dbModel);
+				backupEstimatorNtid = GetNtidWithRole(PtmRole.BackupPricer, dbModel);
+				costVolumeLeadNtid = GetNtidWithRole(PtmRole.CostVolumeLead, dbModel);
+				materialLeadNtid = GetNtidWithRole(PtmRole.SupplyChainPOCMatl, dbModel);
+				backupMaterialLeadNtid = GetNtidWithRole(PtmRole.BackupMaterialLead, dbModel);
+				subcontractsLeadNtid = GetNtidWithRole(PtmRole.SupplyChainPOCSubs, dbModel);
+				backupSubcontractsLeadNtid = GetNtidWithRole(PtmRole.BackupSubcontractsLead, dbModel);
+			}
+
+			ICollection<ProposalRoleDto> result = sut.GetProposalRolesForNlfByNtid(leadEstimatorNtid);
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Role == PtmRole.Pricer));
+
+			result = sut.GetProposalRolesForNlfByNtid(backupEstimatorNtid);
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Role == PtmRole.BackupPricer));
+
+			result = sut.GetProposalRolesForNlfByNtid(costVolumeLeadNtid);
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Role == PtmRole.CostVolumeLead));
+
+			if (!string.IsNullOrEmpty(materialLeadNtid))
+			{
+				result = sut.GetProposalRolesForNlfByNtid(materialLeadNtid);
+				Assert.IsTrue(result.Any());
+				Assert.IsTrue(result.Any(x => x.Role == PtmRole.SupplyChainPOCMatl));
+			}
+
+			if (!string.IsNullOrEmpty(backupMaterialLeadNtid))
+			{
+				result = sut.GetProposalRolesForNlfByNtid(backupMaterialLeadNtid);
+				Assert.IsTrue(result.Any());
+				Assert.IsTrue(result.Any(x => x.Role == PtmRole.BackupMaterialLead));
+			}
+
+			if (!string.IsNullOrEmpty(subcontractsLeadNtid))
+			{
+				result = sut.GetProposalRolesForNlfByNtid(subcontractsLeadNtid);
+				Assert.IsTrue(result.Any());
+				Assert.IsTrue(result.Any(x => x.Role == PtmRole.SupplyChainPOCSubs));
+			}
+
+			if (!string.IsNullOrEmpty(backupSubcontractsLeadNtid))
+			{
+				result = sut.GetProposalRolesForNlfByNtid(backupSubcontractsLeadNtid);
+				Assert.IsTrue(result.Any());
+				Assert.IsTrue(result.Any(x => x.Role == PtmRole.BackupSubcontractsLead));
+			}
+		}
+
+		/// <summary>
+		/// Get an NTID with the given role from a proposal
+		/// </summary>
+		/// <param name="ptmRole">Role to get NTID for</param>
+		/// <param name="dbModel">genTrac Entities</param>
+		/// <returns>NTID</returns>
+		private string GetNtidWithRole(PtmRole ptmRole, genTRACEntities dbModel)
+		{
+			return dbModel.Proposals.Where(x => x.ProposalClassLU.ProposalClass != Constants.PROPOSAL_CLASS_FORECASTED
+					&& x.ProposalUserRoles.Any(role => role.RoleID == (int)ptmRole)).FirstOrDefault()?
+					.ProposalUserRoles.FirstOrDefault(y => y.RoleID == (int)ptmRole)?.genTRACUser.NTID.ToString();
 		}
 	}
 }
