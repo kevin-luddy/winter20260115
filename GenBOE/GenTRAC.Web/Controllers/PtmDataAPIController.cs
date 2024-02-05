@@ -8,6 +8,7 @@ namespace GenTRAC.Web.Controllers
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Web.Http;
 	using GenTRAC.DataBridge.Common.Security;
@@ -249,6 +250,7 @@ namespace GenTRAC.Web.Controllers
 		/// Get Proposal Permissions for NLF for the user retrieved from the authorization token
 		/// </summary>
 		/// <returns>Proposal Permissions for the current user</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<ICollection<ProposalRoleDto>> GetProposalPermissions()
 		{
