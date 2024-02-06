@@ -13,6 +13,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.IO;
 	using System.Linq;
 	using System.Text.RegularExpressions;
+	using System.Threading.Tasks;
 	using System.Transactions;
 	using System.Web;
 	using DataBridge.Loaders;
@@ -579,7 +580,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="serverFileName">Server File Name</param>
         /// <param name="httpResponse">HTTP response object</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired)
+        public async Task GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired)
 		{
             if (serverFileName == null)
 			{
@@ -604,7 +605,7 @@ namespace IES.ActionLogic.ControllerLogic
 			httpResponse.Clear();
 			httpResponse.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
 
-			this.GenerateRDD(proposalId, serverFileName, httpResponse.OutputStream, modelView, null, true, portionMarkingRequired);
+			await this.GenerateRDD(proposalId, serverFileName, httpResponse.OutputStream, modelView, null, true, portionMarkingRequired);
 		}
 
         /// <summary>
@@ -617,7 +618,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
         /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        public void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
+        public async Task GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
 		{
             if (serverFileName == null)
 			{
@@ -672,7 +673,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// Get File Attachments
 			ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
-			this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, portionMarkingRequired, includeDocumentDetails);
+			await this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, portionMarkingRequired, includeDocumentDetails);
 		}
 
 		/// <summary>

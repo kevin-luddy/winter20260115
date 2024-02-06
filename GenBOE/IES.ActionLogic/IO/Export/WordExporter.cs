@@ -79,7 +79,6 @@ namespace IES.ActionLogic.IO.Export
 					// Create the document object in memory
 					using (WordprocessingDocument document = WordprocessingDocument.Open(documentStream, true))
 					{
-						//document.DeepClone()
 						// Call the worker method to load-in the data
 						populateData(document);
 

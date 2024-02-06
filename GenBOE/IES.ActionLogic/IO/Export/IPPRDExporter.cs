@@ -46,6 +46,6 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
         /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        Task<ActionResult> ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool? portionMarkingRequired, bool includeDocumentDetails = true);
+        Task ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool? portionMarkingRequired, bool includeDocumentDetails = true);
     }
 }

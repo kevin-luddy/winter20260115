@@ -92,7 +92,7 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
         /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        public async Task<ActionResult> ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool? portionMarkingRequired, bool includeDocumentDetails = true)
+        public async Task ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool? portionMarkingRequired, bool includeDocumentDetails = true)
 		{
 			if (stream == null)
 			{
@@ -104,8 +104,6 @@ namespace IES.ActionLogic.IO.Export
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
 			await this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream, portionMarkingRequired, tokenService);
-
-            return null;
         }
 
         #region Populate Methods
