@@ -61,6 +61,7 @@ namespace IES.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(populateData));
             }
 
+			bool doPortionMarking = portionMarkingRequired.HasValue && portionMarkingRequired.Value;
             string tempFilename = Path.GetTempFileName();
             new FileInfo(tempFilename).Attributes |= FileAttributes.Temporary;
             using (Stream documentStream = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 4096, FileOptions.DeleteOnClose))
@@ -82,16 +83,15 @@ namespace IES.ActionLogic.IO.Export
 					}
 
 					// write the document from the file into the caller's stream
-					if (!(portionMarkingRequired.HasValue && portionMarkingRequired.Value))
+					if (!doPortionMarking)
 					{
 						documentStream.Seek(0, SeekOrigin.Begin);
 						documentStream.CopyTo(stream);
 					}
 				}
 
-				if (portionMarkingRequired.HasValue && portionMarkingRequired.Value)
+				if (doPortionMarking)
 				{
-
 					ByteArrayContent content;
 					byte[] tempBytes;
 					using (MemoryStream memoryStream = new MemoryStream())
@@ -114,11 +114,35 @@ namespace IES.ActionLogic.IO.Export
 					string allBytes = await response.Content.ReadAsStringAsync();
 					Result<byte[]> deserializedResult = JsonConvert.DeserializeObject<Result<byte[]>>(allBytes);
 
-					// TO-DO: Check for any messages/failed Status from the API here
-
-					MemoryStream memStream = new MemoryStream(deserializedResult.Data);
-					memStream.Seek(0, SeekOrigin.Begin);
-					memStream.CopyTo(stream);
+					if (!deserializedResult.Messages.Any())
+					{
+						MemoryStream memStream = new MemoryStream(deserializedResult.Data);
+						memStream.Seek(0, SeekOrigin.Begin);
+						memStream.CopyTo(stream);
+					} else
+					{
+						string tempErrorFilename = Path.GetTempFileName();
+						lock (CacheConstants.OPEN_XML_LOCK)
+						{
+							using (WordprocessingDocument errorDocument = WordprocessingDocument.Create(tempErrorFilename, WordprocessingDocumentType.Document))
+							{
+								MainDocumentPart mainPart = errorDocument.AddMainDocumentPart();
+								mainPart.Document = new Document();
+								Body body = mainPart.Document.AppendChild(new Body());
+								foreach (string message in deserializedResult.Messages)
+								{
+									Paragraph para = body.AppendChild(new Paragraph());
+									Run run = para.AppendChild(new Run());
+									run.AppendChild(new Text(message));
+								}
+							}
+						}
+						using (Stream errorStream = new FileStream(tempErrorFilename, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.DeleteOnClose))
+						{
+							errorStream.Seek(0, SeekOrigin.Begin);
+							errorStream.CopyTo(stream);
+						}
+					}
 				}
 			}
 		}
