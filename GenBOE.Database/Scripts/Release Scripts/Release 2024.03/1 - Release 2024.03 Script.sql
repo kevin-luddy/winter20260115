@@ -1,4 +1,4 @@
-EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.2';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.3';
 GO
 
 IF COL_LENGTH ('dbo.MOQTypeSelection', 'HistoricalReferenceExplanation') IS NULL

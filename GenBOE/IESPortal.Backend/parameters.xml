@@ -7,6 +7,10 @@
         will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
 
 	<!--appSettings-->
+	<parameter name="AllowedOrigins" description="doesn't matter" defaultvalue="__AllowedOrigins__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_AllowedOrigins_">
+		</parameterentry>
+	</parameter>
 	<parameter name="IESUrl" description="doesn't matter" defaultvalue="__IESUrl__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IESUrl_">
 		</parameterentry>
@@ -72,9 +76,9 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_SECRET_">
 		</parameterentry>
 	</parameter>
-	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities2__" tags="">
+	<parameter name="IESDatabase" description="doesn't matter" defaultvalue="__IES_Database__" tags="">
 		<parameterValidation kind="AllowEmpty" />
-		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_ENTITIES_">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_DATABASE_">
 		</parameterentry>
 	</parameter>
 	<parameter name="SplunkHost" description="doesn't matter" defaultvalue="__Splunk_Host__" tags="">

@@ -242,6 +242,18 @@ namespace IES.Common
 		BackupContractsPOC = 22,
 
 		/// <summary>
+		/// Backup Subcontracts Lead
+		/// </summary>
+		[Description("Backup Subcontracts Lead")]
+		BackupSubcontractsLead = 23,
+
+		/// <summary>
+		/// Backup Material Lead
+		/// </summary>
+		[Description("Backup Material Lead")]
+		BackupMaterialLead = 24,
+
+		/// <summary>
 		/// CAREFUL
 		/// 
 		/// Do not use this as a ROLE. This is only used for some decisions in which dropdown should be 
