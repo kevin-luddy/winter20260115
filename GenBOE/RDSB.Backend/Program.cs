@@ -18,6 +18,14 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 ApplicationConfigurationBase config = new();
 config.ConfigureBasics<Program>(builder, "IES_DATABASE");
 config.AddWindowsAuthentication(builder.Services, builder.Configuration);
+builder.Services.AddCors(options =>
+{
+	options.AddDefaultPolicy(builder =>
+		builder.SetIsOriginAllowed(_ => true)
+		.AllowAnyMethod()
+		.AllowAnyHeader()
+		.AllowCredentials());
+});
 
 // Add Custom Services
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
