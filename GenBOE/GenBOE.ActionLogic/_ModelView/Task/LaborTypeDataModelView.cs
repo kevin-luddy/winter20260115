@@ -62,9 +62,9 @@ namespace GenBOE.ActionLogic.ModelView
         /// </summary>
         /// <param name="inBoeLaborType">The <see cref="ResourceTypeDto"/> object used to populate properties</param>
         /// <param name="inResource">The <see cref="ResourceDTO"/> object used to populate properties</param>
-		/// <param name="inBusinessResourceCode"> The <see cref="BusinessResourceCodeDTO"/> object used to populate properties</param>
+		/// <param name="inBusinessResourceCode"> The <see cref="ResourceDTO"/> object used to populate properties</param>
         /// <param name="perfOrg">The <see cref="PerformingOrgDTO" /> object used to populate properties.</param>
-        public LaborTypeDataModelView(ResourceTypeDto inBoeLaborType, ResourceDTO inResource, BusinessResourceCodeDTO inBusinessResourceCode, PerformingOrgDTO perfOrg)
+        public LaborTypeDataModelView(ResourceTypeDto inBoeLaborType, ResourceDTO inResource, ResourceDTO inBusinessResourceCode, PerformingOrgDTO perfOrg)
             : this()
         {
             if (inBoeLaborType == null) { throw new ArgumentNullException(nameof(inBoeLaborType)); }
@@ -87,9 +87,9 @@ namespace GenBOE.ActionLogic.ModelView
             this.ResourceType = inResource.ResourceTypeCategory;
             this.ResourceDescription = inResource.ResourceDesc;
             this.RateType = inResource.RateType;
-			this.BusinessResourceCodeName = inBusinessResourceCode.BusinessResourceCodeName;
-			this.BusinessResourceCodeType = inBusinessResourceCode.BusinessResourceCodeTypeCategory;
-			this.BusinessResourceCodeDescription = inBusinessResourceCode.BusinessResourceCodeDesc;
+			this.BusinessResourceCodeName = inBusinessResourceCode.ResourceName;
+			this.BusinessResourceCodeType = inBusinessResourceCode.ResourceTypeCategory;
+			this.BusinessResourceCodeDescription = inBusinessResourceCode.ResourceDesc;
             this.CanOffload = inBoeLaborType.CanOffload;
             this.TieredPercentage = inBoeLaborType.TieredPercentage;
             this.ElementOfCost = (int)inResource.ElementOfCost;

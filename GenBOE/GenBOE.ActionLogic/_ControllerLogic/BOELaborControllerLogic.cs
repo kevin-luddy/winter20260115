@@ -473,7 +473,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     foreach (ResourceTypeDto missing in missingLabors)
                     {
                         this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-                        LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new BusinessResourceCodeDTO(), new PerformingOrgDTO());
+                        LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO());
                         toDelete.Deleted = true;
                         modelView.LaborTypesData.Add(toDelete);
                     }
@@ -2102,10 +2102,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     resource = resourcesFromDb.First(x => x.Id == labor.ResourceID.Value);
                 }
 
-				BusinessResourceCodeDTO businessResourceCode = new BusinessResourceCodeDTO();
-				if (labor.BusinessResourceCodeID != null)
+				ResourceDTO businessResourceCode = new ResourceDTO();
+				if (labor.BusinessResourceCodeID != null && labor.BusinessResourceCodeID > 0)
 				{
-					businessResourceCode = new BusinessResourceCodeDTO(resourcesFromDb.First(x => x.Id == labor.BusinessResourceCodeID.Value));
+					businessResourceCode = resourcesFromDb.First(x => x.Id == labor.BusinessResourceCodeID.Value);
 				}
 
                 PerformingOrgDTO perfOrg = new PerformingOrgDTO();

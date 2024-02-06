@@ -27,7 +27,9 @@
     $scope.model.AdjacentItems.PreviousId = undefined;
     $scope.model.AdjacentItems.NextId = undefined;
     $scope.SelectedMoqTypes = [];
-    $scope.IsDraftOrDraftLocked = false;
+	$scope.IsDraftOrDraftLocked = false;
+	$scope.resourceColumnDisabled = false;
+	$scope.brcColumnDisabled = false;
 
     $scope.isPreviousTaskDisabled = function () {
         return $scope.model.AdjacentItems.PreviousId === undefined || $scope.model.AdjacentItems.PreviousId === null;
@@ -77,7 +79,7 @@
 
     /** Resources and Performing Orgs **/
 	$scope.ResourceModels = BOEDetails.WSResources;
-	$scope.BusinessResourceCodeModels = BOEDetails.WSResources;
+	$scope.BusinessResourceCodeModels = BOEDetails.WSBusinessResourceCodes;
     $scope.PerfOrgModels = angular.copy(BOEDetails.WSPerfOrgs);
 
     $scope.isExporting = false;
@@ -1510,7 +1512,19 @@
             item.ResourceID = undefined;
         }
         $scope.checkIfNewRowNeeded(item);
-    };
+	};
+
+	$scope.businessResourceCodeUpdated = function (item) {
+		// this takes care of deselections
+		if ((item.BusinessResourceCodeInput === undefined || item.BusinessResourceCodeInput === '') && item.BusinessResourceCodeDescription !== undefined) {
+			$scope.setDirty();
+			item.BusinessResourceCodeDescription = undefined;
+			item.BusinessResouceCodeName = undefined;
+			item.BusinessResourceCodeType = undefined;
+			item.BusinessResourceCodeID = undefined;
+		}
+		$scope.checkIfNewRowNeeded(item);
+	};
 
     $scope.isResourceValid = function(input, models) {
         result = true;
@@ -1572,7 +1586,7 @@
         $scope.checkIfNewRowNeeded(model);
 	};
 
-	$scope.BusinessResourceCodeSelected = function (item, model) {
+	$scope.businessResourceCodeSelected = function (item, model) {
 		$scope.setDirty();
 
 		if (item && item.BusinessResourceCodeDesc && item.BusinessResourceCodeDesc !== '') {
@@ -1594,7 +1608,7 @@
 			}
 
 			model.RateType = item.RateType;
-			model.BusinessResourceCodeId = item.Id;
+			model.BusinessResourceCodeID = item.Id;
 			$scope.recalculateSpreads(model);
 		}
 
@@ -1800,7 +1814,20 @@
         // update spreads (this validates the row)
         $scope.recalculateSpreads(item);
         $scope.runAllTaskDateValidation();
-    };
+	};
+
+	$scope.setColumnDisabled = function (item) {
+		var itemStartDate = item.StartDate.toDate();
+		var itemEndDate = item.EndDate.toDate();
+
+		if (ManageTaskModel.CompanyConfiguration === "Space") {
+
+		}
+
+		if (ManageTaskModel.CompanyConfiguration === "RMS") {
+
+		}
+	}
 
     $scope.percentSpreadUpdated = function (item) {
         $scope.setDirty();
@@ -1866,7 +1893,12 @@
             ResourceID: undefined,
             ResourceInput: undefined,
             ResourceName: undefined,
-            ResourceType: undefined,
+			ResourceType: undefined,
+			BusinessResourceCodeID: undefined,
+			BusinessResourceCodeInput: undefined,
+			BusinessResouceCodeName: undefined,
+			BusinessResourceCodeType: undefined,
+			BusinessResourceCodeDescription: undefined,
             SelectedMOQType: undefined,
             SpreadCurveID: '-1',
             SpreadData: [],
@@ -1921,7 +1953,12 @@
             ResourceID: laborType.ResourceID,
             ResourceInput: laborType.ResourceInput,
             ResourceName: laborType.ResourceName,
-            ResourceType: laborType.ResourceType,
+			ResourceType: laborType.ResourceType,
+			BusinessResourceCodeDescription: laborType.BusinessResourceCodeDescription,
+			BusinessResourceCodeID: laborType.BusinessResourceCodeID,
+			BusinessResourceCodeInput: laborType.BusinessResourceCodeInput,
+			BusinessResouceCodeName: laborType.BusinessResouceCodeName,
+			BusinessResourceCodeType: laborType.BusinessResourceCodeType,
             SpreadCurveID: laborType.SpreadCurveID,
             SpreadData: angular.copy(laborType.SpreadData),
             SpreadDataInvalid: angular.copy(laborType.SpreadDataInvalid),
@@ -2035,7 +2072,13 @@
                     item.ResourceInput = $scope.ResourceModels.find(function (res) {
                         return res.ResourceDesc == item.ResourceDescription;
                     });
-                }
+				}
+
+				if (item.BusinessResourceCodeDescription) {
+					item.BusinessResourceCodeInput = $scope.BusinessResourceCodeModels.find(function (res) {
+						return res.BusinessResourceCodeDesc == item.BusinessResourceCodeDescription
+					});
+				}
 
                 if (item.PerformingOrgName) {
                     item.PerfOrgInput = $scope.PerfOrgModels.find(function (perf) {

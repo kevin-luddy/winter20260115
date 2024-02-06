@@ -176,6 +176,14 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableBRC']/@value">
 		</parameterentry>
 	</parameter>
+	<parameter name="SpaceSystemsOneLMXCutOffDate" description="doesn't matter" defaultValue="__SpaceSystemsOneLMXCutOffDate" tag="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SpaceSystemsOneLMXCutOffDate']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="RMSOneLMXCutOffDate" description="doesn't matter" defaultValue="__RMSOneLMXCutOffDate" tag="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RMSOneLMXCutOffDate']/@value">
+		</parameterentry>
+	</parameter>
 	<!--system.web-->
   <parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">

@@ -54,8 +54,6 @@ namespace GenBOE.Objects
 		private ReadOnlyCollection<ResourceDTO> resourcesByListId;
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 		protected ReadOnlyCollection<ResourceDTO> resourcesUsedInBoes;
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
-		protected ReadOnlyCollection<BusinessResourceCodeDTO> businessResourceCodesUsedInBoes;
 		private ReadOnlyCollection<ResourceDTO> systemLmLaborResources;
 		private ReadOnlyCollection<TravelDTO> travels;
 		private ReadOnlyCollection<CustomFieldDTO> customFields;

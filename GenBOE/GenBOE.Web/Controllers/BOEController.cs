@@ -638,7 +638,8 @@ namespace GenBOE.Web.Controllers
 			// Perform Action
 			ViewData["BOEID"] = boeID;
 			ViewData["isMaterial"] = boe.isMaterial;
-			ViewData["WSRESOURCES"] = ws.ResourcesForWsResourceListId;
+			ViewData["WSRESOURCES"] = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId);
+			ViewData["WSBUSINESSRESOURCECODES"] = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId, true);
 			ViewData["WSPERFORGS"] = _BoeLaborControllerLogic.GetPerformingOrgs(ws);
 			ViewBag.WsClins = ws.Clins.Where(x => !x.ClinNumber.Equals("MULTI")).Select(x => new { ClinId = x.Id, ClinName = x.ClinString }).ToList();
 			ViewBag.WsWbss = ws.WbsElements.Where(x => !x.WbsNumber.Equals("MULTI")).Select(x => new { WbsId = x.Id, WbsName = x.WbsString }).ToList();
