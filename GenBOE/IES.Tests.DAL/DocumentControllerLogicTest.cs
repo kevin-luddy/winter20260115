@@ -206,7 +206,7 @@ namespace IES.Tests
         /// <returns></returns>
         private IDocumentControllerLogic CreateSut()
         {
-            IDocumentControllerLogic sut = new DocumentControllerLogic(new ProposalLoader(), new DocumentLoader(this.revisionLoader), this.documentDetailLoader, this.AD, this.securityInformation, this.revisionLoader, this.sectionLoader, this.rateDetailLoader, new FileAttachmentLoader(), new PPRDExporter());
+            IDocumentControllerLogic sut = new DocumentControllerLogic(new ProposalLoader(), new DocumentLoader(this.revisionLoader), this.documentDetailLoader, this.AD, this.securityInformation, this.revisionLoader, this.sectionLoader, this.rateDetailLoader, new FileAttachmentLoader(), new PPRDExporter(new TokenService(new MemoryCache())));
 
             return sut;
         }

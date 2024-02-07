@@ -163,7 +163,7 @@ namespace RDSB.Web
             GenBOEUnityContainer.Container.RegisterType(typeof(ISectionLoader), typeof(SectionLoader), this.GetLifetimeManager(), new InjectionConstructor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IWhosOnlineLoader), typeof(WhosOnlineLoader), this.GetLifetimeManager(), new InjectionConstructor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IFileAttachmentLoader), typeof(FileAttachmentLoader), this.GetLifetimeManager(), new InjectionConstructor());
-            GenBOEUnityContainer.Container.RegisterType(typeof(IPPRDExporter), typeof(PPRDExporter), this.GetLifetimeManager(), new InjectionConstructor());
+            GenBOEUnityContainer.Container.RegisterType(typeof(IPPRDExporter), typeof(PPRDExporter), this.GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IPPRDExporter>(new InterfaceInterceptor());
         }
 
         /// <summary>

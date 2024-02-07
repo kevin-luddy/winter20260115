@@ -7,18 +7,29 @@
 namespace IES.ActionLogic.IO.Export
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Net.Http;
+	using System.Threading.Tasks;
+	using System.Web.Mvc;
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
+    using IES.ActionLogic.Common;
     using IES.Common;
+	using Newtonsoft.Json;
 
-    /// <summary>
-    /// Word Exporter class containing export methods and other utilities
-    /// </summary>
-    public class WordExporter
+	/// <summary>
+	/// Word Exporter class containing export methods and other utilities
+	/// </summary>
+	public class WordExporter
     {
+		/// <summary>
+		/// The logger.
+		/// </summary>
+		private readonly Logger logger = new Logger(typeof(WordExporter));
+
         /// <summary>
         /// Run the export: Read the Word template file into an in-memory OpenXml Wordprocessing document, call the designated data
         /// population method, then return the results as a byte stream.
@@ -26,12 +37,13 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="templateFilePathFull">Full path to the Word template file</param>
         /// <param name="populateData">Method to populate data</param>
         /// <param name="stream">Stream into which to write the exported Word document.</param>
-        protected void Export(string templateFilePathFull, Action<WordprocessingDocument> populateData, Stream stream)
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        protected async Task Export(string templateFilePathFull, Action<WordprocessingDocument> populateData, Stream stream, bool? portionMarkingRequired, TokenService tokenService)
         {
             // open a copy of the Excel template file into memory
             byte[] byteArray = File.ReadAllBytes(templateFilePathFull);
 
-            this.Export(byteArray, populateData, stream);
+            await this.Export(byteArray, populateData, stream, portionMarkingRequired, tokenService);
         }
 
         /// <summary>
@@ -42,7 +54,7 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="populateData">Method to populate data</param>
         /// <param name="stream">Stream into which to write the exported Word document.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This is not an issue with MemoryStream, it allows multiple disposals")]
-        protected void Export(byte[] byteArray, Action<WordprocessingDocument> populateData, Stream stream)
+        protected async Task Export(byte[] byteArray, Action<WordprocessingDocument> populateData, Stream stream, bool? portionMarkingRequired, TokenService tokenService)
         {
             if (byteArray == null)
             {
@@ -54,37 +66,117 @@ namespace IES.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(populateData));
             }
 
+			bool doPortionMarking = portionMarkingRequired.HasValue && portionMarkingRequired.Value;
             string tempFilename = Path.GetTempFileName();
             new FileInfo(tempFilename).Attributes |= FileAttributes.Temporary;
             using (Stream documentStream = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 4096, FileOptions.DeleteOnClose))
             {
-                documentStream.Write(byteArray, 0, byteArray.Length);
+				documentStream.Write(byteArray, 0, byteArray.Length);
 
-                // synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
-                lock (CacheConstants.OPEN_XML_LOCK)
-                {
-                    // Create the document object in memory
-                    using (WordprocessingDocument document = WordprocessingDocument.Open(documentStream, true))
-                    {
-                        // Call the worker method to load-in the data
-                        populateData(document);
+				// synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
+				lock (CacheConstants.OPEN_XML_LOCK)
+				{
+					// Create the document object in memory
+					using (WordprocessingDocument document = WordprocessingDocument.Open(documentStream, true))
+					{
+						// Call the worker method to load-in the data
+						populateData(document);
 
-                        // Save all the changes
-                        this.SaveDocument(document);
-                    }
+						// Save all the changes
+						this.SaveDocument(document);
+					}
 
-                    // write the document from the file into the caller's stream
-                    documentStream.Seek(0, SeekOrigin.Begin);
-                    documentStream.CopyTo(stream);
-                }
-            }
-        }
+					// write the document from the file into the caller's stream
+					if (!doPortionMarking)
+					{
+						documentStream.Seek(0, SeekOrigin.Begin);
+						documentStream.CopyTo(stream);
+					}
+				}
 
-        /// <summary>
-        /// Save the document.
+				if (doPortionMarking)
+				{
+					ByteArrayContent content;
+					byte[] tempBytes;
+					using (MemoryStream memoryStream = new MemoryStream())
+					{
+						documentStream.Seek(0, SeekOrigin.Begin);
+						documentStream.CopyTo(memoryStream);
+						tempBytes = memoryStream.ToArray();
+						content = new ByteArrayContent(tempBytes);
+					}
+
+					content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(PPRDExporterConstants.CONTENTTYPE_DOCX);
+					HttpClient httpClient = new HttpClient();
+					Utilities.AddAuthorizationHeader(httpClient, (await tokenService.GetToken()).AccessToken);
+					string portionMarkingAPI = IES.Common.ConfigurationUtilities.GetAppSetting("PortionMarkingAPI");
+					Task<HttpResponseMessage> syncAPICall = Task.Run(() => httpClient.PostAsync(portionMarkingAPI + "/api/PortionMarking/PortionMarkDocument", content));
+					try
+					{
+						syncAPICall.Wait();
+						HttpResponseMessage response = syncAPICall.Result;
+
+						// Deserialize the entire response because we're getting more than just the byte[] back
+						string allBytes = await response.Content.ReadAsStringAsync();
+						Result<byte[]> deserializedResult = JsonConvert.DeserializeObject<Result<byte[]>>(allBytes);
+
+						if (deserializedResult.Messages.Any())
+						{
+							HelperCreateErrorDocument(deserializedResult, stream);
+						}
+						else
+						{
+							MemoryStream memStream = new MemoryStream(deserializedResult.Data);
+							memStream.Seek(0, SeekOrigin.Begin);
+							memStream.CopyTo(stream);
+						}
+					}
+					catch (Exception ex)
+					{
+						this.logger.Error(ex);
+						Result<byte[]> tempResult = new Result<byte[]>();
+						tempResult.Messages.Add("The requested action could not be completed. If the problem persists, please contact your application administrator.");
+						HelperCreateErrorDocument(tempResult, stream);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+        /// Helper for creating a document to return an error message to the user. Returns the result as a byte stream.
         /// </summary>
-        /// <param name="document">The OpenXml Word document object</param>
-        protected void SaveDocument(WordprocessingDocument document)
+        /// <param name="deserializedResult">Failed http response</param>
+        /// <param name="stream">Stream into which to write the exported error Word document.</param>
+		private void HelperCreateErrorDocument(Result<byte[]> deserializedResult, Stream stream)
+		{
+			string tempErrorFilename = Path.GetTempFileName();
+			lock (CacheConstants.OPEN_XML_LOCK)
+			{
+				using (WordprocessingDocument errorDocument = WordprocessingDocument.Create(tempErrorFilename, WordprocessingDocumentType.Document))
+				{
+					MainDocumentPart mainPart = errorDocument.AddMainDocumentPart();
+					mainPart.Document = new Document();
+					Body body = mainPart.Document.AppendChild(new Body());
+					foreach (string message in deserializedResult.Messages)
+					{
+						Paragraph para = body.AppendChild(new Paragraph());
+						Run run = para.AppendChild(new Run());
+						run.AppendChild(new Text(message));
+					}
+				}
+			}
+			using (Stream errorStream = new FileStream(tempErrorFilename, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.DeleteOnClose))
+			{
+				errorStream.Seek(0, SeekOrigin.Begin);
+				errorStream.CopyTo(stream);
+			}
+		}
+
+		/// <summary>
+		/// Save the document.
+		/// </summary>
+		/// <param name="document">The OpenXml Word document object</param>
+		protected void SaveDocument(WordprocessingDocument document)
         {
             if (document == null)
             {

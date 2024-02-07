@@ -7,7 +7,8 @@
 namespace RDM.Tests.IO
 {
     using IES.ActionLogic.IO.Export;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using IES.Common;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
     /// Test helper methods of the PPRD Export that don't directly work with the document/openxml items
@@ -21,7 +22,7 @@ namespace RDM.Tests.IO
         /// <returns>sut</returns>
         private PPRDExporter CreateSut()
         {
-            return new PPRDExporter();
+            return new PPRDExporter(new TokenService(new MemoryCache()));
         }
 
         /// <summary>

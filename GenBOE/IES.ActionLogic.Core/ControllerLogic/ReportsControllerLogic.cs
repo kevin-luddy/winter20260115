@@ -114,8 +114,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="id">Revision ID</param>
 		/// <param name="serverFileName">Server File Name</param>
-		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		public IActionResult GenerateFullPPRD(string id, string serverFileName, bool? portionMarkingRequired)
+		public IActionResult GenerateFullPPRD(string id, string serverFileName)
 		{
 			if (id == null)
 			{
