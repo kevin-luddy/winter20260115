@@ -51,7 +51,8 @@
             RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
             SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>',
             PoPMonthsDivisor: '<%: Constants.POP_MONTHS_DIVISOR %>',
-			OneLMXCutOffDate: '<%: SiteMasterUtilities.GetOneLMXCutOffDate() %>'
+			OneLMXCutOffDate: '<%: SiteMasterUtilities.GetOneLMXCutOffDate() %>',
+			IsBRCEnabled: '<%: Utilities.IsBRCEnabledForSystem %>'
         });
 
         $(function () {
