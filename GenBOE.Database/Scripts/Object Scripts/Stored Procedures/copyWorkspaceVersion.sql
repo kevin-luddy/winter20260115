@@ -47,6 +47,7 @@ AS
 **		3/20/23		Dusan				ACV-498: Updated MOQ Column size (Wbs Element due to prod issue)
 **      8/10/23     twilson             PROPH-1029 Investigate Project Spreads
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
+**		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1979,6 +1980,7 @@ BEGIN TRY
 		[CLINID] [int] NULL,
 		[CanOffload] bit default 0,
 		[LaborSortId] [int] NOT NULL,
+		[BRCResourceID] [int] NULL,
 		Processed bit,
 		[NewBOELaborTypeID] [int],
 		[NewResourceID] [int],
@@ -2005,6 +2007,7 @@ BEGIN TRY
 		  ,LT.[CLINID]
 		  ,LT.[CanOffload]
 		  ,LT.[LaborSortId]
+		  ,LT.[BRCResourceID]
 		  ,0/*PROCESSED*/
 		  ,NULL
 		  ,CASE
@@ -2053,7 +2056,8 @@ BEGIN TRY
 			   ,[WBSID]
 			   ,[CLINID]
 			   ,[CanOffload]
-			   ,[LaborSortId])
+			   ,[LaborSortId]
+			   ,[BRCResourceID])
 	SELECT [UpdateDT]
 		  ,CASE 
 		  WHEN NewResourceID IS NOT NULL THEN NewResourceID
@@ -2072,6 +2076,7 @@ BEGIN TRY
 		  ,[SpreadTypeID]
 		  ,[PercentSpreadLocked]
 		  ,[HourSpreadLocked]
+		  ,[BRCResourceID]
 		  ,CASE
 			WHEN NewWBSID IS NOT NULL THEN NewWBSID
 			ELSE WBSID
