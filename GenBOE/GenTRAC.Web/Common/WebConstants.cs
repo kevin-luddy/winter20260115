@@ -1082,7 +1082,7 @@ namespace GenTRAC.Web.Common
 			/// <summary>
 			/// The reset workflow description.
 			/// </summary>
-			public const string RESET_WORKFLOW = "Clicking ‘Reset Workflow’ will erase all existing signatures and comments and start the workflow from the beginning.";
+			public const string RESET_WORKFLOW = "Clicking ‘Reset Workflow’ will erase all existing signatures and start the workflow from the beginning.";
 		}
 		#endregion
 	}
