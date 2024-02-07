@@ -28,8 +28,6 @@
     $scope.model.AdjacentItems.NextId = undefined;
     $scope.SelectedMoqTypes = [];
 	$scope.IsDraftOrDraftLocked = false;
-	$scope.resourceColumnDisabled = false;
-	$scope.brcColumnDisabled = false;
 
     $scope.isPreviousTaskDisabled = function () {
         return $scope.model.AdjacentItems.PreviousId === undefined || $scope.model.AdjacentItems.PreviousId === null;
@@ -1802,6 +1800,7 @@
 
     $scope.startDateUpdated = function (item) {
         $scope.setDirty();
+		$scope.setColumnDisabled(item);
 
         // update spreads (this validates the row)
         $scope.recalculateSpreads(item);
@@ -1810,6 +1809,7 @@
 
     $scope.endDateUpdated = function (item) {
         $scope.setDirty();
+		$scope.setColumnDisabled(item);
 
         // update spreads (this validates the row)
         $scope.recalculateSpreads(item);
@@ -1819,13 +1819,21 @@
 	$scope.setColumnDisabled = function (item) {
 		var itemStartDate = item.StartDate.toDate();
 		var itemEndDate = item.EndDate.toDate();
-
-		if (ManageTaskModel.CompanyConfiguration === "Space") {
-
+		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.toDate();
+		
+		if (itemEndDate < oneLmxCutOff) {
+			item.disableResource = false;
+			item.disableBRC = true;
 		}
 
-		if (ManageTaskModel.CompanyConfiguration === "RMS") {
+		if (itemStartDate < oneLmxCutOff && itemEndDate >= oneLmxCutOff) {
+			item.disableBRC = false;
+			item.disableResource = false;
+		}
 
+		if (itemStartDate >= oneLmxCutOff) {
+			item.disableResource = true;
+			item.disableBRC = false;
 		}
 	}
 

@@ -82,7 +82,7 @@ namespace GenBOE.ActionLogic.Validation
 						if (companyConfiguration == CompanyConfiguration.SpaceSystems)
 						{	
 							// 
-							if (element.EndDate > this.SpaceSystemsOneLmxCutOffDate)
+							if (element.EndDate < this.SpaceSystemsOneLmxCutOffDate)
 							{
 
 							}

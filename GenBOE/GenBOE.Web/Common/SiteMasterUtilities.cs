@@ -301,28 +301,31 @@ namespace GenBOE.Web.Common
 		/// <returns>Filtered list of Resources</returns>
 		public static IReadOnlyCollection<ResourceDTO> GetResourcesBasedOnCompanyMode(IReadOnlyCollection<ResourceDTO> resourceData, bool isBrc = false)
 		{
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			if (Utilities.IsBRCEnabledForSystem)
 			{
-				if (!isBrc)
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 				{
-					resourceData = resourceData.Where(x => x.SegRegion != "1LMX - Core" && x.SegRegion != "1LMX - Services").ToList();
+					if (!isBrc)
+					{
+						resourceData = resourceData.Where(x => x.SegRegion != "1LMX - Core" && x.SegRegion != "1LMX - Services").ToList();
+					}
+					else
+					{
+						resourceData = resourceData.Where(x => x.SegRegion == "1LMX - Core" || x.SegRegion == "1LMX - Services").ToList();
+					}
 				}
-				else
-				{
-					resourceData = resourceData.Where(x => x.SegRegion == "1LMX - Core" || x.SegRegion == "1LMX - Services").ToList();
-				}
-			}
 
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				if (!isBrc)
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
 				{
-					resourceData = resourceData.Where(x => x.SegRegion != "LM-Core" && x.SegRegion != "LM-Services").ToList();
+					if (!isBrc)
+					{
+						resourceData = resourceData.Where(x => x.SegRegion != "LM-Core" && x.SegRegion != "LM-Services").ToList();
 
-				}
-				else
-				{
-					resourceData = resourceData.Where(x => x.SegRegion == "LM-Core" || x.SegRegion == "LM-Services").ToList();
+					}
+					else
+					{
+						resourceData = resourceData.Where(x => x.SegRegion == "LM-Core" || x.SegRegion == "LM-Services").ToList();
+					}
 				}
 			}
 
@@ -330,12 +333,34 @@ namespace GenBOE.Web.Common
 		}
 
 		/// <summary>
+		/// Get 1LMX Cut Off Date based on System Configuration
+		/// </summary>
+		/// <returns>1LMX Cut Off Date</returns>
+		public static DateTime GetOneLMXCutOffDate()
+		{
+			/// Set it to RMS Date as it is comes first
+			DateTime date = new DateTime(2027, 01, 01);
+
+			if (SystemConfiguration.Instance() .CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				date = Utilities.SpaceSystemsOneLmxCutOffDate;
+			}
+
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				date = Utilities.RMSOneLmxCutOffDate;
+			}
+
+			return date;
+		}
+
+		/// <summary>
 		/// Get Company Mode for App
 		/// </summary>
 		/// <returns>Enum of Company Mode</returns>
-		public static string GetCompanyConfigurationDescription()
+		public static CompanyConfiguration GetCompanyConfiguration()
 		{
-			return SystemConfiguration.Instance().CompanyMode.GetDescription();
+			return SystemConfiguration.Instance().CompanyMode;
 		}
 
 		#region A number of settings that were moved into web.config to support classified installations. These methods expose the settings.

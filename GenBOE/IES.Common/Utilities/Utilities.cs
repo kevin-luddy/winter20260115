@@ -96,15 +96,15 @@ namespace IES.Common
 		{
 			get
 			{
-				if (!spaceSystemsOneLmxCutOffDate.HasValue)
+				if (!rmsOneLmxCutOffDate.HasValue)
 				{
 					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("RMSOneLMXCutOffDate"), out DateTime cutOffDate))
 					{
-						spaceSystemsOneLmxCutOffDate = new DateTime(2028, 01, 01);
+						rmsOneLmxCutOffDate = new DateTime(2027, 01, 01);
 					}
 					else
 					{
-						spaceSystemsOneLmxCutOffDate = cutOffDate.Normalize();
+						rmsOneLmxCutOffDate = cutOffDate.Normalize();
 					}
 				}
 

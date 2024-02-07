@@ -289,12 +289,17 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
         var url = CreatePostURL(currentWorkspace, boeLaborController, action);
         var name = 'Curves';
         var width = 840;
-        var height = 560;
-        if (action.contains('Resource') || action.contains('BusinessResourceCodes')) {
-            name = 'Resources';
-            width = 770;
-             height = 580;
-        } else if (action.contains('Perf')) {
+		var height = 560;
+
+		if (action.contains('BusinessResourceCodes')) {
+			name = 'BusinessResourceCodes';
+			width = 770;
+			height = 580;
+		} else if (action.contains('DisplayResource')) {
+			name = 'Resources';
+			width = 770;
+			height = 580;
+		} else if (action.contains('Perf')) {
             name = 'Performing Orgs';
             width = 700;
         }

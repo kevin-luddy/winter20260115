@@ -36,11 +36,13 @@ namespace GenBOE.Web.Controllers
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
     using IES.Common;
-    using IES.Common.Exceptions;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
     using MoreLinq;
+	using CompanyConfiguration = IES.Common.CompanyConfiguration;
 
-    public class BOELaborController : GenBOEController
+	public class BOELaborController : GenBOEController
     {
         #region Private Fields
 
@@ -264,6 +266,19 @@ namespace GenBOE.Web.Controllers
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             ICollection<ResourceDTO> resources = ws.ResourcesForWsResourceListId.ToList();
+
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					resources = resources.Where(x => x.SegRegion != "1LMX - Core" && x.SegRegion != "1LMX - Services").ToList();
+				}
+				else
+				{
+					resources = resources.Where(x => x.SegRegion != "LM-Core" && x.SegRegion != "LM-Services").ToList();
+				}
+			}
+
             ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
             IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
             
@@ -280,11 +295,49 @@ namespace GenBOE.Web.Controllers
             return View(theModelViews);
         }
 
-        /// <summary>
-        /// Loads the Labor Perf Orgs View
-        /// </summary>
-        /// <returns>Labor Perf Orgs View</returns>
-        public virtual ViewResult DisplayPerfOrgs(string workspace)
+		/// <summary>
+		/// Loads the Labor Business Resource Codes View
+		/// </summary>
+		/// <returns>Labor Business Resource Codes View</returns>
+		public virtual ViewResult DisplayBusinessResourceCodes(string workspace)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			ICollection<ResourceDTO> resources = ws.ResourcesForWsResourceListId.ToList();
+
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					resources = resources.Where(x => x.SegRegion == "1LMX - Core" || x.SegRegion == "1LMX - Services").ToList();
+				}
+				else
+				{
+					resources = resources.Where(x => x.SegRegion == "LM-Core" || x.SegRegion == "LM-Services").ToList();
+				}
+			}
+
+			ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
+			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
+
+			foreach (ResourceDTO resource in resources)
+			{
+				string ElementOfCostDisplay = allElementOfCostTypes[(int)resource.ElementOfCost].ElementOfCostName;
+				string rateTypeDisplay = resource.RateType.GetDescription();
+
+				BOECustomFieldResourceModelView mv = new BOECustomFieldResourceModelView(resource, rateTypeDisplay, ElementOfCostDisplay);
+
+				theModelViews.Add(mv);
+			}
+
+			return View(theModelViews);
+		}
+
+		/// <summary>
+		/// Loads the Labor Perf Orgs View
+		/// </summary>
+		/// <returns>Labor Perf Orgs View</returns>
+		public virtual ViewResult DisplayPerfOrgs(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
