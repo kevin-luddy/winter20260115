@@ -90,9 +90,8 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="proposalId">Proposal ID</param>
 		/// <param name="serverFileName">Server File Name</param>
-		/// <param name="httpResponse">HTTP response object</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		IActionResult GenerateRDD(int proposalId, string serverFileName, bool portionMarkingRequired);
+		Task<IActionResult> GenerateRDD(int proposalId, string serverFileName, bool portionMarkingRequired);
 
 		/// <summary>
 		/// Generates the RDD document for the Proposal Id passed in.
@@ -103,7 +102,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
 		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		Stream GenerateRDD(int proposalId, string serverFileName, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false);
+		Task<Stream> GenerateRDD(int proposalId, string serverFileName, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false);
 
 		/// <summary>
 		/// Check if RDSB Record exists for the given PTM Proposal ID

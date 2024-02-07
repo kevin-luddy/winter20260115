@@ -40,6 +40,9 @@ namespace IES.ActionLogic.IO.Export
 		/// </summary>
 		private const string FIRST_SECTION_REFERENCE_NUMBER = "1.0";
 
+		/// <summary>
+		/// The token service
+		/// </summary>
         private readonly TokenService tokenService;
 
 		public PPRDExporter(

@@ -581,9 +581,8 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="proposalId">Proposal ID</param>
 		/// <param name="serverFileName">Server File Name</param>
-		/// <param name="httpResponse">HTTP response object</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		public IActionResult GenerateRDD(int proposalId, string serverFileName, bool portionMarkingRequired)
+		public async Task<IActionResult> GenerateRDD(int proposalId, string serverFileName, bool portionMarkingRequired)
 		{
 			if (serverFileName == null)
 			{
@@ -598,7 +597,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			string clientFileName = string.Format("{0}_{1}_{2}-{3}.docx", modelView.TrackingNumber, modelView.ProposalTitle, modelView.StartYear, modelView.EndYear).Replace(",", "_");
 
-			Stream stream = GenerateRDD(proposalId, serverFileName, modelView, null, true, portionMarkingRequired);
+			Stream stream = await GenerateRDD(proposalId, serverFileName, modelView, null, true, portionMarkingRequired);
 			stream.Position = 0;
 			return new FileStreamResult(stream, ExportFileDownloadBase.ContentType_DOCX)
 			{
@@ -616,7 +615,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
 		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		public Stream GenerateRDD(int proposalId, string serverFileName, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
+		public async Task<Stream> GenerateRDD(int proposalId, string serverFileName, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
 		{
 			if (serverFileName == null)
 			{
@@ -668,7 +667,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			// Get File Attachments
 			ICollection<FileAttachmentRowModelView> fileAttachments = fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
-			pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, includeDocumentDetails);
+			await pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, includeDocumentDetails, portionMarkingRequired);
 
 			return stream;
 		}
