@@ -15,6 +15,7 @@ namespace IES.ActionLogic.Core.IO.Export
 	using IES.ActionLogic.Core.Common;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
+	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.OfficeUtilities;
 	using IES.Common.Core.Services;
 	using IES.Common.Core.Utilities;
@@ -48,7 +49,8 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="populateData">Method to populate data</param>
 		/// <param name="stream">Stream into which to write the exported Word document.</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		protected async Task Export(string templateFilePathFull, Action<WordprocessingDocument> populateData, Stream stream, bool portionMarkingRequired, TokenService tokenService)
+		/// <param name="tokenService">The token service</param>
+		protected async Task Export(string templateFilePathFull, Action<WordprocessingDocument> populateData, Stream stream, bool portionMarkingRequired, ITokenService tokenService)
 		{
 			// open a copy of the Excel template file into memory
 			byte[] byteArray = File.ReadAllBytes(templateFilePathFull);
@@ -64,8 +66,9 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="populateData">Method to populate data</param>
 		/// <param name="stream">Stream into which to write the exported Word document.</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		/// <param name="tokenService">The token service</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This is not an issue with MemoryStream, it allows multiple disposals")]
-		protected async Task Export(byte[] byteArray, Action<WordprocessingDocument> populateData, Stream stream, bool portionMarkingRequired, TokenService tokenService)
+		protected async Task Export(byte[] byteArray, Action<WordprocessingDocument> populateData, Stream stream, bool portionMarkingRequired, ITokenService tokenService)
 		{
 			if (byteArray == null)
 			{

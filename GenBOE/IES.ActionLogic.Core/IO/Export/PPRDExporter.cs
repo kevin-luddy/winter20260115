@@ -23,6 +23,7 @@ namespace IES.ActionLogic.Core.IO.Export
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Services;
 	using Microsoft.Extensions.Logging;
+	using IES.Common.Core.Interfaces;
 
 	/// <summary>
 	/// The PPRD Exporter.
@@ -47,13 +48,13 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <summary>
 		/// The token service
 		/// </summary>
-		private readonly TokenService tokenService;
+		private readonly ITokenService tokenService;
 
 		/// <summary>
 		/// default constructor
 		/// </summary>
 		/// <param name="rateFormatter">Rate Formatter</param>
-		public PPRDExporter(ILogger<WordExporter> logger, RateFormatter rateFormatter, TokenService tokenService) : base(logger)
+		public PPRDExporter(ILogger<WordExporter> logger, RateFormatter rateFormatter, ITokenService tokenService) : base(logger)
 		{
 			this.rateFormatter = rateFormatter;
 			this.tokenService = tokenService;
