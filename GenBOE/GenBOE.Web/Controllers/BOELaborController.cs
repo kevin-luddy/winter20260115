@@ -36,11 +36,10 @@ namespace GenBOE.Web.Controllers
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
     using IES.Common;
-	using IES.Common.classes;
 	using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
     using MoreLinq;
-	using CompanyConfiguration = IES.Common.CompanyConfiguration;
+	using WebGrease.Css.Extensions;
 
 	public class BOELaborController : GenBOEController
     {
@@ -265,19 +264,7 @@ namespace GenBOE.Web.Controllers
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            ICollection<ResourceDTO> resources = ws.ResourcesForWsResourceListId.ToList();
-
-			if (Utilities.IsBRCEnabledForSystem)
-			{
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-				{
-					resources = resources.Where(x => x.SegRegion != "1LMX - Core" && x.SegRegion != "1LMX - Services").ToList();
-				}
-				else
-				{
-					resources = resources.Where(x => x.SegRegion != "LM-Core" && x.SegRegion != "LM-Services").ToList();
-				}
-			}
+            ICollection<ResourceDTO> resources = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId).ToList();
 
             ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
             IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
@@ -303,19 +290,7 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			ICollection<ResourceDTO> resources = ws.ResourcesForWsResourceListId.ToList();
-
-			if (Utilities.IsBRCEnabledForSystem)
-			{
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-				{
-					resources = resources.Where(x => x.SegRegion == "1LMX - Core" || x.SegRegion == "1LMX - Services").ToList();
-				}
-				else
-				{
-					resources = resources.Where(x => x.SegRegion == "LM-Core" || x.SegRegion == "LM-Services").ToList();
-				}
-			}
+			ICollection<ResourceDTO> resources = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId).ToList();
 
 			ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
