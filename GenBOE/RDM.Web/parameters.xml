@@ -80,7 +80,7 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthIESClientSecret']/@value">
     </parameterentry>
   </parameter>
-  <parameter name="PortionMarkingAPI" description="doesn't matter" defaultvalue="PortionMarkingAPI" tags="">
+  <parameter name="PortionMarkingAPI" description="doesn't matter" defaultvalue="__PortionMarkingAPI__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PortionMarkingAPI']/@value">
     </parameterentry>
   </parameter>
