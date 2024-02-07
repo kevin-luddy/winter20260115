@@ -7,12 +7,10 @@
 namespace IES.ActionLogic.IO.Export
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Net.Http;
 	using System.Threading.Tasks;
-	using System.Web.Mvc;
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;

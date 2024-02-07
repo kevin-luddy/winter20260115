@@ -33,7 +33,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="id">Revision ID</param>
 		/// <param name="serverFileName">Server File Name</param>
-		IActionResult GenerateFullPPRD(string id, string serverFileName);
+		Task<IActionResult> GenerateFullPPRD(string id, string serverFileName);
 
 		/// <summary>
 		/// Generates a file containing revision data as JSON.
