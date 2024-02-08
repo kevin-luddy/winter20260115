@@ -244,7 +244,9 @@ namespace GenTRAC.DataBridge.DTO
                         case PtmRole.CostVolumeLead:
                         case PtmRole.AdditionalUser:
                         case PtmRole.SupplyChainPOCMatl:
+						case PtmRole.BackupMaterialLead:
                         case PtmRole.SupplyChainPOCSubs:
+						case PtmRole.BackupSubcontractsLead:
                         case PtmRole.ContractsPOC:
                         case PtmRole.BackupContractsPOC:
                         case PtmRole.CoverSheetApprover:
@@ -297,7 +299,9 @@ namespace GenTRAC.DataBridge.DTO
                         case PtmRole.CostVolumeLead:
                         case PtmRole.AdditionalUser:
                         case PtmRole.SupplyChainPOCMatl:
+						case PtmRole.BackupMaterialLead:
                         case PtmRole.SupplyChainPOCSubs:
+						case PtmRole.BackupSubcontractsLead:
                         case PtmRole.ContractsPOC:
                         case PtmRole.CoverSheetApprover:
                         case PtmRole.LOBEstLead:

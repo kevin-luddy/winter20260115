@@ -165,6 +165,7 @@
     <Compile Include="DTO\Permission\IProposalPermissionMapper.cs" />
     <Compile Include="DTO\Permission\ISystemPermissionLoader.cs" />
     <Compile Include="DTO\Permission\PermissionDto.cs" />
+    <Compile Include="DTO\Permission\ProposalRoleDto.cs" />
     <Compile Include="DTO\Permission\SystemPermissionDto.cs" />
     <Compile Include="DTO\Permission\SystemPermissionMapper.cs" />
     <Compile Include="DTO\Permission\ProposalPermissionDto.cs" />

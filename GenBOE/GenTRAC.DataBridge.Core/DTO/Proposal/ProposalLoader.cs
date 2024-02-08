@@ -10,6 +10,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using GenTRAC.DataBridge.Core.DTO.Permission;
 	using GenTRAC.Models;
 	using IES.Common.Core;
 	using IES.Common.Core.Configuration;
@@ -2219,6 +2220,38 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 						CostVolumeSubmittalDate = x.CCPDRequired.HasValue && x.CCPDRequired.Value ? null
 							: x.RevisedSubmittalDate.HasValue ? x.RevisedSubmittalDate : x.AnticipatedDeliveryDate
 					}).FirstOrDefault();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get Proposal Roles for the given user that are needed for NLF
+		/// </summary>
+		/// <param name="ntid">NTID</param>
+		/// <returns>Collection of Proposals and Roles for the user</returns>
+		public ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid)
+		{
+			ICollection<ProposalRoleDto> result = new Collection<ProposalRoleDto>();
+			ntid = ntid.ToLower();
+
+			using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetProposalRolesForNlfByNtid", Log))
+			{
+				using (genTRACEntities dbModel = new genTRACEntities())
+				{
+					result = dbModel.Proposals.Where(x => x.ProposalClassLU.ProposalClass != CommonConstants.PROPOSAL_CLASS_FORECASTED
+						&& x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid))
+						.SelectMany(x => x.ProposalUserRoles).Where(role => role.genTRACUser.NTID.ToLower() == ntid
+							&& (role.RoleID == (int)PtmRole.Pricer || role.RoleID == (int)PtmRole.BackupPricer
+								|| role.RoleID == (int)PtmRole.CostVolumeLead || role.RoleID == (int)PtmRole.SupplyChainPOCMatl
+								|| role.RoleID == (int)PtmRole.BackupMaterialLead || role.RoleID == (int)PtmRole.SupplyChainPOCSubs
+								|| role.RoleID == (int)PtmRole.BackupSubcontractsLead))
+						.Select(x => new ProposalRoleDto()
+						{
+							TrackingNumber = x.Proposal.ProposalTrackingID,
+							Role = (PtmRole)x.RoleID
+						}).ToList();
 				}
 			}
 

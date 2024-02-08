@@ -651,6 +651,25 @@ namespace GenTRAC.ActionLogic
 
 			this.AddAndDeletePermissions(fullProposalDto, supplyChainPocMatlPermission, PtmRole.SupplyChainPOCMatl, permissionsToAdd, permissionsToDelete);
 
+			ProposalPermissionDto supplyChainPocMatlBackupPermission = null;
+			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId))
+			{
+				// supply chain POC (matl backup)
+				UserDTO supplyChainPocMatlBackup = UserMapper.GetByNtid(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId);
+				supplyChainPocMatlBackupPermission = new ProposalPermissionDto()
+				{
+					Id = -1,
+					ProposalID = proposalId,
+					UserId = supplyChainPocMatlBackup.Id,
+					Role = PtmRole.BackupMaterialLead,
+					ResourceType = ResourceType.NotSet,
+					Updateable = IES.Common.UpdateType.Upsert,
+					UpdateDate = proposalUserInfo.UpdateDate
+				};
+			}
+
+			this.AddAndDeletePermissions(fullProposalDto, supplyChainPocMatlBackupPermission, PtmRole.BackupMaterialLead, permissionsToAdd, permissionsToDelete);
+
 			ProposalPermissionDto supplyChainPocSubsPermission = null;
 			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsNtId))
 			{
@@ -669,6 +688,25 @@ namespace GenTRAC.ActionLogic
 			}
 
 			this.AddAndDeletePermissions(fullProposalDto, supplyChainPocSubsPermission, PtmRole.SupplyChainPOCSubs, permissionsToAdd, permissionsToDelete);
+
+			ProposalPermissionDto supplyChainPocSubsBackupPermission = null;
+			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsBackupNtId))
+			{
+				// supply chain POC (subs)
+				UserDTO supplyChainPocSubsBackup = UserMapper.GetByNtid(proposalUserInfo.SupplyChainPOCSubsBackupNtId);
+				supplyChainPocSubsBackupPermission = new ProposalPermissionDto()
+				{
+					Id = -1,
+					ProposalID = proposalId,
+					UserId = supplyChainPocSubsBackup.Id,
+					Role = PtmRole.BackupSubcontractsLead,
+					ResourceType = ResourceType.NotSet,
+					Updateable = IES.Common.UpdateType.Upsert,
+					UpdateDate = proposalUserInfo.UpdateDate
+				};
+			}
+
+			this.AddAndDeletePermissions(fullProposalDto, supplyChainPocSubsBackupPermission, PtmRole.BackupSubcontractsLead, permissionsToAdd, permissionsToDelete);
 
 			// Contracts POC manager
 			ProposalPermissionDto contractsPocPermission = null;
@@ -1623,9 +1661,17 @@ namespace GenTRAC.ActionLogic
 							model.SupplyChainPOCMaterialsNtId = user.Ntid;
 							model.SupplyChainPOCMaterialsDisplayName = user.DisplayName;
 							break;
+						case PtmRole.BackupMaterialLead:
+							model.SupplyChainPOCMaterialsBackupNtId = user.Ntid;
+							model.SupplyChainPOCMaterialsBackupDisplayName = user.DisplayName;
+							break;
 						case PtmRole.SupplyChainPOCSubs:
 							model.SupplyChainPOCSubsNtId = user.Ntid;
 							model.SupplyChainPOCSubsDisplayName = user.DisplayName;
+							break;
+						case PtmRole.BackupSubcontractsLead:
+							model.SupplyChainPOCSubsBackupNtId = user.Ntid;
+							model.SupplyChainPOCSubsBackupDisplayName = user.DisplayName;
 							break;
 						case PtmRole.ContractsPOC:
 							model.ContractsPOCNtId = user.Ntid;
@@ -1834,6 +1880,32 @@ namespace GenTRAC.ActionLogic
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
 			}
 
+			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsNtId)
+				&& !string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId)
+				&& proposalUserInfo.SupplyChainPOCMaterialsNtId == proposalUserInfo.SupplyChainPOCMaterialsBackupNtId)
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
+			}
+
+			if (string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsNtId)
+				&& !string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId))
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_BACKUP_REQUIRES_LEAD));
+			}
+
+			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsNtId)
+				&& !string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsBackupNtId)
+				&& proposalUserInfo.SupplyChainPOCSubsNtId == proposalUserInfo.SupplyChainPOCSubsBackupNtId)
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
+			}
+
+			if (string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsNtId)
+				&& !string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsBackupNtId))
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD));
+			}
+
 			// if this is a saved proposal, this will only validate the changed users, else validate all of the users
 
 			ProposalUserInformationModelView savedProposalUsers = this.GetDataForProposalUserInformation(proposalId);
@@ -1843,7 +1915,9 @@ namespace GenTRAC.ActionLogic
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.AdditionalPricingResource1NtId, savedProposalUsers.AdditionalPricingResource1NtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.ADDITIONAL_PRICING_RESOURCE_1_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.AdditionalPricingResource2NtId, savedProposalUsers.AdditionalPricingResource2NtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.ADDITIONAL_PRICING_RESOURCE_2_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCMaterialsNtId, savedProposalUsers.SupplyChainPOCMaterialsNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_MATL_INVALID_NTID, true, true) && validUnchangedUsers;
+			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId, savedProposalUsers.SupplyChainPOCMaterialsBackupNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_MATL_BACKUP_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCSubsNtId, savedProposalUsers.SupplyChainPOCSubsNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_SUBS_INVALID_NTID, true, true) && validUnchangedUsers;
+			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCSubsBackupNtId, savedProposalUsers.SupplyChainPOCSubsBackupNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_SUBS_BACKUP_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ContractsPOCNtId, savedProposalUsers.ContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupContractsPOCNtId, savedProposalUsers.BackupContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupPricerNtId, savedProposalUsers.BackupPricerNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_PRICER_INVALID_NTID, true, true) && validUnchangedUsers;

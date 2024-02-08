@@ -114,8 +114,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="id">Revision ID</param>
 		/// <param name="serverFileName">Server File Name</param>
-		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		public IActionResult GenerateFullPPRD(string id, string serverFileName, bool? portionMarkingRequired)
+		public async Task<IActionResult> GenerateFullPPRD(string id, string serverFileName)
 		{
 			if (id == null)
 			{
@@ -153,7 +152,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			ICollection<FileAttachmentRowModelView> fileAttachments = fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
 			// TODO - RDM 1.0 - Update to allow user to select number of years
-			return pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, refNumberPrefixLevel);
+			return await pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, refNumberPrefixLevel);
 		}
 
 		/// <summary>

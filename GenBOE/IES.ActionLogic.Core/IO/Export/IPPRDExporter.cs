@@ -28,7 +28,8 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
 		/// <param name="response">the web response object to write the file back to for user download</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-		IActionResult ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel);
+		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		Task<IActionResult> ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel, bool portionMarkingRequired = false);
 
 		/// <summary>
 		/// Generate a Word document containing the RDD sections and rates.
@@ -42,6 +43,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="stream">the stream to write the file back to for user download</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
 		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-		void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true);
+		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		Task ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true, bool portionMarkingRequired = false);
 	}
 }

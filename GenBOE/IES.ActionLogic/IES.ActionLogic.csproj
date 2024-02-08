@@ -135,6 +135,8 @@
     <Compile Include="Common\IIESEmailer.cs" />
     <Compile Include="Common\ImportExportConstants.cs" />
     <Compile Include="Common\RateFormatter.cs" />
+    <Compile Include="Common\Result.cs" />
+    <Compile Include="Common\ResultStatus.cs" />
     <Compile Include="ControllerLogic\DocumentControllerLogic.cs" />
     <Compile Include="ControllerLogic\FileAttachmentControllerLogic.cs">
     </Compile>

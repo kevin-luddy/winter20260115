@@ -12,6 +12,7 @@ namespace RDSB.Backend.Controllers
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
+	using System.Threading.Tasks;
 	using System.Transactions;
 	using GenTRAC.DataBridge.Core.Common.Security;
 	using GenTRAC.DataBridge.Core.DTO.Proposal;
@@ -78,7 +79,7 @@ namespace RDSB.Backend.Controllers
 		/// Get the proposals for the Add New Document dropdown 
 		/// </summary>
 		/// <returns>proposals for the Add New Document dropdown </returns>
-		[HttpPost("[action]")]
+		[HttpGet("[action]")]
 		public ICollection<DocumentGridModelView> GetProposalsForNewDocument()
         {
             ICollection<ProposalDto> proposals = this.documentControllerLogic.RetrieveUnlinkedProposals(this.SecurityMapper.GetRolesForLoggedInUser(),
@@ -168,13 +169,13 @@ namespace RDSB.Backend.Controllers
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
 		/// <returns>Export document.</returns>
 		[HttpGet("[action]")]
-		public IActionResult Publish(int id, bool portionMarkingRequired)
+		public async Task<IActionResult> Publish(int id, bool portionMarkingRequired)
         {
 			IActionResult result;
             try
             {
 				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/PPRDTemplate.docx");
-				result = this.documentControllerLogic.GenerateRDD(id, serverFileName, portionMarkingRequired);
+				result = await this.documentControllerLogic.GenerateRDD(id, serverFileName, portionMarkingRequired);
             }
             catch (GeneralAppException e)
             {
