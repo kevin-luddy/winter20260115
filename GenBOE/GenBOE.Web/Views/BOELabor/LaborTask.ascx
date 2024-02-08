@@ -584,9 +584,9 @@
                                     <thead>
                                         <tr>
                                             <th class="element-of-cost">Element of Cost</th>
-                                            <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)*</th>
-                                            <th data-ng-hide="!ManageTaskModel.IsBRCEnabled" class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)&#10013;</th>
-											<th data-ng-hide="!ManageTaskModel.IsBRCEnabled" class="resource">Business Resource Code (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController, '<%:WebConstants.ACTION_DISPLAY_BUSINESS_RESOURCE_CODES%>'); return false;">View</a>)&#10013;</th>
+                                            <th data-ng-hide="IsBRCEnabled" class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)*</th>
+                                            <th data-ng-show="IsBRCEnabled" class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)&#10013;</th>
+											<th data-ng-show="IsBRCEnabled" class="resource">Business Resource Code (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController, '<%:WebConstants.ACTION_DISPLAY_BUSINESS_RESOURCE_CODES%>'); return false;">View</a>)&#10013;</th>
                                             <th class="performing-org">Performing Org (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_PERF_ORGS%>'); return false;">View</a>)*</th>
                                             <% if (Model.BOEIsMulti) { %>
                                                 <th class="resource-wbs">WBS</th>
@@ -602,7 +602,7 @@
                                                     <option data-ng-repeat="option in ManageTaskModel.ElementsOfCost" data-ng-value="option.ElementOfCostId">{{option.ElementOfCostName}}</option>
                                                 </select>
                                             </td>
-                                            <td class="resources" data-ng-class="{inputError: isResourceValid(item.ResourceInput, ResourceModels) === false && item.NewLaborType === false }">
+                                            <td data-ng-hide="IsBRCEnabled" class="resources" data-ng-class="{inputError: isResourceValid(item.ResourceInput, ResourceModels) === false && item.NewLaborType === false }">
                                                 <div class="resource-selection bootstrap">
                                                     <select data-ng-if="showDropdowns" tabindex ="{{tabindex + 1}}" data-ng-model="item.ResourceInput" data-ng-change="resourceSelected(item.ResourceInput, item)"
                                                         data-ng-options="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'ResourceDesc'">
@@ -610,12 +610,20 @@
                                                     <input data-ng-if="!showDropdowns" tabindex ="{{tabindex + 1}}" type="text" data-ng-model="item.ResourceInput" placeholder="Select a resource" uib-typeahead="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="2" data-ng-change="resourceUpdated(item)" typeahead-on-select="resourceSelected($item, item)">
                                                 </div>
                                             </td>
-											<td data-ng-hide="!ManageTaskModel.IsBRCEnabled" class="resources" data-ng-class="{inputError: isBusinessResourceCodeValid(item.BusinessResourceCodeInput, BusinessResourceCodeModels) === false && item.NewLaborType === false }">
+											<td data-ng-show="IsBRCEnabled" class="resources" data-ng-class="{inputError: isResourceValid(item.ResourceInput, ResourceModels) === false && item.NewLaborType === false }">
+												<div class="resource-selection bootstrap">
+													<select data-ng-if="showDropdowns" tabindex ="{{tabindex + 1}}" data-ng-model="item.ResourceInput" data-ng-change="resourceSelected(item.ResourceInput, item)"
+														data-ng-options="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'ResourceDesc'">
+													</select>
+													<input data-ng-if="!showDropdowns" tabindex ="{{tabindex + 1}}" type="text" data-ng-model="item.ResourceInput" placeholder="Select a resource" uib-typeahead="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="2" data-ng-change="resourceUpdated(item)" typeahead-on-select="resourceSelected($item, item)">
+												</div>
+											</td>
+											<td data-ng-show="IsBRCEnabled" class="resources" data-ng-class="{inputError: isBusinessResourceCodeValid(item.BusinessResourceCodeInput, BusinessResourceCodeModels) === false && item.NewLaborType === false }">
 												<div class="resource-selection bootstrap">
 													<select data-ng-if="showDropdowns" tabindex ="{{tabindex + 1}}" data-ng-model="item.BusinessResourceCodeInput" data-ng-change="businessResourceCodeSelected(item.BusinessResourceCode, item)"
 														data-ng-options="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'BusinessResourceCodeDesc'">
 													</select>
-													<input data-ng-if="!showDropdowns" tabindex ="{{tabindex + 1}}" type="text" data-ng-model="item.BusinessResourceCodeInput" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{item.ElementOfCost} | filter:{BusinessResourceCodeDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" data-ng-change="businessResourceCodeUpdated(item)" typeahead-on-select="businessResourceCodeSelected($item, item)">
+													<input data-ng-if="!showDropdowns" tabindex ="{{tabindex + 1}}" type="text" data-ng-model="item.BusinessResourceCodeInput" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" data-ng-change="businessResourceCodeUpdated(item)" typeahead-on-select="businessResourceCodeSelected($item, item)">
 												</div>
 											</td>
                                             <td class="performing-org" data-ng-class="{inputError: isPerfOrgValid(item.PerfOrgInput, PerfOrgModels) === false && item.NewLaborType === false }">
@@ -765,6 +773,7 @@
                                 <thead>
                                     <tr>
                                         <th>Resource</th>
+										<th data-ng-show="IsBRCEnabled">Business Resource Code</th>
                                         <th>Performing Org</th>
                                     </tr>
                                 </thead>
@@ -778,7 +787,8 @@
                                      */
                                     %>
                                     <tr data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false } track by item.BOELaborTypeID">
-                                        <td class="ResourceName" title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
+                                        <td title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
+                                        <td data-ng-show="IsBRCEnabled" class="ResourceName" title="{{item.BusinessResourceCodeName}}"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
                                         <td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
                                     </tr>
                                     <tr id="LaborSpreadHeaderDividerRow" class="subheader">

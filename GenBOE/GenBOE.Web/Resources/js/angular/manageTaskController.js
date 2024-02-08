@@ -18,7 +18,7 @@
     $scope.isSaving = false;
     $scope.invalidSpreads = false;
     $scope.showDropdowns = false;
-    $scope.perfOrgTypeaheadLength = ManageTaskModel.IsSpace ? 0 : 2;
+	$scope.perfOrgTypeaheadLength = ManageTaskModel.IsSpace ? 0 : 2;
     $scope.offloadOptions = [
         { name: 'True', value: true },
         { name: 'False', value: false }
@@ -26,8 +26,8 @@
     $scope.model.AdjacentItems = {};
     $scope.model.AdjacentItems.PreviousId = undefined;
     $scope.model.AdjacentItems.NextId = undefined;
-    $scope.SelectedMoqTypes = [];
-	$scope.IsDraftOrDraftLocked = false;
+	$scope.SelectedMoqTypes = []; $scope.IsDraftOrDraftLocked = false;
+	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
 
     $scope.isPreviousTaskDisabled = function () {
         return $scope.model.AdjacentItems.PreviousId === undefined || $scope.model.AdjacentItems.PreviousId === null;
@@ -1514,7 +1514,7 @@
 
 	$scope.businessResourceCodeUpdated = function (item) {
 		// this takes care of deselections
-		if ((item.BusinessResourceCodeInput === undefined || item.BusinessResourceCodeInput === '') && item.BusinessResourceCodeDescription !== undefined) {
+	if ((item.BusinessResourceCodeInput === undefined || item.BusinessResourceCodeInput === '') && item.BusinessResourceCodeDescription !== undefined) {
 			$scope.setDirty();
 			item.BusinessResourceCodeDescription = undefined;
 			item.BusinessResouceCodeName = undefined;
@@ -1587,11 +1587,11 @@
 	$scope.businessResourceCodeSelected = function (item, model) {
 		$scope.setDirty();
 
-		if (item && item.BusinessResourceCodeDesc && item.BusinessResourceCodeDesc !== '') {
+		if (item && item.ResourceDesc && item.ResourceDesc !== '') {
 			// Business Resource Code was selected
-			model.BusinessResourceCodeDescription = item.BusinessResourceCodeDesc;
-			model.BusinessResourceCodeName = item.BusinessResourceCodeName;
-			model.BusinessResourceCodeType = item.BusinessResourceCodeTypeCategory;
+			model.BusinessResourceCodeDescription = item.ResourceDesc;
+			model.BusinessResourceCodeName = item.ResourceName;
+			model.BusinessResourceCodeType = item.ResourceTypeCategory;
 
 			// Rate Type change
 			if (mode.RateType !== item.RateType) {

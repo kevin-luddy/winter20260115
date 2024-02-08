@@ -9,16 +9,12 @@ namespace GenBOE.ActionLogic.Validation
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-	using System.Web.Configuration;
 	using IES.Common;
-	using IES.Common.classes;
 
 	public class StartEndDateTypeValidator : Validator
     {
         private DateTime? _StartDate;
         private DateTime? _EndDate;
-		private DateTime SpaceSystemsOneLmxCutOffDate;
-		private DateTime RMSOneLmxCutOffDate;
         private string _TypeForErrorMessage;
         private string _ElementName;
         private bool canBeEqual;
@@ -41,9 +37,6 @@ namespace GenBOE.ActionLogic.Validation
             this._TypeForErrorMessage = inTypeForErroMessage;
             this._ElementName = String.IsNullOrEmpty(ElementName) ? "" : ElementName + " ";
             this.canBeEqual = canBeEqual;
-
-			this.RMSOneLmxCutOffDate = Utilities.RMSOneLmxCutOffDate;
-			this.SpaceSystemsOneLmxCutOffDate = Utilities.SpaceSystemsOneLmxCutOffDate;
         }
 
 
@@ -76,33 +69,12 @@ namespace GenBOE.ActionLogic.Validation
                         {
                             response.Add(this._ElementName + "End date must be before the " + this._TypeForErrorMessage + " End date");
                         }
-
-						CompanyConfiguration companyConfiguration = SystemConfiguration.Instance().CompanyMode;
-
-						if (companyConfiguration == CompanyConfiguration.SpaceSystems)
-						{	
-							// 
-							if (element.EndDate < this.SpaceSystemsOneLmxCutOffDate)
-							{
-
-							}
-
-						}
-
-						if (companyConfiguration == CompanyConfiguration.MST)
-						{
-							if (element.EndDate > this.RMSOneLmxCutOffDate)
-							{
-
-							}
-						}
                     }
                 }
             }
 
             return response;
         }
-
     }
 
     public class verificationDateTime : IStartEndDates

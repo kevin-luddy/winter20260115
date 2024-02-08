@@ -15,7 +15,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Web;
     using System.Web.Configuration;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
@@ -61,10 +61,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IESSAPClient iesSapClient;
         private readonly ITokenService tokenservice;
 
-        /// <summary>
-        /// Task Element Validation Class
-        /// </summary>
-        private readonly TaskElementValidation taskElementValidation;
+		/// <summary>
+		/// Task Element Validation Class
+		/// </summary>
+		private readonly TaskElementValidation taskElementValidation;
         private readonly IVariableCircularReferenceChecker circularReferenceChecker;
         private readonly Logger logger = new Logger(typeof(BOELaborControllerLogic));
         protected ICommonDataMapper CommonDataMapper { get; }
@@ -119,7 +119,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.moqTableImporter = moqTableImporter;
             this.tokenservice = tokenservice;
             this.iesSapClient = iesSapClient;
-        }
+		}
 
         #region Public Members
 
@@ -776,6 +776,33 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 tasksToValidate.Add(taskElement);
                 errors = BOEvalidator.validation(tasksToValidate, (Collection<Dictionary<string, string>>)null);
+
+				if (Utilities.IsBRCEnabledForSystem)
+				{
+					DateTime OneLmxCutOffDate = Utilities.GetOneLMXCutOffDate();
+					foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
+					{
+						//
+						if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate &&  dto.ResourceID == 0)
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cut Off Date"));							
+						}
+
+						if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate 
+							&& dto.EndDate.HasValue && dto.EndDate.Value >= OneLmxCutOffDate
+							&& dto.ResourceID == 0 && dto.BusinessResourceCodeID == 0)
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs both Resource and Business Resource Code Selected because the start date is prior to 1LMX Cut Off Date and the end date is greater than or equal to 1LMX Cut Off Date"));
+						}
+
+						if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
+							&& dto.BusinessResourceCodeID == 0)
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is greater than or equal to 1LMX Cut Off Date"));
+						}
+					}
+				}
+
 
                 // gather errors up, if any
                 foreach (string error in errors)

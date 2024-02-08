@@ -332,37 +332,6 @@ namespace GenBOE.Web.Common
 			return resourceData;
 		}
 
-		/// <summary>
-		/// Get 1LMX Cut Off Date based on System Configuration
-		/// </summary>
-		/// <returns>1LMX Cut Off Date</returns>
-		public static DateTime GetOneLMXCutOffDate()
-		{
-			/// Set it to RMS Date as it is comes first
-			DateTime date = new DateTime(2027, 01, 01);
-
-			if (SystemConfiguration.Instance() .CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				date = Utilities.SpaceSystemsOneLmxCutOffDate;
-			}
-
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				date = Utilities.RMSOneLmxCutOffDate;
-			}
-
-			return date;
-		}
-
-		/// <summary>
-		/// Get Company Mode for App
-		/// </summary>
-		/// <returns>Enum of Company Mode</returns>
-		public static CompanyConfiguration GetCompanyConfiguration()
-		{
-			return SystemConfiguration.Instance().CompanyMode;
-		}
-
 		#region A number of settings that were moved into web.config to support classified installations. These methods expose the settings.
 
 		/// <summary>

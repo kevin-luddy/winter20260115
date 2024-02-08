@@ -851,6 +851,28 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		/// Get 1LMX Cut Off Date based on System Configuration
+		/// </summary>
+		/// <returns>1LMX Cut Off Date</returns>
+		public static DateTime GetOneLMXCutOffDate()
+		{
+			/// Set it to RMS Date as it is comes first
+			DateTime date = new DateTime(2027, 01, 01);
+
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				date = Utilities.SpaceSystemsOneLmxCutOffDate;
+			}
+
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				date = Utilities.RMSOneLmxCutOffDate;
+			}
+
+			return date;
+		}
+
+		/// <summary>
 		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
 		/// to not point at unclassified locations that are not accessible.
 		/// </summary>

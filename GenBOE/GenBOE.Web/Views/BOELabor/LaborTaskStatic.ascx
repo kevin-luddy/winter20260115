@@ -27,7 +27,7 @@
     var TaskElementDetailsWidget;
     
     var TaskLaborTypesWidget;
-    var TaskLaborSpreadsWidget;
+	var TaskLaborSpreadsWidget;
 
     validateCustomFields = function () {
         // Does nothing, but called from manageTaskController() even when using static page
@@ -325,8 +325,9 @@
                                         <tr>
                                             <th class="element-of-cost">Element of Cost</th>
 											<%-- This code: &#10013; is for display the Cross on the page --%>
-                                            <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)&#10013;</th>
-											<th class="resource">Business Resource Code (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController, '<%:WebConstants.ACTION_DISPLAY_BUSINESS_RESOURCE_CODES%>'); return false;">View</a>)&#10013;</th>
+                                            <th data-ng-hide="IsBRCEnabled" class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)*</th>
+                                            <th data-ng-show="IsBRCEnabled" class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)&#10013;</th>
+											<th data-ng-show="IsBRCEnabled" class="resource">Business Resource Code (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController, '<%:WebConstants.ACTION_DISPLAY_BUSINESS_RESOURCE_CODES%>'); return false;">View</a>)&#10013;</th>
                                             <th class="performing-org">Performing Org (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_PERF_ORGS%>'); return false;">View</a>)*</th>
                                             <% if (Model.BOEIsMulti)
                                                {%>
@@ -340,10 +341,10 @@
                                             <td>
                                                 {{ getElementOfCostText(item.ElementOfCost)}}
                                             </td>
-                                            <td>
-                                                <div title="{{item.ResourceDescription}}">{{item.ResourceDescription}}</div>
-                                            </td>
 											<td>
+												<div title="{{item.ResourceDescription}}">{{item.ResourceDescription}}</div>
+											</td>
+											<td data-ng-show="IsBRCEnabled">
 												<div title="{{item.BusinessResourceDescription}}">{{item.BusinessResourceDescription}}</div>
 											</td>
                                             <td>

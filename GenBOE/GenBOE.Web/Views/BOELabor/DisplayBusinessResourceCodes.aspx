@@ -7,7 +7,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-    <title>Resources</title>
+    <title>Business Resource Codes</title>
     <%: Styles.Render("~/Content/siteCss") %>
 </head>
 <body class="module-content-center" style="margin-bottom:0;max-width:1000px" onLoad="window.focus();">
