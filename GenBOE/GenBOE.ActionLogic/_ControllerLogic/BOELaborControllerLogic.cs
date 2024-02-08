@@ -782,7 +782,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					DateTime OneLmxCutOffDate = Utilities.GetOneLMXCutOffDate();
 					foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
 					{
-						//
+						// do validation per row item
 						if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate &&  dto.ResourceID == 0)
 						{
 							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cut Off Date"));							

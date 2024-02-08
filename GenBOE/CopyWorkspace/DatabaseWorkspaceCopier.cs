@@ -167,7 +167,6 @@ namespace CopyWorkspace
 
             Dictionary<int, int> performingOrgMapping = new Dictionary<int, int>();
             Dictionary<int, int> resourceMapping = new Dictionary<int, int>();
-
 			if (copyLaborSpreads)
             {
                 Console.WriteLine("Copying Perf Orgs");
@@ -1079,8 +1078,7 @@ namespace CopyWorkspace
         /// <param name="perfOrgs">Performing Orgs</param>
         /// <returns>Boolean indicating whether there was any bad data that the user should be notified about</returns>
         private bool CopyTasks(Dictionary<int, int> boeIDMapping, Dictionary<int, int> wbsIDMapping, Dictionary<int, int> clinIDMapping,
-            Dictionary<int, int> variableIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping, bool copyLaborSpreads, 
-			Dictionary<int, int> Resources, Dictionary<int, int> perfOrgs)
+            Dictionary<int, int> variableIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping, bool copyLaborSpreads, Dictionary<int, int> Resources, Dictionary<int, int> perfOrgs)
         {
             bool finishedCorrectly = true;
 
@@ -1205,7 +1203,7 @@ namespace CopyWorkspace
                             else
                             {
                                 finishedCorrectly = false;
-                                Console.WriteLine("Could not find Resource with ID " + laborType.ResourceID.Value + " for boeId " + newBoeID.ToString() + " labor type id " + laborType.Id);
+                                Console.WriteLine("Could not find Resource with ID " + laborType.ResourceID.Value + " for boeId " + newBoeID.ToString() + " labor type id" + laborType.Id);
                             }
                         }
                         else
