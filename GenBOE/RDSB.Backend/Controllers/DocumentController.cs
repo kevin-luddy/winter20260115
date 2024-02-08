@@ -79,7 +79,7 @@ namespace RDSB.Backend.Controllers
 		/// Get the proposals for the Add New Document dropdown 
 		/// </summary>
 		/// <returns>proposals for the Add New Document dropdown </returns>
-		[HttpPost("[action]")]
+		[HttpGet("[action]")]
 		public ICollection<DocumentGridModelView> GetProposalsForNewDocument()
         {
             ICollection<ProposalDto> proposals = this.documentControllerLogic.RetrieveUnlinkedProposals(this.SecurityMapper.GetRolesForLoggedInUser(),
