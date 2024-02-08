@@ -308,7 +308,9 @@ namespace GenBOE.Dtos
         /// </summary>
         public bool IsOffloaded { get; set; } = false;
 
-        // The BRC Resource ID
+        /// <summary>
+        /// The BRC Resource ID
+        /// </summary>
         public int? BusinessResourceCodeID { get; set; }
 	}
 
