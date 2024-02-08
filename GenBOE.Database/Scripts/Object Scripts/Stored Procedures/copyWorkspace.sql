@@ -1811,7 +1811,6 @@ SELECT [UpdateDT]
       ,[SpreadTypeID]
       ,[PercentSpreadLocked]
       ,[HourSpreadLocked]
-	  ,[BRCResourceID]
 	  ,CASE
 		WHEN NewWBSID IS NOT NULL THEN NewWBSID
 		ELSE WBSID
@@ -1822,6 +1821,7 @@ SELECT [UpdateDT]
 		END AS CLINID
 		,[CanOffload]
 		,[LaborSortId]
+		,[BRCResourceID]
   FROM @BOELaborType
 WHERE  [BOELaborTypeID] = @BOELaborTypeID
       

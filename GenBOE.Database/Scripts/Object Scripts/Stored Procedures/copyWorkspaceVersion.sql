@@ -2076,7 +2076,6 @@ BEGIN TRY
 		  ,[SpreadTypeID]
 		  ,[PercentSpreadLocked]
 		  ,[HourSpreadLocked]
-		  ,[BRCResourceID]
 		  ,CASE
 			WHEN NewWBSID IS NOT NULL THEN NewWBSID
 			ELSE WBSID
@@ -2087,6 +2086,7 @@ BEGIN TRY
 			END AS CLINID
 			,[CanOffload]
 			,[LaborSortId]
+			,[BRCResourceID]
 	  FROM @BOELaborType
 	WHERE  [BOELaborTypeID] = @BOELaborTypeID
       
