@@ -15,7 +15,7 @@ namespace GenBOE.Web.Common
 	using GenBOE.ActionLogic.Common;
 	using IES.Common;
 	using GenBOE.Objects;
-    using IES.Common.classes;
+	using IES.Common.classes;
 	using System.Collections.Generic;
 	using GenBOE.Dtos;
 	using System.Linq;
@@ -244,35 +244,35 @@ namespace GenBOE.Web.Common
 			}
 		}
 
-        /// <summary>
-        /// Gets Archive URL for the site; used to decide if the app is running in archive
-        /// </summary>
-        /// <returns>Archive URL</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
-        public static string ArchiveUrl()
-        {
-            return ConfigurationUtilities.GetAppSetting("ArchiveUrlBoe");
-        }
+		/// <summary>
+		/// Gets Archive URL for the site; used to decide if the app is running in archive
+		/// </summary>
+		/// <returns>Archive URL</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
+		public static string ArchiveUrl()
+		{
+			return ConfigurationUtilities.GetAppSetting("ArchiveUrlBoe");
+		}
 
 		/// <summary>
 		/// Gets the Server URL
 		/// </summary>
 		/// <returns>Server URL for this website</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
-        public static string ServerUrl()
-        {
-            return ConfigurationUtilities.GetAppSetting("ServerURL");
-        }        
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
+		public static string ServerUrl()
+		{
+			return ConfigurationUtilities.GetAppSetting("ServerURL");
+		}
 
 		/// <summary>
 		/// Returns true if RMS Archive
 		/// </summary>
 		/// <returns>True if RMS Archive</returns>
-        public static bool IsRMSArchive()
+		public static bool IsRMSArchive()
 		{
 			return SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST &&
 				ArchiveUrl() == ServerUrl();
-        }
+		}
 
 		/// <summary>
 		/// Returns true if this is RMS Production
@@ -282,7 +282,7 @@ namespace GenBOE.Web.Common
 		{
 			return SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST &&
 				ProductionUrl() == ServerUrl();
-        }
+		}
 
 		/// <summary>
 		/// Returns true if this is Read Only
