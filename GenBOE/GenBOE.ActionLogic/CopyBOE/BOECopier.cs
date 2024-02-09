@@ -686,6 +686,11 @@ namespace GenBOE.ActionLogic.CopyBOE
                             laborType.ResourceID = (laborType.ResourceID.HasValue && inResourceIDMapping[laborType.ResourceID.Value] != -1) ? inResourceIDMapping[laborType.ResourceID.Value] : (int?)null;
                         }
 
+                        if (laborType.BusinessResourceCodeID.HasValue && inResourceIDMapping.ContainsKey(laborType.BusinessResourceCodeID.Value))
+                        {
+                            laborType.BusinessResourceCodeID = (laborType.BusinessResourceCodeID.HasValue && inResourceIDMapping[laborType.BusinessResourceCodeID.Value] != -1) ? inResourceIDMapping[laborType.BusinessResourceCodeID.Value] : (int?)null;
+                        }
+
                         if (laborType.PerformingOrgID.HasValue && inPerformingOrgIDMapping.ContainsKey(laborType.PerformingOrgID.Value))
                         {
                             laborType.PerformingOrgID = (laborType.PerformingOrgID.HasValue && inPerformingOrgIDMapping[laborType.PerformingOrgID.Value] != -1) ? inPerformingOrgIDMapping[laborType.PerformingOrgID.Value] : (int?)null;

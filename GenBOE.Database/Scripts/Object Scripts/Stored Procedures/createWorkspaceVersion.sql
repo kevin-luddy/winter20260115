@@ -50,6 +50,7 @@ AS
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
+**		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -1228,6 +1229,7 @@ INSERT INTO [version].[BOELaborType]
 ,[CLINID]
 ,[CanOffload]
 ,[LaborSortId]
+,[BRCResourceID]
 )
 SELECT BLT.[BOELaborTypeID]
 ,BLT.[ResourceID]
@@ -1247,6 +1249,7 @@ SELECT BLT.[BOELaborTypeID]
 ,BLT.CLINID
 ,BLT.[CanOffload]
 ,BLT.[LaborSortId]
+,BLT.[BRCResourceID]
 FROM [dbo].[BOELaborType] BLT
 INNER JOIN [dbo].[BOETaskElement] BTE ON BLT.BOETaskElementID = BTE.BOETaskElementID
 INNER JOIN dbo.BOE B ON BTE.BOEID  = B.BOEID
