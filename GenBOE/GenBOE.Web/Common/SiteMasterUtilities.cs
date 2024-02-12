@@ -307,11 +307,11 @@ namespace GenBOE.Web.Common
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => x.SegRegion != "1LMX - Core" && x.SegRegion != "1LMX - Services").ToList();
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES).ToList();
 					}
 					else
 					{
-						resourceData = resourceData.Where(x => x.SegRegion == "1LMX - Core" || x.SegRegion == "1LMX - Services").ToList();
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.SPACE_1LMX_CORE || x.SegRegion == WebConstants.SPACE_1LMX_SERVICES).ToList();
 					}
 				}
 
@@ -319,12 +319,12 @@ namespace GenBOE.Web.Common
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => x.SegRegion != "LM-Core" && x.SegRegion != "LM-Services").ToList();
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMX_1LMX_CORE && x.SegRegion != WebConstants.RMX_1LMX_SERVICES).ToList();
 
 					}
 					else
 					{
-						resourceData = resourceData.Where(x => x.SegRegion == "LM-Core" || x.SegRegion == "LM-Services").ToList();
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMX_1LMX_CORE || x.SegRegion == WebConstants.RMX_1LMX_SERVICES).ToList();
 					}
 				}
 			}

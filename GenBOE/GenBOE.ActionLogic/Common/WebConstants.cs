@@ -108,6 +108,11 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string UPDATE_WORKSPACE_TRAVEL_ZONE_RATE = "UpdateWorkspaceTravelZoneRate";
 		public static readonly string UPDATE_WORKSPACE_OFFLOAD_RATES = "UpdateWorkspaceOffloadRates";
 
+		public static readonly string SPACE_1LMX_CORE = "1LMX - Core";
+		public static readonly string SPACE_1LMX_SERVICES = "1LMX - Services";
+		public static readonly string RMX_1LMX_CORE = "LM-Core";
+		public static readonly string RMX_1LMX_SERVICES = "LM-Services";
+
 		#region TEMPLATE FILES
 
 		public static readonly string ISGS_LABOR_RATES_EXAMPLE_LOCATION = "~/Templates/Export/ISGS_Labor_Rates_example.xlsx";
