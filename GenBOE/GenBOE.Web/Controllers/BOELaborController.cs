@@ -263,7 +263,7 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			ICollection<ResourceDTO> resources = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId).ToList();
+			ICollection<ResourceDTO> resources = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId, false).ToList();
 
 			ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();

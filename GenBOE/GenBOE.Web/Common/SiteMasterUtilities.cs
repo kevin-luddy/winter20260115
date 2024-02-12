@@ -299,7 +299,7 @@ namespace GenBOE.Web.Common
 		/// <param name="resourceData">Original Resources list</param>
 		/// <param name="isBrc">Bool to signify if Resources are of type Business Resource Codes</param>
 		/// <returns>Filtered list of Resources</returns>
-		public static IReadOnlyCollection<ResourceDTO> GetResourcesBasedOnCompanyMode(IReadOnlyCollection<ResourceDTO> resourceData, bool isBrc = false)
+		public static IReadOnlyCollection<ResourceDTO> GetResourcesBasedOnCompanyMode(IReadOnlyCollection<ResourceDTO> resourceData, bool isBrc)
 		{
 			if (Utilities.IsBRCEnabledForSystem)
 			{

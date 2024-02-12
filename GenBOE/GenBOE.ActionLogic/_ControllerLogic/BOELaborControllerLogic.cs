@@ -789,10 +789,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 
 						if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate 
-							&& dto.EndDate.HasValue && dto.EndDate.Value >= OneLmxCutOffDate
+							&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
 							&& dto.ResourceID == 0 && dto.BusinessResourceCodeID == 0)
 						{
-							validationErrors.Add(new ValidationMessage("Element row needs both Resource and Business Resource Code Selected because the start date is prior to 1LMX Cut Off Date and the end date is greater than or equal to 1LMX Cut Off Date"));
+							validationErrors.Add(new ValidationMessage("Element row needs both Resource and Business Resource Code Selected because the start date is prior to 1LMX Cut Off Date and the end date is greater than 1LMX Cut Off Date"));
 						}
 
 						if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate

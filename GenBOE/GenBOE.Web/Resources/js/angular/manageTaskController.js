@@ -26,7 +26,8 @@
 	$scope.model.AdjacentItems = {};
 	$scope.model.AdjacentItems.PreviousId = undefined;
 	$scope.model.AdjacentItems.NextId = undefined;
-	$scope.SelectedMoqTypes = []; $scope.IsDraftOrDraftLocked = false;
+	$scope.SelectedMoqTypes = [];
+	$scope.IsDraftOrDraftLocked = false;
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
 
 	$scope.isPreviousTaskDisabled = function () {
@@ -1594,7 +1595,7 @@
 			model.BusinessResourceCodeType = item.ResourceTypeCategory;
 
 			// Rate Type change
-			if (mode.RateType !== item.RateType) {
+			if (model.RateType !== item.RateType) {
 				model.HourSpread = '0';
 				model.CostSpread = '0';
 				model.PercentSpread = '0';
