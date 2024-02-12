@@ -13,64 +13,64 @@ namespace GenBOE.Dtos
 	using System.Linq;
 	using IES.Common;
 
-	/// <summary>
-	/// This is the labor type data associated with the BOE DTO
-	/// </summary>
-	[ExcludeFromCodeCoverage]
-	[Serializable()]
-	public class ResourceTypeDto : UpdateableDTO, IBOEMembership, IStartEndDates, IDateShiftable
-	{
-		public ResourceTypeDto()
-		{
-			this.Id = -1;
-			this.ResourceID = 0;
-			this.BusinessResourceCodeID = 0;
-			this.PerformingOrgID = 0;
-			this.spreadCurveIDField = null;
-			this.PercentSpread = 0;
-			this.ValueSpread = 0;
-			this.StartDate = DateTime.MaxValue;
-			this.EndDate = DateTime.MinValue;
-			this.LaborSpreads = new Collection<ResourceSpreadDto>();
-			this.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
-			this.HourSpreadLocked = false;
-			this.PercentSpreadLocked = false;
-			this.WBSID = null;
-			this.CLINID = null;
-			this.IsAddOrDelete = null;
-			this.LaborTypeOrder = 2000; // New resource types should be put at bottom of order
-		}
+    /// <summary>
+    /// This is the labor type data associated with the BOE DTO
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    [Serializable()]
+    public class ResourceTypeDto : UpdateableDTO, IBOEMembership, IStartEndDates, IDateShiftable
+    {
+        public ResourceTypeDto()
+        {
+            this.Id = -1;
+            this.ResourceID = 0;
+            this.PerformingOrgID = 0;
+            this.spreadCurveIDField = null;
+            this.PercentSpread = 0;
+            this.ValueSpread = 0;
+            this.StartDate = DateTime.MaxValue;
+            this.EndDate = DateTime.MinValue;
+            this.LaborSpreads = new Collection<ResourceSpreadDto>();
+            this.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
+            this.HourSpreadLocked = false;
+            this.PercentSpreadLocked = false;
+            this.WBSID = null;
+            this.CLINID = null;
+            this.IsAddOrDelete = null;
+            this.LaborTypeOrder = 2000; // New resource types should be put at bottom of order
+            this.BusinessResourceCodeID = 0;
+        }
 
 		/*
          * used for the importers to create a new imported type from the DB.
          */
-		public ResourceTypeDto(ResourceTypeDto inBOELaborType) : this()
-		{
-			if (inBOELaborType != null)
-			{
-				this.BoeID = inBOELaborType.BoeID;
-				this.Id = inBOELaborType.Id;
-				this.EndDate = inBOELaborType.EndDate;
-				this.LaborSpreads = inBOELaborType.LaborSpreads;
-				this.PercentSpread = inBOELaborType.PercentSpread;
-				this.PerformingOrgID = inBOELaborType.PerformingOrgID;
-				this.ResourceID = inBOELaborType.ResourceID;
-				this.BusinessResourceCodeID = inBOELaborType.BusinessResourceCodeID;
-				this.SpreadCurveID = inBOELaborType.SpreadCurveID;
-				this.StartDate = inBOELaborType.StartDate;
-				this.ValueSpread = inBOELaborType.ValueSpread;
-				this.CustomFieldValueContainers = inBOELaborType.CustomFieldValueContainers;
-				this.PercentSpreadLocked = inBOELaborType.PercentSpreadLocked;
-				this.HourSpreadLocked = inBOELaborType.HourSpreadLocked;
-				this.SpreadType = inBOELaborType.SpreadType;
-				this.WBSID = inBOELaborType.WBSID;
-				this.CLINID = inBOELaborType.CLINID;
-				this.IsAddOrDelete = inBOELaborType.IsAddOrDelete;
-				this.CanOffload = inBOELaborType.CanOffload;
-				this.TieredPercentage = inBOELaborType.TieredPercentage;
-				this.LaborTypeOrder = inBOELaborType.LaborTypeOrder;
-			}
-		}
+        public ResourceTypeDto(ResourceTypeDto inBOELaborType):this()
+        {
+            if (inBOELaborType != null)
+            {
+                this.BoeID = inBOELaborType.BoeID;
+                this.Id = inBOELaborType.Id;
+                this.EndDate = inBOELaborType.EndDate;
+                this.LaborSpreads = inBOELaborType.LaborSpreads;
+                this.PercentSpread = inBOELaborType.PercentSpread;
+                this.PerformingOrgID = inBOELaborType.PerformingOrgID;
+                this.ResourceID = inBOELaborType.ResourceID;
+                this.SpreadCurveID = inBOELaborType.SpreadCurveID;
+                this.StartDate = inBOELaborType.StartDate;
+                this.ValueSpread = inBOELaborType.ValueSpread;
+                this.CustomFieldValueContainers = inBOELaborType.CustomFieldValueContainers;
+                this.PercentSpreadLocked = inBOELaborType.PercentSpreadLocked;
+                this.HourSpreadLocked = inBOELaborType.HourSpreadLocked;
+                this.SpreadType = inBOELaborType.SpreadType;
+                this.WBSID = inBOELaborType.WBSID;
+                this.CLINID = inBOELaborType.CLINID;
+                this.IsAddOrDelete = inBOELaborType.IsAddOrDelete;
+                this.CanOffload = inBOELaborType.CanOffload;
+                this.TieredPercentage = inBOELaborType.TieredPercentage;
+                this.LaborTypeOrder = inBOELaborType.LaborTypeOrder;
+                this.BusinessResourceCodeID = inBOELaborType.BusinessResourceCodeID;
+            }
+        }
 
 		// the resource code ID
 		public int? ResourceID { get; set; }
@@ -306,10 +306,15 @@ namespace GenBOE.Dtos
 		/// </summary>
 		public int LaborSortID { get { return this.LaborTypeOrder; } }
 
-		/// <summary>
-		/// Indicates whether the Resource Type was generated by the offload process. Used by ProPricer exporter.
-		/// </summary>
-		public bool IsOffloaded { get; set; } = false;
+        /// <summary>
+        /// Indicates whether the Resource Type was generated by the offload process. Used by ProPricer exporter.
+        /// </summary>
+        public bool IsOffloaded { get; set; } = false;
+
+        /// <summary>
+        /// The BRC Resource ID
+        /// </summary>
+        public int? BusinessResourceCodeID { get; set; }
 	}
 
 	public static class BOELaborTypeExtensions
