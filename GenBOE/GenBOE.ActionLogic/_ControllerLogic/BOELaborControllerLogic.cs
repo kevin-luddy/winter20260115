@@ -15,7 +15,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Web;
     using System.Web.Configuration;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
@@ -61,10 +61,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IESSAPClient iesSapClient;
         private readonly ITokenService tokenservice;
 
-        /// <summary>
-        /// Task Element Validation Class
-        /// </summary>
-        private readonly TaskElementValidation taskElementValidation;
+		/// <summary>
+		/// Task Element Validation Class
+		/// </summary>
+		private readonly TaskElementValidation taskElementValidation;
         private readonly IVariableCircularReferenceChecker circularReferenceChecker;
         private readonly Logger logger = new Logger(typeof(BOELaborControllerLogic));
         protected ICommonDataMapper CommonDataMapper { get; }
@@ -119,7 +119,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.moqTableImporter = moqTableImporter;
             this.tokenservice = tokenservice;
             this.iesSapClient = iesSapClient;
-        }
+		}
 
         #region Public Members
 
@@ -473,7 +473,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     foreach (ResourceTypeDto missing in missingLabors)
                     {
                         this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-                        LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new PerformingOrgDTO());
+                        LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO());
                         toDelete.Deleted = true;
                         modelView.LaborTypesData.Add(toDelete);
                     }
@@ -776,6 +776,33 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 tasksToValidate.Add(taskElement);
                 errors = BOEvalidator.validation(tasksToValidate, (Collection<Dictionary<string, string>>)null);
+
+				if (Utilities.IsBRCEnabledForSystem)
+				{
+					DateTime OneLmxCutOffDate = Utilities.GetOneLMXCutOffDate();
+					foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
+					{
+						// do validation per row item
+						if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate &&  dto.ResourceID == 0)
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cut Off Date"));							
+						}
+
+						if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate 
+							&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
+							&& dto.ResourceID == 0 && dto.BusinessResourceCodeID == 0)
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs both Resource and Business Resource Code Selected because the start date is prior to 1LMX Cut Off Date and the end date is greater than 1LMX Cut Off Date"));
+						}
+
+						if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
+							&& dto.BusinessResourceCodeID == 0)
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is greater than or equal to 1LMX Cut Off Date"));
+						}
+					}
+				}
+
 
                 // gather errors up, if any
                 foreach (string error in errors)
@@ -2102,13 +2129,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     resource = resourcesFromDb.First(x => x.Id == labor.ResourceID.Value);
                 }
 
+				ResourceDTO businessResourceCode = new ResourceDTO();
+				if (labor.BusinessResourceCodeID != null && labor.BusinessResourceCodeID > 0)
+				{
+					businessResourceCode = resourcesFromDb.First(x => x.Id == labor.BusinessResourceCodeID.Value);
+				}
+
                 PerformingOrgDTO perfOrg = new PerformingOrgDTO();
                 if (labor.PerformingOrgID != null)
                 {
                     perfOrg = performingOrgsFromDb.First(x => x.Id == labor.PerformingOrgID.Value);
                 }
 
-                LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, perfOrg);
+                LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg);
 
                 ICollection<CustomFieldSelectionModelView> laborCustomFieldSelection = new Collection<CustomFieldSelectionModelView>();
                 ICollection<CustomFieldValueContainer> laborCustomFieldValues = labor.CustomFieldValueContainers;

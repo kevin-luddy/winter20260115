@@ -15,7 +15,10 @@ namespace GenBOE.Web.Common
 	using GenBOE.ActionLogic.Common;
 	using IES.Common;
 	using GenBOE.Objects;
-    using IES.Common.classes;
+	using IES.Common.classes;
+	using System.Collections.Generic;
+	using GenBOE.Dtos;
+	using System.Linq;
 
 	[ExcludeFromCodeCoverage]
 	sealed public class SiteMasterUtilities
@@ -241,35 +244,35 @@ namespace GenBOE.Web.Common
 			}
 		}
 
-        /// <summary>
-        /// Gets Archive URL for the site; used to decide if the app is running in archive
-        /// </summary>
-        /// <returns>Archive URL</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
-        public static string ArchiveUrl()
-        {
-            return ConfigurationUtilities.GetAppSetting("ArchiveUrlBoe");
-        }
+		/// <summary>
+		/// Gets Archive URL for the site; used to decide if the app is running in archive
+		/// </summary>
+		/// <returns>Archive URL</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
+		public static string ArchiveUrl()
+		{
+			return ConfigurationUtilities.GetAppSetting("ArchiveUrlBoe");
+		}
 
 		/// <summary>
 		/// Gets the Server URL
 		/// </summary>
 		/// <returns>Server URL for this website</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
-        public static string ServerUrl()
-        {
-            return ConfigurationUtilities.GetAppSetting("ServerURL");
-        }        
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
+		public static string ServerUrl()
+		{
+			return ConfigurationUtilities.GetAppSetting("ServerURL");
+		}
 
 		/// <summary>
 		/// Returns true if RMS Archive
 		/// </summary>
 		/// <returns>True if RMS Archive</returns>
-        public static bool IsRMSArchive()
+		public static bool IsRMSArchive()
 		{
 			return SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST &&
 				ArchiveUrl() == ServerUrl();
-        }
+		}
 
 		/// <summary>
 		/// Returns true if this is RMS Production
@@ -279,7 +282,7 @@ namespace GenBOE.Web.Common
 		{
 			return SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST &&
 				ProductionUrl() == ServerUrl();
-        }
+		}
 
 		/// <summary>
 		/// Returns true if this is Read Only
@@ -288,6 +291,45 @@ namespace GenBOE.Web.Common
 		public static bool IsReadOnly()
 		{
 			return !string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("IsReadOnly")) && ConfigurationUtilities.GetAppSetting("IsReadOnly").ToLower().Equals("true");
+		}
+
+		/// <summary>
+		/// Returns Resources / Business Resource Codes based on Company mode and 1LMX or Legacy distinction
+		/// </summary>
+		/// <param name="resourceData">Original Resources list</param>
+		/// <param name="isBrc">Bool to signify if Resources are of type Business Resource Codes</param>
+		/// <returns>Filtered list of Resources</returns>
+		public static IReadOnlyCollection<ResourceDTO> GetResourcesBasedOnCompanyMode(IReadOnlyCollection<ResourceDTO> resourceData, bool isBrc)
+		{
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					if (!isBrc)
+					{
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES).ToList();
+					}
+					else
+					{
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.SPACE_1LMX_CORE || x.SegRegion == WebConstants.SPACE_1LMX_SERVICES).ToList();
+					}
+				}
+
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+				{
+					if (!isBrc)
+					{
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMX_1LMX_CORE && x.SegRegion != WebConstants.RMX_1LMX_SERVICES).ToList();
+
+					}
+					else
+					{
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMX_1LMX_CORE || x.SegRegion == WebConstants.RMX_1LMX_SERVICES).ToList();
+					}
+				}
+			}
+
+			return resourceData;
 		}
 
 		#region A number of settings that were moved into web.config to support classified installations. These methods expose the settings.
