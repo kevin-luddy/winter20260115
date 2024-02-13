@@ -626,12 +626,12 @@ namespace IES.Common
                                               select new UserData()
                                               {
                                                   DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
-                                                  Ntid = user.Properties["samaccountname"][0].ToString(),
+                                                  Ntid = user.Properties.Contains("samaccountname") ? user.Properties["samaccountname"][0].ToString() : string.Empty,
                                                   FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
                                                   LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
                                                   Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
                                                   Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
-                                                  IsGroup = user.Properties["objectClass"].Contains("group"),
+                                                  IsGroup = user.Properties.Contains("objectClass") && user.Properties["objectClass"].Contains("group"),
                                                   State = user.Properties.Contains("st") ? user.Properties["st"][0].ToString() : string.Empty,
                                                   Company = user.Properties.Contains("company") ? user.Properties["company"][0].ToString() : string.Empty,
                                                   Country = user.Properties.Contains("c") ? user.Properties["c"][0].ToString() : string.Empty,
@@ -639,7 +639,7 @@ namespace IES.Common
                                                   EmployeeId = user.Properties.Contains("lmcEmployeeID") ? user.Properties["lmcEmployeeID"][0].ToString() : string.Empty,
                                                   IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
                                                   IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
-                                              }).ToList();
+                                              }).Where(u => !string.IsNullOrWhiteSpace(u.Ntid)).ToList();
                             }
 
                             allUsersAdded = true;
