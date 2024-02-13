@@ -75,9 +75,6 @@ namespace GenBOE.Dtos
 		// the resource code ID
 		public int? ResourceID { get; set; }
 
-		// the business resource code ID
-		public int? BusinessResourceCodeID { get; set; }
-
 		// the performing organization ID
 		public int? PerformingOrgID { get; set; }
 
