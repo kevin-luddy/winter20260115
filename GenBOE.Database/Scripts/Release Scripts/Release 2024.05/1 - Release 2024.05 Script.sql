@@ -1,4 +1,16 @@
-﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[upsertWorkspace]') AND type in (N'P', N'PC'))
+﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.5';
+GO
+
+/*
+	## START ##
+	2/14/2020 [e374897] - PROPH-1445 CurrentWorkspace
+*/
+
+BEGIN
+	ALTER TABLE [dbo].[Workspace] ADD [CurrentPTMWorkspace] bit NOT NULL DEFAULT 0;
+END
+
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[upsertWorkspace]') AND type in (N'P', N'PC'))
 	DROP PROCEDURE [dbo].[upsertWorkspace];
 GO
 
@@ -464,3 +476,8 @@ IF @@ERROR = 0
       SELECT @WorkspaceID AS WorkspaceID
 
 GO
+
+/*
+   2/14/2020 [e374897] - PROPH-1445 CurrentWorkspace
+   ## END ##
+/*
