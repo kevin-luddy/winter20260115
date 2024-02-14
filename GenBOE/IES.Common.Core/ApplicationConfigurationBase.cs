@@ -14,8 +14,6 @@
 	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.HttpOverrides;
-	using Microsoft.AspNetCore.Mvc.Authorization;
-	using Microsoft.AspNetCore.Server.IISIntegration;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.DependencyModel;
@@ -272,16 +270,6 @@
 							 .AllowAnyMethod()
 							 .AllowAnyHeader()
 							 .AllowCredentials()));
-
-			services.AddMvc(options =>
-			{
-				var policy = new AuthorizationPolicyBuilder()
-								 .RequireAuthenticatedUser()
-								 .Build();
-				options.Filters.Add(new AuthorizeFilter(policy));
-			});
-
-			services.AddAuthentication(IISDefaults.AuthenticationScheme);
 		}
 
 		/// <summary>
@@ -310,7 +298,6 @@
 			app.UseSerilogRequestLogging();
 			app.UseRouting();
 			app.UseCors("CorsPolicy");
-			app.UseAuthentication();
 			app.UseAuthorization();
 			app.UseMiddleware<UserLoggingMiddleware>();
 			app.UseMiddleware<CorrelationMiddleware>();
