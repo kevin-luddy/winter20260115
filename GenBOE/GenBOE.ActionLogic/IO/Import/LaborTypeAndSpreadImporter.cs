@@ -45,18 +45,18 @@ namespace GenBOE.ActionLogic.IO.Import
 
         // Array of the columns that must be contained in the imported file
         private readonly string[] REQUIRED_COLUMNS = new string[] { LABOR_TYPE_ID_COL, ImportExportConstants.RESOURCE_COLUMN_HEADER, PERFORMING_ORG_COL, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, ImportExportConstants.SPREAD_CURVE_COLUMN_HEADER, PERCENT_SPREAD_COL, COST_COL };
+		private readonly string[] REQUIRED_COLUMNS_BRC_ENABLED = new string[] { LABOR_TYPE_ID_COL, ImportExportConstants.RESOURCE_COLUMN_HEADER, ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER, PERFORMING_ORG_COL, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, ImportExportConstants.SPREAD_CURVE_COLUMN_HEADER, PERCENT_SPREAD_COL, COST_COL };
+		#endregion Constants
 
-        #endregion Constants
+		#region Public Functions
 
-        #region Public Functions
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LaborTypeAndSpreadImporter"/> class.
-        /// </summary>
-        /// <param name="inIResourceDTODataLoader">The resource dto data loader.</param>
-        /// <param name="perfOrgLoader">The perf org loader.</param>
-        /// <param name="inICommonDataMapper">The common data mapper.</param>
-        public LaborTypeAndSpreadImporter(
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LaborTypeAndSpreadImporter"/> class.
+		/// </summary>
+		/// <param name="inIResourceDTODataLoader">The resource dto data loader.</param>
+		/// <param name="perfOrgLoader">The perf org loader.</param>
+		/// <param name="inICommonDataMapper">The common data mapper.</param>
+		public LaborTypeAndSpreadImporter(
             IResourceDTODataLoader inIResourceDTODataLoader,
             IPerformingOrgDTODataLoader perfOrgLoader,
             ICommonDataMapper inICommonDataMapper)
@@ -93,15 +93,26 @@ namespace GenBOE.ActionLogic.IO.Import
                 // Open the document as read-only.
                 using (SpreadsheetDocument document = SpreadsheetDocument.Open(inExcelFileStream, false))
                 {
-                    // add column header "identifiers" for each spread-month-data column
-                    List<string> columnsToRetrieve = this.REQUIRED_COLUMNS.Union(FindSpreadDatesHeaders(inTaskElement)).ToList();
-                    if(isMulti)
+					// add column header "identifiers" for each spread-month-data column
+					List<string> columnsToRetrieve;
+					List<string> requiredColumns;
+
+					if (Utilities.IsBRCEnabledForSystem)
+					{
+						columnsToRetrieve = this.REQUIRED_COLUMNS_BRC_ENABLED.Union(FindSpreadDatesHeaders(inTaskElement)).ToList();
+						requiredColumns = new List<string>(this.REQUIRED_COLUMNS_BRC_ENABLED);
+					}
+					else
+					{
+						columnsToRetrieve = this.REQUIRED_COLUMNS.Union(FindSpreadDatesHeaders(inTaskElement)).ToList();
+						requiredColumns = new List<string>(this.REQUIRED_COLUMNS);
+					}
+
+					if(isMulti)
                     {
                         columnsToRetrieve.Add(RESOURCE_WBS_HEADER);
                         columnsToRetrieve.Add(RESOURCE_CLIN_HEADER);
                     }
-
-                    List<string> requiredColumns = new List<string>(this.REQUIRED_COLUMNS);
 
                     if (isOffload)
                     {

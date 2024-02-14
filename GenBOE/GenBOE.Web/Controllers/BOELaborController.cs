@@ -1203,7 +1203,16 @@ namespace GenBOE.Web.Controllers
 				DataRelationshipVerifier.VerifyDataRelation(thisTaskElement, boeID);
 			}
 
-			string templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread.xlsx";
+			string templateName; 
+			
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread_BRCEnabled.xlsx";
+			}
+			else
+			{
+				templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread.xlsx";
+			}
 
 			string exportedFileName = LaborTypeAndSpreadExporter.ExportToExcelFile(Server.MapPath(templateName), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement, boeID, isTemplate);
 

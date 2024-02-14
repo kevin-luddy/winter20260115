@@ -20,7 +20,8 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
-    using IES.Common.OfficeUtilities;
+	using IES.Common.classes;
+	using IES.Common.OfficeUtilities;
 
     [ExcludeFromCodeCoverage]
     public static class LaborTypeAndSpreadExporter
@@ -76,7 +77,11 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(inTaskElement));
             }
 
-            List<CustomFieldDTO> workspaceCustomFields = inWorkspace.CustomFields.Where(cf => cf.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay).ToList();
+			ICollection<ResourceDTO> originalResources = inResourceLoader.GetByListIdAndElementOfCost(
+				inWorkspace.ResourceListID,
+				new Collection<ElementOfCostType>() { ElementOfCostType.LMLabor, ElementOfCostType.IWTA, ElementOfCostType.Sub, ElementOfCostType.ODC, ElementOfCostType.Travel, ElementOfCostType.Materials });
+
+			List<CustomFieldDTO> workspaceCustomFields = inWorkspace.CustomFields.Where(cf => cf.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay).ToList();
             ICollection<int> customFieldIds = workspaceCustomFields.Select(cf => cf.Id).ToList();
             ICollection<CustomFieldValueDTO> workspaceCustomFieldValues = inWorkspace.CustomFieldValues.Where(cfv => customFieldIds.Contains(cfv.CustomFieldID)).ToList();
             bool isMulti = inWorkspace.Boes.First(b => b.Id == boeId).IsMultiClinWbs;
@@ -84,10 +89,14 @@ namespace GenBOE.ActionLogic.IO.Export
 
             IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs = inWorkspace.PerformingOrgsForWsList;
              Collection<SpreadCurveModelView> allCurves = inCommonMapper.getSpreadCurve();
-            ICollection<ResourceDTO> allResourceTypes = inResourceLoader.GetByListIdAndElementOfCost(
-                inWorkspace.ResourceListID,
-                new Collection<ElementOfCostType>() { ElementOfCostType.LMLabor, ElementOfCostType.IWTA, ElementOfCostType.Sub, ElementOfCostType.ODC, ElementOfCostType.Travel, ElementOfCostType.Materials });
-            
+			ICollection<ResourceDTO> allResourceTypes = GetResourcesBasedOnCompanyMode(originalResources, false);
+			ICollection<ResourceDTO> allBusinessResourceCodeTypes = new List<ResourceDTO>();
+
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				allBusinessResourceCodeTypes = GetResourcesBasedOnCompanyMode(originalResources, true);
+			}
+			
             // Create a new random file name in the specified directory
             string toReturn = ExcelUtilities.CopyExcelTemplateFile(templateFileLocation);
 
@@ -103,19 +112,23 @@ namespace GenBOE.ActionLogic.IO.Export
             // Create the document object in memory
             using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(toReturn, true))
             {
-                PopulateOptionsList(spreadsheet, allPerformingOrgs, allCurves, allResourceTypes, workspaceCustomFields, workspaceCustomFieldValues, inWorkspace.WbsElementsNoMultiWbs, inWorkspace.ClinsNoMultiClin, inWorkspace);
-                PopulateLaborTypeAndSpread(spreadsheet, inWorkspace, inTaskElement, allPerformingOrgs, allCurves, allResourceTypes, workspaceCustomFields, workspaceCustomFieldValues, isMulti, isTemplate, isOffload);
+                PopulateOptionsList(spreadsheet, allPerformingOrgs, allCurves, allResourceTypes, workspaceCustomFields, workspaceCustomFieldValues, inWorkspace.WbsElementsNoMultiWbs, inWorkspace.ClinsNoMultiClin, inWorkspace, allBusinessResourceCodeTypes);
+                PopulateLaborTypeAndSpread(spreadsheet, inWorkspace, inTaskElement, allPerformingOrgs, allCurves, allResourceTypes, workspaceCustomFields, workspaceCustomFieldValues, isMulti, isTemplate, isOffload, allBusinessResourceCodeTypes);
             }
 
             FormatLaborExport(toReturn);
             return toReturn;
         }
 
-        /// <summary>
-        /// Cleans up LaborSpreadsExport format, so cost is currency and the month values are general style so imports dont break.
-        /// </summary>
-        /// <param name="inTemplateFileLocation">Template file location</param>
-        private static void FormatLaborExport(string inTemplateFileLocation)
+		#endregion Public Functions
+
+		#region Private Functions
+
+		/// <summary>
+		/// Cleans up LaborSpreadsExport format, so cost is currency and the month values are general style so imports dont break.
+		/// </summary>
+		/// <param name="inTemplateFileLocation">Template file location</param>
+		private static void FormatLaborExport(string inTemplateFileLocation)
         {
             using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(inTemplateFileLocation, true))
             {
@@ -215,7 +228,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="isOffload">True if we should show the Offload column; otherwise false.</param>
         private static void PopulateLaborTypeAndSpread(SpreadsheetDocument spreadsheet, FullWorkspace inWorkspace, BoeTaskElementDTO inTaskElement, IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs, 
             ICollection<SpreadCurveModelView> allCurves, ICollection<ResourceDTO> allResourceTypes, ICollection<CustomFieldDTO> workspaceCustomFields,
-            ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool isMulti, bool isTemplate, bool isOffload)
+            ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool isMulti, bool isTemplate, bool isOffload,
+			ICollection<ResourceDTO> allBusinessResourceCodes)
         {
             // determination complete range of spread dates across all resources (i.e. the total number of spread month columns needed)
             DateTime spreadStartDate = inTaskElement.StartDate.Value;
@@ -266,7 +280,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 // Populate Labor data
                 foreach (ResourceTypeDto laborType in laborResources)
                 {
-                    List<string> row = CreateLaborRow(inWorkspace, inTaskElement, allPerformingOrgs, allCurves, allResourceTypes, spreadDateColumnIndices, laborTypeCustomFieldValueIdMappings,
+                    List<string> row = CreateLaborRow(inWorkspace, inTaskElement, allPerformingOrgs, allCurves, allResourceTypes, allBusinessResourceCodes, spreadDateColumnIndices, laborTypeCustomFieldValueIdMappings,
                         allTaskResourcesCustomFields, laborType, workspaceCustomFields, isMulti, isOffload);
 
                     laborTypeWorksheet.Add(row);
@@ -360,7 +374,14 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </returns>
         private static List<string> CreateHeaderRow(ICollection<CustomFieldDTO> workspaceCustomFields, List<string> spreadMonthColumnHeaders, bool isMulti, bool isUsingEquivalentPerson, bool isOffload)
         {
-            List<string> headerRow = new List<string>() { LaborTypeAndSpreadImporter.LABOR_TYPE_ID_COL, ImportExportConstants.RESOURCE_COLUMN_HEADER, LaborTypeAndSpreadImporter.PERFORMING_ORG_COL };
+			List<string> headerRow = new List<string>() { LaborTypeAndSpreadImporter.LABOR_TYPE_ID_COL, ImportExportConstants.RESOURCE_COLUMN_HEADER };
+
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				headerRow.Add(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER);
+			}
+
+			headerRow.Add(LaborTypeAndSpreadImporter.PERFORMING_ORG_COL);
 
             foreach (CustomFieldDTO customField in workspaceCustomFields)
             {
@@ -414,11 +435,12 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="isOffload">True if we should show the Offload column; otherwise false.</param>
         /// <returns></returns>
         private static List<string> CreateLaborRow(FullWorkspace inWorkspace, BoeTaskElementDTO inTaskElement, IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs,
-            ICollection<SpreadCurveModelView> allCurves, ICollection<ResourceDTO> allResourceTypes, Dictionary<DateTime, int> spreadDateColumnIndices,
+            ICollection<SpreadCurveModelView> allCurves, ICollection<ResourceDTO> allResourceTypes, ICollection<ResourceDTO> allBusinessResourceTypes, Dictionary<DateTime, int> spreadDateColumnIndices,
             Dictionary<int, ICollection<KeyValuePair<int, int>>> laborTypeCustomFieldValueIdMappings, IDictionary<CustomFieldValueDTO, CustomFieldDTO> customFieldDictionary,
             ResourceTypeDto laborType, ICollection<CustomFieldDTO> workspaceCustomFields, bool isMulti, bool isOffload)
         {
             ResourceDTO thisResource = (from resources in allResourceTypes where laborType.ResourceID.HasValue && resources.Id == laborType.ResourceID select resources).FirstOrDefault();
+			ResourceDTO thisBusinessResourceCode = (from businessResourceCodes in allBusinessResourceTypes where laborType.BusinessResourceCodeID.HasValue && businessResourceCodes.Id == laborType.BusinessResourceCodeID select businessResourceCodes).FirstOrDefault();
             PerformingOrgDTO thisPerfOrg = (from perOrgs in allPerformingOrgs where laborType.PerformingOrgID.HasValue && perOrgs.Id == laborType.PerformingOrgID select perOrgs).FirstOrDefault();
             SpreadCurveModelView thisSpread = (from curves in allCurves where curves.SpreadCurveID == laborType.SpreadCurveID select curves).FirstOrDefault();
             FullWbs thisWBS = inWorkspace.WbsElementsNoMultiWbs.FirstOrDefault(w => w.Id == laborType.WBSID);
@@ -428,13 +450,19 @@ namespace GenBOE.ActionLogic.IO.Export
             switch (inTaskElement.TaskElementType)
             {
                 case TaskElementType.Labor:
-                    row.AddRange(
-                        new string[]
-                            {
-                                laborType.Id.ToString(),
-                                thisResource != null ? thisResource.ResourceDesc : string.Empty,
-                                thisPerfOrg != null ? thisPerfOrg.PerformingOrgName + " - " + thisPerfOrg.PerformingOrgDesc : string.Empty
-                            });
+					row.AddRange(
+						new string[]
+							{
+								laborType.Id.ToString(),
+								thisResource != null ? thisResource.ResourceDesc : string.Empty
+							});
+
+					if (Utilities.IsBRCEnabledForSystem)
+					{
+						row.Add(thisBusinessResourceCode != null ? thisBusinessResourceCode.ResourceDesc : string.Empty);
+					}
+
+					row.Add(thisPerfOrg != null ? thisPerfOrg.PerformingOrgName + " - " + thisPerfOrg.PerformingOrgDesc : string.Empty);
 
                     ICollection<string> customFieldValues = CreateCustomFieldRowValues(laborType, customFieldDictionary, laborTypeCustomFieldValueIdMappings, workspaceCustomFields);
                     row.AddRange(customFieldValues);
@@ -649,7 +677,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="workspaceClins">The workspace CLINs.</param>
         /// <param name="inWorkspace">The workspace.</param>
         private static void PopulateOptionsList(SpreadsheetDocument spreadsheet, IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs, ICollection<SpreadCurveModelView> allCurves, ICollection<ResourceDTO> allResourceTypes, 
-            ICollection<CustomFieldDTO> workspaceCustomFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, IReadOnlyCollection<FullWbs> workspaceWBSs, IReadOnlyCollection<FullClin> workspaceClins, FullWorkspace inWorkspace)
+            ICollection<CustomFieldDTO> workspaceCustomFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, IReadOnlyCollection<FullWbs> workspaceWBSs, IReadOnlyCollection<FullClin> workspaceClins, 
+			FullWorkspace inWorkspace, ICollection<ResourceDTO> allBusinessResourceCodes)
         {
             // Create collections of strings for each row in the export file
             ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet(ImportExportConstants.OPTIONS_LISTS);
@@ -664,6 +693,12 @@ namespace GenBOE.ActionLogic.IO.Export
                 ImportExportConstants.CLIN_COLUMN_HEADER,
                 ImportExportConstants.OFFLOAD_COLUMN_HEADER
             };
+
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				headerValues.Add(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER);
+			}
+
             string[] offloadOptions = new string[] { "TRUE", "FALSE" };
 
             int maxRows = Math.Max(allCurves.Count, Math.Max(allPerformingOrgs.Count, Math.Max(workspaceWBSs.Count, Math.Max(workspaceClins.Count, allResourceTypes.Count))));
@@ -711,13 +746,20 @@ namespace GenBOE.ActionLogic.IO.Export
             // Add option value rows
             for (int i = 0; i < maxRows; i++)
             {
-                List<string> optionValues = new List<string>();
-                optionValues.Add(allResourceTypes.Count > i ? allResourceTypes.ElementAt(i).ResourceDesc : string.Empty);
-                optionValues.Add(allPerformingOrgs.Count > i ? allPerformingOrgs.ElementAt(i).PerformingOrgName + " - " + allPerformingOrgs.ElementAt(i).PerformingOrgDesc : string.Empty);
-                optionValues.Add(allCurves.Count > i ? allCurves.ElementAt(i).SpreadCurveName.Replace("Hours", FullObjectHelper.HoursLabel(inWorkspace)) : string.Empty);
-                optionValues.Add(workspaceWBSs.Count > i ? workspaceWBSs.ElementAt(i).WbsString : string.Empty);
-                optionValues.Add(workspaceClins.Count > i ? workspaceClins.ElementAt(i).ClinString : string.Empty);
-                optionValues.Add(offloadOptions.Length > i ? offloadOptions.ElementAt(i) : string.Empty);
+                List<string> optionValues = new List<string>
+				{
+					allResourceTypes.Count > i ? allResourceTypes.ElementAt(i).ResourceDesc : string.Empty,
+					allPerformingOrgs.Count > i ? allPerformingOrgs.ElementAt(i).PerformingOrgName + " - " + allPerformingOrgs.ElementAt(i).PerformingOrgDesc : string.Empty,
+					allCurves.Count > i ? allCurves.ElementAt(i).SpreadCurveName.Replace("Hours", FullObjectHelper.HoursLabel(inWorkspace)) : string.Empty,
+					workspaceWBSs.Count > i ? workspaceWBSs.ElementAt(i).WbsString : string.Empty,
+					workspaceClins.Count > i ? workspaceClins.ElementAt(i).ClinString : string.Empty,
+					offloadOptions.Length > i ? offloadOptions.ElementAt(i) : string.Empty
+				};
+
+				if (Utilities.IsBRCEnabledForSystem)
+				{
+					optionValues.Add(allBusinessResourceCodes.Count > i ? allBusinessResourceCodes.ElementAt(i).ResourceDesc : string.Empty);
+				}
                 
                 // include custom field values
                 foreach (List<string> valueList in customFieldValueTable)
@@ -742,11 +784,56 @@ namespace GenBOE.ActionLogic.IO.Export
                 { ImportExportConstants.CLINS, workspaceClins.Count },
                 { ImportExportConstants.OFFLOAD, offloadOptions.Length }
             };
+
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				lengths.Add(ImportExportConstants.BUSINESS_RESOURCE_CODES, allBusinessResourceCodes.Count);
+			}
+
             ExcelExporter.AdjustDefinedNames(spreadsheet, lengths);
             // Add Defined Names for each custom field
             ExcelExporter.AddDefinedNames(spreadsheet, customFieldDefinedNames);
         }
 
-        #endregion Public Functions
-    }
+		/// <summary>
+		/// Returns Resources / Business Resource Codes based on Company mode and 1LMX or Legacy distinction
+		/// </summary>
+		/// <param name="resourceData">Original Resources list</param>
+		/// <param name="isBrc">Bool to signify if Resources are of type Business Resource Codes</param>
+		/// <returns>Filtered list of Resources</returns>
+		public static ICollection<ResourceDTO> GetResourcesBasedOnCompanyMode(ICollection<ResourceDTO> resourceData, bool isBrc)
+		{
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					if (!isBrc)
+					{
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES).ToList();
+					}
+					else
+					{
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.SPACE_1LMX_CORE || x.SegRegion == WebConstants.SPACE_1LMX_SERVICES).ToList();
+					}
+				}
+
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+				{
+					if (!isBrc)
+					{
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMX_1LMX_CORE && x.SegRegion != WebConstants.RMX_1LMX_SERVICES).ToList();
+
+					}
+					else
+					{
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMX_1LMX_CORE || x.SegRegion == WebConstants.RMX_1LMX_SERVICES).ToList();
+					}
+				}
+			}
+
+			return resourceData;
+		}
+
+		#endregion Private Functions
+	}
 }
