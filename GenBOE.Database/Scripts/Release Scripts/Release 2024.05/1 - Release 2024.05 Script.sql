@@ -161,21 +161,21 @@ BEGIN
 	
 END
 
-/* 
-    When a Workspace is being created and no other workspaces linked to the PTM Tracking #, 
-    CurrentPTMWorkspace is set to 1, else 0
-*/
-IF NOT EXISTS (SELECT * FROM [dbo].[Workspace] WHERE [TrackingNumber] = @TrackingNumber)
-    BEGIN
-        SET @CurrentPTMWorkspace = 1;
-    END
-ELSE
-    BEGIN
-        SET @CurrentPTMWorkspace = 0;
-    END
-
 IF @WorkspaceID  < 0  /*Insert Record*/
       BEGIN
+
+        /* 
+        When a Workspace is being created and no other workspaces linked to the PTM Tracking #, 
+        CurrentPTMWorkspace is set to 1, else 0
+        */
+          IF NOT EXISTS (SELECT * FROM [dbo].[Workspace] WHERE [TrackingNumber] = @TrackingNumber)
+              BEGIN
+                SET @CurrentPTMWorkspace = 1;
+              END
+          ELSE
+              BEGIN
+                SET @CurrentPTMWorkspace = 0;
+              END
       
       SET @UpdateDT = GETDATE()
       
