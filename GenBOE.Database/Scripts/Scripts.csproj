@@ -340,7 +340,8 @@
     <Content Include="Release Scripts\Release 2023.35\1 - Release 2023.35 Script.sql" />
     <Content Include="Release Scripts\Release 2024.03\1 - Release 2024.03 Script.sql" />
     <Content Include="Release Scripts\Release 2024.03\2 - Release 2024.03 Script.sql" />
-    <Content Include="Release Scripts\Release 2024.05\1 - Release 2024.05 Script.sql" />
+    <Content Include="Release Scripts\Release 2024.04\1 - Release 2024.4 Script.sql" />
+    <Content Include="Release Scripts\Release 2024.04\2 - Release 2024.4 Script.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.11 Generated On 4_11_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.5 Generated On 3_8_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2022.15 Generated On 5_16_2022.sql" />
@@ -416,6 +417,8 @@
   <ItemGroup>
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2020.3.11 8_26_2020.sql" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Release Scripts\Release 2023.04\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
