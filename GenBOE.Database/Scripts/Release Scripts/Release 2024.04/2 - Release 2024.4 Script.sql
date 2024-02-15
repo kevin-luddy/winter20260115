@@ -1,7 +1,4 @@
-﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.5';
-GO
-
-/*
+﻿/*
 	## START ##
 	2/14/2020 [e374897] - PROPH-1445 CurrentWorkspace
 */
