@@ -9,6 +9,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DataBridge.ModelViews;
 	using GenTRAC.DataBridge.Common.Security;
@@ -92,7 +93,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="serverFileName">Server File Name</param>
 		/// <param name="httpResponse">HTTP response object</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired);
+		Task GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired);
 
         /// <summary>
         /// Generates the RDD document for the Proposal Id passed in.
@@ -104,7 +105,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
         /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false);
+        Task GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false);
 
         /// <summary>
         /// Check if RDSB Record exists for the given PTM Proposal ID

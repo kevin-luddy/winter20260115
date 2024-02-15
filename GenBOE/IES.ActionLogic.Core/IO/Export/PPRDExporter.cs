@@ -21,6 +21,9 @@ namespace IES.ActionLogic.Core.IO.Export
 	using Microsoft.AspNetCore.Mvc;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Constants;
+	using IES.Common.Core.Services;
+	using Microsoft.Extensions.Logging;
+	using IES.Common.Core.Interfaces;
 
 	/// <summary>
 	/// The PPRD Exporter.
@@ -43,12 +46,18 @@ namespace IES.ActionLogic.Core.IO.Export
 		private readonly RateFormatter rateFormatter;
 
 		/// <summary>
+		/// The token service
+		/// </summary>
+		private readonly ITokenService tokenService;
+
+		/// <summary>
 		/// default constructor
 		/// </summary>
 		/// <param name="rateFormatter">Rate Formatter</param>
-		public PPRDExporter(RateFormatter rateFormatter)
+		public PPRDExporter(ILogger<WordExporter> logger, RateFormatter rateFormatter, ITokenService tokenService) : base(logger)
 		{
 			this.rateFormatter = rateFormatter;
+			this.tokenService = tokenService;
 		}
 
 		/// <summary>
@@ -63,12 +72,13 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
 		/// <param name="response">the web response object to write the file back to for user download</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-		public IActionResult ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel)
+		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		public async Task<IActionResult> ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel, bool portionMarkingRequired = false)
 		{
 			ChunkCounter counters = new();
 
 			Stream stream = new MemoryStream(32000);
-			Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream);
+			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream, portionMarkingRequired, tokenService);
 			stream.Position = 0;
 			return new FileStreamResult(stream, ExportFileDownloadBase.ContentType_DOCX)
 			{
@@ -86,15 +96,16 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="revision">Revision modelview</param>
 		/// <param name="rddDocument">The RDD document to use for creation.</param>
 		/// <param name="stream">the stream to write the file back to for user download</param>
-		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-		public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true)
+		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		public async Task ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
 		{
 			ChunkCounter counters = new();
 
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
-			Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream);
+			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream, portionMarkingRequired, tokenService);
 		}
 
 		#region Populate Methods

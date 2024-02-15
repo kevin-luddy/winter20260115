@@ -20,6 +20,7 @@ namespace RDSB.Backend.Common
 	using IES.Common.Core.Security;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Mvc.Controllers;
@@ -29,6 +30,7 @@ namespace RDSB.Backend.Common
 	/// <summary>
 	/// RDSB base controller
 	/// </summary>
+	[Authorize]
 	public abstract class RDSBController : IES.Common.Core.IESController, IActionFilter
 	{
         #region Variables

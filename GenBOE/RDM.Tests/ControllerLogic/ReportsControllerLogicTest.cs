@@ -9,7 +9,8 @@ namespace RDM.Tests.ControllerLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Web;
+	using System.Threading.Tasks;
+	using System.Web;
     using IES.ActionLogic.ControllerLogic;
     using IES.ActionLogic.IO.Export;
     using IES.ActionLogic.Mediator;
@@ -108,7 +109,7 @@ namespace RDM.Tests.ControllerLogic
         /// Test GenerateFullPPRD for the WIP revision
         /// </summary>
         [TestMethod]
-        public void TestGenerateFullPPRD_WIP()
+        public async Task TestGenerateFullPPRD_WIP()
         {
             ReportsControllerLogic sut = this.CreateSut();
 
@@ -139,16 +140,16 @@ namespace RDM.Tests.ControllerLogic
 
             this.sectionLoader.Setup(x => x.GetAll(wipRevision, false, null, null)).Returns(new Collection<SectionModelView>());
 
-            sut.GenerateFullPPRD(id, serverFileName, httpResponse.Object, portionMarkingRequired);
+            await sut.GenerateFullPPRD(id, serverFileName, httpResponse.Object, portionMarkingRequired);
 
-            this.pprdExporter.Verify(x => x.ExportFullPPRDToWordFile(It.IsAny<ICollection<SectionModelView>>(), It.IsAny<ICollection<RateDetailModelView>>(), It.IsAny<ICollection<FileAttachmentRowModelView>>(), serverFileName, It.IsAny<string>(), wipRevision, It.IsAny<int>(), httpResponse.Object, It.IsAny<int>()), Times.Exactly(1));
+            this.pprdExporter.Verify(x => x.ExportFullPPRDToWordFile(It.IsAny<ICollection<SectionModelView>>(), It.IsAny<ICollection<RateDetailModelView>>(), It.IsAny<ICollection<FileAttachmentRowModelView>>(), serverFileName, It.IsAny<string>(), wipRevision, It.IsAny<int>(), httpResponse.Object, It.IsAny<int>(), portionMarkingRequired), Times.Exactly(1));
         }
 
         /// <summary>
         /// Test GenerateFullPPRD for a previous revision
         /// </summary>
         [TestMethod]
-        public void TestGenerateFullPPRD_PreviousRevision()
+        public async Task TestGenerateFullPPRD_PreviousRevision()
         {
             ReportsControllerLogic sut = this.CreateSut();
 
@@ -179,9 +180,9 @@ namespace RDM.Tests.ControllerLogic
 
             this.sectionLoader.Setup(x => x.GetAll(previousRevision, false, null, null)).Returns(new Collection<SectionModelView>());
 
-            sut.GenerateFullPPRD(id, serverFileName, httpResponse.Object, portionMarkingRequired);
+            await sut.GenerateFullPPRD(id, serverFileName, httpResponse.Object, portionMarkingRequired);
 
-            this.pprdExporter.Verify(x => x.ExportFullPPRDToWordFile(It.IsAny<ICollection<SectionModelView>>(), It.IsAny<ICollection<RateDetailModelView>>(), It.IsAny<ICollection<FileAttachmentRowModelView>>(), serverFileName, It.IsAny<string>(), previousRevision, It.IsAny<int>(), httpResponse.Object, It.IsAny<int>()), Times.Exactly(1));
+            this.pprdExporter.Verify(x => x.ExportFullPPRDToWordFile(It.IsAny<ICollection<SectionModelView>>(), It.IsAny<ICollection<RateDetailModelView>>(), It.IsAny<ICollection<FileAttachmentRowModelView>>(), serverFileName, It.IsAny<string>(), previousRevision, It.IsAny<int>(), httpResponse.Object, It.IsAny<int>(), portionMarkingRequired), Times.Exactly(1));
         }
 
         /// <summary>

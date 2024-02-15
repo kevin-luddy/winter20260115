@@ -12,7 +12,7 @@ namespace CopyWorkspace
     using System.Linq;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
@@ -167,13 +167,13 @@ namespace CopyWorkspace
 
             Dictionary<int, int> performingOrgMapping = new Dictionary<int, int>();
             Dictionary<int, int> resourceMapping = new Dictionary<int, int>();
-            if (copyLaborSpreads)
+			if (copyLaborSpreads)
             {
                 Console.WriteLine("Copying Perf Orgs");
                 performingOrgMapping = this.CopyPerformingOrganizations(newWorkspace, performingOrgsToCopy);
                 Console.WriteLine("Copying Resources");
                 resourceMapping = this.CopyResources(newWorkspace, resourcesToCopy);
-            }
+			}
 
             if (copyTasks)
             {
