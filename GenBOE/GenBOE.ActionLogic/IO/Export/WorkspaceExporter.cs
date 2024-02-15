@@ -579,11 +579,11 @@ namespace GenBOE.ActionLogic.IO.Export
                             row.Add(this.sEmpty);
                         }
 
-						bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
+                        bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
 
-						ResourceDTO aResource = resourceType.ResourceID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
-						ResourceDTO brcResource = isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
-						PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? exportInputs.PerformingOrgsUsedInBoes.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
+                        ResourceDTO aResource = resourceType.ResourceID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
+                        ResourceDTO brcResource = isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
+                        PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? exportInputs.PerformingOrgsUsedInBoes.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
                         string percentSpread = this.sEmpty;
 
                         if (resourceType.SpreadType == SpreadType.Hours)
@@ -606,11 +606,11 @@ namespace GenBOE.ActionLogic.IO.Export
                                     resourceType.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
                                     resourceType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
                                     resourceType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
-									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceDesc : this.sEmpty,
-									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.SegRegion : this.sEmpty,
-									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.LaborType : this.sEmpty,
-									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceName : this.sEmpty,
-									resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
+                                    isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceDesc : this.sEmpty,
+                                    isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.SegRegion : this.sEmpty,
+                                    isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.LaborType : this.sEmpty,
+                                    isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceName : this.sEmpty,
+                                    resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
                                     resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty,
                                     resourceType.StartDate.HasValue ? resourceType.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
                                     resourceType.EndDate.HasValue ? resourceType.EndDate.Value.ToString("MM/yyyy") : this.sEmpty,
@@ -1043,11 +1043,11 @@ namespace GenBOE.ActionLogic.IO.Export
                                           select s).FirstOrDefault();
 
                             List<string> row = new List<string>();
-
-							bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
+                            
+                            bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
 
                             ResourceDTO aResource = type.ResourceID.HasValue ? workspaceResources.First(x => x.Id == type.ResourceID.Value) : new ResourceDTO();
-							ResourceDTO brcResource = isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == type.BusinessResourceCodeID.Value) : new ResourceDTO();
+                            ResourceDTO brcResource = isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == type.BusinessResourceCodeID.Value) : new ResourceDTO();
 
 							row.AddRange(
                                 new string[]
@@ -1061,9 +1061,9 @@ namespace GenBOE.ActionLogic.IO.Export
                                     clinTitle,
                                     type.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
                                     type.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
-									isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? brcResource.SegRegion : this.sEmpty,
-									isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? brcResource.LaborType : this.sEmpty,
-									type.PerformingOrgID.HasValue ? perfOrgsFromDb.First(x => x.Id == type.PerformingOrgID.Value).PerformingOrgName : this.sEmpty,
+                                    isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? brcResource.SegRegion : this.sEmpty,
+                                    isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? brcResource.LaborType : this.sEmpty,
+                                    type.PerformingOrgID.HasValue ? perfOrgsFromDb.First(x => x.Id == type.PerformingOrgID.Value).PerformingOrgName : this.sEmpty,
                                     currentDate.Year.ToString(),
                                     currentDate.Month.ToString()
                                 });
@@ -1488,7 +1488,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 bool resourceUsesCostValues = resourceType.SpreadType == SpreadType.Cost;
                 DateTime currentDate = resourceType.StartDate.Value;                
                 ResourceDTO aResource = resourceType.ResourceID.HasValue ? workspaceResources.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
-				ResourceDTO brcResource = Utilities.IsBRCEnabledForSystem && resourceType.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
+                ResourceDTO brcResource = Utilities.IsBRCEnabledForSystem && resourceType.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
 
 				row.AddRange(
                     new string[]
@@ -2187,11 +2187,11 @@ namespace GenBOE.ActionLogic.IO.Export
                                     resourceType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
                                     resourceType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
                                     resourceType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
-									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceDesc : this.sEmpty,
-									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.LaborType : this.sEmpty,
-									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceName : this.sEmpty,
-									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.SegRegion : this.sEmpty,
-									resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
+                                    isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceDesc : this.sEmpty,
+                                    isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.LaborType : this.sEmpty,
+                                    isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceName : this.sEmpty,
+                                    isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.SegRegion : this.sEmpty,
+                                    resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
                                     resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty,
                                     resourceType.SpreadCurveID.HasValue ? allSpreadCurves[(int)resourceType.SpreadCurveID.Value].SpreadCurveName.Replace("Hours", FullObjectHelper.HoursLabel(exportInputs.Workspace)) : this.sEmpty,
                                     percentSpread
