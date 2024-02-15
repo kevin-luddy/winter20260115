@@ -8,6 +8,11 @@
   
   <!--appSettings-->
 
+	
+  <parameter name="HistoricalReferenceExplanationStartDate" description="doesn't matter" defaultvalue="__HistoricalReferenceExplanationStartDate__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='HistoricalReferenceExplanationStartDate']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="ShowIesHeader" description="doesn't matter" defaultvalue="__ShowIesHeader__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowIesHeader']/@value">
     </parameterentry>
