@@ -10,6 +10,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Transactions;
     using System.Web.Mvc;
@@ -131,10 +132,10 @@ namespace GenBOE.Web.Controllers
             theModelView.HideContractType = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST;
             theModelView.ContractTypeList = this.BuildContractTypeDropdownOptions(ws.Id);
             ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
-            // convert the DTOs to model views
-            var clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinPaddedNumber);
+			// convert the DTOs to model views
+			IOrderedEnumerable<FullClin> clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinPaddedNumber);
 
-            foreach (var clin in clins)
+            foreach (FullClin clin in clins)
             {
                 string contract = Utilities.GetPickListText(clin.ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING);
                 theModelView.ClinResults.Add(new ManageCLINModelView(clin, contract));
@@ -203,9 +204,9 @@ namespace GenBOE.Web.Controllers
         public virtual JsonResult DeleteCLINs(string workspace, Collection<ManageCLINModelView> inDeletedClins)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-            
-            // Initialize Action
-            var sw = this.InitializeAction(this._log, "DeleteCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+			// Initialize Action
+			Stopwatch sw = this.InitializeAction(this._log, "DeleteCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             JsonResult toReturn = this.Json(new { Status = true });
 
@@ -214,7 +215,7 @@ namespace GenBOE.Web.Controllers
             // to the user.
             if (inDeletedClins != null)
             {
-                foreach (var deletedCLIN in inDeletedClins)
+                foreach (ManageCLINModelView deletedCLIN in inDeletedClins)
                 {
                     // Only delete CLINs that have positive IDs
                     if (deletedCLIN.ClinID > 0 && deletedCLIN.Deleted == true)
@@ -241,8 +242,8 @@ namespace GenBOE.Web.Controllers
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            // Initialize Action
-            var sw = this.InitializeAction(this._log, "SaveClin", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			// Initialize Action
+			Stopwatch sw = this.InitializeAction(this._log, "SaveClin", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             // Dictionary to keep track of task variable IDs that need to be updated and their old variable total
             Dictionary<int, decimal> WorkspaceVarOldValueD = new Dictionary<int, decimal>();
@@ -285,9 +286,9 @@ namespace GenBOE.Web.Controllers
                     // Don't bother validating deletions
                     if (updatedClin.Updateable != UpdateType.Deleted)
                     {
-                        // Validate CLIN
-                        var validator = new CLINValidator(this.Factory);
-                        var validationerrors = validator.validation(updatedClin, (Collection<Dictionary<string, string>>)null);
+						// Validate CLIN
+						CLINValidator validator = new CLINValidator(this.Factory);
+						Collection<string> validationerrors = validator.validation(updatedClin, (Collection<Dictionary<string, string>>)null);
 
                         if (validationerrors.Count > 0)
                         {
@@ -314,10 +315,10 @@ namespace GenBOE.Web.Controllers
                    
                     //find any boes that have resources using the clin
                     Collection<FullBoe> boesUsingClin = (from b in MultiBOEs
-                                                from l in b.TaskElements
-                                                from x in l.taskElementLabors
-                                                where x.CLINID.HasValue && x.CLINID == updatedClin.Id
-                                                select b).ToCollection<FullBoe>();
+	    from l in b.TaskElements
+	    from x in l.taskElementLabors
+	    where x.CLINID.HasValue && x.CLINID == updatedClin.Id
+	    select b).ToCollection<FullBoe>();
                     //if there are duplicates lets filter those out.
                     boesUsingClin = boesUsingClin.Distinct().ToCollection<FullBoe>();
 
@@ -335,7 +336,7 @@ namespace GenBOE.Web.Controllers
                     ClinDTO oldClin = this.Factory.CreateFullClin(inUpdatedClin.ClinID);
 
                     // Save the CLINs
-                    using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+                    using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                     {
                         ICollection<WorkspaceVariableDTO> workspaceVariablesOld = new Collection<WorkspaceVariableDTO>();
                         if (updatedClin.Updateable == UpdateType.Deleted)
@@ -359,9 +360,9 @@ namespace GenBOE.Web.Controllers
                             // save all the task elements that were effected by a CLIN deletion
                             this._BoeTaskElementMediator.MediatedSaveTaskElements(new Collection<BoeTaskElementDTO>(boeTaskElementsToRecalculate), ws);
                         }
-                      
-                        // get the unique BOE IDs from boeTaskElementsToRecalculate so we can set their state back to Draft
-                        var BoeIDsToCheck = new Collection<int>(boeTaskElementsToRecalculate.Where(x => x.BoeID > 0).Select(x => x.BoeID).ToList());
+
+						// get the unique BOE IDs from boeTaskElementsToRecalculate so we can set their state back to Draft
+						Collection<int> BoeIDsToCheck = new Collection<int>(boeTaskElementsToRecalculate.Where(x => x.BoeID > 0).Select(x => x.BoeID).ToList());
                         
                         ICollection<FullBoe> boesToCheck = this.Factory.CreateFullBoes(BoeIDsToCheck);
                         //add on the boes with the multiboes
@@ -422,8 +423,8 @@ namespace GenBOE.Web.Controllers
 
                     if (inUpdatedClin.ClinID > 0 && inUpdatedClin.Deleted == false)
                     {
-                        // just make sure we have the latest version of the DTO. (the returned DTO has the updated ID, but not the updated UpdateDate)
-                        var modifiedClin = this.Factory.CreateFullClin(updatedClin.Id);
+						// just make sure we have the latest version of the DTO. (the returned DTO has the updated ID, but not the updated UpdateDate)
+						FullClin modifiedClin = this.Factory.CreateFullClin(updatedClin.Id);
                         ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
                         string contract = Utilities.GetPickListText(modifiedClin.ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING);
 
@@ -468,7 +469,7 @@ namespace GenBOE.Web.Controllers
                 try
                 {
                     ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
-                    var results = this._ClinImporter.ImportClinsFromExcelFile(this.Request.Files[0].InputStream, ws, contractTypes);
+					Collection<ImportedClin> results = this._ClinImporter.ImportClinsFromExcelFile(this.Request.Files[0].InputStream, ws, contractTypes);
 
                     toReturn = this.GenerateJsonUploadResponse(true, results, this.Request.Files[0].FileName);
                 }
@@ -510,28 +511,28 @@ namespace GenBOE.Web.Controllers
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            // Initialize Action
-            var sw = this.InitializeAction(this._log, "CompleteImportCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			// Initialize Action
+			Stopwatch sw = this.InitializeAction(this._log, "CompleteImportCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-            var toReturn = this.Json(new { Status = true });
+			JsonResult toReturn = this.Json(new { Status = true });
 
             if (importResults != null)
             {
-                // Get NEW CLINs from the imported data
-                var newClinResults = from x in importResults
+				// Get NEW CLINs from the imported data
+				IEnumerable<ImportedClin> newClinResults = from x in importResults
                                      where x.ImportTypes.Contains(ClinImportResult.CreateClin)
                                      select x;
 
-                // Get EXISTING UPDATED CLINs from the imported data
-                var updatedClinResults = (from x in importResults
+				// Get EXISTING UPDATED CLINs from the imported data
+				List<ImportedClin> updatedClinResults = (from x in importResults
                                          where x.ImportTypes.Contains(ClinImportResult.UpdateClin)
                                          select x).ToList();
 
-                // Initialize the collection to hold CLINs that will be saved.
-                var clinToSave = new Collection<ClinDTO>();
+				// Initialize the collection to hold CLINs that will be saved.
+				Collection<ClinDTO> clinToSave = new Collection<ClinDTO>();
 
                 // Start the collection off with all of the new CLINs from the imported data
-                foreach (var newClin in newClinResults)
+                foreach (ImportedClin newClin in newClinResults)
                 {
                     // Call Long Tick Properties with their own values to force DateTimes to be set properly
                     newClin.StartDateLong = newClin.StartDateLong;
@@ -544,12 +545,12 @@ namespace GenBOE.Web.Controllers
                     clinToSave.Add(newClin);
                 }
 
-                // Create a dictionary to hold all of the updated CLINs before they are updated in the DB
-                var oldClinForEmailDict = new Dictionary<int, ClinDTO>();
+				// Create a dictionary to hold all of the updated CLINs before they are updated in the DB
+				Dictionary<int, ClinDTO> oldClinForEmailDict = new Dictionary<int, ClinDTO>();
 
-                foreach (var updatedClin in updatedClinResults)
+                foreach (ImportedClin updatedClin in updatedClinResults)
                 {
-                    var oldClin = this.Factory.CreateFullClin(updatedClin.Id);
+					FullClin oldClin = this.Factory.CreateFullClin(updatedClin.Id);
 
                     // Stash 'old' CLIN away before changes are applied to the DB
                     oldClinForEmailDict.Add(oldClin.Id, oldClin);
@@ -587,7 +588,7 @@ namespace GenBOE.Web.Controllers
 
                     // at this point all commits have taken place and were succesful (or an exception would have been thrown)
                     // so let's fire off emails, if applicable
-                    foreach (var updatedClin in updatedClinResults)
+                    foreach (ImportedClin updatedClin in updatedClinResults)
                     {
                         // look at the BOEs related to the CLIN
                         // if the CLIN was in use and the BOE is in DRAFT state, send the email
@@ -618,9 +619,9 @@ namespace GenBOE.Web.Controllers
         {
             if (newCLIN.InUse) // check in use
             {
-                var boesForUpdatedClin = newCLIN.Boes;
+				IReadOnlyCollection<FullBoe> boesForUpdatedClin = newCLIN.Boes;
 
-                foreach (var boeForClin in boesForUpdatedClin)
+                foreach (FullBoe boeForClin in boesForUpdatedClin)
                 {
                     // check boe state
                     if (boeForClin.State == BOEState.Draft || boeForClin.State == BOEState.DraftLocked || boeForClin.State == BOEState.AwaitingApproval || boeForClin.State == BOEState.Approved)
@@ -727,12 +728,13 @@ namespace GenBOE.Web.Controllers
         /// Exports all CLINs for the workspace
         /// </summary>
         /// <param name="workspace"></param>
-        /// <returns>A ExportFileDownloadResult for the file being exported</returns>
+        /// <returns>An ActionResult for the file being exported</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult ExportCLINs(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = this.InitializeAction(this._log, "PageManageCLIN", SecurityPage.ManageCLINs, SecurityAuthorization.Read, ws, null);
+            Stopwatch sw = this.InitializeAction(this._log, "ExportCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.Read, ws, null);
 
             ActionResult toReturn = null;
 
@@ -742,20 +744,30 @@ namespace GenBOE.Web.Controllers
                 //filter out multi boe's to hide from user. 
                 Collection<FullClin> clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinNumber).ToCollection();
 
-                // Get the CLIN template file name
-                var templateFileName = this.Server.MapPath("~/Templates/Export/CLINs.xlsx");
+				// Get the CLIN template file name
+				string templateFileName = this.Server.MapPath("~/Templates/Export/CLINs.xlsx");
 
                 if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                 {
                     templateFileName = this.Server.MapPath("~/Templates/Export/CLINsRMS.xlsx");
                 }
                 ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
-                
-                var exportFile = this._ClinExporter.ExportToExcelFile(templateFileName, clins, ws, contractTypes);
+
+				string exportFile = this._ClinExporter.ExportToExcelFile(templateFileName, clins, ws, contractTypes);
 
                 if (exportFile.Length > 0)
                 {
-                    toReturn = new ExportFileDownloadResult(exportFile, string.Format("GenBOE-{0}-CLINs.xlsx", ws.WorkspaceName));
+                    string fileName = string.Format("GenBOE-{0}-CLINs.xlsx", ws.WorkspaceName);
+                    // Generate a custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    // Finalize Action
+                    FinalizeAction(_log, "ExportCLINs", sw);
+
+                    toReturn = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileName),
+                        fileDownloadName: fileName);
                 }
 
             }

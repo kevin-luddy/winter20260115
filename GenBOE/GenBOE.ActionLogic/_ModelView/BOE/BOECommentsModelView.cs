@@ -28,7 +28,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         {
             if (inBoeApprovers != null)
             {
-                var currentApprover = inBoeApprovers.FirstOrDefault(a => a.ETIUserID == currentUserID);
+				BoeApproverResponseDTO currentApprover = inBoeApprovers.FirstOrDefault(a => a.ETIUserID == currentUserID);
 
                 if (currentApprover != null)
                 {
@@ -90,6 +90,14 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.AuthorName = string.Empty;
             this.AuthorResponseUpdateDT = DateTime.MinValue;
             this.CommentType = BOECommentType.Comment;
+            this.BOEId = -1;
+            this.BOETitle = string.Empty;
+            this.ClinNumber = string.Empty;
+            this.ClinTitle = string.Empty;
+            this.WbsNumber = string.Empty;
+            this.WbsTitle = string.Empty;
+            this.BOEAuthors = string.Empty;
+            this.CommenterRole = string.Empty;
         }
 
         public BOEComment(BOECommentDTO inComment, UserDTO inCommenter)
@@ -168,13 +176,13 @@ namespace GenBOE.ActionLogic.ModelView.BOE
 
         // Display date as MM/DD/YYYY HH:MM AM/PM
         [DisplayFormat(DataFormatString = "{0:g}")]
-        public DateTime AuthorResponseUpdateDT { get; set; }
+        public DateTime? AuthorResponseUpdateDT { get; set; }
 
         public long AuthorResponseUpdateDTLong
         {
             get
             {
-                return this.AuthorResponseUpdateDT.Ticks;
+                return this.AuthorResponseUpdateDT.GetValueOrDefault().Ticks;
             }
             set
             {
@@ -183,6 +191,22 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         }
         
         public BOECommentType CommentType { get; set; }
+
+        public int BOEId { get; set; }
+
+        public string BOETitle { get; set;}
+
+        public string ClinNumber { get; set;}
+
+        public string ClinTitle { get; set; }
+
+        public string WbsNumber { get; set; }
+
+        public string WbsTitle { get; set; }
+
+        public string BOEAuthors { get; set; }
+
+        public string CommenterRole { get; set; }
     }
 
     public enum BOECommentType

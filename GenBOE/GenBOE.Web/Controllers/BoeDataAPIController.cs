@@ -86,6 +86,16 @@ namespace GenBOE.Web.Controllers
 		private readonly IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader;
 
 		/// <summary>
+		/// Active Directory Utilities
+		/// </summary>
+		private readonly IActiveDirectoryUtilities activeDirectoryUtilities;
+
+		/// <summary>
+		/// User Data Loader
+		/// </summary>
+		private IUserDTODataLoader userDataLoader { get; set; }
+
+		/// <summary>
 		/// Contract Type loader
 		/// </summary>
 		private readonly ContractTypeLoader contractTypeLoader;
@@ -111,7 +121,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, ContractTypeLoader contractTypeLoader)
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -123,6 +133,8 @@ namespace GenBOE.Web.Controllers
 			this.traceTableExporter = traceTableExporter;
 			this.boeFormControllerLogic = boeFormControllerLogic;
 			this.boeFormPBOEDTODataLoader = boeFormPBOEDTODataLoader;
+			this.activeDirectoryUtilities = activeDirectoryUtilities;
+			this.userDataLoader = userDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
 		}
 		#endregion
@@ -345,7 +357,7 @@ namespace GenBOE.Web.Controllers
 
 				HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 
-				string fileName = string.Format("genBOE-Export-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty);
+				string fileName = Utilities.StripIllegalFileNameCharacters(string.Format("genBOE-Export-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty));
 
 				MemoryStream stream = new MemoryStream();
 
@@ -422,7 +434,7 @@ namespace GenBOE.Web.Controllers
 		[HttpPost]
 		public IESResponse<TraceTableBoeData> GetWorkspaceDataForTraceTable(string workspaceShortName, TraceTableSettingsData settingsData)
 		{
-			IESResponse<TraceTableBoeData> boeData = new IESResponse<TraceTableBoeData>();
+            IESResponse<TraceTableBoeData> boeData = new IESResponse<TraceTableBoeData>();
 
 			try
 			{
@@ -431,25 +443,58 @@ namespace GenBOE.Web.Controllers
 				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
 				if (this.HasOciPermission(SecurityPage.Reports, workspace))
 				{
-					boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
-					boeData.IsSuccessful = true;
+                    boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
+                    boeData.IsSuccessful = true;
 				}
-			}
-			catch (Exception ex)
+
+            }
+            catch (Exception ex)
 			{
 				logger.Error(ex);
-				boeData.Messages.Add($"Unknown error occurred returning Workspace data for Trace Table: {ex.Message}");
+                boeData.Messages.Add($"Unknown error occurred returning Workspace data for Trace Table: {ex.Message}");
 			}
 
 			return boeData;
 		}
 
-		/// <summary>
-		/// Gets all of the IWTA Company Names for a Workspace
-		/// </summary>
-		/// <param name="workspaceShortName">Short name of the workspace</param>
-		/// <returns>HttpResponseMessage</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        /// <summary>
+        /// Get the genBOE Workspace data group for use with a Trace Table in ACV
+        /// </summary>
+        /// <param name="workspaceShortName">Workspace short name</param>
+        /// <param name="settingsData">Trace Table Settings Data</param>
+        /// <returns>genBOE Workspace data group for use with a Trace Table in ACV</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        [HttpPost]
+        public IESResponse<TraceTableBoeDataGroup> GetWorkspaceDataForTraceTableGroup(string workspaceShortName, TraceTableSettingsData settingsData)
+        {
+            IESResponse<TraceTableBoeDataGroup> boeData = new IESResponse<TraceTableBoeDataGroup>();
+
+            try
+            {
+                tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+                FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+                if (this.HasOciPermission(SecurityPage.Reports, workspace))
+                {
+                    boeData.Data = traceTableExporter.ExportTraceTableDataGroup(workspace, settingsData);
+                    boeData.IsSuccessful = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+                boeData.Messages.Add($"Unknown error occurred returning Workspace data group for Trace Table: {ex.Message}");
+            }
+
+            return boeData;
+        }
+
+        /// <summary>
+        /// Gets all of the IWTA Company Names for a Workspace
+        /// </summary>
+        /// <param name="workspaceShortName">Short name of the workspace</param>
+        /// <returns>HttpResponseMessage</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<BOEFormData> GetIwtaCompanies(string workspaceShortName)
 		{
@@ -482,14 +527,14 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-		/// <summary>
-		/// Gets all of the Subcontractors for a Workspace
-		/// </summary>
-		/// <param name="workspaceShortName">Short name of the workspace</param>
-		/// <returns>HttpResponseMessage</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        /// <summary>
+        /// Gets all of the Subcontractors for a Workspace
+        /// </summary>
+        /// <param name="workspaceID">Workspace Id</param>
+        /// <returns>HttpResponseMessage</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<BOEFormData> GetSubcontractors(string workspaceShortName)
+		public IESResponse<BOEFormData> GetSubcontractors(int workspaceID)
 		{
 			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
 
@@ -497,7 +542,7 @@ namespace GenBOE.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceID);
 				if (this.HasOciPermission(SecurityPage.ManageBOEForms, workspace))
 				{
 					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
@@ -505,7 +550,8 @@ namespace GenBOE.Web.Controllers
 					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
 						new BOEFormData()
 						{
-							Name = p.BOEFormName,
+							PBOEId = p.BOEFormId,
+							Name = p.NLFSupplierName,
 							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost,
 							IsIncomplete = p.IsIncomplete
 						}).ToList();
@@ -660,6 +706,54 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Get workspace inner data for user (id via token) for use in NLF using Workspace Id
+		/// </summary>
+		/// <returns>Workspace Inner Data for user for use in NLF</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<NlfWorkspaceInnerData> GetNlfWorkspaceInnerDataByWorkspaceIdForUser(int workspaceId)
+		{
+			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// check if user is system admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
+
+				ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
+
+				if (isSystemAdmin && workspaceId > 0)
+				{
+					// get all workspaces
+					boes = loader.GetWorkspaceInnerDataForNlf(workspaceId);
+				}
+
+				result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
+				{
+					WorkspaceId = x.WorkspaceId,
+					WorkspaceUrl = x.WorkspaceUrl,
+					WorkspaceName = x.WorkspaceName,
+					WorkspaceCreationDate = x.WorkspaceCreationDate,
+					PTMTrackingNumber = x.PTMTrackingNumber,
+					EstimatingLead = x.EstimatingLead,
+					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
+					LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
+				}).ToCollection();
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning NLF Workspace inner data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Get Material PBoe Data for given Workspace
 		/// </summary>
 		/// <param name="workspaceID">Workspace ID</param>
@@ -774,23 +868,46 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForWorkspace(workspaceID).Select<PBOEDataDTO, PBOEData>(x => new PBOEData()
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForWorkspace(workspaceID).Select<PBOEDataDTO, PBOEData>(x => 
 					{
-						PBoeID = x.PBoeID,
-						SupplierName = x.SupplierName,
-						VendorId = x.VendorId,
-						SubResources = x.SubResources,
-						TotalCost = x.TotalCost.GetValueOrDefault(),
-						SupplierProposedValue = x.SupplierProposedValue,
-						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
-						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
-						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
-						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
-						CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
-						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
-						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
-						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
-						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault()
+						UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
+						UserDTO leadEstimator = userDataLoader.GetUserByID(x.LeadEstimatorId);
+
+						return new PBOEData()
+						{
+							PBoeID = x.PBoeID,
+							SupplierName = x.SupplierName,
+							VendorId = x.VendorId,
+							SubResources = x.SubResources,
+							TotalCost = x.TotalCost.GetValueOrDefault(),
+							SupplierProposedValue = x.SupplierProposedValue,
+							IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+							IsCompetitionException = x.IsCompetitionException.GetValueOrDefault(),
+							IsCommercialItemException = x.IsCommercialItemException.GetValueOrDefault(),
+							IsCCoPDThresholdException = x.IsCCoPDThresholdException.GetValueOrDefault(),
+							IsCCoPDOtherException = x.IsCCoPDOtherException.GetValueOrDefault(),
+							ExpectedCCoPDApplicability = x.ExpectedCCoPDApplicability.GetDescription(),
+							PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
+							PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
+							CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
+							CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
+							GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
+							GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
+							CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
+							CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
+							TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
+							TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
+							RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
+							SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
+							ProposalDate = x.ProposalDate,
+							ValidityDate = x.ValidityDate,
+							Approver = x.Approver,
+							LeadEstimatorId = x.LeadEstimatorId,
+							LeadEstimatorDisplayName = leadEstimator != null ? leadEstimator.DisplayName : string.Empty,
+							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
+							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
+							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty
+						};
 					}).ToList();
 
 					result.IsSuccessful = true;
@@ -835,23 +952,45 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					result.Data = boeFormPBOEDTODataLoader.GetPBOEByIDs(workspaceID, pboeID).Select<PBOEDataDTO, PBOEData>(x => new PBOEData()
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEByIDs(workspaceID, pboeID).Select<PBOEDataDTO, PBOEData>(x => 
 					{
-						PBoeID = x.PBoeID,
-						SupplierName = x.SupplierName,
-						VendorId = x.VendorId,
-						SubResources = x.SubResources,
-						TotalCost = x.TotalCost.GetValueOrDefault(),
-						SupplierProposedValue = x.SupplierProposedValue,
-						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
-						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
-						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
-						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
-						CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
-						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
-						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
-						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
-						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault()
+						UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
+						UserDTO leadEstimator = userDataLoader.GetUserByID(x.LeadEstimatorId);
+
+						return new PBOEData()
+						{
+							PBoeID = x.PBoeID,
+							SupplierName = x.SupplierName,
+							VendorId = x.VendorId,
+							SubResources = x.SubResources,
+							TotalCost = x.TotalCost.GetValueOrDefault(),
+							SupplierProposedValue = x.SupplierProposedValue,
+							IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+							IsCommercialItemException = x.IsCommercialItemException.GetValueOrDefault(),
+							IsCompetitionException = x.IsCompetitionException.GetValueOrDefault(),
+							IsCCoPDOtherException = x.IsCCoPDOtherException.GetValueOrDefault(),
+							IsCCoPDThresholdException = x.IsCCoPDThresholdException.GetValueOrDefault(),
+							PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
+							PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
+							CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
+							CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
+							GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
+							GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
+							CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
+							CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
+							TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
+							TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
+							RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
+							SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
+							ProposalDate = x.ProposalDate,
+							ValidityDate = x.ValidityDate,
+							Approver = x.Approver,
+							LeadEstimatorId = x.LeadEstimatorId,
+							LeadEstimatorDisplayName = leadEstimator != null ? leadEstimator.DisplayName : string.Empty,
+							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
+							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
+							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty
+						};
 					}).ToList();
 
 					result.IsSuccessful = true;

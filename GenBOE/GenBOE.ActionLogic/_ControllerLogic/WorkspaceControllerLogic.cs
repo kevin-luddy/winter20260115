@@ -462,7 +462,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				ICollection<CustomFieldValueDTO> allCustomFieldValues = this.customFieldValueLoader.GetCustomFieldValueDTOsByCustomFieldIds(customFields.Select(i => i.Id).ToCollection<int>());
 				foreach (CustomFieldDTO customField in customFields)
 				{
-					var newModelView = new BOECustomFieldsGridModelView(customField)
+					BOECustomFieldsGridModelView newModelView = new BOECustomFieldsGridModelView(customField)
 					{
 						inUse = allCustomFieldValues.Any(c => c.CustomFieldID == customField.Id && c.CustomFieldValueInUseFlag)
 					};
@@ -542,7 +542,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICollection<TMResourceRateDTO> currentWorkspaceRates = this.tmResourceRateLoader.GetByWorkspaceId(workspace.Id)
 				.Where(x => x.ResourceRateID != currentResourceRateID && x.ResourceID == resourceID).ToArray();
 
-			foreach (var resourceRate in currentWorkspaceRates)
+			foreach (TMResourceRateDTO resourceRate in currentWorkspaceRates)
 			{
 				if (resourceRate.StartDate.HasValue && resourceRate.EndDate.HasValue)
 				{
@@ -1493,6 +1493,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				validationErrors.Add(new ValidationMessage("Using Template BOEs cannot be changed from 'Yes' to 'No'. The only allowed changed to this field is from 'No' to 'Yes'."));
 			}
 
+			// Validate the estimating lead/pricer's permissions
+			// Edge case - if the selected user is already a lead/pricer for the WS and had create WS permissions removed afterwards, and they were not unselected during this step,
+			// leave them as is
+			WorkspaceDTO wsInDatabase = WorkspaceLoader.GetById(ws.Id);
+			if (wsInDatabase.CostVolumeLeadPricerUserID != ws.CostVolumeLeadPricerUserID)
+			{
+				UserDTO costVolumeLeadDTO = this.UserLoader.GetUserByID(ws.CostVolumeLeadPricerUserID);
+				// Need to send in an empty string for NTID and display name
+				// The parameters below are already assuming that someone we select had permissions and then got them revoked, but are still selected; we want to restrict this
+				ICollection<KeyValuePair<string, string>> createWSUsers = this.PermissionLoader.GetCreateWorkspaceRolesForPtm(string.Empty, string.Empty);
+				KeyValuePair<string, string> estimatingLeadPricerKVP = new KeyValuePair<string, string>(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
+				if (!createWSUsers.Contains(estimatingLeadPricerKVP))
+				{
+					validationErrors.Add(new ValidationMessage("CostVolumeLeadPricerDisplayName", "Cannot add a user as the Estimating Lead/Pricer if they are not also a Workspace Creator."));
+				}
+			}
+
 			return validationErrors;
 		}
 
@@ -1534,7 +1551,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 		/// <summary>
 		/// Validate the Cost Volume Lead Pricer ID is an individual and not a group.
-		/// Also, if they are an individual, verify they are not a subcontractor.
+		/// If they are an individual, verify they are not a subcontractor.
+		/// Also need to ensure that the individual has Create WS permissions.
 		/// </summary>
 		/// <param name="inCostVolumeLeadPricerNTID">Cost Volume Lead Pricer NTID</param>
 		/// <returns>Collection of Validation Messages.</returns>
@@ -1568,6 +1586,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					errors.Add(new ValidationMessage("CostVolumeLeadPricerNTID", ve));
 				}
+			}
+
+			// Verify that the user has create WS permissions
+			UserDTO costVolumeLeadDTO = this.UserLoader.GetOrCreateUserByNtid(inCostVolumeLeadPricerNTID);
+			ICollection<KeyValuePair<string, string>> createWSUsers = this.PermissionLoader.GetCreateWorkspaceRolesForPtm(string.Empty, string.Empty);
+			KeyValuePair<string, string> estimatingLeadPricerKVP = new KeyValuePair<string, string>(costVolumeLeadDTO.NTID, costVolumeLeadDTO.DisplayName);
+			if (!createWSUsers.Contains(estimatingLeadPricerKVP))
+			{
+				errors.Add(new ValidationMessage("CostVolumeLeadPricerNTID", "Cannot add a user as the Estimating Lead/Pricer if they are not also a Workspace Creator."));
 			}
 
 			return errors;
@@ -2006,42 +2033,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public void CreateProPricerCustomFields(int wsId)
 		{
 			// Custom fields(all regular custom fields, none are open ended, none are required):
-			// Function -> default: FI
 			// SOW -> default: SOW1
 			// Location -> default: Moorestown
 			// Class Of Cost-> defaults: REC, NRE
 			// Project -> default: USER1
 			// FIELD-A -> default: USER2
-			// FIELD-B -> default: USER3
-
+			
 			ICollection<CustomFieldDTO> existingCustomFields = this.customFieldLoader.GetByWorkspaceId(wsId);
 			ICollection<CustomFieldValueDTO> customFieldValues = new Collection<CustomFieldValueDTO>();
-
-			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FUNCTION, existingCustomFields))
-			{
-				CustomFieldDTO function = new CustomFieldDTO
-				{
-					Id = -1,
-					WorkspaceID = wsId,
-					CustomFieldName = ProPricerCFConstants.PROPRICER_CF_FUNCTION,
-					CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay,
-					CustomFieldRequired = false,
-					IsOpenEnded = false,
-					Updateable = UpdateType.Upsert
-				};
-
-				int? functionId = this.customFieldLoader.Save(function);
-
-				customFieldValues.Add(new CustomFieldValueDTO
-				{
-					Updateable = UpdateType.Upsert,
-					CustomFieldID = functionId.Value,
-					CustomFieldValueName = "FI",
-					CustomFieldValueDescription = "Finance",
-					Id = -1,
-					CustomFieldValueID = -1
-				});
-			}
 
 			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_SOW, existingCustomFields))
 			{
@@ -2180,32 +2179,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					CustomFieldValueDescription = "User Defined 2",
 					Id = -7,
 					CustomFieldValueID = -7
-				});
-			}
-
-			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FIELDB, existingCustomFields))
-			{
-				CustomFieldDTO fieldB = new CustomFieldDTO
-				{
-					Id = -7,
-					WorkspaceID = wsId,
-					CustomFieldName = ProPricerCFConstants.PROPRICER_CF_FIELDB,
-					CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay,
-					CustomFieldRequired = false,
-					IsOpenEnded = false,
-					Updateable = UpdateType.Upsert
-				};
-
-				int? fieldBId = this.customFieldLoader.Save(fieldB);
-
-				customFieldValues.Add(new CustomFieldValueDTO
-				{
-					Updateable = UpdateType.Upsert,
-					CustomFieldID = fieldBId.Value,
-					CustomFieldValueName = "USER3",
-					CustomFieldValueDescription = "Resource User Defined",
-					Id = -8,
-					CustomFieldValueID = -8
 				});
 			}
 

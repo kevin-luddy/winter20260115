@@ -35,9 +35,9 @@ namespace GenBOE.ActionLogic.Validation
             Collection<int> boeComments = (from c in allComments
                                            where c.FieldID == (int)FieldType.Comment
                                            select c.Id).ToCollection();
-            
-            //determine which comments do not have responses
-            var boeCommentsWithoutResponses = boeComments.Where(c => !boeCommentsWithResponses.Any(c2 => c == c2));
+
+			//determine which comments do not have responses
+			IEnumerable<int> boeCommentsWithoutResponses = boeComments.Where(c => !boeCommentsWithResponses.Any(c2 => c == c2));
             
             //if any are found, fail validation
             return !boeCommentsWithoutResponses.Any();

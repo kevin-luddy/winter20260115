@@ -152,7 +152,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var response = from b in gbe.BOETaskElementWorkspaceVariableXREFs
+					IQueryable<int> response = from b in gbe.BOETaskElementWorkspaceVariableXREFs
                                    where b.WorkspaceVariableID == inWorkspaceVarID
                                    select b.BOETaskElement.BOEID;
 

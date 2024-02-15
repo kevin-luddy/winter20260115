@@ -549,7 +549,7 @@
         if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.customer, value.Cust) == false) return false;
         if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.boeTool, value.BoeTool) == false) return false;
         if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.manager, value.Mgr) == false) return false;
-        if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.pricer, value.Pricers) == false) return false;
+        if ($scope.checkMultiSelectFilterContains($scope.selectedPTMFilters.pricer, value.Pricers) == false) return false; 
         if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.coverSheet, value.CSA) == false) return false;
         if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.pricingVerifier, value.PV) == false) return false;
         if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.materialLead, value.ML) == false) return false;

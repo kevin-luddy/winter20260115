@@ -41,6 +41,9 @@ AS
 **		3/1/23		twilson3			ACV-343 Update MOQ Column sizes
 **		3/20/23		Dusan				ACV-498: Updated MOQ Column size (Wbs Element due to prod issue)
 **		3/23/23		twilson3			ACV-274 Handle SAP Fiscal Week Cutoff
+**      8/10/23     twilson             PROPH-1029 Investigate Project Spreads
+**		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
+**		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -639,6 +642,7 @@ SELECT 	    @NewWorkspaceID,
 FROM  ProjectMapSpread S
 INNER JOIN ProjectMap P ON P.ID = S.ProjectMapId
 INNER JOIN ProjectMap NewP ON NewP.WorkspaceId = @NewWorkspaceID AND NewP.OrderID = P.OrderID
+WHERE S.WorkspaceID = @WorkspaceID
 
 /**** Custom Fields ****/
 INSERT INTO [dbo].[CustomField]
@@ -1524,6 +1528,7 @@ DECLARE @MOQTypeSelection TABLE
 	[DurationLogicAndAssumptions] [varchar](max) NULL,
 	[EstimateTasks] [varchar](max) NULL,
 	[Rationale] [varchar](max) NULL,
+	[HistoricalReferenceExplanation] [varchar](max) NULL,
 	[SkillMix] [varchar](max) NULL,
 	Processed bit,
 	NewMOQTypeSelectionId int,
@@ -1543,6 +1548,7 @@ SELECT
 	M.[DurationLogicAndAssumptions],
 	M.[EstimateTasks],
 	M.[Rationale],
+	M.[HistoricalReferenceExplanation],
 	M.[SkillMix],
 	0,
 	NULL,
@@ -1566,6 +1572,7 @@ INSERT INTO [dbo].[MOQTypeSelection]
 			[DurationLogicAndAssumptions],
 			[EstimateTasks],
 			[Rationale],
+			[HistoricalReferenceExplanation],
 			[SkillMix]
 			)
 SELECT NewTaskId,
@@ -1579,6 +1586,7 @@ SELECT NewTaskId,
 	[DurationLogicAndAssumptions],
 	[EstimateTasks],
 	[Rationale],
+	[HistoricalReferenceExplanation],
 	[SkillMix]
 FROM @MOQTypeSelection
 WHERE MOQTypeSelectionId = @MOQTypeSelectionId
@@ -1707,6 +1715,7 @@ DECLARE @BOELaborType TABLE
 	[CLINID] [int] NULL,
 	[CanOffload] bit default 0,
 	[LaborSortId] [int] NOT NULL,
+	[BRCResourceID] [int] NULL,
 	Processed bit,
 	[NewBOELaborTypeID] [int],
 	[NewResourceID] [int],
@@ -1733,6 +1742,7 @@ SELECT LT.[BOELaborTypeID]
 	  ,LT.[CLINID]
       ,LT.[CanOffload]
 	  ,LT.[LaborSortId]
+	  ,LT.[BRCResourceID]
 	  ,0/*PROCESSED*/
       ,NULL
       ,CASE
@@ -1780,7 +1790,8 @@ INSERT INTO [dbo].[BOELaborType]
 		   ,[WBSID]
 		   ,[CLINID]
 		   ,[CanOffload]
-		   ,[LaborSortId])
+		   ,[LaborSortId]
+		   ,[BRCResourceID])
 SELECT [UpdateDT]
       ,CASE 
       WHEN NewResourceID IS NOT NULL THEN NewResourceID
@@ -1810,6 +1821,7 @@ SELECT [UpdateDT]
 		END AS CLINID
 		,[CanOffload]
 		,[LaborSortId]
+		,[BRCResourceID]
   FROM @BOELaborType
 WHERE  [BOELaborTypeID] = @BOELaborTypeID
       

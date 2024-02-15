@@ -350,6 +350,9 @@
         <AssociationConnector Association="GenBOE.Models.FK__MoqTypeTa__Custo__503886C7" />
         <AssociationConnector Association="GenBOE.Models.FK__MoqTypeTa__MoqTy__4F44628E" />
         <EntityTypeShape EntityType="GenBOE.Models.BOEFormPBOE" Width="1.5" PointX="4.875" PointY="0.625" />
+        <EntityTypeShape EntityType="GenBOE.Models.MessageConfirmation" Width="1.5" PointX="3" PointY="115.75" />
+        <AssociationConnector Association="GenBOE.Models.FK_MessageConfirmation_UserId" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_BRCResource" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

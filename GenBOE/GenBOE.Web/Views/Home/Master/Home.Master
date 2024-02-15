@@ -122,7 +122,7 @@
                 </div>
             <%}%>
 
-            <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) { %>
+            <% if (SiteMasterUtilities.ShowIesHeader) { %>
             <iframe class="iframe" src="<%:ConfigurationUtilities.IESHeaderUrl("BOE")%>"></iframe>
             <% } %>
             <div class="title">
@@ -137,8 +137,15 @@
                             %>
                             <% if (ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration", false)) 
                             { %>
-                                <div>Company Mode: <%: SystemConfiguration.Instance().CompanyMode.GetDescription() %></div>
-                            <% } %> 
+                                <div>Company Mode: <%: SystemConfiguration.Instance().CompanyMode.GetDescription() %>
+                               <% if (SiteMasterUtilities.IsRMSProduction()) { %>
+                                Production - <span class="blue-link"><a href="<%=SiteMasterUtilities.ArchiveUrl()%>">Switch to Archive</a></span>
+                               <% } %>
+                                <% if (SiteMasterUtilities.IsRMSArchive()) { %>
+                                Archive - <span class="blue-link"><a href="<%=SiteMasterUtilities.ProductionUrl()%>">Switch to Production</a></span>
+                               <% } %>
+                                </div>                               
+                          <% } %> 
                             </div>
                         </div>
                         <div class="col-lg-5 col-md-5 col-sm-5">
@@ -153,7 +160,7 @@
         </div>
         <% Html.RenderAction(WebConstants.ACTION_HOME_DISPLAY_MASTER_MENU, WebConstants.CONTROLLER_HOME); %>
         <div class="bannerContainer">
-            <iframe class="bannerframe" id="bannerIFrame" src="<%:ConfigurationUtilities.IESBannerUrl(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems ? "BOESSC" : "BOERMS")%>"></iframe>
+            <iframe class="bannerframe" id="bannerIFrame" src="<%:ConfigurationUtilities.IESBannerUrl(SiteMasterUtilities.IESBannerApp)%>"></iframe>
         </div>
         <div class="main">
             <div id="Notification" class="notification-bar display-none">
@@ -277,6 +284,47 @@
               + 'Select OK to continue with your current browser.  <br/><br/>');
         }
 
+
+
+		var displayEciMessage = '<%: SiteMasterUtilities.ShowEciForbiddenMessage() %>';
+		if (displayEciMessage == "True") {
+            GenSession.commonDialog('ECI Forbidden',
+				'<p>You have chosen to access the International genBOE Environment. This genBOE environment is accessible to international users throughout LM as well as within the United States. Export Controlled Information (ECI) is <strong>Forbidden</strong> on this site.</p>' +
+                '<br/><p>By pressing "Ok" you agree / acknowledge that you will <strong>NOT</strong> record any <strong>Export Controlled Information(ECI)</strong> into any field on this site. Upon pressing "Ok" you will be permitted access to the site and your acknowledgment will be documented in the genBOE database.To learn more about Export Controlled Information(ECI), please click <a href="https://lockheed.plateau.com/learning/user/common/viewItemDetails.do?componentTypeID=COURSE&componentID=000027WPL00&revisionDate=157784401000&catalogCurrencyCode=USD&returnLink=%2Flearning%2Fuser%2Fcatalogsearch%2FcatalogSearchDispatchAction.do%3FsearchType%3DfilteredSearch%26keywords%3D&backto=%2Flearning%2Fuser%2Fcatalogsearch%2FcatalogSearchDispatchAction.do%3FsearchType%3DfilteredSearch%26keywords%3D#/968AEC5CFF86D8DEE10000000A6CA48D" target="_blank">HERE</a>.</p>',
+				[{
+					buttonClass: "ies",
+					ButtonText: 'Ok',
+					ButtonName: 'yes-button',
+					callbackMethod: function () {
+						// call the server to do update the confirmation for the user
+						var data = '{ "message" : "<%: (int)ConfirmationMessage.ECI_FORBIDDEN%>" }';
+						$.ajax({
+							type: 'POST',
+							async: false, // call MUST be synchronous so args.content will be set before the function exits
+							url: '/default/GenBOE/ConfirmMessage',
+							contentType: 'application/json; charset=utf-8',
+							data: data,
+							dataType: 'json',
+							success: function (response) {
+							},
+							error: function (response) {
+							},
+							complete: function (response) {
+							}
+						});
+					}
+				}, {
+						buttonClass: "ies",
+						ButtonText: 'Exit',
+						ButtonName: 'no-button',
+					callbackMethod: function () { window.location.replace('https://www.lockheedmartin.com') }
+                    }],
+                600,
+                // close button clicked
+				function () { window.location.replace('https://www.lockheedmartin.com') },
+                undefined,
+            );
+        }
     });
 </script>
 </body>

@@ -80,7 +80,7 @@ namespace GenBOE.Tests.ActionLogic
                             ResourceID = res1.Id,
                             SpreadType = IES.Common.SpreadType.Hours,
                             SpreadCurveID = SpreadCurves.SpreadCurve10,
-                            ValueSpread = (decimal)100,
+                            ValueSpread = 100,
                             LaborSpreads = new Collection<ResourceSpreadDto>()
                             {
                                 new ResourceSpreadDto() { Id = 1, LaborSpreadValue = 20, LaborSpreadDate = new DateTime(2012,6,15,0,0,0) },
@@ -97,7 +97,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspaceDto.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElements);
             retriever.Setup(x => x.GetTMResourceRates((workspaceDto.Id))).Returns(tmResourceRatesFromDB);
 
-            var sut = new TMCalculator();
+			TMCalculator sut = new TMCalculator();
             decimal cost = 0;
             foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {
@@ -139,7 +139,7 @@ namespace GenBOE.Tests.ActionLogic
                                 ResourceID = res2.Id,
                                 SpreadType = IES.Common.SpreadType.Hours,
                                 SpreadCurveID = SpreadCurves.SpreadCurve10,
-                                ValueSpread = (decimal)100,
+                                ValueSpread = 100,
                                 LaborSpreads = new Collection<ResourceSpreadDto>()
                                 {
                                     // TM Rates for res2 start June of 2013. This should cause an exception for dates prior to then.
@@ -157,7 +157,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElements);
             retriever.Setup(x => x.GetTMResourceRates((workspaceDto.Id))).Returns(tmResourceRatesFromDB);
 
-            var sut = new TMCalculator();
+			TMCalculator sut = new TMCalculator();
             decimal cost = 0;
             foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {

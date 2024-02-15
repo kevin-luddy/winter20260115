@@ -57,7 +57,7 @@ namespace IES.Common.classes
 
         public IDependencyScope BeginScope()
         {
-            var child = container.CreateChildContainer();
+			IUnityContainer child = container.CreateChildContainer();
             return new UnityResolver(child);
         }
 

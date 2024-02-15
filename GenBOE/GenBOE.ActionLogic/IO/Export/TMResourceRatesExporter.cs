@@ -43,7 +43,7 @@ namespace GenBOE.ActionLogic.IO.Export
             //get only rates that are actually exportable (non Mapped too).
             inRates = (from exportableRates in inRates where exportableRates.EndDate.HasValue && exportableRates.StartDate.HasValue && exportableRates.ResourceRate.HasValue select exportableRates).ToList();
 
-            var optionsListWorksheet = new ExcelExportWorksheet("OptionsList");
+			ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet("OptionsList");
             optionsListWorksheet.AddRange(from rate in inResources
                 select new Collection<string>
                 {
@@ -51,8 +51,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 });
 
 
-            // Create collections of strings for each row in the export file
-            var worksheet = new ExcelExportWorksheet("TMResourceRates");
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet worksheet = new ExcelExportWorksheet("TMResourceRates");
 
             if (inRates.Count > 0)
             {

@@ -22,5 +22,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="settingsData">Trace Table Settings Data</param>
 		/// <returns>Trace Table Data</returns>
 		ICollection<TraceTableBoeData> ExportTraceTableData(FullWorkspace workspace, TraceTableSettingsData settingsData);
-	}
+        ICollection<TraceTableBoeDataGroup> ExportTraceTableDataGroup(FullWorkspace workspace, TraceTableSettingsData settingsData);
+    }
 }

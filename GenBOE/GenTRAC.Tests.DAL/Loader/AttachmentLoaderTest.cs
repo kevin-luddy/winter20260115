@@ -30,7 +30,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_AttachmentsTest()
         {
-            var sut = this.CreateSystem();
+			AttachmentLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(true);
             ICollection<AttachmentDto> attachments = sut.GetAttachmentsForProposal(proposal.Id);
@@ -130,7 +130,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_AttachmentsTestRevisionFullSave()
         {
-            var sut = this.CreateSystem();
+			AttachmentLoader sut = this.CreateSystem();
 
             ProposalDto proposal1 = this.testData.GetProposal(true);
             AttachmentDto dto1 = new AttachmentDto
@@ -264,7 +264,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAttachments_BadProposalId()
         {
-            var sut = this.CreateSystem();
+			AttachmentLoader sut = this.CreateSystem();
             ICollection<AttachmentDto> attachments = sut.GetAttachmentsForProposal(-50);
 
             Assert.AreEqual(0, attachments.Count);

@@ -104,7 +104,7 @@ namespace GenBOE.Tests.ActionLogic
 
             WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO { Id = 1, ValueType = VarValueType.SumOfBOEs, SelectedBOEsToSum = selectedBoes, SumVariableResourceTypeIDs = new Collection<int> { (int)SumVariableResourceType.LOESub, (int)SumVariableResourceType.ESLabor } };
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation(); 
             data.FillData(null, new List<WorkspaceVariableDTO>() { workspaceVar }, ws);
@@ -169,7 +169,7 @@ namespace GenBOE.Tests.ActionLogic
 
             WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO { Id = 1, ValueType = VarValueType.SumOfBOEs, SelectedBOEsToSum = selectedBoes, SumVariableResourceTypeIDs = new Collection<int> { (int)SumVariableResourceType.SSCLOESub, (int)SumVariableResourceType.SSCLMLabor } };
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
             data.FillData(null, new List<WorkspaceVariableDTO>() { workspaceVar }, ws);
@@ -233,7 +233,7 @@ namespace GenBOE.Tests.ActionLogic
 
             WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO { Id = 1, ValueType = VarValueType.SumOfBOEs, SelectedBOEsToSum = selectedBoes, SumVariableResourceTypeIDs = new Collection<int> { (int)SumVariableResourceType.LOESub, (int)SumVariableResourceType.ESLabor } };
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
             data.FillData(null, new List<WorkspaceVariableDTO>() { workspaceVar }, workspace);
@@ -271,7 +271,7 @@ namespace GenBOE.Tests.ActionLogic
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.LOEIWTA };
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
             data.FillData(new List<OrdinaryVariableDto>() { new OrdinaryVariableDto() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { BoeID = 1 } } } }, null, ws);
@@ -306,7 +306,7 @@ namespace GenBOE.Tests.ActionLogic
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.SSCLMLabor, (int)SumVariableResourceType.SSCLOEIWTA };
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
             data.FillData(new List<OrdinaryVariableDto>() { new OrdinaryVariableDto() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { BoeID = 1 } } } }, null, ws);
@@ -348,8 +348,8 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<FullWbs> { wbs });
             retriever.Setup(x => x.GetBoesWithNestingByWbs(wbs.Id)).Returns(new Collection<FullBoe>() { boeObj, boeObj2 });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new List<FullClin>());
-            
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.LSLabor, (int)SumVariableResourceType.LOEIWTA };
 
@@ -395,7 +395,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoesWithNestingByWbs(wbs.Id)).Returns(new Collection<FullBoe>() { boeObj, boeObj2 });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new List<FullClin>());
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.SSCLMLabor, (int)SumVariableResourceType.SSCLOEIWTA};
 
@@ -445,7 +445,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetResourcesByResourceListId(ws.ResourceListID)).Returns(new Collection<ResourceDTO> { resource1, resource2 });
             retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(It.IsAny<int>())).Returns(new List<FullWbs>());
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.TSLabor };
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
@@ -493,7 +493,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetResourcesByResourceListId(ws.ResourceListID)).Returns(new Collection<ResourceDTO> { resource1, resource2 });
             retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(It.IsAny<int>())).Returns(new List<FullWbs>());
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.SSCLMLabor };
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
@@ -553,7 +553,7 @@ namespace GenBOE.Tests.ActionLogic
 
             OrdinaryVariableDto taskVar = new OrdinaryVariableDto { Id = 1, ValueType = VarValueType.SumOfBOEs, SelectedBOEsToSum = selectedBoes, SortBOEBy = VarSortBOEBy.WBS, SumVariableResourceTypeIDs = new Collection<int> { (int)SumVariableResourceType.LOESub, (int)SumVariableResourceType.ESLabor } };
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
             data.FillData(new List<OrdinaryVariableDto>() { taskVar }, null, ws);
@@ -612,7 +612,7 @@ namespace GenBOE.Tests.ActionLogic
 
             OrdinaryVariableDto taskVar = new OrdinaryVariableDto { Id = 1, ValueType = VarValueType.SumOfBOEs, SelectedBOEsToSum = selectedBoes, SortBOEBy = VarSortBOEBy.WBS, SumVariableResourceTypeIDs = new Collection<int> { (int)SumVariableResourceType.SSCLOESub, (int)SumVariableResourceType.SSCLMLabor } };
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
             data.FillData(new List<OrdinaryVariableDto>() { taskVar }, null, ws);
@@ -665,7 +665,7 @@ namespace GenBOE.Tests.ActionLogic
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.SSCLMLabor, (int)SumVariableResourceType.SSCLOEIWTA, (int)SumVariableResourceType.SSCLOESub };
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
             data.FillData(new List<OrdinaryVariableDto>() { new OrdinaryVariableDto() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { BoeID = 1 } } } }, null, ws);
@@ -709,7 +709,7 @@ namespace GenBOE.Tests.ActionLogic
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.LOEIWTA };
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
             data.FillData(new List<OrdinaryVariableDto>() { new OrdinaryVariableDto() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { BoeID = 1 } } } }, null, ws);
@@ -757,7 +757,7 @@ namespace GenBOE.Tests.ActionLogic
 
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.SSCLMLabor, (int)SumVariableResourceType.SSCLOEIWTA };
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
             data.FillData(new List<OrdinaryVariableDto>() { new OrdinaryVariableDto() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { BoeID = 1 } } } }, null, ws);
@@ -769,7 +769,7 @@ namespace GenBOE.Tests.ActionLogic
         #region Exception Tests
         private static void SetupExceptionTest(out Mock<IPerformingOrgDTODataLoader> PerfOrgLoader)
         {
-            var ResourceDM = new Mock<IResourceDTODataLoader>();
+			Mock<IResourceDTODataLoader> ResourceDM = new Mock<IResourceDTODataLoader>();
             PerfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
             ResourceDTO resource1 = new ResourceDTO { Id = 1, ResourceName = "1CE1", ResourceDesc = "1CE1 - DS On Prem West E1", SegRegion = "1C", LaborType = "E1", Segment = SegmentType.DS, ElementOfCost = ElementOfCostType.LMLabor };
             ResourceDM.Setup(x => x.GetByIds(new Collection<int> { resource1.Id })).Returns(new Collection<ResourceDTO> { resource1 });
@@ -780,7 +780,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest1()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             sut.GetTotalBasedOnCLINID(1, null, null);
         }
@@ -790,7 +790,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest1SpaceSystems()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             sut.GetTotalBasedOnCLINID(1, null, null);
         }
@@ -801,7 +801,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.TSLabor };
 
             sut.GetTotalBasedOnCLINID(1, SumVariableResourceTypes, null);
@@ -813,7 +813,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.TSLabor };
 
             sut.GetTotalBasedOnCLINID(1, SumVariableResourceTypes, null);
@@ -824,7 +824,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest3()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             sut.GetTotalBasedOnBoeID(1, null, null);
         }
@@ -834,7 +834,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest3SpaceSystems()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             sut.GetTotalBasedOnBoeID(1, null, null);
         }
@@ -845,7 +845,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.TSLabor };
 
             sut.GetTotalBasedOnBoeID(1, SumVariableResourceTypes, null);
@@ -857,7 +857,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.TSLabor };
 
             sut.GetTotalBasedOnBoeID(1, SumVariableResourceTypes, null);
@@ -868,7 +868,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest5()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             sut.GetTaskVarLabelTotal(null, null);
         }
@@ -878,7 +878,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest5SpaceSystems()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             sut.GetTaskVarLabelTotal(null, null);
         }
@@ -888,7 +888,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest6()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
             Collection<SelectBOEsToSum> selectedBoes = new Collection<SelectBOEsToSum>();
             OrdinaryVariableDto taskVar = new OrdinaryVariableDto { Id = 1, ValueType = VarValueType.SumOfBOEs, SelectedBOEsToSum = selectedBoes, SortBOEBy = VarSortBOEBy.WBS, SumVariableResourceTypeIDs = new Collection<int> { (int)SumVariableResourceType.SSCLOESub, (int)SumVariableResourceType.SSCLMLabor } };
 
@@ -901,7 +901,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
             Collection<SelectBOEsToSum> selectedBoes = new Collection<SelectBOEsToSum>();
             OrdinaryVariableDto taskVar = new OrdinaryVariableDto { Id = 1, ValueType = VarValueType.SumOfBOEs, SelectedBOEsToSum = selectedBoes, SortBOEBy = VarSortBOEBy.WBS, SumVariableResourceTypeIDs = new Collection<int> { (int)SumVariableResourceType.SSCLOESub, (int)SumVariableResourceType.SSCLMLabor } };
 
@@ -913,7 +913,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest7()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             sut.GetTotalBasedOnWBSID(1, null, null);
         }
@@ -923,7 +923,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest7SpaceSystems()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             sut.GetTotalBasedOnWBSID(1, null, null);
         }
@@ -934,7 +934,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.TSLabor };
 
             sut.GetTotalBasedOnWBSID(1, SumVariableResourceTypes, null);
@@ -946,7 +946,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.TSLabor };
 
             sut.GetTotalBasedOnWBSID(1, SumVariableResourceTypes, null);
@@ -957,7 +957,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest9()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
 
             sut.GetWorkspaceVarLabelTotal(null, null);
         }
@@ -967,7 +967,7 @@ namespace GenBOE.Tests.ActionLogic
         public void VSBTSC_IsValidExceptionTest9SpaceSystems()
         {
             SetupExceptionTest(out PerfOrgLoader);
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
 
             sut.GetWorkspaceVarLabelTotal(null, null);
         }
@@ -978,7 +978,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-            var sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
             Collection<SelectBOEsToSum> selectedBoes = new Collection<SelectBOEsToSum>();
             WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO { Id = 1, ValueType = VarValueType.SumOfBOEs, SelectedBOEsToSum = selectedBoes, SumVariableResourceTypeIDs = new Collection<int> { (int)SumVariableResourceType.LOESub, (int)SumVariableResourceType.ESLabor } };
 
@@ -991,7 +991,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-            var sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculationSpaceSystems sut = new VariableSelectBOEtoSumCalculationSpaceSystems(PerfOrgLoader.Object);
             Collection<SelectBOEsToSum> selectedBoes = new Collection<SelectBOEsToSum>();
             WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO { Id = 1, ValueType = VarValueType.SumOfBOEs, SelectedBOEsToSum = selectedBoes, SumVariableResourceTypeIDs = new Collection<int> { (int)SumVariableResourceType.LOESub, (int)SumVariableResourceType.ESLabor } };
 

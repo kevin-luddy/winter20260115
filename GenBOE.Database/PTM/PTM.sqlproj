@@ -16,7 +16,7 @@
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
@@ -76,7 +76,6 @@
     <Folder Include="Release Scripts\Older\Release 2020.5.2" />
     <Folder Include="Release Scripts\Older\Release 2020.2" />
     <Folder Include="Release Scripts\Older\Release 2020.4" />
-    <Folder Include="Release Scripts\Release 2023.3" />
     <Folder Include="Release Scripts\Release 2023.12" />
     <Folder Include="Release Scripts\Older\Release 2021.2" />
     <Folder Include="Release Scripts\Older\Release 2021.23" />
@@ -87,6 +86,8 @@
     <Folder Include="Release Scripts\Older\Release 2022.27" />
     <Folder Include="Release Scripts\Older\Release 2022.34" />
     <Folder Include="Release Scripts\Release 2023.26" />
+    <Folder Include="Release Scripts\Older\Release 2023.3" />
+    <Folder Include="Release Scripts\Release 2024.4" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -158,13 +159,11 @@
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2021.2 Generated On 2_25_2021.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.10 Generated On 3_22_2022.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.15 Generated On 5_16_2022.sql" />
-    <Build Include="Release Scripts\Release 2023.3\Release 2023.3.sql" />
-    <Build Include="_Full Script Files For Specific Versions\PTM - 2023.3 Generated On 3_1_2023.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.27 Generated On 7_27_2022.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.34 Generated On 10_20_2022.sql" />
     <Build Include="Object Scripts\Stored Procedures\CopyPARChecklist.sql" />
     <Build Include="Object Scripts\Stored Procedures\CopyPPRChecklist.sql" />
-    <Build Include="Release Scripts\Release 2023.12\Release 2023.12.sql" />
+    <Build Include="Release Scripts\Release 2023.12\1 - Release 2023.12.sql" />
     <Build Include="Release Scripts\Older\Release 2021.2\Release 2021.2.sql" />
     <Build Include="Release Scripts\Older\Release 2021.23\Release 2021.23.sql" />
     <Build Include="Release Scripts\Older\Release 2021.5\Release 2021.5.sql" />
@@ -173,7 +172,11 @@
     <Build Include="Release Scripts\Older\Release 2022.15\Release 2022.15.sql" />
     <None Include="Release Scripts\Older\Release 2022.27\Release 2022.27.sql" />
     <Build Include="Release Scripts\Older\Release 2022.34\Release 2022.34.sql" />
-    <Build Include="Release Scripts\Release 2023.26\Release 2023.26.sql" />
+    <Build Include="Release Scripts\Release 2023.26\1 - Release 2023.26.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2023.26 Generated On 1_17_2024.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2023.3 Generated On 3_1_2023.sql" />
+    <Build Include="Release Scripts\Older\Release 2023.3\1 - Release 2023.3.sql" />
+    <Build Include="Release Scripts\Release 2024.4\1 - Release 2024.4.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />

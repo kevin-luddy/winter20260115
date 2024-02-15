@@ -41,7 +41,7 @@ namespace GenBOE.ActionLogic.Validation
                 throw new InvalidCastException("value");
             }
 
-            var valueToValidate = value as string;
+			string valueToValidate = value as string;
 
             Dictionary<String, String> data = inData != null && inData.Count > 0 ? inData.First<Dictionary<String, String>>() : null;
 
@@ -54,11 +54,11 @@ namespace GenBOE.ActionLogic.Validation
                 string wbsID;
                 if (data.TryGetValue("WbsID", out wbsID))
                 {
-                    var wbsIDInt = Convert.ToInt32(wbsID);
+					int wbsIDInt = Convert.ToInt32(wbsID);
 
                     if (wbsIDInt > 0)
                     {
-                        var cache = new VariableCircularReferenceCheckerCache();
+						VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
 
                         FullWbs wbs = this.factory.CreateFullWbs(wbsIDInt);
                         FullWorkspace ws = wbs.Workspace;
@@ -111,7 +111,7 @@ namespace GenBOE.ActionLogic.Validation
                 }
             }
 
-            var wbsUniqueNumberValidatorMessages = ValidationFactory.Instance.getValidator(ValidationType.WBSUniqueNumber).validation(value, inData);
+			Collection<string> wbsUniqueNumberValidatorMessages = ValidationFactory.Instance.getValidator(ValidationType.WBSUniqueNumber).validation(value, inData);
 
             return new Collection<string>(wbsUniqueNumberValidatorMessages.Union(response).ToArray());
         }

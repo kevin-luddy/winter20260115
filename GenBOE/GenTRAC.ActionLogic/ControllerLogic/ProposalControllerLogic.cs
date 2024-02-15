@@ -510,7 +510,7 @@ namespace GenTRAC.ActionLogic
 		/// <param name="isForecasted">Whether this is a Forecast Proposal.</param>
 		internal void SaveProposalUsers(ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, int proposalId, ProposalPermissionDto pricerPermission, bool isForecasted)
 		{
-			var fullProposalDto = this.GetFullProposalDto(proposalId);
+			FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
 
 			ICollection<ProposalPermissionDto> permissionsToAdd = new List<ProposalPermissionDto>();
 			ICollection<ProposalPermissionDto> permissionsToDelete = new List<ProposalPermissionDto>();
@@ -651,6 +651,25 @@ namespace GenTRAC.ActionLogic
 
 			this.AddAndDeletePermissions(fullProposalDto, supplyChainPocMatlPermission, PtmRole.SupplyChainPOCMatl, permissionsToAdd, permissionsToDelete);
 
+			ProposalPermissionDto supplyChainPocMatlBackupPermission = null;
+			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId))
+			{
+				// supply chain POC (matl backup)
+				UserDTO supplyChainPocMatlBackup = UserMapper.GetByNtid(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId);
+				supplyChainPocMatlBackupPermission = new ProposalPermissionDto()
+				{
+					Id = -1,
+					ProposalID = proposalId,
+					UserId = supplyChainPocMatlBackup.Id,
+					Role = PtmRole.BackupMaterialLead,
+					ResourceType = ResourceType.NotSet,
+					Updateable = IES.Common.UpdateType.Upsert,
+					UpdateDate = proposalUserInfo.UpdateDate
+				};
+			}
+
+			this.AddAndDeletePermissions(fullProposalDto, supplyChainPocMatlBackupPermission, PtmRole.BackupMaterialLead, permissionsToAdd, permissionsToDelete);
+
 			ProposalPermissionDto supplyChainPocSubsPermission = null;
 			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsNtId))
 			{
@@ -669,6 +688,25 @@ namespace GenTRAC.ActionLogic
 			}
 
 			this.AddAndDeletePermissions(fullProposalDto, supplyChainPocSubsPermission, PtmRole.SupplyChainPOCSubs, permissionsToAdd, permissionsToDelete);
+
+			ProposalPermissionDto supplyChainPocSubsBackupPermission = null;
+			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsBackupNtId))
+			{
+				// supply chain POC (subs)
+				UserDTO supplyChainPocSubsBackup = UserMapper.GetByNtid(proposalUserInfo.SupplyChainPOCSubsBackupNtId);
+				supplyChainPocSubsBackupPermission = new ProposalPermissionDto()
+				{
+					Id = -1,
+					ProposalID = proposalId,
+					UserId = supplyChainPocSubsBackup.Id,
+					Role = PtmRole.BackupSubcontractsLead,
+					ResourceType = ResourceType.NotSet,
+					Updateable = IES.Common.UpdateType.Upsert,
+					UpdateDate = proposalUserInfo.UpdateDate
+				};
+			}
+
+			this.AddAndDeletePermissions(fullProposalDto, supplyChainPocSubsBackupPermission, PtmRole.BackupSubcontractsLead, permissionsToAdd, permissionsToDelete);
 
 			// Contracts POC manager
 			ProposalPermissionDto contractsPocPermission = null;
@@ -1017,6 +1055,7 @@ namespace GenTRAC.ActionLogic
 		/// </summary>
 		/// <param name="proposalId">Proposal Id.  Can be null.</param>
 		/// <returns>Proposal Information Model View</returns>
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public ProposalInformationModelView GetDataForProposalInformation(int? proposalId)
 		{
 			ProposalInformationModelView model = new ProposalInformationModelView();
@@ -1102,6 +1141,7 @@ namespace GenTRAC.ActionLogic
 				model.ProposalTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalType, fullProposalDto.ProposalType);
 				model.RequestTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.TypeOfRequest, fullProposalDto.Request);
 				model.ProposalClassesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalClass, fullProposalDto.ProposalClass);
+				model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup, fullProposalDto.ContractTypeGroup);
 
 				model.ProposalID = fullProposalDto.Id;
 				model.ProposalTrackingNumber = fullProposalDto.TrackingNumber;
@@ -1143,10 +1183,11 @@ namespace GenTRAC.ActionLogic
 					model.ProposalClassesList.First(x => x.Value == model.ProposalClass.ToString()).Text : "Not Set";
 				model.RequestTypeText = model.RequestTypesList.Any(x => x.Value == model.RequestType.ToString()) ?
 					model.RequestTypesList.First(x => x.Value == model.RequestType.ToString()).Text : "Not Set";
+				model.ContractTypeGroupText = model.ContractTypeGroupsList.Any(x => x.Value == model.ContractTypeGroup.ToString()) ?
+					model.ContractTypeGroupsList.First(x => x.Value == model.ContractTypeGroup.ToString()).Text : "Not Set";
 
 				model.DocumentId = fullProposalDto.DocumentId;
 
-				model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup, fullProposalDto.ContractTypeGroup);
 			}
 			else
 			{
@@ -1252,6 +1293,7 @@ namespace GenTRAC.ActionLogic
 				model.ProposalTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalType, fullProposalDto.ProposalType);
 				model.RequestTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.TypeOfRequest, fullProposalDto.Request);
 				model.ProposalClassesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalClass, fullProposalDto.ProposalClass);
+				model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup, fullProposalDto.ContractTypeGroup);
 
 				string newRevisionSuffix;
 				string newRevisionTrackingNumber = this.GetRevisionTrackingNumber(fullProposalDto.TrackingNumber, out newRevisionSuffix);
@@ -1281,10 +1323,11 @@ namespace GenTRAC.ActionLogic
 					model.ProposalClassesList.First(x => x.Value == model.ProposalClass.ToString()).Text : "Not Set";
 				model.RequestTypeText = model.RequestTypesList.Any(x => x.Value == model.RequestType.ToString()) ?
 					model.RequestTypesList.First(x => x.Value == model.RequestType.ToString()).Text : "Not Set";
+				model.ContractTypeGroupText = model.ContractTypeGroupsList.Any(x => x.Value == model.ContractTypeGroup.ToString()) ?
+					model.ContractTypeGroupsList.First(x => x.Value == model.ContractTypeGroup.ToString()).Text : "Not Set";
 
 				model.DocumentId = fullProposalDto.DocumentId;
 
-				model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup, fullProposalDto.ContractTypeGroup);
 			}
 			else
 			{
@@ -1618,9 +1661,17 @@ namespace GenTRAC.ActionLogic
 							model.SupplyChainPOCMaterialsNtId = user.Ntid;
 							model.SupplyChainPOCMaterialsDisplayName = user.DisplayName;
 							break;
+						case PtmRole.BackupMaterialLead:
+							model.SupplyChainPOCMaterialsBackupNtId = user.Ntid;
+							model.SupplyChainPOCMaterialsBackupDisplayName = user.DisplayName;
+							break;
 						case PtmRole.SupplyChainPOCSubs:
 							model.SupplyChainPOCSubsNtId = user.Ntid;
 							model.SupplyChainPOCSubsDisplayName = user.DisplayName;
+							break;
+						case PtmRole.BackupSubcontractsLead:
+							model.SupplyChainPOCSubsBackupNtId = user.Ntid;
+							model.SupplyChainPOCSubsBackupDisplayName = user.DisplayName;
 							break;
 						case PtmRole.ContractsPOC:
 							model.ContractsPOCNtId = user.Ntid;
@@ -1829,6 +1880,32 @@ namespace GenTRAC.ActionLogic
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
 			}
 
+			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsNtId)
+				&& !string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId)
+				&& proposalUserInfo.SupplyChainPOCMaterialsNtId == proposalUserInfo.SupplyChainPOCMaterialsBackupNtId)
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
+			}
+
+			if (string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsNtId)
+				&& !string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId))
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_BACKUP_REQUIRES_LEAD));
+			}
+
+			if (!string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsNtId)
+				&& !string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsBackupNtId)
+				&& proposalUserInfo.SupplyChainPOCSubsNtId == proposalUserInfo.SupplyChainPOCSubsBackupNtId)
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
+			}
+
+			if (string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsNtId)
+				&& !string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsBackupNtId))
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD));
+			}
+
 			// if this is a saved proposal, this will only validate the changed users, else validate all of the users
 
 			ProposalUserInformationModelView savedProposalUsers = this.GetDataForProposalUserInformation(proposalId);
@@ -1838,7 +1915,9 @@ namespace GenTRAC.ActionLogic
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.AdditionalPricingResource1NtId, savedProposalUsers.AdditionalPricingResource1NtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.ADDITIONAL_PRICING_RESOURCE_1_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.AdditionalPricingResource2NtId, savedProposalUsers.AdditionalPricingResource2NtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.ADDITIONAL_PRICING_RESOURCE_2_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCMaterialsNtId, savedProposalUsers.SupplyChainPOCMaterialsNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_MATL_INVALID_NTID, true, true) && validUnchangedUsers;
+			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCMaterialsBackupNtId, savedProposalUsers.SupplyChainPOCMaterialsBackupNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_MATL_BACKUP_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCSubsNtId, savedProposalUsers.SupplyChainPOCSubsNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_SUBS_INVALID_NTID, true, true) && validUnchangedUsers;
+			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCSubsBackupNtId, savedProposalUsers.SupplyChainPOCSubsBackupNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_SUBS_BACKUP_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ContractsPOCNtId, savedProposalUsers.ContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupContractsPOCNtId, savedProposalUsers.BackupContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupPricerNtId, savedProposalUsers.BackupPricerNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_PRICER_INVALID_NTID, true, true) && validUnchangedUsers;
@@ -2272,7 +2351,7 @@ namespace GenTRAC.ActionLogic
 			FullProposal fullProposal = this.GetFullProposalDto(proposalId);
 			if (fullProposal != null)
 			{
-				var parData = fullProposal.ProposalChecklistPARData;
+				ChecklistContentDto parData = fullProposal.ProposalChecklistPARData;
 
 				if (ProposalChecklistType.InternationalCommercial.IsActive() &&
 					(parData.ChecklistType == ProposalChecklistType.InternationalCommercial && newProposalChecklistType != ProposalChecklistType.InternationalCommercial ||
@@ -2555,7 +2634,7 @@ namespace GenTRAC.ActionLogic
 				this.ValidateCertification(proposalId, model, false);
 				ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, false);
 
-				using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
 				{
 					this.ProposalMediator.SaveProposal(proposal);
 					scope.Complete();
@@ -2707,7 +2786,7 @@ namespace GenTRAC.ActionLogic
 				this.ValidateCertification(proposalId, model, true);
 				ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, true);
 
-				using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
 				{
 					this.ProposalMediator.SaveProposal(proposal);
 					scope.Complete();

@@ -26,7 +26,8 @@ CREATE PROCEDURE [dbo].[upsertBOELaborType]
 @WBSID int,
 @CLINID int,
 @CanOffload bit,
-@LaborSortID int
+@LaborSortID int,
+@BRCResourceID int
 )
 AS
 /******************************************************************************
@@ -86,6 +87,7 @@ AS
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
 **		9/15/2020	ranzalon			BOEJ-4825 - Added MOQTypeSelectionId
 **		12/8/2020	ranzalon			BOEJ-4972 - Removed MOQTypeSelectionId
+**		1/23/24		e302876			    PROPH-1484 - New column BRCResourceID
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -117,6 +119,7 @@ IF @BOELaborTypeID < 0  /*Insert Record*/
 		   ,[CLINID]
            ,[CanOffload]
 		   ,[LaborSortId]
+		   ,[BRCResourceID]
 		   )
      OUTPUT inserted.BOELaborTypeID INTO @InsertedBOELaborType
      VALUES
@@ -136,7 +139,8 @@ IF @BOELaborTypeID < 0  /*Insert Record*/
 		   @WBSID,
 		   @CLINID,
            @CanOffload,
-		   @LaborSortID
+		   @LaborSortID,
+		   @BRCResourceID
 		   )
            
            
@@ -182,7 +186,8 @@ ELSE
 					[WBSID] = @WBSID,
 					[CLINID] = @CLINID,
 					[CanOffload] = @CanOffload,
-					[LaborSortId] = @LaborSortID
+					[LaborSortId] = @LaborSortID,
+					[BRCResourceID] = @BRCResourceID
 			WHERE 
 				BOELaborTypeID = @BOELaborTypeID
 				

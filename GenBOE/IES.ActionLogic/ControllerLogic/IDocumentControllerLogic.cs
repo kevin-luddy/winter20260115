@@ -9,6 +9,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DataBridge.ModelViews;
 	using GenTRAC.DataBridge.Common.Security;
@@ -91,7 +92,8 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">Proposal ID</param>
 		/// <param name="serverFileName">Server File Name</param>
 		/// <param name="httpResponse">HTTP response object</param>
-		void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse);
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+		Task GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired);
 
         /// <summary>
         /// Generates the RDD document for the Proposal Id passed in.
@@ -102,7 +104,8 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="modelView">document detail modelview (if available)</param>
         /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
         /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-        void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true);
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        Task GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false);
 
         /// <summary>
         /// Check if RDSB Record exists for the given PTM Proposal ID
@@ -112,11 +115,11 @@ namespace IES.ActionLogic.ControllerLogic
         bool DoesRdsbRecordExistForProposalId(int proposalId);
 
         /// <summary>
-		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Compliance data, and 3) Disclosure Statements
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		(string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId);
+		(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId);
 
 		/// <summary>
 		/// Gets data necessary for CPS Reports
@@ -125,7 +128,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a CPS Report</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		ICollection<(string rateCode, string parentSectionNumber)> GetTopLevelSectionsForRateCodes(ICollection<string> rateCodes, int proposalId);
+		ICollection<string> GetTopLevelSectionsForRateCodes(ICollection<string> rateCodes, int proposalId);
 
 		/// <summary>
 		/// Gets data necessary for CPS Reports
@@ -134,6 +137,13 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a CPS Report</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		ICollection<(string rateDescription, string parentSectionNumber)> GetTopLevelSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId);
+		ICollection<string> GetTopLevelSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId);
+
+		/// <summary>
+		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
+		/// </summary>
+		/// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
+		/// <returns>A collection of addresses</returns>
+		ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId);
 	}
 }

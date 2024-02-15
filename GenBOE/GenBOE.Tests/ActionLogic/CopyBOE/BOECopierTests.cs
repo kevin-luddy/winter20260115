@@ -33,7 +33,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 		/// <returns>SUT</returns>
 		private BOECopier CreateSUT()
 		{
-			BOECopier copier = new BOECopier(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, moqTypeDataLoader.Object);
+			BOECopier copier = new BOECopier(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, moqTypeDataLoader.Object, null);
 			moqTypeDataLoader.Setup(c => c.Save(It.IsAny<ICollection<MoqTypeSelection>>())).Returns(new Dictionary<int, int>());
 
 			return copier;
@@ -45,7 +45,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 		[TestMethod]
 		public void CopyMOQTypesOldFiscalWeek()
 		{
-			var sut = CreateSUT();
+			BOECopier sut = CreateSUT();
 			Utilities.IsSAPEnabledForSystem = true;
 			List<MoqTypeSelection> moqTypesToCopy = new List<MoqTypeSelection>
 			{
@@ -83,7 +83,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 		[TestMethod]
 		public void CopyMOQTypesNewFiscalWeek()
 		{
-			var sut = CreateSUT();
+			BOECopier sut = CreateSUT();
 			Utilities.IsSAPEnabledForSystem = true;
 
 			List<MoqTypeSelection> moqTypesToCopy = new List<MoqTypeSelection>
@@ -120,7 +120,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 		[TestMethod]
 		public void CopyMOQTypesOldFiscalWeekSameWorkspace()
 		{
-			var sut = CreateSUT();
+			BOECopier sut = CreateSUT();
 			Utilities.IsSAPEnabledForSystem = true;
 
 			List<MoqTypeSelection> moqTypesToCopy = new List<MoqTypeSelection>

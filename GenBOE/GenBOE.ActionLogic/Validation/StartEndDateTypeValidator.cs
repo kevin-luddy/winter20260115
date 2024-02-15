@@ -9,9 +9,9 @@ namespace GenBOE.ActionLogic.Validation
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using IES.Common;
+	using IES.Common;
 
-    public class StartEndDateTypeValidator : Validator
+	public class StartEndDateTypeValidator : Validator
     {
         private DateTime? _StartDate;
         private DateTime? _EndDate;
@@ -75,7 +75,6 @@ namespace GenBOE.ActionLogic.Validation
 
             return response;
         }
-
     }
 
     public class verificationDateTime : IStartEndDates

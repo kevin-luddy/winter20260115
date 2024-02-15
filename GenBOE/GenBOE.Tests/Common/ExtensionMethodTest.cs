@@ -161,7 +161,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void IEnumerable_ThenByTest()
         {
-            var dates = new DateTime[]
+			DateTime[] dates = new DateTime[]
             {
                 new DateTime(2012, 1, 1),
                 new DateTime(2012, 2, 1),

@@ -1238,9 +1238,10 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                         laborType.Updateable = UpdateType.Upsert;
                         laborType.BoeID = newBoeID;
 
-                        // if the task does not have a performing org or a resource, we will still copy the WS, but we will want to tell the user to double check the new WS..
+                        // if the task does not have a performing org, business resource ID (from the resource) or a resource, we will still copy the WS, but we will want to tell the user to double check the new WS..
                         // because the data will be incomplete/incorrect
                         if (laborType.ResourceID.HasValue) { laborType.ResourceID = Resources[laborType.ResourceID.Value]; } else { finishedCorrectly = false; }
+                        if (laborType.BusinessResourceCodeID.HasValue) { laborType.BusinessResourceCodeID = Resources[laborType.BusinessResourceCodeID.Value]; } else { finishedCorrectly = false; }
                         if (laborType.PerformingOrgID.HasValue) { laborType.PerformingOrgID = perfOrgs[laborType.PerformingOrgID.Value]; } else { finishedCorrectly = false; }
 
                         if (laborType.CustomFieldValueContainers.Any())

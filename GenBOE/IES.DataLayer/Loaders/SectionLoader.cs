@@ -58,40 +58,52 @@ namespace IES.DataBridge.Loaders
 
             using (IESEntities context = new IESEntities())
             {
-                ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToCollection();
-                if (sectionsOnly)
+                ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
+				if (sectionsOnly)
                 {
                     // Filter out Sections that don't have a Content Type of Section
                     sectionsForRevision = sectionsForRevision
-                        .Where(x => x.SectionContentTypeID == (int) SectionContentType.Section).ToCollection();
-                }
+						.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section).ToCollection();
+				}
 
                 if (sectionIds != null)
                 {
                     int sectionType = (int)SectionContentType.Section;
-                    sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID)).ToCollection();
-                }
+					sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID)).ToCollection();
+				}
 
-                sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
-                {
-                    Id = r.ID,
-                    UpdateDate = r.UpdateDate,
-                    RevisionId = r.RevisionID,
-                    ParentId = r.ParentID,
-                    DisplayOrder = r.DisplayOrder,
-                    Title = r.Title,
-                    TextContent = r.TextContent,
-                    ContentType = (SectionContentType) r.SectionContentTypeID,
-                    IsInternalSection = r.IsInternalSection,
-                    DisplayRateCode = r.DisplayRateCode,
-                    RevisionUniqueSectionId = r.RevisionUniqueSectionId,
-                    IsRdsbRequired = r.IsRdsbRequired,
-                    SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
-                    SectionContainsNonCompliance = r.SectionContainsNonCompliance
-                }).ToList();
-            }
+				sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
+				{
+					Id = r.ID,
+					UpdateDate = r.UpdateDate,
+					RevisionId = r.RevisionID,
+					ParentId = r.ParentID,
+					DisplayOrder = r.DisplayOrder,
+					Title = r.Title,
+					TextContent = r.TextContent,
+					ContentType = (SectionContentType)r.SectionContentTypeID,
+					IsInternalSection = r.IsInternalSection,
+					DisplayRateCode = r.DisplayRateCode,
+					RevisionUniqueSectionId = r.RevisionUniqueSectionId,
+					IsRdsbRequired = r.IsRdsbRequired,
+					SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
+					IsDisclosureStatementAdequate = r.IsDisclosureStatementAdequate is null ? false : r.IsDisclosureStatementAdequate.Value,
+					SectionContainsNonCompliance = r.SectionContainsNonCompliance,
+					NonComplianceNotification = r.NonComplianceNotification is null ? false : r.NonComplianceNotification.Value,
+					Office = r.Office,
+					Agency = r.Agency,
+					LMBA = r.LMBA,
+					Name = r.Name,
+					Street = r.Street,
+					CityST = r.CityST,
+					Phone = r.Phone,
+					Email = r.Email,
+					Other = r.Other,
+					IncludeInCoversheet = r.IncludeInCoversheet,
+				}).ToList();
+			}
 
-            foreach (SectionModelView topLevelSection in sectionDetailsByRevision.Where(x => (x.ParentId == null)))
+			foreach (SectionModelView topLevelSection in sectionDetailsByRevision.Where(x => (x.ParentId == null)))
             {
                 sectionsToReturn.Add(this.GetBySectionId(topLevelSection.Id, sectionDetailsByRevision));
             }
@@ -133,6 +145,7 @@ namespace IES.DataBridge.Loaders
 
                             break;
                         case SectionContentType.RateTable:
+                        case SectionContentType.Address:
                         case SectionContentType.Text:
                             parentSection.ChildNodes.Add(subSection);
                             break;
@@ -324,8 +337,10 @@ namespace IES.DataBridge.Loaders
                     result = iesEntities.upsertSection(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.RevisionId,
                         dtoToUpsert.ParentId, dtoToUpsert.DisplayOrder, dtoToUpsert.Title,
                         dtoToUpsert.TextContent, (int)dtoToUpsert.ContentType, dtoToUpsert.IsInternalSection,
-                        dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired, 
-                        dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.SectionContainsNonCompliance).First();
+                        dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired,
+                        dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.IsDisclosureStatementAdequate, dtoToUpsert.SectionContainsNonCompliance, dtoToUpsert.NonComplianceNotification,
+                        dtoToUpsert.Office, dtoToUpsert.Agency, dtoToUpsert.LMBA, dtoToUpsert.Name, dtoToUpsert.Street, dtoToUpsert.CityST, dtoToUpsert.Phone, dtoToUpsert.Email, dtoToUpsert.Other, dtoToUpsert.IncludeInCoversheet
+                        ).First();
                 }
             }
 
@@ -437,7 +452,7 @@ namespace IES.DataBridge.Loaders
                     s = new SectionModelView
                     {
                         Id = -1,    // Force upsert to insert new row
-                        // section was moved - keep old section Id and UpdateDate for eventual re-map in SaveAll method
+                                    // section was moved - keep old section Id and UpdateDate for eventual re-map in SaveAll method
                         OldId = section.Id,
                         OldUpdateDate = section.UpdateDate,
                         DisplayOrder = section.DisplayOrder
@@ -457,7 +472,20 @@ namespace IES.DataBridge.Loaders
                 s.RevisionUniqueSectionId = section.RevisionUniqueSectionId;
                 s.IsRdsbRequired = section.IsRdsbRequired;
                 s.SectionContainsCasbDisclosure = section.SectionContainsCasbDisclosure;
+                s.IsDisclosureStatementAdequate = section.IsDisclosureStatementAdequate;
                 s.SectionContainsNonCompliance = section.SectionContainsNonCompliance;
+                s.NonComplianceNotification = section.NonComplianceNotification;
+
+                s.Office = section.Office;
+                s.Agency = section.Agency;
+                s.LMBA = section.LMBA;
+                s.Name = section.Name;
+                s.Street = section.Street;
+                s.CityST = section.CityST;
+                s.Phone = section.Phone;
+                s.Email = section.Email;
+                s.Other = section.Other;
+                s.IncludeInCoversheet = section.IncludeInCoversheet;
 
                 this.UpdateSectionsAndContent(s, section.ChildNodes, sectionsToDelete);
             }
@@ -467,7 +495,8 @@ namespace IES.DataBridge.Loaders
             {
                 SectionModelView s = new SectionModelView(section.RevisionId, section.DisplayOrder, section.IsInternalSection,
                     section.Title, section.TextContent, section.DisplayRateCode, section.ContentType, section.ReferenceNumber,
-                    section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosure, section.SectionContainsNonCompliance);
+                    section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosure, section.IsDisclosureStatementAdequate, section.SectionContainsNonCompliance, section.NonComplianceNotification,
+                    section.Office, section.Agency, section.LMBA, section.Name, section.Street, section.CityST, section.Phone, section.Email, section.Other, section.IncludeInCoversheet);
                 s.Id = -1; // Force upsert to insert new row
                 parent.ChildNodes.Add(s);
                 this.UpdateSectionsAndContent(s, section.ChildNodes, sectionsToDelete);
@@ -476,14 +505,121 @@ namespace IES.DataBridge.Loaders
         #endregion
 
         /// <summary>
-        /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Disclosure data
+        /// Get all addresses, regardless if a section is a parent or not
+        /// </summary>
+        /// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
+        /// <returns>A collection of addresses, complete with a section title</returns>
+        public ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId)
+        {
+            ICollection<SectionAddressModelView> result = new List<SectionAddressModelView>();
+            IList<SectionAddressParentModelView> allSections = new List<SectionAddressParentModelView>();
+            IList<Section> addresses = new List<Section>();
+
+            using (IESEntities context = new IESEntities())
+            {
+                // Get the revision ID for the PTM Tracking ID
+                int? rdmRevision = context.RDSBDocumentInformations.FirstOrDefault(x => x.PTMProposalID == ptmTrackingId)?.RDMRevisionID;
+
+                if (rdmRevision.HasValue)
+                {
+                    SectionContentTypeLU addressType = context.SectionContentTypeLUs.Where(x => x.Description.Equals("Address")).FirstOrDefault();
+                    allSections = context.Sections.Where(x => x.RevisionID == rdmRevision.Value).Select(x =>
+                        new SectionAddressParentModelView
+                        {
+                            Id = x.ID,
+                            Title = x.Title,
+                            ParentID = x.ParentID
+                        }).ToList();
+                    addresses = context.Sections
+                        .Where(x => x.SectionContentTypeID == addressType.ID && x.RevisionID == rdmRevision.Value && x.IncludeInCoversheet.Value).ToList();
+                }
+            }
+
+            // Get section titles
+            if (addresses.Any())
+            {
+                foreach (Section addressIterator in addresses)
+                {
+                    SectionAddressParentModelView address = new SectionAddressParentModelView
+                    {
+                        Id = addressIterator.ID,
+                        Title = addressIterator.Title,
+                        ParentID = addressIterator.ParentID
+                    };
+                    string title = GetSectionTitle(address, allSections);
+                    addressIterator.Title = title;
+                }
+
+                result = addresses.Select(x =>
+                    new SectionAddressModelView
+                    {
+                        Id = x.ID,
+                        Title = x.Title,
+                        Office = x.Office,
+                        Agency = x.Agency,
+                        LMBA = x.LMBA,
+                        Name = x.Name,
+                        Street = x.Street,
+                        CityST = x.CityST,
+                        Phone = x.Phone,
+                        Email = x.Email,
+                    }).ToList();
+            }
+            else // Use default address
+            {
+                SectionAddressModelView defaultAddress = new SectionAddressModelView
+                {
+                    Id = 0,
+                    Title = "Default Address",
+                    Office = Constants.DEFAULT_ADDRESS_OFFICE,
+                    Agency = Constants.DEFAULT_ADDRESS_AGENCY,
+                    LMBA = Constants.DEFAULT_ADDRESS_LM_BA,
+                    Name = Constants.DEFAULT_ADDRESS_NAME,
+                    Street = Constants.DEFAULT_ADDRESS_STREET,
+                    CityST = Constants.DEFAULT_ADDRESS_CITY_ST,
+                    Phone = Constants.DEFAULT_ADDRESS_PHONE,
+                    Email = Constants.DEFAULT_ADDRESS_EMAIL
+                };
+
+                result.Add(defaultAddress);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Recursively gets the section title for an address, EX: "Introduction; Section 2B; Part 4"
+        /// </summary>
+        /// <param name="address">The section info for the address</param>
+        /// <param name="allSections">All the sections</param>
+        /// <returns>The complete section title for an address, including children section titles</returns>
+        private string GetSectionTitle(SectionAddressParentModelView address, IList<SectionAddressParentModelView> allSections)
+        {
+            string title = string.Empty;
+            SectionAddressParentModelView parentSection = allSections.Where(x => x.Id == address.ParentID).FirstOrDefault();
+            if (parentSection.ParentID == null)
+            {
+                title = parentSection.Title;
+            }
+            else
+            {
+                title += GetSectionTitle(parentSection, allSections) + "; " + parentSection.Title;
+            }
+
+            return title;
+        }
+
+        /// <summary>
+        /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Disclosure data, and 3) Disclosure Statements
         /// </summary>
         /// <param name="proposalId">PTM Proposal ID</param>
         /// <returns>Data to support a Cover Sheet creation</returns>
-        public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+        public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
         {
             string casbSection = null;
             string nonCompliance = null;
+            bool adequateDisclosure = false;
+            bool noncomplianceNotification = false;
 
             using (IESEntities context = new IESEntities())
             {
@@ -495,10 +631,12 @@ namespace IES.DataBridge.Loaders
 
                     casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
                     nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
+                    adequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequate.HasValue && x.IsDisclosureStatementAdequate.Value == true) ? true : false;
+                    noncomplianceNotification = flatSections.Any(x => x.NonComplianceNotification.HasValue && x.NonComplianceNotification.Value == true) ? true : false;
                 }
             }
 
-            return (casbSection, nonCompliance);
+            return (casbSection, nonCompliance, adequateDisclosure, noncomplianceNotification);
         }
 
         /// <summary>
@@ -507,7 +645,7 @@ namespace IES.DataBridge.Loaders
         /// <param name="sectionsToProcess">Sections to flatten</param>
         /// <returns>An ICollection of flattened sections</returns>
         private ICollection<SectionModelView> FlattenSections(ICollection<SectionModelView> sectionsToProcess)
-		{
+        {
             ICollection<SectionModelView> flatSections = new List<SectionModelView>();
 
             foreach (SectionModelView section in sectionsToProcess)

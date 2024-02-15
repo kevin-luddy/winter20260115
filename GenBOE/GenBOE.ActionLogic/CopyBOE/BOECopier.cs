@@ -6,22 +6,25 @@
 
 namespace GenBOE.ActionLogic.CopyBOE
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Linq;
-	using GenBOE.ActionLogic.BLL;
-	using GenBOE.ActionLogic.Common.Calculations;
-	using GenBOE.ActionLogic.ModelView;
-	using GenBOE.ActionLogic.Validation;
-	using GenBOE.DataBridge.DTO;
-	using GenBOE.Dtos;
-	using GenBOE.Objects;
-	using IES.Common;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using GenBOE.ActionLogic.BLL;
+    using GenBOE.ActionLogic.Common.Calculations;
+    using GenBOE.ActionLogic.ModelView;
+    using GenBOE.ActionLogic.Validation;
+    using GenBOE.ActionLogic.WBS.BOE;
+    using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
+    using GenBOE.Models;
+    using GenBOE.Objects;
+    using IES.Common;
     using IES.Common.classes;
+    using IES.Common.Exceptions;
     using MoreLinq;
 
-	public class BOECopier
+    public class BOECopier
     {
         private IBoeDTODataLoader boeLoader;
         private IClinDTODataLoader clinLoader;
@@ -38,6 +41,8 @@ namespace GenBOE.ActionLogic.CopyBOE
         private IWorkspaceVariableDTODataLoader _workspaceVariableLoader;
         private IBoeTaskElementRecalculation _boeTaskElementRecalculation;
         private IMoqTypeDataLoader moqTypeLoader;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+		private IValidateBOE validateBOE = null;
 
         /// <summary>
         /// RTE Template Data Loader
@@ -60,7 +65,8 @@ namespace GenBOE.ActionLogic.CopyBOE
             IClinDTODataLoader clinLoader,
             IWbsDTODataLoader wbsLoader,
             IRteTemplateDataLoader rteTemplateDataLoader,
-            IMoqTypeDataLoader moqTypeLoader)
+            IMoqTypeDataLoader moqTypeLoader,
+            IValidateBOE validateBOE)
         {
             this.boeLoader = boeLoader;
             this.clinLoader = clinLoader;
@@ -79,6 +85,7 @@ namespace GenBOE.ActionLogic.CopyBOE
             this._boeTaskElementRecalculation = inBoeTaskElementRecalculation;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.moqTypeLoader = moqTypeLoader;
+            this.validateBOE = validateBOE;
         }
 
         /// <summary>
@@ -93,7 +100,7 @@ namespace GenBOE.ActionLogic.CopyBOE
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
-            
+
             FullBoe sourceBoe = this.factory.CreateFullBoe(inSourceBOEID);
             FullBoe destinationBoe;
 
@@ -127,7 +134,25 @@ namespace GenBOE.ActionLogic.CopyBOE
             sourceBoe.LoadBOEsRTEData();
             sourceBoe.LoadTaskElementRTEData();
 
-            this.CopyBOE(sourceBoe, destinationBoe, taskElementsToCopy);
+            // RMS decided not to do validation -- for now
+            //if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+            //{
+            //    // Call to the business layer to validate the BOE
+            //    ValidationBOEModelView validatedBOE = this.validateBOE.ValidateBOE_OnValidateBtnClick(sourceBoe, sourceBoe.Workspace);
+
+            //    if (validatedBOE.isValid)
+            //    {
+            //        this.CopyBOE(sourceBoe, destinationBoe, taskElementsToCopy);
+            //    }
+            //    else
+            //    {
+            //        throw new GenValidationException("Validation issues with Source BOE");
+            //    }
+            //}
+            //else
+            //{
+                  this.CopyBOE(sourceBoe, destinationBoe, taskElementsToCopy);
+            //}
         }
 
         /// <summary>
@@ -151,7 +176,7 @@ namespace GenBOE.ActionLogic.CopyBOE
             this.CopyBOEHeader(inSourceBOE, inDestinationBOE, copyWithinSameWorkspace);
 
             if (copyWithinSameWorkspace)
-            { 
+            {
                 this.CopyBOECustomFieldCrossRefs(inSourceBOE, inDestinationBOE);
             }
 
@@ -174,7 +199,7 @@ namespace GenBOE.ActionLogic.CopyBOE
             if (ws == null) { throw new ArgumentNullException(nameof(ws)); }
             if (duplicateRequest == null) { throw new ArgumentNullException(nameof(duplicateRequest)); }
 
-            foreach (KeyValuePair<int,int> task in duplicateRequest)
+            foreach (KeyValuePair<int, int> task in duplicateRequest)
             {
                 ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(task.Key); // dictionary key is the task id
 
@@ -193,7 +218,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                         taskDuplicateId = this.SaveDuplicateTask(ws, taskDuplicate, inUseMetricIDs, i);
                     }
 
-                    if(taskDuplicateId > 0)
+                    if (taskDuplicateId > 0)
                     {
                         if (originalMoqTypes.Any())
                         {
@@ -210,37 +235,37 @@ namespace GenBOE.ActionLogic.CopyBOE
                             }
                         }
                     }
-                }   
+                }
             }
         }
-       
+
         /// <summary>
         /// Copies performing organizations from one workspace to another
         /// </summary>
         private Dictionary<int, int> MapPerformingOrganizations(FullBoe inSourceBOE, FullWorkspace inDestinationWorkspace)
         {
-			// Create a collection to map old perf org IDs to new copied ones
-			Dictionary<int, int> toReturn = new Dictionary<int, int>();
+            // Create a collection to map old perf org IDs to new copied ones
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
-			// Get a list of all in-use Performing Ord IDs
-			List<int> perfOrgIDs = (from t in inSourceBOE.TaskElements
-                                        from l in t.taskElementLabors
-                                        where l.PerformingOrgID.HasValue
-                                        select l.PerformingOrgID.Value).ToList();
+            // Get a list of all in-use Performing Ord IDs
+            List<int> perfOrgIDs = (from t in inSourceBOE.TaskElements
+                                    from l in t.taskElementLabors
+                                    where l.PerformingOrgID.HasValue
+                                    select l.PerformingOrgID.Value).ToList();
 
-			Collection<PerformingOrgDTO> perfOrgsToCopy = this.perfOrgLoader.GetByIds(perfOrgIDs);
+            Collection<PerformingOrgDTO> perfOrgsToCopy = this.perfOrgLoader.GetByIds(perfOrgIDs);
 
             if (perfOrgsToCopy.Any())
             {
-				// Get all performing orgs in the workspace
-				IReadOnlyCollection<PerformingOrgDTO> allCurrentPerformingOrganizations = inDestinationWorkspace.PerformingOrgsForWsList;
+                // Get all performing orgs in the workspace
+                IReadOnlyCollection<PerformingOrgDTO> allCurrentPerformingOrganizations = inDestinationWorkspace.PerformingOrgsForWsList;
 
                 foreach (PerformingOrgDTO performingOrganization in perfOrgsToCopy)
                 {
-					// Get the perf org to copy
-					PerformingOrgDTO matchingPerformingOrg = (from r in allCurrentPerformingOrganizations
-                                                 where r.PerformingOrgName.Equals(performingOrganization.PerformingOrgName, StringComparison.CurrentCultureIgnoreCase)
-                                                 select r).FirstOrDefault();
+                    // Get the perf org to copy
+                    PerformingOrgDTO matchingPerformingOrg = (from r in allCurrentPerformingOrganizations
+	                  where r.PerformingOrgName.Equals(performingOrganization.PerformingOrgName, StringComparison.CurrentCultureIgnoreCase)
+	                  select r).FirstOrDefault();
 
                     // If a perf org exists with the same name, add the ID mapping to return
                     if (matchingPerformingOrg != null)
@@ -265,28 +290,28 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="inDestinationWorkspaceResourceListID"> destination workspace's resource list ID</param>
         private Dictionary<int, int> MapResources(FullBoe inSourceBOE, int inDestinationWorkspaceResourceListID)
         {
-			// Create a collection to map old resource IDs to new copied ones
-			Dictionary<int, int> toReturn = new Dictionary<int, int>();
+            // Create a collection to map old resource IDs to new copied ones
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
-			// Get a list of all in-use Resource IDs
-			List<int> resourceIDs = (from t in inSourceBOE.TaskElements
-                                         from l in t.taskElementLabors
-                                         where l.ResourceID.HasValue
-                                         select l.ResourceID.Value).ToList();
+            // Get a list of all in-use Resource IDs
+            List<int> resourceIDs = (from t in inSourceBOE.TaskElements
+                                     from l in t.taskElementLabors
+                                     where l.ResourceID.HasValue
+                                     select l.ResourceID.Value).ToList();
 
-			ICollection<ResourceDTO> resourcesToMap = this._IResourceDTODataLoader.GetByIds(resourceIDs);
+            ICollection<ResourceDTO> resourcesToMap = this._IResourceDTODataLoader.GetByIds(resourceIDs);
 
             if (resourcesToMap.Any())
             {
-				// Get all resources in the workspace
-				ICollection<ResourceDTO> allCurrentResources = this._IResourceDTODataLoader.GetByListId(inDestinationWorkspaceResourceListID);
+                // Get all resources in the workspace
+                ICollection<ResourceDTO> allCurrentResources = this._IResourceDTODataLoader.GetByListId(inDestinationWorkspaceResourceListID);
 
                 foreach (ResourceDTO resource in resourcesToMap)
                 {
-					// Get the resource to copy
-					ResourceDTO matchingResource = (from r in allCurrentResources
-                                            where r.ResourceName.Equals(resource.ResourceName, StringComparison.CurrentCultureIgnoreCase)
-                                            select r).FirstOrDefault();
+                    // Get the resource to copy
+                    ResourceDTO matchingResource = (from r in allCurrentResources
+	        where r.ResourceName.Equals(resource.ResourceName, StringComparison.CurrentCultureIgnoreCase)
+	        select r).FirstOrDefault();
 
                     // If a resource exists with the same name, add the ID mapping to return
                     if (matchingResource != null)
@@ -310,8 +335,8 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// </summary>
         private Dictionary<int, Tuple<int, decimal?>> MapWorkspaceVariables(FullBoe inSourceBOE, FullBoe inDestinationBOE)
         {
-			// Create a collection to map old variable IDs to new copied ones
-			Dictionary<int, Tuple<int, decimal?>> toReturn = new Dictionary<int, Tuple<int, decimal?>>();
+            // Create a collection to map old variable IDs to new copied ones
+            Dictionary<int, Tuple<int, decimal?>> toReturn = new Dictionary<int, Tuple<int, decimal?>>();
 
             // Get the variables to copy
             ICollection<WorkspaceVariableDTO> workspaceVariablesToCopy = this._workspaceVariableLoader.GetByIds(inSourceBOE.TaskElements.SelectMany(v => v.WorkspaceVariableIDs).ToCollection<int>());
@@ -342,9 +367,9 @@ namespace GenBOE.ActionLogic.CopyBOE
                 // Iterate through each existing variables and set values to create a copy of it in the new workspace
                 foreach (WorkspaceVariableDTO workspaceVariable in workspaceVariablesToCopy)
                 {
-					WorkspaceVariableDTO matchingWorkspaceVariable = (from w in currentWorkspaceVariables
-                                                     where w.WorkspaceVariableName.Equals(workspaceVariable.WorkspaceVariableName, StringComparison.CurrentCultureIgnoreCase)
-                                                     select w).FirstOrDefault();
+                    WorkspaceVariableDTO matchingWorkspaceVariable = (from w in currentWorkspaceVariables
+	                          where w.WorkspaceVariableName.Equals(workspaceVariable.WorkspaceVariableName, StringComparison.CurrentCultureIgnoreCase)
+	                          select w).FirstOrDefault();
 
                     if (matchingWorkspaceVariable == null)
                     {
@@ -388,7 +413,7 @@ namespace GenBOE.ActionLogic.CopyBOE
             {
                 // Get a fresh copy of the BOE, since we'll be saving it and need the UpdateDate to be fresh
                 inDestinationBOE = this.factory.CreateFullBoe(this.boeLoader.GetById(inDestinationBOE.Id));
-                
+
                 // set the new copy to be updateable
                 inDestinationBOE.Updateable = UpdateType.Upsert;
 
@@ -608,13 +633,13 @@ namespace GenBOE.ActionLogic.CopyBOE
 
                     ICollection<MoqTypeSelection> moqTypesToCopy = this.GetMoqTypesToCopy(inSourceBOE, taskElementOrig, inDestinationWorkspace.CreationDate, moveSingleMoqTypeToMultiple);
                     if (moveSingleMoqTypeToMultiple)
-					{
+                    {
                         // Clear the MOQ Text now that it has been set in the new location
                         taskElementCopy.MOQText = String.Empty;
-					}
+                    }
 
                     ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(taskElementCopy.Id);
-                    
+
                     // Create new Task Element for Project Map if copying from another workspace
                     if (!inDestinationWorkspace.IsProjectMapWorkspace || !copyWithinSameWorkspace)
                     {
@@ -656,12 +681,17 @@ namespace GenBOE.ActionLogic.CopyBOE
                         laborType.Updateable = UpdateType.Upsert;
                         laborType.BoeID = inDestinationBOE.Id;
 
-                        if (inResourceIDMapping.ContainsKey(laborType.ResourceID.Value))
+                        if (laborType.ResourceID.HasValue && inResourceIDMapping.ContainsKey(laborType.ResourceID.Value))
                         {
                             laborType.ResourceID = (laborType.ResourceID.HasValue && inResourceIDMapping[laborType.ResourceID.Value] != -1) ? inResourceIDMapping[laborType.ResourceID.Value] : (int?)null;
                         }
 
-                        if (inPerformingOrgIDMapping.ContainsKey(laborType.PerformingOrgID.Value))
+                        if (laborType.BusinessResourceCodeID.HasValue && inResourceIDMapping.ContainsKey(laborType.BusinessResourceCodeID.Value))
+                        {
+                            laborType.BusinessResourceCodeID = (laborType.BusinessResourceCodeID.HasValue && inResourceIDMapping[laborType.BusinessResourceCodeID.Value] != -1) ? inResourceIDMapping[laborType.BusinessResourceCodeID.Value] : (int?)null;
+                        }
+
+                        if (laborType.PerformingOrgID.HasValue && inPerformingOrgIDMapping.ContainsKey(laborType.PerformingOrgID.Value))
                         {
                             laborType.PerformingOrgID = (laborType.PerformingOrgID.HasValue && inPerformingOrgIDMapping[laborType.PerformingOrgID.Value] != -1) ? inPerformingOrgIDMapping[laborType.PerformingOrgID.Value] : (int?)null;
                         }
@@ -773,16 +803,16 @@ namespace GenBOE.ActionLogic.CopyBOE
             return moqTypesToCopy;
         }
 
-		/// <summary>
-		/// Copies MOQ Type Selections
-		/// </summary>
-		/// <param name="moqTypesToCopy">MOQ Types to copy</param>
-		/// <param name="newTaskId">New Task Id</param>
-		/// <param name="copyWithinSameWorkspace">Are we copying within the same workspace</param>
+        /// <summary>
+        /// Copies MOQ Type Selections
+        /// </summary>
+        /// <param name="moqTypesToCopy">MOQ Types to copy</param>
+        /// <param name="newTaskId">New Task Id</param>
+        /// <param name="copyWithinSameWorkspace">Are we copying within the same workspace</param>
         /// <param name="originalWorkspaceCreationDate">Original workspace creation date</param>
-		/// <param name="workspaceCreationDate">Workspace Creation Date</param>
-		internal void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, bool copyWithinSameWorkspace, DateTime? originalWorkspaceCreationDate,
-            DateTime? workspaceCreationDate)
+        /// <param name="workspaceCreationDate">Workspace Creation Date</param>
+        internal void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, bool copyWithinSameWorkspace, DateTime? originalWorkspaceCreationDate,
+DateTime? workspaceCreationDate)
         {
             _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
 
@@ -798,10 +828,10 @@ namespace GenBOE.ActionLogic.CopyBOE
                 newMoqType.Updateable = UpdateType.Upsert;
                 newMoqType.TaskId = newTaskId;
 
-                existingMoqType.TableData.ForEach(existingTable => 
+                existingMoqType.TableData.ForEach(existingTable =>
                 {
                     MoqTableData newTable = existingTable.DeepClone();
-                    newTable.Id = --i; 
+                    newTable.Id = --i;
 
                     if (copyWithinSameWorkspace && newTable.CustomFieldValueContainers.Any())
                     {
@@ -810,20 +840,20 @@ namespace GenBOE.ActionLogic.CopyBOE
 
                     // if Space copy is not in the same workspace, SAP is enabled, and one workspace shows SAP when other does not make the cutoff
                     // Empty out the POP Start/End because of Fiscal Week changes
-					if (!copyWithinSameWorkspace && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && 
-                        Utilities.IsSAPEnabledForSystem && (Utilities.ShowSAPForWorkspace(originalWorkspaceCreationDate) != Utilities.ShowSAPForWorkspace(workspaceCreationDate)) &&
-                        (newTable.QueryType == MoqTableData.WEEKLY || newTable.QueryType == MoqTableData.WEEKLY_DATETIME))
-					{
+                    if (!copyWithinSameWorkspace && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
+Utilities.IsSAPEnabledForSystem && (Utilities.ShowSAPForWorkspace(originalWorkspaceCreationDate) != Utilities.ShowSAPForWorkspace(workspaceCreationDate)) &&
+(newTable.QueryType == MoqTableData.WEEKLY || newTable.QueryType == MoqTableData.WEEKLY_DATETIME))
+                    {
                         newTable.QueryType = Utilities.ShowSAPForWorkspace(workspaceCreationDate) ? MoqTableData.WEEKLY_DATETIME : MoqTableData.WEEKLY;
-						newTable.PoPStartYear = null;
-						newTable.PoPStartWeek = null;
-						newTable.PoPEndYear = null;
-						newTable.PoPEndWeek = null;
+                        newTable.PoPStartYear = null;
+                        newTable.PoPStartWeek = null;
+                        newTable.PoPEndYear = null;
+                        newTable.PoPEndWeek = null;
                         newTable.PoPStart = null;
                         newTable.PoPEnd = null;
-					}
+                    }
 
-					newMoqType.TableData.Add(newTable); 
+                    newMoqType.TableData.Add(newTable);
                 });
 
                 moqTypesToSave.Add(newMoqType);
@@ -899,7 +929,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                         laborSpread.Updateable = UpdateType.Upsert;
                     }
 
-                }    
+                }
             }
             return duplicateTaskElement;
         }
@@ -998,9 +1028,9 @@ namespace GenBOE.ActionLogic.CopyBOE
         private bool isTaskIdUsedInBoe(FullBoe inDestinationBOE, String taskId)
         {
             bool taskIdExists = (from t in inDestinationBOE.TaskElements
-                                  where t.BOETaskID != null &&
-                                      t.BOETaskID.Equals(taskId, StringComparison.CurrentCulture)
-                                  select t).Any();
+                                 where t.BOETaskID != null &&
+                                     t.BOETaskID.Equals(taskId, StringComparison.CurrentCulture)
+                                 select t).Any();
 
             return taskIdExists;
         }
@@ -1041,23 +1071,23 @@ namespace GenBOE.ActionLogic.CopyBOE
         {
             bool moqEquationCanBeCopied = true;
 
-			// Cache for circular references
-			VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
+            // Cache for circular references
+            VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
 
-			// Get all workspace variables that are used in this task, but don't have a matching
-			// WS variable in this new workspace. We'll need to turn these into task variables.
-			List<WorkspaceVariableDTO> workspaceVariablesToConvertToOrdinary = (from w in inSourceBOE.WorkspaceVariables.Where(i => inSourceTaskElement.WorkspaceVariableIDs.Contains(i.Id))
-                                                        from m in inVariableIDMapping
-                                                        where w.Id == m.Key &&
-                                                              m.Value.Item1 == -1
-                                                        select w).ToList();
+            // Get all workspace variables that are used in this task, but don't have a matching
+            // WS variable in this new workspace. We'll need to turn these into task variables.
+            List<WorkspaceVariableDTO> workspaceVariablesToConvertToOrdinary = (from w in inSourceBOE.WorkspaceVariables.Where(i => inSourceTaskElement.WorkspaceVariableIDs.Contains(i.Id))
+	                                    from m in inVariableIDMapping
+	                                    where w.Id == m.Key &&
+	                                          m.Value.Item1 == -1
+	                                    select w).ToList();
             List<int> oldWorkspaceVariableIds = workspaceVariablesToConvertToOrdinary.Select(i => i.Id).ToList<int>();
 
             // Turn unmatched workspace variables into task variables
             if (workspaceVariablesToConvertToOrdinary.Any())
             {
-				List<int> workspaceVariableIDs = new List<int>();
-				List<OrdinaryVariableDto> ordinaryVariables = new List<OrdinaryVariableDto>();
+                List<int> workspaceVariableIDs = new List<int>();
+                List<OrdinaryVariableDto> ordinaryVariables = new List<OrdinaryVariableDto>();
 
                 workspaceVariableIDs.AddRange(inSourceTaskElement.WorkspaceVariableIDs);
                 ordinaryVariables.AddRange(inSourceTaskElement.OrdinaryVariables);
@@ -1065,7 +1095,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                 int newOrdinaryVariableID = -1;
                 foreach (WorkspaceVariableDTO workspaceVariable in workspaceVariablesToConvertToOrdinary)
                 {
-					OrdinaryVariableDto newOrdinaryVariable = new OrdinaryVariableDto();
+                    OrdinaryVariableDto newOrdinaryVariable = new OrdinaryVariableDto();
 
                     newOrdinaryVariable.OrdinaryVariableName = workspaceVariable.WorkspaceVariableName;
                     newOrdinaryVariable.Id = newOrdinaryVariableID;
@@ -1105,12 +1135,12 @@ namespace GenBOE.ActionLogic.CopyBOE
                         newVariableIDs.Add(inVariableIDMapping[variableID].Item1);
 
                         inSourceTaskElement.MOQHoursEquation = inSourceTaskElement.MOQHoursEquation.Replace(
-                                                    String.Format(
-                                                        Common.MOQ.Parser.REGEX_WorkspaceVariableTagReplacement,
-                                                        variableID),
-                                                    String.Format(
-                                                        Common.MOQ.Parser.REGEX_WorkspaceVariableTagReplacement,
-                                                        inVariableIDMapping[variableID].Item1));
+	        String.Format(
+	            Common.MOQ.Parser.REGEX_WorkspaceVariableTagReplacement,
+	            variableID),
+	        String.Format(
+	            Common.MOQ.Parser.REGEX_WorkspaceVariableTagReplacement,
+	            inVariableIDMapping[variableID].Item1));
                     }
                 }
 
@@ -1121,22 +1151,22 @@ namespace GenBOE.ActionLogic.CopyBOE
             // by exising workspace variables by the same name
             ICollection<WorkspaceVariableDTO> oldWorkspaceVariables = inSourceBOE.WorkspaceVariables.Where(i => oldWorkspaceVariableIds.Contains(i.Id)).ToCollection<WorkspaceVariableDTO>();
 
-			string untaggedHoursEquation = Common.MOQ.Parser.UntagVariables(inSourceTaskElement.MOQHoursEquation, inDestinationBOE.WorkspaceVariables.Union(oldWorkspaceVariables).ToList());
+            string untaggedHoursEquation = Common.MOQ.Parser.UntagVariables(inSourceTaskElement.MOQHoursEquation, inDestinationBOE.WorkspaceVariables.Union(oldWorkspaceVariables).ToList());
             inSourceTaskElement.MOQHoursEquation = Common.MOQ.Parser.TagVariables(untaggedHoursEquation, inDestinationBOE.WorkspaceVariables.ToList());
 
             if (inSourceTaskElement.OrdinaryVariables.Any())
             {
-				List<OrdinaryVariableDto> taskOrdinaryVariables = new List<OrdinaryVariableDto>();
+                List<OrdinaryVariableDto> taskOrdinaryVariables = new List<OrdinaryVariableDto>();
 
-				List<int> taskWorkspaceVariableIDs = new List<int>();
+                List<int> taskWorkspaceVariableIDs = new List<int>();
                 taskWorkspaceVariableIDs.AddRange(inSourceTaskElement.WorkspaceVariableIDs);
 
                 int NewTaskVariableID = -1;
                 foreach (OrdinaryVariableDto ordinaryVariable in inSourceTaskElement.OrdinaryVariables)
                 {
-					WorkspaceVariableDTO matchingWorkspaceVariable = (from w in inDestinationBOE.WorkspaceVariables
-                                                     where w.WorkspaceVariableName.Equals(ordinaryVariable.OrdinaryVariableName, StringComparison.CurrentCultureIgnoreCase)
-                                                     select w).FirstOrDefault();
+                    WorkspaceVariableDTO matchingWorkspaceVariable = (from w in inDestinationBOE.WorkspaceVariables
+	                          where w.WorkspaceVariableName.Equals(ordinaryVariable.OrdinaryVariableName, StringComparison.CurrentCultureIgnoreCase)
+	                          select w).FirstOrDefault();
 
                     // Only add ordinary variables if there are no workspace variables using the same name
                     if (matchingWorkspaceVariable == null)
@@ -1201,7 +1231,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         {
             ICollection<RTECustomTemplateQuestionAnswerModelView> toReturn = new Collection<RTECustomTemplateQuestionAnswerModelView>();
 
-            foreach(RTECustomTemplateQuestionAnswerModelView answer in templateAnswers)
+            foreach (RTECustomTemplateQuestionAnswerModelView answer in templateAnswers)
             {
                 RTECustomTemplateQuestionAnswerModelView duplicateAnswer = answer.DeepClone();
                 duplicateAnswer.Id = -1;

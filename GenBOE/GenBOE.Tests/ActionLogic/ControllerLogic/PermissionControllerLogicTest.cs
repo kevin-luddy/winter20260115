@@ -226,7 +226,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
             //Act
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
 
             //Verify since code does not return values
             permissionLoader.Verify(x => x.SavePermission(It.IsAny<PermissionsDTO>()), Times.Exactly(4));
@@ -278,7 +278,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
 
             permissionLoader.Verify(x => x.SavePermission(It.IsAny<PermissionsDTO>()), Times.Once());
             _ADUTils.Verify(x => x.GetUserByQualifiedAccount(EIds1, false), Times.Once());
@@ -321,7 +321,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
 
         [TestMethod]
@@ -360,7 +360,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
 
         [TestMethod]
@@ -400,7 +400,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
 
             permissionLoader.Verify(x => x.SavePermission(It.IsAny<PermissionsDTO>()), Times.Once());
             _ADUTils.Verify(x => x.GetUserByQualifiedAccount(EIds1, false), Times.Once());
@@ -431,7 +431,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
 
         [TestMethod]
@@ -459,7 +459,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
 
         [TestMethod]
@@ -474,7 +474,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
 
         [TestMethod]
@@ -489,7 +489,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
 
         [TestMethod]
@@ -503,7 +503,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
 
         [TestMethod]
@@ -515,7 +515,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
@@ -581,7 +581,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
             //Act
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
 
             //Verify since code does not return values
             permissionLoader.Verify(x => x.SavePermission(It.IsAny<PermissionsDTO>()), Times.Exactly(4));
@@ -637,7 +637,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
             //Act
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
 
         /// <summary>
@@ -683,7 +683,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
             //Act
-            sut.SaveNewPermission(workspace, inPermission);
+            sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
         #endregion
 

@@ -32,5 +32,15 @@ namespace GenBOE.ActionLogic.ModelView
 		/// Collection of Summary Field Names
 		/// </summary>
 		public ICollection<string> SummaryFields { get; set; }
-	}
+
+		/// <summary>
+		/// Field to group by in the trace table columns
+		/// </summary>
+		public string GroupingField { get; set; }
+
+        /// <summary>
+        /// Custom Field to group by in the trace table columns
+        /// </summary>
+        public string CustomGroupingField { get; set; }
+    }
 }

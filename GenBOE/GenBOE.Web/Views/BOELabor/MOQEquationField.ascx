@@ -44,7 +44,9 @@
         SAPWorkspaceBeforeCutoff: '<%:(bool)ViewData["SAPWorkspaceBeforeCutoff"]%>'.isTrue(),
         SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
 		RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
-		RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>'
+        RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
+		ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
+		HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -210,6 +212,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.WbsElement}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementComparativeSuffix);"></div>
+                                <div data-ng-if="!model.IsRMS"><br /><strong>Note:</strong> genBOE uses the <strong>"Starts With"</strong> condition to pull actuals beginning with the <strong>first 12 characters</strong> of the charge #'s entered. Click the "?" for additional information. </div>
                             </td>
                             <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" placeholder="If entering multiple WBS Elements, please separate them with a comma ',' or a semicolon ';'" required data-ng-model="tableData.WbsElement" data-ng-change="SetTableDirty(tableData)" /></td>
                         </tr>
@@ -370,6 +373,15 @@
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SmeTaskEstimates"></span>
             </div>
         </div>
+        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.HistoricalReferenceExplanationIsRequired && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)">
+	        <div class="form-label">
+		        <span>Provide an explanation of Why the Historical Reference was Selected: *</span>
+	        </div>
+            <div class="form-element">
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="HistoricalReferenceExplanation_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Historical Reference Explanation', moqType.SelectedMOQType)}}" data-ng-model="moqType.HistoricalReferenceExplanation"></textarea>
+                <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.HistoricalReferenceExplanation"></span>
+            </div>
+        </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.SME%>">
             <div class="form-label">
                 <span>Rationale: *</span>
@@ -387,7 +399,7 @@
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.Rationale"></span>
             </div>
         </div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
+		<div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
             <div class="form-label">
                 <span>Skill Mix Rationale: *</span>
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalSkillMixSuffix);"></div>

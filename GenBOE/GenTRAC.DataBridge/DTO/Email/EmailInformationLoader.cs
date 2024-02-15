@@ -52,7 +52,7 @@ namespace GenTRAC.DataBridge.DTO
             this.Log = new IES.Common.Logger(typeof(EmailInformationLoader));
             // This Loader is called from the Emailer console app, so it does not have the Unity Container loaded for resolutions, have to new up any Loaders/mappers
             this.PermissionLoader = new ProposalPermissionLoader();
-            this.ProposalLoader = new ProposalLoader(this.PermissionLoader);
+            this.ProposalLoader = new ProposalLoader();
             this.UserLoader = new UserLoader();
             this.AttachmentLoader = new AttachmentLoader();
         }
@@ -367,37 +367,14 @@ namespace GenTRAC.DataBridge.DTO
             {
                 string email = this.RetrieveEmailForRole(proposal, PtmRole.Pricer);
 
-                string contractsEmail = this.RetrieveEmailForRole(proposal, PtmRole.ContractsPOC);
-                if (!email.Contains(contractsEmail))
-                {
-                    email += ";" + contractsEmail;
-                }
-
-                string backupContractsEmail = this.RetrieveEmailForRole(proposal, PtmRole.BackupContractsPOC);
-                if (!email.Contains(backupContractsEmail))
-                {
-                    email += ";" + backupContractsEmail;
-                }
-
                 ICollection<ProposalPermissionDto> permissions = this.RetrievePermissions(proposal.Id);
 
-                if (permissions.Any(x => x.Role == PtmRole.SupplyChainPOCMatl))
-                {
-                    string matEmail = this.RetrieveEmailForRole(proposal, PtmRole.SupplyChainPOCMatl);
-                    if (!email.Contains(matEmail))
-                    {
-                        email += ";" + matEmail;
-                    }
-                }
-
-                if (permissions.Any(x => x.Role == PtmRole.SupplyChainPOCSubs))
-                {
-                    string subEmail = this.RetrieveEmailForRole(proposal, PtmRole.SupplyChainPOCSubs);
-                    if (!email.Contains(subEmail))
-                    {
-                        email += ";" + subEmail;
-                    }
-                }
+				AddRoleToEmail(proposal, permissions, PtmRole.ContractsPOC, ref email);
+				AddRoleToEmail(proposal, permissions, PtmRole.BackupContractsPOC, ref email);
+				AddRoleToEmail(proposal, permissions, PtmRole.SupplyChainPOCMatl, ref email);
+				AddRoleToEmail(proposal, permissions, PtmRole.BackupMaterialLead, ref email);
+				AddRoleToEmail(proposal, permissions, PtmRole.SupplyChainPOCSubs, ref email);
+				AddRoleToEmail(proposal, permissions, PtmRole.BackupSubcontractsLead, ref email);
 
                 if (!string.IsNullOrEmpty(email))
                 {
@@ -414,6 +391,25 @@ namespace GenTRAC.DataBridge.DTO
                 }
             }
         }
+
+		/// <summary>
+		/// Add the role's email to the email "To"
+		/// </summary>
+		/// <param name="proposal">the proposal</param>
+		/// <param name="permissions">proposal's permissions</param>
+		/// <param name="role">the role to add</param>
+		/// <param name="email">the email "To" string</param>
+		private void AddRoleToEmail(ProposalDto proposal, ICollection<ProposalPermissionDto> permissions, PtmRole role, ref string email)
+		{
+			if (permissions.Any(x => x.Role == role))
+			{
+				string roleEmail = this.RetrieveEmailForRole(proposal, role);
+				if (!email.Contains(roleEmail))
+				{
+					email += ";" + roleEmail;
+				}
+			}
+		}
         
         /// <summary>
         /// Processes email alerts for LOB approver.

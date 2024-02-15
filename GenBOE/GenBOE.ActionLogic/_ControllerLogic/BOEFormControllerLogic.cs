@@ -289,6 +289,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 Collection<ValidationMessage> pboeErrors = new Collection<ValidationMessage>();
                 this.ValidatePBOE(pboe, pboeErrors, proposalTitleAndRfpNumber);
                 BOEFormModelView modelView = this.ConvertSummaryDtoToModelView(pboe, workspace, resourceIdsWithValidTMRates);
+                modelView.NLFSupplierName = pboe.SupplierName;
                 modelView.IsIncomplete = pboeErrors.Any();
                 modelView.IncompleteMessages = pboeErrors.Select(e => e.ValidationIssue).ToList();
                 forms.Add(modelView);
@@ -458,16 +459,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.MOU = modelview.MOU;
             dto.MOUDate = modelview.MOUDate;
             dto.OtherText = modelview.OtherText;
-            if (modelview.IsPlannedDatesRequired)
-            {
-                dto.PlannedDate_WrittenApproval = modelview.PlannedDate_WrittenApproval;
-                dto.PlannedDate_ApprovedSubmission = modelview.PlannedDate_ApprovedSubmission;
-            }
-            else
-            {
-                dto.PlannedDate_WrittenApproval = null;
-                dto.PlannedDate_ApprovedSubmission = null;
-            }
+            dto.PlannedDate_WrittenApproval = modelview.IsPlannedWrittenRequired ? modelview.PlannedDate_WrittenApproval : null;
+            dto.PlannedDate_ApprovedSubmission = modelview.IsPlannedApprovedRequired ? modelview.PlannedDate_ApprovedSubmission : null;
             dto.Poc = modelview.Poc;
             dto.PocPhone = modelview.PocPhone;
             dto.PriceAnalysis = modelview.PriceAnalysis;

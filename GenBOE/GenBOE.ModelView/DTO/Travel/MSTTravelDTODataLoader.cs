@@ -573,7 +573,7 @@ namespace GenBOE.DataBridge.DTO
 
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var resultsLinq = gbe.upsertTravelTripTaskElement(inTravel.Id, inTravel.TaskID, inTravel.TaskTitle, inTravel.Description, inTravel.BoeID, inTravel.UpdateDate, inTravel.StartDate, inTravel.EndDate, inTravel.BOETaskElementOrder);
+				System.Data.Entity.Core.Objects.ObjectResult<int?> resultsLinq = gbe.upsertTravelTripTaskElement(inTravel.Id, inTravel.TaskID, inTravel.TaskTitle, inTravel.Description, inTravel.BoeID, inTravel.UpdateDate, inTravel.StartDate, inTravel.EndDate, inTravel.BOETaskElementOrder);
 
                 TRAVEL_ID = Convert.ToInt32(resultsLinq.SingleOrDefault());
             }
@@ -611,7 +611,7 @@ namespace GenBOE.DataBridge.DTO
             int toReturn = 0;
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var resultsLinq = gbe.upsertMSTTravelTrip
+				System.Data.Entity.Core.Objects.ObjectResult<int?> resultsLinq = gbe.upsertMSTTravelTrip
                 (
                     inMSTTravelTrip.Id,
                     (int)inMSTTravelTrip.ModeID,

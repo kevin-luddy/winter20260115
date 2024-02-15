@@ -193,7 +193,11 @@
                 '<%: WebConstants.ACTION_EXPORT_PROJECT_MAP %>',
                 '?offload=' + offloadType);
 
-            GenWidget.prototype.performExport(reportGenerationUrl );
+            GenSession.confirmDialog("Export Report", "The export is a long running process. <br/>Please do not leave this page until the file is available to open/save. <br/>Continue with this export? <br/><br/>Please refrain from clicking the export link multiple times until the download is complete.",
+                function () {
+                    GenWidget.prototype.performExport(reportGenerationUrl);
+                }
+                , null);
         });
 
         $('#Exports a[name=Reports-CustomExportButton]').click(function () {
@@ -211,6 +215,20 @@
                 <%}%>
             };
             DiscrepancyValidator.ValidateDiscrepancies(proceedWithExportFunction);
+        });
+
+        // Exports all workspace author, reviewer and approver comments and responses into an excel download
+        $('#Exports a[name="CommentsAndResponses-ViewButton"]').click(function (e) {
+            e.stopPropagation();
+            var reportGenerationUrl = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+                '<%: WebConstants.CONTROLLER_WORKSPACE %>',
+                '<%: WebConstants.ACTION_EXPORT_WORKSPACE_COMMENTS_AND_RESPONSES %>');
+
+            GenSession.confirmDialog("Export Report", "The export is a long running process. <br/>Please do not leave this page until the file is available to open/save. <br/>Continue with this export? <br/><br/>Please refrain from clicking the export link multiple times until the download is complete.",
+                function () {
+                    GenWidget.prototype.performExport(reportGenerationUrl);
+                }
+                , null);
         });
 
         // Decrease width of Action column for Project Map
@@ -311,6 +329,12 @@
                     <td><span>Project Map Export with Offloading</span></td>
                     <td><span>Exports all BOEs after Offloading to Project Map format.</span></td>
                     <td style="text-align: right"><span><a name="ProjectMap-ViewButton">Export...</a></span>
+                    </td>
+                </tr>
+                <tr offloadtype="false">
+                    <td><span>All Comments and Responses</span></td>
+                    <td><span>Exports all Author, Reviewer and Approver comments and responses.</span></td>
+                    <td style="text-align: right"><span><a name="CommentsAndResponses-ViewButton">Export...</a></span>
                     </td>
                 </tr>
                 <% } %>

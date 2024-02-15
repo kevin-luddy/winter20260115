@@ -24,6 +24,7 @@
         SectionContentTypeSection: @((int)IES.Common.SectionContentType.Section),
         SectionContentTypeText: @((int)IES.Common.SectionContentType.Text),
         SectionContentTypeRateTable: @((int)IES.Common.SectionContentType.RateTable),
+        SectionContentTypeAddress: @((int)IES.Common.SectionContentType.Address),
         SectionContentTypeNone: @((int)IES.Common.SectionContentType.None),
         SectionContentTypeOptions: @Html.Raw(JsonConvert.SerializeObject(Model.SectionContentTypeOptions, microsoftDateFormatSettings))
     });
@@ -56,7 +57,8 @@
             <span data-ng-if="!IsSectionContent(node)">{{node.ReferenceNumber}}</span>
             <span class="glyphicon" data-ng-if="IsSectionContent(node)" data-ng-class="{
                       'glyphicon-edit':node.ContentType == @((int)IES.Common.SectionContentType.Text),
-                      'glyphicon-list-alt':node.ContentType == @((int)IES.Common.SectionContentType.RateTable)
+                      'glyphicon-list-alt':node.ContentType == @((int)IES.Common.SectionContentType.RateTable),
+                      'glyphicon-list-alt':node.ContentType == @((int)IES.Common.SectionContentType.Address)
                       }" title="Move">
             </span>
             {{node.Title}}
@@ -79,8 +81,89 @@
                 <span class="glyphicon glyphicon-plus">Section</span>
             </a>
             <!-- Render content -->
-            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.Text)" class="section-content" data-ng-bind-html="trustedHtml(node.TextContent)"></span>
-            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.RateTable)" class="section-content"><br />Display Resource Code = {{node.DisplayRateCode}}<br /></span>
+            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.Text)" class="section-content" data-ng-bind-html=trustedHtml(node.TextContent)></span>
+            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.RateTable)" class="section-content" ><br />Display Resource Code = {{node.DisplayRateCode}}<br /></span>
+            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.Address)" class="section-content">
+                <p>Address</p>
+                <div>Include in cover sheet selection = {{node.IncludeInCoversheet}}</div>
+                <table style="border-collapse: collapse;">
+                    <tbody>
+                        <tr>
+                            <td class="content-table-column1">
+                                <p class="content-table-text">Office</p>
+                            </td>
+                            <td class="content-table-column2">
+                                <p class="content-table-text">{{node.Office}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="content-table-column1">
+                                <p class="content-table-text">Agency</p>
+                            </td>
+                            <td class="content-table-column2">
+                                <p class="content-table-text">{{node.Agency}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="content-table-column1">
+                                <p class="content-table-text">LM BA</p>
+                            </td>
+                            <td class="content-table-column2">
+                                <p class="content-table-text">{{node.LMBA}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="content-table-column1">
+                                <p class="content-table-text">Name</p>
+                            </td>
+                            <td class="content-table-column2">
+                                <p class="content-table-text">{{node.Name}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="content-table-column1">
+                                <p class="content-table-text">Street/Bldg</p>
+                            </td>
+                            <td class="content-table-column2">
+                                <p class="content-table-text">{{node.Street}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="content-table-column1">
+                                <p class="content-table-text">City, St</p>
+                            </td>
+                            <td class="content-table-column2">
+                                <p class="content-table-text">{{node.CityST}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="content-table-column1">
+                                <p class="content-table-text">Phone</p>
+                            </td>
+                            <td class="content-table-column2">
+                                <p class="content-table-text">{{node.Phone}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="content-table-column1">
+                                <p class="content-table-text">Email</p>
+                            </td>
+                            <td class="content-table-column2">
+                                <p class="content-table-text">{{node.Email}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="content-table-column1">
+                                <p class="content-table-text">Other</p>
+                            </td>
+                            <td class="content-table-column2">
+                                <p class="content-table-text">{{node.Other}}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+            </span>
         </div>
         <ol ui-tree-nodes="" data-ng-model="node.ChildNodes" data-ng-class="{hidden: collapsed}">
             <li data-ng-repeat="node in node.ChildNodes" ui-tree-node data-ng-include="'nodes_renderer.html'">
@@ -105,14 +188,25 @@
                             <div class="inline css3pie-position-fix" style="line-height: 32px;" data-ng-cloak>
                                 <button id="ExpandAllButton-PPRD" data-ng-click="expandAll()" data-ng-disabled="isDataLoading" type="button" class="ies">Expand All</button>
                                 <button id="CollapseAllButton-PPRD" data-ng-click="collapseAll()" data-ng-disabled="isDataLoading" type="button" class="ies">Collapse All</button>
-                                <button class="ies-action"
+                                <button ng-if="!@IES.Common.ConfigurationUtilities.GetAppSetting("HideNonPortionMarking")"
+                                        class="ies-action"
                                         id="GeneratePPRDButton-PPRD"
                                         type="button"
                                         data-ng-disabled="isDataLoading || isGeneratingPPRD"
-                                        data-ng-click="generatePPRDClick()"
-                                        style="min-width: 118px" >
-                                    <div id="Generate-PPRDText" data-ng-hide="isGeneratingPPRD" >Preview Full PPR&amp;D</div>
+                                        data-ng-click="generatePPRDClick(false)"
+                                        style="min-width: 118px">
+                                    <div id="Generate-PPRDText" data-ng-hide="isGeneratingPPRD">Preview Full PPR&amp;D</div>
                                     <div id="Generate-PPRD" style="min-width: 116px" data-ng-show="isGeneratingPPRD" class="loader"></div>
+                                </button>
+                                <button ng-if="!@IES.Common.ConfigurationUtilities.GetAppSetting("HidePortionMarking")"
+                                        class="ies-action"
+                                        id="GeneratePortionMarkedPPRDButton-PPRD"
+                                        type="button"
+                                        data-ng-disabled="isDataLoading || isGeneratingPortionMarkedPPRD"
+                                        data-ng-click="generatePPRDClick(true)"
+                                        style="min-width: 118px">
+                                    <div id="Generate-PPRDText" data-ng-hide="isGeneratingPortionMarkedPPRD">Preview Full, Portion Marked PPR&amp;D</div>
+                                    <div id="Generate-PPRD" style="min-width: 116px" data-ng-show="isGeneratingPortionMarkedPPRD" class="loader"></div>
                                 </button>
                                 <button id="SaveButton-PPRD" data-ng-click="savePPRD(true)" data-ng-disabled="isDataLoading || !PageIsDirty" data-ng-if="!pprd.LockInfo.IsReadOnly" type="button" class="ies-action">Save</button>
                                 <button id="SaveContinueButton-PPRD" data-ng-click="savePPRD(false)" data-ng-disabled="isDataLoading || !PageIsDirty" data-ng-if="!pprd.LockInfo.IsReadOnly" type="button" class="ies-action">Save &amp; Continue</button>

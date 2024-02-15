@@ -407,6 +407,7 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             _ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
             _ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
+			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
             if (moqTypeContainerTemplate != null)
             {
@@ -426,12 +427,13 @@ namespace GenBOE.ActionLogic.IO.Export
                     SdtElement smeContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SME);
                     SdtElement moqTypeTableContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Table_MOQType);
                     SdtElement rationaleContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_MOQTypeRationale);
-                    SdtElement skillMixContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SkillMix);
+					SdtElement skillMixContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SkillMix);
+					SdtElement historicalRefExpContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_HistoricalRefExp);
 
-                    #endregion
+					#endregion
 
-                    // populate unique fields and remove unused fields for MOQ Type                    
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeSelection),
+					// populate unique fields and remove unused fields for MOQ Type                    
+					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeSelection),
                         moqType.SelectedMOQType.GetDescription());
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeDescription),
                         this.GetMoqTypeDescription(moqType.SelectedMOQType, laborTaskElement.MOQTypes.Count > 1));
@@ -571,7 +573,21 @@ namespace GenBOE.ActionLogic.IO.Export
                         WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_Rationale);
                     }
 
-                    if (moqType.SelectedMOQType != MOQType.NonLabor)
+					if (Utilities.IsHistoricalReferenceExplanationRequired(exportInputs.Workspace.CreationDate) && (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative))
+					{
+						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp),
+							moqType.HistoricalReferenceExplanation, ref counters, true);
+					}
+					else if (customExport)
+					{
+						this.RemoveElement(historicalRefExpContainer);
+					}
+					else
+					{
+						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
+					}
+
+					if (moqType.SelectedMOQType != MOQType.NonLabor)
                     {
                         WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
                             moqType.SkillMixRationale, ref counters, true);
@@ -686,7 +702,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					// populate/remove Additional Query filters based on selected components
                     bool isSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
-					IDictionary<string, IList<string>> EmployeeIdFilters = GetEmployeeIds(table.AdditionalQueryFilters);
+                    ICollection<Tuple<string, IList<string>>> EmployeeIdFilters = GetEmployeeIds(table.AdditionalQueryFilters);
 					bool containsTaskMOQEmployeeIDFilters = selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEmployeeIDFilters);
 
 					if (isSpace)
@@ -808,10 +824,10 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// Get a dictionary of employee id filters and the employee ids in them
 		/// </summary>
 		/// <param name="filter">The full filter from the MOQ Table</param>
-		/// <returns>dictionary of employee id filters and the employee ids in them</returns>
-		internal IDictionary<string, IList<string>> GetEmployeeIds(string filter)
+		/// <returns>A collection of tuples of employee id filters and the employee ids in them</returns>
+        internal ICollection<Tuple<string, IList<string>>> GetEmployeeIds(string filter)
         {
-            IDictionary<string, IList<string>> toReturn = new Dictionary<string, IList<string>>();
+            ICollection<Tuple<string, IList<string>>> toReturn = new Collection<Tuple<string, IList<string>>>();
             filter = filter ?? String.Empty;
             IList<string> filterComponents = filter.Split(new string[] { "\n" }, StringSplitOptions.None).ToList();
             IList<string> employeeIdFilters = filterComponents.Where(x => x.StartsWith(BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL) || x.StartsWith("( " + BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL)).ToList();
@@ -822,7 +838,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 MatchCollection employeeIdMatches = Regex.Matches(employeeIdFilter, @"\d+");
                 IList<string> employeeIds = employeeIdMatches.Cast<Match>().Select(x => x.Value).ToList();
 
-                toReturn.Add(employeeIdFilter, employeeIds);
+                toReturn.Add(new Tuple<string, IList<string>>(employeeIdFilter, employeeIds));
             }
 
             return toReturn;
@@ -834,21 +850,21 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="employeeIdFilters">dictionary of of employee id filters and the employee ids in them</param>
 		/// <param name="additionalQueryFilters">Full Additional Query Filters string</param>
 		/// <returns>filters with employee ids masked</returns>
-		internal string MaskSpaceEmployeeIds(IDictionary<string, IList<string>> employeeIdFilters, string additionalQueryFilters)
+		internal string MaskSpaceEmployeeIds(ICollection<Tuple<string, IList<string>>> employeeIdFilters, string additionalQueryFilters)
 		{
 			if (employeeIdFilters.Any())
 			{
-				foreach (KeyValuePair<string, IList<string>> employeeIdFilter in employeeIdFilters)
+				foreach (Tuple<string, IList<string>> employeeIdFilter in employeeIdFilters)
 				{
-					string maskedFilter = employeeIdFilter.Key;
-					foreach (string employeeId in employeeIdFilter.Value)
+					string maskedFilter = employeeIdFilter.Item1;
+					foreach (string employeeId in employeeIdFilter.Item2)
 					{
 						// use ReplaceFirst so a smaller id doesn't risk replacing a portion of a later one
 						// ex. a filter of "Starts with 1, 4321" using regular string replace would result in "Starts with *, 432*". ReplaceFirst results in "Starts with *, ***1"
 						maskedFilter = maskedFilter.ReplaceFirst(employeeId, BOEExporterConstants.EMPLOYEE_ID_FILTERS_REPLACEMENT_TEXT);
 					}
 
-					additionalQueryFilters = additionalQueryFilters.Replace(employeeIdFilter.Key, maskedFilter);
+					additionalQueryFilters = additionalQueryFilters.Replace(employeeIdFilter.Item1, maskedFilter);
 				}
 
 				additionalQueryFilters += "\n\n*" + BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT; 
@@ -863,13 +879,13 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="employeeIdFilters">dictionary of of employee id filters and the employee ids in them</param>
 		/// <param name="additionalQueryFilters">Full Additional Query Filters string</param>
 		/// <returns>filters with employee ids masked</returns>
-		internal string MaskRmsEmployeeIds(IDictionary<string, IList<string>> employeeIdFilters, string additionalQueryFilters)
+		internal string MaskRmsEmployeeIds(ICollection<Tuple<string, IList<string>>> employeeIdFilters, string additionalQueryFilters)
         {
-            foreach (KeyValuePair<string, IList<string>> employeeIdFilter in employeeIdFilters)
+            foreach (Tuple<string, IList<string>> employeeIdFilter in employeeIdFilters)
             {
-                string maskedFilter = employeeIdFilter.Key;
+                string maskedFilter = employeeIdFilter.Item1;
 
-				foreach (string employeeId in employeeIdFilter.Value)
+				foreach (string employeeId in employeeIdFilter.Item2)
                 {
                     // mask all but the last 3 characters of the id
                     bool moreThanThreeChars = employeeId.Length > 3;
@@ -883,7 +899,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					maskedFilter = maskedFilter.ReplaceFirst(employeeId, $"{masking}{lastThreeChars}");
                 }
 
-				additionalQueryFilters = additionalQueryFilters.Replace(employeeIdFilter.Key, maskedFilter);
+				additionalQueryFilters = additionalQueryFilters.Replace(employeeIdFilter.Item1, maskedFilter);
             }
 
             return additionalQueryFilters;

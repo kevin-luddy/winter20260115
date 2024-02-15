@@ -30,10 +30,10 @@ namespace GenBOE.Tests.ActionLogic.Validation
         public void WorkspaceVariableUniqueNameValidator_IsValid()
         {
 
-            var factory = new Mock<IFullObjectFactory>();
-            var retriever = new Mock<IRetriever>();
-            var dataMapper = new Mock<ICommonDataMapper>();
-            var permissions = new Mock<IPermissionsDTODataLoader>();
+			Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
+			Mock<IRetriever> retriever = new Mock<IRetriever>();
+			Mock<ICommonDataMapper> dataMapper = new Mock<ICommonDataMapper>();
+			Mock<IPermissionsDTODataLoader> permissions = new Mock<IPermissionsDTODataLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), dataMapper.Object);

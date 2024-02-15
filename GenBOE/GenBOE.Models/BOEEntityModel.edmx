@@ -344,6 +344,7 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="CLINID" Type="int" />
           <Property Name="CanOffload" Type="bit" />
           <Property Name="LaborSortId" Type="int" Nullable="false" />
+          <Property Name="BRCResourceID" Type="int" />
         </EntityType>
         <EntityType Name="BOELaborTypeCustomFieldValueXREF">
           <Key>
@@ -601,6 +602,15 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="MaterialMOQText" Type="varchar(max)" />
           <Property Name="BOEID" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="MessageConfirmation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ETIUserId" Type="int" Nullable="false" />
+          <Property Name="MessageId" Type="int" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
         <EntityType Name="MetricDetail">
           <Key>
             <PropertyRef Name="MetricDetailID" />
@@ -676,6 +686,7 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="EstimateTasks" Type="varchar(max)" />
           <Property Name="Rationale" Type="varchar(max)" />
           <Property Name="SkillMix" Type="varchar(max)" />
+          <Property Name="HistoricalReferenceExplanation" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="MOQTypeSelectionTableData">
           <Key>
@@ -2207,6 +2218,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_BOELaborType_BRCResource">
+          <End Role="Resource" Type="Self.Resource" Multiplicity="0..1" />
+          <End Role="BOELaborType" Type="Self.BOELaborType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Resource">
+              <PropertyRef Name="ResourceID" />
+            </Principal>
+            <Dependent Role="BOELaborType">
+              <PropertyRef Name="BRCResourceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_BOELaborType_CLIN">
           <End Role="CLIN" Type="Self.CLIN" Multiplicity="0..1" />
           <End Role="BOELaborType" Type="Self.BOELaborType" Multiplicity="*" />
@@ -2696,6 +2719,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </Principal>
             <Dependent Role="MaterialTaskElement">
               <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MessageConfirmation_UserId">
+          <End Role="ETIuser" Type="Self.ETIuser" Multiplicity="1" />
+          <End Role="MessageConfirmation" Type="Self.MessageConfirmation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ETIuser">
+              <PropertyRef Name="ETIUserID" />
+            </Principal>
+            <Dependent Role="MessageConfirmation">
+              <PropertyRef Name="ETIUserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4739,6 +4774,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="LocationName" Type="varchar" Mode="In" />
           <Parameter Name="UpdatedByETIUserID" Type="int" Mode="In" />
         </Function>
+        <Function Name="insertMessageConfirmation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ETIUserID" Type="int" Mode="In" />
+          <Parameter Name="MessageID" Type="int" Mode="In" />
+        </Function>
         <Function Name="insertMetricDetail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MetricDetailID" Type="int" Mode="In" />
           <Parameter Name="SourceSystemID" Type="int" Mode="In" />
@@ -5122,6 +5161,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="CLINID" Type="int" Mode="In" />
           <Parameter Name="CanOffload" Type="bit" Mode="In" />
           <Parameter Name="LaborSortID" Type="int" Mode="In" />
+          <Parameter Name="BRCResourceID" Type="int" Mode="In" />
         </Function>
         <Function Name="upsertBOELaborTypeCustomFieldValue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BLTCFVID" Type="int" Mode="In" />
@@ -5229,6 +5269,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="EstimateTasks" Type="varchar(max)" Mode="In" />
           <Parameter Name="Rationale" Type="varchar(max)" Mode="In" />
           <Parameter Name="SkillMix" Type="varchar(max)" Mode="In" />
+          <Parameter Name="HistoricalReferenceExplanation" Type="varchar(max)" Mode="In" />
         </Function>
         <Function Name="upsertMOQTypeSelectionTableData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MOQTypeSelectionTableDataId" Type="int" Mode="In" />
@@ -5707,6 +5748,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySet Name="LineOfBusiness" EntityType="Self.LineOfBusiness" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Location" EntityType="Self.Location" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaterialTaskElement" EntityType="Self.MaterialTaskElement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MessageConfirmation" EntityType="Self.MessageConfirmation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MetricDetail" EntityType="Self.MetricDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MileageReimbursementRate" EntityType="Self.MileageReimbursementRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MOQTypeLU" EntityType="Self.MOQTypeLU" Schema="dbo" store:Type="Tables" />
@@ -6086,6 +6128,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <End Role="BOETaskElement" EntitySet="BOETaskElement" />
             <End Role="BOELaborType" EntitySet="BOELaborType" />
           </AssociationSet>
+          <AssociationSet Name="FK_BOELaborType_BRCResource" Association="Self.FK_BOELaborType_BRCResource">
+            <End Role="Resource" EntitySet="Resource" />
+            <End Role="BOELaborType" EntitySet="BOELaborType" />
+          </AssociationSet>
           <AssociationSet Name="FK_BOELaborType_CLIN" Association="Self.FK_BOELaborType_CLIN">
             <End Role="CLIN" EntitySet="CLIN" />
             <End Role="BOELaborType" EntitySet="BOELaborType" />
@@ -6249,6 +6295,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <AssociationSet Name="FK_MaterialTaskElement_BOE" Association="Self.FK_MaterialTaskElement_BOE">
             <End Role="BOE" EntitySet="BOE" />
             <End Role="MaterialTaskElement" EntitySet="MaterialTaskElement" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MessageConfirmation_UserId" Association="Self.FK_MessageConfirmation_UserId">
+            <End Role="ETIuser" EntitySet="ETIuser" />
+            <End Role="MessageConfirmation" EntitySet="MessageConfirmation" />
           </AssociationSet>
           <AssociationSet Name="FK_MSTTravelTrip_Clins" Association="Self.FK_MSTTravelTrip_Clins">
             <End Role="CLIN" EntitySet="CLIN" />
@@ -7211,6 +7261,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="IsUsPerson" Type="Boolean" />
           <Property Name="IsSubcontractor" Type="Boolean" />
           <NavigationProperty Name="RteTemplates" Relationship="GenBOE.Models.FK_RteTemplate_ETIuser" FromRole="ETIuser" ToRole="RteTemplate" />
+          <NavigationProperty Name="MessageConfirmations" Relationship="GenBOE.Models.FK_MessageConfirmation_UserId" FromRole="ETIuser" ToRole="MessageConfirmation" />
         </EntityType>
         <EntityType Name="FieldLU">
           <Key>
@@ -7715,6 +7766,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="BOEFormIBOEResourcesXREFs" Relationship="GenBOE.Models.FK_BOEFormIBOEResourcesXREF_Resource" FromRole="Resource" ToRole="BOEFormIBOEResourcesXREF" />
           <NavigationProperty Name="BOEFormPBOEResourcesXREFs" Relationship="GenBOE.Models.FK_BOEFormPBOEResourcesXREF_Resource" FromRole="Resource" ToRole="BOEFormPBOEResourcesXREF" />
           <NavigationProperty Name="BOELaborTypes" Relationship="GenBOE.Models.FK_BOELaborType_Resource" FromRole="Resource" ToRole="BOELaborType" />
+          <NavigationProperty Name="BOELaborTypes1" Relationship="GenBOE.Models.FK_BOELaborType_BRCResource" FromRole="Resource" ToRole="BOELaborType" />
         </EntityType>
         <EntityType Name="ResourceList">
           <Key>
@@ -11275,6 +11327,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="CLINID" Mode="In" Type="Int32" />
             <Parameter Name="CanOffload" Mode="In" Type="Boolean" />
             <Parameter Name="LaborSortID" Mode="In" Type="Int32" />
+            <Parameter Name="BRCResourceID" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="upsertBOELaborTypeCustomFieldValue" ReturnType="Collection(Int32)">
             <Parameter Name="BLTCFVID" Mode="In" Type="Int32" />
@@ -12244,6 +12297,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="EstimateTasks" Mode="In" Type="String" />
             <Parameter Name="Rationale" Mode="In" Type="String" />
             <Parameter Name="SkillMix" Mode="In" Type="String" />
+            <Parameter Name="HistoricalReferenceExplanation" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertMOQTypeSelectionTableData" ReturnType="Collection(Int32)">
             <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
@@ -12347,6 +12401,19 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="IsOpenEnded" Mode="In" Type="Boolean" />
           </FunctionImport>
           <EntitySet Name="BOEFormPBOEs" EntityType="GenBOE.Models.BOEFormPBOE" />
+          <EntitySet Name="MessageConfirmations" EntityType="GenBOE.Models.MessageConfirmation" />
+          <AssociationSet Name="FK_MessageConfirmation_UserId" Association="GenBOE.Models.FK_MessageConfirmation_UserId">
+            <End Role="ETIuser" EntitySet="ETIusers" />
+            <End Role="MessageConfirmation" EntitySet="MessageConfirmations" />
+          </AssociationSet>
+          <FunctionImport Name="insertMessageConfirmation">
+            <Parameter Name="ETIUserID" Mode="In" Type="Int32" />
+            <Parameter Name="MessageID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <AssociationSet Name="FK_BOELaborType_BRCResource" Association="GenBOE.Models.FK_BOELaborType_BRCResource">
+            <End Role="Resource" EntitySet="Resources" />
+            <End Role="BOELaborType" EntitySet="BOELaborTypes" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="getBOEForFindReplace_Result">
           <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -13620,6 +13687,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="SpreadTypeLU" Relationship="GenBOE.Models.FK_BOELaborType_SpreadTypeLU" FromRole="BOELaborType" ToRole="SpreadTypeLU" />
           <NavigationProperty Name="WorkBreakdownStructure" Relationship="GenBOE.Models.FK_BOELaborType_WorkBreakdownStructure" FromRole="BOELaborType" ToRole="WorkBreakdownStructure" />
           <NavigationProperty Name="BOELaborTypeCustomFieldValueXREFs" Relationship="GenBOE.Models.FK_BOELaborTypeCustomFieldValueXREF_BOELaborType" FromRole="BOELaborType" ToRole="BOELaborTypeCustomFieldValueXREF" />
+          <Property Name="BRCResourceID" Type="Int32" />
+          <NavigationProperty Name="Resource1" Relationship="GenBOE.Models.FK_BOELaborType_BRCResource" FromRole="BOELaborType" ToRole="Resource" />
         </EntityType>
         <Association Name="FK_BOELaborSpread_BOELaborType">
           <End Type="GenBOE.Models.BOELaborType" Role="BOELaborType" Multiplicity="1" />
@@ -13749,6 +13818,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A" FromRole="MOQTypeSelection" ToRole="BOETaskElement" />
           <NavigationProperty Name="MOQTypeLU" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__32C688C3" FromRole="MOQTypeSelection" ToRole="MOQTypeLU" />
           <NavigationProperty Name="MOQTypeSelectionTableDatas" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelection" ToRole="MOQTypeSelectionTableData" />
+          <Property Name="HistoricalReferenceExplanation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK__MOQTypeSe__TaskI__31D2648A">
           <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
@@ -13913,6 +13983,40 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="VendorId" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="SupplierProposedValue" Type="Decimal" Precision="13" Scale="2" />
         </EntityType>
+        <EntityType Name="MessageConfirmation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ETIUserId" Type="Int32" Nullable="false" />
+          <Property Name="MessageId" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="ETIuser" Relationship="GenBOE.Models.FK_MessageConfirmation_UserId" FromRole="MessageConfirmation" ToRole="ETIuser" />
+        </EntityType>
+        <Association Name="FK_MessageConfirmation_UserId">
+          <End Type="GenBOE.Models.ETIuser" Role="ETIuser" Multiplicity="1" />
+          <End Type="GenBOE.Models.MessageConfirmation" Role="MessageConfirmation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ETIuser">
+              <PropertyRef Name="ETIUserID" />
+            </Principal>
+            <Dependent Role="MessageConfirmation">
+              <PropertyRef Name="ETIUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOELaborType_BRCResource">
+          <End Type="GenBOE.Models.Resource" Role="Resource" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.BOELaborType" Role="BOELaborType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Resource">
+              <PropertyRef Name="ResourceID" />
+            </Principal>
+            <Dependent Role="BOELaborType">
+              <PropertyRef Name="BRCResourceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -15999,6 +16103,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="BOELaborTypes">
             <EntityTypeMapping TypeName="GenBOE.Models.BOELaborType">
               <MappingFragment StoreEntitySet="BOELaborType">
+                <ScalarProperty Name="BRCResourceID" ColumnName="BRCResourceID" />
                 <ScalarProperty Name="LaborSortId" ColumnName="LaborSortId" />
                 <ScalarProperty Name="CanOffload" ColumnName="CanOffload" />
                 <ScalarProperty Name="CLINID" ColumnName="CLINID" />
@@ -16022,6 +16127,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="MOQTypeSelections">
             <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelection">
               <MappingFragment StoreEntitySet="MOQTypeSelection">
+                <ScalarProperty Name="HistoricalReferenceExplanation" ColumnName="HistoricalReferenceExplanation" />
                 <ScalarProperty Name="CERName" ColumnName="CERName" />
                 <ScalarProperty Name="SkillMix" ColumnName="SkillMix" />
                 <ScalarProperty Name="Rationale" ColumnName="Rationale" />
@@ -16144,6 +16250,17 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="MessageConfirmations">
+            <EntityTypeMapping TypeName="GenBOE.Models.MessageConfirmation">
+              <MappingFragment StoreEntitySet="MessageConfirmation">
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="ETIUserId" ColumnName="ETIUserId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="insertMessageConfirmation" FunctionName="GenBOE.Models.Store.insertMessageConfirmation" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

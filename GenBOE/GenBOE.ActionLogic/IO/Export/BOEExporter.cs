@@ -525,8 +525,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 this.Logger.Info("Exporting - BOEExporter - ExportBOEToWordFile - FetchRepeatableBOEElement begin");
             }
 
-            // Check the file for both the portrait and landscape special boe table elements
-            var lastBOE = this.FetchRepeatableBOEElement(document);
+			// Check the file for both the portrait and landscape special boe table elements
+			SdtElement lastBOE = this.FetchRepeatableBOEElement(document);
             if (writelogstatements)
             {
                 this.Logger.Info("Exporting - BOEExporter - ExportBOEToWordFile - FetchRepeatableBOEElement end");
@@ -567,7 +567,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 bool wsHasMoqRteTemplate = exportInputs.RTETemplatesOverrides.Any(x => x.SourceId == (int)RteTemplateSource.TaskMOQ);
                 exportInputs.ClearRteOverrides();
 
-                for (var ndx = 0; ndx < boeExportModelViews.Count; ndx++)
+                for (int ndx = 0; ndx < boeExportModelViews.Count; ndx++)
                 {
                     Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> taskContainers = new Dictionary<BOEExportTaskElementType, BOEExportTaskContainer>();
 
@@ -600,7 +600,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                             if (TableAlias != null)
                             {
-                                var element = TableAlias.Ancestors<SdtElement>().FirstOrDefault();
+								SdtElement element = TableAlias.Ancestors<SdtElement>().FirstOrDefault();
                                 element.RemoveAllChildren();
                             }
                         }
@@ -639,7 +639,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                                     if (TableAliasContainer != null)
                                     {
-                                        var element = TableAliasContainer.Ancestors<SdtElement>().FirstOrDefault();
+										SdtElement element = TableAliasContainer.Ancestors<SdtElement>().FirstOrDefault();
                                         element.RemoveAllChildren();
                                     }
                                 }
@@ -664,7 +664,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                                 if (TableAliasContainer != null)
                                 {
-                                    var element = TableAliasContainer.Ancestors<SdtElement>().FirstOrDefault();
+									SdtElement element = TableAliasContainer.Ancestors<SdtElement>().FirstOrDefault();
                                     element.RemoveAllChildren();
                                 }
                             }
@@ -762,7 +762,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                                     if (TableAliasContainer != null)
                                     {
-                                        var element = TableAliasContainer.Ancestors<SdtElement>().FirstOrDefault();
+										SdtElement element = TableAliasContainer.Ancestors<SdtElement>().FirstOrDefault();
                                         element.RemoveAllChildren();
                                     }
                                 }
@@ -780,8 +780,8 @@ namespace GenBOE.ActionLogic.IO.Export
                                 this.Logger.Info("Exporting - BOEExporter - ExportBOEToWordFile - Process Task Elements begin");
                             }
 
-                            // Removed the sorting by ElementType for taskelements. Requested by Frank - all exports now just sort by BOETaskElementOrder/ Whats shown on the users UI
-                            var OrderedTaskElements = boeExportModelView.TaskElements.OrderBy(y => y.BOETaskElementOrder).ThenBy(x => x.BOETaskElementID).ToList();
+							// Removed the sorting by ElementType for taskelements. Requested by Frank - all exports now just sort by BOETaskElementOrder/ Whats shown on the users UI
+							List<BOEExportTaskElement> OrderedTaskElements = boeExportModelView.TaskElements.OrderBy(y => y.BOETaskElementOrder).ThenBy(x => x.BOETaskElementID).ToList();
 
                             ICollection<BoeTaskElementDTO> taskElements = exportInputs.TaskElements.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
 
@@ -789,8 +789,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
                             foreach (BOEExportTaskElement taskElement in OrderedTaskElements)
                             {
-                                // Get the container that will hold this task
-                                var taskContainer = this.GetTaskContainer(taskElement.ElementType, taskContainers);
+								// Get the container that will hold this task
+								BOEExportTaskContainer taskContainer = this.GetTaskContainer(taskElement.ElementType, taskContainers);
 
                                 if (taskContainer != null)
                                 {
@@ -878,7 +878,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                                                     if (TaskRollup != null && TaskRollup.Any())
                                                     {
-                                                        var element = TableAlias2.Ancestors<SdtElement>().FirstOrDefault();
+														SdtElement element = TableAlias2.Ancestors<SdtElement>().FirstOrDefault();
                                                         this.PopulateBoeYearSummaryRollup(element, TaskRollup, this.DefaultHoursFormat, null, useFont, "18", "18", TableAlias2.Val.Value, JustificationValues.Center);
                                                     }
                                                 }
@@ -933,16 +933,16 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 this.FetchResourceContainerElements(taskContainer.TaskContainer, ResourceContainers);
                                                 ICollection<ResourceTypeDto> resourceTypeDtos = taskElements.Where(t => t.BOETaskID == taskElement.BOETaskID).SelectMany(r => r.taskElementLabors).ToList();
 
-                                                var orderedResources = taskElement.taskElementLabors
+												List<BOEExportTaskElementLabor> orderedResources = taskElement.taskElementLabors
                                                     .Where(x => x.ExportFields.ContainsKey(FieldName_ResourceID)
                                                                 && x.ExportFields.ContainsKey(FieldName_LaborTypeID)
                                                                 && x.ExportFields.ContainsKey(FieldName_PerfOrg))
                                                     .OrderBy(o => o.ExportFields[FieldName_ResourceID])
                                                     .ThenBy(t => t.ExportFields[FieldName_PerfOrg]).ToList();
 
-                                                foreach (var resource in orderedResources)
+                                                foreach (BOEExportTaskElementLabor resource in orderedResources)
                                                 {
-                                                    var resourceContainer = this.GetTaskContainer(taskElement.ElementType, ResourceContainers);
+													BOEExportTaskContainer resourceContainer = this.GetTaskContainer(taskElement.ElementType, ResourceContainers);
                                                     PerformingOrgDTO currentPerfOrg = exportInputs.PerformingOrgsForWsList
                                                         .FirstOrDefault(p => p.PerformingOrgName == resource.ExportFields[FieldName_PerfOrg]);
 
@@ -997,7 +997,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                             {
                                                                 Collection<LaborRollupByDate> rollup = this.GetResourceRollup(currentResourceTypeDto, taskElement.taskElementLabors).ToCollection();
 
-                                                                var element = TableAlias3.Ancestors<SdtElement>().FirstOrDefault();
+																SdtElement element = TableAlias3.Ancestors<SdtElement>().FirstOrDefault();
                                                                 if (element != null)
                                                                 {
                                                                     this.PopulateBoeYearSummaryRollup(element, rollup, this.DefaultHoursFormat, null, useFont, "18", "18", TableAlias3.Val.Value, JustificationValues.Center);
@@ -1009,7 +1009,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                                                                 if (TableAlias3a != null)
                                                                 {
-                                                                    var element = TableAlias3a.Ancestors<SdtElement>().FirstOrDefault();
+																	SdtElement element = TableAlias3a.Ancestors<SdtElement>().FirstOrDefault();
                                                                     if (element != null)
                                                                     {
                                                                         element.RemoveAllChildren();
@@ -1033,7 +1033,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                                                                 if (TableAlias3a != null)
                                                                 {
-                                                                    var element = TableAlias3a.Ancestors<SdtElement>().FirstOrDefault();
+																	SdtElement element = TableAlias3a.Ancestors<SdtElement>().FirstOrDefault();
                                                                     if (element != null)
                                                                     {
                                                                         element.RemoveAllChildren();
@@ -1117,8 +1117,8 @@ namespace GenBOE.ActionLogic.IO.Export
                                                     if (boeExportModelView.IsMultiClinWbs && multiLabel != null)
                                                     {
                                                         SdtElement currentTable = zoneTableElement;
-                                                        var multiGroups = zoneLabors.GroupBy(x => x.ExportFields[FieldName_MultiLabel]);
-                                                        foreach (var group in multiGroups)
+														IEnumerable<IGrouping<string, BOEExportTaskElementLabor>> multiGroups = zoneLabors.GroupBy(x => x.ExportFields[FieldName_MultiLabel]);
+                                                        foreach (IGrouping<string, BOEExportTaskElementLabor> group in multiGroups)
                                                         {
                                                             SdtElement clonedTable = zoneTableElement.CloneNode(true) as SdtElement;
                                                             SdtAlias currentRowAlias = clonedTable.Descendants<SdtAlias>().LastOrDefault(a => a.Val.Value == FieldName_TaskTypeRow_ZoneTravel);
@@ -1126,7 +1126,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                             TableRow currentRow = originalRow;
                                                             multiLabel = WordUtilities.GetTaggedChildElement(clonedTable, FieldName_MultiLabel);
                                                             WordUtilities.SetElementText(multiLabel, group.First().ExportFields[FieldName_MultiLabel]);
-                                                            foreach (var labor in group)
+                                                            foreach (BOEExportTaskElementLabor labor in group)
                                                             {
                                                                 if (labor.ExportFields.ContainsKey(FieldName_TaskTypeTravelMode) && labor.ExportFields[FieldName_TaskTypeTravelMode] == MSTTravelMode.ZoneAirfare.ToDescription())
                                                                 {
@@ -1159,7 +1159,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                         TableRow zoneRow = zoneRowAlias.Ancestors<TableRow>().FirstOrDefault();
                                                         TableRow currentRow = zoneRow;
 
-                                                        foreach (var labor in zoneLabors)
+                                                        foreach (BOEExportTaskElementLabor labor in zoneLabors)
                                                         {
                                                             if (labor.ExportFields.ContainsKey(FieldName_TaskTypeTravelMode) && labor.ExportFields[FieldName_TaskTypeTravelMode] == MSTTravelMode.ZoneAirfare.ToDescription())
                                                             {
@@ -1198,8 +1198,8 @@ namespace GenBOE.ActionLogic.IO.Export
                                                     if (boeExportModelView.IsMultiClinWbs && multiLabel != null)
                                                     {
                                                         SdtElement currentTable = nonzoneTableElement;
-                                                        var multiGroups = nonzoneLabors.GroupBy(x => x.ExportFields[FieldName_MultiLabel]);
-                                                        foreach (var group in multiGroups)
+														IEnumerable<IGrouping<string, BOEExportTaskElementLabor>> multiGroups = nonzoneLabors.GroupBy(x => x.ExportFields[FieldName_MultiLabel]);
+                                                        foreach (IGrouping<string, BOEExportTaskElementLabor> group in multiGroups)
                                                         {
                                                             SdtElement clonedTable = nonzoneTableElement.CloneNode(true) as SdtElement;
                                                             SdtAlias currentRowAlias = clonedTable.Descendants<SdtAlias>().LastOrDefault(a => a.Val.Value == FieldName_TaskTypeRow_NonzoneTravel);
@@ -1207,7 +1207,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                             TableRow currentRow = originalRow;
                                                             multiLabel = WordUtilities.GetTaggedChildElement(clonedTable, FieldName_MultiLabel);
                                                             WordUtilities.SetElementText(multiLabel, group.First().ExportFields[FieldName_MultiLabel]);
-                                                            foreach (var labor in group)
+                                                            foreach (BOEExportTaskElementLabor labor in group)
                                                             {
                                                                 this.PopulateRMSTravelSummaryTableRow(labor, originalRow, currentRow);
                                                             }
@@ -1227,7 +1227,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                         TableRow nonzoneRow = nonzoneRowAlias.Ancestors<TableRow>().FirstOrDefault();
                                                         TableRow currentRow = nonzoneRow;
 
-                                                        foreach (var labor in nonzoneLabors)
+                                                        foreach (BOEExportTaskElementLabor labor in nonzoneLabors)
                                                         {
                                                             this.PopulateRMSTravelSummaryTableRow(labor, nonzoneRow, currentRow);
                                                         }
@@ -1295,12 +1295,12 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 this.FetchResourceContainerElements(taskContainer.TaskContainer, ResourceContainers);
                                                 ICollection<OtherDirectCostType> ODCTypes = exportInputs.Odcs.Where(x => x.TaskID == taskElement.BOETaskID).SelectMany(o => o.ODCTypes).ToList();
 
-                                                var orderedResources = taskElement.taskElementLabors
+												List<BOEExportTaskElementLabor> orderedResources = taskElement.taskElementLabors
                                                     .Where(x => x.ExportFields.ContainsKey(FieldName_ResourceID) && x.ExportFields.ContainsKey(FieldName_PerfOrg))
                                                     .OrderBy(y => y.ExportFields[FieldName_ResourceID])
                                                     .ThenBy(z => z.ExportFields[FieldName_PerfOrg]).ToList();
 
-                                                foreach (var resource in orderedResources)
+                                                foreach (BOEExportTaskElementLabor resource in orderedResources)
                                                 {
                                                     // taskElement.taskElementLabors groups resources with the same performing org, but we need to output them separately
                                                     PerformingOrgDTO currentPerfOrg = exportInputs.PerformingOrgsForWsList.FirstOrDefault(p => p.PerformingOrgName == resource.ExportFields[FieldName_PerfOrg]);
@@ -1313,11 +1313,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
                                                         if (currentODCTypes != null)
                                                         {
-                                                            var orderedCurrentODCTypes = currentODCTypes.OrderBy(x => x.StartDate).ToList();
+															List<OtherDirectCostType> orderedCurrentODCTypes = currentODCTypes.OrderBy(x => x.StartDate).ToList();
 
-                                                            foreach (var odcType in orderedCurrentODCTypes)
+                                                            foreach (OtherDirectCostType odcType in orderedCurrentODCTypes)
                                                             {
-                                                                var resourceContainer = this.GetTaskContainer(taskElement.ElementType, ResourceContainers);
+																BOEExportTaskContainer resourceContainer = this.GetTaskContainer(taskElement.ElementType, ResourceContainers);
 
                                                                 if (resourceContainer != null)
                                                                 {
@@ -1340,7 +1340,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                                         SdtAlias TableAlias3a = resourceContainer.TaskContainer.Descendants<SdtAlias>().LastOrDefault(s => s.Val.Value.Equals(FieldName_ResourceCostRollupContainer));
                                                                         if (TableAlias3a != null)
                                                                         {
-                                                                            var element = TableAlias3a.Ancestors<SdtElement>().FirstOrDefault();
+																			SdtElement element = TableAlias3a.Ancestors<SdtElement>().FirstOrDefault();
                                                                             if (element != null)
                                                                             {
                                                                                 element.RemoveAllChildren();
@@ -1427,11 +1427,11 @@ namespace GenBOE.ActionLogic.IO.Export
                         // are added are different based on whether this is a landscape or portrait template.
                         if (lastBOE != null && ndx != boeExportModelViews.Count - 1)
                         {
-                            // Clone new table from the empty table template
-                            var newBOE = emptyBOE.CloneNode(true) as SdtElement;
+							// Clone new table from the empty table template
+							SdtElement newBOE = emptyBOE.CloneNode(true) as SdtElement;
 
-                            // Add a page break before the next BOE
-                            var pageBreak = new Paragraph(new Run(new Break() { Type = BreakValues.Page }));
+							// Add a page break before the next BOE
+							Paragraph pageBreak = new Paragraph(new Run(new Break() { Type = BreakValues.Page }));
                             lastBOE.InsertAfterSelf(pageBreak);
 
                             // Add the new empty table to the file after the last table
@@ -1541,10 +1541,10 @@ namespace GenBOE.ActionLogic.IO.Export
             Collection<string> allStatus = new Collection<string>(allStates.Select(x => x.BOEState).ToList());
             allStatus.Add("Delete");
 
-            #region Create Options tab
+			#region Create Options tab
 
-            // Create collections of strings for each row in the export file
-            var optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
 
             int maxRows = allWbs.Count > allClins.Count ? allWbs.Count : allClins.Count;
             maxRows = maxRows > allAuthors.Count ? maxRows : allAuthors.Count;
@@ -1571,9 +1571,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 });
             }
 
-            #endregion
+			#endregion
 
-            var firstWorksheet = new ExcelExportWorksheet();
+			ExcelExportWorksheet firstWorksheet = new ExcelExportWorksheet();
 
             if (workspace.Boes.Any() && !blankTemplate)
             {
@@ -1654,7 +1654,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 if (user.NTID.Contains('.')) // AD group name
                 {
-                    var members = this.adUtils.GetAdGroupUsers(user.DisplayName);
+					ICollection<UserData> members = this.adUtils.GetAdGroupUsers(user.DisplayName);
 
                     ICollection<UserData> orderedMembers = members.OrderBy(m => m.DisplayName).ToList();
                     
@@ -1716,27 +1716,27 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="boeExportModelView">Object to hold most of the BOE's data</param>
         private void PopulateGeneralContent(WordprocessingDocument document, BOEExportModelView boeExportModelView)
         {
-            // Get all tagged elements in Header
-            var headerElements = from footerPart in document.MainDocumentPart.HeaderParts
+			// Get all tagged elements in Header
+			IEnumerable<SdtAlias> headerElements = from footerPart in document.MainDocumentPart.HeaderParts
                 from sdtElement in footerPart.Header.Descendants<SdtAlias>()
                 select sdtElement;
 
-            // Get all tagged elements in Main Document
-            var mainDocumentElements = document.MainDocumentPart.Document.Descendants<SdtAlias>();
+			// Get all tagged elements in Main Document
+			IEnumerable<SdtAlias> mainDocumentElements = document.MainDocumentPart.Document.Descendants<SdtAlias>();
 
-            // Get all tagged elements in Footer
-            var footerElements = from footerPart in document.MainDocumentPart.FooterParts
+			// Get all tagged elements in Footer
+			IEnumerable<SdtAlias> footerElements = from footerPart in document.MainDocumentPart.FooterParts
                 from sdtElement in footerPart.Footer.Descendants<SdtAlias>()
                 select sdtElement;
 
             // Iterate over all SdtElements in the document
-            foreach (var alias in headerElements.Concat(mainDocumentElements).Concat(footerElements).ToList())
+            foreach (SdtAlias alias in headerElements.Concat(mainDocumentElements).Concat(footerElements).ToList())
             {
                 // Get the title of this Alias
                 string sdtTitle = alias.Val.Value;
 
-                // Get the Element that encapsulates the current alias
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+				// Get the Element that encapsulates the current alias
+				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 // If the current element is not null, populate it with the appropriate data from the BOEExportModelView
                 if (element != null)
@@ -2041,7 +2041,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         bool keepEmptyTableRow = (item.Ancestors<TableRow>().FirstOrDefault() != null) && string.IsNullOrEmpty(SourcesOfData);
 
                         // removes blank spaces in output and "Sources" placeholder
-                        foreach (var child in item.ChildElements)
+                        foreach (OpenXmlElement child in item.ChildElements)
                         {
                             if ((string.IsNullOrEmpty(child.InnerText) || (child.InnerText == "Sources" && child.HasAttributes)) && !keepEmptyTableRow)
                             {
@@ -2081,10 +2081,10 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="fieldValues">Field Values</param>
         private static void SetFieldWithValuePlainText(HashSet<SdtAlias> boeElements, string fieldName, string[] fieldValues)
         {
-            var alias = boeElements.LastOrDefault(x => x.Val.Value == fieldName);
+			SdtAlias alias = boeElements.LastOrDefault(x => x.Val.Value == fieldName);
             if (alias != null)
             {
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
                 if (element != null)
                 {
                     SetElementText(element, fieldValues);
@@ -2104,7 +2104,7 @@ namespace GenBOE.ActionLogic.IO.Export
             // this allows us to deal with multiple instances of the same field needing to be filled out w/ data
             boeElements.Where(x => x.Val.Value == fieldName).ToList().ForEach(alias =>
                 {
-                    var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+					SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
                     if (element != null)
                     {
                         SetElementText(element, fieldValue);
@@ -2123,10 +2123,10 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="counters">Counters for alt-chunks</param>
         private static void SetFieldWithValueHtmlText(MainDocumentPart mainPart, HashSet<SdtAlias> boeElements, string fieldName, string fieldValue, ref ChunkCounter counters)
         {
-            var alias = boeElements.LastOrDefault(x => x.Val.Value == fieldName);
+			SdtAlias alias = boeElements.LastOrDefault(x => x.Val.Value == fieldName);
             if (alias != null)
             {
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
                 if (element != null)
                 {
                     WordUtilities.SetElementTextWithHTML(mainPart, element, fieldValue, ref counters);
@@ -2147,8 +2147,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="SummaryAlias">SdtAlias for SummaryElementofCost</param>
         private void PopulateBOEContent_SummaryElementofCost(List<BOESummaryGridModelView> boeSummaryGridModelView, HashSet<SdtAlias> boeElements, SdtAlias SummaryAlias)
         {
-            var element = SummaryAlias.Ancestors<SdtElement>().FirstOrDefault();
-            var ElementofCostDescriptons = from s in boeSummaryGridModelView
+			SdtElement element = SummaryAlias.Ancestors<SdtElement>().FirstOrDefault();
+			IEnumerable<string> ElementofCostDescriptons = from s in boeSummaryGridModelView
                 select s.Category.ToDescription();
 
             SetElementText(element, (ElementofCostDescriptons.Distinct().OrderBy(x => x).ToArray()));
@@ -2180,7 +2180,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="SummaryAlias4">SdtAlias for the SummaryHourByDateContainer</param>
         private static void PopulateBOEContent_MaterialSummaryHourByDateContainer(SdtAlias SummaryAlias4)
         {
-            var element = SummaryAlias4.Ancestors<SdtElement>().FirstOrDefault();
+			SdtElement element = SummaryAlias4.Ancestors<SdtElement>().FirstOrDefault();
             element.RemoveAllChildren();
             SummaryAlias4.RemoveIt();
         }
@@ -2198,7 +2198,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="SummaryAlias5">sdtAlias of the table</param>
         private void PopulateBOEContent_SummaryHourByDate(BOEExportModelView boeExportModelView, BOEExportInputs exportInputs, ExcelReportTemplateType templateType, HashSet<SdtAlias> boeElements, string useFontSize, string useHeaderFontSize, string useFont, SdtAlias SummaryAlias5)
         {
-            var element = SummaryAlias5.Ancestors<SdtElement>().FirstOrDefault();
+			SdtElement element = SummaryAlias5.Ancestors<SdtElement>().FirstOrDefault();
             ICollection<BoeTaskElementDTO> taskElementCollection = exportInputs.TaskElements.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
             if (taskElementCollection.Any())
             {
@@ -2256,7 +2256,7 @@ namespace GenBOE.ActionLogic.IO.Export
         [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         private void PopulateBOEContent_SummaryCostByDate(BOEExportModelView boeExportModelView, BOEExportInputs exportInputs, HashSet<SdtAlias> boeElements, string useFontSize, string useHeaderFontSize, string useFont, SdtAlias SummaryAlias6)
         {
-            var element = SummaryAlias6.Ancestors<SdtElement>().FirstOrDefault();
+			SdtElement element = SummaryAlias6.Ancestors<SdtElement>().FirstOrDefault();
             NumberFormatInfo currencyFormatter = new NumberFormatInfo();
             currencyFormatter.CurrencyNegativePattern = BOEExporterConstants.CURRENCY_NEGATIVE_PATTERN_MINUS_DOLLAR;
             currencyFormatter.CurrencySymbol = string.Empty;
@@ -2297,10 +2297,10 @@ namespace GenBOE.ActionLogic.IO.Export
             else // remove table and title for LMSI-NISSC template if empty
             {
                 SummaryAlias6.RemoveIt();
-                var SummaryAlias7 = boeElements.LastOrDefault(s => s.Val.Value.Equals(FieldName_SummaryCostByDateContainer, StringComparison.CurrentCultureIgnoreCase));
+				SdtAlias SummaryAlias7 = boeElements.LastOrDefault(s => s.Val.Value.Equals(FieldName_SummaryCostByDateContainer, StringComparison.CurrentCultureIgnoreCase));
                 if (SummaryAlias7 != null)
                 {
-                    var element2 = SummaryAlias7.Ancestors<SdtElement>().FirstOrDefault();
+					SdtElement element2 = SummaryAlias7.Ancestors<SdtElement>().FirstOrDefault();
                     element2.RemoveIt();
                     SummaryAlias7.RemoveIt();
                 }
@@ -2315,7 +2315,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="SummaryAlias8">sdtAlias of the table</param>
         private void PopulateBOEContent_SummaryHourByResource(BOEExportModelView boeExportModelView, HashSet<SdtAlias> boeElements, SdtAlias SummaryAlias8)
         {
-            var element = SummaryAlias8.Ancestors<SdtElement>().FirstOrDefault();
+			SdtElement element = SummaryAlias8.Ancestors<SdtElement>().FirstOrDefault();
             List<BOEExportTaskElementLabor> allExportResourceTypes = new List<BOEExportTaskElementLabor>();
 
             // Only populate these if it's not material, otherwise it would not be used
@@ -2645,7 +2645,7 @@ namespace GenBOE.ActionLogic.IO.Export
         protected virtual TableRow CreateRollupHeaderRow(List<string> Headers, string inFont, string inFontSize, bool noAfterSpacing)
         {
             TableRowProperties trp = new TableRowProperties(new TableHeader(), new CantSplit());
-            var tr = new TableRow();
+			TableRow tr = new TableRow();
             tr.Append(trp);
             if (Headers != null)
             {
@@ -2961,7 +2961,7 @@ namespace GenBOE.ActionLogic.IO.Export
             IDictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> resourceCustomFields = new Dictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>>();
             IReadOnlyCollection<CustomFieldDTO> workspaceCustomFields = exportInputs.CustomFields;
 
-            foreach (var resourceCustomFieldIdMapping in customFieldValueIdMappings)
+            foreach (KeyValuePair<int, ICollection<KeyValuePair<int, int>>> resourceCustomFieldIdMapping in customFieldValueIdMappings)
             {
                 int resourceId = resourceCustomFieldIdMapping.Key;
                 ICollection<KeyValuePair<int, int>> idPairs = resourceCustomFieldIdMapping.Value;
@@ -3150,7 +3150,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     decimal costTotal = 0m;
                     decimal monthsTotal = 0m;
 
-                    foreach (var rollupRowData in rollupData)
+                    foreach (ResourceSummaryRowData rollupRowData in rollupData)
                     {
                         // create a new summary data row in the table
                         // clone marked template row
@@ -3413,7 +3413,7 @@ namespace GenBOE.ActionLogic.IO.Export
             if (Rollup != null && Rollup.Any())
             {
                 string format = BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS;
-                var element = TableAlias.Ancestors<SdtElement>().FirstOrDefault();
+				SdtElement element = TableAlias.Ancestors<SdtElement>().FirstOrDefault();
                 if (element != null)
                 {
                     this.PopulateBoeYearSummaryRollup(element, Rollup.ToCollection(), format, this.CurrencyFormatter, Font, "18", "18", TableAlias.Val.Value, JustificationValues.Center);
@@ -3423,7 +3423,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 SdtAlias alias = taskContainer.TaskContainer.Descendants<SdtAlias>().LastOrDefault(s => s.Val.Value.Equals(containerName, StringComparison.CurrentCultureIgnoreCase));
 
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
                 if (element != null)
                 {
                     element.RemoveAllChildren();
@@ -3588,7 +3588,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     foreach (LaborRollupByDate item in laborRollup)
                     {
-                        var tr2 = new TableRow();
+						TableRow tr2 = new TableRow();
 
                         // so rows won't be split across pages
                         TableRowProperties trp = new TableRowProperties();
@@ -3625,7 +3625,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
                 }
 
-                var tr3 = new TableRow();
+				TableRow tr3 = new TableRow();
 
                 TableCellProperties totalLabelProperties = new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct },
                     new TableCellBorders(new BottomBorder() { Val = BorderValues.Nil }), new TableCellBorders(new LeftBorder() { Val = BorderValues.Nil }));
@@ -3966,7 +3966,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 string[] Headers = new string[] { "GSMO Labor Category", "Company", "Calendar Year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Total" };
 
                 TableRowProperties trp = new TableRowProperties(new TableHeader(), new CantSplit());
-                var tr = new TableRow();
+				TableRow tr = new TableRow();
                 tr.Append(trp);
                 if (Headers != null)
                 {
@@ -4034,7 +4034,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
 
                 TableRowProperties trp = new TableRowProperties(new TableHeader(), new CantSplit());
-                var tr = new TableRow();
+				TableRow tr = new TableRow();
                 tr.Append(trp);
                 if (Headers != null)
                 {
@@ -4106,7 +4106,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 foreach (GSMOLaborRollupByDate item2 in taskRollup[item])
                 {
-                    var tr2 = new TableRow();
+					TableRow tr2 = new TableRow();
                     TableCellProperties cellProperties = new TableCellProperties(new TableCellVerticalAlignment() { Val = vertAlign }, new TableCellWidth() { Type = TableWidthUnitValues.Pct });
 
                     // populate the cells
@@ -4140,7 +4140,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 if (!removeResourceTotals)
                 {
-                    var tr3 = new TableRow();
+					TableRow tr3 = new TableRow();
 
                     // create resource total field
                     TableCellProperties totalLabelCellProperties = new TableCellProperties(new TableCellVerticalAlignment() { Val = vertAlign },
@@ -4165,11 +4165,11 @@ namespace GenBOE.ActionLogic.IO.Export
                     table.Append(tr3);
                 }
 
-                // create blank separator row between resources
-                var tr4 = new TableRow();
+				// create blank separator row between resources
+				TableRow tr4 = new TableRow();
                 TableCellProperties blankCellProperties = new TableCellProperties(new TableCellVerticalAlignment() { Val = vertAlign },
                     new TableCellWidth() { Type = TableWidthUnitValues.Pct }, new TableCellBorders(new TopBorder() { Val = BorderValues.Nil }));
-                var blankCellRP = new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+				RunProperties blankCellRP = new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
                 this.PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, blankCellRP, new GridSpan() { Val = 16 }); // old gridspan value 15
 
                 table.Append(tr4);
@@ -4330,7 +4330,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 foreach (GSMOLaborRollupByDate item2 in taskRollup[item])
                 {
-                    var tr2 = new TableRow();
+					TableRow tr2 = new TableRow();
                     TableCellProperties cellProperties = new TableCellProperties(new TableCellVerticalAlignment() { Val = vertAlign }, new TableCellWidth() { Type = TableWidthUnitValues.Pct });
 
                     // populate the cells
@@ -4358,7 +4358,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     table.Append(tr2);
                 }
 
-                var tr3 = new TableRow();
+				TableRow tr3 = new TableRow();
 
                 // create resource total field
                 TableCellProperties totalLabelCellProperties = new TableCellProperties(new TableCellVerticalAlignment() { Val = vertAlign },
@@ -4382,11 +4382,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 table.Append(tr3);
 
-                // create blank separator row between resources
-                var tr4 = new TableRow();
+				// create blank separator row between resources
+				TableRow tr4 = new TableRow();
                 TableCellProperties blankCellProperties = new TableCellProperties(new TableCellVerticalAlignment() { Val = vertAlign },
                     new TableCellWidth() { Type = TableWidthUnitValues.Pct }, new TableCellBorders(new TopBorder() { Val = BorderValues.Nil }));
-                var rp = new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+				RunProperties rp = new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
                 this.PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, rp, new GridSpan() { Val = numColumns });
 
                 table.Append(tr4);
@@ -4572,11 +4572,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
         private TableRow CreateTableBlankRow(int NumOfColumns)
         {
-            var tr2 = new TableRow();
+			TableRow tr2 = new TableRow();
 
             for (int i = 0; i < NumOfColumns; i++)
             {
-                var tc = new TableCell();
+				TableCell tc = new TableCell();
                 tc.PrependChild(new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct }));
                 ParagraphProperties pp = new ParagraphProperties(new Justification() { Val = JustificationValues.Center });
                 Paragraph p = new Paragraph(new Run(new Text(string.Empty)));
@@ -4642,7 +4642,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="inFontSize">Size of the font.</param>
         private void AppendTaskVariableTableHeader(List<string> headers, Table table, string inFont, string inFontSize)
         {
-            var tr = new TableRow();
+			TableRow tr = new TableRow();
             TableRowProperties tableRowProperties = new TableRowProperties();
             CantSplit cantSplit = new CantSplit();
             tableRowProperties.Append(cantSplit);
@@ -4681,7 +4681,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 foreach (BOEExportTaskElementMOQVariableBOEModelView item2 in item.ReferencedBOEs)
                 {
-                    var tr = new TableRow();
+					TableRow tr = new TableRow();
 
                     // Populate Variable Cells
                     TableCellProperties VariableTCP;
@@ -4990,7 +4990,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (taskElement.taskElementLabors.Any())
             {
-                foreach (var taskElementType in taskElement.taskElementLabors)
+                foreach (BOEExportTaskElementLabor taskElementType in taskElement.taskElementLabors)
                 {
                     if (taskContainer.TaskTypeRow != null)
                     {
@@ -5011,13 +5011,13 @@ namespace GenBOE.ActionLogic.IO.Export
         private void PopulateResourceContent(BOEExportTaskContainer resourceContainer, BOEExportTaskElementLabor resource)
         {
             // Iterate over all SdtElements in the document
-            foreach (var alias in resourceContainer.TaskContainer.Descendants<SdtAlias>().ToList())
+            foreach (SdtAlias alias in resourceContainer.TaskContainer.Descendants<SdtAlias>().ToList())
             {
                 // Get the title of this Alias
                 string sdtTitle = alias.Val.Value;
 
-                // Get the Element that encapsulates the current alias
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+				// Get the Element that encapsulates the current alias
+				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 // If the current element is not null, populate it with the appropriate data from the BOEExportModelView
                 if (element != null && element != resourceContainer.TaskContainer)
@@ -5085,13 +5085,13 @@ namespace GenBOE.ActionLogic.IO.Export
             }
 
             // Iterate over all SdtElements in the document
-            foreach (var alias in taskTypeRow.Descendants<SdtAlias>().ToList())
+            foreach (SdtAlias alias in taskTypeRow.Descendants<SdtAlias>().ToList())
             {
                 // Get the title of this Alias
                 string sdtTitle = alias.Val.Value;
 
-                // Get the Element that encapsulates the current alias
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+				// Get the Element that encapsulates the current alias
+				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 // If the current element is not null, populate it with the appropriate data from the BOEExportModelView
                 if (element != null)
@@ -5133,14 +5133,14 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             SdtElement toReturn = null;
 
-            // Get all SdtElements (tags) that have Aliases (tag names) attached to them
-            var sdtElementsWithAliases = document.MainDocumentPart.Document.Descendants<SdtElement>().Where(s => s.Descendants<SdtAlias>().Any()).ToList();
+			// Get all SdtElements (tags) that have Aliases (tag names) attached to them
+			List<SdtElement> sdtElementsWithAliases = document.MainDocumentPart.Document.Descendants<SdtElement>().Where(s => s.Descendants<SdtAlias>().Any()).ToList();
 
             // If there are SdtElements with names
             if (sdtElementsWithAliases.Any())
             {
-                // Attempt to find the SdtElement with a special name for the landscape template
-                var finder = sdtElementsWithAliases.FirstOrDefault(s => s.Descendants<SdtAlias>().FirstOrDefault().Val.Value == FieldName_BOETable);
+				// Attempt to find the SdtElement with a special name for the landscape template
+				SdtElement finder = sdtElementsWithAliases.FirstOrDefault(s => s.Descendants<SdtAlias>().FirstOrDefault().Val.Value == FieldName_BOETable);
 
                 // If the special element was found, return it
                 if (finder != null)
@@ -5229,8 +5229,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 from brokenText in text.Split('\n')
                 select brokenText).ToArray();
 
-            // Get the first text run in the element
-            var textRun = inElement.Descendants<Run>().FirstOrDefault();
+			// Get the first text run in the element
+			Run textRun = inElement.Descendants<Run>().FirstOrDefault();
 
             // If a text run was found
             if (textRun != null)
@@ -5282,13 +5282,13 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="inTaskContainers">The task containers.</param>
         private void FetchContainerElements(OpenXmlElement boeElement, Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> inTaskContainers)
         {
-            // Get all SdtElements (tags) that have Aliases (tag names) attached to them
-            var sdtAliases = boeElement.Descendants<SdtAlias>().ToList();
+			// Get all SdtElements (tags) that have Aliases (tag names) attached to them
+			List<SdtAlias> sdtAliases = boeElement.Descendants<SdtAlias>().ToList();
 
             // If there are SdtElements with names
             if (sdtAliases.Any())
             {
-                foreach (var boeExportTaskElementType in Enum.GetValues(typeof(BOEExportTaskElementType)).Cast<BOEExportTaskElementType>())
+                foreach (BOEExportTaskElementType boeExportTaskElementType in Enum.GetValues(typeof(BOEExportTaskElementType)).Cast<BOEExportTaskElementType>())
                 {
                     this.FetchSDTContainerElement(sdtAliases, boeExportTaskElementType, inTaskContainers);
                     this.FetchRowContainerElement(sdtAliases, boeExportTaskElementType, boeElement, inTaskContainers);
@@ -5303,18 +5303,18 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="inResourceContainers">Containers to fetch elements for</param>
         private void FetchResourceContainerElements(OpenXmlElement taskElement, Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> inResourceContainers)
         {
-            // Get all SdtElements (tags) that have Aliases (tag names) attached to them
-            var sdtAliases = taskElement.Descendants<SdtAlias>().ToList();
+			// Get all SdtElements (tags) that have Aliases (tag names) attached to them
+			List<SdtAlias> sdtAliases = taskElement.Descendants<SdtAlias>().ToList();
 
             // If there are SdtElements with names
             if (sdtAliases.Any())
             {
-                foreach (var boeExportTaskElementType in ExtensionMethods.GetEnumValues<BOEExportTaskElementType>())
+                foreach (BOEExportTaskElementType boeExportTaskElementType in ExtensionMethods.GetEnumValues<BOEExportTaskElementType>())
                 {
                     SdtElement taskContainer = null;
 
-                    // Attempt to find the SdtAlias with a special name for the current task type
-                    var alias = sdtAliases.LastOrDefault(s => s.Val.Value.Equals(FieldName_ResourceContainer + "-" + ExtensionMethods.GetName(boeExportTaskElementType)));
+					// Attempt to find the SdtAlias with a special name for the current task type
+					SdtAlias alias = sdtAliases.LastOrDefault(s => s.Val.Value.Equals(FieldName_ResourceContainer + "-" + ExtensionMethods.GetName(boeExportTaskElementType)));
 
                     // If the special alias was found, return its parent SDT Element
                     if (alias != null)
@@ -5324,8 +5324,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
                         if (taskContainer != null)
                         {
-                            // Add the element to the collection of task types
-                            var taskTypeRow = this.FetchTaskTypeRowFinder(taskContainer, boeExportTaskElementType);
+							// Add the element to the collection of task types
+							TableRow taskTypeRow = this.FetchTaskTypeRowFinder(taskContainer, boeExportTaskElementType);
                             BOEExportTaskContainer newTaskContainer;
                             if (taskTypeRow == null)
                             {
@@ -5351,8 +5351,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="inTaskContainers">The task containers.</param>
         private void FetchSDTContainerElement(ICollection<SdtAlias> sdtAliases, BOEExportTaskElementType boeExportTaskElementType, Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> inTaskContainers)
         {
-            // Attempt to find the SdtAlias with a special name for the current task type
-            var alias = sdtAliases.LastOrDefault(s => s.Val.Value.Equals("BOE:TaskContainer-" + Enum.GetName(typeof(BOEExportTaskElementType), boeExportTaskElementType), StringComparison.CurrentCultureIgnoreCase));
+			// Attempt to find the SdtAlias with a special name for the current task type
+			SdtAlias alias = sdtAliases.LastOrDefault(s => s.Val.Value.Equals("BOE:TaskContainer-" + Enum.GetName(typeof(BOEExportTaskElementType), boeExportTaskElementType), StringComparison.CurrentCultureIgnoreCase));
 
             // If the special alias was found, return its parent SDT Element
             if (alias != null)
@@ -5362,8 +5362,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 if (taskContainer != null)
                 {
-                    // Add the element to the collection of task types
-                    var taskTypeRow = this.FetchTaskTypeRowFinder(taskContainer, boeExportTaskElementType);
+					// Add the element to the collection of task types
+					TableRow taskTypeRow = this.FetchTaskTypeRowFinder(taskContainer, boeExportTaskElementType);
                     BOEExportTaskContainer newTaskContainer;
                     if (taskTypeRow == null)
                     {
@@ -5389,10 +5389,10 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="inTaskContainers">The task containers.</param>
         private void FetchRowContainerElement(ICollection<SdtAlias> sdtAliases, BOEExportTaskElementType boeExportTaskElementType, OpenXmlElement boeElement, Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> inTaskContainers)
         {
-            
 
-            // Attempt to find the SdtAlias with a special name for the current task type
-            var alias = sdtAliases.LastOrDefault(s => s.Val.Value.Equals("BOE:TaskRow-" + Enum.GetName(typeof(BOEExportTaskElementType), boeExportTaskElementType), StringComparison.CurrentCultureIgnoreCase));
+
+			// Attempt to find the SdtAlias with a special name for the current task type
+			SdtAlias alias = sdtAliases.LastOrDefault(s => s.Val.Value.Equals("BOE:TaskRow-" + Enum.GetName(typeof(BOEExportTaskElementType), boeExportTaskElementType), StringComparison.CurrentCultureIgnoreCase));
 
             // If the special alias was found, return its parent SDT Element
             if (alias != null)
@@ -5421,8 +5421,8 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             TableRow toReturn = null;
 
-            // Attempt to find the SdtElement with a special name for the landscape template
-            var finder = taskElementContainer.Descendants<SdtAlias>().LastOrDefault(a => a.Val.Value == "BOE:TaskTypeRow-" + Enum.GetName(typeof(BOEExportTaskElementType), boeExportTaskElementType));
+			// Attempt to find the SdtElement with a special name for the landscape template
+			SdtAlias finder = taskElementContainer.Descendants<SdtAlias>().LastOrDefault(a => a.Val.Value == "BOE:TaskTypeRow-" + Enum.GetName(typeof(BOEExportTaskElementType), boeExportTaskElementType));
 
             // If the special element was found, return it
             if (finder != null)
@@ -5477,7 +5477,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="inTaskContainers">The task containers.</param>
         private void CleanEmptyTaskContainers(Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> inTaskContainers)
         {
-            foreach (var taskContainer in inTaskContainers)
+            foreach (KeyValuePair<BOEExportTaskElementType, BOEExportTaskContainer> taskContainer in inTaskContainers)
             {
                 if (!taskContainer.Value.Duplicated)
                 {
@@ -5496,14 +5496,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 return;
             }
 
-            // Attempt to find the SdtAlias with a special name for the current task type
-            var alias = container.Descendants<SdtAlias>().LastOrDefault(s => s.Val.Value.Equals("BOE:SectionTitle-" + Enum.GetName(typeof(BOEExportTaskElementType), taskElementType), StringComparison.CurrentCultureIgnoreCase));
+			// Attempt to find the SdtAlias with a special name for the current task type
+			SdtAlias alias = container.Descendants<SdtAlias>().LastOrDefault(s => s.Val.Value.Equals("BOE:SectionTitle-" + Enum.GetName(typeof(BOEExportTaskElementType), taskElementType), StringComparison.CurrentCultureIgnoreCase));
 
             // If the special alias was found, return its parent SDT Element
             if (alias != null)
             {
-                // Get the parent SdtElement
-                var titleContainer = alias.Ancestors<SdtElement>().FirstOrDefault();
+				// Get the parent SdtElement
+				SdtElement titleContainer = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 if (titleContainer != null)
                 {
@@ -5905,7 +5905,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (ODCElementsDateRange.StartDate.HasValue && ODCElementsDateRange.EndDate.HasValue)
             {
-                var ODCElementTypes = ODCElements.SelectMany(x => x.ODCTypes).ToList();
+				List<OtherDirectCostType> ODCElementTypes = ODCElements.SelectMany(x => x.ODCTypes).ToList();
                 var ODCGroups = (from f in ODCElementTypes
                     group f by new { f.ResourceID } into g
                     select new { g.Key.ResourceID }).ToList();
@@ -5976,12 +5976,12 @@ namespace GenBOE.ActionLogic.IO.Export
             DateRange travelElementsDateRange = this.GetODCTravelDateRange(null, TravelElements);
             if (travelElementsDateRange.StartDate.HasValue && travelElementsDateRange.EndDate.HasValue)
             {
-                var travelTrips = TravelElements.SelectMany(x => x.TravelTrips).ToList();
+				List<TravelTripType> travelTrips = TravelElements.SelectMany(x => x.TravelTrips).ToList();
                 var travelGroups = (from f in travelTrips
                     group f by new { f.Segment } into g
                     select new { Segment = g.Key.Segment }).ToList();
 
-                var travelExportElements = elements.Where(g => g.ElementType == BOEExportTaskElementType.Travel).ToList();
+				List<BOEExportTaskElement> travelExportElements = elements.Where(g => g.ElementType == BOEExportTaskElementType.Travel).ToList();
 
                 foreach (var item in travelGroups)
                 {
@@ -6916,7 +6916,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                 // need to pull the string from the equation instead of what is stored in the DB since variable names are always stored in UpperCase
                                 string variableNameWithCorrectCap = s.ToString().Trim(new char[] { '<', '>' });
 
-                                var workspaceVariableValue = workspacevar.WorkspaceVariableValue;
+								decimal workspaceVariableValue = workspacevar.WorkspaceVariableValue;
                                 moqToDisplay = moqToDisplay.Replace(moqToDisplay, Regex.Replace(moqToDisplay, variableReplacementRegex, Convert.ToDecimal(workspaceVariableValue).ToString("0.#######") + " " + variableNameWithCorrectCap, RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT));
                             }
                         }
@@ -6945,7 +6945,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
                 data.FillData(taskElement.OrdinaryVariables, taskElement.WorkspaceVariables, exportInputs.WbsElements, exportInputs.AllWorkspaceBoes, allTaskElements, exportInputs.ResourcesForWsResourceListId, exportInputs.Clins);
 
-                var moqResultString = Common.MOQ.Parser.Calculate(taskElement.MOQEquation, taskElement.OrdinaryVariables, taskElement.WorkspaceVariables, this.variableSelectBOEtoSumCalculation, data, exportInputs.Workspace);
+				string moqResultString = Common.MOQ.Parser.Calculate(taskElement.MOQEquation, taskElement.OrdinaryVariables, taskElement.WorkspaceVariables, this.variableSelectBOEtoSumCalculation, data, exportInputs.Workspace);
 
                 decimal tempMOQResult;
                 if (decimal.TryParse(moqResultString, out tempMOQResult))
@@ -7057,7 +7057,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         private void ReplaceResNameForNISSC(Collection<BOEExportTaskElementLabor> currentLabors, BOEExportInputs exportInputs)
         {
-            foreach (var labor in currentLabors)
+            foreach (BOEExportTaskElementLabor labor in currentLabors)
             {
                 if (labor.ExportFields.ContainsKey(FieldName_ResourceID))
                 {
@@ -7218,8 +7218,6 @@ namespace GenBOE.ActionLogic.IO.Export
     internal class GSMOLaborRollupByDate : LaborRollupByDate
     {
         public string LaborType { get; set; }
-        public string Company { get; set; }
-        public string PerfOrg { get; set; }
     }
 
     /// <summary>

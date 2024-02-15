@@ -336,7 +336,6 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(IMSTMetricLoader), typeof(MSTMetricLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(ISecurityUserAuthorizationsDataLoader), typeof(SecurityUserAuthorizationsDataLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(SecurityUserAuthorizationsDataLoader), typeof(SecurityUserAuthorizationsDataLoader), GetLifetimeManager(), new InjectionMember[] { });
-            GenBOEUnityContainer.Container.RegisterType(typeof(SecurityGroupAuthorizationsDataLoader), typeof(SecurityGroupAuthorizationsDataLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(IWorkspaceDTODataLoader), typeof(WorkspaceDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IPermissionsDTODataLoader), typeof(PermissionsDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IPermissionsDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IBoeDTODataLoader), typeof(BoeDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
@@ -771,7 +770,8 @@ namespace GenBOE
                                                                                                                           new ResolvedParameter(typeof(BoeEmailer)),
                                                                                                                           new ResolvedParameter(typeof(BoeApproverResponseDTODataLoader)),
                                                                                                                           new ResolvedParameter(typeof(BoeMediator)),
-                                                                                                                          new ResolvedParameter(typeof(BOEStateMachine))
+                                                                                                                          new ResolvedParameter(typeof(BOEStateMachine)),
+                                                                                                                          new ResolvedParameter(typeof(IPermissionsDTODataLoader))
                                                                                                                          ));
 
             GenBOEUnityContainer.Container.RegisterType(typeof(BOEZoneTravelControllerLogic), typeof(BOEZoneTravelControllerLogic), GetLifetimeManager(), new InjectionConstructor(
@@ -1404,7 +1404,8 @@ namespace GenBOE
                                                                                                                             new ResolvedParameter(typeof(IClinDTODataLoader)),
                                                                                                                             new ResolvedParameter(typeof(IWbsDTODataLoader)),
                                                                                                                             new ResolvedParameter(typeof(IRteTemplateDataLoader)),
-                                                                                                                            new ResolvedParameter(typeof(IMoqTypeDataLoader))));
+                                                                                                                            new ResolvedParameter(typeof(IMoqTypeDataLoader)),
+		                                    new ResolvedParameter(typeof(IValidateBOE))));
 
             GenBOEUnityContainer.Container.RegisterType(typeof(TravelTripCostCalculation), typeof(TravelTripCostCalculation), GetLifetimeManager());
             GenBOEUnityContainer.Container.RegisterType(typeof(TMCalculator), typeof(TMCalculator), GetLifetimeManager());

@@ -153,8 +153,8 @@ namespace GenBOE.ActionLogic.IO.Import
                 }
             }
 
-            // update results with invalid per diems
-            var validImports = importResults.Where(x => x.ImportTypes.Contains(TripImportResult.AddNewTrip) || x.ImportTypes.Contains(TripImportResult.UpdateExistingTrip)).ToArray();
+			// update results with invalid per diems
+			ImportedTrip[] validImports = importResults.Where(x => x.ImportTypes.Contains(TripImportResult.AddNewTrip) || x.ImportTypes.Contains(TripImportResult.UpdateExistingTrip)).ToArray();
 
             foreach (ImportedTrip validImport in validImports)
             {
@@ -164,8 +164,8 @@ namespace GenBOE.ActionLogic.IO.Import
                     validImport.ImportTypes.Add(TripImportResult.MismatchedPerDiemData);
                 }
 
-                // search for another matching valid trip
-                var matchingTrips = (from x in validImports
+				// search for another matching valid trip
+				ImportedTrip[] matchingTrips = (from x in validImports
                                      where x.TripID != validImport.TripID &&
                                         x.MiscTravelRateID == validImport.MiscTravelRateID &&
                                         x.DepartureLocationID == validImport.DepartureLocationID &&

@@ -7,12 +7,16 @@
 namespace IES.ActionLogic.IO.Export
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
-	using System.Web;
-	using Common;
+	using System.Net.Http;
+    using System.Threading.Tasks;
+    using System.Web;
+    using System.Web.Mvc;
+    using Common;
 	using DocumentFormat.OpenXml;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Wordprocessing;
@@ -36,6 +40,18 @@ namespace IES.ActionLogic.IO.Export
 		/// </summary>
 		private const string FIRST_SECTION_REFERENCE_NUMBER = "1.0";
 
+		/// <summary>
+		/// The token service
+		/// </summary>
+        private readonly TokenService tokenService;
+
+		public PPRDExporter(
+			TokenService tokenService
+			)
+		{
+			this.tokenService = tokenService;
+		}
+
         /// <summary>
         /// Generate a Word document containing the full PPRD.
         /// </summary>
@@ -48,7 +64,8 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="rateTableYears">Number of years to include in the rate tables</param>
         /// <param name="response">the web response object to write the file back to for user download</param>
         /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        public void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel)
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        public async Task ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel, bool? portionMarkingRequired)
 		{
 			if (response == null)
 			{
@@ -62,7 +79,7 @@ namespace IES.ActionLogic.IO.Export
 			response.Clear();
 			response.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
 
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, response.OutputStream);
+			await this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, response.OutputStream, portionMarkingRequired, tokenService);
 		}
 
         /// <summary>
@@ -77,7 +94,8 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="stream">the stream to write the file back to for user download</param>
         /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
         /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-        public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true)
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        public async Task ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool? portionMarkingRequired, bool includeDocumentDetails = true)
 		{
 			if (stream == null)
 			{
@@ -88,8 +106,8 @@ namespace IES.ActionLogic.IO.Export
 
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream);
-		}
+			await this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream, portionMarkingRequired, tokenService);
+        }
 
         #region Populate Methods
 
@@ -275,7 +293,7 @@ namespace IES.ActionLogic.IO.Export
 				// Separate out the child node elements
 				ICollection<SectionModelView> textAndTableMVs =
 					section.ChildNodes.Where(x => x.ContentType == SectionContentType.Text ||
-												  x.ContentType == SectionContentType.RateTable)
+												  x.ContentType == SectionContentType.RateTable || x.ContentType == SectionContentType.Address)
 						.OrderBy(o => o.DisplayOrder).ToCollection();
 				ICollection<SectionModelView> subsectionMVs =
 					section.ChildNodes.Where(x => x.ContentType == SectionContentType.Section).ToCollection();
@@ -299,14 +317,17 @@ namespace IES.ActionLogic.IO.Export
 							PPRDExporterConstants.FIELDNAME_TEXTELEMENT);
 						SdtElement rateTableElement =
 							WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_RATES);
+                        SdtElement addressTableElement =
+                            WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_ADDRESS);
 
-						if (modelView.ContentType == SectionContentType.Text && textElement != null)
+                        if (modelView.ContentType == SectionContentType.Text && textElement != null)
 						{
 							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, ref counters, false, modelView.IsInternalSection ?? false);
 
 							// Remove table elements
 							this.RemoveElement(rateTableElement);
-						}
+                            this.RemoveElement(addressTableElement);
+                        }
 						else if (modelView.ContentType == SectionContentType.RateTable && rateTableElement != null)
 						{
 							// Get rates for section
@@ -369,15 +390,56 @@ namespace IES.ActionLogic.IO.Export
 								templateTableElement.Remove();
 							}
 
-							// Remove the text element
+							// Remove the text address element
 							this.RemoveElement(textElement);
-						}
-						else
+                            this.RemoveElement(addressTableElement);
+                        }
+                        else if (modelView.ContentType == SectionContentType.Address && addressTableElement != null)  //new address table code here
+                        {
+                            // Populate Address Table
+                            SdtElement addressOffice = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOFFICE);
+                            WordUtilities.SetElementText(addressOffice, modelView.Office);
+
+                            SdtElement addressAgency = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSAGENCY);
+                            WordUtilities.SetElementText(addressAgency, modelView.Agency);
+
+                            SdtElement addressLMBA = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSLMBA);
+                            WordUtilities.SetElementText(addressLMBA, modelView.LMBA);
+
+                            SdtElement addressName = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSNAME);
+                            WordUtilities.SetElementText(addressName, modelView.Name);
+
+                            SdtElement addressStreet = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSSTREET);
+                            WordUtilities.SetElementText(addressStreet, modelView.Street);
+
+                            SdtElement addressCity = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSCITY);
+                            WordUtilities.SetElementText(addressCity, modelView.CityST);
+
+                            SdtElement addressPhone = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSPHONE);
+                            WordUtilities.SetElementText(addressPhone, modelView.Phone);
+
+                            SdtElement addressEmail = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSEMAIL);
+                            WordUtilities.SetElementText(addressEmail, modelView.Email);
+
+                            SdtElement addressOther = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOTHER);
+                            WordUtilities.SetElementText(addressOther, modelView.Other);
+
+
+                            // Adjust bottom border thickness
+                            Table addressTable = addressTableElement.Descendants<Table>().FirstOrDefault();
+                            this.AdjustTableBorders(addressTable);
+
+                            // Remove the text element
+                            this.RemoveElement(textElement);
+                            this.RemoveElement(rateTableElement);
+                        }
+                        else
 						{
 							// Remove all elements
 							this.RemoveElement(textElement);
 							this.RemoveElement(rateTableElement);
-						}
+                            this.RemoveElement(addressTableElement);
+                        }
 					}
 				}
 
@@ -422,6 +484,8 @@ namespace IES.ActionLogic.IO.Export
 						PPRDExporterConstants.FIELDNAME_TEXTELEMENT);
 					SdtElement rateTableElement =
 						WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_RATES);
+					SdtElement addressTableElement =
+							WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_ADDRESS);
 
 					// Create the hyperlink text
 					string hyperlink = string.Format("<a href=\"{1}\">{0}</a>", attachment.Name, attachment.Link);
@@ -431,6 +495,7 @@ namespace IES.ActionLogic.IO.Export
 
 					// Remove table elements
 					this.RemoveElement(rateTableElement);
+					this.RemoveElement(addressTableElement);
 				}
 			}
 		}

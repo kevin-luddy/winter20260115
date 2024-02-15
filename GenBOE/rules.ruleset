@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="rules" ToolsVersion="16.0">
+<RuleSet Name="rules" ToolsVersion="17.0">
   <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
   <Include Path="basicdesignguidelinerules.ruleset" Action="Default" />
   <Include Path="extendedcorrectnessrules.ruleset" Action="Default" />
@@ -232,5 +232,6 @@
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <Rule Id="IDE0001" Action="None" />
     <Rule Id="IDE0002" Action="None" />
+    <Rule Id="IDE0009" Action="Warning" />
   </Rules>
 </RuleSet>

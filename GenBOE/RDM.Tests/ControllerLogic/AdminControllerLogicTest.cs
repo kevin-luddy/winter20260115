@@ -71,7 +71,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateRateCodeReplication_EX1()
         {
-            var sut = this.CreateSut();
+			AdminControllerLogic sut = this.CreateSut();
             sut.ValidateRateCodeReplication(null);
         }
 
@@ -81,7 +81,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateRateCodeReplication_TO_Not_Unique()
         {
-            var sut = this.CreateSut();
+			AdminControllerLogic sut = this.CreateSut();
             this.rateDetailLoader.Setup(x => x.GetRateCodesForRevision(It.IsAny<int>())).Returns(new RateDto[] { new RateDto { Rate = "TIM" }, new RateDto { Rate = "BOB" }, new RateDto { Rate = "JEFF" } });
 
             this.rateCodeReplicationLoader.Setup(x => x.GetAll()).Returns(new List<RateCodeModelView> { new RateCodeModelView { Id = 5, From = "TIM", To = "BOB" } });
@@ -120,7 +120,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateRateCodeReplication_FROM_TO_Match()
         {
-            var sut = this.CreateSut();
+			AdminControllerLogic sut = this.CreateSut();
             this.rateDetailLoader.Setup(x => x.GetRateCodesForRevision(It.IsAny<int>())).Returns(new RateDto[] { new RateDto { Rate = "TIM" }, new RateDto { Rate = "BOB" }, new RateDto { Rate = "JEFF" } });
 
             this.rateCodeReplicationLoader.Setup(x => x.GetAll()).Returns(new List<RateCodeModelView> { new RateCodeModelView { Id = 5, From = "TIM", To = "BOB" } });
@@ -153,7 +153,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateRateCodeReplication_FROM_TO_Match_Different_Row()
         {
-            var sut = this.CreateSut();
+			AdminControllerLogic sut = this.CreateSut();
             this.rateDetailLoader.Setup(x => x.GetRateCodesForRevision(It.IsAny<int>())).Returns(new RateDto[] { new RateDto { Rate = "TIM" }, new RateDto { Rate = "BOB" }, new RateDto { Rate = "JEFF" } });
 
             this.rateCodeReplicationLoader.Setup(x => x.GetAll()).Returns(new List<RateCodeModelView> { new RateCodeModelView { Id = 5, From = "TIM", To = "BOB" } });
@@ -192,7 +192,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateRateCodeReplication_FROM_Missing()
         {
-            var sut = this.CreateSut();
+			AdminControllerLogic sut = this.CreateSut();
             this.rateDetailLoader.Setup(x => x.GetRateCodesForRevision(It.IsAny<int>())).Returns(new RateDto[] { new RateDto { Rate = "TIM" }, new RateDto { Rate = "BOB" }, new RateDto { Rate = "JEFF" } });
 
             this.rateCodeReplicationLoader.Setup(x => x.GetAll()).Returns(new List<RateCodeModelView> { new RateCodeModelView { Id = 5, From = "TIM", To = "BOB" } });
@@ -224,7 +224,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateRateCodeReplication_TO_Missing()
         {
-            var sut = this.CreateSut();
+			AdminControllerLogic sut = this.CreateSut();
             this.rateDetailLoader.Setup(x => x.GetRateCodesForRevision(It.IsAny<int>())).Returns(new RateDto[] { new RateDto { Rate = "TIM" }, new RateDto { Rate = "BOB" }, new RateDto { Rate = "JEFF" } });
 
             this.rateCodeReplicationLoader.Setup(x => x.GetAll()).Returns(new List<RateCodeModelView> { new RateCodeModelView { Id = 5, From = "TIM", To = "BOB" } });
@@ -254,7 +254,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateRateCodeReplication_FROM_Invalid()
         {
-            var sut = this.CreateSut();
+			AdminControllerLogic sut = this.CreateSut();
             this.rateDetailLoader.Setup(x => x.GetRateCodesForRevision(It.IsAny<int>())).Returns(new RateDto[] { new RateDto { Rate = "TIM" }, new RateDto { Rate = "BOB" }, new RateDto { Rate = "JEFF" } });
             this.rateCodeReplicationLoader.Setup(x => x.GetAll()).Returns(new List<RateCodeModelView> { new RateCodeModelView { Id = 5, From = "TIM", To = "BOB" } });
             
@@ -286,7 +286,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateRateCodeReplication_TO_Invalid()
         {
-            var sut = this.CreateSut();
+			AdminControllerLogic sut = this.CreateSut();
             this.rateDetailLoader.Setup(x => x.GetRateCodesForRevision(It.IsAny<int>())).Returns(new RateDto[] { new RateDto { Rate = "TIM" }, new RateDto { Rate = "BOB" }, new RateDto { Rate = "JEFF" } });
 
             this.rateCodeReplicationLoader.Setup(x => x.GetAll()).Returns(new List<RateCodeModelView> { new RateCodeModelView { Id = 5, From = "TIM", To = "BOB" } });
@@ -319,7 +319,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateRateCodeReplication_Valid()
         {
-            var sut = this.CreateSut();
+			AdminControllerLogic sut = this.CreateSut();
             this.rateDetailLoader.Setup(x => x.GetRateCodesForRevision(It.IsAny<int>())).Returns(new RateDto[] { new RateDto { Rate = "TIM" }, new RateDto { Rate = "BOB" }, new RateDto { Rate = "JEFF" } });
 
             this.rateCodeReplicationLoader.Setup(x => x.GetAll()).Returns(new List<RateCodeModelView> { new RateCodeModelView { Id = 5, From = "TIM", To = "BOB" } });

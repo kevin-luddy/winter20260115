@@ -11,6 +11,7 @@
     $scope.isExportingRateDoc = false;
     $scope.isExportingExpandedRateDoc = false;
     $scope.isExportingPPRD = false;
+    $scope.isExportingPortionMarkedPPRD = false;
     $scope.timeoutTime = 3000;
     $scope.rateGridOptions = {};
     $scope.rateData = [];
@@ -63,10 +64,14 @@
     }
 
     // Generates Full PPR&D.  Call controller to redirect to export page w/version selector
-    $scope.generatePPRDClick = function () {
-        $scope.isExportingPPRD = true;
+    $scope.generatePPRDClick = function (portionMarkingRequired) {
+        if (portionMarkingRequired) {
+            $scope.isExportingPortionMarkedPPRD = true;
+        } else {
+            $scope.isExportingPPRD = true;
+        }
         setTimeout(function () { $scope.timeoutFuncPPRD(); }, $scope.timeoutTime);
-        DownloadFile('GeneratePPRD', VersionIndexModel.wcController, VersionIndexModel.wcActionGenerateFullPPRD, $scope.selectedVersion.Id);
+        DownloadFile('GeneratePPRD', VersionIndexModel.wcController, VersionIndexModel.wcActionGenerateFullPPRD, $scope.selectedVersion.Id, portionMarkingRequired);
     }
 
     // Exports Revision data as zipped XML files.
@@ -106,7 +111,7 @@
     $scope.timeoutFuncRevisionAsJson = function () { $scope.$apply(function () { $scope.isExportingRevisionAsJson = false; }); }
     $scope.timeoutFuncCobra = function () { $scope.$apply(function () { $scope.isExportingCobra = false; }); }
     $scope.timeoutFuncRateDoc = function () { $scope.$apply(function () { $scope.isExportingRateDoc = false; $scope.isExportingExpandedRateDoc = false; }); }
-    $scope.timeoutFuncPPRD = function () { $scope.$apply(function () { $scope.isExportingPPRD = false; }); }
+    $scope.timeoutFuncPPRD = function () { $scope.$apply(function () { $scope.isExportingPPRD = false; $scope.isExportingPortionMarkedPPRD = false }); }
 
     initialize();
 }]);

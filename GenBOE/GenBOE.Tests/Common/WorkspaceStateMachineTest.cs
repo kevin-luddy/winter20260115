@@ -22,7 +22,7 @@ namespace GenBOE.Tests.Common
         [ExpectedException(typeof(InvalidOperationException))]
         public void TestInvalidTransition()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             factory = new Mock<IFullObjectFactory>();
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                                                                     emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -35,7 +35,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void NoChangeTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -50,7 +50,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void InitializationToWorkingTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -64,7 +64,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void WorkingToInitializationTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -78,7 +78,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void InitializationToClosedTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -92,7 +92,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void ClosedToInitializationTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -106,7 +106,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void WorkingToLockedTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -120,7 +120,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void LockedToWorkingTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -134,7 +134,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void WorkingToClosedTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -148,7 +148,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void LockedToCompleteTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -162,7 +162,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void CompleteToLockedTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -176,7 +176,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void LockedToClosedTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -190,7 +190,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void CompleteToWorkingTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
@@ -204,7 +204,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void NoneToInitializationTest()
         {
-            var emptyTransition = new Mock<IWorkspaceStateTransition>();
+			Mock<IWorkspaceStateTransition> emptyTransition = new Mock<IWorkspaceStateTransition>();
             this.factory = new Mock<IFullObjectFactory>();
 
             WorkspaceStateMachine sut = new WorkspaceStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,

@@ -182,7 +182,7 @@ namespace GenBOE.Objects
         /// <summary>
         /// Loads BOEs and Clins into the properties.. Used if you want to preload the BOEs and Clins ahead of time.
         /// </summary>
-        public override void LoadClinsAndBoes()
+        public override void LoadClinsAndBoes(bool loadBoeRteData = false)
         {
             if (this.boes == null)
             {

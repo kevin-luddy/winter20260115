@@ -39,7 +39,7 @@ namespace GenTRAC.Tests.Objects
         [TestMethod]
         public void O_CreateFullProposalTest()
         {
-            var sut = this.CreateSystem();
+            FullObjectFactory sut = this.CreateSystem();
 
             ProposalDto proposal = new ProposalDto()
             {
@@ -76,7 +76,7 @@ namespace GenTRAC.Tests.Objects
 
             FullProposal expected = new FullProposal(proposal);
 
-            var result = sut.CreateFullProposal(proposal);
+            FullProposal result = sut.CreateFullProposal(proposal);
 
             DtoAssertHelpers.AssertDtos(expected, result);
         }
@@ -87,7 +87,7 @@ namespace GenTRAC.Tests.Objects
         [TestMethod]
         public void O_CreateFullProposalLegacyTest()
         {
-            var sut = this.CreateSystem();
+            FullObjectFactory sut = this.CreateSystem();
             bool legacy = true;
 
             ProposalDto proposal = new ProposalDto()
@@ -125,7 +125,7 @@ namespace GenTRAC.Tests.Objects
 
             FullProposal expected = new FullProposal(proposal);
 
-            var result = sut.CreateFullProposal(proposal);
+            FullProposal result = sut.CreateFullProposal(proposal);
 
             DtoAssertHelpers.AssertDtos(expected, result, legacy);
         }
@@ -139,7 +139,7 @@ namespace GenTRAC.Tests.Objects
         [ExpectedException(typeof(AuthorizationException))]
         public void C_CreateFullProposal_ExceptionTest()
         {
-            var sut = this.CreateSystem();
+            FullObjectFactory sut = this.CreateSystem();
             sut.CreateFullProposal(null);
         }
 

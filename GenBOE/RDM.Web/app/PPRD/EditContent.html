@@ -6,24 +6,29 @@
     <div class="ui-widget-header modal-title-bar">Edit Content<div class="modal-close-box" data-ng-click="$close()"><i class="glyphicon glyphicon-remove"></i></div></div>
     <div class="modal-content-area">
         <form name="form">
-            <div class="form-row css3pie-position-fix">
-                <div gen-validation data-errors="$root.modalErrors"></div>
-            </div>
+			<div class="form-row css3pie-position-fix">
+				<div gen-validation data-errors="$root.modalErrors"></div>
+			</div>
             <div class="form-row">
                 <div class="form-label">Content Type *</div>
                 <div class="form-element tinyMceOutside">
                     <div data-ng-if="newNode !== true">
                         <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'{{model.ContentType}}'}" data-ng-model="model.ContentType"></select>
                     </div>
-
                     <div data-ng-if="newNode === true">
-                        <div data-ng-if="model.NumTablesInSection <= 0">
-                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'}" data-ng-model="model.ContentType"></select>
+                        <div data-ng-if="(model.NumTablesInSection >= 1) && (model.NumAddressInSection >= 1)">
+                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'!{{PPRDModel.SectionContentTypeAddress}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeRateTable}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'}" data-ng-model="model.ContentType"></select>
                         </div>
-                        <div data-ng-if="model.NumTablesInSection >= 1">
-                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'!{{PPRDModel.SectionContentTypeRateTable}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'}" data-ng-model="model.ContentType"></select>
+                        <div data-ng-if="(model.NumTablesInSection <= 0) && (model.NumAddressInSection <= 0)">
+                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions |  filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'}" data-ng-model="model.ContentType"></select>
                         </div>
-                    </div>
+                        <div data-ng-if="(model.NumTablesInSection >= 1) && (model.NumAddressInSection <= 0) ">
+                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'!{{PPRDModel.SectionContentTypeRateTable}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'} " data-ng-model="model.ContentType"></select>
+                        </div>
+                        <div data-ng-if="(model.NumTablesInSection <= 0) && (model.NumAddressInSection >= 1)">
+                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions |filter:{Id:'!{{PPRDModel.SectionContentTypeAddress}}'}| filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'} " data-ng-model="model.ContentType"></select>
+                        </div>                 
+                    </div>               
                 </div>
             </div>
             <div data-ng-if="model.ContentType === PPRDModel.SectionContentTypeText">
@@ -54,7 +59,74 @@
                     </div>
                 </div>
             </div>
-            <div data-ng-if="model.ContentType !== PPRDModel.SectionContentTypeText && model.ContentType !== PPRDModel.SectionContentTypeRateTable">
+            <div data-ng-if="model.ContentType === PPRDModel.SectionContentTypeAddress">
+                <div class="modal-content-area">
+                    <div class="form-row css3pie-position-fix">
+                        <div gen-validation data-errors="$root.modalErrors"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Include in cover sheet selection</div>
+                        <div class="form-element">
+                            <input data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.IncludeInCoversheet" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Office</div>
+                        <div class="form-element">
+                            <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.Office" class="sectionTitle input-full" maxlength="100" autofocus />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Agency</div>
+                        <div class="form-element">
+                            <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.Agency" class="sectionTitle input-full" maxlength="100" autofocus />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">LM BA</div>
+                        <div class="form-element">
+                            <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.LMBA" class="sectionTitle input-full" maxlength="100" autofocus />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Name</div>
+                        <div class="form-element">
+                            <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.Name" class="sectionTitle input-full" maxlength="100" autofocus />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Street/Bldg</div>
+                        <div class="form-element">
+                            <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.Street" class="sectionTitle input-full" maxlength="100" autofocus />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">City, ST</div>
+                        <div class="form-element">
+                            <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.CityST" class="sectionTitle input-full" maxlength="100" autofocus />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Phone</div>
+                        <div class="form-element">
+                            <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.Phone" class="sectionTitle input-full" maxlength="100" autofocus />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Email</div>
+                        <div class="form-element">
+                            <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.Email" class="sectionTitle input-full" maxlength="100" autofocus />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Other</div>
+                        <div class="form-element">
+                            <input type="text" name="sectionTitle" data-ng-required="false" data-ng-model="model.Other" class="sectionTitle input-full" maxlength="100" autofocus />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-ng-if="model.ContentType !== PPRDModel.SectionContentTypeText && model.ContentType !== PPRDModel.SectionContentTypeRateTable && model.ContentType !== PPRDModel.SectionContentTypeAddress">
                 Unknown Content Type!!
             </div>
             <div class="modal-footer">

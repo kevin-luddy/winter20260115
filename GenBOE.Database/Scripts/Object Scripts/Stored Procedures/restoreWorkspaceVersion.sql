@@ -49,6 +49,8 @@ AS
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF; additional cleanup
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
+**		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
+**		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2439,6 +2441,7 @@ BEGIN
 		[DurationLogicAndAssumptions],
 		[EstimateTasks],
 		[Rationale],
+		[HistoricalReferenceExplanation],
 		[SkillMix]
 		)
 		SELECT M.[MOQTypeSelectionId],
@@ -2453,6 +2456,7 @@ BEGIN
 			M.[DurationLogicAndAssumptions],
 			M.[EstimateTasks],
 			M.[Rationale],
+			M.[HistoricalReferenceExplanation],
 			M.[SkillMix]
 		FROM [version].[MOQTypeSelection] M
 		INNER JOIN [version].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
@@ -2564,6 +2568,7 @@ BEGIN
 		,[CLINID]
 		,[CanOffload]
 		,[LaborSortID]
+		,[BRCResourceID]
 		)
 		SELECT BLT.[BOELaborTypeID]
 		,R.[ResourceID]
@@ -2582,6 +2587,7 @@ BEGIN
 		,BLT.[CLINID]
 		,BLT.[CanOffload]
 		,BLT.[LaborSortID]
+		,BLT.[BRCResourceID]
 		FROM [version].[BOELaborType] BLT
 		INNER JOIN [version].[BOETaskElement] BTE ON BLT.BOETaskElementID = BTE.BOETaskElementID
 		INNER JOIN [version].BOE B ON BTE.BOEID  = B.BOEID

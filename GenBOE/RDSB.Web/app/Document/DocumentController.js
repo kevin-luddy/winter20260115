@@ -39,21 +39,21 @@
         });
     }
 
-    $scope.publishDocument = function (Document) {
+    $scope.publishDocument = function (Document, portionMarkingRequired) {
         if (Document.IsReadOnly || Document.IsUsingLatest) {
-            $scope.export(Document);
+            $scope.export(Document, portionMarkingRequired);
         } else {
             // Only show the confirm dialog if user has Edit and not using latest
             ConfirmDialog("Old PPR&D Revision", "This document is using an older PPR&D Revision. Are you sure you want to continue publishing?", function () {
-                $scope.export(Document);
+                $scope.export(Document, portionMarkingRequired);
             });
         }
     };
 
-    $scope.export = function (Document) {
+    $scope.export = function (Document, portionMarkingRequired) {
         $(document).trigger("SHOW_LOADING_BOX");
         setTimeout(function () { $scope.timeoutFuncRDD(); }, $scope.timeoutTime);
-        DownloadFile('GenerateRDD', DocumentGridModel.controller, DocumentGridModel.publishAction, Document.ProposalId);
+        DownloadFile('GenerateRDD', DocumentGridModel.controller, DocumentGridModel.publishAction, Document.ProposalId, portionMarkingRequired);
     }
 
     $scope.timeoutFuncRDD = function () { $(document).trigger("HIDE_LOADING_BOX"); }
@@ -103,7 +103,7 @@
 
             $scope.isDataLoading = false;
         }
-    };
+        };
 
     $scope.gridOptions = {
         enableSorting: true,
@@ -142,9 +142,10 @@
             { field: 'PPRDVersion', displayName: 'PPR&D Revision', groupColumn: 'trads' },
             { field: 'PPRDVersionDate', displayName: 'PPR&D Revision Date', groupColumn: 'trads', enableFiltering: false, cellFilter: 'date:\'short\'' },
             {
-                field: 'Manage', groupColumn: 'trads', headerCellClass: 'text-center', enableFiltering: false, enableSorting: false,
+                field: 'Manage', groupColumn: 'trads', headerCellClass: 'text-center', enableFiltering: false, enableSorting: false, width: '143',
                 cellTemplate: "<div class=\"ui-grid-cell-contents pad-left\">\
-                        <a title=\"Download Document\" class=\"glyphicon glyphicon-save-file publish-button text-success\" data-ng-click=\"grid.appScope.publishDocument(row.entity)\"></a>\r\n \
+                        <a ng-if=\"!grid.appScope.HideNonPortionMarking\" title=\"Export PPR&D\" class=\"glyphicon glyphicon-save-file publish-button text-success\" data-ng-click=\"grid.appScope.publishDocument(row.entity, false)\"></a>\r\n \
+                        <a ng-if=\"!grid.appScope.HidePortionMarking\" title=\"Export Portion Marked PPR&D\" class=\"glyphicon glyphicon-save-file publish-button text-success\" data-ng-click=\"grid.appScope.publishDocument(row.entity, true)\"></a>\r\n \
                         <a class=\"btn btn-primary btn-xs proposal-button\" href=\"{{grid.appScope.PTMUrl}}proposal/DisplayProposalDetails/id/{{row.entity.ProposalId}}/#Proposal\" target=\"_blank\" title=\"Open proposal in PTM\"><span class=\"glyphicon\">P</span></a>\r\n \
                         <a class=\"btn btn-primary btn-xs edit-button\" title=\"Edit Document\" data-nodrag data-ng-hide=\"row.entity.IsReadOnly\" data-ng-click=\"grid.appScope.editDocument(row.entity)\"><span class=\"glyphicon glyphicon-pencil\"></span></a>\r\n \
                         <a class=\"btn btn-danger btn-xs delete-button\" title=\"Delete Document\" data-nodrag data-ng-hide=\"row.entity.IsReadOnly\" data-ng-click=\"grid.appScope.deleteDocument(row.entity)\"><span class=\"glyphicon glyphicon-remove\"></span></a>\r\n \

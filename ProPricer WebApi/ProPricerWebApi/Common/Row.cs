@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2020 Lockheed Martin Corporation.
+    Copyright 2016-2023 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -19,6 +19,6 @@ namespace APTSPropricerApi.Common
 		/// <summary>
 		/// Gets or sets the Cells of a Row
 		/// </summary>
-		public ICollection<string> Cells { get; set; } = new List<string>();
+		public ICollection<DetailedCell> Cells { get; set; } = new List<DetailedCell>();
 	}
 }

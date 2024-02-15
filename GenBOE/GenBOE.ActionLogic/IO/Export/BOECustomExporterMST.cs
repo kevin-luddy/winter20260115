@@ -122,7 +122,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     decimal hoursTotal = 0m;
                     decimal costTotal = 0m;
 
-                    foreach (var rollupRowData in rollupData)
+                    foreach (ResourceSummaryRowData rollupRowData in rollupData)
                     {
                         //create a new summary data row in the table
                         //clone marked template row
@@ -1246,8 +1246,8 @@ namespace GenBOE.ActionLogic.IO.Export
         private void populateTravelTripsTableForMultiBOEs(SdtElement tableElement, SdtElement tableLabelElement, Collection<BOEExportTaskElementLabor> travelTaskElementLabors, bool isZone)
         {
             SdtElement currentTable = tableElement;
-            var multiGroups = travelTaskElementLabors.GroupBy(x => x.ExportFields[BOEExporterConstants.FieldName_MultiLabel]);
-            foreach (var group in multiGroups)
+			IEnumerable<IGrouping<string, BOEExportTaskElementLabor>> multiGroups = travelTaskElementLabors.GroupBy(x => x.ExportFields[BOEExporterConstants.FieldName_MultiLabel]);
+            foreach (IGrouping<string, BOEExportTaskElementLabor> group in multiGroups)
             {
                 SdtElement clonedTable = tableElement.CloneNode(true) as SdtElement;
                 WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(clonedTable, BOEExporterConstants.FieldName_MultiLabel), group.First().ExportFields[BOEExporterConstants.FieldName_MultiLabel]);
@@ -1280,7 +1280,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 if (useGfy)
                 {
-                    foreach(var trip in TravelTrips)
+                    foreach(MSTTravelTripType trip in TravelTrips)
                     {
                         trip.TripDate = this.AdjustDateForGovtFiscalYear(trip.TripDate);
                     }

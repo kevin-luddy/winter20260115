@@ -217,7 +217,7 @@ namespace GenBOE.DataBridge.DTO
             // Upsert SP
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var resultsLinq = gbe.upsertSystemOffloadRate(dtoToUpsert.Id, dtoToUpsert.Resource, dtoToUpsert.PerformingOrg, dtoToUpsert.Percent, dtoToUpsert.Year,
+				System.Data.Entity.Core.Objects.ObjectResult<int?> resultsLinq = gbe.upsertSystemOffloadRate(dtoToUpsert.Id, dtoToUpsert.Resource, dtoToUpsert.PerformingOrg, dtoToUpsert.Percent, dtoToUpsert.Year,
                     dtoToUpsert.SubResource, dtoToUpsert.HourlyRate, dtoToUpsert.UpdateDate);
 
                 offloadRateId = Convert.ToInt32(resultsLinq.SingleOrDefault());

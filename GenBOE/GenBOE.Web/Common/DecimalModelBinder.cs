@@ -14,7 +14,7 @@ namespace GenBOE.Web.Common
                 throw new ArgumentNullException(nameof(bindingContext),"Binding Context was null");
             }
 
-            var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
+			ValueProviderResult valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
             decimal value;
             return valueProviderResult == null || !Decimal.TryParse(valueProviderResult.AttemptedValue, out value) ? base.BindModel(controllerContext, bindingContext) : value;

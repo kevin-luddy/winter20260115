@@ -31,8 +31,8 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             int boeID = 1;
             int workspaceID = 1;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
             Mock<IWorkspaceDTODataLoader> workspaceDataLoader = new Mock<IWorkspaceDTODataLoader>();
 
             BoeDTO boe = new BoeDTO { WBSID = 1, CLINID = 2, Id = boeID, State = BOEState.Approved, WorkspaceID = workspaceID };
@@ -54,9 +54,9 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             int boeID = 1;
             int workspaceID = 1;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var commonMapper = new Mock<ICommonDataMapper>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<ICommonDataMapper> commonMapper = new Mock<ICommonDataMapper>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
             Mock<IWorkspaceDTODataLoader> workspaceDataLoader = new Mock<IWorkspaceDTODataLoader>();
 
             WorkspaceDTO workspace = new WorkspaceDTO { Id = workspaceID, WorkspaceState = IES.Common.WorkspaceState.Working };
@@ -66,7 +66,7 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonMapper.Object);
 
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
 
             commonMapper.Setup(x => x.getWorkspaceStateName(workspace.WorkspaceState)).Returns("Working");
@@ -89,9 +89,9 @@ namespace GenBOE.Tests.ActionLogic.BOETransitions
             int boeID = 1;
             int workspaceID = 1;
 
-            var emailer = new Mock<IBoeEmailer>();
-            var commonMapper = new Mock<ICommonDataMapper>();
-            var boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<ICommonDataMapper> commonMapper = new Mock<ICommonDataMapper>();
+			Mock<IBoeApproverResponseDTODataLoader> boeApproverLoader = new Mock<IBoeApproverResponseDTODataLoader>();
             Mock<IWorkspaceDTODataLoader> workspaceDataLoader = new Mock<IWorkspaceDTODataLoader>();
 
             WorkspaceDTO workspace = new WorkspaceDTO { Id = workspaceID, WorkspaceState = IES.Common.WorkspaceState.Complete};

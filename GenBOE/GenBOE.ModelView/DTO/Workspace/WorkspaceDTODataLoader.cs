@@ -416,7 +416,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					var tempWs = gbe.Workspaces.FirstOrDefault(x => x.WorkspaceID == wsId && x.RteSizeLimit.HasValue);
+					Workspace tempWs = gbe.Workspaces.FirstOrDefault(x => x.WorkspaceID == wsId && x.RteSizeLimit.HasValue);
 					rteSizeLimit = tempWs.RteSizeLimit;
 
 					data = tempWs.BOEs.Where(b => b.BOEDescription != null)
@@ -584,7 +584,7 @@ namespace GenBOE.DataBridge.DTO
 							  { 
 								  WorkspaceId = w.WorkspaceID, 
 								  WorkspaceUrl = w.WorkspaceShortName, 
-								  WorkspaceName = w.WorkspaceName 
+								  WorkspaceName = w.WorkspaceName
 							  }).ToList();
 				}
 			}
@@ -644,6 +644,39 @@ namespace GenBOE.DataBridge.DTO
 					result = (from w in gbe.Workspaces
 							  join eti in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eti.ETIUserID
 							  where w.IsDeleted == false
+							  select new NlfWorkspaceInnerDataDTO
+							  {
+								  WorkspaceId = w.WorkspaceID,
+								  WorkspaceUrl = w.WorkspaceShortName,
+								  WorkspaceName = w.WorkspaceName,
+								  LineOfBusiness = w.LineOfBusiness,
+								  PTMTrackingNumber = w.TrackingNumber,
+								  WorkspaceCreationDate = w.WorkspaceCreationDate,
+								  EstimatingLead = eti.DisplayName
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get Workspace Inner Data for a System Admin
+		/// </summary>
+		/// <param name="workspaceId">Workspace Id to search</param>
+		/// <returns>Collection of Workspace Inner Data</returns>
+		[DbQuery]
+		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataForNlf(int workspaceId)
+		{
+			ICollection<NlfWorkspaceInnerDataDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  join eti in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eti.ETIUserID
+							  where w.WorkspaceID == workspaceId && w.IsDeleted == false
 							  select new NlfWorkspaceInnerDataDTO
 							  {
 								  WorkspaceId = w.WorkspaceID,
@@ -1074,7 +1107,7 @@ namespace GenBOE.DataBridge.DTO
 				string contractTypesList = null;
 				if (wsToSave.SelectedContractTypes != null)
 				{
-					contractTypesList = string.Join(",", wsToSave.SelectedContractTypes.Select(i => (int)i));
+					contractTypesList = string.Join(",", wsToSave.SelectedContractTypes.Select(i => i));
 				}
 
 				using (GenBoeEntities gbe = new GenBoeEntities())

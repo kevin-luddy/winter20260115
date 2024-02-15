@@ -34,6 +34,7 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
+    using Microsoft.VisualBasic.Logging;
 
 	public class BOEFormController : GenBOEController
     {
@@ -92,6 +93,7 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Word template.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public ActionResult ExportBOEForm(string workspace, Collection<int> i, Collection<int> p)
@@ -105,7 +107,7 @@ namespace GenBOE.Web.Controllers
                 }
 
                 FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-                var sw = InitializeAction(log, "ExportBOEForm", SecurityPage.ManageBOEForms, SecurityAuthorization.Read, ws, null);
+				Stopwatch sw = InitializeAction(log, "ExportBOEForm", SecurityPage.ManageBOEForms, SecurityAuthorization.Read, ws, null);
 
                 bool isSubcontractorUser = (from pr in this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id)
                                             where pr.Role == Role.SubcontractorAuthor && pr.ETIUserId == ws.CurrentActiveUser.UserID
@@ -135,20 +137,33 @@ namespace GenBOE.Web.Controllers
                 {
                     // only exporting one PBOE, just return the form itself
                     fileNames = this.boeFormControllerLogic.ExportBOEFormReport(ws, p.First(), BOEFormType.PBOE, isPortionMarkingEnabled, contractTypes);
-                    result = new ExportFileDownloadResult(fileNames[0], fileNames[1]);
+                    
+                    // Generate a custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    result = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+                        fileDownloadName: fileNames[1]);
                 }
                 else if (!p.Any() && i.Count == 1)
                 {
                     // only exporting one IBOE, just return the form itself
                     fileNames = this.boeFormControllerLogic.ExportBOEFormReport(ws, i.First(), BOEFormType.IBOE, isPortionMarkingEnabled, contractTypes);
-                    result = new ExportFileDownloadResult(fileNames[0], fileNames[1]);
+                    // Generate a custom ActionResult to cause a file download to the client
+                    FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                    result = File(
+                        fileStream: fs,
+                        contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+                        fileDownloadName: fileNames[1]);
                 }
                 else
                 {
                     Collection<string> filesToRemove = new Collection<string>();
 
                     // zip the multiple returns up
-                    using (var memoryStream = new MemoryStream())
+                    using (MemoryStream memoryStream = new MemoryStream())
                     {
                         using (ZipArchive archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
                         {
@@ -391,7 +406,7 @@ namespace GenBOE.Web.Controllers
 
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            var sw = InitializeAction(log, WebConstants.ACTION_DELETE_BOE_FORMS, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DELETE_BOE_FORMS, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
@@ -428,7 +443,7 @@ namespace GenBOE.Web.Controllers
 
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            var sw = InitializeAction(log, WebConstants.ACTION_SAVE_IBOE_FORM, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_SAVE_IBOE_FORM, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             if (ModelState.IsValid)
             {
@@ -471,7 +486,7 @@ namespace GenBOE.Web.Controllers
 
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            var sw = InitializeAction(log, WebConstants.ACTION_SAVE_PBOE_FORM, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_SAVE_PBOE_FORM, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             if (ModelState.IsValid)
             {
@@ -525,7 +540,7 @@ namespace GenBOE.Web.Controllers
 
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            var sw = InitializeAction(log, WebConstants.ACTION_VALIDATE_IBOE_FORM, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_VALIDATE_IBOE_FORM, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             if (ModelState.IsValid)
             {
@@ -563,7 +578,7 @@ namespace GenBOE.Web.Controllers
 
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            var sw = InitializeAction(log, WebConstants.ACTION_VALIDATE_PBOE_FORM, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_VALIDATE_PBOE_FORM, SecurityPage.ManageBOEForms, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             if (ModelState.IsValid)
             {

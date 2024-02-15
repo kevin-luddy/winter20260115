@@ -88,12 +88,22 @@ namespace RDM.Tests.ControllerLogic
         /// </summary>
         private RateDetailModelView[] originals;
 
+		/// <summary>
+		/// Mock existing 1LMX RateCodes
+		/// </summary>
+		private RateDetailModelView[] original1LMXRates;
+
         /// <summary>
         /// Set of test RateCode MVs for use by tests
         /// </summary>
         private Dictionary<string, RateDetailModelView> testRateCodes = new Dictionary<string, RateDetailModelView>();
 
-        public RateControllerLogic CreateSut()
+		/// <summary>
+		/// Set of test 1LMXRateCode MVs for use by tests
+		/// </summary>
+		private Dictionary<string, RateDetailModelView> oneLMXTestRateCodes = new Dictionary<string, RateDetailModelView>();
+
+		public RateControllerLogic CreateSut()
         {
             this.securityInfo = new Mock<SecurityInformation>(this.adUtils.Object, null);
             return new RateControllerLogic(this.rateDetailLoader.Object, this.commonDataMapper.Object,
@@ -161,7 +171,13 @@ namespace RDM.Tests.ControllerLogic
                     ResourceClassId6 = 0,
                     RateDescription7 = string.Empty,
                     ResourceClass7 = string.Empty,
-                    ResourceClassId7 = 0
+                    ResourceClassId7 = 0,
+                    RateDescription8 = string.Empty,
+                    ResourceClass8 = string.Empty,
+                    ResourceClassId8 = 0,
+                    RateDescription9 = string.Empty,
+                    ResourceClass9 = string.Empty,
+                    ResourceClassId9 = 0
                 },
                 new RateDetailModelView
                 {
@@ -203,8 +219,14 @@ namespace RDM.Tests.ControllerLogic
                     ResourceClassId6 = 0,
                     RateDescription7 = string.Empty,
                     ResourceClass7 = string.Empty,
-                    ResourceClassId7 = 0
-                },
+                    ResourceClassId7 = 0,
+                    RateDescription8 = string.Empty,
+                    ResourceClass8 = string.Empty,
+                    ResourceClassId8 = 0,
+					RateDescription9 = string.Empty,
+					ResourceClass9 = string.Empty,
+					ResourceClassId9 = 0
+				},
                 new RateDetailModelView
                 {
                     Id = 3,
@@ -245,8 +267,14 @@ namespace RDM.Tests.ControllerLogic
                     ResourceClassId6 = 0,
                     RateDescription7 = string.Empty,
                     ResourceClass7 = string.Empty,
-                    ResourceClassId7 = 0
-                },
+                    ResourceClassId7 = 0,
+                    RateDescription8 = string.Empty,
+                    ResourceClass8 = string.Empty,
+                    ResourceClassId8 = 0,
+					RateDescription9 = string.Empty,
+					ResourceClass9 = string.Empty,
+					ResourceClassId9 = 0
+				},
                 new RateDetailModelView
                 {
                     Id = 4,
@@ -287,11 +315,167 @@ namespace RDM.Tests.ControllerLogic
                     ResourceClassId6 = 0,
                     RateDescription7 = string.Empty,
                     ResourceClass7 = string.Empty,
-                    ResourceClassId7 = 0
-                }
+                    ResourceClassId7 = 0,
+                    RateDescription8 = string.Empty,
+                    ResourceClass8 = string.Empty,
+                    ResourceClassId8 = 0,
+					RateDescription9 = string.Empty,
+					ResourceClass9 = string.Empty,
+					ResourceClassId9 = 0
+				}
             };
 
-            testRateCodes["FXDDAB"] = new RateDetailModelView
+			this.original1LMXRates = new RateDetailModelView[]
+			{
+				new RateDetailModelView
+				{
+					Id = 1,
+					RateCode = "1LMX5790",
+					RateCategoryDescription = "Direct Labor",
+					RateCategory = RateCategory.DirectLabor,
+					ResourceType = DirectRateMappingResourceType.Labor,
+					Section = 27208,
+					RateType = RateType.Hours,
+					DisclosureType = DisclosureType.OneLMX,
+					Description = "Titusville Development Hourly & NES Straight Time Rate",
+					CommercialBurdenPool = "OHDEVNET-G",
+					CommercialBurdenPoolId = 3830,
+					GovernmentBurdenPool = "OHDEVNET",
+					GovernmentBurdenPoolId = 3829,
+					ProPricerMappings = null,
+					Values = new Collection<RateYearModelView>(),
+					GenerateAdditionalDirectLaborRates = true,
+					RateDescription = string.Empty,
+					ResourceClass = string.Empty,
+					ResourceClassId = 0,
+					RateDescription11 = "ATLO Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass11 = "Labor-Core-ATLO(1)",
+					ResourceClassId11 = 19,
+					RateDescription21 = "ENG Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass21 = "Labor-Core-Engineering(2)",
+					ResourceClassId21 = 27,
+					RateDescription31 = "LABS Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass31 = "Labor-Core-Labs(3)",
+					ResourceClassId31 = 28,
+					RateDescription41 = "OTHER Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass41 = "Labor-Core-Other(4)",
+					ResourceClassId41 = 42,
+					RateDescription51 = "QUAL Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass51 = "Labor-Core-Quality(5)",
+					ResourceClassId51 = 43,
+					RateDescription61 = string.Empty,
+					ResourceClass61 = string.Empty,
+					ResourceClassId61 = 0,
+					RateDescription71 = string.Empty,
+					ResourceClass71 = string.Empty,
+					ResourceClassId71 = 0,
+					RateDescription81 = string.Empty,
+					ResourceClass81 = string.Empty,
+					ResourceClassId81 = 0,
+					RateDescription91 = string.Empty,
+					ResourceClass91 = string.Empty,
+					ResourceClassId91 = 0
+				},
+				new RateDetailModelView
+				{
+					Id = 2,
+					RateCode = "XXJDAB",
+					RateCategoryDescription = "Direct Labor",
+					RateCategory = RateCategory.DirectLabor,
+					ResourceType = DirectRateMappingResourceType.Labor,
+					Section = 27208,
+					RateType = RateType.Hours,
+					DisclosureType = DisclosureType.OneLMX,
+					Description = "Billerica Development (Nantero) Lvl 1 & 2",
+					CommercialBurdenPool = "OHDEVNET-G",
+					CommercialBurdenPoolId = 3830,
+					GovernmentBurdenPool = "OHDEVNET",
+					GovernmentBurdenPoolId = 3829,
+					ProPricerMappings = null,
+					Values = new Collection<RateYearModelView>(),
+					GenerateAdditionalDirectLaborRates = true,
+					RateDescription = string.Empty,
+					ResourceClass = string.Empty,
+					ResourceClassId = 0,
+					RateDescription11 = string.Empty,
+					ResourceClass11 = string.Empty,
+					ResourceClassId11 = 0,
+					RateDescription21 = string.Empty,
+					ResourceClass21 = string.Empty,
+					ResourceClassId21 = 0,
+					RateDescription31 = string.Empty,
+					ResourceClass31 = string.Empty,
+					ResourceClassId31 = 0,
+					RateDescription41 = "Billerica (MA) Development Lvl 1 & 2",
+					ResourceClass41 = "Labor-Core-ATC-Other(4)",
+					ResourceClassId41 = 16,
+					RateDescription51 = string.Empty,
+					ResourceClass51 = string.Empty,
+					ResourceClassId51 = 0,
+					RateDescription61 = string.Empty,
+					ResourceClass61 = string.Empty,
+					ResourceClassId61 = 0,
+					RateDescription71 = string.Empty,
+					ResourceClass71 = string.Empty,
+					ResourceClassId71 = 0,
+					RateDescription81 = string.Empty,
+					ResourceClass81 = string.Empty,
+					ResourceClassId81 = 0,
+					RateDescription91 = string.Empty,
+					ResourceClass91 = string.Empty,
+					ResourceClassId91 = 0
+				},
+				new RateDetailModelView
+				{
+					Id = 4,
+					RateCode = "1LMX3080",
+					RateCategoryDescription = "Travel OTC",
+					RateCategory = RateCategory.TravelOtc,
+					ResourceType = DirectRateMappingResourceType.Labor,
+					Section = 0,
+					RateType = RateType.Hours,
+					Description = "Other travel costs ",
+					CommercialBurdenPool = string.Empty,
+					CommercialBurdenPoolId = 0,
+					GovernmentBurdenPool = string.Empty,
+					GovernmentBurdenPoolId = 0,
+					ProPricerMappings = null,
+					Values = new Collection<RateYearModelView>(),
+					GenerateAdditionalDirectLaborRates = true,
+					RateDescription = string.Empty,
+					ResourceClass = string.Empty,
+					ResourceClassId = 0,
+					RateDescription15 = "ATLO Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass15 = "Labor-Core-ATLO(1)",
+					ResourceClassId15 = 19,
+					RateDescription25 = "ENG Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass25 = "Labor-Core-Engineering(2)",
+					ResourceClassId25 = 27,
+					RateDescription35 = "LABS Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass35 = "Labor-Core-Labs(3)",
+					ResourceClassId35 = 28,
+					RateDescription45 = "OTHER Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass45 = "Labor-Core-Other(4)",
+					ResourceClassId45 = 42,
+					RateDescription55 = "QUAL Titusville Development Hourly & NES Straight Time Rate",
+					ResourceClass55 = "Labor-Core-Quality(5)",
+					ResourceClassId55 = 0,
+					RateDescription65 = string.Empty,
+					ResourceClass65 = string.Empty,
+					ResourceClassId65 = 0,
+					RateDescription75 = string.Empty,
+					ResourceClass75 = string.Empty,
+					ResourceClassId75 = 0,
+					RateDescription85 = string.Empty,
+					ResourceClass85 = string.Empty,
+					ResourceClassId85 = 0,
+					RateDescription95 = string.Empty,
+					ResourceClass95 = string.Empty,
+					ResourceClassId95 = 0
+				}
+			};
+
+			testRateCodes["FXDDAB"] = new RateDetailModelView
             {
                 Id = 11,
                 RateCode = "FXDDAB",
@@ -331,9 +515,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
-
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["C1NDAB"] = new RateDetailModelView
             {
                 Id = 12,
@@ -374,9 +563,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
-
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["CASPRNET"] = new RateDetailModelView
             {
                 Id = 13,
@@ -417,8 +611,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["Travel SERV Esc"] = new RateDetailModelView
             {
                 Id = 14,
@@ -459,8 +659,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["NLBESCCH"] = new RateDetailModelView
             {
                 Id = 15,
@@ -501,8 +707,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["OHDEVNET"] = new RateDetailModelView
             {
                 Id = 16,
@@ -543,8 +755,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["541760NL"] = new RateDetailModelView
             {
                 Id = 17,
@@ -585,8 +803,14 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
             testRateCodes["Mileage Serv"] = new RateDetailModelView
             {
                 Id = 18,
@@ -627,10 +851,115 @@ namespace RDM.Tests.ControllerLogic
                 ResourceClassId6 = 0,
                 RateDescription7 = string.Empty,
                 ResourceClass7 = string.Empty,
-                ResourceClassId7 = 0
-            };
+                ResourceClassId7 = 0,
+                RateDescription8 = string.Empty,
+                ResourceClass8 = string.Empty,
+                ResourceClassId8 = 0,
+				RateDescription9 = string.Empty,
+				ResourceClass9 = string.Empty,
+				ResourceClassId9 = 0
+			};
 
-            rateConfigLoader = new Mock<IRateConfigLoader>();
+			oneLMXTestRateCodes["1LMX5790"] = new RateDetailModelView
+			{
+				Id = 18,
+				RateCode = "1LMX5790",
+				RateCategoryDescription = "Travel Mlge",
+				RateCategory = RateCategory.TravelMlge,
+				ResourceType = DirectRateMappingResourceType.Labor,
+				DisclosureType = DisclosureType.OneLMX,
+				Section = 0,
+				RateType = RateType.Cost,
+				Description = "Services Personal Car Travel $/Mile",
+				CommercialBurdenPool = "SERVNLG&APOOL-G",
+				CommercialBurdenPoolId = 3874,
+				GovernmentBurdenPool = "SERVNLG&APOOL",
+				GovernmentBurdenPoolId = 3873,
+				ProPricerMappings = null,
+				Values = new Collection<RateYearModelView>(),
+				GenerateAdditionalDirectLaborRates = true,
+				RateDescription = string.Empty,
+				ResourceClass = string.Empty,
+				ResourceClassId = 0,
+				RateDescription15 = "ATLO Titusville Development Hourly & NES Straight Time Rate",
+				ResourceClass15 = "Labor-Core-ATLO(1)",
+				ResourceClassId15 = 19,
+				RateDescription25 = "ENG Titusville Development Hourly & NES Straight Time Rate",
+				ResourceClass25 = "Labor-Core-Engineering(2)",
+				ResourceClassId25 = 27,
+				RateDescription35 = "LABS Titusville Development Hourly & NES Straight Time Rate",
+				ResourceClass35 = "Labor-Core-Labs(3)",
+				ResourceClassId35 = 28,
+				RateDescription45 = "OTHER Titusville Development Hourly & NES Straight Time Rate",
+				ResourceClass45 = "Labor-Core-Other(4)",
+				ResourceClassId45 = 42,
+				RateDescription55 = "QUAL Titusville Development Hourly & NES Straight Time Rate",
+				ResourceClass55 = "Labor-Core-Quality(5)",
+				ResourceClassId55 = 41,
+				RateDescription65 = string.Empty,
+				ResourceClass65 = string.Empty,
+				ResourceClassId65 = 0,
+				RateDescription75 = string.Empty,
+				ResourceClass75 = string.Empty,
+				ResourceClassId75 = 0,
+				RateDescription85 = string.Empty,
+				ResourceClass85 = string.Empty,
+				ResourceClassId85 = 0,
+				RateDescription95 = string.Empty,
+				ResourceClass95 = string.Empty,
+				ResourceClassId95 = 0
+			};
+			oneLMXTestRateCodes["1LMX3080"] = new RateDetailModelView
+			{
+				Id = 2,
+				RateCode = "1LMX3080",
+				RateCategoryDescription = "Direct Labor",
+				RateCategory = RateCategory.DirectLabor,
+				ResourceType = DirectRateMappingResourceType.Labor,
+				Section = 27208,
+				RateType = RateType.Hours,
+				DisclosureType = DisclosureType.OneLMX,
+				Description = "Billerica Development (Nantero) Lvl 1 & 2",
+				CommercialBurdenPool = "OHDEVNET-G",
+				CommercialBurdenPoolId = 3830,
+				GovernmentBurdenPool = "OHDEVNET",
+				GovernmentBurdenPoolId = 3829,
+				ProPricerMappings = null,
+				Values = new Collection<RateYearModelView>(),
+				GenerateAdditionalDirectLaborRates = true,
+				RateDescription = string.Empty,
+				ResourceClass = string.Empty,
+				ResourceClassId = 0,
+				RateDescription11 = string.Empty,
+				ResourceClass11 = string.Empty,
+				ResourceClassId11 = 0,
+				RateDescription21 = string.Empty,
+				ResourceClass21 = string.Empty,
+				ResourceClassId21 = 0,
+				RateDescription31 = string.Empty,
+				ResourceClass31 = string.Empty,
+				ResourceClassId31 = 0,
+				RateDescription41 = "Billerica (MA) Development Lvl 1 & 2",
+				ResourceClass41 = "Labor-Core-ATC-Other(4)",
+				ResourceClassId41 = 16,
+				RateDescription51 = string.Empty,
+				ResourceClass51 = string.Empty,
+				ResourceClassId51 = 0,
+				RateDescription61 = string.Empty,
+				ResourceClass61 = string.Empty,
+				ResourceClassId61 = 0,
+				RateDescription71 = string.Empty,
+				ResourceClass71 = string.Empty,
+				ResourceClassId71 = 0,
+				RateDescription81 = string.Empty,
+				ResourceClass81 = string.Empty,
+				ResourceClassId81 = 0,
+				RateDescription91 = string.Empty,
+				ResourceClass91 = string.Empty,
+				ResourceClassId91 = 0
+			};
+
+			rateConfigLoader = new Mock<IRateConfigLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRateConfigLoader), rateConfigLoader.Object);
             this.rateConfigLoader.Setup(x => x.GetAll()).Returns(TestData.GetRateConfigTestData());
         }
@@ -687,7 +1016,7 @@ namespace RDM.Tests.ControllerLogic
 
                 // Round the rate to the correct precision.
                 ratePrecision = RateFormatter.GetRatePrecision(RateTarget.Rate, category.GetDescription());
-                rate = decimal.Round((decimal)rate, ratePrecision);
+                rate = decimal.Round(rate, ratePrecision);
 
                 validRateDetails.Add(new RateDetailModelView() { Id = id++, RateCode = rateCode, RateCategory = category, Values = new Collection<RateYearModelView>() { new RateYearModelView() { Year = 2012, Value = rate, Dirty = true } } });
             }
@@ -847,7 +1176,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateImportedRatesTest_EX1()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.ValidateImportedRates(null, new Collection<RateDetailModelView>());
         }
 
@@ -858,7 +1187,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateImportedRatesTest_EX2()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.ValidateImportedRates(new Collection<RateDetailModelView>(), null);
         }
 
@@ -868,7 +1197,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateImportedRatesTest()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             Collection<RateDetailModelView> originals = new Collection<RateDetailModelView>()
             {
                 new RateDetailModelView { RateCode= "RateCode1", RateCategoryDescription = "Direct Labor"},
@@ -903,7 +1232,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void LoadImportedRatesTest_EX1()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.LoadImportedRates(null, new Collection<RateDetailModelView>());
         }
 
@@ -914,7 +1243,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(GenValidationException))]
         public void LoadImportedRatesTest_EX2()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.LoadImportedRates(new Collection<RateDetailModelView>(), null);
         }
 
@@ -925,7 +1254,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(GenValidationException))]
         public void LoadImportedRatesTest_EX3()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             Collection<RateDetailModelView> originals = new Collection<RateDetailModelView>()
             {
                 new RateDetailModelView { RateCode= "RateCode1" }
@@ -946,7 +1275,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void LoadImportedRatesTest()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             Collection<RateDetailModelView> originals = new Collection<RateDetailModelView>()
             {
                 new RateDetailModelView()
@@ -1061,7 +1390,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateImportedRateCodesTest_EX1()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             RateDetailModelView[] imported = new RateDetailModelView[] { };
             sut.ValidateImportedRates(null, imported);
         }
@@ -1073,7 +1402,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateImportedRateCodesTest_EX2()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             RateDetailModelView[] existing = new RateDetailModelView[] { };
             sut.ValidateImportedRates(existing, null);
         }
@@ -1086,11 +1415,25 @@ namespace RDM.Tests.ControllerLogic
         {
             RateDetailModelView[] imported = testRateCodes.Values.ToArray();
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<ValidationMessage> validationMessages = sut.ValidateImportedRateCodes(this.originals, imported);
             Assert.AreEqual(0, validationMessages.Count,
                 "Validator should generate no errors since the Rate Codes all valid");
         }
+
+		/// <summary>
+		/// Tests validating imported rate codes without any errors
+		/// </summary>
+		[TestMethod]
+		public void Validate1LMXImportedRateCodes_HappyPath()
+		{
+			RateDetailModelView[] imported = oneLMXTestRateCodes.Values.ToArray();
+
+			RateControllerLogic sut = CreateSut();
+			ICollection<ValidationMessage> validationMessages = sut.ValidateImportedRateCodes(this.original1LMXRates, imported);
+			Assert.AreEqual(0, validationMessages.Count,
+				"Validator should generate no errors since the Rate Codes are all valid");
+		}
 
         /// <summary>
         /// Test required fields validation
@@ -1105,7 +1448,7 @@ namespace RDM.Tests.ControllerLogic
                 new RateDetailModelView { }
             };
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<ValidationMessage> validationMessages = sut.ValidateImportedRateCodes(this.originals, imported);
             Assert.AreEqual(11, validationMessages.Count,
                 "Validator should generate 11 errors since 2 rows have 3 missing fields each, and the last row has 5 missing fields");
@@ -1117,7 +1460,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateImportedRateCodes_RateCode_NotUnique()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
 
             // Test duplicate rate codes (within imported rate codes)
             RateDetailModelView[] imported = new RateDetailModelView[]
@@ -1132,13 +1475,31 @@ namespace RDM.Tests.ControllerLogic
                 "Validator should generate 2 errors one for each row where C1NDAB is not unique");
         }
 
+		[TestMethod]
+		public void Validate1LMXImportedRateCodes_RateCode_NotUnique()
+		{
+			RateControllerLogic sut = CreateSut();
+
+			// Test duplicate rate codes
+			RateDetailModelView[] imported = new RateDetailModelView[]
+			{
+				oneLMXTestRateCodes["1LMX5790"],
+				oneLMXTestRateCodes["1LMX3080"],
+				oneLMXTestRateCodes["1LMX5790"]		// duplicate rate code
+			};
+
+			ICollection<ValidationMessage> validationMessages = sut.ValidateImportedRateCodes(this.original1LMXRates, imported);
+			Assert.AreEqual(2, validationMessages.Count,
+				"Validator should generate 2 errors one for each row where 1LMX5790 is not unique");
+		}
+
         /// <summary>
         /// Tests validating imported rate codes with invalid ProPricer mappings.
         /// </summary>
         [TestMethod]
         public void ValidateImportedRateCodes_ProPricerMappings_Invalid()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
 
             // test case where both ProPricer base and extended descriptions are populated 
             RateDetailModelView[] imported = new RateDetailModelView[] { testRateCodes["FXDDAB"] };
@@ -1162,13 +1523,44 @@ namespace RDM.Tests.ControllerLogic
                 "Validator should generate errors for invalid ProPricer mappings");
         }
 
+		/// <summary>
+		/// Test validating 1LMX imported rate codes with invalid Disclosure type and Pro Pricer Mapping
+		/// </summary>
+		[TestMethod]
+		public void Validate1LMXImportedRateCodes_ProPricerMappings_Invalid()
+		{
+			RateControllerLogic sut = CreateSut();
+
+			// test case where both ProPricer base and extended descriptions are populated 
+			RateDetailModelView[] imported = new RateDetailModelView[] { oneLMXTestRateCodes["1LMX5790"] };
+			imported[0].RateDescription = "Invalid";    // not allowed since extensions 1-7 are also populated
+			imported[0].ResourceClass = "Invalid";
+			imported[0].ResourceClassId = 999;
+
+			ICollection<ValidationMessage> validationMessages = sut.ValidateImportedRateCodes(this.originals, imported);
+			Assert.AreEqual(1, validationMessages.Count,
+				"Validator should generate errors for invalid ProPricer mappings");
+
+			// test case where Disclosure Type is not specified as other than 1LMX
+			imported[0].RateDescription = string.Empty;
+			imported[0].ResourceClass = string.Empty;
+			imported[0].ResourceClassId = 0;
+			imported[0].DisclosureType = DisclosureType.LegacySpace;
+
+			imported[0].ResourceClassId = 0;
+
+			validationMessages = sut.ValidateImportedRateCodes(this.originals, imported);
+			Assert.AreEqual(1, validationMessages.Count,
+				"Validator should generate errors for invalid ProPricer mappings");
+		}
+
         /// <summary>
         /// Tests validating imported rate codes where a ProPricer additional resource class is specified but ResourceType is not Labor.
         /// </summary>
         [TestMethod]
         public void ValidateImportedRateCodes_ProPricerMappings_InvalidResourceType()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
 
             // test case where ProPricer extended descriptions are populated, but ResourceType is something other than Labor.
             RateDetailModelView[] imported = new RateDetailModelView[] { testRateCodes["FXDDAB"] };
@@ -1186,7 +1578,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(GenValidationException))]
         public void LoadImportedRateCodesTest_EX1()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.LoadImportedRateCodes(null);
         }
 
@@ -1199,7 +1591,7 @@ namespace RDM.Tests.ControllerLogic
         {
             RateDetailModelView[] imported = this.originals.DeepClone();
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             RateDetailModelView[] existing = this.originals.ToArray();
             existing[existing.Length - 1].RateCode = existing[0].RateCode;  // duplicate rate codes
 
@@ -1232,7 +1624,7 @@ namespace RDM.Tests.ControllerLogic
                 }
             }
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<RateDetailModelView> updated = sut.GetUpdatedRateCodes(this.originals, imported);
             Assert.AreEqual(3, updated.Count);
             Assert.AreEqual(3, updated.Where(u => u.Updateable == UpdateType.Upsert).Count());
@@ -1249,7 +1641,7 @@ namespace RDM.Tests.ControllerLogic
         {
             RateDetailModelView[] imported = testRateCodes.Values.ToArray();
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<RateDetailModelView> updated = sut.GetUpdatedRateCodes(this.originals, imported);
             Assert.AreEqual(testRateCodes.Count, updated.Count);
         }
@@ -1262,7 +1654,7 @@ namespace RDM.Tests.ControllerLogic
         {
             RateDetailModelView[] imported = this.originals.ToArray();
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<RateDetailModelView> updated = sut.GetUpdatedRateCodes(this.originals, imported);
             Assert.AreEqual(0, updated.Count);
         }
@@ -1313,7 +1705,7 @@ namespace RDM.Tests.ControllerLogic
                 }
             }
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<RateDetailModelView> updated = sut.GetUpdatedRateCodes(this.originals, imported);
             Assert.AreEqual(testRateCodes.Count + 3, updated.Count);
             Assert.AreEqual(testRateCodes.Count + 3, updated.Where(u => u.Updateable == UpdateType.Upsert).Count());

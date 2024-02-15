@@ -59,8 +59,29 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsIdentitySwappingAllowed']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="HideNonPortionMarking" description="doesn't matter" defaultvalue="__HideNonPortionMarking__" tags="">
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='HideNonPortionMarking']/@value">
+	</parameterentry>
+  </parameter>
+  <parameter name="HidePortionMarking" description="doesn't matter" defaultvalue="__HidePortionMarking__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='HidePortionMarking']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="_APPLICATION_VERSION" description="doesn't matter" defaultvalue="__APPLICATION_VERSION__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='APPLICATION_VERSION']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
+    <parameterValidation kind="AllowEmpty" />
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthDomain']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="oAuthIESClientSecret" description="doesn't matter" defaultvalue="__oAuthIESClientSecret__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthIESClientSecret']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="PortionMarkingAPI" description="doesn't matter" defaultvalue="__PortionMarkingAPI__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PortionMarkingAPI']/@value">
     </parameterentry>
   </parameter>
   

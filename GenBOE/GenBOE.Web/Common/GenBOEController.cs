@@ -134,9 +134,9 @@ namespace GenBOE.Web.Common
             if (ReferenceEquals(ws, null))
             {
                 throw new ArgumentNullException(nameof(ws));
-            }
+			}
 
-            if (ws.Id == 0)
+			if (ws.Id == 0)
             {
                 // if the workspace doesn't exist .. for example if we are running a system job
                 model.ProposalName = "No Workspace";
@@ -144,7 +144,7 @@ namespace GenBOE.Web.Common
                 model.WorkspaceState = _CommonDataMapper.getWorkspaceStateName(WorkspaceState.None);
 
                 model.HeaderFooter = "Lockheed Martin Proprietary Information";
-            }
+			}
             else
             {
                 model.ProposalName = ws.WorkspaceName;
@@ -154,7 +154,7 @@ namespace GenBOE.Web.Common
                 model.HeaderFooter = ws.ContainsOCI ?
                     "Organizational Conflict of Interest - Lockheed Martin Proprietary Information" :
                     "Lockheed Martin Proprietary Information";
-            }
+			}
         }
 
         /// <summary>
@@ -169,11 +169,11 @@ namespace GenBOE.Web.Common
             // Action Initialize
             Stopwatch sw = InitializeAction(_log, "DisplayMasterMenu", SecurityPage.Home, SecurityAuthorization.Read, ws, null);
 
-            var theModelViews = new Collection<GenBOEMasterMenuItemModelView>();
+			Collection<GenBOEMasterMenuItemModelView> theModelViews = new Collection<GenBOEMasterMenuItemModelView>();
 
             // Iterate over the static collection of Menu Items defined in GenBOEMasterMenuItemModelView
             ICollection<GenBOEMasterMenuItemModelView> MenuItems = GenBOEMasterMenuItemModelView.BuildSiteMasterMenuItems(ws);
-            foreach (var menuItem in MenuItems)
+            foreach (GenBOEMasterMenuItemModelView menuItem in MenuItems)
             {
                 // For menu items with no sub items, check access
                 if (!menuItem.subMenuItems.Any())
@@ -200,15 +200,15 @@ namespace GenBOE.Web.Common
                 // If the menu items has sub items, we'll check access on each
                 else
                 {
-                    // Create a new model View for the inactive top-level menu item
-                    var inactiveMenuItem = new GenBOEMasterMenuItemModelView
+					// Create a new model View for the inactive top-level menu item
+					GenBOEMasterMenuItemModelView inactiveMenuItem = new GenBOEMasterMenuItemModelView
                     {
                         linkText = menuItem.linkText,
                         menuLocation = menuItem.menuLocation
                     };
 
                     // Iterate the sub items
-                    foreach (var subMenuItem in menuItem.subMenuItems)
+                    foreach (GenBOEMasterMenuItemModelView subMenuItem in menuItem.subMenuItems)
                     {
                         bool submenuItemAuthorization = CheckPermissions(subMenuItem.securityPage, ws, null) != SecurityAuthorization.None;
 
@@ -278,7 +278,16 @@ namespace GenBOE.Web.Common
             }
 
             ViewData["DisplayProjectMapOnly"] = ws.IsProjectMapWorkspace;
-        }
+
+            ViewData["ReadOnlyMode"] = false;
+			if (SiteMasterUtilities.IsReadOnly())
+			{
+				if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+                    ViewData["ReadOnlyMode"] = true;
+				}
+			}
+		}
 
         /// <summary>
         /// Decides whether the Zone Travel Update Link should be displayed
@@ -482,7 +491,16 @@ namespace GenBOE.Web.Common
                 ViewData["ContainsOCI"] = ws.ContainsOCI.ToString().ToLower();
             }
 
-            ViewData["READONLY"] = readOnly ? "true" : "false";
+			ViewData["ReadOnlyMode"] = false;
+			if (SiteMasterUtilities.IsReadOnly())
+			{
+				if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+					ViewData["ReadOnlyMode"] = true;
+				}
+			}
+
+			ViewData["READONLY"] = readOnly ? "true" : "false";
 
             return sw;
         }
@@ -955,6 +973,25 @@ namespace GenBOE.Web.Common
                 ContentType = "text/plain",
                 ContentEncoding = System.Text.Encoding.UTF8
             };
+        }
+
+        /// <summary>
+        /// Confirms a message by a User
+        /// </summary>
+        /// <param name="messageId">The message Id to confirm</param>
+        public void ConfirmMessage(ConfirmationMessage message)
+        {
+            if (message == ConfirmationMessage.NOT_APPLICABLE)
+            {
+                _log.Error("Unknown Confirmation Message");
+            }
+            else
+            {
+                UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+
+				// save to Database
+				this.UserLoader.SaveMessageConfirmation(currentUser.UserID, message);
+			}
         }
 
         /// <summary>

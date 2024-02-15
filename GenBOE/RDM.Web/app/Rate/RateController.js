@@ -270,6 +270,8 @@
             RD5: '',
             RD6: '',
             RD7: '',
+            RD8: '',
+            RD9: '',
             RCId: 0, // Resource Class Ids
             RCId1: 0,
             RCId2: 0,
@@ -278,6 +280,8 @@
             RCId5: 0,
             RCId6: 0,
             RCId7: 0,
+            RCId8: 0,
+            RCId9: 0,
             RS: '', // RateSet
             Ra: 0,
             RT: 0,
@@ -362,7 +366,8 @@
             $scope.rateCategories = response.data.RateCategories;
             $scope.sections = response.data.Sections;
             $scope.rateTypes = response.data.RateTypes;
-            $scope.resourceTypes = response.data.ResourceTypes;
+			$scope.resourceTypes = response.data.ResourceTypes;
+			$scope.disclosureTypes = response.data.DisclosureTypes;
             $scope.resourceClasses = response.data.ResourceClasses;
             $scope.commercialBurdenPools = response.data.CommercialBurdenPools;
             $scope.governmentBurdenPools = response.data.GovernmentBurdenPools;

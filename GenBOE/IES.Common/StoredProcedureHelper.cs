@@ -155,11 +155,11 @@ namespace IES.Common
 
             DataTable table = new DataTable();
 
-            // get properties of T 
-            var binding = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty;
-            var options = PropertyReflectionOptions.IgnoreEnumerable | PropertyReflectionOptions.IgnoreIndexer;
+			// get properties of T 
+			BindingFlags binding = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty;
+			PropertyReflectionOptions options = PropertyReflectionOptions.IgnoreEnumerable | PropertyReflectionOptions.IgnoreIndexer;
 
-            var properties = ReflectionHelper.GetProperties(typeof(TEntityType), binding, options).ToList();
+			List<PropertyInfo> properties = ReflectionHelper.GetProperties(typeof(TEntityType), binding, options).ToList();
             ICollection<PropertyInfo> includedProperties = new Collection<PropertyInfo>();
             Dictionary<string, object> nestedValues = new Dictionary<string, object>();
 

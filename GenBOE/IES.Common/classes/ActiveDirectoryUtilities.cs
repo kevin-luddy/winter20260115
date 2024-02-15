@@ -131,6 +131,23 @@ namespace IES.Common
 
                             using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
                             {
+                                if (isGroup)
+                                {
+                                    ds.PropertiesToLoad.Add("sAMAccountName");
+                                    ds.PropertiesToLoad.Add("name");
+                                }
+                                else
+                                {
+                                    ds.PropertiesToLoad.Add("sAMAccountName");
+                                    ds.PropertiesToLoad.Add("givenname");
+                                    ds.PropertiesToLoad.Add("sn");
+                                    ds.PropertiesToLoad.Add("displayname");
+                                    ds.PropertiesToLoad.Add("mail");
+                                    ds.PropertiesToLoad.Add("telephonenumber");
+                                    ds.PropertiesToLoad.Add("lmcUSAPersonIndicator");
+                                    ds.PropertiesToLoad.Add("employeeType");
+                                }
+
                                 SearchResult searchResult = ds.FindOne();
 
                                 if (searchResult == null)
@@ -253,6 +270,8 @@ namespace IES.Common
                                     ds.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
                                 }
 
+                                ds.PropertyNamesOnly = true;
+                                
                                 SearchResult samResult = ds.FindOne();
 
                                 if (samResult != null)
@@ -292,7 +311,7 @@ namespace IES.Common
 
                                         foreach (SearchResult searchResult in results)
                                         {
-                                            var groupData = new GroupData()
+											GroupData groupData = new GroupData()
                                             {
                                                 DisplayName = searchResult.Properties["name"][0].ToString(),
                                                 Ntid = searchResult.Properties["sAMAccountName"][0].ToString()
@@ -360,12 +379,18 @@ namespace IES.Common
                     {
                         case ObjectClass.user:
                             mySearcher.Filter = "(&(objectClass=user)(|(cn=" + objectName + ")(sAMAccountName=" + objectName + ")))";
+                            // TODO This code is never used, if we do use it in the future then test out the performance fix below
+                            // mySearcher.PropertiesToLoad.Add("sAMAccountName");
+                            // mySearcher.PropertiesToLoad.Add("distinguishedName");
                             break;
                         case ObjectClass.group:
                             mySearcher.Filter = string.Format("(&(objectClass=group)(|(cn=" + objectName + ")(dn=" + objectName + ")(samAccountName=" + objectName + ")))");
+                            mySearcher.PropertyNamesOnly = true;
                             break;
                         case ObjectClass.computer:
                             mySearcher.Filter = "(&(objectClass=computer)(|(cn=" + objectName + ")(dn=" + objectName + ")))";
+                            // TODO This code is never used, if we do use it in the future then test out the performance fix below
+                            // mySearcher.PropertyNamesOnly = true;
                             break;
                     }
 
@@ -558,13 +583,13 @@ namespace IES.Common
                     try
                     {
 
-                        var groupDN = this.GetObjectDistinguishedName(ObjectClass.group, ReturnType.distinguishedName, inGroupName);
+						string groupDN = this.GetObjectDistinguishedName(ObjectClass.group, ReturnType.distinguishedName, inGroupName);
 
                         groupNotFound = false;
 
-                        using (var root = new DirectoryEntry(this.activeDirectoryPath))
+                        using (DirectoryEntry root = new DirectoryEntry(this.activeDirectoryPath))
                         {
-                            var attributesToLoad = new[]
+							string[] attributesToLoad = new[]
                                 {
                                 "displayname",
                                 "distinguishedname",
@@ -584,9 +609,9 @@ namespace IES.Common
                                 "employeeType"
                             };
 
-                            var distinguishedNameWithoutLDAPPrefix = groupDN.Remove(0, 7);
-                            var searchFilter = "(memberOf=" + distinguishedNameWithoutLDAPPrefix + ")";
-                            using (var searcher = new DirectorySearcher(root, searchFilter, attributesToLoad))
+							string distinguishedNameWithoutLDAPPrefix = groupDN.Remove(0, 7);
+							string searchFilter = "(memberOf=" + distinguishedNameWithoutLDAPPrefix + ")";
+                            using (DirectorySearcher searcher = new DirectorySearcher(root, searchFilter, attributesToLoad))
                             {
                                 searcher.PageSize = 1000; // Very important to have it here. Otherwise you'll get only 1000 at all. Please refer to DirectorySearcher documentation
 
@@ -595,18 +620,18 @@ namespace IES.Common
                                     searcher.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
                                 }
 
-                                var results = searcher.FindAll();
+								SearchResultCollection results = searcher.FindAll();
 
                                 userNames = (from SearchResult user in results
                                               select new UserData()
                                               {
                                                   DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
-                                                  Ntid = user.Properties["samaccountname"][0].ToString(),
+                                                  Ntid = user.Properties.Contains("samaccountname") ? user.Properties["samaccountname"][0].ToString() : string.Empty,
                                                   FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
                                                   LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
                                                   Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
                                                   Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
-                                                  IsGroup = user.Properties["objectClass"].Contains("group"),
+                                                  IsGroup = user.Properties.Contains("objectClass") && user.Properties["objectClass"].Contains("group"),
                                                   State = user.Properties.Contains("st") ? user.Properties["st"][0].ToString() : string.Empty,
                                                   Company = user.Properties.Contains("company") ? user.Properties["company"][0].ToString() : string.Empty,
                                                   Country = user.Properties.Contains("c") ? user.Properties["c"][0].ToString() : string.Empty,
@@ -614,7 +639,7 @@ namespace IES.Common
                                                   EmployeeId = user.Properties.Contains("lmcEmployeeID") ? user.Properties["lmcEmployeeID"][0].ToString() : string.Empty,
                                                   IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
                                                   IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
-                                              }).ToList() as ICollection<UserData>;
+                                              }).Where(u => !string.IsNullOrWhiteSpace(u.Ntid)).ToList();
                             }
 
                             allUsersAdded = true;
@@ -703,7 +728,8 @@ namespace IES.Common
         /// <param name="searchBy">Search by last name or account</param>
         /// <param name="matchBy">Starts-with, exact match, or contains</param>
         /// <returns>Active Directory search results</returns>
-        private SearchResultCollection FindMatchingUsers(string userSearchString, ActiveDirectorySearchBy searchBy, ActiveDirectoryMatchType matchBy)
+        private SearchResultCollection FindMatchingUsers(string userSearchString, ActiveDirectorySearchBy searchBy, ActiveDirectoryMatchType matchBy,
+            string[] propertiesToLoad)
         {
             if (string.IsNullOrEmpty(userSearchString))
             {
@@ -713,7 +739,7 @@ namespace IES.Common
             {
                 using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(this.activeDirectoryPath))
                 {
-                    using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=person)"))
+                    using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=person)", propertiesToLoad))
                     {
                         if (CLIENT_TIMEOUT_SECONDS > 0)
                         {
@@ -764,6 +790,8 @@ namespace IES.Common
                 {
                     using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=group)"))
                     {
+                        // TODO This code is only used in PTM, if we do use it in the future in genBOE then test out the performance fix below
+                        // search.PropertyNamesOnly = true;
                         if (CLIENT_TIMEOUT_SECONDS > 0)
                         {
                             search.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
@@ -826,7 +854,7 @@ namespace IES.Common
                     "employeeType"
                 };
 
-                SearchResultCollection searchResults = this.FindMatchingUsers(sanitizedString, searchBy, matchBy);
+                SearchResultCollection searchResults = this.FindMatchingUsers(sanitizedString, searchBy, matchBy, propertyNames);
 
                 if (searchResults != null && searchResults.Count > 0)
                 { 

@@ -180,7 +180,22 @@
                             <button data-ng-hide="isSaving" id="SaveButton-Document" type="submit" class="ies-action" data-ng-click="saveDocument()" data-ng-disabled="isDataLoading || !documentForm.$dirty">Save</button>
                             <button data-ng-show="isSaving" class="loader ies-action"></button>
                             <button id="CancelButton-Document" type="button" class="ies" data-ng-click="cancel()" data-ng-disabled="isDataLoading">Cancel</button>
-                            <a title="Download Document" data-ng-click="documentForm.$dirty || publishDocument()" data-ng-disabled="isDataLoading || documentForm.$dirty" class="glyphicon glyphicon-save-file publish-button text-success"></a>
+                            <button ng-if="!@IES.Common.ConfigurationUtilities.GetAppSetting("HideNonPortionMarking")"
+                                    class="ies-action"
+                                    id="DownloadButton-Document"
+                                    type="button"
+                                    data-ng-disabled="isDataLoading || documentForm.$dirty"
+                                    data-ng-click="documentForm.$dirty || publishDocument(null, false)">
+                                Download
+                            </button>
+                            <button ng-if="!@IES.Common.ConfigurationUtilities.GetAppSetting("HidePortionMarking")"
+                                    id="DownloadPortionMarkedButton-Document"
+                                    class="ies-action"
+                                    type="button"
+                                    data-ng-disabled="isDataLoading || documentForm.$dirty"
+                                    data-ng-click="documentForm.$dirty || publishDocument(null, true)">
+                                Download Portion Marked
+                            </button>
                         </div>
                     </form>
                 </div>

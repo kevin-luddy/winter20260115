@@ -70,7 +70,7 @@ namespace GenBOE.Tests.Objects
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _perissionsDtoDataLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
             _commentsControllerLogic = new BOECommentsControllerLogic(_boeCommentDTOLoader.Object, _userDTOLoader.Object, _securityInformation.Object,
-                _emailer.Object, _boeApproverResponseLoader.Object, _boeMediator.Object, _boeStateMachine.Object);
+                _emailer.Object, _boeApproverResponseLoader.Object, _boeMediator.Object, _boeStateMachine.Object, _perissionsDtoDataLoader.Object);
 
             BOECommentDTO comment = new BOECommentDTO
             {

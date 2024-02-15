@@ -59,7 +59,7 @@ namespace GenBOE.ActionLogic.Validation
                 if (data.Keys.Contains("TaskElementDetailID"))
                 {
                     int taskElementId = Convert.ToInt32(data["TaskElementDetailID"]);
-                    var boeTaskElement = boeTaskElements.Where(x => x.Id == taskElementId && x.BOETaskID == taskIdFromUI).Select(x => x).FirstOrDefault();
+					BoeTaskElementDTO boeTaskElement = boeTaskElements.Where(x => x.Id == taskElementId && x.BOETaskID == taskIdFromUI).Select(x => x).FirstOrDefault();
                     if (boeTaskElement != null)
                     {
                         return response; // valid
@@ -68,7 +68,7 @@ namespace GenBOE.ActionLogic.Validation
                 else if (data.Keys.Contains("ODCID"))
                 {
                     int taskElementId = Convert.ToInt32(data["ODCID"]);
-                    var odcTaskElement = odcTaskElements.Where(x => x.Id == taskElementId && x.TaskID == taskIdFromUI).Select(x => x).FirstOrDefault();
+					OtherDirectCostDTO odcTaskElement = odcTaskElements.Where(x => x.Id == taskElementId && x.TaskID == taskIdFromUI).Select(x => x).FirstOrDefault();
                     if (odcTaskElement != null)
                     {
                         return response; // valid
@@ -77,7 +77,7 @@ namespace GenBOE.ActionLogic.Validation
                 else if (data.Keys.Contains("TravelID"))
                 {
                     int taskElementId = Convert.ToInt32(data["TravelID"]);
-                    var travelTaskElement = travelTaskElements.Where(x => x.Id == taskElementId && x.TaskID == taskIdFromUI).Select(x => x).FirstOrDefault();
+					TravelDTO travelTaskElement = travelTaskElements.Where(x => x.Id == taskElementId && x.TaskID == taskIdFromUI).Select(x => x).FirstOrDefault();
                     if (travelTaskElement != null)
                     {
                         return response; // valid
@@ -86,7 +86,7 @@ namespace GenBOE.ActionLogic.Validation
                 else if (data.Keys.Contains("MaterialID"))
                 {
                     int taskElementId = Convert.ToInt32(data["MaterialID"]);
-                    var materialTaskElement = materialTaskElements.Where(x => x.Id == taskElementId && x.TaskID == taskIdFromUI).Select(x => x).FirstOrDefault();
+					MaterialDTO materialTaskElement = materialTaskElements.Where(x => x.Id == taskElementId && x.TaskID == taskIdFromUI).Select(x => x).FirstOrDefault();
                     if (materialTaskElement != null)
                     {
                         return response; // valid
@@ -100,7 +100,7 @@ namespace GenBOE.ActionLogic.Validation
                 taskIds.AddRange(travelTaskElements.Select(x => x.TaskID).ToArray());
                 taskIds.AddRange(materialTaskElements.Select(x => x.TaskID).ToArray());
 
-                var linqresults = (from a in taskIds
+				int linqresults = (from a in taskIds
                                    where !String.IsNullOrEmpty(a) && a.ToLower() == valueToValidate.ToLower()
                                    select a).Count();
                 count = linqresults;

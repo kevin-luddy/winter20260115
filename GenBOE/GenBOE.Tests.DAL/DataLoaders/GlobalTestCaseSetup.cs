@@ -1519,6 +1519,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 SmeTaskEstimates = "test task estimates",
                 Rationale = "test rationale",
                 SkillMixRationale = "test skill mix",
+				HistoricalReferenceExplanation = "test historical reference explanation",
                 BoeId = GlobalTestCaseSetup.GlobalBOEID,
                 Updateable = UpdateType.Upsert
             };

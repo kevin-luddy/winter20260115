@@ -8,7 +8,9 @@ namespace IES.ActionLogic.ControllerLogic
 {
     using System;
     using System.Collections.Generic;
-    using System.Web;
+	using System.Threading.Tasks;
+	using System.Web;
+    using System.Web.Mvc;
     using IES.ActionLogic.IO.Export;
     using IES.Common;
     using IES.Common.classes;
@@ -92,8 +94,8 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="rates">PPR&amp;D rates</param>
         /// <param name="burdenPools">PPR&amp;D ProPricer burden pools</param>
         /// <param name="burdenElements">PPR&amp;D ProPricer burden elements</param>
-        /// <returns>The ExportFileDownloadResult.</returns>
-        public ExportFileDownloadResult ExportProPricerData(string zipPathFile, string versionNumber,
+        /// <returns>An ActionResult.</returns>
+        public ActionResult ExportProPricerData(string zipPathFile, string versionNumber,
             ICollection<RateDetailModelView> rates, ICollection<BurdenPoolDetailModelView> burdenPools, 
             ICollection<BurdenElementModelView> burdenElements)
         {
@@ -114,7 +116,8 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="id">Revision ID</param>
         /// <param name="serverFileName">Server File Name</param>
         /// <param name="httpResponse">HTTP response object</param>
-        public void GenerateFullPPRD(string id, string serverFileName, HttpResponseBase httpResponse)
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        public async Task GenerateFullPPRD(string id, string serverFileName, HttpResponseBase httpResponse, bool? portionMarkingRequired)
         {
             if (id == null)
             {
@@ -153,7 +156,7 @@ namespace IES.ActionLogic.ControllerLogic
             ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
             // TODO - RDM 1.0 - Update to allow user to select number of years
-            this.pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, httpResponse, refNumberPrefixLevel);
+           await this.pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, httpResponse, refNumberPrefixLevel, portionMarkingRequired);
         }
 
         /// <summary>
@@ -161,7 +164,7 @@ namespace IES.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="id">Revision Id to export</param>
         /// <param name="jsonFilePath">The server path where the JSON file will be created</param>
-        public ExportFileDownloadResult ExportRevisionAsJson(string id, string jsonFilePath)
+        public ActionResult ExportRevisionAsJson(string id, string jsonFilePath)
         {
             if (id == null)
             {

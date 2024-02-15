@@ -47,8 +47,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(workspace));
             }
 
-            var worksheet = this.GetExcelExportWorksheet(clinDTOs, contractTypes);
-            var optionsSheet = this.PopulateOptionsList(workspace, contractTypes);
+			ExcelExportWorksheet worksheet = this.GetExcelExportWorksheet(clinDTOs, contractTypes);
+			ExcelExportWorksheet optionsSheet = this.PopulateOptionsList(workspace, contractTypes);
 
             string toReturn = ExcelUtilities.CopyExcelTemplateFile(templateFileLocation);
 
@@ -90,11 +90,11 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(clinDTOs));
             }
 
-            var toReturn = new ExcelExportWorksheet(ImportExportConstants.CLINS);
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(ImportExportConstants.CLINS);
 
             if (clinDTOs.Count > 0)
             {
-                foreach (var clin in clinDTOs)
+                foreach (FullClin clin in clinDTOs)
                 {
                     toReturn.Add(
                         clin.Id.ToString(),

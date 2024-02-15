@@ -19,6 +19,7 @@ namespace GenBOE.Web.Controllers
     using System.Web;
     using System.Web.Mvc;
     using System.Web.Script.Serialization;
+    using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
@@ -31,6 +32,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
+    using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.ModelView.Workspace;
     using GenBOE.ActionLogic.NewValidation;
     using GenBOE.ActionLogic.Validation;
@@ -102,6 +104,8 @@ namespace GenBOE.Web.Controllers
         private GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
         private GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper;
         private BoePickListMapper boePickListMapper;
+        private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
+        private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
 
         /// <summary>
         /// Workspace Exporter
@@ -197,7 +201,9 @@ namespace GenBOE.Web.Controllers
             WorkspaceExporter workspaceExporter,
             IReportsControllerLogic reportsControllerLogic,
             IBOEExporter boeExporter,
-            IBOECustomExporter boeCustomExporter)
+            IBOECustomExporter boeCustomExporter,
+            CommentsAndResponsesExporter commentsAndResponsesExporter,
+            BOECommentsControllerLogic boeCommentsControllerLogic)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsDTOLoader, inControllerLogic)
         {
             _WorkspaceStateMachine = inWorkspaceStateMachine;
@@ -250,6 +256,8 @@ namespace GenBOE.Web.Controllers
             this.reportsControllerLogic = reportsControllerLogic;
             this.boeExporter = boeExporter;
             this.boeCustomExporter = boeCustomExporter;
+            _commentsAndResponsesExporter = commentsAndResponsesExporter;
+            _boeCommentsControllerLogic = boeCommentsControllerLogic;
         }
 
         #region Public Methods
@@ -362,7 +370,7 @@ namespace GenBOE.Web.Controllers
             }
             else
             {
-                var projectMapData = ws.ProjectMapData;
+				IReadOnlyCollection<ProjectMapModelView> projectMapData = ws.ProjectMapData;
                 ProjectMapOffloadConverter.AddOffloadWarnings(ws, projectMapData);
                 jsonResult = Json(projectMapData, JsonRequestBehavior.AllowGet);
             }
@@ -380,6 +388,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">Workspace Short Name</param>
         /// <param name="offload">An indication whether we should try to offload first</param>
         /// <returns>Download Result for the Project Map Data.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
         public ActionResult ExportProjectMapData(string workspace, bool offload)
         {
@@ -413,8 +422,14 @@ namespace GenBOE.Web.Controllers
                 // Call the export function in the business layer and get back the file name of the populated template.
                 string exportedFileName = ProjectMapExporter.ExportToExcelFile(templateName, modelViews, ws, offload);
 
-                // Generate an custom ActionResult to cause a file download to the client
-                result = new ExportFileDownloadResult(exportedFileName, string.Format("ProjectMap_{0}.xlsx", ws.WorkspaceName));
+                // Generate a custom ActionResult to cause a file download to the client
+                string fileName = string.Format("ProjectMap_{0}.xlsx", ws.WorkspaceName);
+                FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                result = File(
+                    fileStream: fs,
+                    contentType: ExportFileDownloadBase.GetContentType(fileName),
+                    fileDownloadName: fileName);
             }
             catch (GenValidationException ex)
             {
@@ -432,6 +447,45 @@ namespace GenBOE.Web.Controllers
             FinalizeAction(_log, "ExportProjectMapData", sw);
             return result;
         }
+
+        /// <summary>
+        /// Exports all workspace author, reviewer and approver comments and responses into an excel download
+        /// </summary>
+        /// <param name="workspace">Workspace Short Name</param>
+        /// <returns>Download Result for the excel sheet.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+        public ActionResult ExportWorkspaceCommentsAndResponses(string workspace)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            // Action Initialize
+            Stopwatch sw = InitializeAction(_log, "ExportWorkspaceCommentsAndResponses", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+
+            ActionResult result = new EmptyResult();
+            try
+            {
+                IDictionary<int, ICollection<BOEComment>> commentDTOs = _boeCommentsControllerLogic.GetAllCommentsInWorkspace(ws.Boes);
+
+                string templateName = Server.MapPath("~/Templates/Export/CommentsAndResponses.xlsx");
+                // Call the export function in the business layer and get back the file name of the populated template.
+                string exportedFileName = _commentsAndResponsesExporter.ExportToExcelFile(templateName, commentDTOs);
+
+                // Generate an custom ActionResult to cause a file download to the client
+                result = new ExportFileDownloadResult(exportedFileName, string.Format("WorkspaceCommentsAndResponses_{0}.xlsx", ws.WorkspaceName));
+            }
+            catch (Exception e)
+            {
+                _log.Error(e);
+                string supportLink = Utilities.ServiceCentralLink();
+
+                result = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", supportLink));
+            }
+
+            // Finalize Action
+            FinalizeAction(_log, "ExportWorkspaceCommentsAndResponses", sw);
+            return result;
+        }
+
 
         /// <summary>
         /// Imports the project map data.
@@ -1110,7 +1164,7 @@ namespace GenBOE.Web.Controllers
 
             if (importResults != null)
             {
-                var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
+				JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
                 ViewData["SERIALIZED_DATA"] = serializer.Serialize(this.RemoveInvalidObjectsFromImportModelView(theModelView));
             }
             else
@@ -1358,7 +1412,7 @@ namespace GenBOE.Web.Controllers
             this.GetTrackingNumberOptionList(workspaceModelView);
 
             // gather up contract types
-            ViewData["SelectedContractTypes"] = string.Join(",", ws.SelectedContractTypes.Select(i => (int)i)); 
+            ViewData["SelectedContractTypes"] = string.Join(",", ws.SelectedContractTypes.Select(i => i)); 
 
             ViewResult toReturn = this.View(_ControllerLogic.WorkspaceIdentificationViewName, workspaceModelView);
 
@@ -1508,7 +1562,7 @@ namespace GenBOE.Web.Controllers
 
             DataRelationshipVerifier.VerifyDataRelation(workspaceVariable, ws.Id);
 
-            var toReturn = Json(_VariableCircularReferenceChecker.FindValidBOEsForWorkspaceVariable(new VariableCircularReferenceCheckerCache(), workspaceVariable, ws));
+			JsonResult toReturn = Json(_VariableCircularReferenceChecker.FindValidBOEsForWorkspaceVariable(new VariableCircularReferenceCheckerCache(), workspaceVariable, ws));
 
             // Finalize Action
             FinalizeAction(_log, "FindValidBOEsForWorkspaceVariable", sw);
@@ -1528,7 +1582,7 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "FindValidBOEsForNotInUseWorkspaceVariable", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
-            var toReturn = Json(_VariableCircularReferenceChecker.FindValidBOEsForNotInUseWorkspaceVariable(ws));
+			JsonResult toReturn = Json(_VariableCircularReferenceChecker.FindValidBOEsForNotInUseWorkspaceVariable(ws));
 
             // Finalize Action
             FinalizeAction(_log, "FindValidBOEsForNotInUseWorkspaceVariable", sw);
@@ -1573,7 +1627,7 @@ namespace GenBOE.Web.Controllers
 
             // gather up output sort order types
             Collection<SelectListItemWithTitle> SortOrderTypes = new Collection<SelectListItemWithTitle>();
-            var exportSortOrder = _CommonDataMapper.getSortBy();
+			Collection<SortByModelView> exportSortOrder = _CommonDataMapper.getSortBy();
             foreach (SortByModelView sortOrder in exportSortOrder)
             {
                 SortOrderTypes.Add(new SelectListItemWithTitle
@@ -1619,7 +1673,7 @@ namespace GenBOE.Web.Controllers
             // Return the template as a download for the user
             using (MemoryStream mem = _PackageUtilities.UpdateDocumentVersion(template.FileData, template.PhysicalFilePathCache, template.ExportFormat))
             {
-                toReturn = new FileContentResult(mem.ToArray(), ExportFileDownloadResult.ContentType_DOCX);
+                toReturn = new FileContentResult(mem.ToArray(), ExportFileDownloadBase.ContentType_DOCX);
                 toReturn.FileDownloadName = template.ExportFormatName + ".docx";
             }
 
@@ -1862,7 +1916,7 @@ namespace GenBOE.Web.Controllers
 
             Collection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
             IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
-            var resources = _ResourceLoader.GetGlobalResources();
+			ICollection<ResourceDTO> resources = _ResourceLoader.GetGlobalResources();
             
             foreach (ResourceDTO resource in resources)
             {
@@ -2487,7 +2541,7 @@ namespace GenBOE.Web.Controllers
 
             Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceResourceRatesGridTM", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
-            var theModelView = _ControllerLogic.GetWorkspaceResourceRateGridTMModelView(ws, modelView);
+			WorkspaceResourceRateGridTMModelView theModelView = _ControllerLogic.GetWorkspaceResourceRateGridTMModelView(ws, modelView);
 
             ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_RESOURCE_RATES_GRID_TM, theModelView);
 
@@ -2643,8 +2697,15 @@ namespace GenBOE.Web.Controllers
             // get all data
             HomeWorkspaceGridModelView theModelView = _GetHomeWorkspaceGridData(ws);
 
-            // Action Finalize
-            FinalizeAction(_log, "GetWorkspaceHomeModel", sw);
+            theModelView.isReadOnly = SiteMasterUtilities.IsReadOnly();
+
+            if (CheckPermissions(SecurityPage.SystemAdmin, null, null) == SecurityAuthorization.CreateReadUpdateDelete) 
+            {
+                theModelView.isReadOnly = false;
+            };
+
+			// Action Finalize
+			FinalizeAction(_log, "GetWorkspaceHomeModel", sw);
 
             return Json(theModelView);
         }
@@ -3570,7 +3631,7 @@ namespace GenBOE.Web.Controllers
                     }
                 }
 
-                var cache = new VariableCircularReferenceCheckerCache();
+				VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
                 List<WorkspaceVariableDTO> validatedWorkspaceVariables = _VariableCircularReferenceChecker.ValidateWorkspaceVariableSave(cache, modifiedWorkspaceVariables, ws).ToList();
                 Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
                 // if any returned true there was an error
@@ -3578,7 +3639,7 @@ namespace GenBOE.Web.Controllers
                 {
                     ValidationErrors.Add(new ValidationMessage("The following Workspace Variables contain circular references. To remove, edit its summed BOEs."));
 
-                    foreach (var wvar in validatedWorkspaceVariables)
+                    foreach (WorkspaceVariableDTO wvar in validatedWorkspaceVariables)
                     {
                             ValidationErrors.Add(new ValidationMessage("- " + wvar.WorkspaceVariableName));
                     }
@@ -3596,7 +3657,7 @@ namespace GenBOE.Web.Controllers
                 // get the original workspace variable list so we can determine if values changed
                 // if they did, we need to send an email to the BOE Author
                 IReadOnlyCollection<WorkspaceVariableDTO> originalWorkspaceVars = ws.WorkspaceVariables;
-                var changedWorkspaceVars = from o in originalWorkspaceVars
+				IEnumerable<WorkspaceVariableDTO> changedWorkspaceVars = from o in originalWorkspaceVars
                                            from m in modifiedWorkspaceVariables
                                            where o.Id == m.Id &&
                                                  (o.WorkspaceVariableValue != m.WorkspaceVariableValue ||
@@ -3626,8 +3687,8 @@ namespace GenBOE.Web.Controllers
                     }
                 }
 
-                // Get all deleted variables that are currently in use. These must not be deleted.
-                var invalidDeletions = from m in modifiedWorkspaceVariables
+				// Get all deleted variables that are currently in use. These must not be deleted.
+				IEnumerable<ValidationMessage> invalidDeletions = from m in modifiedWorkspaceVariables
                                        from o in originalWorkspaceVars
                                        where m.Id == o.Id &&
                                              m.Updateable == UpdateType.Deleted &&
@@ -4389,6 +4450,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="exportAllBoes">Bool noting if all BOEs to be exported or just selected ones</param>
         /// <param name="boesToExport">BOEs to be exported if not exporting all</param>
         /// <returns>Report</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public ActionResult ExportWorkspaceVersion(string workspace, int versionId, bool exportAllBoes, ICollection<int> boesToExport)
         {
@@ -4415,7 +4477,7 @@ namespace GenBOE.Web.Controllers
             
             try
             {
-                using (FileStream workspaceDataStream = new FileStream(workspaceDataReportLocation, FileMode.Open))
+                using (FileStream workspaceDataStream = new FileStream(workspaceDataReportLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose))
                 {
                     workspaceDataStream.Position = 0;
                     zipContents.Add(Utilities.CleanFileName(string.Format("WorkspaceData-{0}-{1}.xlsx", ws.Shortname, versionName)), workspaceDataStream);
@@ -4448,18 +4510,21 @@ namespace GenBOE.Web.Controllers
                         zipContents.Add(Utilities.CleanFileName(string.Format("AllBOEs-{0}-{1}.docx", ws.Shortname, versionName)), allBoesStream);
 
                         string zipFileName = Zip.ZipFiles(zipContents, Server.MapPath("~/Templates/Export"));
-                        toReturn = new ExportFileDownloadResult(zipFileName, Utilities.CleanFileName(string.Format("BackupExport_{0}_{1}.zip", ws.Shortname, versionName)));
+
+                        string fileName = Utilities.CleanFileName(string.Format("BackupExport_{0}_{1}.zip", ws.Shortname, versionName));
+                        // Generate a custom ActionResult to cause a file download to the client
+                        FileStream fs = new FileStream(zipFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+                        toReturn = File(
+                            fileStream: fs,
+                            contentType: ExportFileDownloadBase.GetContentType(fileName),
+                            fileDownloadName: fileName);
                     }
                 }
             }
             catch (Exception e)
             {
                 _log.Error(e);
-            }
-            finally
-            {
-                // Delete temporary Workspace Data report file - All BOEs already deleted
-                System.IO.File.Delete(workspaceDataReportLocation);
             }
 
             return toReturn;
@@ -5002,7 +5067,7 @@ namespace GenBOE.Web.Controllers
             // Perform Date Range validation
             DateRangeValidator validator = new DateRangeValidator();
 
-            var validationData = new Collection<Dictionary<string, string>>()
+			Collection<Dictionary<string, string>> validationData = new Collection<Dictionary<string, string>>()
             {
                 new Dictionary<string, string>()
                 {
@@ -5138,7 +5203,7 @@ namespace GenBOE.Web.Controllers
                     newWorkspaceDTO.CostDecimalPrecision = newWorkspace.CostDecimalPrecision;
 
                     _ControllerLogic.PopulateCompanySpecificWorkspaceProperties(newWorkspace, newWorkspaceDTO);
-                    if ((int)newWorkspaceDTO.BOEExportSortByID == 0)
+                    if (newWorkspaceDTO.BOEExportSortByID == 0)
                     {
                         newWorkspaceDTO.BOEExportSortByID = (int)ExportSortBOEBy.WBS;
                     }
@@ -5217,14 +5282,14 @@ namespace GenBOE.Web.Controllers
                         // Call the BL to copy the workspace
                         finishedWithoutErrors = _WorkspaceCopier.CopyWorkspace(copiedFromWs, newWs, newWorkspace.BOEsToCopy, newWorkspace.CopyPermissions,
                         newWorkspace.CopyTasks, newWorkspace.CopyLaborSpreads);
-                        var copiedTemplateTypes = _WorkspaceExportFormatDTOLoader.GetWorkspaceExportFormatsForWorkspace(newWorkspace.WorkspaceToCopyID);
+						Collection<WorkspaceExportFormatDTO> copiedTemplateTypes = _WorkspaceExportFormatDTOLoader.GetWorkspaceExportFormatsForWorkspace(newWorkspace.WorkspaceToCopyID);
                         _WorkspaceExportFormatDTOLoader.InsertWorkspaceExportFormatsPickList(copiedTemplateTypes, newWorkspaceID);
                     }
                     else
                     {
                         // associate default output formats (landscape and portrait) to new workspace
                         ICollection<ExcelReportTemplateType> picklistTemplateTypes = _ControllerLogic.GetPicklistReportTemplateTypes(newWs);
-                        foreach (var templateType in picklistTemplateTypes)
+                        foreach (ExcelReportTemplateType templateType in picklistTemplateTypes)
                         {
                             _WorkspaceExportFormatDTOLoader.InsertWorkspaceExportFormatPicklist(new Collection<int> { newWorkspaceID }, (int)templateType);
                         }
@@ -5932,7 +5997,7 @@ namespace GenBOE.Web.Controllers
             {
                 try
                 {
-                    var resourceListID = ws.ResourceListID;
+					int resourceListID = ws.ResourceListID;
 
                     bool importLabor = Request.Form["ImportISGSLabor"] != null;
                     bool importIWTA = Request.Form["ImportIWTA"] != null;
@@ -5974,16 +6039,16 @@ namespace GenBOE.Web.Controllers
 
                     if (resourcesFromImportFile.Any())
                     {
-                        // Get the current resources for this workspace
-                        var allDatabaseResources = _ResourceLoader.GetByListId(resourceListID);
+						// Get the current resources for this workspace
+						ICollection<ResourceDTO> allDatabaseResources = _ResourceLoader.GetByListId(resourceListID);
 
                         List<ResourceDTO> inUseResouresCannotBeEditedOrDeleted = new List<ResourceDTO>();
 
-                        // Process Adds. Adds are defined as new resources with a negative resource ID
-                        var addedResources = newResources.Where(x => x.Id < 0).ToList();
+						// Process Adds. Adds are defined as new resources with a negative resource ID
+						List<ResourceDTO> addedResources = newResources.Where(x => x.Id < 0).ToList();
 
                         // Set UpdateDate and Updateable on each added item
-                        foreach (var addedResource in addedResources)
+                        foreach (ResourceDTO addedResource in addedResources)
                         {
                             addedResource.UpdateDate = DateTime.Now;
                             addedResource.Updateable = UpdateType.Upsert;
@@ -6027,10 +6092,10 @@ namespace GenBOE.Web.Controllers
                         inUseResouresCannotBeEditedOrDeleted = availableToDelete.Where(x => resourceIDsInUse.Contains(x.Id) == true).ToList();
                         availableToDelete = availableToDelete.Where(x => resourceIDsInUse.Contains(x.Id) == false).ToList();
 
-                        var deletedResources = availableToDelete.ToList();
+						List<ResourceDTO> deletedResources = availableToDelete.ToList();
 
                         // Set Updateable on each deleted item
-                        foreach (var deletedResource in deletedResources)
+                        foreach (ResourceDTO deletedResource in deletedResources)
                         {
                             deletedResource.Updateable = UpdateType.Deleted;
                         }
@@ -6081,7 +6146,7 @@ namespace GenBOE.Web.Controllers
                         // update in Use options with the resource that editing was attempted but will be denied
                         inUseResouresCannotBeEditedOrDeleted.AddRange(InUseEditedResourcesButNotAllowedToEdit);
 
-                        var ChangedResources = editedResources.Concat(InUseEditedResources).ToList();
+						List<ResourceDTO> ChangedResources = editedResources.Concat(InUseEditedResources).ToList();
 
                         foreach (ResourceDTO resource in ChangedResources)
                         {
@@ -6187,7 +6252,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
-        public ExportFileDownloadResult ExportBOECustomFieldResource(string workspace, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials, string searchText)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportBOECustomFieldResource(string workspace, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials, string searchText)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -6210,12 +6276,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = ResourcesExporter.ExportToExcelFile(templateFileName, resources, _CommonDataMapper);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_Resources.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("{0}_Resources.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBOECustomFieldResource", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -6229,7 +6300,8 @@ namespace GenBOE.Web.Controllers
         /// <param name="showMaterials"></param>
         /// <param name="searchText"></param>
         /// <returns></returns>
-        public ExportFileDownloadResult ExportBOECustomFieldResourceTemplate(string workspace, string searchText)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportBOECustomFieldResourceTemplate(string workspace, string searchText)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -6246,26 +6318,28 @@ namespace GenBOE.Web.Controllers
 
 
             // Get Resources template file name
-            string templateFileName = Server.MapPath("~/Templates/Export/PerformingOrgs.xlsx");
+            string templateFileName = Server.MapPath("~/Templates/Export/Resources.xlsx");
 
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = ResourcesExporter.ExportTemplate(templateFileName, _CommonDataMapper);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_Resources.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("{0}_Resources.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBOECustomFieldResourceTemplate", sw);
 
-            return toReturn;
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
-        public ExportFileDownloadResult ExportWorkspaceResourceRatesTM(string workspace)
+        public ActionResult ExportWorkspaceResourceRatesTM(string workspace)
         {
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult();
-
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
@@ -6288,20 +6362,23 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = TMResourceRatesExporter.ExportToExcelFile(templateFileName, Rates.ToList<ResourceRateDTO>(), workspaceResources, otherWorkspaceResources);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("TM_{0}_ResourceRates.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("TM_{0}_ResourceRates.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportWorkspaceResourceRatesTM", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
-        public ExportFileDownloadResult ExportBlankWorkspaceResourceRatesTM(string workspace)
+        public ActionResult ExportBlankWorkspaceResourceRatesTM(string workspace)
         {
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult();
-
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
@@ -6320,12 +6397,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = TMResourceRatesExporter.ExportToExcelFile(templateFileName, new List<ResourceRateDTO>(), workspaceResources, new List<ResourceDTO>());
 
-            // Generate an custom ActionResult to cause a file download to the client
-            toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("TM_{0}_ResourceRates.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("TM_{0}_ResourceRates.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBlankWorkspaceResourceRatesTM", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -6532,17 +6614,18 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
-        public ExportFileDownloadResult ExportBOECustomFieldPerfOrg(string workspace)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportBOECustomFieldPerfOrg(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "ExportBOECustomFieldPerfOrg", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
-            // Perform Action
+			// Perform Action
 
-            // Get data to export for this Workspace
-            var performingOrgs = ws.PerformingOrgsForWsList.ToCollection();
+			// Get data to export for this Workspace
+			Collection<PerformingOrgDTO> performingOrgs = ws.PerformingOrgsForWsList.ToCollection();
 
             // Get export template file name
             string templateFileName = Server.MapPath("~/Templates/Export/PerformingOrgs.xlsx");
@@ -6550,12 +6633,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = PerformingOrgsExporter.ExportToExcelFile(templateFileName, performingOrgs);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_PerformingOrgs.xlsx", ws.WorkspaceName));
+            string fileName = string.Format("{0}_PerformingOrgs.xlsx", ws.WorkspaceName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBOECustomFieldPerfOrg", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
         /// <summary>
@@ -6590,20 +6678,20 @@ namespace GenBOE.Web.Controllers
                         // Get the custom field values for this custom field.
                         ICollection<CustomFieldValueDTO> currentCustomFieldValues = _CustomFieldValueLoader.GetCustomFieldValueDTOsByCustomFieldID(customFieldID);
 
-                        var unusedCustomFieldValues = currentCustomFieldValues.Where(customFieldValue => !customFieldValue.CustomFieldValueInUseFlag);
+						IEnumerable<CustomFieldValueDTO> unusedCustomFieldValues = currentCustomFieldValues.Where(customFieldValue => !customFieldValue.CustomFieldValueInUseFlag);
 
-                        // Process Adds
-                        var addedCustomFieldValues = newCustomFieldValues.Except(currentCustomFieldValues, new KeyEqualityComparer<CustomFieldValueDTO>(x => x.CustomFieldValueName.Trim().ToLower()));
+						// Process Adds
+						IEnumerable<CustomFieldValueDTO> addedCustomFieldValues = newCustomFieldValues.Except(currentCustomFieldValues, new KeyEqualityComparer<CustomFieldValueDTO>(x => x.CustomFieldValueName.Trim().ToLower()));
 
                         // Set UpdateDate and Updateable on each added item
-                        foreach (var addedPerformingOrg in addedCustomFieldValues)
+                        foreach (CustomFieldValueDTO addedPerformingOrg in addedCustomFieldValues)
                         {
                             addedPerformingOrg.UpdateDate = DateTime.Now;
                             addedPerformingOrg.Updateable = UpdateType.Upsert;
                         }
 
-                        // Process Changes
-                        var changedCustomFieldValues = from newCustomFieldValue in newCustomFieldValues
+						// Process Changes
+						IEnumerable<CustomFieldValueDTO> changedCustomFieldValues = from newCustomFieldValue in newCustomFieldValues
                                                        from unusedCustomFieldValue in unusedCustomFieldValues
                                                        where newCustomFieldValue.CustomFieldValueName.Equals(unusedCustomFieldValue.CustomFieldValueName, StringComparison.CurrentCultureIgnoreCase) &&
                                                              newCustomFieldValue.CustomFieldValueName != unusedCustomFieldValue.CustomFieldValueDescription
@@ -6629,11 +6717,11 @@ namespace GenBOE.Web.Controllers
                                                                         New = changedCustomFieldValue
                                                                     };
 
-                        // Process Deletes
-                        var deletedCustomFieldValues = unusedCustomFieldValues.Except(newCustomFieldValues, new KeyEqualityComparer<CustomFieldValueDTO>(x => x.CustomFieldValueName.Trim().ToLower()));
+						// Process Deletes
+						IEnumerable<CustomFieldValueDTO> deletedCustomFieldValues = unusedCustomFieldValues.Except(newCustomFieldValues, new KeyEqualityComparer<CustomFieldValueDTO>(x => x.CustomFieldValueName.Trim().ToLower()));
 
                         // Set Updateable on each deleted item
-                        foreach (var deletedCustomFieldValue in deletedCustomFieldValues)
+                        foreach (CustomFieldValueDTO deletedCustomFieldValue in deletedCustomFieldValues)
                         {
                             deletedCustomFieldValue.Updateable = UpdateType.Deleted;
                         }
@@ -6703,7 +6791,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
-        public ExportFileDownloadResult ExportBOECustomField(string workspace, int customFieldID)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public ActionResult ExportBOECustomField(string workspace, int customFieldID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -6731,12 +6820,17 @@ namespace GenBOE.Web.Controllers
             // Call the export function in the business layer and get back the file name of the populated template.
             string exportedFileName = CustomFieldExporter.ExportToExcelFile(templateFileName, customFieldValues);
 
-            // Generate an custom ActionResult to cause a file download to the client
-            ExportFileDownloadResult toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_{1}.xlsx", ws.WorkspaceName, customFieldName));
+            string fileName = string.Format("{0}_{1}.xlsx", ws.WorkspaceName, customFieldName);
+            // Generate a custom ActionResult to cause a file download to the client
+            FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
             FinalizeAction(_log, "ExportBOECustomField", sw);
-            return toReturn;
+
+            return File(
+                fileStream: fs,
+                contentType: ExportFileDownloadBase.GetContentType(fileName),
+                fileDownloadName: fileName);
         }
 
 

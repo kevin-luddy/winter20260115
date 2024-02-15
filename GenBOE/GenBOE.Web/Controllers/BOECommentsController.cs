@@ -67,7 +67,7 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "DisplayBOEComments", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
-            var currentUserID = ws.CurrentActiveUser.UserID;
+			int currentUserID = ws.CurrentActiveUser.UserID;
 
             ViewData["BOEID"] = boeID;
             ViewData["CurrentUserID"] = currentUserID;
@@ -94,6 +94,16 @@ namespace GenBOE.Web.Controllers
             {
                 this.ViewData["Responses_ReadOnly"] = this.GetReadOnlyAttribute(permission);
             }
+
+            if (SiteMasterUtilities.IsReadOnly())
+            {
+                if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
+                {
+					this.ViewData["Approvals_ReadOnly"] = true;
+					this.ViewData["Comments_ReadOnly"] = true;
+					this.ViewData["Responses_ReadOnly"] = true;
+				}
+			}
 
             ViewData["WorkspaceState"] = (int)ws.WorkspaceState;
 

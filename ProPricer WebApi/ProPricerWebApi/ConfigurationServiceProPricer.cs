@@ -87,6 +87,7 @@
 			{
 				endpoints.MapControllers();
 				endpoints.MapHealthChecks("/Health", new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
+				endpoints.MapRazorPages();
 			});
 
 			app.Use(async (context, next) =>
@@ -97,6 +98,21 @@
 
 				await next();
 			});
+		}
+
+		/// <summary>
+		/// Override CORS to allow subdomain wildcards
+		/// </summary>
+		/// <param name="services"></param>
+		protected override void ConfigureCors(IServiceCollection services)
+		{
+			string[] allowedOrigins = ConfigurationServiceBase.Configuration["AllowedOrigins"].Split(';');
+			services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+					 builder.WithOrigins(allowedOrigins)
+							 .SetIsOriginAllowedToAllowWildcardSubdomains()
+							 .AllowAnyMethod()
+							 .AllowAnyHeader()
+							 .AllowCredentials()));
 		}
 	}
 }

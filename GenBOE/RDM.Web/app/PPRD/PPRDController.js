@@ -7,6 +7,7 @@
         $rootScope.errors = [];
         $scope.showEditLockTimeoutExpiration = false;
         $scope.isGeneratingPPRD = false;
+        $scope.isGeneratingPortionMarkedPPRD = false;
         $scope.timeoutTime = 4000;
         $scope.PageIsDirty = false;
         $scope.canEdit = function () { return $scope.pprd && $scope.pprd.LockInfo && !$scope.pprd.LockInfo.IsReadOnly; };
@@ -63,6 +64,15 @@
             }
         };
 
+        /* Helper method - returns true if node is address; false otherwise. */
+        $scope.IsSectionAddressContent = function (node) {
+            if (node.ContentType === PPRDModel.SectionContentTypeAddress) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
         /* Helper method to count the table nodes in the section */
         $scope.countTablesInSection = function (targetNode) {
             var numTablesInSection = 0;
@@ -75,6 +85,20 @@
                 }
             }
             return numTablesInSection;
+        };
+
+        /* Helper method to count the address content in the section */
+        $scope.countAddressInSection = function (targetNode) {
+            var numAddressInSection = 0;
+            if (!$scope.IsSectionContent(targetNode)) { // make sure this is a section node
+                for (var i = 0; i < targetNode.ChildNodes.length; i++) {
+                    var node = targetNode.ChildNodes[i];
+                    if ($scope.IsSectionAddressContent(node)) {
+                        numAddressInSection++;
+                    }
+                }
+            }
+            return numAddressInSection;
         };
 
         /* sanitize html */
@@ -154,13 +178,17 @@
             $scope.$broadcast('angular-ui-tree:expand-all');
         };
 
-        $scope.generatePPRDClick = function () {
-            $scope.isGeneratingPPRD = true;
+        $scope.generatePPRDClick = function (portionMarkingRequired) {
+            if (portionMarkingRequired) {
+                $scope.isGeneratingPortionMarkedPPRD = true;
+            } else {
+                $scope.isGeneratingPPRD = true;
+            }
             setTimeout(function () { $scope.timeoutFuncPPRD(); }, $scope.timeoutTime);
-            DownloadFile('GeneratePPRD', PPRDModel.reportsController, PPRDModel.generateFullPPRDAction, 'WIP');
+            DownloadFile('GeneratePPRD', PPRDModel.reportsController, PPRDModel.generateFullPPRDAction, 'WIP', portionMarkingRequired);
         };
 
-        $scope.timeoutFuncPPRD = function () { $scope.$apply(function () { $scope.isGeneratingPPRD = false; }); }
+        $scope.timeoutFuncPPRD = function () { $scope.$apply(function () { $scope.isGeneratingPPRD = false; $scope.isGeneratingPortionMarkedPPRD = false; }); }
 
         $scope.showConfirmDelete = function (scope, $event) {
             // Clear error messages.
@@ -302,7 +330,7 @@
             });
             
             modalInstance.rendered.then(function () {
-                utilityService.makeModalDraggableAndResizable('#editSectionModal', 160, 500);
+                utilityService.makeModalDraggableAndResizable('#editSectionModal', 160, 700);
             });
 
             modalInstance.result.then(function (section) {
@@ -345,7 +373,18 @@
                 "TextContent": "",
                 "IsInternalSection": false,
                 "DisplayRateCode": false,
-                "NumTablesInSection": $scope.countTablesInSection(targetNode)
+                "Office": "",
+                "Agency": "",
+                "LMBA": "",
+                "Name": "",
+                "Street": "",
+                "CityST": "",
+                "Phone": "",
+                "Email": "",
+                "Other": "",
+                "IncludeInCoversheet": false,
+                "NumTablesInSection": $scope.countTablesInSection(targetNode),
+                "NumAddressInSection": $scope.countAddressInSection(targetNode)
             };
             $scope.openEditContentModal(targetNode, content, true);
         };

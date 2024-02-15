@@ -102,11 +102,11 @@ namespace GenTRAC.Web.Common
                 throw new ArgumentNullException(nameof(modelStateDictionary));
             }
 
-            var errors = new Collection<ValidationMessage>();
+			Collection<ValidationMessage> errors = new Collection<ValidationMessage>();
 
-            foreach (var state in modelStateDictionary)
+            foreach (System.Collections.Generic.KeyValuePair<string, ModelState> state in modelStateDictionary)
             {
-                foreach (var error in state.Value.Errors)
+                foreach (ModelError error in state.Value.Errors)
                 {
                     ValidationMessage message = null;
 

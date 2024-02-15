@@ -228,10 +228,15 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// </summary>
         public string RequestTypeText { get; set; }
 
-        /// <summary>
-        /// Text for Proposal Class (used by read only
-        /// </summary>
-        public string ProposalClassText { get; set; }
+		/// <summary>
+		/// Text for Contract Type Group (used by read only
+		/// </summary>
+		public string ContractTypeGroupText { get; set; }
+
+		/// <summary>
+		/// Text for Proposal Class (used by read only
+		/// </summary>
+		public string ProposalClassText { get; set; }
 
         /// <summary>
         /// Document Id (RDSB)

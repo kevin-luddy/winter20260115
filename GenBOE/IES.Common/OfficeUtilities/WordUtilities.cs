@@ -321,10 +321,10 @@ namespace IES.Common.OfficeUtilities
                 throw new ArgumentNullException(nameof(document));
             }
 
-            // Change all the text that has Hours to EPs (Equivalent Persons)
-            var body = document.MainDocumentPart.Document.Body;
-            var texts = body.Descendants<Text>();
-            foreach (var text in texts)
+			// Change all the text that has Hours to EPs (Equivalent Persons)
+			Body body = document.MainDocumentPart.Document.Body;
+			IEnumerable<Text> texts = body.Descendants<Text>();
+            foreach (Text text in texts)
             {
                 if (text.Text.Contains("Hours"))
                 {

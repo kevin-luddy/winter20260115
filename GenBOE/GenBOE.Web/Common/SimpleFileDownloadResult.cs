@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using IES.Common;
+using IES.Common.OfficeUtilities;
 
 namespace GenBOE.Web.Common
 {
     [ExcludeFromCodeCoverage]
     public class SimpleExportFileDownloadResult : ActionResult
     {
-        public const string ContentType_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-        public const string ContentType_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        public const string ContentType_XLSM = "application/vnd.ms-excel.sheet.macroEnabled.12";
-        public const string ContentType_CSV = "text/csv";
-        public const string ContentType_ZIP = "application/zip";
-
         private string _fileDownloadName;
 
         /// <summary>
@@ -59,27 +55,7 @@ namespace GenBOE.Web.Common
                 {
                     context.HttpContext.Response.AddHeader("content-disposition", "attachment; filename=" + this.FileDownloadName);
 
-                    if (FileDownloadName.EndsWith(".docx", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        context.HttpContext.Response.ContentType = ContentType_DOCX;
-                    }
-                    else if (FileDownloadName.EndsWith(".xlsx", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        context.HttpContext.Response.ContentType = ContentType_XLSX;
-                    }
-                    else if (FileDownloadName.EndsWith(".xlsm", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        context.HttpContext.Response.ContentType = ContentType_XLSM;
-                    }
-                    else if (FileDownloadName.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        context.HttpContext.Response.ContentType = ContentType_CSV;
-                    }
-                    else if (FileDownloadName.EndsWith(".zip", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        context.HttpContext.Response.ContentType = ContentType_ZIP;
-                    }
-
+                    context.HttpContext.Response.ContentType = ExportFileDownloadBase.GetContentType(FileDownloadName);
                 }
 
                 try

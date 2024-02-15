@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
 	using IES.Common;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
+	using System;
 
 	/// <summary>
 	/// The PBOE INL Form Data Loader Class.
@@ -148,7 +149,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <returns>Latest version number of the form.</returns>
 		public int GetCurrentFormVersion()
 		{
-			return 1;
+			return 2;
 		}
 
 		/// <summary>
@@ -291,6 +292,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					toReturn = (from b in gbe.BOEFormPBOEs
 								where workspaceId.Equals(b.WorkspaceID)
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
 								orderby b.PBOEFormID
 								select new PBOEDataDTO
 								{
@@ -299,6 +301,11 @@ namespace GenBOE.DataBridge.DTO
 									VendorId = b.VendorId,
 									SupplierProposedValue = b.SupplierProposedValue,
 									IsCCoPD = ((Ccopd)b.CCoPD & Ccopd.Applies) == Ccopd.Applies,
+									IsCompetitionException = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
+									IsCommercialItemException = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
+									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
+									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
+									ExpectedCCoPDApplicability = ((Ccopd)b.CCoPD),
 									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
 									PriceAnalysisDate = b.PriceAnalysisDate,
 									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
@@ -306,7 +313,15 @@ namespace GenBOE.DataBridge.DTO
 									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
 									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
 									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
-									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -348,6 +363,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					toReturn = (from b in gbe.BOEFormPBOEs
 								where workspaceId.Equals(b.WorkspaceID) && pboeId.Equals(b.PBOEFormID)
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
 								select new PBOEDataDTO
 								{
 									PBoeID = b.PBOEFormID,
@@ -355,6 +371,11 @@ namespace GenBOE.DataBridge.DTO
 									VendorId = b.VendorId,
 									SupplierProposedValue = b.SupplierProposedValue,
 									IsCCoPD = ((Ccopd)b.CCoPD & Ccopd.Applies) == Ccopd.Applies,
+									IsCommercialItemException = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
+									IsCompetitionException = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
+									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
+									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
+									ExpectedCCoPDApplicability = (Ccopd)b.CCoPD,
 									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
 									PriceAnalysisDate = b.PriceAnalysisDate,
 									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
@@ -362,7 +383,15 @@ namespace GenBOE.DataBridge.DTO
 									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
 									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
 									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
-									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -409,7 +438,7 @@ namespace GenBOE.DataBridge.DTO
 					string clinList = string.Empty;
 					if (dtoToUpsert.ClinContractTypes != null && dtoToUpsert.ClinContractTypes.Any())
 					{
-						clinList = string.Join(",", dtoToUpsert.ClinContractTypes.Where(c => c.ContractType > 0).Select(c => c.ClinId.ToString() + ":" + ((int)c.ContractType).ToString()));
+						clinList = string.Join(",", dtoToUpsert.ClinContractTypes.Where(c => c.ContractType > 0).Select(c => c.ClinId.ToString() + ":" + c.ContractType.ToString()));
 					}
 
 					Ccopd ccopdValue = CreateCCOPDEnum(dtoToUpsert);

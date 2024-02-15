@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2023 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -21,11 +21,13 @@ namespace RDSB.Web.Controllers
 	using IES.ActionLogic.ControllerLogic;
 	using IES.Common;
 	using IES.Common.OfficeUtilities;
+	using IES.DataBridge.ModelViews;
+	using RDSB.Web.Models;
 
-	/// <summary>
-	/// RDSB Data API Controller - used to serve up RDSB data for ACV (or other applications as needed)
-	/// </summary>
-	[AllowAnonymous]
+    /// <summary>
+    /// RDSB Data API Controller - used to serve up RDSB data for ACV (or other applications as needed)
+    /// </summary>
+    [AllowAnonymous]
 	public class RdsbDataApiController : ApiController
 	{
 		#region Properties & Ctor
@@ -92,15 +94,16 @@ namespace RDSB.Web.Controllers
 			return toReturn;
 		}
 
-		/// <summary>
-		/// Export the RDSB Document
-		/// </summary>
-		/// <param name="proposalId">PTM Proposal ID</param>
-		/// <param name="parentSectionNumber">Parent Section Number</param>
-		/// <returns>RDSB Document in HTTP Response Message</returns>
-		[HttpGet]
+        /// <summary>
+        /// Export the RDSB Document
+        /// </summary>
+        /// <param name="proposalId">PTM Proposal ID</param>
+        /// <param name="parentSectionNumber">Parent Section Number</param>
+        /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        /// <returns>RDSB Document in HTTP Response Message</returns>
+        [HttpGet]
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public HttpResponseMessage ExportRdsbDocument(int proposalId, string parentSectionNumber)
+		public HttpResponseMessage ExportRdsbDocument(int proposalId, string parentSectionNumber, bool portionMarkingRequired = false)
 		{
 			HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
 
@@ -118,7 +121,7 @@ namespace RDSB.Web.Controllers
 				// perform export
 				string serverFileName = HttpContext.Current.Server.MapPath("~/Templates/Export/PPRDTemplate.docx");
 				MemoryStream stream = new MemoryStream();
-				this.documentControllerLogic.GenerateRDD(proposalId, serverFileName, stream, null, parentSectionNumber, false);
+				this.documentControllerLogic.GenerateRDD(proposalId, serverFileName, stream, null, parentSectionNumber, false, portionMarkingRequired);
 
 				stream.Position = 0;
 				responseMessage.Content = new StreamContent(stream);
@@ -161,21 +164,23 @@ namespace RDSB.Web.Controllers
 		}
 
 		/// <summary>
-		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Compliance data, and 3) Disclosure Statements
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
 		[HttpGet]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<(string CasbSection, string NonComplianceSection)> GetCoverSheetData(int proposalId)
+		public IESResponse<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)> GetCoverSheetData(int proposalId)
 		{
-			IESResponse<(string CasbSection, string NonComplianceSection)> toReturn = new IESResponse<(string CasbSection, string NonComplianceSection)>();
+			IESResponse<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)> toReturn = new IESResponse<(string CasbSection,
+				string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)>();
 
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = new List<(string CasbSection, string NonComplianceSection)>() { documentControllerLogic.GetCoverSheetData(proposalId) };
+				toReturn.Data = new List<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)>() {
+					documentControllerLogic.GetCoverSheetData(proposalId) };
 				toReturn.IsSuccessful = true;
 			}
 			catch (Exception ex)
@@ -187,25 +192,65 @@ namespace RDSB.Web.Controllers
 			return toReturn;
 		}
 
-		/// <summary>
-		/// Gets data necessary for CPS Reports
-		/// </summary>
-		/// <param name="rateCodes">List of rate codes</param>
-		/// <param name="proposalId">PTM Proposal ID</param>
-		/// <returns>Data to support a CPS Report</returns>
-		[HttpGet]
+        /// <summary>
+        /// Gets data necessary for CPS Reports
+        /// </summary>
+        /// <param name="requestData">Request data for RDSB API.</param>
+        /// <returns>Data to support a CPS Report</returns>
+        [HttpPost]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<(string rateCode, string parentSectionNumber)> GetSectionsForRateCodes(ICollection<string> rateCodes, int proposalId)
+		public IESResponse<string> GetSectionsForRateCodes(RDSBRateCodesRequest requestData)
 		{
-			IESResponse<(string rateCode, string parentSectionNumber)> toReturn = new IESResponse<(string rateCode, string parentSectionNumber)>();
+			IESResponse<string> toReturn = new IESResponse<string>();
 
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateCodes(rateCodes, proposalId);
-				toReturn.IsSuccessful = true;
+				if (requestData != null)
+				{
+                    toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateCodes(requestData.RateCodes, requestData.PtmProposalId);
+                    toReturn.IsSuccessful = true;
+                }
+				else
+				{
+                    toReturn.IsSuccessful = false;
+                }
+            }
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				toReturn.Messages.Add($"Error occurred while retrieving data from RDSB");
 			}
+
+			return toReturn;
+		}
+
+        /// <summary>
+        /// Gets data necessary for CPS Reports
+        /// </summary>
+        /// <param name="requestData">Request data for RDSB API.</param>
+        /// <returns>Data to support a CPS Report</returns>
+        [HttpPost]
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<string> GetSectionsForRateDescriptions(RDSBRateDescriptionsRequest requestData)
+		{
+			IESResponse<string> toReturn = new IESResponse<string>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				if (requestData != null)
+				{
+					toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateDescriptions(requestData.RateDescriptions, requestData.PtmProposalId);
+                    toReturn.IsSuccessful = true;
+                }
+				else
+				{
+					toReturn.IsSuccessful = false;
+                }
+            }
 			catch (Exception ex)
 			{
 				logger.Error(ex);
@@ -216,31 +261,30 @@ namespace RDSB.Web.Controllers
 		}
 
 		/// <summary>
-		/// Gets data necessary for CPS Reports
+		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
 		/// </summary>
-		/// <param name="rateDescriptions">List of rate descriptions</param>
-		/// <param name="proposalId">PTM Proposal ID</param>
-		/// <returns>Data to support a CPS Report</returns>
+		/// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
+		/// <returns>A collection of addresses</returns>
 		[HttpGet]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<(string rateDescription, string parentSectionNumber)> GetSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId)
+		public IESResponse<SectionAddressModelView> GetAddresses(int ptmTrackingId)
 		{
-			IESResponse<(string rateDescription, string parentSectionNumber)> toReturn = new IESResponse<(string rateDescription, string parentSectionNumber)>();
+			IESResponse<SectionAddressModelView> addresses = new IESResponse<SectionAddressModelView>();
 
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateDescriptions(rateDescriptions, proposalId);
-				toReturn.IsSuccessful = true;
+				addresses.Data = this.documentControllerLogic.GetAddresses(ptmTrackingId);
+				addresses.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				toReturn.Messages.Add($"Error occurred while retrieving data from RDSB");
+				addresses.Messages.Add($"Error occurred while retrieving address data from RDSB");
 			}
 
-			return toReturn;
+			return addresses;
 		}
 	}
 }

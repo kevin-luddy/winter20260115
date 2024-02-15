@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<parameters>
+	<!--  http://colinsalmcorner.com/post/end-to-end-walkthrough-deploying-web-applications-using-team-build-and-release-management
+        The publish profile takes care of the connection strings – but you will have noticed that it doesn’t ask for values for appSettings 
+        (or any other configuration) anywhere. In order to tokenize anything in your web.config other than connection strings, you’ll need to 
+        create a parameters.xml file (yes, it has to be called that) in the root of your web application project. When the build runs, it 
+        will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
+
+	<!--appSettings-->
+	
+	<parameter name="AllowedOrigins" description="doesn't matter" defaultvalue="__AllowedOrigins__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_AllowedOrigins_">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESUrl" description="doesn't matter" defaultvalue="__IESUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IESUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="PTMUrl" description="doesn't matter" defaultvalue="__PTMUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PTMUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="_APPLICATION_VERSION" description="doesn't matter" defaultvalue="__APPLICATION_VERSION__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_APPLICATION_VERSION_">
+		</parameterentry>
+	</parameter>
+	<parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_AUTHORITY_">
+		</parameterentry>
+	</parameter>
+	<parameter name="oAuthSecret" description="doesn't matter" defaultvalue="__oAuthSecret__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_SECRET_">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESDatabase" description="doesn't matter" defaultvalue="__IES_DATABASE__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_DATABASE_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SplunkHost" description="doesn't matter" defaultvalue="__Splunk_Host__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_HOST_">
+		</parameterentry>
+	</parameter>
+	<parameter name="AuthorizeViewWhosOnlineGroups" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+		</parameterentry>
+	</parameter>
+	<parameter name="HideNonPortionMarking" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+		</parameterentry>
+	</parameter>
+	<parameter name="HidePortionMarking" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+		</parameterentry>
+	</parameter>
+	<parameter name="IsProduction" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SplunkToken" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+		</parameterentry>
+	</parameter>
+	
+	<!--system.web-->
+	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
+		</parameterentry>
+	</parameter>
+	
+	<!--app.config-->
+	<parameter name="IsIdentitySwappingAllowed" description="doesn't matter" defaultvalue="__IsIdentitySwappingAllowed__" tags="">
+		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/appSettings/add[@key='IsIdentitySwappingAllowed']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="AuthorizeViewWhosOnlineGroups" description="doesn't matter" defaultvalue="__AuthorizeViewWhosOnlineGroups__" tags="">
+		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/appSettings/add[@key='AuthorizeViewWhosOnlineGroups']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ActiveDirectoryPath" description="doesn't matter" defaultvalue="__ActiveDirectoryPath__" tags="">
+		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+	<parameter name="genTracEntities" description="doesn't matter" defaultvalue="__genTracEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='genTracEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+</parameters>
