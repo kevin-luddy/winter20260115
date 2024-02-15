@@ -33,6 +33,8 @@
 
 					var dataToSend = JSON.stringify(WorkspaceIdentificationWidget.getForm('WorkspaceIdentificationForm').getData());
 
+					console.log(dataToSend);
+
 					WorkspaceIdentificationWidget.saveRequest({
 						url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                             '<%: WebConstants.CONTROLLER_WORKSPACE %>',
