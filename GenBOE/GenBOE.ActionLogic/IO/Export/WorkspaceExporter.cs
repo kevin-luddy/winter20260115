@@ -579,8 +579,11 @@ namespace GenBOE.ActionLogic.IO.Export
                             row.Add(this.sEmpty);
                         }
 
-                        ResourceDTO aResource = resourceType.ResourceID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
-                        PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? exportInputs.PerformingOrgsUsedInBoes.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
+						bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
+
+						ResourceDTO aResource = resourceType.ResourceID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
+						ResourceDTO brcResource = isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
+						PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? exportInputs.PerformingOrgsUsedInBoes.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
                         string percentSpread = this.sEmpty;
 
                         if (resourceType.SpreadType == SpreadType.Hours)
@@ -595,7 +598,6 @@ namespace GenBOE.ActionLogic.IO.Export
                             }
                         }
 
-
                         row.AddRange(
                             new string[] {
                                     this.sEmpty, this.sEmpty,
@@ -604,7 +606,11 @@ namespace GenBOE.ActionLogic.IO.Export
                                     resourceType.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
                                     resourceType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
                                     resourceType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
-                                    resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
+									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceDesc : this.sEmpty,
+									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.SegRegion : this.sEmpty,
+									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.LaborType : this.sEmpty,
+									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceName : this.sEmpty,
+									resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
                                     resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty,
                                     resourceType.StartDate.HasValue ? resourceType.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
                                     resourceType.EndDate.HasValue ? resourceType.EndDate.Value.ToString("MM/yyyy") : this.sEmpty,
@@ -1038,9 +1044,12 @@ namespace GenBOE.ActionLogic.IO.Export
 
                             List<string> row = new List<string>();
 
-                            ResourceDTO aResource = type.ResourceID.HasValue ? workspaceResources.First(x => x.Id == type.ResourceID.Value) : new ResourceDTO();
+							bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
 
-                            row.AddRange(
+                            ResourceDTO aResource = type.ResourceID.HasValue ? workspaceResources.First(x => x.Id == type.ResourceID.Value) : new ResourceDTO();
+							ResourceDTO brcResource = isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == type.BusinessResourceCodeID.Value) : new ResourceDTO();
+
+							row.AddRange(
                                 new string[]
                                 {
                                     taskID,
@@ -1052,7 +1061,9 @@ namespace GenBOE.ActionLogic.IO.Export
                                     clinTitle,
                                     type.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
                                     type.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
-                                    type.PerformingOrgID.HasValue ? perfOrgsFromDb.First(x => x.Id == type.PerformingOrgID.Value).PerformingOrgName : this.sEmpty,
+									isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? brcResource.SegRegion : this.sEmpty,
+									isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? brcResource.LaborType : this.sEmpty,
+									type.PerformingOrgID.HasValue ? perfOrgsFromDb.First(x => x.Id == type.PerformingOrgID.Value).PerformingOrgName : this.sEmpty,
                                     currentDate.Year.ToString(),
                                     currentDate.Month.ToString()
                                 });
@@ -1444,9 +1455,9 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 // Labor Resource Types
                 toReturn = this.GetLaborResourceTypeDataforBOEResourceCombo(exportInputs, toReturn, boe, task, allWbs, allClins, workspaceResources, workspace_customFields, workspaceCustomFieldValues, allSpreadCurves, perfOrgsFromDb, taskFields1, taskFields2);
-            }
+			}
 
-            return toReturn;
+			return toReturn;
         }
 
         /// <summary>
@@ -1477,8 +1488,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 bool resourceUsesCostValues = resourceType.SpreadType == SpreadType.Cost;
                 DateTime currentDate = resourceType.StartDate.Value;                
                 ResourceDTO aResource = resourceType.ResourceID.HasValue ? workspaceResources.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
+				ResourceDTO brcResource = Utilities.IsBRCEnabledForSystem && resourceType.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
 
-                row.AddRange(
+				row.AddRange(
                     new string[]
                     {
                         boe.Id.ToString(),
@@ -1498,7 +1510,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 // Empty cells for Task level CFs
                 this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.TaskDisplay);
 
-                string[] resFields2 = this.GetResourceTypeDetails(resourceType, aResource, task, perfOrgsFromDb, allSpreadCurves, exportInputs);
+                string[] resFields2 = this.GetResourceTypeDetails(resourceType, aResource, brcResource, task, perfOrgsFromDb, allSpreadCurves, exportInputs);
                 row.AddRange(resFields2);
 
                 row.AddRange(this.GetResourceTypeHourAndCostSpreads(resourceType, exportInputs));
@@ -1515,25 +1527,25 @@ namespace GenBOE.ActionLogic.IO.Export
             return toReturn;
         }
 
-        /// <summary>
-        /// Gets the Labor Resource Spread row data for the BOE Resource Combo sheet
-        /// </summary>
-        /// <param name="exportInputs">The export inputs.</param>
-        /// <param name="toReturn">Excel Export Worksheet to add the rows to</param>
-        /// <param name="boe">BOE</param>
-        /// <param name="resourceType">Resource Type</param>
-        /// <param name="taskFields1">task field data from GetTaskIdTitleAndMOQFields for the row</param>
-        /// <param name="taskFields2">task field data from GetTaskDescriptionMetricsAndDateFields for the row</param>
-        /// <param name="resFields1">resource type field data for the row (part 1)</param>
-        /// <param name="resFields2">resource type field data for the row (part 2)</param>
-        /// <param name="currentDate">Resource Start Date - used to increment spread dates</param>
-        /// <param name="workspace_customFields">Workspace Custom Fields</param>
-        /// <param name="workspaceCustomFieldValues">Workspace Custom Field Values</param>
-        /// <param name="resourceUsesCostValues">Bool noting if Resource Type uses a Cost Spread</param>
-        /// <returns>
-        /// Excel Export Worksheet with Labor Task data
-        /// </returns>
-        private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1, string[] resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues)
+		/// <summary>
+		/// Gets the Labor Resource Spread row data for the BOE Resource Combo sheet
+		/// </summary>
+		/// <param name="exportInputs">The export inputs.</param>
+		/// <param name="toReturn">Excel Export Worksheet to add the rows to</param>
+		/// <param name="boe">BOE</param>
+		/// <param name="resourceType">Resource Type</param>
+		/// <param name="taskFields1">task field data from GetTaskIdTitleAndMOQFields for the row</param>
+		/// <param name="taskFields2">task field data from GetTaskDescriptionMetricsAndDateFields for the row</param>
+		/// <param name="resFields1">resource type field data for the row (part 1)</param>
+		/// <param name="resFields2">resource type field data for the row (part 2)</param>
+		/// <param name="currentDate">Resource Start Date - used to increment spread dates</param>
+		/// <param name="workspace_customFields">Workspace Custom Fields</param>
+		/// <param name="workspaceCustomFieldValues">Workspace Custom Field Values</param>
+		/// <param name="resourceUsesCostValues">Bool noting if Resource Type uses a Cost Spread</param>
+		/// <returns>
+		/// Excel Export Worksheet with Labor Task data
+		/// </returns>
+		private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1, string[] resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues)
         {
             while (currentDate <= resourceType.EndDate.Value)
             {
@@ -2137,7 +2149,7 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
         /// <summary>
-        /// Gets the Element of Cost, Resource Description, Labor Type, Resource Name, Perf Org, Spread Curve, and Percent Spread fields
+        /// Gets the Element of Cost, Resource Description, Labor Type, Resource Name, Perf Org, Spread Curve, and BRC Resource and Percent Spread fields
         /// </summary>
         /// <param name="resourceType">Resource Type</param>
         /// <param name="aResource">Resource</param>
@@ -2148,7 +2160,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <returns>
         /// Strings for the Resource Type fields
         /// </returns>
-        private string[] GetResourceTypeDetails(ResourceTypeDto resourceType, ResourceDTO aResource, BoeTaskElementDTO task, HashSet<PerformingOrgDTO> perfOrgsFromDb, IDictionary<int, SpreadCurveModelView> allSpreadCurves, BOEExportInputs exportInputs)
+        private string[] GetResourceTypeDetails(ResourceTypeDto resourceType, ResourceDTO aResource, ResourceDTO brcResource, BoeTaskElementDTO task, HashSet<PerformingOrgDTO> perfOrgsFromDb, IDictionary<int, SpreadCurveModelView> allSpreadCurves, BOEExportInputs exportInputs)
         {
             PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? perfOrgsFromDb.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
             string percentSpread = this.sEmpty;
@@ -2165,6 +2177,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
             }
 
+			bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
+
             return new string[]
                         {
                                     this.sEmpty, // Total Task Hours
@@ -2173,7 +2187,11 @@ namespace GenBOE.ActionLogic.IO.Export
                                     resourceType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
                                     resourceType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
                                     resourceType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
-                                    resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
+									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceDesc : this.sEmpty,
+									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.LaborType : this.sEmpty,
+									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.ResourceName : this.sEmpty,
+									isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? brcResource.SegRegion : this.sEmpty,
+									resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
                                     resourceType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty,
                                     resourceType.SpreadCurveID.HasValue ? allSpreadCurves[(int)resourceType.SpreadCurveID.Value].SpreadCurveName.Replace("Hours", FullObjectHelper.HoursLabel(exportInputs.Workspace)) : this.sEmpty,
                                     percentSpread

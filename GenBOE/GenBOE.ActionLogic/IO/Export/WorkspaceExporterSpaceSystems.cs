@@ -16,14 +16,24 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Objects;
-    using IES.Common.OfficeUtilities;
+	using IES.Common;
+	using IES.Common.OfficeUtilities;
 
-    [ExcludeFromCodeCoverage]
+	[ExcludeFromCodeCoverage]
     public class WorkspaceExporterSpaceSystems:WorkspaceExporter
     {
         public override string WORKSPACE_DATA_EXCEL_MAP_PATH
         {
-            get { return "~/Templates/Export/WorkspaceDataSpaceSystems.xlsx"; }
+            get {
+				if (Utilities.IsBRCEnabledForSystem)
+				{
+					return "~/Templates/Export/WorkspaceDataWithBRCSpaceSystems.xlsx";
+				}
+				else
+				{
+					return "~/Templates/Export/WorkspaceDataSpaceSystems.xlsx";
+				}
+			}
         }
 
         public WorkspaceExporterSpaceSystems(
