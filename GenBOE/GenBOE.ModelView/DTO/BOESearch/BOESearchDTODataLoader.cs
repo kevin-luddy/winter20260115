@@ -313,8 +313,17 @@ namespace GenBOE.DataBridge.DTO
                         finalSearchString.Append('"').Append(searchString).Append('"').Append(delimiter);
                     }
                 }
-                toReturn = finalSearchString.Remove(finalSearchString.Length - delimiter.Length, delimiter.Length).ToString();
-            }
+
+				// Edge case for if only non-alphanumeric characters are searched
+				if (!string.IsNullOrWhiteSpace(finalSearchString.ToString())) 
+				{
+					toReturn = finalSearchString.Remove(finalSearchString.Length - delimiter.Length, delimiter.Length).ToString();
+				}
+				else
+				{
+					toReturn = "\"\"";
+				}
+			}
             else
             {
                 toReturn = "\"\"";
