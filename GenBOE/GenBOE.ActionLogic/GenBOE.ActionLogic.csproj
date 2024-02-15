@@ -247,6 +247,7 @@
     <Compile Include="IO\Export\PermissionsExporter.cs" />
     <Compile Include="IO\Export\TMResourceRatesExporter.cs" />
     <Compile Include="IO\Export\TraceTableExporter.cs" />
+    <Compile Include="IO\ImportExportUtilities.cs" />
     <Compile Include="IO\Import\IMoqTableImporter.cs" />
     <Compile Include="IO\Import\ImportedMoqTable.cs" />
     <Compile Include="IO\Import\MoqTableImporter.cs" />

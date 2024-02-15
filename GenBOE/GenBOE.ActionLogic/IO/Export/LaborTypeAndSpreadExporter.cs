@@ -89,12 +89,12 @@ namespace GenBOE.ActionLogic.IO.Export
 
             IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs = inWorkspace.PerformingOrgsForWsList;
              Collection<SpreadCurveModelView> allCurves = inCommonMapper.getSpreadCurve();
-			ICollection<ResourceDTO> allResourceTypes = GetResourcesBasedOnCompanyMode(originalResources, false);
+			ICollection<ResourceDTO> allResourceTypes = ImportExportUtilities.GetResourcesBasedOnCompanyMode(originalResources, false);
 			ICollection<ResourceDTO> allBusinessResourceCodeTypes = new List<ResourceDTO>();
 
 			if (Utilities.IsBRCEnabledForSystem)
 			{
-				allBusinessResourceCodeTypes = GetResourcesBasedOnCompanyMode(originalResources, true);
+				allBusinessResourceCodeTypes = ImportExportUtilities.GetResourcesBasedOnCompanyMode(originalResources, true);
 			}
 			
             // Create a new random file name in the specified directory
@@ -794,45 +794,6 @@ namespace GenBOE.ActionLogic.IO.Export
             // Add Defined Names for each custom field
             ExcelExporter.AddDefinedNames(spreadsheet, customFieldDefinedNames);
         }
-
-		/// <summary>
-		/// Returns Resources / Business Resource Codes based on Company mode and 1LMX or Legacy distinction
-		/// </summary>
-		/// <param name="resourceData">Original Resources list</param>
-		/// <param name="isBrc">Bool to signify if Resources are of type Business Resource Codes</param>
-		/// <returns>Filtered list of Resources</returns>
-		public static ICollection<ResourceDTO> GetResourcesBasedOnCompanyMode(ICollection<ResourceDTO> resourceData, bool isBrc)
-		{
-			if (Utilities.IsBRCEnabledForSystem)
-			{
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-				{
-					if (!isBrc)
-					{
-						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES).ToList();
-					}
-					else
-					{
-						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.SPACE_1LMX_CORE || x.SegRegion == WebConstants.SPACE_1LMX_SERVICES).ToList();
-					}
-				}
-
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-				{
-					if (!isBrc)
-					{
-						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMX_1LMX_CORE && x.SegRegion != WebConstants.RMX_1LMX_SERVICES).ToList();
-
-					}
-					else
-					{
-						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMX_1LMX_CORE || x.SegRegion == WebConstants.RMX_1LMX_SERVICES).ToList();
-					}
-				}
-			}
-
-			return resourceData;
-		}
 
 		#endregion Private Functions
 	}
