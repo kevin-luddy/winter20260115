@@ -1049,7 +1049,7 @@ namespace GenBOE.ActionLogic.IO.Export
                             ResourceDTO aResource = type.ResourceID.HasValue ? workspaceResources.First(x => x.Id == type.ResourceID.Value) : new ResourceDTO();
                             ResourceDTO brcResource = isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == type.BusinessResourceCodeID.Value) : new ResourceDTO();
                             
-                                row.AddRange(
+                            row.AddRange(
                                 new string[]
                                 {
                                     taskID,
@@ -1457,7 +1457,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 toReturn = this.GetLaborResourceTypeDataforBOEResourceCombo(exportInputs, toReturn, boe, task, allWbs, allClins, workspaceResources, workspace_customFields, workspaceCustomFieldValues, allSpreadCurves, perfOrgsFromDb, taskFields1, taskFields2);
 			}
    
-                return toReturn;
+           return toReturn;
         }
 
         /// <summary>
@@ -1490,7 +1490,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 ResourceDTO aResource = resourceType.ResourceID.HasValue ? workspaceResources.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
                 ResourceDTO brcResource = Utilities.IsBRCEnabledForSystem && resourceType.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
                 
-                    row.AddRange(
+                row.AddRange(
                     new string[]
                     {
                         boe.Id.ToString(),
