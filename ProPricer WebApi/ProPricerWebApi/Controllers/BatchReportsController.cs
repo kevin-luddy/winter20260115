@@ -257,7 +257,10 @@ namespace APTSPropricerApi.Controllers
 		internal ProPricerResponse<byte[]> ExportBatchReportAsPdf(int instanceId, ProPricerExportContainer container, out string tempFile)
 		{
 			ProPricerResponse<byte[]> response = new();
-			tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Pdf);
+			//tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Pdf);
+			tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Excel);
+			Aspose.Cells.Workbook wb = new Workbook(tempFile);
+			wb.Save(tempFile + ".pdf", SaveFormat.Pdf);
 			response.IsSuccessful = true;
 			return response;
 		}

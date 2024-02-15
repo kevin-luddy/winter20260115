@@ -93,13 +93,13 @@ namespace UnitTestProject
 				Directory.CreateDirectory(Constants.TEMP_DIRECTORY);
 			}
 
-			string proposalId = "3ac7f35f-5e08-ed11-9f7b-64c901b7a0ad";
+			string proposalId = "400c9fe1-de18-ed11-9f7f-64c901b7a0ad";
 
 			BatchReportsController controller = CreateSUT();
 
 			ProPricerResponse<ICollection<BatchReportDto>> results = controller.GetBatchReports(TestConstants.SpaceInstanceId);
 			// pick id for Batch Report
-			string batchId = results.Data.First(b => b.Name.StartsWith("15-2 iii a")).Id;
+			string batchId = results.Data.First(b => b.Name.StartsWith("DD1861 - Batch")).Id;
 			ProPricerResponse<byte[]> response = controller.ExportBatchReportAsPdf(TestConstants.SpaceInstanceId, new ProPricerExportContainer
 			{
 				batchReportId = batchId,

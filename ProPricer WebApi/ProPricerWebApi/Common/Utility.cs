@@ -37,11 +37,11 @@ namespace APTSPropricerApi.Common
 			batchReport.Open();
 
 			string tempFile = Path.GetRandomFileName();
+			BatchReportContextManager mgr = new(proposal);
+			BatchReportRuntimeContext ctx = new(batchReport, mgr);
 
 			if (batchReport.ReportType == EBS.ProPricer.Data.ReportType.Regular)
 			{
-				BatchReportContextManager mgr = new(proposal);
-				BatchReportRuntimeContext ctx = new(batchReport, mgr);
 				ctx.Options.ExportType = exportType;
 				ctx.Options.Folder = Constants.TEMP_DIRECTORY;
 				ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
@@ -66,8 +66,6 @@ namespace APTSPropricerApi.Common
 			}
 			else
 			{
-				BatchReportContextManager mgr = new(proposal);
-				BatchReportRuntimeContext ctx = new(batchReport, mgr);
 				ctx.Options.ExportType = exportType;
 				ctx.Options.Folder = Constants.TEMP_DIRECTORY;
 				ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
