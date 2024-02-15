@@ -51,6 +51,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
                 this.RevisedSubmittalDate = workspaceDTO.RevisedSubmittalDate.HasValue?
                     workspaceDTO.RevisedSubmittalDate.Value.ToString("MM/dd/yyyy") : 
                     string.Empty;
+				this.CurrentPTMWorkspace = workspaceDTO.CurrentPTMWorkspace;
             }
             if (costVolumeLeadDTO != null)
             {
@@ -135,5 +136,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// Revised Submitted Date. Allows 01-12 for month, 01-31 for day, 1999-2000 for year
         /// </summary>
         public string RevisedSubmittalDate { get; set; }
-    }
+
+		/// <summary>
+		/// Get/Set whether Workspace is the current for the PTM Tracking Number
+		/// </summary>
+		public bool CurrentPTMWorkspace { get; set; }
+	}
 }

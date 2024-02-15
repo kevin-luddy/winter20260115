@@ -339,6 +339,8 @@
 		}
 	};
 
+
+
 	$(function () {
 		WorkspaceIdentificationWidget.registerForEvent('CLEAN_WORKSPACE_SETTINGS_DIRTY', function () { WorkspaceIdentificationWidget.cleanDirty('WorkspaceIdentificationForm'); });
 
@@ -743,6 +745,18 @@
 					<%} %>
 			</div>
 		<% } %>
+		<div class="form-row">
+			<div class="form-label">
+				<span>Current Workspace</span>
+			</div>
+			<div class="form-element">
+				<%: Html.DropDownListFor(c => c.CurrentPTMWorkspace, new List<SelectListItem>()
+					{
+						new SelectListItem() { Text = "Yes", Value = "True" },
+						new SelectListItem() { Text = "No", Value = "False" }
+					}) %>
+			</div>
+		</div>
 		<button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
 		<% } %>
 	</div>

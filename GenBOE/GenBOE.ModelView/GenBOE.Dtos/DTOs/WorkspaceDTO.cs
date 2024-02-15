@@ -54,6 +54,7 @@ namespace GenBOE.Dtos
             this.ResourceSorting = CustomFieldSorting.Description;
             this.PerfOrgSorting = CustomFieldSorting.Description;
             this.EnableSAPConnection = true;
+			this.CurrentPTMWorkspace = false;
         }
 
         /// <summary>
@@ -215,6 +216,11 @@ namespace GenBOE.Dtos
         /// Get or set whether using Enable SAP Connection is selected.
         /// </summary>
         public bool EnableSAPConnection { get; set; } = true;
+
+		/// <summary>
+		/// Get or set whether the workspace should be marked as Current for the PTM Tracking Number
+		/// </summary>
+		public bool CurrentPTMWorkspace { get; set; } = false;
 
         /// <summary>
         /// WS Creation Date
