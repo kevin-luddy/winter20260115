@@ -1472,6 +1472,7 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.UserLog' does not have a prima
           <Property Name="RevisedSubmittalDate" Type="datetime2" Precision="7" />
           <Property Name="TemplateBoe" Type="bit" Nullable="false" />
           <Property Name="EnableSAPConnection" Type="bit" Nullable="false" />
+			<Property Name="CurrentPTMWorkspace" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="WorkspaceContractTypeXREF">
           <Key>
