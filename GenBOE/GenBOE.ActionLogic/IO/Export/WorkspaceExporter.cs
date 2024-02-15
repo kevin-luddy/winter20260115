@@ -1455,7 +1455,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 // Labor Resource Types
                 toReturn = this.GetLaborResourceTypeDataforBOEResourceCombo(exportInputs, toReturn, boe, task, allWbs, allClins, workspaceResources, workspace_customFields, workspaceCustomFieldValues, allSpreadCurves, perfOrgsFromDb, taskFields1, taskFields2);
-			}
+            }
    
             return toReturn;
         }
