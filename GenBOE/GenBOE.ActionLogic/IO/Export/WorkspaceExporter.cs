@@ -1048,8 +1048,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
                             ResourceDTO aResource = type.ResourceID.HasValue ? workspaceResources.First(x => x.Id == type.ResourceID.Value) : new ResourceDTO();
                             ResourceDTO brcResource = isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == type.BusinessResourceCodeID.Value) : new ResourceDTO();
-
-							row.AddRange(
+                            
+                                row.AddRange(
                                 new string[]
                                 {
                                     taskID,
@@ -1456,8 +1456,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 // Labor Resource Types
                 toReturn = this.GetLaborResourceTypeDataforBOEResourceCombo(exportInputs, toReturn, boe, task, allWbs, allClins, workspaceResources, workspace_customFields, workspaceCustomFieldValues, allSpreadCurves, perfOrgsFromDb, taskFields1, taskFields2);
 			}
-
-			return toReturn;
+   
+                return toReturn;
         }
 
         /// <summary>
@@ -1489,8 +1489,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 DateTime currentDate = resourceType.StartDate.Value;                
                 ResourceDTO aResource = resourceType.ResourceID.HasValue ? workspaceResources.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
                 ResourceDTO brcResource = Utilities.IsBRCEnabledForSystem && resourceType.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
-
-				row.AddRange(
+                
+                    row.AddRange(
                     new string[]
                     {
                         boe.Id.ToString(),
@@ -1527,25 +1527,25 @@ namespace GenBOE.ActionLogic.IO.Export
             return toReturn;
         }
 
-		/// <summary>
-		/// Gets the Labor Resource Spread row data for the BOE Resource Combo sheet
-		/// </summary>
-		/// <param name="exportInputs">The export inputs.</param>
-		/// <param name="toReturn">Excel Export Worksheet to add the rows to</param>
-		/// <param name="boe">BOE</param>
-		/// <param name="resourceType">Resource Type</param>
-		/// <param name="taskFields1">task field data from GetTaskIdTitleAndMOQFields for the row</param>
-		/// <param name="taskFields2">task field data from GetTaskDescriptionMetricsAndDateFields for the row</param>
-		/// <param name="resFields1">resource type field data for the row (part 1)</param>
-		/// <param name="resFields2">resource type field data for the row (part 2)</param>
-		/// <param name="currentDate">Resource Start Date - used to increment spread dates</param>
-		/// <param name="workspace_customFields">Workspace Custom Fields</param>
-		/// <param name="workspaceCustomFieldValues">Workspace Custom Field Values</param>
-		/// <param name="resourceUsesCostValues">Bool noting if Resource Type uses a Cost Spread</param>
-		/// <returns>
-		/// Excel Export Worksheet with Labor Task data
-		/// </returns>
-		private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1, string[] resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues)
+        /// <summary>
+        /// Gets the Labor Resource Spread row data for the BOE Resource Combo sheet
+        /// </summary>
+        /// <param name="exportInputs">The export inputs.</param>
+        /// <param name="toReturn">Excel Export Worksheet to add the rows to</param>
+        /// <param name="boe">BOE</param>
+        /// <param name="resourceType">Resource Type</param>
+        /// <param name="taskFields1">task field data from GetTaskIdTitleAndMOQFields for the row</param>
+        /// <param name="taskFields2">task field data from GetTaskDescriptionMetricsAndDateFields for the row</param>
+        /// <param name="resFields1">resource type field data for the row (part 1)</param>
+        /// <param name="resFields2">resource type field data for the row (part 2)</param>
+        /// <param name="currentDate">Resource Start Date - used to increment spread dates</param>
+        /// <param name="workspace_customFields">Workspace Custom Fields</param>
+        /// <param name="workspaceCustomFieldValues">Workspace Custom Field Values</param>
+        /// <param name="resourceUsesCostValues">Bool noting if Resource Type uses a Cost Spread</param>
+        /// <returns>
+        /// Excel Export Worksheet with Labor Task data
+        /// </returns>
+        private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1, string[] resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues)
         {
             while (currentDate <= resourceType.EndDate.Value)
             {
