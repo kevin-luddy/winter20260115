@@ -1,13 +1,13 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.4, on 2/9/2024.
+    This file was auto-generated for Release: 2024.04, on 2/15/2024.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2024.4\1 - Release 2024.4 Script.sql
+    File: \Release 2024.04\1 - Release 2024.4 Script.sql
 */
-PRINT '### Starting file: \Release 2024.4\1 - Release 2024.4 Script.sql';
+PRINT '### Starting file: \Release 2024.04\1 - Release 2024.4 Script.sql';
 EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.4';
 GO
 
@@ -17,6 +17,29 @@ GO
 -- copyWorkspaceVersion.sql
 -- createWorkspaceVersion.sql
 -- restoreWorkspaceVersion.sql
+
+
+/*
+    File: \Release 2024.04\2 - Release 2024.4 Script.sql
+*/
+PRINT '### Starting file: \Release 2024.04\2 - Release 2024.4 Script.sql';
+/*
+	## START ##
+	2/14/2020 [e374897] - PROPH-1445 CurrentWorkspace
+*/
+
+BEGIN
+	ALTER TABLE [dbo].[Workspace] ADD [CurrentPTMWorkspace] bit NOT NULL DEFAULT 0;
+END
+
+-- 2/7/2024 - e374897 - PROPH-1445 CurrentWorkspace
+-- Stored procs changed:
+-- upsertWorkspace.sql
+
+/*
+   2/14/2020 [e374897] - PROPH-1445 CurrentWorkspace
+   ## END ##
+/*
 
 
 /*
@@ -17190,7 +17213,6 @@ AS
 **		5/22/2017	Dusan				BOEJ-2181 Add Add/Delete column
 **		8/17/2017	Dusan				BOEJ-2469 Add Old Resource (2.16.1)
 **		10/2/2017	twilson3			BOEJ-2520 Cleanup DB, remove old ProjectMap columns
-**		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 *******************************************************************************/
 SET NOCOUNT ON 
 /*DECLARE @WorkspaceID int=1239*/
@@ -17212,8 +17234,7 @@ SELECT
 	 [LT].WBSID,
 	 [LT].CLINID,
 	 [B].[BOEID],
-	 [LT].[CanOffload],
-	 [LT].[BRCResourceID]
+	 [LT].[CanOffload]	 
 FROM [dbo].[BOELaborType] AS LT
 INNER JOIN 
 	(SELECT [BOETaskElementID], [BOEID] FROM [dbo].[BOETaskElement]) TE 
@@ -34424,7 +34445,8 @@ CREATE  PROCEDURE [dbo].[upsertWorkspace]
 @RteSizeLimit int,
 @RevisedSubmittalDate DateTime2(7),
 @TemplateBoe bit,
-@EnableSAPConnection bit
+@EnableSAPConnection bit,
+@CurrentPTMWorkspace bit
 )
 AS
 /******************************************************************************
@@ -34456,6 +34478,7 @@ AS
 **			9/25/19		ranzalon				BOEJ-4349 - Revised Submittal Date
 **			8/27/20		ranzalon				BOEJ-4760 - Template Boe
 **			1/31/23		e405721					ACV-221 - Enable SAP Connection
+**          2/14/24     e374897                 PROPH-1445 - Add CurrentPTMWorkspace Column to Workspace
 *******************************************************************************/
 
 /*
@@ -34520,10 +34543,21 @@ BEGIN
 	
 END
 
-
-
 IF @WorkspaceID  < 0  /*Insert Record*/
       BEGIN
+
+        /* 
+        When a Workspace is being created and no other workspaces linked to the PTM Tracking #, 
+        CurrentPTMWorkspace is set to 1, else 0
+        */
+          IF NOT EXISTS (SELECT * FROM [dbo].[Workspace] WHERE [TrackingNumber] = @TrackingNumber)
+              BEGIN
+                SET @CurrentPTMWorkspace = 1;
+              END
+          ELSE
+              BEGIN
+                SET @CurrentPTMWorkspace = 0;
+              END
       
       SET @UpdateDT = GETDATE()
       
@@ -34567,6 +34601,7 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,[RevisedSubmittalDate]
 		   ,[TemplateBoe]
            ,[EnableSAPConnection]
+           ,[CurrentPTMWorkspace]
            )
      OUTPUT inserted.WorkspaceID INTO @InsertedWorkspace           
      VALUES
@@ -34609,6 +34644,7 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,@RevisedSubmittalDate
 		   ,@TemplateBoe
 		   ,@EnableSAPConnection
+           ,@CurrentPTMWorkspace
            )
 
       SELECT @WorkspaceID = WorkspaceID FROM @InsertedWorkspace
@@ -34753,6 +34789,7 @@ ELSE
 									,[RevisedSubmittalDate] = @RevisedSubmittalDate
 									,[TemplateBoe] = @TemplateBoe
 									,[EnableSAPConnection] = @EnableSAPConnection
+                                    ,[CurrentPTMWorkspace] = @CurrentPTMWorkspace
                         WHERE 
                               WorkspaceID = @WorkspaceID
                               
