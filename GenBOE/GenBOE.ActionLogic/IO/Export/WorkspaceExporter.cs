@@ -2176,8 +2176,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     percentSpread = CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + this.sEmpty;
                 }
             }
-
-			bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
+            
+            bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
 
             return new string[]
                         {
