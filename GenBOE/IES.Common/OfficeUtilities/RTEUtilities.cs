@@ -21,7 +21,7 @@ namespace IES.Common.OfficeUtilities
 	public static class RTEUtilities
     {
         // Regex that will match an element (with some optional styles) that contains nothing but whitespace as it's "content", or InnerText
-        private static string regexToRemoveEmptyElement =
+        private static readonly string regexToRemoveEmptyElement =
             // opening tag of the element (with an optional style; RTE only sets text-align and color, and the specified characters take care of that
             "<ELEMENT(( ){0,}style=\"[A-Za-z0-9: #=; -]*\"){0,1}>"
             // any combination/order/number of ONLY "HTML white space" => regular space or &nbsp.. we do not need to test for line breaks, as those show up in new <p> objects
@@ -31,25 +31,30 @@ namespace IES.Common.OfficeUtilities
 
         // Create static Regex objects.
         // bold font
-        private static Regex regexStrong = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "strong"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static readonly Regex regexStrong = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "strong"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
 
         // italics font
-        private static Regex regexEm = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "em"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static readonly Regex regexEm = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "em"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
 
         // subscript
-        private static Regex regexSub = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sub"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static readonly Regex regexSub = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sub"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
 
         // superscript
-        private static Regex regexSup = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sup"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static readonly Regex regexSup = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "sup"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
 
         // spans are used when you set either a color or alignment to a partial element (partial line, but also partial "strong" and so on
-        private static Regex regexSpan = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "span"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static readonly Regex regexSpan = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "span"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
 
         // every line is wrapped in a paragraph, so empty lines will be always wrapped in this; putting it at the end, to have this go last, for efficiency
-        private static Regex regexP = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "p"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static readonly Regex regexP = new Regex(regexToRemoveEmptyElement.Replace("ELEMENT", "p"), RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
 
         // next we need to remove text that starts w/ a "mso-" above and ends with ";" - this is Microsoft-specific formatting.
-        private static Regex regexMicrosoft = new Regex("( ){0,1}mso-[A-Za-z0-9:.% #='?-]*;", RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+        private static readonly Regex regexMicrosoft = new Regex("( ){0,1}mso-[A-Za-z0-9:.% #='?-]*;", RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT);
+
+		/// <summary>
+		/// Whether to remove Empty Span tags, which may cause smushed text
+		/// </summary>
+		private static readonly bool removeEmptySpans = ConfigurationUtilities.GetAppSetting<bool>("RemoveEmptySpans", true);
 
         #region These are used in Excel, when we need to display just text, and no other markup or images
 
@@ -221,7 +226,12 @@ namespace IES.Common.OfficeUtilities
                 comparers.Add(regexEm);
                 comparers.Add(regexSub);
                 comparers.Add(regexSup);
-                comparers.Add(regexSpan);
+
+				if (removeEmptySpans)
+				{
+					comparers.Add(regexSpan);
+				}
+
                 comparers.Add(regexP);
 
                 // Remove the lines
