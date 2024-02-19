@@ -12945,6 +12945,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <NavigationProperty Name="RteTemplates" Relationship="GenBOE.Models.FK_RteTemplate_Workspace" FromRole="Workspace" ToRole="RteTemplate" />
 		  <Property Name="TemplateBoe" Type="Boolean" Nullable="false" />
 		  <Property Name="EnableSAPConnection" Type="Boolean" Nullable="false" />
+		  <Property Name="CurrentPTMWorkspace" Type="Boolean" Nullable="false" />
 		</EntityType>
 		<Association Name="FK_BOE_Workspace">
 		  <End Type="GenBOE.Models.Workspace" Role="Workspace" Multiplicity="1" />
@@ -15873,6 +15874,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <EntitySetMapping Name="Workspaces">
 			<EntityTypeMapping TypeName="GenBOE.Models.Workspace">
 			  <MappingFragment StoreEntitySet="Workspace">
+				<ScalarProperty Name="CurrentPTMWorkspace" ColumnName="CurrentPTMWorkspace" />
 				<ScalarProperty Name="EnableSAPConnection" ColumnName="EnableSAPConnection" />
 				<ScalarProperty Name="TemplateBoe" ColumnName="TemplateBoe" />
 				<ScalarProperty Name="RevisedSubmittalDate" ColumnName="RevisedSubmittalDate" />
