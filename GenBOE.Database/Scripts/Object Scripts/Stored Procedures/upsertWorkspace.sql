@@ -51,7 +51,8 @@ CREATE  PROCEDURE [dbo].[upsertWorkspace]
 @RteSizeLimit int,
 @RevisedSubmittalDate DateTime2(7),
 @TemplateBoe bit,
-@EnableSAPConnection bit
+@EnableSAPConnection bit,
+@CurrentPTMWorkspace bit
 )
 AS
 /******************************************************************************
@@ -83,6 +84,7 @@ AS
 **			9/25/19		ranzalon				BOEJ-4349 - Revised Submittal Date
 **			8/27/20		ranzalon				BOEJ-4760 - Template Boe
 **			1/31/23		e405721					ACV-221 - Enable SAP Connection
+**          2/14/24     e374897                 PROPH-1445 - Add CurrentPTMWorkspace Column to Workspace
 *******************************************************************************/
 
 /*
@@ -106,26 +108,26 @@ SET NOCOUNT ON
 DECLARE @ErrorMessage varchar (500)
 
 IF EXISTS   (SELECT 1 FROM dbo.Workspace 
-                        WHERE 
-                              (WorkspaceName = @WorkspaceName AND @WorkspaceID < 0)  OR  /*Workspace Name is unique*/
-                              (WorkspaceShortName = @WorkspaceShortName AND @WorkspaceID < 0)  OR /*Workspace Short Name is unique*/
-                              (WorkspaceName = @WorkspaceName AND WorkspaceID <> @WorkspaceID)  OR  /*Workspace Name is unique*/
-                              (WorkspaceShortName = @WorkspaceShortName AND WorkspaceID <> @WorkspaceID)   /*Workspace Short Name is unique*/
-                  )
-      BEGIN
-            /*
-                  WorkspaceName and Short Name must be unique 
-            */
-                        SET @ErrorMessage =   'There already exists a Workspace with Workspace Name ' + @WorkspaceName + '.'
-                        RAISERROR (
-                              @ErrorMessage, -- Message text.
-                          11, -- Severity,/*Severity Changed to 11*/
-                              1 -- State,
-                              )
-                        RETURN
-                  END
-                  
-                  
+						WHERE 
+							  (WorkspaceName = @WorkspaceName AND @WorkspaceID < 0)  OR  /*Workspace Name is unique*/
+							  (WorkspaceShortName = @WorkspaceShortName AND @WorkspaceID < 0)  OR /*Workspace Short Name is unique*/
+							  (WorkspaceName = @WorkspaceName AND WorkspaceID <> @WorkspaceID)  OR  /*Workspace Name is unique*/
+							  (WorkspaceShortName = @WorkspaceShortName AND WorkspaceID <> @WorkspaceID)   /*Workspace Short Name is unique*/
+				  )
+	  BEGIN
+			/*
+				  WorkspaceName and Short Name must be unique 
+			*/
+						SET @ErrorMessage =   'There already exists a Workspace with Workspace Name ' + @WorkspaceName + '.'
+						RAISERROR (
+							  @ErrorMessage, -- Message text.
+						  11, -- Severity,/*Severity Changed to 11*/
+							  1 -- State,
+							  )
+						RETURN
+				  END
+				  
+				  
 DECLARE @InsertedWorkspace AS Table (WorkspaceID int)
 
 
@@ -147,36 +149,47 @@ BEGIN
 	
 END
 
-
-
 IF @WorkspaceID  < 0  /*Insert Record*/
-      BEGIN
-      
-      SET @UpdateDT = GETDATE()
-      
-      INSERT INTO [dbo].[Workspace]
-           ([WorkspaceName]
-           ,[WorkspaceShortName]
-           ,[WorkspaceStateID]
-           ,[ContractStartDate]
-           ,[ContractEndDate]
-           ,[ProposalSubmitDate]
-           ,[WorkspaceDescription]
-           ,[CostVolumeLeadPricerUserID]
-           ,[RFPNumber]
-           ,[TemplateID]
-           ,[ContainsOCI]
-           ,[TrackingNumber]
-           ,[ContainsTemplate]
-           ,[NumProPricerExport]
-           ,[ProposalStatusID]
-           ,[StatusComment]
-           ,[CreatedByETIUserID]
-           ,[UpdateDT]
-           ,[BOEExportSortByID]
-           ,[SegmentID]
-           ,[LineOfBusinessID]
-           ,[ProposalClassID]
+	  BEGIN
+
+		/* 
+		When a Workspace is being created and no other workspaces linked to the PTM Tracking #, 
+		CurrentPTMWorkspace is set to 1, else 0
+		*/
+		  IF NOT EXISTS (SELECT * FROM [dbo].[Workspace] WHERE [TrackingNumber] = @TrackingNumber)
+			  BEGIN
+				SET @CurrentPTMWorkspace = 1;
+			  END
+		  ELSE
+			  BEGIN
+				SET @CurrentPTMWorkspace = 0;
+			  END
+	  
+	  SET @UpdateDT = GETDATE()
+	  
+	  INSERT INTO [dbo].[Workspace]
+		   ([WorkspaceName]
+		   ,[WorkspaceShortName]
+		   ,[WorkspaceStateID]
+		   ,[ContractStartDate]
+		   ,[ContractEndDate]
+		   ,[ProposalSubmitDate]
+		   ,[WorkspaceDescription]
+		   ,[CostVolumeLeadPricerUserID]
+		   ,[RFPNumber]
+		   ,[TemplateID]
+		   ,[ContainsOCI]
+		   ,[TrackingNumber]
+		   ,[ContainsTemplate]
+		   ,[NumProPricerExport]
+		   ,[ProposalStatusID]
+		   ,[StatusComment]
+		   ,[CreatedByETIUserID]
+		   ,[UpdateDT]
+		   ,[BOEExportSortByID]
+		   ,[SegmentID]
+		   ,[LineOfBusinessID]
+		   ,[ProposalClassID]
 		   ,[ProposalTitle]
 		   ,[ResourcePrecision]
 		   ,[RecalculationStartedDate]
@@ -193,32 +206,33 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,[RteSizeLimit]
 		   ,[RevisedSubmittalDate]
 		   ,[TemplateBoe]
-           ,[EnableSAPConnection]
-           )
-     OUTPUT inserted.WorkspaceID INTO @InsertedWorkspace           
-     VALUES
-           (@WorkspaceName
-           ,@WorkspaceShortName
-           ,@WorkspaceStateID
-           ,@ContractStartDate
-           ,@ContractEndDate
-           ,@ProposalSubmitDate
-           ,@WorkspaceDescription
-           ,@CostVolumeLeadPricerETIUserID
-           ,@RFPNumber
-           ,@TemplateID
-           ,@ContainsOCI
-           ,@TrackingNumber
-           ,@ContainsTemplate
-           ,@NumProPricerExport
-           ,@ProposalStatusID
-           ,@StatusComment
-           ,@CreatedByETIUserID
-           ,@UpdateDT
-           ,@BOEExportSortByID
-           ,@SegmentID
-           ,@LineOfBusinessID
-           ,@ProposalClassID
+		   ,[EnableSAPConnection]
+		   ,[CurrentPTMWorkspace]
+		   )
+	 OUTPUT inserted.WorkspaceID INTO @InsertedWorkspace           
+	 VALUES
+		   (@WorkspaceName
+		   ,@WorkspaceShortName
+		   ,@WorkspaceStateID
+		   ,@ContractStartDate
+		   ,@ContractEndDate
+		   ,@ProposalSubmitDate
+		   ,@WorkspaceDescription
+		   ,@CostVolumeLeadPricerETIUserID
+		   ,@RFPNumber
+		   ,@TemplateID
+		   ,@ContainsOCI
+		   ,@TrackingNumber
+		   ,@ContainsTemplate
+		   ,@NumProPricerExport
+		   ,@ProposalStatusID
+		   ,@StatusComment
+		   ,@CreatedByETIUserID
+		   ,@UpdateDT
+		   ,@BOEExportSortByID
+		   ,@SegmentID
+		   ,@LineOfBusinessID
+		   ,@ProposalClassID
 		   ,@ProposalTitle
 		   ,@ResourcePrecision
 		   ,@RecalculationStartedDate
@@ -236,18 +250,19 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,@RevisedSubmittalDate
 		   ,@TemplateBoe
 		   ,@EnableSAPConnection
-           )
+		   ,@CurrentPTMWorkspace
+		   )
 
-      SELECT @WorkspaceID = WorkspaceID FROM @InsertedWorkspace
-      
-      
+	  SELECT @WorkspaceID = WorkspaceID FROM @InsertedWorkspace
+	  
+	  
 
 
 
 INSERT INTO [dbo].[WorkspaceContractTypeXREF]
-           ([UpdateDT]
-           ,[WorkspaceID]
-           ,[ContractTypeID])
+		   ([UpdateDT]
+		   ,[WorkspaceID]
+		   ,[ContractTypeID])
 SELECT
 			@UpdateDT,
 			@WorkspaceID,
@@ -261,44 +276,44 @@ FROM @ContractType
 	IF @ProjectMapTypeID = 4 OR @ProjectMapTypeID = 3 SET @UpdatedWSStateID = 2
 
 
-      /*On Creation of Workspace, a record needs to be added to Workspace History*/
-      INSERT INTO [dbo].[WorkspaceStateHistory]
-           ([WorkspaceID]
-           ,[CurrentWorkspaceStateID]/* No Current Workspace with a New Workspace - Current is NULL*/
-           ,[UpdatedWorkspaceStateID]
-           ,[ChangedByETIUserID]
-           ,[UpdateDT])
-     VALUES
-           (@WorkspaceID
-           ,0 /*None*/
-           ,@UpdatedWSStateID
-           ,@CreatedByETIUserID
-           ,@UpdateDT)
-           
-      
-            /*On creation of a Workspace, the Default Resources and Performing Organizations need to be populated*/      
-        /*
-                  Resource and Performing Organization List now used 
-            */
-            
-            IF IsNULL(@ResourceListID,-1) < 1 SET @ResourceListID = 1               
-            EXECUTE [dbo].[insertDefaultResource] @WorkspaceID, @ResourceListID, @SegmentID
-            
-            IF IsNULL(@PerformingOrganizationListID,-1) < 1 SET @PerformingOrganizationListID = 1
-            EXECUTE [dbo].[insertDefaultPerformingOrganization] @WorkspaceID, @PerformingOrganizationListID
-      END
+	  /*On Creation of Workspace, a record needs to be added to Workspace History*/
+	  INSERT INTO [dbo].[WorkspaceStateHistory]
+		   ([WorkspaceID]
+		   ,[CurrentWorkspaceStateID]/* No Current Workspace with a New Workspace - Current is NULL*/
+		   ,[UpdatedWorkspaceStateID]
+		   ,[ChangedByETIUserID]
+		   ,[UpdateDT])
+	 VALUES
+		   (@WorkspaceID
+		   ,0 /*None*/
+		   ,@UpdatedWSStateID
+		   ,@CreatedByETIUserID
+		   ,@UpdateDT)
+		   
+	  
+			/*On creation of a Workspace, the Default Resources and Performing Organizations need to be populated*/      
+		/*
+				  Resource and Performing Organization List now used 
+			*/
+			
+			IF IsNULL(@ResourceListID,-1) < 1 SET @ResourceListID = 1               
+			EXECUTE [dbo].[insertDefaultResource] @WorkspaceID, @ResourceListID, @SegmentID
+			
+			IF IsNULL(@PerformingOrganizationListID,-1) < 1 SET @PerformingOrganizationListID = 1
+			EXECUTE [dbo].[insertDefaultPerformingOrganization] @WorkspaceID, @PerformingOrganizationListID
+	  END
 ELSE
-      /*Update*/
-      BEGIN
-            IF (SELECT UpdateDT FROM [dbo].[Workspace] WHERE WorkspaceID = @WorkspaceID) = @UpdateDT
-                  BEGIN
-                  
-                        SET @UpdateDT = GETDATE()
-                        
-                        /*For Workspace State History, need to get the current State*/
-                        DECLARE @CurrentWorkspaceHistoryStateID int
-                        SELECT @CurrentWorkspaceHistoryStateID = WorkspaceStateID 
-                                    FROM dbo.Workspace WHERE WorkspaceID = @WorkspaceID
+	  /*Update*/
+	  BEGIN
+			IF (SELECT UpdateDT FROM [dbo].[Workspace] WHERE WorkspaceID = @WorkspaceID) = @UpdateDT
+				  BEGIN
+				  
+						SET @UpdateDT = GETDATE()
+						
+						/*For Workspace State History, need to get the current State*/
+						DECLARE @CurrentWorkspaceHistoryStateID int
+						SELECT @CurrentWorkspaceHistoryStateID = WorkspaceStateID 
+									FROM dbo.Workspace WHERE WorkspaceID = @WorkspaceID
 
 						DECLARE @CurrentResourcePrecision INT
 						SELECT @CurrentResourcePrecision = IsNull (ResourcePrecision, -99) FROM dbo.Workspace WHERE WorkspaceID = @WorkspaceID
@@ -339,30 +354,30 @@ ELSE
 							EXECUTE  [dbo].[createWorkspaceVersion] @VersionName, @CreatedByETIUserID/*CreatedByETIUserID*/,@WorkspaceStateID,@WorkspaceID
 
 							END
-                        
-                        UPDATE [dbo].[Workspace]
-                           SET      [WorkspaceName] = @WorkspaceName
-                                    ,[WorkspaceShortName] = @WorkspaceShortName
-                                    ,[WorkspaceStateID] = @WorkspaceStateID
-                                    ,[ContractStartDate] = @ContractStartDate
-                                    ,[ContractEndDate] = @ContractEndDate
-                                    ,[ProposalSubmitDate] = @ProposalSubmitDate
-                                    ,[WorkspaceDescription] = @WorkspaceDescription
-                                    ,[CostVolumeLeadPricerUserID] = @CostVolumeLeadPricerETIUserID
-                                    ,[RFPNumber] = @RFPNumber
-                                    ,[TemplateID] = @TemplateID                                   
-                                    ,[ContainsOCI] = @ContainsOCI
-                                    ,[TrackingNumber] = @TrackingNumber
-                                    ,[ContainsTemplate] = @ContainsTemplate
-                                    ,[NumProPricerExport] = @NumProPricerExport
-                                    ,[ProposalStatusID] = @ProposalStatusID
-                                    ,[StatusComment] = @StatusComment
-                                    ,[CreatedByETIUserID] = @CreatedByETIUserID
-                                    ,[UpdateDT] = @UpdateDT
-                                    ,[BOEExportSortByID] = @BOEExportSortByID
-                                    ,[SegmentID] = @SegmentID
-                                    ,[LineOfBusinessID] = @LineOfBusinessID
-                                    ,[ProposalClassID] = @ProposalClassID
+						
+						UPDATE [dbo].[Workspace]
+						   SET      [WorkspaceName] = @WorkspaceName
+									,[WorkspaceShortName] = @WorkspaceShortName
+									,[WorkspaceStateID] = @WorkspaceStateID
+									,[ContractStartDate] = @ContractStartDate
+									,[ContractEndDate] = @ContractEndDate
+									,[ProposalSubmitDate] = @ProposalSubmitDate
+									,[WorkspaceDescription] = @WorkspaceDescription
+									,[CostVolumeLeadPricerUserID] = @CostVolumeLeadPricerETIUserID
+									,[RFPNumber] = @RFPNumber
+									,[TemplateID] = @TemplateID                                   
+									,[ContainsOCI] = @ContainsOCI
+									,[TrackingNumber] = @TrackingNumber
+									,[ContainsTemplate] = @ContainsTemplate
+									,[NumProPricerExport] = @NumProPricerExport
+									,[ProposalStatusID] = @ProposalStatusID
+									,[StatusComment] = @StatusComment
+									,[CreatedByETIUserID] = @CreatedByETIUserID
+									,[UpdateDT] = @UpdateDT
+									,[BOEExportSortByID] = @BOEExportSortByID
+									,[SegmentID] = @SegmentID
+									,[LineOfBusinessID] = @LineOfBusinessID
+									,[ProposalClassID] = @ProposalClassID
 									,[ProposalTitle] = @ProposalTitle
 									,[ResourcePrecision] = @ResourcePrecision
 									,[RecalculationStartedDate] = @RecalculationStartedDate
@@ -380,9 +395,10 @@ ELSE
 									,[RevisedSubmittalDate] = @RevisedSubmittalDate
 									,[TemplateBoe] = @TemplateBoe
 									,[EnableSAPConnection] = @EnableSAPConnection
-                        WHERE 
-                              WorkspaceID = @WorkspaceID
-                              
+									,[CurrentPTMWorkspace] = @CurrentPTMWorkspace
+						WHERE 
+							  WorkspaceID = @WorkspaceID
+							  
 
 						DELETE FROM [dbo].[WorkspaceContractTypeXREF]
 						WHERE 
@@ -412,39 +428,39 @@ ELSE
 							)
 
 
-                              
-                        /*Log the Workspace State Change*/
-                        IF @CurrentWorkspaceHistoryStateID <> @WorkspaceStateID
-                        BEGIN
-                        INSERT INTO [dbo].[WorkspaceStateHistory]
-                                 ([WorkspaceID]
-                                 ,[CurrentWorkspaceStateID]
-                                 ,[UpdatedWorkspaceStateID]
-                                 ,[ChangedByETIUserID]
-                                 ,[UpdateDT])
-                        VALUES
-                                 (@WorkspaceID
-                                 ,@CurrentWorkspaceHistoryStateID
-                                 ,@WorkspaceStateID
-                                 ,@CreatedByETIUserID
-                                 ,@UpdateDT)    
-                        END
+							  
+						/*Log the Workspace State Change*/
+						IF @CurrentWorkspaceHistoryStateID <> @WorkspaceStateID
+						BEGIN
+						INSERT INTO [dbo].[WorkspaceStateHistory]
+								 ([WorkspaceID]
+								 ,[CurrentWorkspaceStateID]
+								 ,[UpdatedWorkspaceStateID]
+								 ,[ChangedByETIUserID]
+								 ,[UpdateDT])
+						VALUES
+								 (@WorkspaceID
+								 ,@CurrentWorkspaceHistoryStateID
+								 ,@WorkspaceStateID
+								 ,@CreatedByETIUserID
+								 ,@UpdateDT)    
+						END
  END            
-                  
-            ELSE
-                  BEGIN
-                        SET @ErrorMessage =   'The Workspace with Name ' + @WorkspaceName + ' has been updated and is out of sync with the data in your browser.  Please refresh your data.'
-                        RAISERROR (
-                              @ErrorMessage, -- Message text.
-                          11, -- Severity,/*Severity Changed to 11*/
-                              1 -- State,
-                              )
-                        RETURN
-                  END
-                        
+				  
+			ELSE
+				  BEGIN
+						SET @ErrorMessage =   'The Workspace with Name ' + @WorkspaceName + ' has been updated and is out of sync with the data in your browser.  Please refresh your data.'
+						RAISERROR (
+							  @ErrorMessage, -- Message text.
+						  11, -- Severity,/*Severity Changed to 11*/
+							  1 -- State,
+							  )
+						RETURN
+				  END
+						
 END
 
 IF @@ERROR = 0
-      SELECT @WorkspaceID AS WorkspaceID
+	  SELECT @WorkspaceID AS WorkspaceID
 
 GO

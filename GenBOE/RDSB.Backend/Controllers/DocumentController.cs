@@ -23,6 +23,7 @@ namespace RDSB.Backend.Controllers
 	using IES.Common.Core.Interfaces;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Logging;
@@ -31,6 +32,7 @@ namespace RDSB.Backend.Controllers
 	/// <summary>
 	/// Controller for Document Section
 	/// </summary>
+	[Authorize]
 	[Route("api/Document")]
 	public class DocumentController : RDSBController
     {

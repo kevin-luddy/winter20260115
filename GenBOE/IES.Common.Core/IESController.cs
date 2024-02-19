@@ -24,7 +24,7 @@ namespace IES.Common.Core
 	using Microsoft.AspNetCore.Mvc.Filters;
 	using Microsoft.Extensions.Logging;
 
-	[ApiController, Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+	[ApiController, Authorize]
 	public abstract class IESController : ControllerBase, IActionFilter
 	{
 		/// <summary>

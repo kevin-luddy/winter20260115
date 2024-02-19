@@ -8,6 +8,11 @@
   
   <!--appSettings-->
 
+	
+  <parameter name="HistoricalReferenceExplanationStartDate" description="doesn't matter" defaultvalue="__HistoricalReferenceExplanationStartDate__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='HistoricalReferenceExplanationStartDate']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="ShowIesHeader" description="doesn't matter" defaultvalue="__ShowIesHeader__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowIesHeader']/@value">
     </parameterentry>
@@ -174,14 +179,6 @@
 	</parameter>
 	<parameter name="EnableBRC" description="doesn't matter" defaultvalue="__EnableBRC__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableBRC']/@value">
-		</parameterentry>
-	</parameter>
-	<parameter name="SpaceSystemsOneLMXCutOffDate" description="doesn't matter" defaultValue="__SpaceSystemsOneLMXCutOffDate" tag="">
-		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SpaceSystemsOneLMXCutOffDate']/@value">
-		</parameterentry>
-	</parameter>
-	<parameter name="RMSOneLMXCutOffDate" description="doesn't matter" defaultValue="__RMSOneLMXCutOffDate" tag="">
-		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RMSOneLMXCutOffDate']/@value">
 		</parameterentry>
 	</parameter>
 	<!--system.web-->
