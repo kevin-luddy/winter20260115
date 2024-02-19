@@ -779,7 +779,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (Utilities.IsBRCEnabledForSystem)
 				{
-					DateTime OneLmxCutOffDate = Utilities.GetOneLMXCutOffDate();
+					DateTime OneLmxCutOffDate = Utilities.OneLmxStartDate;
 					foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
 					{
 						// do validation per row item
@@ -802,7 +802,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 					}
 				}
-
 
                 // gather errors up, if any
                 foreach (string error in errors)
