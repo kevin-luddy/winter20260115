@@ -5649,6 +5649,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Parameter Name="RevisedSubmittalDate" Type="datetime2" Mode="In" />
 		  <Parameter Name="TemplateBoe" Type="bit" Mode="In" />
 		  <Parameter Name="EnableSAPConnection" Type="bit" Mode="In" />
+		  <Parameter Name="CurrentPTMWorkspace" Type="bit" Mode="In" />
 		</Function>
 		<Function Name="upsertWorkspaceEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
 		  <Parameter Name="WorkspaceEmailID" Type="int" Mode="In" />
@@ -11704,6 +11705,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			<Parameter Name="RevisedSubmittalDate" Mode="In" Type="DateTime" />
 			<Parameter Name="TemplateBoe" Mode="In" Type="Boolean" />
 			<Parameter Name="EnableSAPConnection" Mode="In" Type="Boolean" />
+			<Parameter Name="CurrentPTMWorkspace" Mode="In" Type="Boolean" />
 		  </FunctionImport>
 		  <FunctionImport Name="upsertWorkspacePerformingOrganization" ReturnType="Collection(Int32)">
 			<Parameter Name="PerformingOrganizationID" Mode="In" Type="Int32" />

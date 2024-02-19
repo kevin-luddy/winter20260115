@@ -158,5 +158,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// Was WS created prior to Boe Templates being enabled
         /// </summary>
         bool CreatedPriorToBoeTemplates { get; set; }
-    }
+
+		/// <summary>
+		/// Get or set whether the workspace should be marked as Current for the PTM Tracking Number
+		/// </summary>
+		bool CurrentPTMWorkspace { get; set; }
+	}
 }

@@ -3206,6 +3206,7 @@ namespace GenBOE.Web.Controllers
                 ws.RteSizeLimit = workspaceDetails.RteSizeLimit;
                 ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
                 ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
+				ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
 
                 // Populate the company specific properties
                 _ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);

@@ -77,6 +77,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE;
 				this.CreatedPriorToBoeTemplates = !workspaceDTO.CreationDate.HasValue || workspaceDTO.CreationDate < DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
 				this.EnableSAPConnection = workspaceDTO.EnableSAPConnection;
+				this.CurrentPTMWorkspace = workspaceDTO.CurrentPTMWorkspace;
 			}
 			if (costVolumeLeadDTO != null)
 			{
@@ -240,5 +241,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Indicates whether SAP features are enabled for this particular workspace
 		/// </summary>
 		public bool IsWorkspaceSAPEnabled { get; set; }
+
+		/// <summary>
+		/// Get or set whether the workspace should be marked as Current for the PTM Tracking Number
+		/// </summary>
+		public bool CurrentPTMWorkspace { get; set; }
 	}
 }
