@@ -40,8 +40,6 @@ namespace IES.Common
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? historicalReferenceExplanationStartDate;
-		private static DateTime? spaceSystemsOneLmxCutOffDate;
-		private static DateTime? rmsOneLmxCutOffDate;
 
 		/// <summary>
 		/// 1LMX boundary time
@@ -63,52 +61,6 @@ namespace IES.Common
 				}
 
 				return oneLmxStartDate.Value;
-			}
-		}
-
-		/// <summary>
-		/// Space Systems 1LMX Cut Off Date
-		/// </summary>
-		public static DateTime SpaceSystemsOneLmxCutOffDate
-		{
-			get
-			{
-				if (!spaceSystemsOneLmxCutOffDate.HasValue)
-				{
-					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("SpaceSystemsOneLMXCutOffDate"), out DateTime cutOffDate))
-					{
-						spaceSystemsOneLmxCutOffDate = new DateTime(2028, 01, 01);
-					}
-					else
-					{
-						spaceSystemsOneLmxCutOffDate = cutOffDate.Normalize();
-					}
-				}
-
-				return spaceSystemsOneLmxCutOffDate.Value;
-			}
-		}
-
-		/// <summary>
-		/// RMS 1LMX Cut Off Date
-		/// </summary>
-		public static DateTime RMSOneLmxCutOffDate
-		{
-			get
-			{
-				if (!rmsOneLmxCutOffDate.HasValue)
-				{
-					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("RMSOneLMXCutOffDate"), out DateTime cutOffDate))
-					{
-						rmsOneLmxCutOffDate = new DateTime(2027, 01, 01);
-					}
-					else
-					{
-						rmsOneLmxCutOffDate = cutOffDate.Normalize();
-					}
-				}
-
-				return rmsOneLmxCutOffDate.Value;
 			}
 		}
 
@@ -849,28 +801,6 @@ namespace IES.Common
 			{
 				isBRCEnabled = value;
 			}
-		}
-
-		/// <summary>
-		/// Get 1LMX Cut Off Date based on System Configuration
-		/// </summary>
-		/// <returns>1LMX Cut Off Date</returns>
-		public static DateTime GetOneLMXCutOffDate()
-		{
-			/// Set it to RMS Date as it is comes first
-			DateTime date = new DateTime(2027, 01, 01);
-
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				date = Utilities.SpaceSystemsOneLmxCutOffDate;
-			}
-
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				date = Utilities.RMSOneLmxCutOffDate;
-			}
-
-			return date;
 		}
 
 		/// <summary>
