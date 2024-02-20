@@ -71,6 +71,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
             this.CostVolumeLeadPricerNTID = string.Empty;
             this.IsUsingTM = false;
             this.RevisedSubmittalDate = string.Empty;
+			this.CurrentPTMWorkspace = false;
         }
 
         /// <summary>

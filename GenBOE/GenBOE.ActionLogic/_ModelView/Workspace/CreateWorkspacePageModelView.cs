@@ -71,5 +71,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// Gets or sets a value indicating whether or not the SAP Connection is configured, via the value in the config
         /// </summary>
         public bool IsSAPConnectionEnabled { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the new Workspace should be the current workspace for PTM
+		/// </summary>
+		public bool CurrentPTMWorkspace { get; set; }
     }
 }

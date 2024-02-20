@@ -50,6 +50,8 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
             this.IsUsingTM = false;
             this.ProjectMapType = ProjectMapType.StandardWithoutOffload;
             this.EnableSAPConnection = true;
+			this.CurrentPTMWorkspace = false;
+
         }
 
         public override string ToString()
@@ -258,5 +260,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// </summary>
         [Required(ErrorMessage = "Enable SAP connection selection is required.")]
         public bool EnableSAPConnection { get; set; }
-    }
+
+		/// <summary>
+		/// Get/set whether the new workspace is Current for PTM
+		/// </summary>
+		public bool CurrentPTMWorkspace { get; set; }
+	}
 }

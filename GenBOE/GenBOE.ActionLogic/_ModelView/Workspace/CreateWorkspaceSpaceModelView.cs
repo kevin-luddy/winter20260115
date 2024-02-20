@@ -31,6 +31,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
             this.ContractTypes = new Collection<PickListDto>();
             this.SelectedContractTypes = new Collection<int>();
             this.RevisedSubmittalDate = string.Empty;
+			this.CurrentPTMWorkspace = false;
         }
 
         /// <summary>
@@ -84,5 +85,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// Now labeled as Revised Anticipated Delivery Date
         /// </summary>
         public string RevisedSubmittalDate { get; set; }
-    }
+
+		/// <summary>
+		/// Get/set whether the new workspace is Current for PTM
+		/// </summary>
+		public bool CurrentPTMWorkspace { get; set; }
+	}
 }

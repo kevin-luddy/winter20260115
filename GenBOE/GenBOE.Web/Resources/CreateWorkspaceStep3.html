@@ -354,6 +354,18 @@
         </select>
     </div>
 </div>
+
+<div id="CurrentPTMWorkspace" class="form-row" data-ng-show="model.isSSC">
+    <div class="form-label">
+        <span>Current Workspace</span>
+    </div>
+    <div class="radio form-element">
+        <select name="CurrentPTMWorkspace" id="CurrentPTMWorkspace" data-ng-model="data.CurrentPTMWorkspace">
+            <option data-ng-value="true">Yes</option>
+            <option data-ng-value="false">No</option>
+        </select>
+    </div>
+</div>
     {{setupIdentificationPage()}}
     <script type="text/javascript">
         (function () {

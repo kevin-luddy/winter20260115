@@ -5183,6 +5183,7 @@ namespace GenBOE.Web.Controllers
                     newWorkspaceDTO.RteSizeLimit = newWorkspace.RteSizeLimit;
                     newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
                     newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
+					newWorkspaceDTO.CurrentPTMWorkspace = newWorkspace.CurrentPTMWorkspace;
                     
                     if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                     {

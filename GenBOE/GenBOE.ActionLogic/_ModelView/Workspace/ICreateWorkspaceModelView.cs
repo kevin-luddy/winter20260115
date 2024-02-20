@@ -193,5 +193,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// Get/set whether using Enable SAP Connection is selected.
         /// </summary>
         bool EnableSAPConnection { get; set; }
-    }
+
+		/// <summary>
+		/// Get/set whether the new workspace is Current for PTM
+		/// </summary>
+		bool CurrentPTMWorkspace { get; set; }
+	}
 }
