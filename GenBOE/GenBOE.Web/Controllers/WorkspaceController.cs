@@ -5161,41 +5161,41 @@ namespace GenBOE.Web.Controllers
 					// Get/Save Cost Volume Lead
 					UserDTO costVolumeLeadPricerDTO = this.UserLoader.GetOrCreateUserByNtid(newWorkspace.CostVolumeLeadPricerNTID);
 
-                    // Create the Workspace
-                    newWorkspaceDTO = new WorkspaceDTO();
-                    newWorkspaceDTO.ContainsOCI = newWorkspace.ContainsOCI;
-                    newWorkspaceDTO.ContractEndDate = Convert.ToDateTime(newWorkspace.ContractEndDate);
-                    newWorkspaceDTO.ContractStartDate = Convert.ToDateTime(newWorkspace.ContractStartDate);
-                    newWorkspaceDTO.Description = newWorkspace.Description;
-                    newWorkspaceDTO.ProposalSubmittalDate = newWorkspace.ProposalSubmittalDate != null ? (DateTime?)Convert.ToDateTime(newWorkspace.ProposalSubmittalDate) : null;
-                    newWorkspaceDTO.LineOfBusiness = new PickListDto() { Id = newWorkspace.LineOfBusinessID };
-                    newWorkspaceDTO.Segment = newWorkspace.Segment;
-                    newWorkspaceDTO.RFPNumber = newWorkspace.RFPNumber;
-                    newWorkspaceDTO.TrackingNumber = newWorkspace.TrackingNumber;
-                    newWorkspaceDTO.Shortname = newWorkspace.Shortname;
-                    newWorkspaceDTO.WorkspaceName = newWorkspace.WorkspaceName;
-                    newWorkspaceDTO.CreatedByUserID = createdByUserDTO.UserID;
-                    newWorkspaceDTO.CostVolumeLeadPricerUserID = costVolumeLeadPricerDTO.UserID;
-                    newWorkspaceDTO.ContainsTemplate = newWorkspace.ContainsContentTemplates;
-                    newWorkspaceDTO.AllowSearch = newWorkspace.ShareAndAllowSearch;
-                    newWorkspaceDTO.IsUsingEquivalentPerson = newWorkspace.IsUsingEquivalentPerson;
-                    newWorkspaceDTO.IsUsingTM = newWorkspace.IsUsingTM;
-                    newWorkspaceDTO.RteSizeLimit = newWorkspace.RteSizeLimit;
-                    newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
-                    newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
+					// Create the Workspace
+					newWorkspaceDTO = new WorkspaceDTO();
+					newWorkspaceDTO.ContainsOCI = newWorkspace.ContainsOCI;
+					newWorkspaceDTO.ContractEndDate = Convert.ToDateTime(newWorkspace.ContractEndDate);
+					newWorkspaceDTO.ContractStartDate = Convert.ToDateTime(newWorkspace.ContractStartDate);
+					newWorkspaceDTO.Description = newWorkspace.Description;
+					newWorkspaceDTO.ProposalSubmittalDate = newWorkspace.ProposalSubmittalDate != null ? (DateTime?)Convert.ToDateTime(newWorkspace.ProposalSubmittalDate) : null;
+					newWorkspaceDTO.LineOfBusiness = new PickListDto() { Id = newWorkspace.LineOfBusinessID };
+					newWorkspaceDTO.Segment = newWorkspace.Segment;
+					newWorkspaceDTO.RFPNumber = newWorkspace.RFPNumber;
+					newWorkspaceDTO.TrackingNumber = newWorkspace.TrackingNumber;
+					newWorkspaceDTO.Shortname = newWorkspace.Shortname;
+					newWorkspaceDTO.WorkspaceName = newWorkspace.WorkspaceName;
+					newWorkspaceDTO.CreatedByUserID = createdByUserDTO.UserID;
+					newWorkspaceDTO.CostVolumeLeadPricerUserID = costVolumeLeadPricerDTO.UserID;
+					newWorkspaceDTO.ContainsTemplate = newWorkspace.ContainsContentTemplates;
+					newWorkspaceDTO.AllowSearch = newWorkspace.ShareAndAllowSearch;
+					newWorkspaceDTO.IsUsingEquivalentPerson = newWorkspace.IsUsingEquivalentPerson;
+					newWorkspaceDTO.IsUsingTM = newWorkspace.IsUsingTM;
+					newWorkspaceDTO.RteSizeLimit = newWorkspace.RteSizeLimit;
+					newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
+					newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
 					newWorkspaceDTO.CurrentPTMWorkspace = newWorkspace.CurrentPTMWorkspace;
-                    
-                    if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                    {
-                        newWorkspaceDTO.ProposalTitle = newWorkspace.ProposalTitle;
-                        newWorkspaceDTO.ProposalClass = new PickListDto { Id = newWorkspace.ProposalClass };
-                    }
-                    else
-                    {
-                        // RMS
-                        newWorkspaceDTO.ProjectMapType = newWorkspace.ProjectMapType;
-                        newWorkspaceDTO.AllowGridEdit = newWorkspace.AllowGridEdit;
-                    }
+					
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					{
+						newWorkspaceDTO.ProposalTitle = newWorkspace.ProposalTitle;
+						newWorkspaceDTO.ProposalClass = new PickListDto { Id = newWorkspace.ProposalClass };
+					}
+					else
+					{
+						// RMS
+						newWorkspaceDTO.ProjectMapType = newWorkspace.ProjectMapType;
+						newWorkspaceDTO.AllowGridEdit = newWorkspace.AllowGridEdit;
+					}
 
 					// supply an initial output template id (from the default set)
 					newWorkspaceDTO.TemplateID = (int) (newWorkspaceDTO.IsProjectMapWorkspace ? 

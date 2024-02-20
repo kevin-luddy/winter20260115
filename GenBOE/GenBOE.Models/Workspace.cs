@@ -9,151 +9,151 @@
 
 namespace GenBOE.Models
 {
-    using System;
-    using System.Collections.Generic;
-    
-    public partial class Workspace
-    {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Workspace()
-        {
-            this.BOEs = new HashSet<BOE>();
-            this.BOEPotentialRoles = new HashSet<BOEPotentialRole>();
-            this.CLINs = new HashSet<CLIN>();
-            this.CustomFields = new HashSet<CustomField>();
-            this.OutputFormatTemplateWorkspaceXREFs = new HashSet<OutputFormatTemplateWorkspaceXREF>();
-            this.ProPricerExports = new HashSet<ProPricerExport>();
-            this.TMResourceRates = new HashSet<TMResourceRate>();
-            this.WorkBreakdownStructures = new HashSet<WorkBreakdownStructure>();
-            this.WorkspaceRMSTravelNonzoneFeesAndCosts = new HashSet<WorkspaceRMSTravelNonzoneFeesAndCost>();
-            this.WorkspaceOffloadRates = new HashSet<WorkspaceOffloadRate>();
-            this.WorkspaceRMSTravelEscalationRates = new HashSet<WorkspaceRMSTravelEscalationRate>();
-            this.WorkspaceContractTypeXREFs = new HashSet<WorkspaceContractTypeXREF>();
-            this.WorkspaceEmailXREFs = new HashSet<WorkspaceEmailXREF>();
-            this.WorkspaceLockedPerDiems = new HashSet<WorkspaceLockedPerDiem>();
-            this.WorkspaceLockedTravelEscalationRates = new HashSet<WorkspaceLockedTravelEscalationRate>();
-            this.WorkspaceLockedTravelMiscRates = new HashSet<WorkspaceLockedTravelMiscRate>();
-            this.WorkspaceLockedTrips = new HashSet<WorkspaceLockedTrip>();
-            this.WorkspacePerformingOrganizations = new HashSet<WorkspacePerformingOrganization>();
-            this.WorkspaceResources = new HashSet<WorkspaceResource>();
-            this.WorkspaceStateHistories = new HashSet<WorkspaceStateHistory>();
-            this.WorkspaceUserRoles = new HashSet<WorkspaceUserRole>();
-            this.WorkspaceUserXREFs = new HashSet<WorkspaceUserXREF>();
-            this.WorkspaceVariables = new HashSet<WorkspaceVariable>();
-            this.WorkspaceVersions = new HashSet<WorkspaceVersion>();
-            this.RteTemplates = new HashSet<RteTemplate>();
-        }
-    
-        public int WorkspaceID { get; set; }
-        public System.DateTime UpdateDT { get; set; }
-        public string WorkspaceName { get; set; }
-        public string WorkspaceShortName { get; set; }
-        public int WorkspaceStateID { get; set; }
-        public System.DateTime ContractStartDate { get; set; }
-        public System.DateTime ContractEndDate { get; set; }
-        public Nullable<System.DateTime> ProposalSubmitDate { get; set; }
-        public string WorkspaceDescription { get; set; }
-        public int CostVolumeLeadPricerUserID { get; set; }
-        public string RFPNumber { get; set; }
-        public int TemplateID { get; set; }
-        public bool ContainsOCI { get; set; }
-        public int CreatedByETIUserID { get; set; }
-        public bool AllowSearch { get; set; }
-        public Nullable<int> ResourceListID { get; set; }
-        public Nullable<int> PerformingOrganizationListID { get; set; }
-        public bool PerformingOrganizationChangeFlag { get; set; }
-        public string TrackingNumber { get; set; }
-        public bool ContainsTemplate { get; set; }
-        public int NumProPricerExport { get; set; }
-        public int ProposalStatusID { get; set; }
-        public string StatusComment { get; set; }
-        public int BOEExportSortByID { get; set; }
-        public Nullable<int> SegmentID { get; set; }
-        public Nullable<int> LineOfBusinessID { get; set; }
-        public Nullable<int> ProposalClassID { get; set; }
-        public string ProposalTitle { get; set; }
-        public Nullable<bool> IsDeleted { get; set; }
-        public Nullable<System.DateTime> DateDeleted { get; set; }
-        public Nullable<int> ResourcePrecision { get; set; }
-        public Nullable<System.DateTime> RecalculationStartedDate { get; set; }
-        public byte CostPrecision { get; set; }
-        public bool IsUsingEquivalentPerson { get; set; }
-        public bool IsUsingTM { get; set; }
-        public int ProjectMapTypeID { get; set; }
-        public bool AllowGridEdit { get; set; }
-        public int CustomSorting { get; set; }
-        public int ResourceSorting { get; set; }
-        public int PerfOrgSorting { get; set; }
-        public Nullable<int> LastProPricerInstance { get; set; }
-        public string LastProPricerProposal { get; set; }
-        public Nullable<int> RteSizeLimit { get; set; }
-        public Nullable<System.DateTime> WorkspaceCreationDate { get; set; }
-        public Nullable<System.DateTime> RevisedSubmittalDate { get; set; }
-        public bool TemplateBoe { get; set; }
-        public bool EnableSAPConnection { get; set; }
-        public bool CurrentPTMWorkspace { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOE> BOEs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOEPotentialRole> BOEPotentialRoles { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CLIN> CLINs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CustomField> CustomFields { get; set; }
-        public virtual ETIuser ETIuser { get; set; }
-        public virtual ETIuser ETIuser1 { get; set; }
-        public virtual LineOfBusiness LineOfBusiness { get; set; }
-        public virtual OutputFormatTemplate OutputFormatTemplate { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OutputFormatTemplateWorkspaceXREF> OutputFormatTemplateWorkspaceXREFs { get; set; }
-        public virtual PerformingOrganizationList PerformingOrganizationList { get; set; }
-        public virtual ProjectMapTypeLU ProjectMapTypeLU { get; set; }
-        public virtual ProposalClassLU ProposalClassLU { get; set; }
-        public virtual ProposalStatusLU ProposalStatusLU { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ProPricerExport> ProPricerExports { get; set; }
-        public virtual ResourceList ResourceList { get; set; }
-        public virtual SegmentLU SegmentLU { get; set; }
-        public virtual SortByLU SortByLU { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TMResourceRate> TMResourceRates { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkBreakdownStructure> WorkBreakdownStructures { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceRMSTravelNonzoneFeesAndCost> WorkspaceRMSTravelNonzoneFeesAndCosts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceOffloadRate> WorkspaceOffloadRates { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceRMSTravelEscalationRate> WorkspaceRMSTravelEscalationRates { get; set; }
-        public virtual WorkspaceStateLU WorkspaceStateLU { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceContractTypeXREF> WorkspaceContractTypeXREFs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceEmailXREF> WorkspaceEmailXREFs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceLockedPerDiem> WorkspaceLockedPerDiems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceLockedTravelEscalationRate> WorkspaceLockedTravelEscalationRates { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceLockedTravelMiscRate> WorkspaceLockedTravelMiscRates { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceLockedTrip> WorkspaceLockedTrips { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspacePerformingOrganization> WorkspacePerformingOrganizations { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceResource> WorkspaceResources { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceStateHistory> WorkspaceStateHistories { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceUserRole> WorkspaceUserRoles { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceUserXREF> WorkspaceUserXREFs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceVariable> WorkspaceVariables { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkspaceVersion> WorkspaceVersions { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RteTemplate> RteTemplates { get; set; }
-    }
+	using System;
+	using System.Collections.Generic;
+	
+	public partial class Workspace
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+		public Workspace()
+		{
+			this.BOEs = new HashSet<BOE>();
+			this.BOEPotentialRoles = new HashSet<BOEPotentialRole>();
+			this.CLINs = new HashSet<CLIN>();
+			this.CustomFields = new HashSet<CustomField>();
+			this.OutputFormatTemplateWorkspaceXREFs = new HashSet<OutputFormatTemplateWorkspaceXREF>();
+			this.ProPricerExports = new HashSet<ProPricerExport>();
+			this.TMResourceRates = new HashSet<TMResourceRate>();
+			this.WorkBreakdownStructures = new HashSet<WorkBreakdownStructure>();
+			this.WorkspaceRMSTravelNonzoneFeesAndCosts = new HashSet<WorkspaceRMSTravelNonzoneFeesAndCost>();
+			this.WorkspaceOffloadRates = new HashSet<WorkspaceOffloadRate>();
+			this.WorkspaceRMSTravelEscalationRates = new HashSet<WorkspaceRMSTravelEscalationRate>();
+			this.WorkspaceContractTypeXREFs = new HashSet<WorkspaceContractTypeXREF>();
+			this.WorkspaceEmailXREFs = new HashSet<WorkspaceEmailXREF>();
+			this.WorkspaceLockedPerDiems = new HashSet<WorkspaceLockedPerDiem>();
+			this.WorkspaceLockedTravelEscalationRates = new HashSet<WorkspaceLockedTravelEscalationRate>();
+			this.WorkspaceLockedTravelMiscRates = new HashSet<WorkspaceLockedTravelMiscRate>();
+			this.WorkspaceLockedTrips = new HashSet<WorkspaceLockedTrip>();
+			this.WorkspacePerformingOrganizations = new HashSet<WorkspacePerformingOrganization>();
+			this.WorkspaceResources = new HashSet<WorkspaceResource>();
+			this.WorkspaceStateHistories = new HashSet<WorkspaceStateHistory>();
+			this.WorkspaceUserRoles = new HashSet<WorkspaceUserRole>();
+			this.WorkspaceUserXREFs = new HashSet<WorkspaceUserXREF>();
+			this.WorkspaceVariables = new HashSet<WorkspaceVariable>();
+			this.WorkspaceVersions = new HashSet<WorkspaceVersion>();
+			this.RteTemplates = new HashSet<RteTemplate>();
+		}
+	
+		public int WorkspaceID { get; set; }
+		public System.DateTime UpdateDT { get; set; }
+		public string WorkspaceName { get; set; }
+		public string WorkspaceShortName { get; set; }
+		public int WorkspaceStateID { get; set; }
+		public System.DateTime ContractStartDate { get; set; }
+		public System.DateTime ContractEndDate { get; set; }
+		public Nullable<System.DateTime> ProposalSubmitDate { get; set; }
+		public string WorkspaceDescription { get; set; }
+		public int CostVolumeLeadPricerUserID { get; set; }
+		public string RFPNumber { get; set; }
+		public int TemplateID { get; set; }
+		public bool ContainsOCI { get; set; }
+		public int CreatedByETIUserID { get; set; }
+		public bool AllowSearch { get; set; }
+		public Nullable<int> ResourceListID { get; set; }
+		public Nullable<int> PerformingOrganizationListID { get; set; }
+		public bool PerformingOrganizationChangeFlag { get; set; }
+		public string TrackingNumber { get; set; }
+		public bool ContainsTemplate { get; set; }
+		public int NumProPricerExport { get; set; }
+		public int ProposalStatusID { get; set; }
+		public string StatusComment { get; set; }
+		public int BOEExportSortByID { get; set; }
+		public Nullable<int> SegmentID { get; set; }
+		public Nullable<int> LineOfBusinessID { get; set; }
+		public Nullable<int> ProposalClassID { get; set; }
+		public string ProposalTitle { get; set; }
+		public Nullable<bool> IsDeleted { get; set; }
+		public Nullable<System.DateTime> DateDeleted { get; set; }
+		public Nullable<int> ResourcePrecision { get; set; }
+		public Nullable<System.DateTime> RecalculationStartedDate { get; set; }
+		public byte CostPrecision { get; set; }
+		public bool IsUsingEquivalentPerson { get; set; }
+		public bool IsUsingTM { get; set; }
+		public int ProjectMapTypeID { get; set; }
+		public bool AllowGridEdit { get; set; }
+		public int CustomSorting { get; set; }
+		public int ResourceSorting { get; set; }
+		public int PerfOrgSorting { get; set; }
+		public Nullable<int> LastProPricerInstance { get; set; }
+		public string LastProPricerProposal { get; set; }
+		public Nullable<int> RteSizeLimit { get; set; }
+		public Nullable<System.DateTime> WorkspaceCreationDate { get; set; }
+		public Nullable<System.DateTime> RevisedSubmittalDate { get; set; }
+		public bool TemplateBoe { get; set; }
+		public bool EnableSAPConnection { get; set; }
+		public bool CurrentPTMWorkspace { get; set; }
+	
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<BOE> BOEs { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<BOEPotentialRole> BOEPotentialRoles { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<CLIN> CLINs { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<CustomField> CustomFields { get; set; }
+		public virtual ETIuser ETIuser { get; set; }
+		public virtual ETIuser ETIuser1 { get; set; }
+		public virtual LineOfBusiness LineOfBusiness { get; set; }
+		public virtual OutputFormatTemplate OutputFormatTemplate { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<OutputFormatTemplateWorkspaceXREF> OutputFormatTemplateWorkspaceXREFs { get; set; }
+		public virtual PerformingOrganizationList PerformingOrganizationList { get; set; }
+		public virtual ProjectMapTypeLU ProjectMapTypeLU { get; set; }
+		public virtual ProposalClassLU ProposalClassLU { get; set; }
+		public virtual ProposalStatusLU ProposalStatusLU { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<ProPricerExport> ProPricerExports { get; set; }
+		public virtual ResourceList ResourceList { get; set; }
+		public virtual SegmentLU SegmentLU { get; set; }
+		public virtual SortByLU SortByLU { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<TMResourceRate> TMResourceRates { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkBreakdownStructure> WorkBreakdownStructures { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceRMSTravelNonzoneFeesAndCost> WorkspaceRMSTravelNonzoneFeesAndCosts { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceOffloadRate> WorkspaceOffloadRates { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceRMSTravelEscalationRate> WorkspaceRMSTravelEscalationRates { get; set; }
+		public virtual WorkspaceStateLU WorkspaceStateLU { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceContractTypeXREF> WorkspaceContractTypeXREFs { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceEmailXREF> WorkspaceEmailXREFs { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceLockedPerDiem> WorkspaceLockedPerDiems { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceLockedTravelEscalationRate> WorkspaceLockedTravelEscalationRates { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceLockedTravelMiscRate> WorkspaceLockedTravelMiscRates { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceLockedTrip> WorkspaceLockedTrips { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspacePerformingOrganization> WorkspacePerformingOrganizations { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceResource> WorkspaceResources { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceStateHistory> WorkspaceStateHistories { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceUserRole> WorkspaceUserRoles { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceUserXREF> WorkspaceUserXREFs { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceVariable> WorkspaceVariables { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<WorkspaceVersion> WorkspaceVersions { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<RteTemplate> RteTemplates { get; set; }
+	}
 }

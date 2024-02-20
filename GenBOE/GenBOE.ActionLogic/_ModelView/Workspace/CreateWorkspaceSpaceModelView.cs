@@ -15,24 +15,24 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 	using IES.Common;
 	using IES.Common.PickList;
 
-    /// <summary>
-    /// Model View for the Create Workspace page for Space
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    public class CreateWorkspaceSpaceModelView : CreateWorkspaceModelView, ICreateWorkspaceModelView
-    {
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public CreateWorkspaceSpaceModelView()
-        {
-            this.CostVolumeLeadPricerNTID = string.Empty;
-            this.ProposalClass = Constants.PROPOSAL_CLASS_TYPE_NOT_SET;
-            this.ContractTypes = new Collection<PickListDto>();
-            this.SelectedContractTypes = new Collection<int>();
-            this.RevisedSubmittalDate = string.Empty;
+	/// <summary>
+	/// Model View for the Create Workspace page for Space
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class CreateWorkspaceSpaceModelView : CreateWorkspaceModelView, ICreateWorkspaceModelView
+	{
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public CreateWorkspaceSpaceModelView()
+		{
+			this.CostVolumeLeadPricerNTID = string.Empty;
+			this.ProposalClass = Constants.PROPOSAL_CLASS_TYPE_NOT_SET;
+			this.ContractTypes = new Collection<PickListDto>();
+			this.SelectedContractTypes = new Collection<int>();
+			this.RevisedSubmittalDate = string.Empty;
 			this.CurrentPTMWorkspace = false;
-        }
+		}
 
 		/// <summary>
 		/// To string
@@ -79,12 +79,12 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// </summary>
 		public SegmentType Segment { get { return SegmentType.SSC; } }
 
-        /// <summary>
-        /// Summary Revised Submittal Date of the Proposal
-        /// 
-        /// Now labeled as Revised Anticipated Delivery Date
-        /// </summary>
-        public string RevisedSubmittalDate { get; set; }
+		/// <summary>
+		/// Summary Revised Submittal Date of the Proposal
+		/// 
+		/// Now labeled as Revised Anticipated Delivery Date
+		/// </summary>
+		public string RevisedSubmittalDate { get; set; }
 
 		/// <summary>
 		/// Get/set whether the new workspace is Current for PTM

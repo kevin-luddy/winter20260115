@@ -15,44 +15,44 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 	using GenBOE.ActionLogic.ValidationAttributes;
 	using IES.Common;
 
-    [ExcludeFromCodeCoverage]
-    public class CreateWorkspaceModelView : PersistedDataModelView
-    {
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public CreateWorkspaceModelView()
-        {
-            this.WorkspaceID = -1;
-            this.WorkspaceName = null;
-            this.Description = string.Empty;
-            this.Shortname = string.Empty;
-            this.ContractStartDate = "01/1900";
-            this.ContractEndDate = "12/2099";
-            this.ProposalSubmittalDate = DateTime.Now.ToString("MM/dd/yyyy");
-            this.UpdateDate = DateTime.Now;
-            this.CostVolumeLeadPricerDisplayName = string.Empty;
-            this.RFPNumber = string.Empty;
-            this.TrackingNumber = string.Empty;
-            this.ContainsOCI = false;
-            this.ContainsContentTemplates = false;
-            this.ShareAndAllowSearch = false;
-            this.WorkspaceToCopyID = -1;
-            this.BOEsToCopy = new Collection<int>();
-            this.CopyPermissions = false;
-            this.CopyTasks = false;
-            this.CopyLaborSpreads = false;
-            this.WSExactCopy = null;
-            this.ProposalTitle = string.Empty;
-            this.ResourceDecimalPrecision = null;
-            this.CostDecimalPrecision = 2;
-            this.IsUsingEquivalentPerson = false;
-            this.IsUsingTM = false;
-            this.ProjectMapType = ProjectMapType.StandardWithoutOffload;
-            this.EnableSAPConnection = true;
+	[ExcludeFromCodeCoverage]
+	public class CreateWorkspaceModelView : PersistedDataModelView
+	{
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public CreateWorkspaceModelView()
+		{
+			this.WorkspaceID = -1;
+			this.WorkspaceName = null;
+			this.Description = string.Empty;
+			this.Shortname = string.Empty;
+			this.ContractStartDate = "01/1900";
+			this.ContractEndDate = "12/2099";
+			this.ProposalSubmittalDate = DateTime.Now.ToString("MM/dd/yyyy");
+			this.UpdateDate = DateTime.Now;
+			this.CostVolumeLeadPricerDisplayName = string.Empty;
+			this.RFPNumber = string.Empty;
+			this.TrackingNumber = string.Empty;
+			this.ContainsOCI = false;
+			this.ContainsContentTemplates = false;
+			this.ShareAndAllowSearch = false;
+			this.WorkspaceToCopyID = -1;
+			this.BOEsToCopy = new Collection<int>();
+			this.CopyPermissions = false;
+			this.CopyTasks = false;
+			this.CopyLaborSpreads = false;
+			this.WSExactCopy = null;
+			this.ProposalTitle = string.Empty;
+			this.ResourceDecimalPrecision = null;
+			this.CostDecimalPrecision = 2;
+			this.IsUsingEquivalentPerson = false;
+			this.IsUsingTM = false;
+			this.ProjectMapType = ProjectMapType.StandardWithoutOffload;
+			this.EnableSAPConnection = true;
 			this.CurrentPTMWorkspace = false;
 
-        }
+		}
 
 		public override string ToString()
 		{
@@ -255,11 +255,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		[Required(ErrorMessage = "A selection for Template BOE is required.")]
 		public bool UsingTemplateBoe { get; set; }
 
-        /// <summary>
-        /// Get/set whether using Enable SAP Connection is selected.
-        /// </summary>
-        [Required(ErrorMessage = "Enable SAP connection selection is required.")]
-        public bool EnableSAPConnection { get; set; }
+		/// <summary>
+		/// Get/set whether using Enable SAP Connection is selected.
+		/// </summary>
+		[Required(ErrorMessage = "Enable SAP connection selection is required.")]
+		public bool EnableSAPConnection { get; set; }
 
 		/// <summary>
 		/// Get/set whether the new workspace is Current for PTM
