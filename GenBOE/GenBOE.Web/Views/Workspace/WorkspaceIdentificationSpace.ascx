@@ -37,8 +37,8 @@
 
 					WorkspaceIdentificationWidget.saveRequest({
 						url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
-                            '<%: WebConstants.CONTROLLER_WORKSPACE %>',
-                            '<%: WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION %>', ''),
+							'<%: WebConstants.CONTROLLER_WORKSPACE %>',
+							'<%: WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION %>', ''),
 						data: dataToSend,
 						success: function (result) {
 							var message = '';
@@ -50,8 +50,8 @@
 							if ($('#ShortName').val() != '') {
 								newJumpUrl = CreatePostURL(
 									$('#ShortName').val(),
-                                '<%: WebConstants.CONTROLLER_WORKSPACE %>',
-                                '<%: WebConstants.ACTION_WORKSPACE_SETTINGS %>');
+								'<%: WebConstants.CONTROLLER_WORKSPACE %>',
+								'<%: WebConstants.ACTION_WORKSPACE_SETTINGS %>');
 							}
 
 							WorkspaceIdentificationWidget.cleanDirty('WorkspaceIdentificationForm');
@@ -61,7 +61,7 @@
 				},
 				Stateful: true
 			}
-            <% if (Utilities.IsPTMIntegrated)
+			<% if (Utilities.IsPTMIntegrated)
 	{ %>
 			, {
 				ButtonClass: 'ies-action',
@@ -71,7 +71,7 @@
 					WorkspaceIdentificationWidget.RefreshTrackingNumber(true);
 				},
 			}
-            <% } %>
+			<% } %>
 			, {
 				ButtonClass: 'ies',
 				ButtonText: 'Cancel',
@@ -82,7 +82,7 @@
 			}
 		],
 		ContainsOCI: <%: ViewData["ContainsOCI"] %>
-    });
+	});
 
 	var dialogConfigs = [];
 
@@ -94,18 +94,18 @@
 	widgetConfig.DialogConfigs = dialogConfigs;
 
 	var dateShiftUrl = CreatePostURL(
-        '<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
-        '<%: WebConstants.CONTROLLER_DATESHIFT %>',
-        '<%: WebConstants.ACTION_INDEX %>',
-        'id/<%: Model.WorkspaceID%>/level/<%: ((int)IES.Common.Level.Workspace).ToString() %>');
+		'<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+		'<%: WebConstants.CONTROLLER_DATESHIFT %>',
+		'<%: WebConstants.ACTION_INDEX %>',
+		'id/<%: Model.WorkspaceID%>/level/<%: ((int)IES.Common.Level.Workspace).ToString() %>');
 	var jumpUrl = CreatePostURL(
-        '<%:SiteMasterUtilities.GetCurrentWorkspace()%>',
-        '<%: WebConstants.CONTROLLER_WORKSPACE %>',
-        '<%: WebConstants.ACTION_WORKSPACE_SETTINGS %>');
+		'<%:SiteMasterUtilities.GetCurrentWorkspace()%>',
+		'<%: WebConstants.CONTROLLER_WORKSPACE %>',
+		'<%: WebConstants.ACTION_WORKSPACE_SETTINGS %>');
 	WorkspaceIdentificationWidget = InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl);
 
 	WorkspaceIdentificationWidget.LockFields = function () {
-        <% if (Utilities.IsPTMIntegrated)
+		<% if (Utilities.IsPTMIntegrated)
 	{ %>
 
 		// break up workspacename and revisionworkspacename if needed
@@ -165,7 +165,7 @@
 		WorkspaceIdentificationWidget.refreshModule();
 		selections.text(values.join(','));
 
-        <% } %>
+		<% } %>
 	}
 
 	WorkspaceIdentificationWidget.RefreshTrackingNumber = function (refreshOnly) {
@@ -416,9 +416,10 @@
 
 	   originalTrackingNumber = $('#TrackingNumber').val();
 	   originalSapConnectionEnabled = $('#EnableSAPConnection').val();
+	   
    });
 
-    // Dynamically set disabled/readonly dropdown for SAP connection
+	// Dynamically set disabled/readonly dropdown for SAP connection
 	var usingTemplateBoeInit = '<%:Model.UsingTemplateBoe%>'.isTrue();
 	var enableSAPDropdown = $('#EnableSAPConnection');
 
@@ -426,17 +427,17 @@
 		enableSAPDropdown.addClass('disabled').attr('disabled', true);
 	}
 
-    $('#UsingTemplateBoe').change(function () {
-        if ($('#UsingTemplateBoe').val() === 'False') {
+	$('#UsingTemplateBoe').change(function () {
+		if ($('#UsingTemplateBoe').val() === 'False') {
 			enableSAPDropdown.addClass('disabled').attr('disabled', true);
 			enableSAPDropdown.val('False');
 			disabledEnableSAPConnectionDropdown = true;
-        } else {
+		} else {
 			enableSAPDropdown.removeClass('disabled').removeAttr('disabled');
 			enableSAPDropdown.val('True');
 			disabledEnableSAPConnectionDropdown = false;
-        }
-    });
+		}
+	});
 </script>
 
 <div id="WorkspaceIdentification" class="workspace-identification module ">
@@ -533,7 +534,7 @@
 		<div class="form-row">
 			<div class="form-label">
 				<span helptext="The individual who will perform the initial setup procedures before the BOE Authors
-                        begin the writing process.">Estimating Lead/Pricer *</span>
+						begin the writing process.">Estimating Lead/Pricer *</span>
 			</div>
 			<div class="form-element">
 				<input id="CostVolumeLeadPricerDisplayName" name="CostVolumeLeadPricerDisplayName" type="text" class="half" maxlength="50" />
@@ -584,7 +585,7 @@
 		<div class="form-row">
 			<div class="form-label">
 				PTM Tracking #
-                <div class="help-icon" onclick="WorkspaceIdentificationWidget.ToggleHelp(this);"></div>
+				<div class="help-icon" onclick="WorkspaceIdentificationWidget.ToggleHelp(this);"></div>
 				<!-- This comment is needed for the jquery animation to work in IE8... -->
 				<div class="help-dialog" style="width: 130px;">
 					<div class="help-dialog-close"></div>
@@ -630,8 +631,8 @@
 		<div class="form-row">
 			<div class="form-label">
 				<span helptext="'No' means the proposal was created with the intent of using 
-                    Hours as Labor Spread values. 'Yes' means the proposal was created with 
-                    the intent of using Equivalent Person (EP) as Labor Spread values.">Is using Equivalent Person (EP)</span>
+					Hours as Labor Spread values. 'Yes' means the proposal was created with 
+					the intent of using Equivalent Person (EP) as Labor Spread values.">Is using Equivalent Person (EP)</span>
 			</div>
 			<div class="form-element static"><%: Model.IsUsingEquivalentPerson ? "Yes" : "No" %></div>
 		</div>
@@ -646,9 +647,9 @@
 		<div class="form-row">
 			<div class="form-label">
 				<span helptext="Information subject to contractual organization conflict of interest (OCI) limitations.
-                        Access must be restricted to authorized employees who have executed non-disclosure
-                        agreements. The information is limited for use solely in the performance of the
-                        contract on which it was provided or created.">Contains OCI Information *</span>
+						Access must be restricted to authorized employees who have executed non-disclosure
+						agreements. The information is limited for use solely in the performance of the
+						contract on which it was provided or created.">Contains OCI Information *</span>
 			</div>
 			<div class="form-element radio">
 				<%: Html.RadioButton("ContainsOCI", true, Model.ContainsOCI, new { id="ContainsOCI-Yes" })%>
@@ -719,10 +720,10 @@
 			</div>
 			<div class="form-element">
 				<%: Html.DropDownListFor(c => c.UsingTemplateBoe, new List<SelectListItem>()
-                    {
-                        new SelectListItem() { Text = "Yes", Value = "True" },
-                        new SelectListItem() { Text = "No", Value = "False" }
-                    }, dropdownParamsForBoeTemplates) %>
+					{
+						new SelectListItem() { Text = "Yes", Value = "True" },
+						new SelectListItem() { Text = "No", Value = "False" }
+					}, dropdownParamsForBoeTemplates) %>
 				<%if (disabledBoeTemplateDropdown)
 					{ %>
 				<%: Html.HiddenFor(c => c.UsingTemplateBoe) %>
@@ -751,12 +752,8 @@
 			<div class="form-label">
 				<span>Current Workspace</span>
 			</div>
-			<div class="form-element">
-				<%: Html.DropDownListFor(c => c.CurrentPTMWorkspace, new List<SelectListItem>()
-					{
-						new SelectListItem() { Text = "Yes", Value = "True" },
-						new SelectListItem() { Text = "No", Value = "False" }
-					}) %>
+			<div class="form-element" id="CurrentPTMWorkspaceSelection">
+				<%: Html.DropDownListFor(c => c.CurrentPTMWorkspace, Model.CurrentPTMWorkspaceSelection) %>
 			</div>
 		</div>
 		<button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
