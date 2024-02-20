@@ -52,7 +52,7 @@
 			RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
 			SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>',
 			PoPMonthsDivisor: '<%: Constants.POP_MONTHS_DIVISOR %>',
-			OneLMXCutOffDate: '<%: Utilities.GetOneLMXCutOffDate() %>',
+			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
 			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForSystem %>'.isTrue()
 		});
 
