@@ -43,7 +43,7 @@ namespace IESPortal.Backend.Controllers
 		/// <param name="securityInformation">The security information.</param>
 		/// <param name="bannerMediator">The banner mediator.</param>
 		public HomeController(ILogger<HomeController> logger, IConfiguration configuration, ISecurityInformation securityInformation, BannerMediator bannerMediator, IOfflineApplicationLoader offlineApplicationLoader) 
-            : base(logger, securityInformation)
+            : base(logger, securityInformation, configuration)
         {
             this.configuration = configuration;
             this.bannerMediator = bannerMediator;
