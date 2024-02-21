@@ -41,12 +41,12 @@ namespace GenBOE.ActionLogic.IO
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMX_1LMX_CORE && x.SegRegion != WebConstants.RMX_1LMX_SERVICES).ToList();
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMS_1LMX_CORE && x.SegRegion != WebConstants.RMS_1LMX_SERVICES).ToList();
 
 					}
 					else
 					{
-						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMX_1LMX_CORE || x.SegRegion == WebConstants.RMX_1LMX_SERVICES).ToList();
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMS_1LMX_CORE || x.SegRegion == WebConstants.RMS_1LMX_SERVICES).ToList();
 					}
 				}
 			}

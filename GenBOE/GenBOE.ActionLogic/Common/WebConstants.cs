@@ -110,8 +110,8 @@ namespace GenBOE.ActionLogic.Common
 
 		public static readonly string SPACE_1LMX_CORE = "1LMX - Core";
 		public static readonly string SPACE_1LMX_SERVICES = "1LMX - Services";
-		public static readonly string RMX_1LMX_CORE = "LM-Core";
-		public static readonly string RMX_1LMX_SERVICES = "LM-Services";
+		public static readonly string RMS_1LMX_CORE = "LM-Core";
+		public static readonly string RMS_1LMX_SERVICES = "LM-Services";
 
 		#region TEMPLATE FILES
 
