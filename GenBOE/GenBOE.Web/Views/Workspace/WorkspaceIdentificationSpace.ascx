@@ -87,6 +87,7 @@
 	var widgetConfig = {};
 	widgetConfig.ContextID = "WorkspaceIdentification";
 	widgetConfig.isReadOnly = <%: ViewData["READONLY"] %>;
+	widgetConfig.MultipleCurrentWorkspace = <%: ViewData["DoesPTMMultipleWorkspaces"] %>; 
 	widgetConfig.IsModule = true;
 	widgetConfig.FormConfigs = formConfigs;
 	widgetConfig.DialogConfigs = dialogConfigs;
@@ -338,6 +339,23 @@
 			);
 		}
 	};
+
+	WorkspaceIdentificationWidget.OnCurrentWorkspaceChange = function(selection) {
+		console.log(widgetConfig.MultipleCurrentWorkspace)
+		console.log($(selection).val())
+		if ($(selection).val() == 'True' && widgetConfig.MultipleCurrentWorkspace) {
+			GenSession.confirmDialog("Enable Workspace As Current",
+				"Only one workspace should be marked Current at a time, unless multiple workspaces are required for the Proposal",
+				function () {
+					// do nothing on confirm, let the change happen
+				},
+				function () {
+					// reset value on cancel
+					$('#CurrentPTMWorkspace').val('False');
+				}
+			);
+		}
+	}
 
 
 
@@ -751,7 +769,11 @@
 				<span>Current Workspace</span>
 			</div>
 			<div class="form-element" id="CurrentPTMWorkspaceSelection">
-				<%: Html.DropDownListFor(c => c.CurrentPTMWorkspace, Model.CurrentPTMWorkspaceSelection) %>
+				<%: Html.DropDownListFor(c => c.CurrentPTMWorkspace, new List<SelectListItem>()
+				{
+					new SelectListItem() { Text = "Yes", Value = "True" },
+					new SelectListItem() { Text = "No", Value = "False" }
+				}, new { onchange="WorkspaceIdentificationWidget.OnCurrentWorkspaceChange(this)" }) %>
 			</div>
 		</div>
 		<button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>

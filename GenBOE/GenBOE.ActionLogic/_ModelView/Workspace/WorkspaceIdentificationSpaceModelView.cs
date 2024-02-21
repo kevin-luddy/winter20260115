@@ -17,6 +17,8 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 	using IES.Common;
 	using IES.Common.classes;
 	using System.Collections.Generic;
+	using GenBOE.DataBridge.DTO;
+	using System.Linq;
 
 	/// <summary>
 	/// Workspace Identification (Space Systems Company) ModelView that extends WorkspaceIdentificationModelView
@@ -142,5 +144,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Get/Set whether Workspace is the current for the PTM Tracking Number
 		/// </summary>
 		public bool CurrentPTMWorkspace { get; set; }
+
+		/// <summary>
+		/// Check whether or not this Tracking Number has multiple workspaces
+		/// </summary>
+		public bool IsMultipleWorkspaces { get; set; }
 	}
 }

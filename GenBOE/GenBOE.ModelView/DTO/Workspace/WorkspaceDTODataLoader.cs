@@ -88,7 +88,8 @@ namespace GenBOE.DataBridge.DTO
 									Shortname = w.WorkspaceShortName,
 									Id = w.WorkspaceID,
 									TrackingNumber = w.TrackingNumber,
-									WorkspaceState = (WorkspaceState)w.WorkspaceStateID
+									WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
+									CurrentPTMWorkspace = w.CurrentPTMWorkspace
 								}).ToCollection();
 				}
 			}
