@@ -384,6 +384,7 @@ namespace GenBOE.DataBridge.DTO
 										RevisedSubmittalDate = w.RevisedSubmittalDate,
 										UsingTemplateBOE = w.TemplateBoe,
 										EnableSAPConnection = w.EnableSAPConnection,
+										CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 										CreationDate = w.WorkspaceCreationDate
 									}).FirstOrDefault();
 
@@ -1159,7 +1160,8 @@ namespace GenBOE.DataBridge.DTO
 						wsToSave.RteSizeLimit,
 						wsToSave.RevisedSubmittalDate,
 						wsToSave.UsingTemplateBOE,
-						wsToSave.EnableSAPConnection).FirstOrDefault());
+						wsToSave.EnableSAPConnection,
+						wsToSave.CurrentPTMWorkspace).FirstOrDefault());
 
 					// if the result ID is not a positive number, something bad went wrong so Log it
 					if (resultID <= 0)
