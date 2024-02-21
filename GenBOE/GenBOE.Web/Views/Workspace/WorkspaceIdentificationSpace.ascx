@@ -341,8 +341,6 @@
 	};
 
 	WorkspaceIdentificationWidget.OnCurrentWorkspaceChange = function(selection) {
-		console.log(widgetConfig.MultipleCurrentWorkspace)
-		console.log($(selection).val())
 		if ($(selection).val() == 'True' && widgetConfig.MultipleCurrentWorkspace) {
 			GenSession.confirmDialog("Enable Workspace As Current",
 				"Only one workspace should be marked Current at a time, unless multiple workspaces are required for the Proposal",
