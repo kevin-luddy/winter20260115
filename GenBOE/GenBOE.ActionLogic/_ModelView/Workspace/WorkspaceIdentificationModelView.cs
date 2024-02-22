@@ -38,9 +38,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 			this.CostPrecisionSelect.Add(new SelectListItem { Text = "0", Value = "0", Selected = false });
 			this.CostPrecisionSelect.Add(new SelectListItem { Text = "2", Value = "2", Selected = true });
 			this.CustomFieldSortingSelect = ExtensionMethods.GetSelectItems<CustomFieldSorting>();
-			this.CurrentPTMWorkspaceSelection = new List<SelectListItem>();
-			this.CurrentPTMWorkspaceSelection.Add(new SelectListItem { Text = "Yes", Value = "True", Selected = true });
-			this.CurrentPTMWorkspaceSelection.Add(new SelectListItem { Text = "No", Value = "False", Selected = false });
 		}
 
 		/// <summary>
@@ -80,9 +77,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE;
 				this.CreatedPriorToBoeTemplates = !workspaceDTO.CreationDate.HasValue || workspaceDTO.CreationDate < DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
 				this.EnableSAPConnection = workspaceDTO.EnableSAPConnection;
-				this.CurrentPTMWorkspaceSelection = new List<SelectListItem>();
-				this.CurrentPTMWorkspaceSelection.Add(new SelectListItem { Text = "Yes", Value = "True", Selected = workspaceDTO.CurrentPTMWorkspace == true });
-				this.CurrentPTMWorkspaceSelection.Add(new SelectListItem { Text = "No", Value = "False", Selected = workspaceDTO.CurrentPTMWorkspace == false });
 				this.CurrentPTMWorkspace = workspaceDTO.CurrentPTMWorkspace;
 			}
 			if (costVolumeLeadDTO != null)
@@ -247,11 +241,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Indicates whether SAP features are enabled for this particular workspace
 		/// </summary>
 		public bool IsWorkspaceSAPEnabled { get; set; }
-
-		/// <summary>
-		/// Select list of valid precisions.
-		/// </summary>
-		public ICollection<SelectListItem> CurrentPTMWorkspaceSelection { get; set; }
 
 		/// <summary>
 		/// Get or set whether the workspace should be marked as Current for the PTM Tracking Number

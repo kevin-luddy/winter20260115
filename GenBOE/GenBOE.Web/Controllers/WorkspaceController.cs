@@ -1402,6 +1402,19 @@ namespace GenBOE.Web.Controllers
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
 			ViewData["ShowSAP"] = Utilities.ShowSAPForWorkspace(ws.CreationDate);
 
+			ICollection<WorkspaceDTO> workspaceChecks = this.workspaceLoader.GetAllWsNamesForTrackingNumber(ws.TrackingNumber)
+				.Where(x => x.CurrentPTMWorkspace).ToList();
+
+			ViewData["DoesPTMMultipleWorkspaces"] = "false";
+			if (workspaceChecks.Count() == 1 && workspaceChecks.Any(x => x.Id != ws.Id))
+			{
+				ViewData["DoesPTMMultipleWorkspaces"] = "true";
+			}
+			else if (workspaceChecks.Count() > 1)
+			{
+				ViewData["DoesPTMMultipleWorkspaces"] = "true";
+			}
+
 			// gather up proposal class types
 			this.GetProposalClassOptionList();
 
