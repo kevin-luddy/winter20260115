@@ -394,6 +394,7 @@ namespace GenBOE.ActionLogic.ModelView
 				PercentSpreadLocked = laborType.PercentSpreadLocked,
 				PerformingOrgID = laborType.PerformingOrgID,
 				ResourceID = laborType.ResourceID,
+				BusinessResourceCodeID = laborType.BusinessResourceCodeID,
 				SpreadCurveID = laborType.SpreadCurveID,
 				StartDateValue = startDate.Normalize(DateTimePrecision.Month),
 				Updateable = UpdateType.None,

@@ -2085,7 +2085,7 @@
 
 				if (item.BusinessResourceCodeDescription) {
 					item.BusinessResourceCodeInput = $scope.BusinessResourceCodeModels.find(function (res) {
-						return res.BusinessResourceCodeDesc == item.BusinessResourceCodeDescription
+						return res.ResourceDesc == item.BusinessResourceCodeDescription
 					});
 				}
 
@@ -2096,6 +2096,7 @@
 				}
 			} else {
 				item.ResourceInput = item.ResourceDescription;
+				item.BusinessResourceCodeInput = item.BusinessResourceCodeDescription;
 				item.PerfOrgInput = item.PerformingOrgName;
 			}
 		});

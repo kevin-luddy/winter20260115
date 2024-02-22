@@ -38,7 +38,7 @@ namespace GenBOE.Dtos
             this.CLINID = null;
             this.IsAddOrDelete = null;
             this.LaborTypeOrder = 2000; // New resource types should be put at bottom of order
-            this.BusinessResourceCodeID = 0;
+            this.BusinessResourceCodeID = null;
         }
 
 		/*
