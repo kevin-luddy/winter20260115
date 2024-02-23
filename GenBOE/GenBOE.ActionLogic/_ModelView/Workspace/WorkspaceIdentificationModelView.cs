@@ -38,6 +38,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 			this.CostPrecisionSelect.Add(new SelectListItem { Text = "0", Value = "0", Selected = false });
 			this.CostPrecisionSelect.Add(new SelectListItem { Text = "2", Value = "2", Selected = true });
 			this.CustomFieldSortingSelect = ExtensionMethods.GetSelectItems<CustomFieldSorting>();
+			this.CurrentPTMWorkspace = false;
 		}
 
 		/// <summary>
