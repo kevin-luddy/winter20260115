@@ -1873,6 +1873,11 @@
 		// update Resource which sets Dirty
 		$scope.resourceUpdated(item);
 
+		if ($scope.IsBRCEnabled) {
+			item.BusinessResourceCodeInput = '';
+			$scope.businessResourceCodeUpdated(item);
+		}
+
 		$scope.checkIfNewRowNeeded(item);
 	};
 
