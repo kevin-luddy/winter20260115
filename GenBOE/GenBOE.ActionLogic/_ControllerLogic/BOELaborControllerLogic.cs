@@ -792,7 +792,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
 							&& (dto.ResourceID == 0 || dto.BusinessResourceCodeID == 0))
 						{
-							validationErrors.Add(new ValidationMessage("Element row needs to have Resrouce Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
+							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
 						}
 
 						if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate

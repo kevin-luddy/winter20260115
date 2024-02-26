@@ -26,11 +26,11 @@ namespace GenBOE.ActionLogic.ModelView
 		public LaborTypeDataModelView()
 		{
 			this.BOELaborTypeID = -1;
-			this.ResourceID = 0;
+			this.ResourceID = null;
 			this.ResourceName = String.Empty;
 			this.ResourceType = String.Empty;
 			this.ResourceDescription = String.Empty;
-			this.BusinessResourceCodeID = 0;
+			this.BusinessResourceCodeID = null;
 			this.BusinessResourceCodeName = string.Empty;
 			this.BusinessResourceCodeType = string.Empty;
 			this.BusinessResourceCodeDescription = string.Empty;
