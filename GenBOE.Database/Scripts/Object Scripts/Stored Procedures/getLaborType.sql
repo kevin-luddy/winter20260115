@@ -31,6 +31,7 @@ AS
 **		5/22/2017	Dusan				BOEJ-2181 Add Add/Delete column
 **		8/17/2017	Dusan				BOEJ-2469 Add Old Resource (2.16.1)
 **		10/2/2017	twilson3			BOEJ-2520 Cleanup DB, remove old ProjectMap columns
+**		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 *******************************************************************************/
 SET NOCOUNT ON 
 /*DECLARE @WorkspaceID int=1239*/
@@ -52,7 +53,8 @@ SELECT
 	 [LT].WBSID,
 	 [LT].CLINID,
 	 [B].[BOEID],
-	 [LT].[CanOffload]	 
+	 [LT].[CanOffload],
+	 [LT].[BRCResourceID]
 FROM [dbo].[BOELaborType] AS LT
 INNER JOIN 
 	(SELECT [BOETaskElementID], [BOEID] FROM [dbo].[BOETaskElement]) TE 
