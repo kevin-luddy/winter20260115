@@ -319,12 +319,12 @@ namespace GenBOE.Web.Common
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => x.ElementOfCost != ElementOfCostType.LMLabor || (x.SegRegion != WebConstants.RMX_1LMX_CORE && x.SegRegion != WebConstants.RMX_1LMX_SERVICES)).ToList();
+						resourceData = resourceData.Where(x => x.ElementOfCost != ElementOfCostType.LMLabor || (x.SegRegion != WebConstants.RMS_1LMX_CORE && x.SegRegion != WebConstants.RMS_1LMX_SERVICES)).ToList();
 
 					}
 					else
 					{
-						resourceData = resourceData.Where(x => x.ElementOfCost != ElementOfCostType.LMLabor || x.SegRegion == WebConstants.RMX_1LMX_CORE || x.SegRegion == WebConstants.RMX_1LMX_SERVICES).ToList();
+						resourceData = resourceData.Where(x => x.ElementOfCost != ElementOfCostType.LMLabor || x.SegRegion == WebConstants.RMS_1LMX_CORE || x.SegRegion == WebConstants.RMS_1LMX_SERVICES).ToList();
 					}
 				}
 			}
