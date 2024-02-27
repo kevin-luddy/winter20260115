@@ -256,8 +256,8 @@
 		
 	}
 
-	$scope.copyPromiseCallBack = function () {
-		var copyPromise = $scope.copyExactDetails();
+	$scope.copyPromiseCallBack = function (isCurrentPTMWorkspace) {
+		var copyPromise = $scope.copyExactDetails(isCurrentPTMWorkspace);
 
 		copyPromise.then(
 			function (answer) {
@@ -270,7 +270,7 @@
 			});
 	}
 
-	$scope.currentWorkspaceDialog = function (copyExactDetails) {
+	$scope.currentWorkspaceDialog = function () {
 		GenSession.commonDialog(
 			"Override Current PTM Workspace",
 			"Will this copy be the Current Workspace for the corresponding PTM ?",
@@ -280,7 +280,7 @@
 					ButtonText: 'Yes, Only This Workspace',
 					ButtonName: 'only-button',
 					callbackMethod: function () {
-						$scope.copyPromiseCallBack();
+						$scope.copyPromiseCallBack(true);
 					}
 				},
 				{
@@ -288,7 +288,7 @@
 					ButtonText: 'Yes, Multiple Workspaces',
 					ButtonName: 'multiple-button',
 					callbackMethod: function () {
-						$scope.copyPromiseCallBack();
+						$scope.copyPromiseCallBack(true);
 					}
 				},
 				{
@@ -296,7 +296,7 @@
 					ButtonText: 'No, Keep Current',
 					ButtonName: 'no-button',
 					callbackMethod: function () {
-						$scope.copyPromiseCallBack();
+						$scope.copyPromiseCallBack(false);
 					}
 				}
 			],
@@ -558,7 +558,7 @@
 	};
 
 	// When doing an Exact copy, copy the details so that they are shown on the Verify Page
-	$scope.copyExactDetails = function () {
+	$scope.copyExactDetails = function (isCurrentWorkspace = false) {
 
 		// retrieve exact copy details from server for duplicate name and cost volume pricer display name
 		var deferred = $q.defer();
@@ -580,6 +580,7 @@
 
 			$scope.data.CostVolumeLeadPricerDisplayName = response.data.DisplayName;
 			$scope.data.CostVolumeLeadPricerNTID = response.data.CostVolumeLeadPricerNTID;
+			$scope.data.CurrentPTMWorkspace = isCurrentWorkspace;
 
 			deferred.resolve();
 		},
