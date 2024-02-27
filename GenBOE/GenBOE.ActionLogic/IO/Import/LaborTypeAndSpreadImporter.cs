@@ -776,7 +776,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
 						if (multiList != null && multiList.Count > 0)
 						{
-							if (multiList.ContainsKey(ImportExportConstants.RESOURCE_COLUMN_HEADER))
+							if (multiList.Count == 1 && multiList.ContainsKey(ImportExportConstants.RESOURCE_COLUMN_HEADER))
 							{
 								if (multiList.TryGetValue(ImportExportConstants.RESOURCE_COLUMN_HEADER, out ResourceDTO resource))
 								{
@@ -784,7 +784,7 @@ namespace GenBOE.ActionLogic.IO.Import
 								}
 							}
 
-							if (multiList.ContainsKey(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER))
+							if (multiList.Count == 1 && multiList.ContainsKey(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER))
 							{
 								if (multiList.TryGetValue(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER, out ResourceDTO businessResourceCode))
 								{
@@ -793,6 +793,11 @@ namespace GenBOE.ActionLogic.IO.Import
 							}
 
 							// TODO: Figure out how spread works
+							if (multiList.Count == 2)
+							{
+
+							}
+
 						}
 					}
 				}
