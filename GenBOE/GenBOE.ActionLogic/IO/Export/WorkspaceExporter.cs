@@ -105,6 +105,7 @@ namespace GenBOE.ActionLogic.IO.Export
             
             this.DuplicateCustomFieldColumns(toReturn, exportInputs);
             this.HandleRationaleColumns(toReturn, exportInputs);
+            this.HandleBRCColumns(toReturn);
 
             this.SetAutofilterRange(toReturn);
 
@@ -303,6 +304,29 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
             }
         }
+        /// <summary>
+        /// Handle the MOQ Rationale columns - removed for Template BOE WSs
+        /// </summary>
+        /// <param name="templateFileLocation">The template file location.</param>
+        private void HandleBRCColumns(string templateFileLocation)
+        {
+            using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
+            {
+                if (!Utilities.IsBRCEnabledForSystem)
+                {
+                    ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "BRC");
+                    ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "BRC Description");
+                    ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "BRC Type");
+                    ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "BRC Segment Region");
+                    ExcelUtilities.RemoveColumn(document, "BOEs", "BRC");
+                    ExcelUtilities.RemoveColumn(document, "BOEs", "BRC Description");
+                    ExcelUtilities.RemoveColumn(document, "BOEs", "BRC Type");
+                    ExcelUtilities.RemoveColumn(document, "BOEs", "BRC Segment Region");
+                    ExcelUtilities.RemoveColumn(document, "Resource Spreads", "BRC Type");
+                    ExcelUtilities.RemoveColumn(document, "Resource Spreads", "BRC Segment Region");
+                }
+            }
+        }
 
         /// <summary>
         /// Gets all workspace data required for the export.
@@ -452,6 +476,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
 
                 #region Task Elements
+                
+                bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
 
                 //add any Labor tasks 
                 foreach (BoeTaskElementDTO task in tasks)
@@ -578,8 +604,6 @@ namespace GenBOE.ActionLogic.IO.Export
                         {
                             row.Add(this.sEmpty);
                         }
-
-                        bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
 
                         ResourceDTO aResource = resourceType.ResourceID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
                         ResourceDTO brcResource = isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
@@ -800,17 +824,30 @@ namespace GenBOE.ActionLogic.IO.Export
                         row.AddRange(
                             new string[] {
                                 this.sEmpty, this.sEmpty,
-                            odcType.ResourceID.HasValue ? aResource.ElementOfCost.ToString() : this.sEmpty,
-                            odcType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
-                            odcType.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
-                            odcType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
-                            odcType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
-                            odcType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
-                            odcType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty,
-                            odcType.StartDate.HasValue ? odcType.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
-                            odcType.EndDate.HasValue ? odcType.EndDate.Value.ToString("MM/yyyy") : this.sEmpty,
-                            spreadCurveName, this.sEmpty, this.sEmpty,
-                            CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, (((decimal)odcType.ODCSpreads.Sum(odcs2 => odcs2.CostSpreadValue))/100))
+                                odcType.ResourceID.HasValue ? aResource.ElementOfCost.ToString() : this.sEmpty,
+                                odcType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
+                                odcType.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
+                                odcType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty
+                            });
+                            if (isBrcResourceEnabled)
+                            {
+                                row.AddRange(
+                                    new string[] {
+                                        this.sEmpty,
+                                        this.sEmpty,
+                                        this.sEmpty,
+                                        this.sEmpty
+                                    });
+                            }
+                            row.AddRange(
+                                new string[] {
+                                    odcType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
+                                    odcType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
+                                    odcType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty, this.sEmpty, this.sEmpty, this.sEmpty,
+                                    odcType.StartDate.HasValue ? odcType.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
+                                    odcType.EndDate.HasValue ? odcType.EndDate.Value.ToString("MM/yyyy") : this.sEmpty,
+                                    spreadCurveName, this.sEmpty, this.sEmpty,
+                                    CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, (((decimal)odcType.ODCSpreads.Sum(odcs2 => odcs2.CostSpreadValue))/100))
                             });
 
                         emptyCellsToAdd = workspace_customFields.Count(c => c.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay);
@@ -1010,6 +1047,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 ICollection<BoeTaskElementDTO> laborTasks = (allTaskElements.Where(m => m.BoeID == boe.Id && (m.TaskElementType == TaskElementType.Labor))).ToList();
                 WbsDTO wbs = allWbs.FirstOrDefault(i => i.Id == boe.WBSID);
                 ClinDTO clin = allClins.FirstOrDefault(i => i.Id == boe.CLINID);
+                bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
 
                 foreach (BoeTaskElementDTO task in laborTasks)
                 {
@@ -1052,8 +1090,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
                             List<string> row = new List<string>();
                             
-                            bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
-
                             ResourceDTO aResource = type.ResourceID.HasValue ? workspaceResources.First(x => x.Id == type.ResourceID.Value) : new ResourceDTO();
                             ResourceDTO brcResource = isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == type.BusinessResourceCodeID.Value) : new ResourceDTO();
                             
@@ -1144,11 +1180,21 @@ namespace GenBOE.ActionLogic.IO.Export
                                     clin != null ? CommonConstants.FORCE_AS_STRING_VALUE + clin.ClinNumber : this.sEmpty,
                                     clin != null ? CommonConstants.FORCE_AS_STRING_VALUE + clin.ClinTitle : this.sEmpty,
                                     type.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
-                                    type.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
-                                    type.PerformingOrgID.HasValue ? perfOrgsFromDbForOdc.First(x => x.Id == type.PerformingOrgID.Value).PerformingOrgName : this.sEmpty,
-                                    currentDate.Year.ToString(),
-                                    currentDate.Month.ToString(),
-                                    this.sEmpty
+                                    type.ResourceID.HasValue ? aResource.LaborType : this.sEmpty
+                                });
+                                if (isBrcResourceEnabled) {
+                                    row.AddRange(
+                                        new string[] {
+                                            this.sEmpty,
+                                            this.sEmpty
+                                    });
+                                }
+                                row.AddRange(
+                                    new string[] {
+                                        type.PerformingOrgID.HasValue ? perfOrgsFromDbForOdc.First(x => x.Id == type.PerformingOrgID.Value).PerformingOrgName : this.sEmpty,
+                                        currentDate.Year.ToString(),
+                                        currentDate.Month.ToString(),
+                                        this.sEmpty
                                 });
 
                             if (spread == null)
@@ -1765,21 +1811,33 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     spreadCurveName = spreadCurve.SpreadCurveName;
                 }
-
-                string[] odcFields2 = new string[]
-                    {
-                                    this.sEmpty, // Total Task Hours
-                                    this.sEmpty, // Total Task Cost
-                                    odcType.ResourceID.HasValue ? aResource.ElementOfCost.ToString() : this.sEmpty,
-                                    odcType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
-                                    odcType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
-                                    odcType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
-                                    odcType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
-                                    odcType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty,
-                                    spreadCurveName,
-                                    this.sEmpty, // percent spread
-                                    this.sEmpty // Hours
-                    };
+                List<string> odcFields2 = new List<string>();
+                odcFields2.AddRange(
+                    new string[] {
+                        this.sEmpty, // Total Task Hours
+                        this.sEmpty, // Total Task Cost
+                        odcType.ResourceID.HasValue ? aResource.ElementOfCost.ToString() : this.sEmpty,
+                        odcType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
+                        odcType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
+                        odcType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty
+                });
+                if (Utilities.IsBRCEnabledForSystem) {
+                    odcFields2.AddRange(
+                        new string[] {
+                            this.sEmpty,
+                            this.sEmpty,
+                            this.sEmpty,
+                            this.sEmpty
+                    });
+                }
+                odcFields2.AddRange(
+                    new string[] {
+                        odcType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgName : this.sEmpty,
+                        odcType.PerformingOrgID.HasValue ? perfOrg.PerformingOrgDesc : this.sEmpty,
+                        spreadCurveName,
+                        this.sEmpty, // percent spread
+                        this.sEmpty // Hours
+                });
                 row.AddRange(odcFields2);
 
                 row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, (((decimal)odcType.ODCSpreads.Sum(odcs2 => odcs2.CostSpreadValue)) / 100)));
@@ -1806,7 +1864,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="allWbs">All WBS</param>
         /// <param name="allClins">All CLINs</param>
         /// <returns>Excel Export Worksheet with ODC Task data</returns>
-        private ExcelExportWorksheet GetODCResourceSpreadDataforBOEResourceCombo(ExcelExportWorksheet toReturn, BoeDTO boe, OtherDirectCostType odcType, DateTime currentDate, string[] taskfields, string[] odcFields1, string[] odcFields2, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins)
+        private ExcelExportWorksheet GetODCResourceSpreadDataforBOEResourceCombo(ExcelExportWorksheet toReturn, BoeDTO boe, OtherDirectCostType odcType, DateTime currentDate, string[] taskfields, string[] odcFields1, List<string> odcFields2, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins)
         {
             while (currentDate <= odcType.EndDate.Value)
             {
