@@ -193,6 +193,18 @@ namespace GenBOE.DataBridge.DTO
 					this.Log.Debug(string.Format("ResourceTypeLoader.Upsert => Ntid: {1}, BoeId: {0}, Item Id: {2}, Value: {3}",
 						 dtoToUpsert.BoeID, System.Threading.Thread.CurrentPrincipal.Identity.Name, dtoToUpsert.Id, dtoToUpsert.ValueSpread));
 
+					// Set Resource ID to null if 0 since it will break upsert
+					if (dtoToUpsert.ResourceID.HasValue && dtoToUpsert.ResourceID == 0)
+					{
+						dtoToUpsert.ResourceID = null;
+					}
+
+					// Set Business Resource Code ID to null if 0 since it will break upsert
+					if (dtoToUpsert.BusinessResourceCodeID.HasValue && dtoToUpsert.BusinessResourceCodeID == 0)
+					{
+						dtoToUpsert.BusinessResourceCodeID = null;
+					}
+
 					using (GenBoeEntities gbe = new GenBoeEntities())
 					{
 						result = gbe.upsertBOELaborType(
