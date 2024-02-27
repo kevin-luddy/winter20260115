@@ -1122,8 +1122,6 @@
     <Content Include="Templates\Export\CommentsAndResponses.xlsx" />
     <Content Include="Templates\Export\Permissions.xlsx" />
     <Content Include="Templates\Export\PermissionsRMS.xlsx" />
-    <Content Include="Templates\Export\WorkspaceDataWithBRCSpaceSystems.xlsx" />
-    <Content Include="Templates\Export\WorkspaceDataWithBRCMST.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
