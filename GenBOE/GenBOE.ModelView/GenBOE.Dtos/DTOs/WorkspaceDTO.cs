@@ -220,7 +220,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Get or set whether the workspace should be marked as Current for the PTM Tracking Number
 		/// </summary>
-		public bool CurrentPTMWorkspace { get; set; } = false;
+		public bool CurrentPTMWorkspace { get; set; }
 
 		/// <summary>
 		/// WS Creation Date

@@ -82,6 +82,7 @@ namespace RDSB.Backend.Common
             AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_GET_RATE_CODES_FOR_REVISION, SecurityAuthorization.None, documentControllerActions);
             AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_GET_SECTIONS_FOR_REVISION, SecurityAuthorization.None, documentControllerActions);
 			AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_GET_INFO, SecurityAuthorization.None, documentControllerActions);
+			AddActionToController(IES.Common.Core.Constants.IESWebConstants.ACTION_GET_APP_SETTINGS_FEATURE, SecurityAuthorization.None, documentControllerActions);
 			result.Add(IES.Common.Core.Constants.IESWebConstants.CONTROLLER_DOCUMENT.ToLower(), documentControllerActions);
         }
 

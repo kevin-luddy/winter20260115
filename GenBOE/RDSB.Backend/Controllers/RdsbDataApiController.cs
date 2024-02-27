@@ -26,6 +26,7 @@ namespace RDSB.Backend.Controllers
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 	using RDSB.Backend.Models;
 
@@ -60,7 +61,7 @@ namespace RDSB.Backend.Controllers
 		/// <param name="tokenHandler">Token Handling</param>
 		/// <param name="documentControllerLogic">Document COntroller Logic</param>
 		public RdsbDataApiController(ISecurityMapper securityMapper, TokenHandling tokenHandler, IDocumentControllerLogic documentControllerLogic,
-			ILogger<RdsbDataApiController> logger, ISecurityInformation securityInformation) : base(logger, securityInformation)
+			ILogger<RdsbDataApiController> logger, ISecurityInformation securityInformation, IConfiguration configuration) : base(logger, securityInformation, configuration)
 		{
 			this.securityMapper = securityMapper;
 			this.tokenHandler = tokenHandler;

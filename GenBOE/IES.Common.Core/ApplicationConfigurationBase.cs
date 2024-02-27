@@ -269,7 +269,7 @@
 					 builder.WithOrigins(origins)
 							 .AllowAnyMethod()
 							 .AllowAnyHeader()
-							 .AllowCredentials()));
+							 .AllowCredentials().WithExposedHeaders("content-disposition")));
 		}
 
 		/// <summary>

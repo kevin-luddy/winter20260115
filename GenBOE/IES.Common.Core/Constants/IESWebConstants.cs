@@ -462,6 +462,11 @@ namespace IES.Common.Core.Constants
 		/// </summary>
 		public const string SAVE_OFFLINE_APPLICATIONS = "SaveManageOfflineApplications";
 
+		/// <summary>
+		/// Get appsettings.json features.
+		/// </summary>
+		public const string ACTION_GET_APP_SETTINGS_FEATURE = "GetAppSettingFeatures";
+
 		#endregion
 
 		#region Who's Online

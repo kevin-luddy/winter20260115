@@ -24,6 +24,7 @@ namespace IESPortal.Backend.Controllers
 	using IES.Common.Core.Utilities;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>
@@ -43,15 +44,15 @@ namespace IESPortal.Backend.Controllers
         /// </summary>
         private readonly BannerMediator bannerMediator;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdminController"/> class.
-        /// </summary>
-        /// <param name="securityInformation">The security information.</param>
-        /// <param name="bannerMediator">The banner mediator.</param>
-        public AdminController(ISecurityInformation securityInformation, 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AdminController"/> class.
+		/// </summary>
+		/// <param name="securityInformation">The security information.</param>
+		/// <param name="bannerMediator">The banner mediator.</param>
+		public AdminController(ISecurityInformation securityInformation, 
             BannerMediator bannerMediator, 
             IESPortalAdminControllerLogic adminControllerLogic,
-            ILogger<AdminController> logger) : base(logger, securityInformation)
+            ILogger<AdminController> logger, IConfiguration configuration) : base(logger, securityInformation, configuration)
         {
             this.bannerMediator = bannerMediator;
             this.adminControllerLogic = adminControllerLogic;

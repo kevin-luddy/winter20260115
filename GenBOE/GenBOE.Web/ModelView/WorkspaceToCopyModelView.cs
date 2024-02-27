@@ -28,6 +28,7 @@ namespace GenBOE.Web.ModelView
             IsUsingTM = false;
             ProjectMapType = (int)IES.Common.ProjectMapType.StandardWithoutOffload;
             LineOfBusinessID = -1;
+			CurrentPTMWorkspace = false;
         }
         
         public int LineOfBusinessID { get; set; }
@@ -89,5 +90,10 @@ namespace GenBOE.Web.ModelView
         /// Get or set whether using Enable SAP Connection is selected.
         /// </summary>
         public bool EnableSAPConnection { get; set; }
+
+		/// <summary>
+		/// Get or set whether PTM Workspace is Current
+		/// </summary>
+		public bool CurrentPTMWorkspace { get; set; }
     }
 }

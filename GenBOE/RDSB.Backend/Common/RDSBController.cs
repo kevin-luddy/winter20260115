@@ -25,6 +25,7 @@ namespace RDSB.Backend.Common
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Mvc.Controllers;
 	using Microsoft.AspNetCore.Mvc.Filters;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>
@@ -93,7 +94,7 @@ namespace RDSB.Backend.Common
 		protected RDSBController(ISecurityInformation securityInformation, 
 			ISecurityMapper securityMapper, 
 			IActiveDirectoryService adUtils, IWhosOnlineLoader whosOnlineLoader,
-			ILogger logger) : base(logger, securityInformation)
+			ILogger logger, IConfiguration configuration) : base(logger, securityInformation, configuration)
         {
 			this.SecurityMapper = securityMapper;
             this.AdUtils = adUtils;

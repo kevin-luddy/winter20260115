@@ -17,6 +17,7 @@ namespace IES.Common.Core.OfficeUtilities
 	using DocumentFormat.OpenXml.Packaging;
 	using HtmlAgilityPack;
 	using HtmlToOpenXml;
+	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
 
 	public static class RTEUtilities
@@ -51,6 +52,11 @@ namespace IES.Common.Core.OfficeUtilities
 
 		// next we need to remove text that starts w/ a "mso-" above and ends with ";" - this is Microsoft-specific formatting.
 		private static readonly Regex regexMicrosoft = new("( ){0,1}mso-[A-Za-z0-9:.% #='?-]*;", RegexOptions.IgnoreCase, CommonConstants.REGEX_TIMEOUT);
+
+		/// <summary>
+		/// Whether to remove Empty Span tags, which may cause smushed text
+		/// </summary>
+		private static readonly bool removeEmptySpans = ConfigurationUtilities.GetAppSetting<bool>("RemoveEmptySpans", true);
 
 		#region These are used in Excel, when we need to display just text, and no other markup or images
 
@@ -222,7 +228,12 @@ namespace IES.Common.Core.OfficeUtilities
 				comparers.Add(regexEm);
 				comparers.Add(regexSub);
 				comparers.Add(regexSup);
-				comparers.Add(regexSpan);
+
+				if (removeEmptySpans)
+				{
+					comparers.Add(regexSpan);
+				}
+
 				comparers.Add(regexP);
 
 				// Remove the lines
