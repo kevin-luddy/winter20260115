@@ -194,13 +194,13 @@ namespace GenBOE.DataBridge.DTO
 						 dtoToUpsert.BoeID, System.Threading.Thread.CurrentPrincipal.Identity.Name, dtoToUpsert.Id, dtoToUpsert.ValueSpread));
 
 					// Set Resource ID to null if 0 since it will break upsert
-					if (dtoToUpsert.ResourceID == 0)
+					if (dtoToUpsert.ResourceID.HasValue && dtoToUpsert.ResourceID == 0)
 					{
 						dtoToUpsert.ResourceID = null;
 					}
 
 					// Set Business Resource Code ID to null if 0 since it will break upsert
-					if (dtoToUpsert.BusinessResourceCodeID == 0)
+					if (dtoToUpsert.BusinessResourceCodeID.HasValue && dtoToUpsert.BusinessResourceCodeID == 0)
 					{
 						dtoToUpsert.BusinessResourceCodeID = null;
 					}
