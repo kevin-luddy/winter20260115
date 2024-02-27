@@ -87,7 +87,7 @@
 			SelectedContractTypes: [],              // SSC only, array of strings
 			UsingTemplateBoe: '',
 			EnableSAPConnection: false,
-			CurrentPTMWorkspace: false
+			UpdatePreviousWorkspace: false
 		};
 	};
 
@@ -280,6 +280,7 @@
 					ButtonText: 'Yes, Only This Workspace',
 					ButtonName: 'only-button',
 					callbackMethod: function () {
+						$scope.data.UpdatePreviousWorkspace = true;
 						$scope.copyPromiseCallBack(true);
 					}
 				},
@@ -288,6 +289,7 @@
 					ButtonText: 'Yes, Multiple Workspaces',
 					ButtonName: 'multiple-button',
 					callbackMethod: function () {
+						$scope.data.UpdatePreviousWorkspace = false;
 						$scope.copyPromiseCallBack(true);
 					}
 				},
@@ -296,6 +298,7 @@
 					ButtonText: 'No, Keep Current',
 					ButtonName: 'no-button',
 					callbackMethod: function () {
+						$scope.data.UpdatePreviousWorkspace = false;
 						$scope.copyPromiseCallBack(false);
 					}
 				}
@@ -580,7 +583,6 @@
 
 			$scope.data.CostVolumeLeadPricerDisplayName = response.data.DisplayName;
 			$scope.data.CostVolumeLeadPricerNTID = response.data.CostVolumeLeadPricerNTID;
-			$scope.data.CurrentPTMWorkspace = isCurrentWorkspace;
 
 			deferred.resolve();
 		},
@@ -854,7 +856,6 @@
 			$scope.model.originalCostDecimalPrecision = result.CostDecimalPrecision;
 			$scope.data.ContractStartDate = result.ContractStartDate;
 			$scope.data.ContractEndDate = result.ContractEndDate;
-			$scope.data.CurrentPTMWorkspace = result.CurrentPTMWorkspace;
 
 			if (result.ProposalSubmittalDate !== null) {
 				$scope.data.ProposalSubmittalDate = result.ProposalSubmittalDate;
