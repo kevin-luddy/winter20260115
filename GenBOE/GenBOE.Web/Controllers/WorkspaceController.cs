@@ -5673,7 +5673,8 @@ namespace GenBOE.Web.Controllers
 					LineOfBusinessID = workspace.LineOfBusiness.Id,
 					RteSizeLimit = workspace.RteSizeLimit,
 					UsingTemplateBoe = workspace.UsingTemplateBOE,
-					EnableSAPConnection = workspace.EnableSAPConnection
+					EnableSAPConnection = workspace.EnableSAPConnection,
+					CurrentPTMWorkspace = workspace.CurrentPTMWorkspace
 				};
 
 				toReturn = Json(modelView);

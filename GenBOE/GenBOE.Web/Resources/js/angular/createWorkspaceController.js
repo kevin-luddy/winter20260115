@@ -252,6 +252,58 @@
 		}
 	};
 
+	$scope.callbackTime = function () {
+		
+	}
+
+	$scope.copyPromiseCallBack = function () {
+		var copyPromise = $scope.copyExactDetails();
+
+		copyPromise.then(
+			function (answer) {
+				// go to step 5 -- Verify
+
+				$scope.setStepSpecificElements(5);
+				$scope.isWaitingForCallback = false;
+			}, function (error) {
+				$scope.isWaitingForCallback = false;
+			});
+	}
+
+	$scope.currentWorkspaceDialog = function (copyExactDetails) {
+		GenSession.commonDialog(
+			"Override Current PTM Workspace",
+			"Will this copy be the Current Workspace for the corresponding PTM ?",
+			[
+				{
+					buttonClass: "ies",
+					ButtonText: 'Yes, Only This Workspace',
+					ButtonName: 'only-button',
+					callbackMethod: function () {
+						$scope.copyPromiseCallBack();
+					}
+				},
+				{
+					buttonClass: "ies",
+					ButtonText: 'Yes, Multiple Workspaces',
+					ButtonName: 'multiple-button',
+					callbackMethod: function () {
+						$scope.copyPromiseCallBack();
+					}
+				},
+				{
+					buttonClass: "ies",
+					ButtonText: 'No, Keep Current',
+					ButtonName: 'no-button',
+					callbackMethod: function () {
+						$scope.copyPromiseCallBack();
+					}
+				}
+			],
+			600
+		)
+	};
+
 	$scope.step2Next = function () {
 		if ($scope.data.WSExactCopy) {
 			// skip Workspace Identification and Share/allow search settings steps, but still need to validate the data
@@ -260,15 +312,7 @@
 
 			promise.then(
 				function (answer) {
-					var copyPromise = $scope.copyExactDetails();
-					copyPromise.then(
-					  function (answer) {
-						  // go to step 5 -- Verify
-						  $scope.setStepSpecificElements(5);
-						  $scope.isWaitingForCallback = false;
-					  }, function (error) {
-						  $scope.isWaitingForCallback = false;
-					  });
+					$scope.currentWorkspaceDialog()
 				}, function (error) {
 					$scope.isWaitingForCallback = false;
 				});
@@ -795,6 +839,7 @@
 			data: copyDetails
 		}).then(function successCallback(response) {
 			var result = response.data;
+			console.log(result);
 			$scope.model.workspaceToCopy = result;
 			if (result.Description !== null) {
 				$scope.data.Description = result.Description;
@@ -808,7 +853,7 @@
 			$scope.model.originalCostDecimalPrecision = result.CostDecimalPrecision;
 			$scope.data.ContractStartDate = result.ContractStartDate;
 			$scope.data.ContractEndDate = result.ContractEndDate;
-			$scope.data.CurrentPTMWorkspace = false;
+			$scope.data.CurrentPTMWorkspace = result.CurrentPTMWorkspace;
 
 			if (result.ProposalSubmittalDate !== null) {
 				$scope.data.ProposalSubmittalDate = result.ProposalSubmittalDate;
@@ -913,7 +958,6 @@
 		CreateWorkspace.registerForEvent('WorkspaceToCopyChosen', $scope.workspaceToCopyChosen);
 		CreateWorkspace.registerForEvent('newLeadEstimatorChosen', $scope.newLeadEstimatorChosen);
 
-		$scope.data.CurrentPTMWorkspace = false;
 		if ($scope.model.isSSC) {
 			if ($scope.model.showEquivalentPersonsOption) {
 				$scope.model.hoursLabel = 'Hours/EPs';

@@ -291,6 +291,7 @@ namespace GenBOE.DataBridge.DTO
 									RevisedSubmittalDate = w.RevisedSubmittalDate,
 									UsingTemplateBOE = w.TemplateBoe,
 									EnableSAPConnection = w.EnableSAPConnection,
+									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 									CreationDate = w.WorkspaceCreationDate
 								}).ToCollection();
 
