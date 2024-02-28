@@ -54,6 +54,5 @@ namespace GenBOE.ActionLogic.IO
 
 			return resourceData;
 		}
-
 	}
 }
