@@ -1203,8 +1203,8 @@ namespace GenBOE.Web.Controllers
 				DataRelationshipVerifier.VerifyDataRelation(thisTaskElement, boeID);
 			}
 
-			string templateName; 
-			
+			string templateName;
+
 			if (Utilities.IsBRCEnabledForSystem)
 			{
 				templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread_BRCEnabled.xlsx";
@@ -1751,13 +1751,21 @@ namespace GenBOE.Web.Controllers
 					thisLT.StartDateValue = laborTypeToUpdate.StartDate;
 					thisLT.SpreadCurveID = (SpreadCurves)laborTypeToUpdate.SpreadCurveID;
 					thisLT.ResourceID = laborTypeToUpdate.ResourceID;
+					thisLT.BusinessResourceCodeID = laborTypeToUpdate.BusinessResourceCodeID;
 
 					// Determine the spread type based on the rate type of the resource.
+					RateType rateType;
 					ResourceDTO resourceForLabor = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
-					if (resourceForLabor != null)
+					ResourceDTO brcForLabor = null;
+
+					if (Utilities.IsBRCEnabledForSystem)
 					{
-						thisLT.SpreadType = resourceForLabor.RateType == RateType.Cost ? SpreadType.Cost : SpreadType.Hours;
+						brcForLabor = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForSystemResourceListId, true).FirstOrDefault(r => r.Id == laborTypeToUpdate.BusinessResourceCodeID);
 					}
+
+					// Rate Type Validation not needed here as the import already does it
+					rateType = resourceForLabor?.RateType ?? brcForLabor.RateType;
+					thisLT.SpreadType = rateType == RateType.Cost ? SpreadType.Cost : SpreadType.Hours;
 
 					thisLT.PerformingOrgID = laborTypeToUpdate.PerformingOrgID;
 					thisLT.Updateable = UpdateType.Upsert;
@@ -1824,6 +1832,7 @@ namespace GenBOE.Web.Controllers
 					newLT.StartDateValue = laborTypeToAdd.StartDate;
 					newLT.SpreadCurveID = (SpreadCurves)laborTypeToAdd.SpreadCurveID;
 					newLT.ResourceID = laborTypeToAdd.ResourceID;
+					newLT.BusinessResourceCodeID = laborTypeToAdd.BusinessResourceCodeID;
 					newLT.PerformingOrgID = laborTypeToAdd.PerformingOrgID;
 					newLT.Updateable = UpdateType.Upsert;
 					newLT.PercentSpreadLocked = laborTypeToAdd.PercentSpreadLocked;
@@ -1835,8 +1844,18 @@ namespace GenBOE.Web.Controllers
 					newLT.CustomFieldValueContainers = laborTypeToAdd.CustomFieldValueContainers.ToContainers();
 
 					// Determine the spread type based on the rate type of the resource.
+					RateType rateType;
 					ResourceDTO resourceForLabor = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTypeToAdd.ResourceID);
-					newLT.SpreadType = resourceForLabor != null && resourceForLabor.RateType == RateType.Cost ? SpreadType.Cost : SpreadType.Hours;
+					ResourceDTO brcForLabor = null;
+
+					if (Utilities.IsBRCEnabledForSystem)
+					{
+						brcForLabor = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForSystemResourceListId, true).FirstOrDefault(r => r.Id == laborTypeToAdd.BusinessResourceCodeID);
+					}
+
+					// Rate Type Validation not needed here as the import already does it
+					rateType = resourceForLabor?.RateType ?? brcForLabor.RateType;
+					newLT.SpreadType = rateType == RateType.Cost ? SpreadType.Cost : SpreadType.Hours;
 
 					if (newLT.SpreadCurveID != SpreadCurves.DiscreteHours && newLT.SpreadType == SpreadType.Hours)
 					{
@@ -1917,7 +1936,6 @@ namespace GenBOE.Web.Controllers
 
 				// Process task variable and workspace variable dependencies
 				this._BoeLaborControllerLogic.ProcessAllVariableDependencies(boeID, workspace);
-
 			}
 		}
 

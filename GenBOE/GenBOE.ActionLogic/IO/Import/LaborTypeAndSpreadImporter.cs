@@ -700,7 +700,7 @@ namespace GenBOE.ActionLogic.IO.Import
 			// Define Resource list and Business Resource Code list
 			// IsBRCEnabled Flag already utilized in the method
 			ICollection<ResourceDTO> resourcelist = ImportExportUtilities.GetResourcesBasedOnCompanyMode(this.resourceDTODataLoader.GetByListId(inWorkspace.ResourceListID), false);
-			ICollection<ResourceDTO> businessResourceCodeList = ImportExportUtilities.GetResourcesBasedOnCompanyMode(this.resourceDTODataLoader.GetByListId(inWorkspace.ResourceListID), false); ;
+			ICollection<ResourceDTO> businessResourceCodeList = ImportExportUtilities.GetResourcesBasedOnCompanyMode(this.resourceDTODataLoader.GetByListId(inWorkspace.ResourceListID), true);
 
 			#region Labor Type
 

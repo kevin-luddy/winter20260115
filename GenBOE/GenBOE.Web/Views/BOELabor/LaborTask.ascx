@@ -88,6 +88,7 @@
 			var results = eval('(' + uploadResponseElement.html() + ')');
 			if (results.Status) {
 				ImportLaborType.CloseDialog(ImportLaborType.ImportLaborTypesDialog);
+				console.log(results);
 				ImportLaborType.ImportedData = results.Data;
 				ImportLaborType.ImportedSpreadData = [];
 
@@ -167,6 +168,11 @@
 									break;
 								case '<%: (int)LaborTypeImportResult.SpreadMonthValueOutsideDateRange%>':
 									$('#ImportLaborTypeResults #ImportResult-SpreadMonthValueOutsideDateRange').removeClass('display-none');
+									break;
+								case '<%: (int)LaborTypeImportResult.RateTypesDoNotMatch%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-RateTypesDoNotMatch').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-RateTypesDoNotMatch ul.resultsList').append(listItemToAppend);
 									break;
 								default:
 									break;
@@ -763,7 +769,8 @@
 		<div class="labor-spread module <% if (!Model.ContainsDiscrete)
 			{ %>collapsed<% }
 			else
-			{ %>expanded<% } %>" id="ManageLaborSpread">
+			{ %>expanded<% } %>"
+			id="ManageLaborSpread">
 			<div class="module-header-data">
 				Resource Spread
 			</div>
@@ -1208,6 +1215,13 @@
 					Resource Types will not be added/updated because one or more spread month values are outside the spread date range.<br />
 					Please check the import file and clear any spread month values that are outside the resource spread date range.              
 				</div>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-RateTypesDoNotMatch">
+				<div class="title">
+					<span class="resultCount"></span>
+					Rate Types between Selected Resource and Business Resource Code do not match.
+				</div>
+				<ul class="resultsList"></ul>
 			</div>
 			<div class="title import-result-type display-none" id="ImportResult-NoChanges">No Changes Detected</div>
 
