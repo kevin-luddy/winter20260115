@@ -20,7 +20,7 @@ PRINT '### Starting file: \Release 2024.05\1 - Release 2024.5 Script.sql';
 /*
    2/28/2020 [e374897] - PROPH-1674 Copy Workspace action
    ## END ##
-/*
+*/
 
 
 /*
