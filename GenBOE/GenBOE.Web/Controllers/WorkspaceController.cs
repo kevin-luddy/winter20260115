@@ -3167,17 +3167,31 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">workspace shortname</param>
 		/// <param name="workspaceDetails">Workspace Identification Model View</param>
 		/// <returns>JSON true/false</returns>
-		public ActionResult SaveWorkspaceIdentification(string workspace, [WorkspaceIdentificationBinder] IWorkspaceIdentificationModelView workspaceDetails)
+		public ActionResult SaveWorkspaceIdentification(string workspace, [WorkspaceIdentificationBinder] IWorkspaceIdentificationModelView workspaceDetails, bool notCurrentOnCopy = false)
 		{
-			_ = workspaceDetails ?? throw new ArgumentNullException(nameof(workspaceDetails));
+			// TODO: check when workspaceId is -1 as well
+
+			// workspaceDetails can be null when notCurrentOnCopy is true
+			if (workspaceDetails == null && !notCurrentOnCopy)
+			{
+				throw new ArgumentNullException(nameof(workspaceDetails));
+			}
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceIdentification", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-			if (ModelState.IsValid)
+			if (ModelState.IsValid || notCurrentOnCopy)
 			{
-				bool decimalPrecisionChanged = ws.DecimalPrecision != (workspaceDetails.ResourceDecimalPrecision ?? 0);
-				bool costDecimalPrecisionChanged = ws.CostDecimalPrecision != workspaceDetails.CostDecimalPrecision;
+				bool decimalPrecisionChanged = false;
+				bool costDecimalPrecisionChanged = false;
+				if (workspaceDetails != null)
+				{
+					if (workspaceDetails.WorkspaceID != -1 && notCurrentOnCopy)
+					{
+						decimalPrecisionChanged = ws.DecimalPrecision != (workspaceDetails.ResourceDecimalPrecision ?? 0);
+						costDecimalPrecisionChanged = ws.CostDecimalPrecision != workspaceDetails.CostDecimalPrecision;
+					}
+				}
 
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
 				bool isAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
@@ -3185,10 +3199,13 @@ namespace GenBOE.Web.Controllers
 				bool ptmTrackingNumberNotRequired = string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("CanCreateWorkspaceWithoutPtmTrackingNumber")) ?
 									false : _securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
 
-				ICollection<ValidationMessage> ValidationErrors = _ControllerLogic.SaveWorkspaceIdentificationValidation(ws, workspaceDetails, isAdmin, ptmTrackingNumberNotRequired);
-				if (ValidationErrors.Any())
+				if (workspaceDetails != null && !notCurrentOnCopy)
 				{
-					throw new GenValidationException(ValidationErrors);
+					ICollection<ValidationMessage> ValidationErrors = _ControllerLogic.SaveWorkspaceIdentificationValidation(ws, workspaceDetails, isAdmin, ptmTrackingNumberNotRequired);
+					if (ValidationErrors.Any())
+					{
+						throw new GenValidationException(ValidationErrors);
+					}
 				}
 
 				#region Setup all the data needed for the save, to minimize the time inside of a transaction
@@ -3199,40 +3216,73 @@ namespace GenBOE.Web.Controllers
 
 				// Get the user who is saving the BOE(s)
 				int currentUserID = ws.CurrentActiveUser.UserID;
-				bool templateBoeUsageChanged = ws.UsingTemplateBOE != workspaceDetails.UsingTemplateBoe;
 
-				// Create DTO and populate the common properties
-				ws.ContainsOCI = workspaceDetails.ContainsOCI;
-				ws.Description = workspaceDetails.Description;
-				ws.ProposalSubmittalDate = workspaceDetails.ProposalSubmittalDate != null ? (DateTime?)Convert.ToDateTime(workspaceDetails.ProposalSubmittalDate) : null;
-				ws.LineOfBusiness = new PickListDto() { Id = workspaceDetails.LineOfBusinessTypeID };
-				ws.RFPNumber = workspaceDetails.RFPNumber;
-				ws.UpdateDate = workspaceDetails.UpdateDate;
-				ws.WorkspaceName = workspaceDetails.WorkspaceName;
-				ws.ProposalStatus = workspaceDetails.ProposalStatus;
-				ws.StatusComment = workspaceDetails.StatusComments;
-				ws.ResourceDecimalPrecision = workspaceDetails.ResourceDecimalPrecision;
-				ws.CostDecimalPrecision = workspaceDetails.CostDecimalPrecision;
-				ws.CustomFieldSorting = workspaceDetails.CustomFieldSorting;
-				ws.ResourceSorting = workspaceDetails.ResourceSorting;
-				ws.PerfOrgSorting = workspaceDetails.PerfOrgSorting;
-				ws.RteSizeLimit = workspaceDetails.RteSizeLimit;
-				ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
-				ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
-				ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
+				bool templateBoeUsageChanged = false;
+				if (workspaceDetails != null)
+				{
+					if (workspaceDetails.WorkspaceID != -1)
+					{
+						templateBoeUsageChanged = ws.UsingTemplateBOE != workspaceDetails.UsingTemplateBoe;
+					}
+				}
+
+				if (workspaceDetails != null)
+				{
+					if (workspaceDetails.WorkspaceID != -1)
+					{
+						// Create DTO and populate the common properties
+						// TODO: Talk with team to set this up so that even if workspaceDetails property is null, it will use the ws property value instead
+						ws.ContainsOCI = workspaceDetails.ContainsOCI;
+						ws.Description = workspaceDetails.Description;
+						ws.ProposalSubmittalDate = workspaceDetails.ProposalSubmittalDate != null ? (DateTime?)Convert.ToDateTime(workspaceDetails.ProposalSubmittalDate) : null;
+						ws.LineOfBusiness = new PickListDto() { Id = workspaceDetails.LineOfBusinessTypeID };
+						ws.RFPNumber = workspaceDetails.RFPNumber;
+						ws.UpdateDate = workspaceDetails.UpdateDate;
+						ws.WorkspaceName = workspaceDetails.WorkspaceName;
+						ws.ProposalStatus = workspaceDetails.ProposalStatus;
+						ws.StatusComment = workspaceDetails.StatusComments;
+						ws.ResourceDecimalPrecision = workspaceDetails.ResourceDecimalPrecision;
+						ws.CostDecimalPrecision = workspaceDetails.CostDecimalPrecision;
+						ws.CustomFieldSorting = workspaceDetails.CustomFieldSorting;
+						ws.ResourceSorting = workspaceDetails.ResourceSorting;
+						ws.PerfOrgSorting = workspaceDetails.PerfOrgSorting;
+						ws.RteSizeLimit = workspaceDetails.RteSizeLimit;
+						ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
+						ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
+						ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
+					}
+				}
+
+				if (notCurrentOnCopy)
+				{
+					ws.CurrentPTMWorkspace = false;
+				}
+
 
 				// Populate the company specific properties
-				_ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
+				if (workspaceDetails != null)
+				{
+					if (workspaceDetails.WorkspaceID != -1)
+					{
+						_ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
+					}
+				}
 
 				// we only need to do the code below if the pricer/cost volume lead has changed..
 				costVolumeLeadDTO = this.UserLoader.GetByIds(new List<int>() { ws.CostVolumeLeadPricerUserID }).FirstOrDefault();
 
-				if (costVolumeLeadDTO == null || costVolumeLeadDTO.NTID != workspaceDetails.CostVolumeLeadPricerNTID)
+				if (workspaceDetails != null)
 				{
-					// New CostVolumeLead
-					UserData costVolumeLeadData = _ADUtils.GetUserByQualifiedAccount(workspaceDetails.CostVolumeLeadPricerNTID, false);
+					if (workspaceDetails.WorkspaceID != -1)
+					{
+						if (costVolumeLeadDTO == null || costVolumeLeadDTO.NTID != workspaceDetails.CostVolumeLeadPricerNTID)
+						{
+							// New CostVolumeLead
+							UserData costVolumeLeadData = _ADUtils.GetUserByQualifiedAccount(workspaceDetails.CostVolumeLeadPricerNTID, false);
 
-					costVolumeLeadDTO = this.UserLoader.GetOrCreateUserByNtid(costVolumeLeadData.Ntid);
+							costVolumeLeadDTO = this.UserLoader.GetOrCreateUserByNtid(costVolumeLeadData.Ntid);
+						}
+					}
 				}
 
 				HashSet<PermissionsDTO> wsPermissions = new HashSet<PermissionsDTO>(this.PermissionsLoader.GetWorkspacePermissions(ws.Id));
@@ -3261,7 +3311,13 @@ namespace GenBOE.Web.Controllers
 						// The timeout for the transaction needs to be longer, since the recalculation will save a lot more data..
 						timeout = new TimeSpan(0, 10, 0);
 
-						this._ControllerLogic.WsRecalculationStep1(ws, ref tasksToSave, ref workspaceVariablesToSave, ref boesToTransition, originalWsBoes, decimalPrecisionChanged, costDecimalPrecisionChanged, workspaceDetails.CostDecimalPrecision);
+						if (workspaceDetails != null)
+						{
+							if (workspaceDetails.WorkspaceID != -1)
+							{
+								this._ControllerLogic.WsRecalculationStep1(ws, ref tasksToSave, ref workspaceVariablesToSave, ref boesToTransition, originalWsBoes, decimalPrecisionChanged, costDecimalPrecisionChanged, workspaceDetails.CostDecimalPrecision);
+							}
+						}
 					}
 
 					#endregion
@@ -5143,6 +5199,7 @@ namespace GenBOE.Web.Controllers
 								newWorkspaceDTO.ProposalTitle = spaceWorkspace.ProposalTitle;
 								newWorkspaceDTO.RevisedSubmittalDate = !string.IsNullOrEmpty(spaceWorkspace.RevisedSubmittalDate)
 									? (DateTime?)Convert.ToDateTime(spaceWorkspace.RevisedSubmittalDate) : null;
+								newWorkspaceDTO.CurrentPTMWorkspace = spaceWorkspace.CurrentPTMWorkspace;
 
 								this.workspaceLoader.SaveWorkspaceSettings(createdByUserDTO.UserID, newWorkspaceDTO);
 							}

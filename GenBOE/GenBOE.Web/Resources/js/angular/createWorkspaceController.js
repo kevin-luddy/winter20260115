@@ -635,26 +635,26 @@
 		}
 		
 		//// create the workspace
-		//var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
-		//$http({
-		//	method: 'POST',
-		//	url: createUrl,
-		//	data: $scope.data
-		//}).then(function successCallback(response) {
-		//		$window.location.href = '/' + $scope.data.Shortname;
-		//	},
-		//	function errorCallback(error) {
-		//		$scope.model.showButtonLoader = false;
-		//		if (error && error.data && error.data.MessageList) {
-		//			if (error.data.MessageList.length > 0) {
-		//				$scope.errors = error.data.MessageList;
-		//			} else if (error.data.Message) {
-		//				var newError = { ValidationIssue: error.data.Message };
-		//				$scope.errors.push(newError);
-		//			}
-		//		}
-		//	}
-		//);
+		var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
+		$http({
+			method: 'POST',
+			url: createUrl,
+			data: $scope.data
+		}).then(function successCallback(response) {
+				$window.location.href = '/' + $scope.data.Shortname;
+			},
+			function errorCallback(error) {
+				$scope.model.showButtonLoader = false;
+				if (error && error.data && error.data.MessageList) {
+					if (error.data.MessageList.length > 0) {
+						$scope.errors = error.data.MessageList;
+					} else if (error.data.Message) {
+						var newError = { ValidationIssue: error.data.Message };
+						$scope.errors.push(newError);
+					}
+				}
+			}
+		);
 	};
 
 	// wrapper around the create new workspace, that verifies existing / allows a change of Lead Estimator, for exact copies of WS (BOEJ-4728)
@@ -874,6 +874,7 @@
 			data: copyDetails
 		}).then(function successCallback(response) {
 			var result = response.data;
+			console.log(result);
 			$scope.model.workspaceToCopy = result;
 			if (result.Description !== null) {
 				$scope.data.Description = result.Description;
@@ -933,6 +934,7 @@
 			$scope.data.UsingTemplateBoe = result.UsingTemplateBoe;
 			$scope.data.InitialUsingTemplateBoe = result.UsingTemplateBoe;
 			$scope.data.EnableSAPConnection = result.EnableSAPConnection;
+			$scope.data.CurrentPTMWorkspace = result.CurrentPTMWorkspace;
 				
 			if ($scope.data.WSExactCopy) {
 				$scope.data.ContainsOCI = result.ContainsOCI;
