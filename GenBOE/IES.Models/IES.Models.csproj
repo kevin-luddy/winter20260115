@@ -15,7 +15,6 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -217,9 +216,6 @@
       <DependentUpon>IESEntityModel.edmx</DependentUpon>
       <LastGenOutput>IESEntityModel.cs</LastGenOutput>
     </Content>
-    <Content Include="Settings.StyleCop">
-      <SubType>Designer</SubType>
-    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
@@ -227,7 +223,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\Libraries\StyleCop Files\StyleCop.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
