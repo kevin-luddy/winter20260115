@@ -73,6 +73,8 @@ namespace ProPricer.UnitTests
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 			ServiceProvider = services.AddLogging(builder => builder.AddConsole()).BuildServiceProvider();
+
+			new Aspose.Cells.License().SetLicense("Aspose.Total.lic");
 		}
 	}
 }

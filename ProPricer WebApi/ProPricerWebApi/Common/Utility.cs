@@ -71,6 +71,8 @@ namespace APTSPropricerApi.Common
 				ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
 				ctx.Options.Destination = ReportDestination.File;
 				ctx.Options.OutputMode = OutputMode.Combined;
+				ReportOption<bool> option = ctx.Options.FindOption<ReportOption<bool>>(BatchReportOptions.OpenExportedDocumentKey);
+				option.SetValue(false);
 				ctx.ProcessAll = true;
 
 				BatchReportGenerator generator = new(ctx);
@@ -732,6 +734,37 @@ namespace APTSPropricerApi.Common
 			}
 
 			return tasks;
+		}
+	}
+
+	public class ReportExtender : IReportEx
+	{
+		private readonly Proposal proposal;
+
+		public ReportExtender(Proposal proposal)
+		{
+			this.proposal = proposal;
+		}
+
+
+		public void AskToContinue(string message)
+		{
+			
+		}
+
+		public void OnCurrentTableNotUsed(string message)
+		{
+			
+		}
+
+		public Project RequestCurrentProject()
+		{
+			return this.proposal.ParentProject;
+		}
+
+		public Proposal RequestCurrentProposal()
+		{
+			return this.proposal;
 		}
 	}
 }

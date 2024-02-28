@@ -1,10 +1,10 @@
 ﻿/*
-    Copyright 2016-2020 Lockheed Martin Corporation.
+	Copyright 2016-2020 Lockheed Martin Corporation.
 
-    This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
-    commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
-    by the Trade Secrets Act (18 U.S.C. Sec. 1905) and the Economic Espionage Act of 1996 (18 U.S.C. Sec. 1831 et seq.) 
-    and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
+	This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
+	commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
+	by the Trade Secrets Act (18 U.S.C. Sec. 1905) and the Economic Espionage Act of 1996 (18 U.S.C. Sec. 1831 et seq.) 
+	and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
 namespace APTSPropricerApi.Controllers
@@ -12,7 +12,6 @@ namespace APTSPropricerApi.Controllers
 
 	using System;
 	using System.Collections.Generic;
-	using System.IO;
 	using System.Linq;
 	using APTSPropricerApi.Common;
 	using APTSPropricerApi.Connection;
@@ -20,7 +19,6 @@ namespace APTSPropricerApi.Controllers
 	using Aspose.Cells;
 	using EBS.Core;
 	using EBS.ProPricer.Model;
-	using EBS.ProPricer.Reports;
 	using EBS.ProPricer.Reports.Export;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
@@ -259,10 +257,40 @@ namespace APTSPropricerApi.Controllers
 			ProPricerResponse<byte[]> response = new();
 			//tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Pdf);
 			tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Excel);
-			Aspose.Cells.Workbook wb = new Workbook(tempFile);
-			wb.Save(tempFile + ".pdf", SaveFormat.Pdf);
-			response.IsSuccessful = true;
+			if (!response.Messages.Any())
+			{
+				try
+				{
+					Aspose.Cells.Workbook wb = new(tempFile);
+					RemoveEmptyRowsColumns(wb);
+					string pdfFile = tempFile + ".pdf";
+					wb.Save(pdfFile, SaveFormat.Pdf);
+					response.Data = System.IO.File.ReadAllBytes(pdfFile);
+					System.IO.File.Delete(tempFile);
+					tempFile = pdfFile;
+
+					response.IsSuccessful = true;
+				}
+				catch (Exception ex)
+				{
+					Logger.LogError(ex, "Error converting from Excel to Pdf");
+					response.Messages.Add("Error converting from Excel to Pdf");
+				}
+			}
 			return response;
+		}
+
+		private void RemoveEmptyRowsColumns(Workbook wb)
+		{
+			Worksheet sheet = wb.Worksheets.First();
+			ColumnCollection columns = sheet.Cells.Columns;
+			foreach (Column col in columns)
+			{
+				sheet.Cells.DeleteColumn(
+			}
+			sheet.Cells.DeleteBlankColumns();
+			sheet.Cells.DeleteBlankRows();
+
 		}
 
 		/// <summary>
