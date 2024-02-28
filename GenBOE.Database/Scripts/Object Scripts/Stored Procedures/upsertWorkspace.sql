@@ -85,6 +85,7 @@ AS
 **			8/27/20		ranzalon				BOEJ-4760 - Template Boe
 **			1/31/23		e405721					ACV-221 - Enable SAP Connection
 **          2/14/24     e374897                 PROPH-1445 - Add CurrentPTMWorkspace Column to Workspace
+**          2/28/24     e374897                 PROPH-1674 - Remove CurrentPTMWorkspace logic
 *******************************************************************************/
 
 /*
@@ -151,19 +152,6 @@ END
 
 IF @WorkspaceID  < 0  /*Insert Record*/
 	  BEGIN
-
-		/* 
-		When a Workspace is being created and no other workspaces linked to the PTM Tracking #, 
-		CurrentPTMWorkspace is set to 1, else 0
-		*/
-		  IF NOT EXISTS (SELECT * FROM [dbo].[Workspace] WHERE [TrackingNumber] = @TrackingNumber)
-			  BEGIN
-				SET @CurrentPTMWorkspace = 1;
-			  END
-		  ELSE
-			  BEGIN
-				SET @CurrentPTMWorkspace = 0;
-			  END
 	  
 	  SET @UpdateDT = GETDATE()
 	  
