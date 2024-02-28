@@ -39,7 +39,8 @@
 		isAdmin: CreateWorkspaceModelView.IsAdmin,  // SSC only
 		ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
 		nextRevision: '', // SSC only, the next revision of the PTM tracking number
-		isSAPConfigurationEnabled: CreateWorkspaceModelView.IsSAPConnectionEnabled    // This value will be grabbed from Web.config
+		isSAPConfigurationEnabled: CreateWorkspaceModelView.IsSAPConnectionEnabled,   // This value will be grabbed from Web.config
+		updatePreviousWorkspace: false          // Space only
 	};
 
 	// data houses the data being saved and sent to the back-end
@@ -87,7 +88,7 @@
 			SelectedContractTypes: [],              // SSC only, array of strings
 			UsingTemplateBoe: '',
 			EnableSAPConnection: false,
-			UpdatePreviousWorkspace: false
+			CurrentPTMWorkspace : false
 		};
 	};
 
@@ -280,7 +281,7 @@
 					ButtonText: 'Yes, Only This Workspace',
 					ButtonName: 'only-button',
 					callbackMethod: function () {
-						$scope.data.UpdatePreviousWorkspace = true;
+						$scope.model.UpdatePreviousWorkspace = true;
 						$scope.copyPromiseCallBack(true);
 					}
 				},
@@ -289,7 +290,7 @@
 					ButtonText: 'Yes, Multiple Workspaces',
 					ButtonName: 'multiple-button',
 					callbackMethod: function () {
-						$scope.data.UpdatePreviousWorkspace = false;
+						$scope.model.UpdatePreviousWorkspace = false;
 						$scope.copyPromiseCallBack(true);
 					}
 				},
@@ -298,7 +299,7 @@
 					ButtonText: 'No, Keep Current',
 					ButtonName: 'no-button',
 					callbackMethod: function () {
-						$scope.data.UpdatePreviousWorkspace = false;
+						$scope.model.UpdatePreviousWorkspace = false;
 						$scope.copyPromiseCallBack(false);
 					}
 				}
@@ -315,7 +316,11 @@
 
 			promise.then(
 				function (answer) {
-					$scope.currentWorkspaceDialog()
+					if ($scope.data.CurrentPTMWorkspace) {
+						$scope.currentWorkspaceDialog()
+					} else {
+						$scope.copyPromiseCallBack(false);
+					}
 				}, function (error) {
 					$scope.isWaitingForCallback = false;
 				});
@@ -580,9 +585,12 @@
 				$scope.data.ProposalClass = response.data.ProposalClass;
 				$scope.data.SelectedContractTypes = response.data.ContractTypes;
 			}
-
 			$scope.data.CostVolumeLeadPricerDisplayName = response.data.DisplayName;
 			$scope.data.CostVolumeLeadPricerNTID = response.data.CostVolumeLeadPricerNTID;
+
+			if (isCurrentWorkspace) {
+				$scope.data.CurrentPTMWorkspace = true;
+			}
 
 			deferred.resolve();
 		},
@@ -602,27 +610,51 @@
 		$scope.errors = [];
 		$('#urlValidationBox').html('');
 		$scope.model.showButtonLoader = true;
-		// create the workspace
-		var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
-		$http({
-			method: 'POST',
-			url: createUrl,
-			data: $scope.data
-		}).then(function successCallback(response) {
-				$window.location.href = '/' + $scope.data.Shortname;
-			},
-			function errorCallback(error) {
-				$scope.model.showButtonLoader = false;
-				if (error && error.data && error.data.MessageList) {
-					if (error.data.MessageList.length > 0) {
-						$scope.errors = error.data.MessageList;
-					} else if (error.data.Message) {
-						var newError = { ValidationIssue: error.data.Message };
-						$scope.errors.push(newError);
+
+		if ($scope.model.UpdatePreviousWorkspace) {
+			var postURL = GenSession.CreatePostURL($scope.model.workspaceToCopy.ShortName, CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.SaveWorkspaceIdentificationAction);
+
+			$http({
+				method: 'POST',
+				url: postURL,
+				data: JSON.stringify({ notCurrentOnCopy: true })
+			}).then(
+				function successCallBack(response) { },
+				function errorCallback(error) {
+					$scope.model.showButtonLoader = false;
+					if (error && error.data && error.data.MessageList) {
+						if (error.data.MessageList.length > 0) {
+							$scope.errors = error.data.MessageList;
+						} else if (error.data.Message) {
+							var newError = { ValidationIssue: error.data.Message };
+							$scope.errors.push(newError);
+						}
 					}
 				}
-			}
-		);
+			)
+		}
+		
+		//// create the workspace
+		//var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
+		//$http({
+		//	method: 'POST',
+		//	url: createUrl,
+		//	data: $scope.data
+		//}).then(function successCallback(response) {
+		//		$window.location.href = '/' + $scope.data.Shortname;
+		//	},
+		//	function errorCallback(error) {
+		//		$scope.model.showButtonLoader = false;
+		//		if (error && error.data && error.data.MessageList) {
+		//			if (error.data.MessageList.length > 0) {
+		//				$scope.errors = error.data.MessageList;
+		//			} else if (error.data.Message) {
+		//				var newError = { ValidationIssue: error.data.Message };
+		//				$scope.errors.push(newError);
+		//			}
+		//		}
+		//	}
+		//);
 	};
 
 	// wrapper around the create new workspace, that verifies existing / allows a change of Lead Estimator, for exact copies of WS (BOEJ-4728)
