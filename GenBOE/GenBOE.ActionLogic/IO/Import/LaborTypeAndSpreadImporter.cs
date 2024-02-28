@@ -733,71 +733,36 @@ namespace GenBOE.ActionLogic.IO.Import
 				toReturn.EndDateValue = endDate.Normalize();
 			}
 
+			ResourceDTO resource = null;
+			ResourceDTO businessResourceCode = null;
+
 			if (!Utilities.IsBRCEnabledForSystem)
 			{
-				ResourceDTO resource = ExtractResourceFromImport(importfromfile, inWorkspace, toReturn, resourcelist, false);
-				
-				if (resource != null)
-				{
-					spreadCurveSelection = GetSpreadCurves(importfromfile, inWorkspace, toReturn, spreadCurveSelection, resource);
-				}
+				resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
 			}
 			else
 			{
 				if (importStartDate != null && importEndDate != null)
 				{
-
 					if (importEndDate < Utilities.OneLmxStartDate)
 					{
-						ResourceDTO resource = ExtractResourceFromImport(importfromfile, inWorkspace, toReturn, resourcelist, false);
-
-						if (resource != null)
-						{
-							// Resource is required but BRC is not so call the extraction method for Resource
-							spreadCurveSelection = GetSpreadCurves(importfromfile, inWorkspace, toReturn, spreadCurveSelection, resource);
-						}
+						resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
 					}
 
 					if (importStartDate > Utilities.OneLmxStartDate)
 					{
 						// Business Resource Code is required but not Resource call extraction method for Business Resource Code
-						ResourceDTO businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, inWorkspace, toReturn, businessResourceCodeList, true);
-						
-						if (businessResourceCode != null)
-						{
-							spreadCurveSelection = GetSpreadCurves(importfromfile, inWorkspace, toReturn, spreadCurveSelection, businessResourceCode);
-						}
+						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
 					}
 
 					if (importStartDate < Utilities.OneLmxStartDate && importEndDate > Utilities.OneLmxStartDate)
 					{
-						// Neither is required but we want to call
-						IDictionary<string, ResourceDTO> multiList = ExtractResourceAndOrBRCFromImport(importfromfile, toReturn, resourcelist, businessResourceCodeList);
+						resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
+						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
 
-						if (multiList != null && multiList.Count > 0)
+						if (resource != null && businessResourceCode != null && resource.RateType != businessResourceCode.RateType)
 						{
-							if (multiList.Count == 1 && multiList.ContainsKey(ImportExportConstants.RESOURCE_COLUMN_HEADER))
-							{
-								if (multiList.TryGetValue(ImportExportConstants.RESOURCE_COLUMN_HEADER, out ResourceDTO resource))
-								{
-									spreadCurveSelection = GetSpreadCurves(importfromfile, inWorkspace, toReturn, spreadCurveSelection, resource);
-								}
-							}
-
-							if (multiList.Count == 1 && multiList.ContainsKey(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER))
-							{
-								if (multiList.TryGetValue(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER, out ResourceDTO businessResourceCode))
-								{
-									spreadCurveSelection = GetSpreadCurves(importfromfile, inWorkspace, toReturn, spreadCurveSelection, businessResourceCode);
-								}
-							}
-
-							// TODO: Figure out how spread works
-							if (multiList.Count == 2)
-							{
-
-							}
-
+							toReturn.ImportTypes.Add(LaborTypeImportResult.RateTypesDoNotMatch);
 						}
 					}
 				}
@@ -806,6 +771,12 @@ namespace GenBOE.ActionLogic.IO.Import
 					toReturn.ImportTypes.Add(LaborTypeImportResult.MissingStartEndDate);
 				}
 			}
+
+			if (resource != null || businessResourceCode != null)
+			{
+				spreadCurveSelection = GetSpreadCurves(importfromfile, inWorkspace, toReturn, spreadCurveSelection, resource?.RateType ?? businessResourceCode.RateType);
+			}
+
 
 			if (importfromfile.ContainsKey(LABOR_TYPE_ID_COL) && !String.IsNullOrEmpty(importfromfile[LABOR_TYPE_ID_COL]))
 			{
@@ -1170,20 +1141,17 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// Extract Business Resource Code from Import File row
 		/// </summary>
 		/// <param name="importfromfile">Dictionary of Items contained in row</param>
-		/// <param name="inWorkspace">Workspace</param>
 		/// <param name="toReturn">LaborType model populated from Import File Row content</param>
-		/// <param name="spreadCurveSelection">Spread Curves</param>
 		/// <param name="resourcelist">Business Resource Code Options List</param>
-		/// <param name="setMissingDataForBrc">Boolean to control how to set the missing data based on Is BRC Enabled Flag</param>
-		/// <returns>Spread Curves</returns>
-		private static ResourceDTO ExtractBusinessResourceCodeFromImport(Dictionary<string, string> importfromfile, FullWorkspace inWorkspace, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist, bool setMissingDataForBrc)
+		/// <returns>Resource DTO representing a business resource code</returns>
+		private static ResourceDTO ExtractBusinessResourceCodeFromImport(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist)
 		{
 			ResourceDTO businessResourceCode = null;
 
 			if (!importfromfile.ContainsKey(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER) || String.IsNullOrEmpty(importfromfile[ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER]))
 			{
-				// We do this because 
-				if (!setMissingDataForBrc)
+				// We do this to get proper messaging out to UI based on Feature Flag
+				if (!Utilities.IsBRCEnabledForSystem)
 				{
 					toReturn.ImportTypes.Add(LaborTypeImportResult.MissingData);
 				}
@@ -1204,18 +1172,17 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// Extract Resource from Import File row
 		/// </summary>
 		/// <param name="importfromfile">Dictionary of Items contained in row</param>
-		/// <param name="inWorkspace">Workspace</param>
 		/// <param name="toReturn">LaborType model populated from Import File Row content</param>
 		/// <param name="resourcelist">Resource Options List</param>
-		/// <param name="setMissingDataForBrc">Boolean to control how to set the missing data based on Is BRC Enabled Flag</param>
 		/// <returns>Resource DTO representing a resource</returns>
-		private static ResourceDTO ExtractResourceFromImport(Dictionary<string, string> importfromfile, FullWorkspace inWorkspace, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist, bool setMissingDataForBrc)
+		private static ResourceDTO ExtractResourceFromImport(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist)
 		{
 			ResourceDTO resource = null;
 
 			if (!importfromfile.ContainsKey(ImportExportConstants.RESOURCE_COLUMN_HEADER) || String.IsNullOrEmpty(importfromfile[ImportExportConstants.RESOURCE_COLUMN_HEADER]))
 			{
-				if (!setMissingDataForBrc)
+				// We do this to get proper messaging out to UI based on Feature Flag
+				if (!Utilities.IsBRCEnabledForSystem)
 				{
 					toReturn.ImportTypes.Add(LaborTypeImportResult.MissingData);
 				}
@@ -1230,44 +1197,6 @@ namespace GenBOE.ActionLogic.IO.Import
 			}
 
 			return resource;
-		}
-
-		/// <summary>
-		/// Extract both Business Resource Code And Resource if they exist
-		/// </summary>
-		/// <param name="importfromfile">Dictionary of Items contained in row</param>
-		/// <param name="toReturn">LaborType model populated from Import File Row content</param>
-		/// <param name="resourcelist">Resource Options List</param>
-		/// <param name="businessResourceList">Business Resource Code Options List</param>
-		/// <returns>Spread Curves Selection</returns>
-		private static IDictionary<string, ResourceDTO> ExtractResourceAndOrBRCFromImport(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist, ICollection<ResourceDTO> businessResourceList)
-		{
-			ResourceDTO resource;
-			ResourceDTO businessResourceCode;
-
-			IDictionary<string, ResourceDTO> multiList = new Dictionary<string, ResourceDTO>();
-
-			if (importfromfile.ContainsKey(ImportExportConstants.RESOURCE_COLUMN_HEADER) && !String.IsNullOrEmpty(importfromfile[ImportExportConstants.RESOURCE_COLUMN_HEADER]))
-			{
-				resource = PopulateResource(importfromfile, toReturn, resourcelist);
-
-				if (resource != null)
-				{
-					multiList.Add(ImportExportConstants.RESOURCE_COLUMN_HEADER, resource);
-				}
-			}
-
-			if (importfromfile.ContainsKey(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER) && !String.IsNullOrEmpty(importfromfile[ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER]))
-			{
-				businessResourceCode = PopulateBusinessResourceCode(importfromfile, toReturn, businessResourceList);
-
-				if (businessResourceCode != null)
-				{
-					multiList.Add(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER, businessResourceCode);
-				}
-			}
-
-			return multiList;
 		}
 
 		/// <summary>
@@ -1328,9 +1257,9 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// <param name="inWorkspace">Workspace</param>
 		/// <param name="toReturn">LaborType model populated from Import File Row content</param>
 		/// <param name="spreadCurveSelection">Spread Curves</param>
-		/// <param name="resource">Resource DTO representing either Resource or Business Resource Code</param>
+		/// <param name="rateType">Resource DTO Rate Type</param>
 		/// <returns>Enum representing Spread Curves</returns>
-		private static SpreadCurves? GetSpreadCurves(Dictionary<string, string> importfromfile, FullWorkspace inWorkspace, ImportedLaborType toReturn, SpreadCurves? spreadCurveSelection, ResourceDTO resource)
+		private static SpreadCurves? GetSpreadCurves(Dictionary<string, string> importfromfile, FullWorkspace inWorkspace, ImportedLaborType toReturn, SpreadCurves? spreadCurveSelection, RateType rateType)
 		{
 			// validate agreement between spread curve selection and resource rate type (either both cost or both hours)
 			if (importfromfile.ContainsKey(ImportExportConstants.SPREAD_CURVE_COLUMN_HEADER))
@@ -1341,14 +1270,14 @@ namespace GenBOE.ActionLogic.IO.Import
 					spreadCurveText = spreadCurveText.Replace(FullObjectHelper.HoursLabel(inWorkspace), "Hours");
 				}
 				spreadCurveSelection = spreadCurveText.GetEnumeratedValue<SpreadCurves>(SpreadCurves.None);
-				if ((spreadCurveSelection == SpreadCurves.DiscreteCost && resource.RateType == RateType.Hours) ||
-					(spreadCurveSelection == SpreadCurves.DiscreteHours && resource.RateType == RateType.Cost))
+				if ((spreadCurveSelection == SpreadCurves.DiscreteCost && rateType == RateType.Hours) ||
+					(spreadCurveSelection == SpreadCurves.DiscreteHours && rateType == RateType.Cost))
 				{
 					toReturn.ImportTypes.Add(LaborTypeImportResult.RateTypeSpreadTypeAgreement);
 				}
 				else
 				{
-					toReturn.SpreadType = resource.RateType == RateType.Hours ? SpreadType.Hours : SpreadType.Cost;
+					toReturn.SpreadType = rateType == RateType.Hours ? SpreadType.Hours : SpreadType.Cost;
 				}
 			}
 
@@ -1598,7 +1527,8 @@ namespace GenBOE.ActionLogic.IO.Import
 		SpreadMonthValueOutsideDateRange = 26,
 		MissingStartEndDate = 27,
 		MissingResource = 28,
-		MissingBusinessResourceCode = 29
+		MissingBusinessResourceCode = 29,
+		RateTypesDoNotMatch = 30
 	}
 
 	[ExcludeFromCodeCoverage]
