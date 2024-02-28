@@ -874,7 +874,6 @@
 			data: copyDetails
 		}).then(function successCallback(response) {
 			var result = response.data;
-			console.log(result);
 			$scope.model.workspaceToCopy = result;
 			if (result.Description !== null) {
 				$scope.data.Description = result.Description;

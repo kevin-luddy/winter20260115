@@ -3169,8 +3169,6 @@ namespace GenBOE.Web.Controllers
 		/// <returns>JSON true/false</returns>
 		public ActionResult SaveWorkspaceIdentification(string workspace, [WorkspaceIdentificationBinder] IWorkspaceIdentificationModelView workspaceDetails, bool notCurrentOnCopy = false)
 		{
-			// TODO: check when workspaceId is -1 as well
-
 			// workspaceDetails can be null when notCurrentOnCopy is true
 			if (workspaceDetails == null && !notCurrentOnCopy)
 			{
