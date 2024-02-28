@@ -69,11 +69,11 @@ namespace GenTRAC.LoadGeeps
         private static ICollection<DataMartEmployeeDTO> LoadEmployees()
         {
             List<DataMartEmployeeDTO> employees = new List<DataMartEmployeeDTO>();
-            using (OracleConnection conn = new OracleConnection("Data Source=DWLMP;User Id=GEEPS_PTM;Password=mJ_5SYm_qqGoer;"))
-            {
+			using (OracleConnection conn = new OracleConnection("Data Source=ssedwdbprd.us.lmco.com:1536/PDEDW;User Id=HRIS_PTM;Password=wfL94_BhHxzzw;"))
+			{
                 conn.Open();
 
-                OracleCommand cmd = new OracleCommand("SELECT EMPLID, FIRST_NAME, LAST_NAME, LOWER(ROLEUSER), MGR_SUPV_ID_LM FROM GEEPS.geeps_nonsensitive WHERE empl_status='A'", conn);
+					OracleCommand cmd = new OracleCommand("SELECT EMPLID, FIRST_NAME, LAST_NAME, LOWER(ROLEUSER), MGR_SUPV_ID_LM FROM HRIS_DM.VW_GEEPS_NONSENSITIVE WHERE EMPL_STATUS='A'", conn); 
                 
                 using(OracleDataReader reader = cmd.ExecuteReader())
                 {
