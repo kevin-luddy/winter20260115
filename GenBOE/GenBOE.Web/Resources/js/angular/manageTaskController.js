@@ -1525,13 +1525,37 @@
 		$scope.checkIfNewRowNeeded(item);
 	};
 
-	$scope.isResourceValid = function (input, models) {
+	$scope.isResourceValid = function (item, models) {
 		result = true;
+
+		var startDate = item.StartDate.toDate();
+		var endDate = item.EndDate.toDate();
+		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.toDate();
+		var input = item.ResourceInput;
 
 		if (!$scope.IsBRCEnabled) {
 			if (input === undefined || (typeof input === 'string' && (input.length === 0
 				|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 				result = false;
+			}
+		}
+		else {
+			if (endDate < oneLmxCutOff) {
+				if (input === undefined || (typeof input === 'string' && (input.length === 0
+					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+					result = false;
+				}
+			}
+
+			if (startDate < oneLmxCutOff && endDate > oneLmxCutOff) {
+				if (input === undefined || (typeof input === 'string' && (input.length === 0
+					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+					result = false;
+				}
+
+				// Do call to isBusinessResourceCodeValid()
+				// Need to align inputError on UI to Bool
+
 			}
 		}
 		
@@ -1544,13 +1568,24 @@
 
 		var startDate = item.StartDate.toDate();
 		var endDate = item.EndDate.toDate();
+		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.toDate();
 		var input = item.BusinessResourceCodeInput;
 
-		if (startDate > OneLMXCutOffDate) {
+		if (startDate > oneLmxCutOff) {
 			if (input === undefined || (typeof input === 'string' && (input.length === 0
 				|| models.filter(function (r) { return r.BusinessResourceCodeDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 				result = false;
 			}
+		}
+
+		if (startDate < oneLmxCutOff && endDate > oneLmxCutOff) {
+			if (input === undefined || (typeof input === 'string' && (input.length === 0
+				|| models.filter(function (r) { return r.BusinessResourceCodeDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+				result = false;
+			}
+
+			// Do call to IsResourceValid()
+			// Need to align inputError on UI to Bool
 		}
 		
 		return result;
