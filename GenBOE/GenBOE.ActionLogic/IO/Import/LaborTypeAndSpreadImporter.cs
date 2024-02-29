@@ -747,12 +747,22 @@ namespace GenBOE.ActionLogic.IO.Import
 					if (importEndDate < Utilities.OneLmxStartDate)
 					{
 						resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
+
+						if (resource == null)
+						{
+							toReturn.ImportTypes.Add(LaborTypeImportResult.MissingResource);
+						}
 					}
 
 					if (importStartDate > Utilities.OneLmxStartDate)
 					{
 						// Business Resource Code is required but not Resource call extraction method for Business Resource Code
 						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
+
+						if (businessResourceCode == null)
+						{
+							toReturn.ImportTypes.Add(LaborTypeImportResult.MissingBusinessResourceCode);
+						}
 					}
 
 					if (importStartDate < Utilities.OneLmxStartDate && importEndDate > Utilities.OneLmxStartDate)
@@ -760,9 +770,16 @@ namespace GenBOE.ActionLogic.IO.Import
 						resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
 						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
 
-						if (resource != null && businessResourceCode != null && resource.RateType != businessResourceCode.RateType)
+						if (resource != null && businessResourceCode != null)
 						{
-							toReturn.ImportTypes.Add(LaborTypeImportResult.RateTypesDoNotMatch);
+							if (resource.RateType != businessResourceCode.RateType)
+							{
+								toReturn.ImportTypes.Add(LaborTypeImportResult.RateTypesDoNotMatch);
+							}
+						}
+						else
+						{
+							toReturn.ImportTypes.Add(LaborTypeImportResult.MissingResourceOrBRC);
 						}
 					}
 				}
@@ -1528,7 +1545,8 @@ namespace GenBOE.ActionLogic.IO.Import
 		MissingStartEndDate = 27,
 		MissingResource = 28,
 		MissingBusinessResourceCode = 29,
-		RateTypesDoNotMatch = 30
+		RateTypesDoNotMatch = 30,
+		MissingResourceOrBRC = 31
 	}
 
 	[ExcludeFromCodeCoverage]

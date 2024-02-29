@@ -359,8 +359,11 @@ namespace GenBOE.ActionLogic.IO.Export
 			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.PERFORGS,
 				columnOffset++, startDataRowIndex, endDataRowIndex);
 
+			// We increment by 2 to get to Spread Curve Column
+			columnOffset += 2;
+
 			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.SPREAD_CURVES,
-				((columnOffset++) + spreadOffset), startDataRowIndex, endDataRowIndex);
+				(columnOffset++) + spreadOffset, startDataRowIndex, endDataRowIndex);
 
 			if (isOffload)
 			{
