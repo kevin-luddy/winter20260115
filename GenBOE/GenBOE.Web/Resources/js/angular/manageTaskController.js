@@ -1528,22 +1528,31 @@
 	$scope.isResourceValid = function (input, models) {
 		result = true;
 
-		if (input === undefined || (typeof input === 'string' && (input.length === 0
-			|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-			result = false;
+		if (!$scope.IsBRCEnabled) {
+			if (input === undefined || (typeof input === 'string' && (input.length === 0
+				|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+				result = false;
+			}
 		}
+		
 
 		return result;
 	}
 
-	$scope.isBusinessResouceCodeValid = function (input, models) {
+	$scope.isBusinessResourceCodeValid = function (item, models) {
 		result = true;
 
-		if (input === undefined || (typeof input === 'string' && (input.length === 0
-			|| models.filter(function (r) { return r.BusinessResourceCodeDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-			result = false;
-		}
+		var startDate = item.StartDate.toDate();
+		var endDate = item.EndDate.toDate();
+		var input = item.BusinessResourceCodeInput;
 
+		if (startDate > OneLMXCutOffDate) {
+			if (input === undefined || (typeof input === 'string' && (input.length === 0
+				|| models.filter(function (r) { return r.BusinessResourceCodeDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+				result = false;
+			}
+		}
+		
 		return result;
 	}
 
