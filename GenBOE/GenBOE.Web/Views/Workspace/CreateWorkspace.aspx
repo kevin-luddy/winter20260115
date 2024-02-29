@@ -33,7 +33,7 @@
             GetExactCopyDataAction: '<%:WebConstants.ACTION_GET_EXACT_COPY_DATA %>',
             GetWorkspaceToCopyBOEListAction: '<%:WebConstants.ACTION_GET_BOES_FOR_WORKSPACE_TO_COPY%>',
             GetWorkspaceToCopyDetailsAction: '<%:WebConstants.ACTION_GET_DETAILS_FOR_WORKSPACE_TO_COPY%>',
-            SaveWorkspaceIdentificationAction: '<%:WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION%>',
+            UpdateCurrentWorkspaceIdentification: '<%:WebConstants.ACTION_UPDATE_CURRENT_WORKSPACE_IDENTIFICATION%>',
             WorkSpaceNameURL: window.location.protocol + '//' + window.location.host + '/' + 'default/' + 
                 '<%= WebConstants.CONTROLLER_WORKSPACE %>' + '/' + '<%:WebConstants.ACTION_IS_WORKSPACE_NAME_AVAILABLE %>',
             WorkSpaceShortNameURL: window.location.protocol + '//' + window.location.host + '/' + 'default/' +

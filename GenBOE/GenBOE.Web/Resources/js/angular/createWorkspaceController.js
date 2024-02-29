@@ -612,7 +612,7 @@
 		$scope.model.showButtonLoader = true;
 
 		if ($scope.model.UpdatePreviousWorkspace) {
-			var postURL = GenSession.CreatePostURL($scope.model.workspaceToCopy.ShortName, CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.SaveWorkspaceIdentificationAction);
+			var postURL = GenSession.CreatePostURL($scope.model.workspaceToCopy.ShortName, CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.UpdateCurrentWorkspaceIdentification);
 
 			$http({
 				method: 'POST',
@@ -634,7 +634,7 @@
 			)
 		}
 		
-		//// create the workspace
+		// create the workspace
 		var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
 		$http({
 			method: 'POST',
