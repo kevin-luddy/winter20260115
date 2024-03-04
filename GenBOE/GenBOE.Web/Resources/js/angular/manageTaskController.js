@@ -1525,70 +1525,81 @@
 		$scope.checkIfNewRowNeeded(item);
 	};
 
-	$scope.isResourceValid = function (item, models) {
-		result = true;
+	$scope.getAndSetIsResourceValid = function (item, models, callBusinessResourceCode) {
+		item.IsResourceValid = true;
 
+		// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
+		// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
 		var startDate = item.StartDate.toDate();
 		var endDate = item.EndDate.toDate();
-		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.toDate();
+		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.split(' ')[0].toDate();
 		var input = item.ResourceInput;
 
+		
 		if (!$scope.IsBRCEnabled) {
-			if (input === undefined || (typeof input === 'string' && (input.length === 0
-				|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-				result = false;
+			if (!item.NewLaborType) {
+				if (input === undefined || (typeof input === 'string' && (input.length === 0
+					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+					item.IsResourceValid = false;
+				}
 			}
 		}
 		else {
-			if (endDate < oneLmxCutOff) {
+			if (!item.NewLaborType) {
+				if (endDate < oneLmxCutOff) {
+					if (input === undefined || (typeof input === 'string' && (input.length === 0
+						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+						item.IsResourceValid = false;
+					}
+				}
+
+				if (startDate < oneLmxCutOff && endDate > oneLmxCutOff) {
+					if (input === undefined || (typeof input === 'string' && (input.length === 0
+						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+						item.IsResourceValid = false;
+					}
+
+					if (callBusinessResourceCode) {
+						item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
+					}
+				}
+			}
+		}
+
+		return item.IsResourceValid && !item.NewLaborType;
+	}
+
+	$scope.getAndSetIsBusinessResourceCodeValid = function (item, models, callResource) {
+		item.IsBusinessResourceCodeValid = true;
+
+		// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
+		// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
+		var startDate = item.StartDate.toDate();
+		var endDate = item.EndDate.toDate();
+		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.split(' ')[0].toDate();
+		var input = item.BusinessResourceCodeInput;
+
+		if (!item.NewLaborType) {
+			if (startDate > oneLmxCutOff) {
 				if (input === undefined || (typeof input === 'string' && (input.length === 0
 					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-					result = false;
+					item.IsBusinessResourceCodeValid = false;
 				}
 			}
 
 			if (startDate < oneLmxCutOff && endDate > oneLmxCutOff) {
 				if (input === undefined || (typeof input === 'string' && (input.length === 0
 					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-					result = false;
+					item.IsBusinessResourceCodeValid = false;
 				}
 
-				// Do call to isBusinessResourceCodeValid()
-				// Need to align inputError on UI to Bool
-
-			}
-		}
-		
-
-		return result;
-	}
-
-	$scope.isBusinessResourceCodeValid = function (item, models) {
-		result = true;
-
-		var startDate = item.StartDate.toDate();
-		var endDate = item.EndDate.toDate();
-		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.toDate();
-		var input = item.BusinessResourceCodeInput;
-
-		if (startDate > oneLmxCutOff) {
-			if (input === undefined || (typeof input === 'string' && (input.length === 0
-				|| models.filter(function (r) { return r.BusinessResourceCodeDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-				result = false;
+				if (callResource) {
+					item.IsResourceValid = $scope.getAndSetIsResourceValid(item, $scope.ResourceModels, false);
+				}
 			}
 		}
 
-		if (startDate < oneLmxCutOff && endDate > oneLmxCutOff) {
-			if (input === undefined || (typeof input === 'string' && (input.length === 0
-				|| models.filter(function (r) { return r.BusinessResourceCodeDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-				result = false;
-			}
-
-			// Do call to IsResourceValid()
-			// Need to align inputError on UI to Bool
-		}
-		
-		return result;
+		return item.IsBusinessResourceCodeValid;
 	}
 
 	$scope.isPerfOrgValid = function (input, models) {
