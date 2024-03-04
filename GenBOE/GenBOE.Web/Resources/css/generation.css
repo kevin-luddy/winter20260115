@@ -7225,6 +7225,7 @@ table.moduled-table {
 }
 
 #LaborTypesFixed td.resources,
+#LaborTypesFixed td.business-resource-codes,
 #LaborTypesFixed td.performing-org {
     overflow: visible;
 }

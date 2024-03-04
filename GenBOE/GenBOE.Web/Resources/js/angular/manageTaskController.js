@@ -1145,12 +1145,16 @@
 
 		if (TaskElementDetailsWidget.isAnyDirty() && !TaskElementDetailsWidget.waitingBeforeSubmit) {
 			var invalidResources = $("#LaborTypesFixed td.resources.inputError").length > 0;
+			var invalidBusinessResourceCodes = $("#LaborTypesFixed td.business-resource-codes.inputError").length > 0;
 			var invalidPerfOrgs = $("#LaborTypesFixed td.performing-org.inputError").length > 0;
 
-			if ($scope.invalidSpreads || invalidResources || invalidPerfOrgs) {
+			if ($scope.invalidSpreads || invalidResources || invalidBusinessResourceCodes || invalidPerfOrgs) {
 				var invalidArray = [];
 				if (invalidResources) {
 					invalidArray.push("Resources");
+				}
+				if (invalidBusinessResourceCodes) {
+					invalidArray.push("Business Resource Codes");
 				}
 				if (invalidPerfOrgs) {
 					invalidArray.push("Performing Orgs");

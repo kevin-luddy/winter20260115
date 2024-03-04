@@ -615,7 +615,7 @@
 														<input data-ng-if="!showDropdowns" tabindex="{{tabindex + 1}}" type="text" data-ng-model="item.ResourceInput" placeholder="Select a resource" uib-typeahead="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="2" data-ng-change="resourceUpdated(item)" typeahead-on-select="resourceSelected($item, item)">
 													</div>
 												</td>
-												<td data-ng-show="IsBRCEnabled" class="resources" data-ng-class="{ inputError: getAndSetIsBusinessResourceCodeValid(item, BusinessResourceCodeModels, true) === false }">
+												<td data-ng-show="IsBRCEnabled" class="business-resource-codes" data-ng-class="{ inputError: getAndSetIsBusinessResourceCodeValid(item, BusinessResourceCodeModels, true) === false }">
 													<div class="resource-selection bootstrap">
 														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 2}}" data-ng-model="item.BusinessResourceCodeInput" data-ng-change="businessResourceCodeSelected(item.BusinessResourceCode, item)"
 															data-ng-options="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'BusinessResourceCodeDesc'">
