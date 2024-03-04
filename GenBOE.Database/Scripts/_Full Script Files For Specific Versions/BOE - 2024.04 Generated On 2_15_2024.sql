@@ -39,7 +39,7 @@ END
 /*
    2/14/2020 [e374897] - PROPH-1445 CurrentWorkspace
    ## END ##
-/*
+*/
 
 
 /*
