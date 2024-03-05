@@ -283,7 +283,7 @@
 	$scope.currentWorkspaceDialog = function (nextStep) {
 		GenSession.commonDialog(
 			"Override Current PTM Workspace",
-			"Will this copy be the Current Workspace for the corresponding PTM ?",
+			"Will this copy be designated as the Current Workspace for the selected PTM Tracking Number?",
 			[
 				{
 					buttonClass: "ies",
@@ -305,7 +305,7 @@
 				},
 				{
 					buttonClass: "ies",
-					ButtonText: 'No, Keep Current',
+					ButtonText: 'No',
 					ButtonName: 'no-button',
 					callbackMethod: function () {
 						$scope.model.UpdatePreviousWorkspace = false;
