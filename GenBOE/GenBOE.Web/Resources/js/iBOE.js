@@ -143,7 +143,7 @@ function PageManager() {
 		$(context).delegate(eventOwnerSelector, eventName, functionToBind);
 	}
 
-	this.commonDialog = function (title, body, buttons, width) {
+	this.commonDialog = function (title, body, buttons, width = 450) {
 
 		$("#CommonDialog .buttons").text("");
 
@@ -166,7 +166,7 @@ function PageManager() {
 			}
 		}
 		$("#CommonDialogBody").html(body);
-		$("#CommonDialog").dialog({ width: 450, minHeight: 50, modal: true, resizable: false, draggable: true, title: title });
+		$("#CommonDialog").dialog({ width: width, minHeight: 50, modal: true, resizable: false, draggable: true, title: title });
 	}
 
 	this.closeCommonDialog = function () {

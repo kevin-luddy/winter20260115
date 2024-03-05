@@ -843,10 +843,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="validationErrors">Validation Errors</param>
 		private static void ValidationsForResourceAndBRC(BoeTaskElementDTO taskElement, ICollection<ValidationMessage> validationErrors)
 		{
-			if (Utilities.IsBRCEnabledForSystem)
+			DateTime OneLmxCutOffDate = Utilities.OneLmxStartDate;
+
+			foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
 			{
-				DateTime OneLmxCutOffDate = Utilities.OneLmxStartDate;
-				foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
+				if (Utilities.IsBRCEnabledForSystem)
 				{
 					// do validation per row item
 					if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
@@ -865,6 +866,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
 					{
 						validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+					}
+				}
+				else
+				{
+					if (dto.ResourceID == null || dto.ResourceID == 0)
+					{
+						validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
 					}
 				}
 			}
