@@ -344,7 +344,7 @@
 												<div title="{{item.ResourceDescription}}">{{item.ResourceDescription}}</div>
 											</td>
 											<td data-ng-show="IsBRCEnabled">
-												<div title="{{item.BusinessResourceDescription}}">{{item.BusinessResourceDescription}}</div>
+												<div title="{{item.BusinessResourceCodeDescription}}">{{item.BusinessResourceCodeDescription}}</div>
 											</td>
 											<td>
 												<div title="{{item.PerformingOrgName}}">{{item.PerformingOrgName}}</div>
@@ -455,8 +455,8 @@
 										 */
 									%>
 									<tr data-ng-repeat="item in tableData | filter: { Deleted: false }">
-										<td class="ResourceName" title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
-										<td class="ResourceName" title="{{item.BusinessResourceCodeName}}" data-ng-show="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
+										<td title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
+										<td title="{{item.BusinessResourceCodeName}}" data-ng-show="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
 										<td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
 									</tr>
 									<tr id="LaborSpreadHeaderDividerRow" class="subheader">
