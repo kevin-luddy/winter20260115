@@ -607,7 +607,7 @@
 														<option data-ng-repeat="option in ManageTaskModel.ElementsOfCost" data-ng-value="option.ElementOfCostId">{{option.ElementOfCostName}}</option>
 													</select>
 												</td>
-												<td class="resources" data-ng-class="{inputError: isResourceValid(item.ResourceInput, ResourceModels) === false && item.NewLaborType === false }">
+												<td class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels, true) === false }">
 													<div class="resource-selection bootstrap">
 														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 1}}" data-ng-model="item.ResourceInput" data-ng-change="resourceSelected(item.ResourceInput, item)"
 															data-ng-options="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'ResourceDesc'">
@@ -615,7 +615,7 @@
 														<input data-ng-if="!showDropdowns" tabindex="{{tabindex + 1}}" type="text" data-ng-model="item.ResourceInput" placeholder="Select a resource" uib-typeahead="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="2" data-ng-change="resourceUpdated(item)" typeahead-on-select="resourceSelected($item, item)">
 													</div>
 												</td>
-												<td data-ng-show="IsBRCEnabled" class="resources" data-ng-class="{inputError: isBusinessResourceCodeValid(item.BusinessResourceCodeInput, BusinessResourceCodeModels) === false && item.NewLaborType === false }">
+												<td data-ng-show="IsBRCEnabled" class="business-resource-codes" data-ng-class="{ inputError: getAndSetIsBusinessResourceCodeValid(item, BusinessResourceCodeModels, true) === false }">
 													<div class="resource-selection bootstrap">
 														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 2}}" data-ng-model="item.BusinessResourceCodeInput" data-ng-change="businessResourceCodeSelected(item.BusinessResourceCode, item)"
 															data-ng-options="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'BusinessResourceCodeDesc'">
@@ -794,24 +794,24 @@
 										%>
 										<tr data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false } track by item.BOELaborTypeID">
 											<td title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
-											<td data-ng-show="IsBRCEnabled" class="ResourceName" title="{{item.BusinessResourceCodeName}}"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
+											<td title="{{item.BusinessResourceCodeName}}" data-ng-show="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
 											<td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
 										</tr>
 										<tr id="LaborSpreadHeaderDividerRow" class="subheader">
-											<td colspan="2" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
+											<td colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
 										</tr>
 										<tr>
-											<td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
 										</tr>
 										<tr>
-											<td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
 										</tr>
 										<tr>
-											<td class="subheader" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
 											<td class="hours-total">{{totalSpreadHours}}</td>
 										</tr>
 										<tr>
-											<td class="subheader" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
 											<td class="cost-total"><span class="labor-spread-currency">$</span>{{totalSpreadCost}}</td>
 										</tr>
 									</tbody>
