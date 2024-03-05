@@ -78,6 +78,7 @@
 
 	ImportLaborType.UploadComplete = function () { //Function will be called when iframe is loaded
 		var uploadResponseElement = $("#ImportLaborTypeDialog-UploadTarget").contents().find("body #UploadResponse");
+
 		//hide and unload sections
 		$("#ImportLaborTypeResults div.import-result-type").addClass('display-none');
 		$('#ImportLaborTypeResults div.import-result-type ul.resultsList').empty();
@@ -183,25 +184,21 @@
 									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
 									$('#ImportLaborTypeResults #ImportResult-MissingResource').removeClass('display-none');
 									$('#ImportLaborTypeResults #ImportResult-MissingResource ul.resultsList').append(listItemToAppend);
-									$('#ManageLaborType-CompleteImportButton').addClass('display-none');
 									break;
 								case '<%: (int)LaborTypeImportResult.MissingBusinessResourceCode%>':
 									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
 									$('#ImportLaborTypeResults #ImportResult-MissingBusinessResourceCode').removeClass('display-none');
 									$('#ImportLaborTypeResults #ImportResult-MissingBusinessResourceCode ul.resultsList').append(listItemToAppend);
-									$('#ManageLaborType-CompleteImportButton').addClass('display-none');
 									break;
 								case '<%: (int)LaborTypeImportResult.MissingStartEndDate%>':
 									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
 									$('#ImportLaborTypeResults #ImportResult-MissingStartEndDate').removeClass('display-none');
 									$('#ImportLaborTypeResults #ImportResult-MissingStartEndDate ul.resultsList').append(listItemToAppend);
-									$('#ManageLaborType-CompleteImportButton').addClass('display-none');
 									break;
 								case '<%: (int)LaborTypeImportResult.MissingResourceOrBRC%>':
 									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
 									$('#ImportLaborTypeResults #ImportResult-MissingResourceOrBRC').removeClass('display-none');
 									$('#ImportLaborTypeResults #ImportResult-MissingResourceOrBRC ul.resultsList').append(listItemToAppend);
-									$('#ManageLaborType-CompleteImportButton').addClass('display-none');
 									break;
 								default:
 									break;
@@ -312,6 +309,7 @@
 		}
 
 		$("#ManageLaborType-ImportLoader").addClass('display-none');
+
 		$("#ManageLaborType-ImportButton").removeClass('display-none');
 	}
 
