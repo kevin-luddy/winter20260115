@@ -257,24 +257,33 @@
 		
 	}
 
-	$scope.copyPromiseCallBack = function (isCurrentPTMWorkspace) {
-		var copyPromise = $scope.copyExactDetails(isCurrentPTMWorkspace);
+	$scope.copyPromiseCallBack = function (nextStep, isCurrentPTMWorkspace) {
+		if (nextStep == 3) {
+			var copyPromise = $scope.copyExactDetails(isCurrentPTMWorkspace);
 
-		copyPromise.then(
-			function (answer) {
-				// go to step 5 -- Verify
+			copyPromise.then(
+				function (answer) {
+					// go to step 5 -- Verify
 
-				$scope.setStepSpecificElements(5);
-				$scope.isWaitingForCallback = false;
-			}, function (error) {
-				$scope.isWaitingForCallback = false;
-			});
+					$scope.setStepSpecificElements(nextStep);
+					$scope.isWaitingForCallback = false;
+				}, function (error) {
+					$scope.isWaitingForCallback = false;
+				});
+		} else {
+			if (isCurrentWorkspace) {
+				$scope.data.CurrentPTMWorkspace = true;
+			}
+
+			$scope.setStepSpecificElements(nextStep);
+			$scope.isWaitingForCallback = false;
+		}
 	}
 
-	$scope.currentWorkspaceDialog = function () {
+	$scope.currentWorkspaceDialog = function (nextStep) {
 		GenSession.commonDialog(
 			"Override Current PTM Workspace",
-			"Will this copy be the Current Workspace for the corresponding PTM ?",
+			"Will this copy be designated as the Current Workspace for the selected PTM Tracking Number?",
 			[
 				{
 					buttonClass: "ies",
@@ -282,7 +291,7 @@
 					ButtonName: 'only-button',
 					callbackMethod: function () {
 						$scope.model.UpdatePreviousWorkspace = true;
-						$scope.copyPromiseCallBack(true);
+						$scope.copyPromiseCallBack(nextStep, true);
 					}
 				},
 				{
@@ -291,16 +300,16 @@
 					ButtonName: 'multiple-button',
 					callbackMethod: function () {
 						$scope.model.UpdatePreviousWorkspace = false;
-						$scope.copyPromiseCallBack(true);
+						$scope.copyPromiseCallBack(nextStep, true);
 					}
 				},
 				{
 					buttonClass: "ies",
-					ButtonText: 'No, Keep Current',
+					ButtonText: 'No',
 					ButtonName: 'no-button',
 					callbackMethod: function () {
 						$scope.model.UpdatePreviousWorkspace = false;
-						$scope.copyPromiseCallBack(false);
+						$scope.copyPromiseCallBack(nextStep, false);
 					}
 				}
 			],
@@ -317,9 +326,9 @@
 			promise.then(
 				function (answer) {
 					if ($scope.data.CurrentPTMWorkspace) {
-						$scope.currentWorkspaceDialog()
+						$scope.currentWorkspaceDialog(5)
 					} else {
-						$scope.copyPromiseCallBack(false);
+						$scope.copyPromiseCallBack(5, false);
 					}
 				}, function (error) {
 					$scope.isWaitingForCallback = false;
@@ -331,9 +340,12 @@
 				$scope.data.BOEsToCopy.push($(this).parents('tr').attr('pkid'));
 			});
 
-			// just go to step 3
-			$scope.setStepSpecificElements(3);
-			$scope.isWaitingForCallback = false;
+			if ($scope.data.CurrentPTMWorkspace) {
+				$scope.currentWorkspaceDialog(3)
+			} else {
+				// just go to step 3
+				$scope.copyPromiseCallBack(3, false);
+			}
 		}
 
 		if ($scope.model.ptmTrackingNumberNotRequired && $scope.model.ptmTrackingNumber === '') {
