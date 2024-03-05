@@ -1570,7 +1570,7 @@
 			}
 		}
 
-		return item.IsResourceValid && !item.NewLaborType;
+		return item.IsResourceValid;
 	}
 
 	$scope.getAndSetIsBusinessResourceCodeValid = function (item, models, callResource) {
