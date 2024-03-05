@@ -3380,6 +3380,41 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Update just the Current PTM Workspace during the Copy Workspace workflow
+		/// Current copy workspace workflow will update current workspace to false
+		/// </summary>
+		/// <param name="workspace">workspace short name</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public ActionResult UpdateCurrentWorkspaceIdentification(string workspace)
+		{
+			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
+			Stopwatch sw = InitializeAction(_log, "UpdateCurrentWorkspaceIdentification", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+			// Get the user who is saving the BOE(s)
+			int currentUserID = ws.CurrentActiveUser.UserID;
+
+			ws.CurrentPTMWorkspace = false;
+
+			TimeSpan timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT));
+
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = timeout }))
+			{
+				this.workspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
+
+				scope.Complete();
+			}
+
+			this.Factory.ClearWorkspaceCache(workspace);
+
+			FinalizeAction(_log, "UpdateCurrentWorkspaceIdentification", sw);
+
+			return Json(new { Status = true });
+		}
+
+		/// <summary>
 		/// Saves workspace output format template settings
 		/// </summary>
 		/// <param name="workspace">workspace shortname</param>
@@ -5143,6 +5178,7 @@ namespace GenBOE.Web.Controllers
 								newWorkspaceDTO.ProposalTitle = spaceWorkspace.ProposalTitle;
 								newWorkspaceDTO.RevisedSubmittalDate = !string.IsNullOrEmpty(spaceWorkspace.RevisedSubmittalDate)
 									? (DateTime?)Convert.ToDateTime(spaceWorkspace.RevisedSubmittalDate) : null;
+								newWorkspaceDTO.CurrentPTMWorkspace = spaceWorkspace.CurrentPTMWorkspace;
 
 								this.workspaceLoader.SaveWorkspaceSettings(createdByUserDTO.UserID, newWorkspaceDTO);
 							}
@@ -5673,7 +5709,8 @@ namespace GenBOE.Web.Controllers
 					LineOfBusinessID = workspace.LineOfBusiness.Id,
 					RteSizeLimit = workspace.RteSizeLimit,
 					UsingTemplateBoe = workspace.UsingTemplateBOE,
-					EnableSAPConnection = workspace.EnableSAPConnection
+					EnableSAPConnection = workspace.EnableSAPConnection,
+					CurrentPTMWorkspace = workspace.CurrentPTMWorkspace
 				};
 
 				toReturn = Json(modelView);
