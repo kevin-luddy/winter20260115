@@ -1538,7 +1538,6 @@
 		var endDate = item.EndDate.toDate();
 		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.split(' ')[0].toDate();
 		var input = item.ResourceInput;
-
 		
 		if (!$scope.IsBRCEnabled) {
 			if (!item.NewLaborType) {

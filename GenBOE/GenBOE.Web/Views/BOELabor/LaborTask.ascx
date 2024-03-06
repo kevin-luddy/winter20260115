@@ -309,7 +309,6 @@
 		}
 
 		$("#ManageLaborType-ImportLoader").addClass('display-none');
-
 		$("#ManageLaborType-ImportButton").removeClass('display-none');
 	}
 
