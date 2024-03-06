@@ -1088,7 +1088,6 @@
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.ttf" />
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
     <Content Include="Scripts\tinymce\langs\readme.md" />
-    <None Include="Settings.StyleCop" />
     <Content Include="Templates\Export\WorkspaceDataSpaceSystems.xlsx" />
     <Content Include="Templates\Export\SSC_Labor_Rates_example.xlsx" />
     <Content Include="Templates\Export\MST_Labor_Rates_example.xlsx" />
