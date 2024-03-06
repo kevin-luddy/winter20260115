@@ -284,12 +284,12 @@ namespace APTSPropricerApi.Controllers
 		{
 			Worksheet sheet = wb.Worksheets.First();
 			ColumnCollection columns = sheet.Cells.Columns;
-			foreach (Column col in columns)
-			{
-				sheet.Cells.DeleteColumn(
-			}
-			sheet.Cells.DeleteBlankColumns();
-			sheet.Cells.DeleteBlankRows();
+			//foreach (Column col in columns)
+			//{
+			//	sheet.Cells.DeleteColumn(
+			//}
+			//sheet.Cells.DeleteBlankColumns();
+			//sheet.Cells.DeleteBlankRows();
 
 		}
 
