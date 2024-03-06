@@ -91,7 +91,11 @@ namespace GenBOE.ActionLogic.ModelView
 			this.BusinessResourceCodeDescription = inBusinessResourceCode.ResourceDesc;
 			this.CanOffload = inBoeLaborType.CanOffload;
 			this.TieredPercentage = inBoeLaborType.TieredPercentage;
-			this.ElementOfCost = (int)inResource.ElementOfCost;
+			this.ElementOfCost = (int)inResource?.ElementOfCost;
+			if (this.ElementOfCost == 0)
+			{
+				this.ElementOfCost = (int)inBusinessResourceCode.ElementOfCost;
+			}
 			this.LaborTypeOrder = inBoeLaborType.LaborTypeOrder;
 
 			// Hours/Cost is based on the resource type.
