@@ -578,6 +578,11 @@
 			url: getExactDetailsUrl,
 			data: $scope.data
 		}).then(function successCallback(response) {
+			$scope.data.CurrentPTMWorkspace = false;
+			if (isCurrentWorkspace) {
+				$scope.data.CurrentPTMWorkspace = true;
+			}
+
 			if (nextStep == 5) {
 				if (!$scope.model.isPTMIntegrated || ($scope.model.ptmTrackingNumberNotRequired && $scope.model.ptmTrackingNumber === '')) {
 					// only copy if not PTM Integrated or original does not have a tracking number
@@ -589,10 +594,6 @@
 				}
 				$scope.data.CostVolumeLeadPricerDisplayName = response.data.DisplayName;
 				$scope.data.CostVolumeLeadPricerNTID = response.data.CostVolumeLeadPricerNTID;
-			}
-
-			if (isCurrentWorkspace) {
-				$scope.data.CurrentPTMWorkspace = true;
 			}
 
 			deferred.resolve();
