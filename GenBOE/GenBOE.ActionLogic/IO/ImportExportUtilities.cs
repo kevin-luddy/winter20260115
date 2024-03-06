@@ -30,11 +30,11 @@ namespace GenBOE.ActionLogic.IO
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => x.ElementOfCost != ElementOfCostType.LMLabor || (x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES)).ToList();
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES).ToList();
 					}
 					else
 					{
-						resourceData = resourceData.Where(x => x.ElementOfCost != ElementOfCostType.LMLabor || x.SegRegion == WebConstants.SPACE_1LMX_CORE || x.SegRegion == WebConstants.SPACE_1LMX_SERVICES).ToList();
+						resourceData = resourceData.Where(x =>  x.SegRegion == WebConstants.SPACE_1LMX_CORE || x.SegRegion == WebConstants.SPACE_1LMX_SERVICES).ToList();
 					}
 				}
 
@@ -42,12 +42,12 @@ namespace GenBOE.ActionLogic.IO
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => x.ElementOfCost != ElementOfCostType.LMLabor || (x.SegRegion != WebConstants.RMS_1LMX_CORE && x.SegRegion != WebConstants.RMS_1LMX_SERVICES)).ToList();
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMS_1LMX_CORE && x.SegRegion != WebConstants.RMS_1LMX_SERVICES).ToList();
 
 					}
 					else
 					{
-						resourceData = resourceData.Where(x => x.ElementOfCost != ElementOfCostType.LMLabor || x.SegRegion == WebConstants.RMS_1LMX_CORE || x.SegRegion == WebConstants.RMS_1LMX_SERVICES).ToList();
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMS_1LMX_CORE || x.SegRegion == WebConstants.RMS_1LMX_SERVICES).ToList();
 					}
 				}
 			}

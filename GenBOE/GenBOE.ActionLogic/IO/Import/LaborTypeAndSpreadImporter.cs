@@ -744,14 +744,24 @@ namespace GenBOE.ActionLogic.IO.Import
 			{
 				if (importStartDate != null && importEndDate != null)
 				{
+					bool callResource = importfromfile.ContainsKey(ImportExportConstants.RESOURCE_COLUMN_HEADER);
+					bool callBRC = importfromfile.ContainsKey(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER);
+
+
+
 					if (importEndDate < Utilities.OneLmxStartDate)
 					{
 						resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
 
-						if (resource == null)
+						if (callBRC)
 						{
-							toReturn.ImportTypes.Add(LaborTypeImportResult.MissingResource);
+							businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
 						}
+
+						//if (resource == null)
+						//{
+						//	toReturn.ImportTypes.Add(LaborTypeImportResult.MissingResource);
+						//}
 					}
 
 					if (importStartDate > Utilities.OneLmxStartDate)
@@ -759,10 +769,14 @@ namespace GenBOE.ActionLogic.IO.Import
 						// Business Resource Code is required but not Resource call extraction method for Business Resource Code
 						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
 
-						if (businessResourceCode == null)
+						if (callResource)
 						{
-							toReturn.ImportTypes.Add(LaborTypeImportResult.MissingBusinessResourceCode);
+							resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
 						}
+						//if (businessResourceCode == null)
+						//{
+						//	toReturn.ImportTypes.Add(LaborTypeImportResult.MissingBusinessResourceCode);
+						//}
 					}
 
 					if (importStartDate < Utilities.OneLmxStartDate && importEndDate > Utilities.OneLmxStartDate)
@@ -1622,7 +1636,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
 				if (inBOELaborType.BusinessResourceCodeID.HasValue)
 				{
-					this.BusinessResourceCode = inResourceDTODataLoader.GetById(inBOELaborType.ResourceID.Value).ResourceName;
+					this.BusinessResourceCode = inResourceDTODataLoader.GetById(inBOELaborType.BusinessResourceCodeID.Value).ResourceName;
 				}
 
 				if (inBOELaborType.PerformingOrgID.HasValue)

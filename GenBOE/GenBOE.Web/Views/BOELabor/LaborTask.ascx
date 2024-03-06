@@ -116,7 +116,7 @@
 
 						for (var ltresultTypeNdx = 0; ltresultTypeNdx < ImportLaborType.ImportedData[ltresultNdx].ImportTypes.length; ltresultTypeNdx++) {
 							var ImportType = ImportLaborType.ImportedData[ltresultNdx].ImportTypes[ltresultTypeNdx].toString();
-
+							console.log(ImportLaborType.ImportedData);
 							switch (ImportType) {
 								case '<%: (int)LaborTypeImportResult.MissingData %>':
 								case '<%: (int)LaborTypeImportResult.ResourceMultiValuesInvalid %>':
