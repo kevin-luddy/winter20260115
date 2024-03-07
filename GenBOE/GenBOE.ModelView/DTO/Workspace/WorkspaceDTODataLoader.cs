@@ -13,6 +13,7 @@ namespace GenBOE.DataBridge.DTO
 	using System.Linq;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
+	using GenTRAC.Models;
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
@@ -551,11 +552,11 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					result = (from w in gbe.Workspaces
-							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
-							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
-							  where eu.NTID == ntid
-								&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
-								&& w.IsDeleted == false
+						join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
+						join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
+						where eu.NTID == ntid
+						&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
+						&& w.IsDeleted == false
 							  select new NlfWorkspaceDataDTO 
 							  {
 								  WorkspaceId = w.WorkspaceID, 
@@ -599,9 +600,10 @@ namespace GenBOE.DataBridge.DTO
 		/// Get Workspace data by NTID to be used in NLF home grid
 		/// </summary>
 		/// <param name="ntid">user NTID</param>
+		/// <param name="trackingNumbers">list of all tracking numbers tied to a user</param>
 		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
 		[DbQuery]
-		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid)
+		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid, ICollection<string> trackingNumbers)
 		{
 			ICollection<NlfWorkspaceInnerDataDTO> result;
 
@@ -609,12 +611,25 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					result = (from w in gbe.Workspaces
+					using (genTRACEntities gte = new genTRACEntities())
+					{
+						result = (from w in gbe.Workspaces
 							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
 							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
 							  where eu.NTID == ntid
-								&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
-								&& w.IsDeleted == false
+							  && w.CurrentPTMWorkspace
+							  && trackingNumbers.Contains(w.TrackingNumber)
+							  && w.IsDeleted == false
+							  from p in gte.Proposals
+							  where trackingNumbers.Contains(p.ProposalTrackingID)
+							  join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
+							  where pur.RoleID == (int)PtmRole.SupplyChainPOCSubs
+								|| pur.RoleID == (int)PtmRole.BackupSubcontractsLead
+								|| pur.RoleID == (int)PtmRole.SupplyChainPOCMatl
+								|| pur.RoleID == (int)PtmRole.BackupMaterialLead
+								|| pur.RoleID == (int)PtmRole.Pricer
+								|| pur.RoleID == (int)PtmRole.BackupPricer
+								|| pur.RoleID == (int)PtmRole.CostVolumeLead
 							  select new NlfWorkspaceInnerDataDTO
 							  {
 								  WorkspaceId = w.WorkspaceID,
@@ -625,6 +640,7 @@ namespace GenBOE.DataBridge.DTO
 								  WorkspaceCreationDate = w.WorkspaceCreationDate,
 								  EstimatingLead = eu.DisplayName
 							  }).ToList();
+					}
 				}
 			}
 

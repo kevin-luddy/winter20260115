@@ -433,6 +433,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GenTRAC.Models\GenTRAC.Models.csproj">
+      <Project>{2802B2B5-80B1-4447-88D4-CAAD5FC36BA1}</Project>
+      <Name>GenTRAC.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IES.Common\IES.Common.csproj">
       <Project>{FADFE985-0AA1-41AF-B7CB-A740673FC0D7}</Project>
       <Name>IES.Common</Name>
