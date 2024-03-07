@@ -1755,12 +1755,12 @@ namespace GenBOE.Web.Controllers
 
 					// Determine the spread type based on the rate type of the resource.
 					RateType rateType;
-					ResourceDTO resourceForLabor = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
+					ResourceDTO resourceForLabor = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId, false).FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
 					ResourceDTO brcForLabor = null;
 
 					if (Utilities.IsBRCEnabledForSystem)
 					{
-						brcForLabor = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForSystemResourceListId, true).FirstOrDefault(r => r.Id == laborTypeToUpdate.BusinessResourceCodeID);
+						brcForLabor = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId, true).FirstOrDefault(r => r.Id == laborTypeToUpdate.BusinessResourceCodeID);
 					}
 
 					// Rate Type Validation not needed here as the import already does it

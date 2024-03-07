@@ -834,7 +834,7 @@
 		var dataArray = [];
 
 		angular.forEach($scope.tableData, function (item, key) {
-			if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && item.ResourceID !== undefined && !item.Deleted) {
+			if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && (item.ResourceID !== undefined || item.BusinessResourceCodeID !== undefined) && !item.Deleted) {
 				// now check hours or cost depending on resource type
 				var spreadValueString;
 				if (item.RateType === ManageTaskModel.RateTypeCost) {

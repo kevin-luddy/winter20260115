@@ -747,8 +747,6 @@ namespace GenBOE.ActionLogic.IO.Import
 					bool callResource = importfromfile.ContainsKey(ImportExportConstants.RESOURCE_COLUMN_HEADER);
 					bool callBRC = importfromfile.ContainsKey(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER);
 
-
-
 					if (importEndDate < Utilities.OneLmxStartDate)
 					{
 						resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
@@ -757,11 +755,6 @@ namespace GenBOE.ActionLogic.IO.Import
 						{
 							businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
 						}
-
-						//if (resource == null)
-						//{
-						//	toReturn.ImportTypes.Add(LaborTypeImportResult.MissingResource);
-						//}
 					}
 
 					if (importStartDate > Utilities.OneLmxStartDate)
@@ -773,10 +766,6 @@ namespace GenBOE.ActionLogic.IO.Import
 						{
 							resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
 						}
-						//if (businessResourceCode == null)
-						//{
-						//	toReturn.ImportTypes.Add(LaborTypeImportResult.MissingBusinessResourceCode);
-						//}
 					}
 
 					if (importStartDate < Utilities.OneLmxStartDate && importEndDate > Utilities.OneLmxStartDate)
@@ -805,9 +794,9 @@ namespace GenBOE.ActionLogic.IO.Import
 
 			if (resource != null || businessResourceCode != null)
 			{
+				// validate agreement between spread
 				spreadCurveSelection = GetSpreadCurves(importfromfile, inWorkspace, toReturn, spreadCurveSelection, resource?.RateType ?? businessResourceCode.RateType);
 			}
-
 
 			if (importfromfile.ContainsKey(LABOR_TYPE_ID_COL) && !String.IsNullOrEmpty(importfromfile[LABOR_TYPE_ID_COL]))
 			{
@@ -1173,9 +1162,9 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// </summary>
 		/// <param name="importfromfile">Dictionary of Items contained in row</param>
 		/// <param name="toReturn">LaborType model populated from Import File Row content</param>
-		/// <param name="resourcelist">Business Resource Code Options List</param>
+		/// <param name="businessResourceCodeList">Business Resource Code Options List</param>
 		/// <returns>Resource DTO representing a business resource code</returns>
-		private static ResourceDTO ExtractBusinessResourceCodeFromImport(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist)
+		private static ResourceDTO ExtractBusinessResourceCodeFromImport(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> businessResourceCodeList)
 		{
 			ResourceDTO businessResourceCode = null;
 
@@ -1193,7 +1182,7 @@ namespace GenBOE.ActionLogic.IO.Import
 			}
 			else
 			{
-				businessResourceCode = PopulateBusinessResourceCode(importfromfile, toReturn, resourcelist);
+				businessResourceCode = PopulateBusinessResourceCode(importfromfile, toReturn, businessResourceCodeList);
 			}
 
 			return businessResourceCode;
@@ -1236,10 +1225,10 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// <param name="importfromfile">Dictionary of Items contained in row</param>
 		/// <param name="toReturn">LaborType model populated from Import File Row content</param>
 		/// <param name="resourcelist">Resource Options List</param>
-		/// <returns></returns>
+		/// <returns>ResourceDTO representing Resource selected in import file</returns>
 		private static ResourceDTO PopulateResource(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist)
 		{
-			ResourceDTO resource = (from resourceToGet in resourcelist where importfromfile[ImportExportConstants.RESOURCE_COLUMN_HEADER] == (resourceToGet.ResourceDesc) select resourceToGet).FirstOrDefault();
+			ResourceDTO resource = (from resourceToGet in resourcelist where importfromfile[ImportExportConstants.RESOURCE_COLUMN_HEADER] == resourceToGet.ResourceDesc select resourceToGet).FirstOrDefault();
 
 			if (resource != null)
 			{
@@ -1255,23 +1244,20 @@ namespace GenBOE.ActionLogic.IO.Import
 		}
 
 		/// <summary>
-		/// 
+		/// Populate Business Resource Code from import file into return variable
 		/// </summary>
 		/// <param name="importfromfile">Dictionary of Items contained in row</param>
 		/// <param name="toReturn">LaborType model populated from Import File Row content</param>
 		/// <param name="businessResourceList">Business Resource Code Options List</param>
-		/// <returns></returns>
+		/// <returns>ResourceDTO representing Business Resource Code selected in import file</returns>
 		private static ResourceDTO PopulateBusinessResourceCode(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> businessResourceList)
 		{
-			ResourceDTO businessResourceCode = (from brcToGet in businessResourceList where importfromfile[ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER] == (brcToGet.ResourceDesc) select brcToGet).FirstOrDefault();
+			ResourceDTO businessResourceCode = (from brcToGet in businessResourceList where importfromfile[ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER] == brcToGet.ResourceDesc select brcToGet).FirstOrDefault();
 
 			if (businessResourceCode != null)
 			{
 				toReturn.BusinessResourceCodeID = businessResourceCode.Id;
 				toReturn.BusinessResourceCode = importfromfile[ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER];
-
-				// validate agreement between spread curve selection and resource rate type (either both cost or both hours)
-				//spreadCurveSelection = GetSpreadCurves(importfromfile, inWorkspace, toReturn, spreadCurveSelection, businessResourceCode);
 			}
 			else
 			{
