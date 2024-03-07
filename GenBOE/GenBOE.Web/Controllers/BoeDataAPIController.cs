@@ -627,11 +627,13 @@ namespace GenBOE.Web.Controllers
 					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
                     LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
 				}).ToCollection();
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown Error occurred returning NLF Workspace data: {ex.Message}");
+				result.IsSuccessful = false;
 			}
 
 			return result;
@@ -662,11 +664,13 @@ namespace GenBOE.Web.Controllers
 					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
                     LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
 				}).ToCollection();
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown Error occurred returning NLF Workspace data: {ex.Message}");
+				result.IsSuccessful = false;
 			}
 
 			return result;
