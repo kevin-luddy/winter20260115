@@ -28,14 +28,7 @@ namespace GenBOE.ActionLogic.IO.Export
     {
         public override string WORKSPACE_DATA_EXCEL_MAP_PATH
         {
-            get {
-                if (Utilities.IsBRCEnabledForSystem) {
-                    return "~/Templates/Export/WorkspaceDataWithBRCMST.xlsx";
-                    }
-                else {
-                     return "~/Templates/Export/WorkspaceDataMST.xlsx";
-                }
-			}
+            get {return "~/Templates/Export/WorkspaceDataMST.xlsx";}
         }
 
         private TravelUnitCostExporterRMS travelUnitCostExporter;
