@@ -664,10 +664,45 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (!labor.Deleted)
 				{
-					if (!labor.ResourceID.HasValue || labor.ResourceID < 1)
+					if (!Utilities.IsBRCEnabledForSystem)
 					{
-						validationErrors.Add(new ValidationMessage(fieldPrefix + "ResourceID", "Resource is required or is not valid."));
+						if (!labor.ResourceID.HasValue || labor.ResourceID < 1)
+						{
+							validationErrors.Add(new ValidationMessage(fieldPrefix + "ResourceID", "Resource is required or is not valid."));
+						}
 					}
+					else
+					{
+						if (!DateTime.TryParse(labor.EndDate, out DateTime endDate))
+						{
+							endDate = DateTime.MaxValue;
+						}
+						if (DateTime.TryParse(labor.StartDate, out DateTime startDate))
+						{
+							startDate = DateTime.MaxValue;
+						}
+
+						if (startDate != DateTime.MaxValue && endDate != DateTime.MaxValue)
+						{
+							if (endDate < Utilities.OneLmxStartDate && (!labor.ResourceID.HasValue || labor.ResourceID < 1))
+							{
+								validationErrors.Add(new ValidationMessage(fieldPrefix + "ResourceID", "Resource is required or is not valid."));
+							}
+
+							if (startDate > Utilities.OneLmxStartDate && (!labor.BusinessResourceCodeID.HasValue || labor.BusinessResourceCodeID < 1))
+							{
+								validationErrors.Add(new ValidationMessage(fieldPrefix + "BusinessResourceCodeID", "Business Resource Code is required or is not valid."));
+							}
+
+							if (startDate < Utilities.OneLmxStartDate && endDate > Utilities.OneLmxStartDate
+								&& (!labor.ResourceID.HasValue || labor.ResourceID < 1 || !labor.BusinessResourceCodeID.HasValue || labor.BusinessResourceCodeID < 1))
+							{
+								validationErrors.Add(new ValidationMessage(fieldPrefix + "ResourceID", "Resource is required or is not valid."));
+								validationErrors.Add(new ValidationMessage(fieldPrefix + "BusinessResourceCodeID", "Business Resource Code is required or is not valid."));
+							}
+						}
+					}
+
 					if (!labor.PerformingOrgID.HasValue || labor.PerformingOrgID < 1)
 					{
 						validationErrors.Add(new ValidationMessage(fieldPrefix + "PerformingOrgID", "Performing organization is required or is not valid."));

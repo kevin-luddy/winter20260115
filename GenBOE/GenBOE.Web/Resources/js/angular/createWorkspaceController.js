@@ -258,26 +258,15 @@
 	}
 
 	$scope.copyPromiseCallBack = function (nextStep, isCurrentPTMWorkspace) {
-		if (nextStep == 3) {
-			var copyPromise = $scope.copyExactDetails(isCurrentPTMWorkspace);
+		var copyPromise = $scope.copyExactDetails(isCurrentPTMWorkspace);
 
-			copyPromise.then(
-				function (answer) {
-					// go to step 5 -- Verify
-
-					$scope.setStepSpecificElements(nextStep);
-					$scope.isWaitingForCallback = false;
-				}, function (error) {
-					$scope.isWaitingForCallback = false;
-				});
-		} else {
-			if (isCurrentWorkspace) {
-				$scope.data.CurrentPTMWorkspace = true;
-			}
-
+		copyPromise.then(
+		function (answer) {
 			$scope.setStepSpecificElements(nextStep);
 			$scope.isWaitingForCallback = false;
-		}
+		}, function (error) {
+			$scope.isWaitingForCallback = false;
+		});
 	}
 
 	$scope.currentWorkspaceDialog = function (nextStep) {
@@ -578,7 +567,7 @@
 	};
 
 	// When doing an Exact copy, copy the details so that they are shown on the Verify Page
-	$scope.copyExactDetails = function (isCurrentWorkspace = false) {
+	$scope.copyExactDetails = function (nextStep, isCurrentWorkspace = false) {
 
 		// retrieve exact copy details from server for duplicate name and cost volume pricer display name
 		var deferred = $q.defer();
@@ -589,19 +578,22 @@
 			url: getExactDetailsUrl,
 			data: $scope.data
 		}).then(function successCallback(response) {
-			if (!$scope.model.isPTMIntegrated || ($scope.model.ptmTrackingNumberNotRequired && $scope.model.ptmTrackingNumber === '')) {
-				// only copy if not PTM Integrated or original does not have a tracking number
-				$scope.data.WorkspaceName = response.data.Name;
-				$scope.data.Shortname = response.data.ShortName;
-				$scope.data.LineOfBusinessID = response.data.LOBId;
-				$scope.data.ProposalClass = response.data.ProposalClass;
-				$scope.data.SelectedContractTypes = response.data.ContractTypes;
-			}
-			$scope.data.CostVolumeLeadPricerDisplayName = response.data.DisplayName;
-			$scope.data.CostVolumeLeadPricerNTID = response.data.CostVolumeLeadPricerNTID;
-
+			$scope.data.CurrentPTMWorkspace = false;
 			if (isCurrentWorkspace) {
 				$scope.data.CurrentPTMWorkspace = true;
+			}
+
+			if (nextStep == 5) {
+				if (!$scope.model.isPTMIntegrated || ($scope.model.ptmTrackingNumberNotRequired && $scope.model.ptmTrackingNumber === '')) {
+					// only copy if not PTM Integrated or original does not have a tracking number
+					$scope.data.WorkspaceName = response.data.Name;
+					$scope.data.Shortname = response.data.ShortName;
+					$scope.data.LineOfBusinessID = response.data.LOBId;
+					$scope.data.ProposalClass = response.data.ProposalClass;
+					$scope.data.SelectedContractTypes = response.data.ContractTypes;
+				}
+				$scope.data.CostVolumeLeadPricerDisplayName = response.data.DisplayName;
+				$scope.data.CostVolumeLeadPricerNTID = response.data.CostVolumeLeadPricerNTID;
 			}
 
 			deferred.resolve();

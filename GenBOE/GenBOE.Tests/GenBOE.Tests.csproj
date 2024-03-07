@@ -384,7 +384,6 @@
     <None Include="Resources\ProjectMap.xlsx" />
     <EmbeddedResource Include="Resources\TINATraining.xlsx" />
     <None Include="Resources\WbsBoeReport.xlsx" />
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ActionLogic\ValidationAttributes\" />

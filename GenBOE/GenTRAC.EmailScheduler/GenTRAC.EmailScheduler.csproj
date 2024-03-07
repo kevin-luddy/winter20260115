@@ -22,7 +22,6 @@
     <UserName>tfsuser</UserName>
     <Password>tfspassword</Password>
     <AllowUntrustedCertificate>True</AllowUntrustedCertificate>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <SkipExtraFilesOnServer>false</SkipExtraFilesOnServer>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
@@ -190,7 +189,6 @@
   <ItemGroup>
     <Content Include="App.config" />
     <None Include="packages.config" />
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GenTRAC.ActionLogic\GenTRAC.ActionLogic.csproj">

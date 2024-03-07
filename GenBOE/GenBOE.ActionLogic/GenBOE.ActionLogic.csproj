@@ -638,7 +638,6 @@
     <None Include="Connected Services\IESSAPClient\IESSAPClient.nswag.json" />
     <None Include="packages.config" />
     <None Include="ServiceJsonFiles\iesSAP.swagger.json" />
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="OpenAPIs\" />
