@@ -258,6 +258,10 @@ namespace GenBOE.ActionLogic.IO.Import
 			//Workspace Clins and WBS
 			Collection<FullWbs> wsWBS = new Collection<FullWbs>(workspace.WbsElementsNoMultiWbs.ToCollection());
 			Collection<ClinDTO> wsClins = new Collection<ClinDTO>(workspace.ClinsNoMultiClin.ToCollection<ClinDTO>());
+			//ResourceList and Business ResourceCodeList
+			ICollection<ResourceDTO> resourceList = ImportExportUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), false);
+			ICollection<ResourceDTO> businessResourceCodeList = ImportExportUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), true);
+
 			if (allRows.Any())
 			{
 				// Get all Labor Types currently in the workspace and convert 
@@ -319,12 +323,12 @@ namespace GenBOE.ActionLogic.IO.Import
 						}
 
 						toAdd = this.update(toAdd,
-							this.ConstructImportfromFile(row, taskElement, workspace, existingLT, workspaceCustomFields,
+							this.ConstructImportfromFile(row, taskElement, workspace, existingLT, resourceList, businessResourceCodeList, workspaceCustomFields,
 								wsWBS, wsClins, isMulti, isOffload, ref newCustomFieldIndex), workspaceCustomFields.Any());
 					}
 					else
 					{
-						toAdd = this.ConstructImportfromFile(row, taskElement, workspace, existingLT,
+						toAdd = this.ConstructImportfromFile(row, taskElement, workspace, existingLT, resourceList, businessResourceCodeList,
 							workspaceCustomFields, wsWBS, wsClins, isMulti, isOffload, ref newCustomFieldIndex);
 						toAdd.ImportTypes.Add(LaborTypeImportResult.AddLaborType);
 					}
@@ -685,8 +689,8 @@ namespace GenBOE.ActionLogic.IO.Import
 		[SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private ImportedLaborType ConstructImportfromFile(Dictionary<string, string> importfromfile, BoeTaskElementDTO inTaskElement,
-			FullWorkspace inWorkspace, ResourceTypeDto existingResource, ICollection<CustomFieldDTO> workspaceCustomFields, Collection<FullWbs> wsWbs, Collection<ClinDTO> wsClins,
-			bool isMulti, bool isOffload, ref int newCustomFieldIndex)
+			FullWorkspace inWorkspace, ResourceTypeDto existingResource, ICollection<ResourceDTO> resourceList, ICollection<ResourceDTO> businessResourceCodeList, 
+			ICollection<CustomFieldDTO> workspaceCustomFields, Collection<FullWbs> wsWbs, Collection<ClinDTO> wsClins, bool isMulti, bool isOffload, ref int newCustomFieldIndex)
 		{
 			ImportedLaborType toReturn = new ImportedLaborType();
 
@@ -696,11 +700,6 @@ namespace GenBOE.ActionLogic.IO.Import
 			DateTime? importEndDate = null;
 			decimal percentSpread = 0;
 			SpreadCurves? spreadCurveSelection = null;
-
-			// Define Resource list and Business Resource Code list
-			// IsBRCEnabled Flag already utilized in the method
-			ICollection<ResourceDTO> resourcelist = ImportExportUtilities.GetResourcesBasedOnCompanyMode(this.resourceDTODataLoader.GetByListId(inWorkspace.ResourceListID), false);
-			ICollection<ResourceDTO> businessResourceCodeList = ImportExportUtilities.GetResourcesBasedOnCompanyMode(this.resourceDTODataLoader.GetByListId(inWorkspace.ResourceListID), true);
 
 			#region Labor Type
 
@@ -738,7 +737,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
 			if (!Utilities.IsBRCEnabledForSystem)
 			{
-				resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
+				resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList);
 			}
 			else
 			{
@@ -749,7 +748,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
 					if (importEndDate < Utilities.OneLmxStartDate)
 					{
-						resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
+						resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList);
 
 						if (callBRC)
 						{
@@ -764,13 +763,13 @@ namespace GenBOE.ActionLogic.IO.Import
 
 						if (callResource)
 						{
-							resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
+							resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList);
 						}
 					}
 
 					if (importStartDate < Utilities.OneLmxStartDate && importEndDate > Utilities.OneLmxStartDate)
 					{
-						resource = ExtractResourceFromImport(importfromfile, toReturn, resourcelist);
+						resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList);
 						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
 
 						if (resource != null && businessResourceCode != null)
