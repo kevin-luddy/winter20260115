@@ -1791,7 +1791,7 @@
 
 	$scope.recalculateSpreads = function (item) {
 		// validate everything is kosher for the row
-		if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && item.ResourceID !== undefined) {
+		if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && (item.ResourceID !== undefined || item.BusinessResourceCodeID !== undefined)) {
 			// now check hours or cost depending on resource type
 			var spreadValueString;
 			if (item.RateType === ManageTaskModel.RateTypeCost) {
