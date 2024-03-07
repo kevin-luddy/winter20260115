@@ -258,7 +258,7 @@
 	}
 
 	$scope.copyPromiseCallBack = function (nextStep, isCurrentPTMWorkspace) {
-		var copyPromise = $scope.copyExactDetails(isCurrentPTMWorkspace);
+		var copyPromise = $scope.copyExactDetails(nextStep, isCurrentPTMWorkspace);
 
 		copyPromise.then(
 		function (answer) {
