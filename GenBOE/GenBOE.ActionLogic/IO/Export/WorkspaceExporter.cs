@@ -605,8 +605,6 @@ namespace GenBOE.ActionLogic.IO.Export
                             row.Add(this.sEmpty);
                         }
 
-                        bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
-
                         ResourceDTO aResource = resourceType.ResourceID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
                         ResourceDTO brcResource = isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
                         PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? exportInputs.PerformingOrgsUsedInBoes.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
