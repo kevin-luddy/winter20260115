@@ -887,7 +887,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					// do validation per row item
 					if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
 					{
-						validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cut Off Date"));
+						validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
 					}
 
 					if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
@@ -900,7 +900,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
 						&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
 					{
-						validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cut Off Date"));
+						validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
 					}
 				}
 				else

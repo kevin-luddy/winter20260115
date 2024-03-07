@@ -86,6 +86,12 @@ namespace GenBOE.ActionLogic.ModelView
 			this.ResourceType = inResource.ResourceTypeCategory;
 			this.ResourceDescription = inResource.ResourceDesc;
 			this.RateType = inResource.RateType;
+
+			if (this.RateType == RateType.NotSet)
+			{
+				this.RateType = inBusinessResourceCode.RateType;
+			}
+
 			this.BusinessResourceCodeName = inBusinessResourceCode.ResourceName;
 			this.BusinessResourceCodeType = inBusinessResourceCode.ResourceTypeCategory;
 			this.BusinessResourceCodeDescription = inBusinessResourceCode.ResourceDesc;
@@ -99,11 +105,11 @@ namespace GenBOE.ActionLogic.ModelView
 			this.LaborTypeOrder = inBoeLaborType.LaborTypeOrder;
 
 			// Hours/Cost is based on the resource type.
-			if (inResource.RateType == RateType.Hours)
+			if (this.RateType == RateType.Hours)
 			{
 				this.HourSpread = inBoeLaborType.ValueSpread.HasValue ? (decimal?)Convert.ToDecimal(inBoeLaborType.ValueSpread.Value) : null;
 			}
-			else if (inResource.RateType == RateType.Cost)
+			else if (this.RateType == RateType.Cost)
 			{
 				this.CostSpread = inBoeLaborType.ValueSpread.HasValue ? (decimal?)Convert.ToDecimal(inBoeLaborType.ValueSpread.Value) : null;
 			}

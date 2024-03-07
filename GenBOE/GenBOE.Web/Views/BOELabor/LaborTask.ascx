@@ -78,6 +78,7 @@
 
 	ImportLaborType.UploadComplete = function () { //Function will be called when iframe is loaded
 		var uploadResponseElement = $("#ImportLaborTypeDialog-UploadTarget").contents().find("body #UploadResponse");
+
 		//hide and unload sections
 		$("#ImportLaborTypeResults div.import-result-type").addClass('display-none');
 		$('#ImportLaborTypeResults div.import-result-type ul.resultsList').empty();
@@ -115,14 +116,20 @@
 
 						for (var ltresultTypeNdx = 0; ltresultTypeNdx < ImportLaborType.ImportedData[ltresultNdx].ImportTypes.length; ltresultTypeNdx++) {
 							var ImportType = ImportLaborType.ImportedData[ltresultNdx].ImportTypes[ltresultTypeNdx].toString();
-
+							console.log(ImportLaborType.ImportedData);
 							switch (ImportType) {
 								case '<%: (int)LaborTypeImportResult.MissingData %>':
 								case '<%: (int)LaborTypeImportResult.ResourceMultiValuesInvalid %>':
 								case '<%: (int)LaborTypeImportResult.InvalidData %>':
 									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
-									$('#ImportLaborTypeResults #ImportResult-MissingData').removeClass('display-none');
-									$('#ImportLaborTypeResults #ImportResult-MissingData ul.resultsList').append(listItemToAppend);
+									if (!$scope.IsBRCEnabled) {
+										$('#ImportLaborTypeResults #ImportResult-MissingData').removeClass('display-none');
+										$('#ImportLaborTypeResults #ImportResult-MissingData ul.resultsList').append(listItemToAppend);
+									}
+									else {
+										$('#ImportLaborTypeResults #ImportResult-MissingData-BRCEnabled').removeClass('display-none');
+										$('#ImportLaborTypeResults #ImportResult-MissingData-BRCEnabled ul.resultsList').append(listItemToAppend);
+									}
 									missingDataRows++;
 									break;
 								case '<%: (int)LaborTypeImportResult.AddLaborType%>':
@@ -167,6 +174,31 @@
 									break;
 								case '<%: (int)LaborTypeImportResult.SpreadMonthValueOutsideDateRange%>':
 									$('#ImportLaborTypeResults #ImportResult-SpreadMonthValueOutsideDateRange').removeClass('display-none');
+									break;
+								case '<%: (int)LaborTypeImportResult.RateTypesDoNotMatch%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-RateTypesDoNotMatch').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-RateTypesDoNotMatch ul.resultsList').append(listItemToAppend);
+									break;
+								case '<%: (int)LaborTypeImportResult.MissingResource%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-MissingResource').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-MissingResource ul.resultsList').append(listItemToAppend);
+									break;
+								case '<%: (int)LaborTypeImportResult.MissingBusinessResourceCode%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-MissingBusinessResourceCode').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-MissingBusinessResourceCode ul.resultsList').append(listItemToAppend);
+									break;
+								case '<%: (int)LaborTypeImportResult.MissingStartEndDate%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-MissingStartEndDate').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-MissingStartEndDate ul.resultsList').append(listItemToAppend);
+									break;
+								case '<%: (int)LaborTypeImportResult.MissingResourceOrBRC%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-MissingResourceOrBRC').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-MissingResourceOrBRC ul.resultsList').append(listItemToAppend);
 									break;
 								default:
 									break;
@@ -763,7 +795,8 @@
 		<div class="labor-spread module <% if (!Model.ContainsDiscrete)
 			{ %>collapsed<% }
 			else
-			{ %>expanded<% } %>" id="ManageLaborSpread">
+			{ %>expanded<% } %>"
+			id="ManageLaborSpread">
 			<div class="module-header-data">
 				Resource Spread
 			</div>
@@ -1181,6 +1214,13 @@
 				</div>
 				<ul class="resultsList"></ul>
 			</div>
+			<div class="import-result-type display-none" id="ImportResult-MissingData-BRCEnabled">
+				<div class="title">
+					<span class="resultCount"></span>
+					Resource Types will not be added/uploaded because a Resource, Business Resource Code, Performing Org, Start Date, End Date, Spread Curve, WBS/CLIN, Offload, or required Custom Field is missing or invalid:
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
 			<div class="import-result-type display-none" id="ImportResult-HoursSpreadInvalid">
 				<div class="title">
 					<span class="resultCount"></span>
@@ -1208,6 +1248,41 @@
 					Resource Types will not be added/updated because one or more spread month values are outside the spread date range.<br />
 					Please check the import file and clear any spread month values that are outside the resource spread date range.              
 				</div>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-RateTypesDoNotMatch">
+				<div class="title">
+					<span class="resultCount"></span>
+					Rate Types between Selected Resource and Business Resource Code do not match.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-ResourceMissing">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) needs to have Resource Selected because End Date is before 1LMX Cutoff Date.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-BusinessResourceCodeMissing">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) needs Business Resource Code Selected because start date is greater than or equal to 1LMX Cutoff Date.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-MissingStartEndDate">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) missing Start and/or End Date.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-MissingResourceOrBRC">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) missing Resource and/or Business Resource Code because Start Date is before 1LMX Cutoff Date and End Date is after 1LMX Cutoff Date.
+				</div>
+				<ul class="resultsList"></ul>
 			</div>
 			<div class="title import-result-type display-none" id="ImportResult-NoChanges">No Changes Detected</div>
 

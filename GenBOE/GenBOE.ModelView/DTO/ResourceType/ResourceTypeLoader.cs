@@ -277,6 +277,16 @@ namespace GenBOE.DataBridge.DTO
 				aDto.StartDateValue = aDto.StartDateValue.Normalize();
 				aDto.EndDateValue = aDto.EndDateValue.Normalize();
 
+				if (aDto.BusinessResourceCodeID == 0) 
+				{
+					aDto.BusinessResourceCodeID = null;
+				}
+
+				if (aDto.ResourceID == 0)
+				{
+					aDto.ResourceID = null;
+				}
+
 				this.Log.Debug(string.Format("ResourceTypeLoader.BulkSave => Item Id: {0}, Value: {1}", aDto.Id, aDto.ValueSpread));
 			}
 

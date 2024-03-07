@@ -32,6 +32,7 @@ function InitializeImportLaborTypeWidget(boeId, workspace, completeImportUrl, sp
 		var toReturn =
 			'<li>' +
 			'Resources:' + lt.Resource +
+			' Business Resource Code:' + lt.BusinessResourceCode
 			' Performing Org:' + lt.PerformingOrg +
 			' Date Range:' + lt.StartDateFormatted +
 			'-' + lt.EndDateFormatted +

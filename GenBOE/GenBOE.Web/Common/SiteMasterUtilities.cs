@@ -295,6 +295,7 @@ namespace GenBOE.Web.Common
 
 		/// <summary>
 		/// Returns Resources / Business Resource Codes based on Company mode and 1LMX or Legacy distinction
+		/// SHARED/DUPLICATED METHOD in GenBOE ActionLogic => IO => ImportExportUtilities.cs
 		/// </summary>
 		/// <param name="resourceData">Original Resources list</param>
 		/// <param name="isBrc">Bool to signify if Resources are of type Business Resource Codes</param>
@@ -307,7 +308,7 @@ namespace GenBOE.Web.Common
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => (x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES)).ToList();
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES).ToList();
 					}
 					else
 					{
@@ -319,12 +320,12 @@ namespace GenBOE.Web.Common
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => (x.SegRegion != WebConstants.RMX_1LMX_CORE && x.SegRegion != WebConstants.RMX_1LMX_SERVICES)).ToList();
+						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMS_1LMX_CORE && x.SegRegion != WebConstants.RMS_1LMX_SERVICES).ToList();
 
 					}
 					else
 					{
-						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMX_1LMX_CORE || x.SegRegion == WebConstants.RMX_1LMX_SERVICES).ToList();
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMS_1LMX_CORE || x.SegRegion == WebConstants.RMS_1LMX_SERVICES).ToList();
 					}
 				}
 			}
