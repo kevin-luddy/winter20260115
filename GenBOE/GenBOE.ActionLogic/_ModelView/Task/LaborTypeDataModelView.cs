@@ -26,11 +26,11 @@ namespace GenBOE.ActionLogic.ModelView
 		public LaborTypeDataModelView()
 		{
 			this.BOELaborTypeID = -1;
-			this.ResourceID = 0;
+			this.ResourceID = null;
 			this.ResourceName = String.Empty;
 			this.ResourceType = String.Empty;
 			this.ResourceDescription = String.Empty;
-			this.BusinessResourceCodeID = 0;
+			this.BusinessResourceCodeID = null;
 			this.BusinessResourceCodeName = string.Empty;
 			this.BusinessResourceCodeType = string.Empty;
 			this.BusinessResourceCodeDescription = string.Empty;
@@ -91,7 +91,11 @@ namespace GenBOE.ActionLogic.ModelView
 			this.BusinessResourceCodeDescription = inBusinessResourceCode.ResourceDesc;
 			this.CanOffload = inBoeLaborType.CanOffload;
 			this.TieredPercentage = inBoeLaborType.TieredPercentage;
-			this.ElementOfCost = (int)inResource.ElementOfCost;
+			this.ElementOfCost = (int)inResource?.ElementOfCost;
+			if (this.ElementOfCost == 0)
+			{
+				this.ElementOfCost = (int)inBusinessResourceCode.ElementOfCost;
+			}
 			this.LaborTypeOrder = inBoeLaborType.LaborTypeOrder;
 
 			// Hours/Cost is based on the resource type.
@@ -394,6 +398,7 @@ namespace GenBOE.ActionLogic.ModelView
 				PercentSpreadLocked = laborType.PercentSpreadLocked,
 				PerformingOrgID = laborType.PerformingOrgID,
 				ResourceID = laborType.ResourceID,
+				BusinessResourceCodeID = laborType.BusinessResourceCodeID,
 				SpreadCurveID = laborType.SpreadCurveID,
 				StartDateValue = startDate.Normalize(DateTimePrecision.Month),
 				Updateable = UpdateType.None,

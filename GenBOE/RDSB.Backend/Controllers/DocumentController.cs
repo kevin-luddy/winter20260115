@@ -26,6 +26,7 @@ namespace RDSB.Backend.Controllers
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 	using RDSB.Backend.Common;
 
@@ -58,8 +59,8 @@ namespace RDSB.Backend.Controllers
 		public DocumentController(ISecurityInformation securityInformation, ISecurityMapper securityMapper, 
 			IDocumentControllerLogic documentControllerLogic, IActiveDirectoryService adUtils, 
 			IWhosOnlineLoader whosOnlineLoader, IRateDetailLoader rateDetailLoader, 
-			ILogger<DocumentController> logger)
-            : base(securityInformation, securityMapper, adUtils, whosOnlineLoader, logger)
+			ILogger<DocumentController> logger, IConfiguration configuration)
+            : base(securityInformation, securityMapper, adUtils, whosOnlineLoader, logger, configuration)
         {
             this.documentControllerLogic = documentControllerLogic;
             this.rateDetailLoader = rateDetailLoader;

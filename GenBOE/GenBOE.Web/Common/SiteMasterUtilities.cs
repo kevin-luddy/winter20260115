@@ -307,7 +307,7 @@ namespace GenBOE.Web.Common
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES).ToList();
+						resourceData = resourceData.Where(x => (x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES)).ToList();
 					}
 					else
 					{
@@ -319,7 +319,7 @@ namespace GenBOE.Web.Common
 				{
 					if (!isBrc)
 					{
-						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMX_1LMX_CORE && x.SegRegion != WebConstants.RMX_1LMX_SERVICES).ToList();
+						resourceData = resourceData.Where(x => (x.SegRegion != WebConstants.RMX_1LMX_CORE && x.SegRegion != WebConstants.RMX_1LMX_SERVICES)).ToList();
 
 					}
 					else

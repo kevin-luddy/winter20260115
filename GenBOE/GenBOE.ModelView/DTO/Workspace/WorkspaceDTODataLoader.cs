@@ -88,7 +88,8 @@ namespace GenBOE.DataBridge.DTO
 									Shortname = w.WorkspaceShortName,
 									Id = w.WorkspaceID,
 									TrackingNumber = w.TrackingNumber,
-									WorkspaceState = (WorkspaceState)w.WorkspaceStateID
+									WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
+									CurrentPTMWorkspace = w.CurrentPTMWorkspace
 								}).ToCollection();
 				}
 			}
@@ -290,6 +291,7 @@ namespace GenBOE.DataBridge.DTO
 									RevisedSubmittalDate = w.RevisedSubmittalDate,
 									UsingTemplateBOE = w.TemplateBoe,
 									EnableSAPConnection = w.EnableSAPConnection,
+									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 									CreationDate = w.WorkspaceCreationDate
 								}).ToCollection();
 
@@ -384,6 +386,7 @@ namespace GenBOE.DataBridge.DTO
 										RevisedSubmittalDate = w.RevisedSubmittalDate,
 										UsingTemplateBOE = w.TemplateBoe,
 										EnableSAPConnection = w.EnableSAPConnection,
+										CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 										CreationDate = w.WorkspaceCreationDate
 									}).FirstOrDefault();
 
@@ -1159,7 +1162,8 @@ namespace GenBOE.DataBridge.DTO
 						wsToSave.RteSizeLimit,
 						wsToSave.RevisedSubmittalDate,
 						wsToSave.UsingTemplateBOE,
-						wsToSave.EnableSAPConnection).FirstOrDefault());
+						wsToSave.EnableSAPConnection,
+						wsToSave.CurrentPTMWorkspace).FirstOrDefault());
 
 					// if the result ID is not a positive number, something bad went wrong so Log it
 					if (resultID <= 0)

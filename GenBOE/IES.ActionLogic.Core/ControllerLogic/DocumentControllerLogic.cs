@@ -453,7 +453,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			// set remaining proposal info
 			modelView.ProposalTitle = proposal.ProposalTitle;
-			modelView.TrackingNumber = proposal.TrackingNumber;
+			modelView.ProposalTrackingNumber = proposal.TrackingNumber;
 			modelView.ProposalStatus = proposal.ProposalStatus.ToDescription();
 
 			// Get available revisions
@@ -595,7 +595,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString());
 			}
 
-			string clientFileName = string.Format("{0}_{1}_{2}-{3}.docx", modelView.TrackingNumber, modelView.ProposalTitle, modelView.StartYear, modelView.EndYear).Replace(",", "_");
+			string clientFileName = string.Format("{0}_{1}_{2}-{3}.docx", modelView.ProposalTrackingNumber, modelView.ProposalTitle, modelView.StartYear, modelView.EndYear).Replace(",", "_");
 
 			Stream stream = await GenerateRDD(proposalId, serverFileName, modelView, null, true, portionMarkingRequired);
 			stream.Position = 0;

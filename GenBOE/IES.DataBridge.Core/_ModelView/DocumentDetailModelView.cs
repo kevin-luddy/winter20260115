@@ -31,7 +31,7 @@ namespace IES.DataBridge.ModelViews
         /// <summary>
         /// Gets or sets the proposal tracking number.
         /// </summary>
-        public string TrackingNumber { get; set; }
+        public string ProposalTrackingNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the proposal status.

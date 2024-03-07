@@ -230,7 +230,6 @@
     </None>
     <None Include="CodeCloneIgnoreSettings.codeclonesettings" />
     <None Include="packages.config" />
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

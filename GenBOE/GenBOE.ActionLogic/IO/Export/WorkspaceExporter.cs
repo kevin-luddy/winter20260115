@@ -605,6 +605,8 @@ namespace GenBOE.ActionLogic.IO.Export
                             row.Add(this.sEmpty);
                         }
 
+                        bool isBrcResourceEnabled = Utilities.IsBRCEnabledForSystem;
+
                         ResourceDTO aResource = resourceType.ResourceID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.ResourceID.Value) : new ResourceDTO();
                         ResourceDTO brcResource = isBrcResourceEnabled && resourceType.BusinessResourceCodeID.HasValue ? exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == resourceType.BusinessResourceCodeID.Value) : new ResourceDTO();
                         PerformingOrgDTO perfOrg = resourceType.PerformingOrgID.HasValue ? exportInputs.PerformingOrgsUsedInBoes.First(x => x.Id == resourceType.PerformingOrgID.Value) : new PerformingOrgDTO();
@@ -1089,7 +1091,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                           select s).FirstOrDefault();
 
                             List<string> row = new List<string>();
-                            
+
                             ResourceDTO aResource = type.ResourceID.HasValue ? workspaceResources.First(x => x.Id == type.ResourceID.Value) : new ResourceDTO();
                             ResourceDTO brcResource = isBrcResourceEnabled && type.BusinessResourceCodeID.HasValue ? workspaceResources.First(x => x.Id == type.BusinessResourceCodeID.Value) : new ResourceDTO();
                             
