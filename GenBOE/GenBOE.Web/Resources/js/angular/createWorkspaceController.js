@@ -40,7 +40,8 @@
 		ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
 		nextRevision: '', // SSC only, the next revision of the PTM tracking number
 		isSAPConfigurationEnabled: CreateWorkspaceModelView.IsSAPConnectionEnabled,   // This value will be grabbed from Web.config
-		updatePreviousWorkspace: false          // Space only
+		updatePreviousWorkspace: false,         // Space only
+		openCurrentDialog: false                // Space only
 	};
 
 	// data houses the data being saved and sent to the back-end
@@ -314,7 +315,7 @@
 
 			promise.then(
 				function (answer) {
-					if ($scope.data.CurrentPTMWorkspace) {
+					if ($scope.model.openCurrentDialog) {
 						$scope.currentWorkspaceDialog(5)
 					} else {
 						$scope.copyPromiseCallBack(5, false);
@@ -329,7 +330,7 @@
 				$scope.data.BOEsToCopy.push($(this).parents('tr').attr('pkid'));
 			});
 
-			if ($scope.data.CurrentPTMWorkspace) {
+			if ($scope.model.openCurrentDialog) {
 				$scope.currentWorkspaceDialog(3)
 			} else {
 				// just go to step 3
@@ -938,6 +939,7 @@
 			$scope.data.InitialUsingTemplateBoe = result.UsingTemplateBoe;
 			$scope.data.EnableSAPConnection = result.EnableSAPConnection;
 			$scope.data.CurrentPTMWorkspace = result.CurrentPTMWorkspace;
+			$scope.model.openCurrentDialog = result.CurrentPTMWorkspace;
 				
 			if ($scope.data.WSExactCopy) {
 				$scope.data.ContainsOCI = result.ContainsOCI;
