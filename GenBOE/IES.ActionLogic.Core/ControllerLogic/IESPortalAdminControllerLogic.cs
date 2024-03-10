@@ -19,6 +19,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
+	using IES.Common.Core.Models;
 	using IES.Common.Core.PickList;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
@@ -76,6 +77,27 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			PickListGridMV result = ptmData ?? boeData;
 			ConfigurePickListIds(result, ptmData, boeData);
+			List<string> parentNames = new();
+
+			if (result.Parents is not null && result.PickLists is not null)
+			{
+				foreach (SelectListItem parent in result.Parents)
+				{
+					foreach (PickListDto picklistItem in result.PickLists)
+					{
+						if (picklistItem.ParentIds is not null)
+						{
+							foreach (int parentId in picklistItem.ParentIds)
+							{
+								if (parent.Value == parentId.ToString())
+								{
+									picklistItem.ParentNames.Add(parent.Text);
+								}
+							}
+						}
+					}
+				}
+			}
 
 			return result;
 		}
