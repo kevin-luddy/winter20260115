@@ -359,7 +359,7 @@
         <span>Current Workspace</span>
     </div>
     <div class="radio form-element">
-        <select name="CurrentPTMWorkspace" id="CurrentPTMWorkspace" data-ng-model="data.CurrentPTMWorkspace">
+        <select name="CurrentPTMWorkspace" id="CurrentPTMWorkspace" data-ng-model="data.CurrentPTMWorkspace" data-ng-disabled="data.WorkspaceToCopyID > 0">
             <option data-ng-value="true">Yes</option>
             <option data-ng-value="false">No</option>
         </select>
