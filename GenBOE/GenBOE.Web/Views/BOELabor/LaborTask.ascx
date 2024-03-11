@@ -54,6 +54,7 @@
 	var ManageWBS_ContainsOCI = <%= Model.ContainsOci.ToString().ToLower() %>;
 	var currentWorkspace = '<%: SiteMasterUtilities.GetCurrentWorkspace() %>';
 	var boeLaborController = '<%: WebConstants.CONTROLLER_BOE_LABOR %>';
+	var isBrcEnabled = '<%= Utilities.IsBRCEnabledForSystem %>'.isTrue();
 	var completeImportUrl = CreatePostURL(currentWorkspace, boeLaborController,
                         '<%:WebConstants.ACTION_IMPORT_LABOR_TYPE_AND_SPREAD %>',
 		'boe/' + '<%= ViewData["BOEID"] %>' + '/taskelement/' + '<%: ViewData["TASKID"] %>');
@@ -122,7 +123,7 @@
 								case '<%: (int)LaborTypeImportResult.ResourceMultiValuesInvalid %>':
 								case '<%: (int)LaborTypeImportResult.InvalidData %>':
 									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
-									if (!$scope.IsBRCEnabled) {
+									if (!isBrcEnabled) {
 										$('#ImportLaborTypeResults #ImportResult-MissingData').removeClass('display-none');
 										$('#ImportLaborTypeResults #ImportResult-MissingData ul.resultsList').append(listItemToAppend);
 									}
