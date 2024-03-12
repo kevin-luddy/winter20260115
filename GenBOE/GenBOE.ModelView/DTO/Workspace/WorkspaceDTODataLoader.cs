@@ -614,32 +614,22 @@ namespace GenBOE.DataBridge.DTO
 					using (genTRACEntities gte = new genTRACEntities())
 					{
 						result = (from w in gbe.Workspaces
-							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
-							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
-							  where eu.NTID == ntid
+								  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
+								  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
+								  where eu.NTID == ntid
 							  && w.CurrentPTMWorkspace
 							  && trackingNumbers.Contains(w.TrackingNumber)
 							  && w.IsDeleted == false
-							  from p in gte.Proposals
-							  where trackingNumbers.Contains(p.ProposalTrackingID)
-							  join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
-							  where pur.RoleID == (int)PtmRole.SupplyChainPOCSubs
-								|| pur.RoleID == (int)PtmRole.BackupSubcontractsLead
-								|| pur.RoleID == (int)PtmRole.SupplyChainPOCMatl
-								|| pur.RoleID == (int)PtmRole.BackupMaterialLead
-								|| pur.RoleID == (int)PtmRole.Pricer
-								|| pur.RoleID == (int)PtmRole.BackupPricer
-								|| pur.RoleID == (int)PtmRole.CostVolumeLead
-							  select new NlfWorkspaceInnerDataDTO
-							  {
-								  WorkspaceId = w.WorkspaceID,
-								  WorkspaceUrl = w.WorkspaceShortName,
-								  WorkspaceName = w.WorkspaceName,
-								  LineOfBusiness = w.LineOfBusiness,
-								  PTMTrackingNumber = w.TrackingNumber,
-								  WorkspaceCreationDate = w.WorkspaceCreationDate,
-								  EstimatingLead = eu.DisplayName
-							  }).ToList();
+								  select new NlfWorkspaceInnerDataDTO
+								  {
+									  WorkspaceId = w.WorkspaceID,
+									  WorkspaceUrl = w.WorkspaceShortName,
+									  WorkspaceName = w.WorkspaceName,
+									  LineOfBusiness = w.LineOfBusiness,
+									  PTMTrackingNumber = w.TrackingNumber,
+									  WorkspaceCreationDate = w.WorkspaceCreationDate,
+									  EstimatingLead = eu.DisplayName
+								  }).ToList();
 					}
 				}
 			}
