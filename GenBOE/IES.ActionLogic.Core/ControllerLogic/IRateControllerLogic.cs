@@ -58,7 +58,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="startYear">Revision Start Year</param>
 		/// <param name="endYear">Revision End Year</param>
 		/// <returns>A list of validation errors (if any).</returns>
-		ICollection<ValidationMessage> ValidateRateDetailModelViews(Collection<RateDetailModelView> rateDetailModelViews, int startYear, int endYear);
+		ICollection<ValidationMessage> ValidateRateDetailModelViews(ICollection<RateDetailModelView> rateDetailModelViews, int startYear, int endYear);
 
 		/// <summary>
 		/// Load imported rates into database.

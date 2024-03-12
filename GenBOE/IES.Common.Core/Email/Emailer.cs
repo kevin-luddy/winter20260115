@@ -44,7 +44,7 @@ namespace IES.Common.Core.Email
 		/// Public ctor
 		/// </summary>
 		/// <param name="logger">logger</param>
-		public Emailer(ILogger logger)
+		public Emailer(ILogger<Emailer> logger)
 		{
 			Log = logger;
 		}

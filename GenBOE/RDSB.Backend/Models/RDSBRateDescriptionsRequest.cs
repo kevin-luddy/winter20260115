@@ -6,21 +6,21 @@
 
 namespace RDSB.Backend.Models
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    /// <summary>
-    /// RDSB Data driven CPS Report Request w/ Rate Descriptions
-    /// </summary>
-    public class RDSBRateDescriptionsRequest
-    {
-        /// <summary>
-        /// Rate Descriptions.
-        /// </summary>
-        public ICollection<string> RateDescriptions { get; set; }
+	/// <summary>
+	/// RDSB Data driven CPS Report Request w/ Rate Descriptions
+	/// </summary>
+	public class RDSBRateDescriptionsRequest
+	{
+		/// <summary>
+		/// Rate Descriptions.
+		/// </summary>
+		public ICollection<string> RateDescriptions { get; set; }
 
-        /// <summary>
-        /// PTM Proposal Id.
-        /// </summary>
-        public int PtmProposalId { get; set; }
-    }
+		/// <summary>
+		/// PTM Proposal Id.
+		/// </summary>
+		public int PtmProposalId { get; set; }
+	}
 }
