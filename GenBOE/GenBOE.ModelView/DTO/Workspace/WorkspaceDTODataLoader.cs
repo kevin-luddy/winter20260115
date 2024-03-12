@@ -627,7 +627,7 @@ namespace GenBOE.DataBridge.DTO
 								  PTMTrackingNumber = w.TrackingNumber,
 								  WorkspaceCreationDate = w.WorkspaceCreationDate,
 								  EstimatingLead = eu.DisplayName
-							  }).ToList();
+							  }).Distinct().ToList();
 				}
 			}
 

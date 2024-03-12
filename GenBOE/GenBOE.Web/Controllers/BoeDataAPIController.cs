@@ -670,6 +670,10 @@ namespace GenBOE.Web.Controllers
 					}).ToCollection();
 					result.IsSuccessful = true;
 				}
+				else
+				{
+					throw new ArgumentNullException("trackingNumbers");
+				}
 			}
 			catch (Exception ex)
 			{
