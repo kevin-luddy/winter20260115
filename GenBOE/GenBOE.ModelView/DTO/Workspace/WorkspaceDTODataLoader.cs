@@ -486,7 +486,7 @@ namespace GenBOE.DataBridge.DTO
 						&& !(x.IsDeleted == true)
 						&& !x.WorkspaceName.StartsWith("Mock")
 						&& dateCutoff < (new List<DateTime>() { // Selecting all dates, then doing a max after, doubled the execution time
-                            x.BOEs.Select(z => z.UpdateDT).Max(),
+							x.BOEs.Select(z => z.UpdateDT).Max(),
 							x.BOEs.SelectMany(z => z.BOETaskElements).Select(z => z.UpdateDT).Max(),
 							x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.OrdinaryVariables).Select(z => z.UpdateDT).Max(),
 							x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.BOELaborTypes).Select(z => z.UpdateDT).Max(),
@@ -611,26 +611,23 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					using (genTRACEntities gte = new genTRACEntities())
-					{
-						result = (from w in gbe.Workspaces
-								  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
-								  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
-								  where eu.NTID == ntid
-							  && w.CurrentPTMWorkspace
-							  && trackingNumbers.Contains(w.TrackingNumber)
-							  && w.IsDeleted == false
-								  select new NlfWorkspaceInnerDataDTO
-								  {
-									  WorkspaceId = w.WorkspaceID,
-									  WorkspaceUrl = w.WorkspaceShortName,
-									  WorkspaceName = w.WorkspaceName,
-									  LineOfBusiness = w.LineOfBusiness,
-									  PTMTrackingNumber = w.TrackingNumber,
-									  WorkspaceCreationDate = w.WorkspaceCreationDate,
-									  EstimatingLead = eu.DisplayName
-								  }).ToList();
-					}
+					result = (from w in gbe.Workspaces
+							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
+							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
+							  where eu.NTID == ntid
+						&& w.CurrentPTMWorkspace
+						&& trackingNumbers.Contains(w.TrackingNumber)
+						&& w.IsDeleted == false
+							  select new NlfWorkspaceInnerDataDTO
+							  {
+								  WorkspaceId = w.WorkspaceID,
+								  WorkspaceUrl = w.WorkspaceShortName,
+								  WorkspaceName = w.WorkspaceName,
+								  LineOfBusiness = w.LineOfBusiness,
+								  PTMTrackingNumber = w.TrackingNumber,
+								  WorkspaceCreationDate = w.WorkspaceCreationDate,
+								  EstimatingLead = eu.DisplayName
+							  }).ToList();
 				}
 			}
 
