@@ -28,7 +28,11 @@ namespace IES.Common.Core.Email
 		private delegate void VoidDelegateBySingleID(int ID);
 		private delegate void VoidDelegateByIDCollection(Collection<int> IDs);
 
-		public DataFetchingScheduler(ILogger logger)
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		/// <param name="logger">The logger</param>
+		public DataFetchingScheduler(ILogger<DataFetchingScheduler> logger)
 		{
 			_log = logger;
 		}

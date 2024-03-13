@@ -7,7 +7,19 @@
         will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
 
 	<!--appSettings-->
-	
+
+	<parameter name="ServerURL" description="doesn't matter" defaultvalue="__ServerURL__" tags="">
+		<parameterentry kind="XmlFile" scope="\\appsettings.json$" match="/configuration/appSettings/add[@key='ServerURL']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="DisableAllEmails" description="doesn't matter" defaultvalue="__DisableAllEmails__" tags="">
+		<parameterentry kind="XmlFile" scope="\\appsettings.json$" match="_DisableAllEmails_">
+		</parameterentry>
+	</parameter>
+	<parameter name="EmailsToCurrentlyLoggedInUser" description="doesn't matter" defaultvalue="__EmailsToCurrentlyLoggedInUser__" tags="">
+		<parameterentry kind="XmlFile" scope="\\appsettings.json$" match="_EmailsToCurrentlyLoggedInUser_">
+		</parameterentry>
+	</parameter>
 	<parameter name="AllowedOrigins" description="doesn't matter" defaultvalue="__AllowedOrigins__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_AllowedOrigins_">
 		</parameterentry>
@@ -55,6 +67,18 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_HIDE_PORTION_MARKING_">
 		</parameterentry>
 	</parameter>
+		<parameter name="EstimatingDataGroupDL" description="doesn't matter" defaultvalue="__EstimatingDataGroupDL__" tags="">
+			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EstimatingDataGroupDL']/@value">
+			</parameterentry>
+		</parameter>
+		<parameter name="PiwikId" description="doesn't matter" defaultvalue="__PiwikId__" tags="">
+			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PiwikId']/@value">
+			</parameterentry>
+		</parameter>
+		<parameter name="DisablePiwik" description="doesn't matter" defaultvalue="__DisablePiwik__" tags="">
+			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DisablePiwik']/@value">
+			</parameterentry>
+		</parameter>
 	<parameter name="IsProduction" description="doesn't matter" defaultvalue="__IsProduction__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IS_PRODUCTION_">
 		</parameterentry>
@@ -63,6 +87,18 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
 		</parameterentry>
 	</parameter>
+		<parameter name="RDMAdminGroups" description="doesn't matter" defaultvalue="__RDMAdminGroups__" tags="">
+			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RDMAdminGroups']/@value">
+			</parameterentry>
+		</parameter>
+		<parameter name="RDMViewerGroups" description="doesn't matter" defaultvalue="__RDMViewerGroups__" tags="">
+			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RDMViewerGroups']/@value">
+			</parameterentry>
+		</parameter>
+		<parameter name="RDMCobraAdminGroups" description="doesn't matter" defaultvalue="__RDMCobraAdminGroups__" tags="">
+			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RDMCobraAdminGroups']/@value">
+			</parameterentry>
+		</parameter>
 	
 	<!--system.web-->
 	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
@@ -72,23 +108,23 @@
 	
 	<!--app.config-->
 	<parameter name="IsIdentitySwappingAllowed" description="doesn't matter" defaultvalue="__IsIdentitySwappingAllowed__" tags="">
-		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/appSettings/add[@key='IsIdentitySwappingAllowed']/@value">
+		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/appSettings/add[@key='IsIdentitySwappingAllowed']/@value">
 		</parameterentry>
 	</parameter>
 	<parameter name="AuthorizeViewWhosOnlineGroups" description="doesn't matter" defaultvalue="__AuthorizeViewWhosOnlineGroups__" tags="">
-		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/appSettings/add[@key='AuthorizeViewWhosOnlineGroups']/@value">
+		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/appSettings/add[@key='AuthorizeViewWhosOnlineGroups']/@value">
 		</parameterentry>
 	</parameter>
 	<parameter name="ActiveDirectoryPath" description="doesn't matter" defaultvalue="__ActiveDirectoryPath__" tags="">
-		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
+		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
 		</parameterentry>
 	</parameter>
 	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities__" tags="">
-		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
+		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
 		</parameterentry>
 	</parameter>
 	<parameter name="genTracEntities" description="doesn't matter" defaultvalue="__genTracEntities__" tags="">
-		<parameterentry kind="XmlFile" scope="\\RDSB.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='genTracEntities']/@connectionString">
+		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='genTracEntities']/@connectionString">
 		</parameterentry>
 	</parameter>
 </parameters>
