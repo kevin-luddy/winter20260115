@@ -129,6 +129,21 @@ namespace GenBOE.DataBridge.DTO
 		[DbQuery]
 		ICollection<MPBoeDataDTO> GetMaterialPBoeForWorkspace(int workspaceID);
 
+		/// <summary>
+		/// Get Material PBoe Data for a given tracking number
+		/// </summary>
+		/// <param name="trackingNumber">The tracking number</param>
+		[DbQuery]
+		ICollection<MPBoeDataDTO> GetMaterialPBoeForWorkspace(string trackingNumber);
+
+		/// <summary>
+		/// Get all workspaces given a tracking number
+		/// </summary>
+		/// <param name="trackingNumber">Tracking number</param>
+		/// <returns>Collection of matching workspaces</returns>
+		[DbQuery]
+		ICollection<WorkspaceDTO> GetWorkspacesByTrackingNumber(string trackingNumber);
+
 		#endregion
 
 		#region Restores and Copies

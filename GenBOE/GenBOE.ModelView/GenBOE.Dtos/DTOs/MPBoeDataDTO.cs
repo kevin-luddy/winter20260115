@@ -26,6 +26,7 @@ namespace GenBOE.Dtos
 			this.RFPNumber = null;
 			this.CLINNumbers = null;
 			this.WBSNumbers = null;
+			this.TrackingNumber = null;
 		}
 
 		/// <summary>
@@ -57,5 +58,10 @@ namespace GenBOE.Dtos
 		/// Collection of WBS Numbers ('DisplayedWBSNumber')
 		/// </summary>
 		public ICollection<string> WBSNumbers { get; set; }
+
+		/// <summary>
+		/// Tracking Number
+		/// </summary>
+		public string TrackingNumber { get; set; }
 	}
 }

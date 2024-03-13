@@ -59,6 +59,7 @@ namespace GenBOE.Dtos
 			this.LeadEstimatorId = 0;
 			this.LeadEstimatorDisplayName = null;
 			this.LeadEstimatorEmail = null;
+			this.TrackingNumber = null;
 		}
 
 		/// <summary>
@@ -245,5 +246,10 @@ namespace GenBOE.Dtos
 		/// Lead Estimator Email
 		/// </summary>
 		public string LeadEstimatorEmail { get; set; }
+
+		/// <summary>
+		/// Tracking Number
+		/// </summary>
+		public string TrackingNumber { get; set; }
 	}
 }
