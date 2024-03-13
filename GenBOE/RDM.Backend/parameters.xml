@@ -8,16 +8,12 @@
 
 	<!--appSettings-->
 
-	<parameter name="ServerURL" description="doesn't matter" defaultvalue="__ServerURL__" tags="">
-		<parameterentry kind="XmlFile" scope="\\appsettings.json$" match="/configuration/appSettings/add[@key='ServerURL']/@value">
-		</parameterentry>
-	</parameter>
 	<parameter name="DisableAllEmails" description="doesn't matter" defaultvalue="__DisableAllEmails__" tags="">
-		<parameterentry kind="XmlFile" scope="\\appsettings.json$" match="_DisableAllEmails_">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_DisableAllEmails_">
 		</parameterentry>
 	</parameter>
 	<parameter name="EmailsToCurrentlyLoggedInUser" description="doesn't matter" defaultvalue="__EmailsToCurrentlyLoggedInUser__" tags="">
-		<parameterentry kind="XmlFile" scope="\\appsettings.json$" match="_EmailsToCurrentlyLoggedInUser_">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EmailsToCurrentlyLoggedInUser_">
 		</parameterentry>
 	</parameter>
 	<parameter name="AllowedOrigins" description="doesn't matter" defaultvalue="__AllowedOrigins__" tags="">
@@ -67,18 +63,18 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_HIDE_PORTION_MARKING_">
 		</parameterentry>
 	</parameter>
-		<parameter name="EstimatingDataGroupDL" description="doesn't matter" defaultvalue="__EstimatingDataGroupDL__" tags="">
-			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EstimatingDataGroupDL']/@value">
-			</parameterentry>
-		</parameter>
-		<parameter name="PiwikId" description="doesn't matter" defaultvalue="__PiwikId__" tags="">
-			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PiwikId']/@value">
-			</parameterentry>
-		</parameter>
-		<parameter name="DisablePiwik" description="doesn't matter" defaultvalue="__DisablePiwik__" tags="">
-			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DisablePiwik']/@value">
-			</parameterentry>
-		</parameter>
+	<parameter name="EstimatingDataGroupDL" description="doesn't matter" defaultvalue="__EstimatingDataGroupDL__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EstimatingDataGroupDL_">
+		</parameterentry>
+	</parameter>
+	<parameter name="PiwikId" description="doesn't matter" defaultvalue="__PiwikId__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PiwikId_">
+		</parameterentry>
+	</parameter>
+	<parameter name="DisablePiwik" description="doesn't matter" defaultvalue="__DisablePiwik__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_DisablePiwik_">
+		</parameterentry>
+	</parameter>
 	<parameter name="IsProduction" description="doesn't matter" defaultvalue="__IsProduction__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IS_PRODUCTION_">
 		</parameterentry>
@@ -87,25 +83,30 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
 		</parameterentry>
 	</parameter>
-		<parameter name="RDMAdminGroups" description="doesn't matter" defaultvalue="__RDMAdminGroups__" tags="">
-			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RDMAdminGroups']/@value">
-			</parameterentry>
-		</parameter>
-		<parameter name="RDMViewerGroups" description="doesn't matter" defaultvalue="__RDMViewerGroups__" tags="">
-			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RDMViewerGroups']/@value">
-			</parameterentry>
-		</parameter>
-		<parameter name="RDMCobraAdminGroups" description="doesn't matter" defaultvalue="__RDMCobraAdminGroups__" tags="">
-			<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RDMCobraAdminGroups']/@value">
-			</parameterentry>
-		</parameter>
-	
-	<!--system.web-->
-	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
-		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
+	<parameter name="RDMAdminGroups" description="doesn't matter" defaultvalue="__RDMAdminGroups__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_RDMAdminGroups_">
 		</parameterentry>
 	</parameter>
-	
+	<parameter name="RDMViewerGroups" description="doesn't matter" defaultvalue="__RDMViewerGroups__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_RDMViewerGroups_">
+		</parameterentry>
+	</parameter>
+	<parameter name="RDMCobraAdminGroups" description="doesn't matter" defaultvalue="__RDMCobraAdminGroups__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_RDMCobraAdminGroups_">
+		</parameterentry>
+	</parameter>
+	<parameter name="ServerURL" description="doesn't matter" defaultvalue="__ServerURL__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_ServerURL_">
+		</parameterentry>
+	</parameter>
+
+
+	<!--system.web-->
+	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
+		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/system.web/authorization/allow/@roles">
+		</parameterentry>
+	</parameter>
+
 	<!--app.config-->
 	<parameter name="IsIdentitySwappingAllowed" description="doesn't matter" defaultvalue="__IsIdentitySwappingAllowed__" tags="">
 		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/appSettings/add[@key='IsIdentitySwappingAllowed']/@value">
