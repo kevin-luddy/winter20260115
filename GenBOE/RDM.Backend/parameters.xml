@@ -28,6 +28,10 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PTMUrl_">
 		</parameterentry>
 	</parameter>
+	<parameter name="PortionMarkingAPI" description="doesn't matter" defaultvalue="__PortionMarkingAPI__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PortionMarkingAPI_">
+		</parameterentry>
+	</parameter>
 	<parameter name="_APPLICATION_VERSION" description="doesn't matter" defaultvalue="__APPLICATION_VERSION__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_APPLICATION_VERSION_">
 		</parameterentry>
@@ -103,7 +107,7 @@
 
 	<!--system.web-->
 	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
-		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/system.web/authorization/allow/@roles">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
 		</parameterentry>
 	</parameter>
 
