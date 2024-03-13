@@ -442,7 +442,7 @@ namespace GenBOE.Web.Controllers
 		[HttpPost]
 		public IESResponse<TraceTableBoeData> GetWorkspaceDataForTraceTable(string workspaceShortName, TraceTableSettingsData settingsData)
 		{
-            IESResponse<TraceTableBoeData> boeData = new IESResponse<TraceTableBoeData>();
+			IESResponse<TraceTableBoeData> boeData = new IESResponse<TraceTableBoeData>();
 
 			try
 			{
@@ -451,58 +451,58 @@ namespace GenBOE.Web.Controllers
 				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
 				if (this.HasOciPermission(SecurityPage.Reports, workspace))
 				{
-                    boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
-                    boeData.IsSuccessful = true;
+					boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
+					boeData.IsSuccessful = true;
 				}
 
-            }
-            catch (Exception ex)
+			}
+			catch (Exception ex)
 			{
 				logger.Error(ex);
-                boeData.Messages.Add($"Unknown error occurred returning Workspace data for Trace Table: {ex.Message}");
+				boeData.Messages.Add($"Unknown error occurred returning Workspace data for Trace Table: {ex.Message}");
 			}
 
 			return boeData;
 		}
 
-        /// <summary>
-        /// Get the genBOE Workspace data group for use with a Trace Table in ACV
-        /// </summary>
-        /// <param name="workspaceShortName">Workspace short name</param>
-        /// <param name="settingsData">Trace Table Settings Data</param>
-        /// <returns>genBOE Workspace data group for use with a Trace Table in ACV</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [HttpPost]
-        public IESResponse<TraceTableBoeDataGroup> GetWorkspaceDataForTraceTableGroup(string workspaceShortName, TraceTableSettingsData settingsData)
-        {
-            IESResponse<TraceTableBoeDataGroup> boeData = new IESResponse<TraceTableBoeDataGroup>();
+		/// <summary>
+		/// Get the genBOE Workspace data group for use with a Trace Table in ACV
+		/// </summary>
+		/// <param name="workspaceShortName">Workspace short name</param>
+		/// <param name="settingsData">Trace Table Settings Data</param>
+		/// <returns>genBOE Workspace data group for use with a Trace Table in ACV</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
+		public IESResponse<TraceTableBoeDataGroup> GetWorkspaceDataForTraceTableGroup(string workspaceShortName, TraceTableSettingsData settingsData)
+		{
+			IESResponse<TraceTableBoeDataGroup> boeData = new IESResponse<TraceTableBoeDataGroup>();
 
-            try
-            {
-                tokenHandler.AuthenticateUserFromAuthorizationToken();
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-                FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-                if (this.HasOciPermission(SecurityPage.Reports, workspace))
-                {
-                    boeData.Data = traceTableExporter.ExportTraceTableDataGroup(workspace, settingsData);
-                    boeData.IsSuccessful = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex);
-                boeData.Messages.Add($"Unknown error occurred returning Workspace data group for Trace Table: {ex.Message}");
-            }
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				if (this.HasOciPermission(SecurityPage.Reports, workspace))
+				{
+					boeData.Data = traceTableExporter.ExportTraceTableDataGroup(workspace, settingsData);
+					boeData.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				boeData.Messages.Add($"Unknown error occurred returning Workspace data group for Trace Table: {ex.Message}");
+			}
 
-            return boeData;
-        }
+			return boeData;
+		}
 
-        /// <summary>
-        /// Gets all of the IWTA Company Names for a Workspace
-        /// </summary>
-        /// <param name="workspaceShortName">Short name of the workspace</param>
-        /// <returns>HttpResponseMessage</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		/// <summary>
+		/// Gets all of the IWTA Company Names for a Workspace
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<BOEFormData> GetIwtaCompanies(string workspaceShortName)
 		{
@@ -535,12 +535,12 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-        /// <summary>
-        /// Gets all of the Subcontractors for a Workspace
-        /// </summary>
-        /// <param name="workspaceID">Workspace Id</param>
-        /// <returns>HttpResponseMessage</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		/// <summary>
+		/// Gets all of the Subcontractors for a Workspace
+		/// </summary>
+		/// <param name="workspaceID">Workspace Id</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<BOEFormData> GetSubcontractors(int workspaceID)
 		{
@@ -641,7 +641,7 @@ namespace GenBOE.Web.Controllers
 					PTMTrackingNumber = x.PTMTrackingNumber,
 					EstimatingLead = x.EstimatingLead,
 					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
-                    LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
+					LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
 				}).ToCollection();
 				result.IsSuccessful = true;
 			}
@@ -754,7 +754,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Collection of Material PBoe Data</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<MPBoeData> GetMaterialPBoeForWorkspace(int workspaceID)
+		public IESResponse<MPBoeData> GetMaterialPBoeForTrackingNumber(string trackingNumber)
 		{
 			IESResponse<MPBoeData> result = new IESResponse<MPBoeData>();
 
@@ -764,25 +764,27 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
 				if (isAllowed)
 				{
-					result.Data = loader.GetMaterialPBoeForWorkspace(workspaceID).Select<MPBoeDataDTO, MPBoeData>(x => new MPBoeData()
+					result.Data = loader.GetMaterialPBoeForWorkspace(trackingNumber).Select<MPBoeDataDTO, MPBoeData>(x => new MPBoeData()
 					{
 						CLINNumbers = x.CLINNumbers,
 						RFPNumber = x.RFPNumber,
 						PTMProposalTitle = x.PTMProposalTitle,
 						WBSNumbers = x.WBSNumbers,
 						WorkspaceName = x.WorkspaceName,
-						ShortName = x.ShortName
+						ShortName = x.ShortName,
+						TrackingNumber = x.TrackingNumber
 					}).ToCollection();
 
 					result.IsSuccessful = true;
 				}
 				else
 				{
-					string message = "Invalid permission to Workspace with ID:" + workspaceID + ".";
+					string message = "Invalid permission to Workspace with tracking number: " + trackingNumber + ".";
 					logger.Error(message + " NTID: " + ntid);
 					result.Messages.Add(message);
 					result.IsSuccessful = false;
@@ -792,7 +794,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with ID: {workspaceID}: {ex.Message}");
+				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
 			}
 
 			return result;
@@ -820,7 +822,7 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					result.Data = new Collection<bool>() {true};
+					result.Data = new Collection<bool>() { true };
 					result.IsSuccessful = true;
 				}
 				else
@@ -848,7 +850,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Collection of PBOEs by Workspace ID</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<PBOEData> GetPBOEsForWorkspace(int workspaceID)
+		public IESResponse<PBOEData> GetPBOEsForTrackingNumber(string trackingNumber)
 		{
 			IESResponse<PBOEData> result = new IESResponse<PBOEData>();
 
@@ -858,11 +860,12 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
 				if (isAllowed)
 				{
-					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForWorkspace(workspaceID).Select<PBOEDataDTO, PBOEData>(x => 
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForWorkspace(trackingNumber).Select<PBOEDataDTO, PBOEData>(x =>
 					{
 						UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
 						UserDTO leadEstimator = userDataLoader.GetUserByID(x.LeadEstimatorId);
@@ -908,7 +911,7 @@ namespace GenBOE.Web.Controllers
 				}
 				else
 				{
-					string message = "Invalid permission to Workspace with ID:" + workspaceID + ".";
+					string message = "Invalid permission to Workspace with tracking number:" + trackingNumber + ".";
 					logger.Error(message + " NTID: " + ntid);
 					result.Messages.Add(message);
 					result.IsSuccessful = false;
@@ -918,21 +921,21 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with ID: {workspaceID}: {ex.Message}");
+				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
 			}
 
 			return result;
 		}
 
 		/// <summary>
-		/// Get a single PBOE from a Workspace ID and PBOE ID.
+		/// Get a single PBOE from a Tracking Number and PBOE ID.
 		/// </summary>
-		/// <param name="workspaceID">Workspace ID</param>
+		/// <param name="trackingNumber">Tracking Number</param>
 		/// <param name="pboeID">PBOE ID</param>
-		/// <returns>Single PBOE by Workspace ID and PBOE ID</returns>
+		/// <returns>Single PBOE by Tracking Number and PBOE ID</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<PBOEData> GetPBOEByIDs(int workspaceID, int pboeID)
+		public IESResponse<PBOEData> GetPBOEByIDs(string trackingNumber, int pboeID)
 		{
 			IESResponse<PBOEData> result = new IESResponse<PBOEData>();
 
@@ -942,11 +945,12 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
 				if (isAllowed)
 				{
-					result.Data = boeFormPBOEDTODataLoader.GetPBOEByIDs(workspaceID, pboeID).Select<PBOEDataDTO, PBOEData>(x => 
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEByIDs(trackingNumber, pboeID).Select<PBOEDataDTO, PBOEData>(x =>
 					{
 						UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
 						UserDTO leadEstimator = userDataLoader.GetUserByID(x.LeadEstimatorId);
@@ -991,7 +995,7 @@ namespace GenBOE.Web.Controllers
 				}
 				else
 				{
-					string message = $"Invalid permission to Workspace with ID: {workspaceID} and PBOE ID: {pboeID}."; 
+					string message = $"Invalid permission to Workspace with tracking number: {trackingNumber} and PBOE ID: {pboeID}.";
 					logger.Error(message + " NTID: " + ntid);
 					result.Messages.Add(message);
 					result.IsSuccessful = false;
@@ -1001,7 +1005,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning PBoe Data for given Workspace with ID: {workspaceID} and PBOE ID: {pboeID}: {ex.Message}");
+				result.Messages.Add($"Unknown Error occured returning PBoe Data for given Workspace with tracking number: {trackingNumber} and PBOE ID: {pboeID}: {ex.Message}");
 			}
 
 			return result;

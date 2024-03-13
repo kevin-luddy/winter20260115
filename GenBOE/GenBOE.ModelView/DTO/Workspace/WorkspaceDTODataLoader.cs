@@ -749,6 +749,67 @@ namespace GenBOE.DataBridge.DTO
 			return result;
 		}
 
+		/// <summary>
+		/// Get Material PBoe Data for a given tracking number
+		/// </summary>
+		/// <param name="trackingNumber">The tracking number</param>
+		/// <returns>Collection of Material PBoe</returns>
+		[DbQuery]
+		public ICollection<MPBoeDataDTO> GetMaterialPBoeForWorkspace(string trackingNumber)
+		{
+			ICollection<MPBoeDataDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  where w.TrackingNumber == trackingNumber
+							  select new MPBoeDataDTO
+							  {
+								  PTMProposalTitle = w.ProposalTitle,
+								  RFPNumber = w.RFPNumber,
+								  CLINNumbers = w.CLINs.Select(x => x.DisplayedCLINNumber).ToList(),
+								  WBSNumbers = w.WorkBreakdownStructures.Select(x => x.DisplayedWBSNumber).ToList(),
+								  WorkspaceName = w.WorkspaceName,
+								  ShortName = w.WorkspaceShortName,
+								  TrackingNumber = w.TrackingNumber
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get all workspaces given a tracking number
+		/// </summary>
+		/// <param name="trackingNumber">Tracking number</param>
+		/// <returns>Collection of matching workspaces</returns>
+		[DbQuery]
+		public ICollection<WorkspaceDTO> GetWorkspacesByTrackingNumber(string trackingNumber)
+		{
+			ICollection<WorkspaceDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  where w.TrackingNumber == trackingNumber
+							  select new WorkspaceDTO
+							  {
+								  TrackingNumber = w.TrackingNumber,
+								  RFPNumber = w.RFPNumber,
+								  WorkspaceName = w.WorkspaceName,
+								  Id = w.WorkspaceID
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
 		#endregion
 
 		#region Restores and Copies
