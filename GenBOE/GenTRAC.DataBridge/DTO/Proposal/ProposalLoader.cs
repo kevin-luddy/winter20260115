@@ -2241,8 +2241,9 @@ namespace GenTRAC.DataBridge.DTO
 		/// Get Proposal Roles for the given user that are needed for NLF
 		/// </summary>
 		/// <param name="ntid">NTID</param>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
 		/// <returns>Collection of Proposals and Roles for the user</returns>
-		public ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid)
+		public ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid, string ptmTrackingNumber = "")
 		{
 			ICollection<ProposalRoleDto> result = new Collection<ProposalRoleDto>();
 			ntid = ntid.ToLower();
@@ -2252,7 +2253,7 @@ namespace GenTRAC.DataBridge.DTO
 				using (genTRACEntities dbModel = new genTRACEntities())
 				{
 					result = dbModel.Proposals.Where(x => x.ProposalClassLU.ProposalClass != Constants.PROPOSAL_CLASS_FORECASTED
-						&& x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid))
+						&& x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid) && (string.IsNullOrEmpty(ptmTrackingNumber) || x.ProposalTrackingID == ptmTrackingNumber))
 						.SelectMany(x => x.ProposalUserRoles).Where(role => role.genTRACUser.NTID.ToLower() == ntid
 							&& (role.RoleID == (int)PtmRole.Pricer || role.RoleID == (int)PtmRole.BackupPricer
 								|| role.RoleID == (int)PtmRole.CostVolumeLead || role.RoleID == (int)PtmRole.SupplyChainPOCMatl

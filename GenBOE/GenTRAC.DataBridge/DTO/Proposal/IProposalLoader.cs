@@ -229,7 +229,8 @@ namespace GenTRAC.DataBridge.DTO
 		/// Get Proposal Roles for the given user that are needed for NLF
 		/// </summary>
 		/// <param name="ntid">NTID</param>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
 		/// <returns>Collection of Proposals and Roles for the user</returns>
-		ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid);
+		ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid, string ptmTrackingNumber);
 	}
 }
