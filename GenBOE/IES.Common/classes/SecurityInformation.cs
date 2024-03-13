@@ -424,6 +424,30 @@ namespace IES.Common
         }
 
         /// <summary>
+        /// Determine if the specified user is a system or subcontract admin based on the AD groups
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        virtual public Boolean IsSystemOrSubcontractAdmin(string userName)
+        {
+            if (userName == null)
+            {
+                throw new ArgumentNullException(nameof(userName));
+            }
+
+            bool? resultFromCache = this.IsUserInCacheCheck(userName, this.cacheKeyIsSystemOrSubcontractAdmin);
+            if (resultFromCache.HasValue)
+            {
+                return resultFromCache.Value;
+            }
+
+            bool isSystemOrSubcontractAdmin =
+                this.IsMemberOfADGroupInAppSettingsList(userName, "SystemAdminADGroup") || this.IsMemberOfADGroupInAppSettingsList(userName, "SubcontractAdminADGroup");
+            this.AddResultToCache(userName, this.cacheKeyIsSystemOrSubcontractAdmin, this.secondsToCacheIsSystemOrSubcontractAdmin, isSystemOrSubcontractAdmin);
+            return isSystemOrSubcontractAdmin;
+        }
+
+        /// <summary>
         /// Returns true if a user is a member of a group (from a list of AD groups stored in the Application Settings).
         /// </summary>
         /// <param name="inUserName">The NTID of the user trying to gain access</param>
@@ -527,6 +551,11 @@ namespace IES.Common
         /// </summary>
         private int secondsToCacheIsAllowedProPricerAccess = 30;
 
+		/// <summary>
+        /// We are caching IsSystemOrSubcontractAdmin for 5 minutes.
+        /// </summary>
+        private int secondsToCacheIsSystemOrSubcontractAdmin = 300;
+
         /// <summary>
         /// Key for the cache
         /// </summary>
@@ -556,6 +585,11 @@ namespace IES.Common
         /// Key for the IsAllowedProPricerAccess cache
         /// </summary>
         private string cacheKeyIsAllowedProPricerAccess = "IsAllowedProPricerAccess_";
+
+		/// <summary>
+        /// Key for the IsSystemOrSubcontractAdmin cache
+        /// </summary>
+        private string cacheKeyIsSystemOrSubcontractAdmin = "IsSystemOrSubcontractAdmin_";
 
         #endregion
 
