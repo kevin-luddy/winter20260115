@@ -77,7 +77,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			PickListGridMV result = ptmData ?? boeData;
 			ConfigurePickListIds(result, ptmData, boeData);
-			List<string> parentNames = new();
 
 			if (result.Parents is not null && result.PickLists is not null)
 			{
