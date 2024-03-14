@@ -102,8 +102,10 @@ namespace GenBOE.ActionLogic.IO.Export
                 // Without this, we won't have the right number of rows.. If this is not there, the resulting Excel file exports, but will then throw an error saying it's corrupted
                 toReturn.Add(this.sEmpty, this.sEmpty);
             }
+	     //this is needed so last row is grey
+	     toReturn.Add(this.sEmpty, this.sEmpty);
 
-            return toReturn;
+	     return toReturn;
         }
     }
 }
