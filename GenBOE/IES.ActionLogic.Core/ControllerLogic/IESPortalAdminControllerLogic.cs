@@ -80,17 +80,23 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			if (result.Parents is not null && result.PickLists is not null)
 			{
-				foreach (SelectListItem parent in result.Parents)
+				// Go through each picklist item.
+				foreach (PickListDto picklistItem in result.PickLists)
 				{
-					foreach (PickListDto picklistItem in result.PickLists)
+					if (picklistItem.ParentIds is not null)
 					{
-						if (picklistItem.ParentIds is not null)
+						// Go through each parent id in the picklist item.
+						foreach (int parentId in picklistItem.ParentIds)
 						{
-							foreach (int parentId in picklistItem.ParentIds)
+							if (result.Parents is not null)
 							{
-								if (parent.Value == parentId.ToString())
+								// Now go through the parents and get the parent name based on the id.
+								foreach (SelectListItem parent in result.Parents)
 								{
-									picklistItem.ParentNames.Add(parent.Text);
+									if (parent.Value == parentId.ToString())
+									{
+										picklistItem.ParentNames.Add(parent.Text);
+									}
 								}
 							}
 						}
