@@ -713,6 +713,39 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
+		/// Get Workspace Inner Data for a System Admin
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <returns>Collection of Workspace Inner Data</returns>
+		[DbQuery]
+		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataForNlf(string trackingNumber)
+		{
+			ICollection<NlfWorkspaceInnerDataDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  join eti in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eti.ETIUserID
+							  where w.TrackingNumber == trackingNumber && w.IsDeleted == false
+							  select new NlfWorkspaceInnerDataDTO
+							  {
+								  WorkspaceId = w.WorkspaceID,
+								  WorkspaceUrl = w.WorkspaceShortName,
+								  WorkspaceName = w.WorkspaceName,
+								  LineOfBusiness = w.LineOfBusiness,
+								  PTMTrackingNumber = w.TrackingNumber,
+								  WorkspaceCreationDate = w.WorkspaceCreationDate,
+								  EstimatingLead = eti.DisplayName
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Get Material PBoe Data for a given Workspace
 		/// </summary>
 		/// <param name="workspaceID"></param>
