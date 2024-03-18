@@ -136,7 +136,7 @@ namespace IESPortal.Backend.Controllers
 				headerLinks.Add(new HeaderLink
 				{
 					Name = "Admin",
-					Url = System.IO.Path.Combine(configuration["AdminUrl"], "Admin")
+					Url = System.IO.Path.Combine(configuration["AdminUrl"])
 				});
 			}
 
