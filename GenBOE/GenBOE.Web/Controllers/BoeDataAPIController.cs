@@ -31,6 +31,7 @@ namespace GenBOE.Web.Controllers
 	using IES.Common;
 	using IES.Common.Exceptions;
 	using IES.Common.PickList;
+	using Microsoft.Ajax.Utilities;
 
 	/// <summary>
 	/// BOE Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up BOE data, hence the name.
@@ -660,26 +661,33 @@ namespace GenBOE.Web.Controllers
 		/// <returns>List of Workspace Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf(ICollection<string> trackingNumbers)
+		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf([FromUri]ICollection<string> trackingNumbers)
 		{
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
 			try
 			{
-				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
-				ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
-				boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid, trackingNumbers);
-				result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
+				if (trackingNumbers != null)
 				{
-					WorkspaceId = x.WorkspaceId,
-					WorkspaceUrl = x.WorkspaceUrl,
-					WorkspaceName = x.WorkspaceName,
-					WorkspaceCreationDate = x.WorkspaceCreationDate,
-					PTMTrackingNumber = x.PTMTrackingNumber,
-					EstimatingLead = x.EstimatingLead,
-					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
-                    LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
-				}).ToCollection();
-				result.IsSuccessful = true;
+					string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+					ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
+					boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid, trackingNumbers);
+					result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
+					{
+						WorkspaceId = x.WorkspaceId,
+						WorkspaceUrl = x.WorkspaceUrl,
+						WorkspaceName = x.WorkspaceName,
+						WorkspaceCreationDate = x.WorkspaceCreationDate,
+						PTMTrackingNumber = x.PTMTrackingNumber,
+						EstimatingLead = x.EstimatingLead,
+						LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
+						LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
+					}).ToCollection();
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					throw new ArgumentNullException("trackingNumbers");
+				}
 			}
 			catch (Exception ex)
 			{

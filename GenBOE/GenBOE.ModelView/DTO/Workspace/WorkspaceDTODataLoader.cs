@@ -486,7 +486,7 @@ namespace GenBOE.DataBridge.DTO
 						&& !(x.IsDeleted == true)
 						&& !x.WorkspaceName.StartsWith("Mock")
 						&& dateCutoff < (new List<DateTime>() { // Selecting all dates, then doing a max after, doubled the execution time
-                            x.BOEs.Select(z => z.UpdateDT).Max(),
+							x.BOEs.Select(z => z.UpdateDT).Max(),
 							x.BOEs.SelectMany(z => z.BOETaskElements).Select(z => z.UpdateDT).Max(),
 							x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.OrdinaryVariables).Select(z => z.UpdateDT).Max(),
 							x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.BOELaborTypes).Select(z => z.UpdateDT).Max(),
@@ -606,30 +606,19 @@ namespace GenBOE.DataBridge.DTO
 		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid, ICollection<string> trackingNumbers)
 		{
 			ICollection<NlfWorkspaceInnerDataDTO> result;
+			ICollection<string> filteredTrackingNumbers;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					using (genTRACEntities gte = new genTRACEntities())
-					{
-						result = (from w in gbe.Workspaces
+					result = (from w in gbe.Workspaces
 							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
 							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
 							  where eu.NTID == ntid
-							  && w.CurrentPTMWorkspace
-							  && trackingNumbers.Contains(w.TrackingNumber)
-							  && w.IsDeleted == false
-							  from p in gte.Proposals
-							  where trackingNumbers.Contains(p.ProposalTrackingID)
-							  join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
-							  where pur.RoleID == (int)PtmRole.SupplyChainPOCSubs
-								|| pur.RoleID == (int)PtmRole.BackupSubcontractsLead
-								|| pur.RoleID == (int)PtmRole.SupplyChainPOCMatl
-								|| pur.RoleID == (int)PtmRole.BackupMaterialLead
-								|| pur.RoleID == (int)PtmRole.Pricer
-								|| pur.RoleID == (int)PtmRole.BackupPricer
-								|| pur.RoleID == (int)PtmRole.CostVolumeLead
+						&& w.CurrentPTMWorkspace
+						&& trackingNumbers.Contains(w.TrackingNumber)
+						&& w.IsDeleted == false
 							  select new NlfWorkspaceInnerDataDTO
 							  {
 								  WorkspaceId = w.WorkspaceID,
@@ -639,7 +628,23 @@ namespace GenBOE.DataBridge.DTO
 								  PTMTrackingNumber = w.TrackingNumber,
 								  WorkspaceCreationDate = w.WorkspaceCreationDate,
 								  EstimatingLead = eu.DisplayName
-							  }).ToList();
+							  }).Distinct().ToList();
+
+					using (genTRACEntities gte = new genTRACEntities())
+					{
+						filteredTrackingNumbers = (from p in gte.Proposals
+												   where trackingNumbers.Contains(p.ProposalTrackingID)
+												   join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
+												   where pur.RoleID == (int)PtmRole.SupplyChainPOCSubs
+													 || pur.RoleID == (int)PtmRole.BackupSubcontractsLead
+													 || pur.RoleID == (int)PtmRole.SupplyChainPOCMatl
+													 || pur.RoleID == (int)PtmRole.BackupMaterialLead
+													 || pur.RoleID == (int)PtmRole.Pricer
+													 || pur.RoleID == (int)PtmRole.BackupPricer
+													 || pur.RoleID == (int)PtmRole.CostVolumeLead
+												   select p.ProposalTrackingID).Distinct().ToList();
+
+						result = result.Where(x => filteredTrackingNumbers.Contains(x.PTMTrackingNumber)).ToList();
 					}
 				}
 			}
