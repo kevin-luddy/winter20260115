@@ -606,6 +606,7 @@ namespace GenBOE.DataBridge.DTO
 		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid, ICollection<string> trackingNumbers)
 		{
 			ICollection<NlfWorkspaceInnerDataDTO> result;
+			ICollection<string> filteredTrackingNumbers;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
@@ -628,6 +629,23 @@ namespace GenBOE.DataBridge.DTO
 								  WorkspaceCreationDate = w.WorkspaceCreationDate,
 								  EstimatingLead = eu.DisplayName
 							  }).Distinct().ToList();
+
+					using (genTRACEntities gte = new genTRACEntities())
+					{
+						filteredTrackingNumbers = (from p in gte.Proposals
+												   where trackingNumbers.Contains(p.ProposalTrackingID)
+												   join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
+												   where pur.RoleID == (int)PtmRole.SupplyChainPOCSubs
+													 || pur.RoleID == (int)PtmRole.BackupSubcontractsLead
+													 || pur.RoleID == (int)PtmRole.SupplyChainPOCMatl
+													 || pur.RoleID == (int)PtmRole.BackupMaterialLead
+													 || pur.RoleID == (int)PtmRole.Pricer
+													 || pur.RoleID == (int)PtmRole.BackupPricer
+													 || pur.RoleID == (int)PtmRole.CostVolumeLead
+												   select p.ProposalTrackingID).Distinct().ToList();
+
+						result = result.Where(x => filteredTrackingNumbers.Contains(x.PTMTrackingNumber)).ToList();
+					}
 				}
 			}
 
