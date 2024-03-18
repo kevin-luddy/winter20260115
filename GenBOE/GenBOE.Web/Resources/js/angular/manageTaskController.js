@@ -1153,7 +1153,7 @@
 				if (invalidResources) {
 					invalidArray.push("Resources");
 				}
-				if (ManageTaskModel.IsBRCEnabled && invalidBusinessResourceCodes) {
+				if (invalidBusinessResourceCodes) {
 					invalidArray.push("Business Resource Codes");
 				}
 				if (invalidPerfOrgs) {
