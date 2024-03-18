@@ -28,7 +28,7 @@ namespace GenBOE.ActionLogic.IO.Export
     {
         public override string WORKSPACE_DATA_EXCEL_MAP_PATH
         {
-            get { return "~/Templates/Export/WorkspaceDataMST.xlsx"; }
+            get {return "~/Templates/Export/WorkspaceDataMST.xlsx";}
         }
 
         private TravelUnitCostExporterRMS travelUnitCostExporter;
@@ -109,11 +109,8 @@ namespace GenBOE.ActionLogic.IO.Export
             toReturn.Add("Proposal Comments", workspace.StatusComment);
             toReturn.Add("MOQ Template BOEs", workspace.UsingTemplateBOE ? this.sYes : this.sNo);
             toReturn.Add("SAP Connection Enabled", workspace.EnableSAPConnection ?  this.sYes : this.sNo);
-            // For some unknown reason these are needed so the file won't corrupt
-            toReturn.Add(this.sEmpty, this.sEmpty);
-            toReturn.Add(this.sEmpty, this.sEmpty);
 
-            return toReturn;
+	     return toReturn;
         }
 
         /// <summary>

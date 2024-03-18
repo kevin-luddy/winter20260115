@@ -13,6 +13,7 @@ namespace GenBOE.DataBridge.DTO
 	using System.Linq;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
+	using GenTRAC.Models;
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
@@ -88,7 +89,8 @@ namespace GenBOE.DataBridge.DTO
 									Shortname = w.WorkspaceShortName,
 									Id = w.WorkspaceID,
 									TrackingNumber = w.TrackingNumber,
-									WorkspaceState = (WorkspaceState)w.WorkspaceStateID
+									WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
+									CurrentPTMWorkspace = w.CurrentPTMWorkspace
 								}).ToCollection();
 				}
 			}
@@ -290,6 +292,7 @@ namespace GenBOE.DataBridge.DTO
 									RevisedSubmittalDate = w.RevisedSubmittalDate,
 									UsingTemplateBOE = w.TemplateBoe,
 									EnableSAPConnection = w.EnableSAPConnection,
+									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 									CreationDate = w.WorkspaceCreationDate
 								}).ToCollection();
 
@@ -384,6 +387,7 @@ namespace GenBOE.DataBridge.DTO
 										RevisedSubmittalDate = w.RevisedSubmittalDate,
 										UsingTemplateBOE = w.TemplateBoe,
 										EnableSAPConnection = w.EnableSAPConnection,
+										CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 										CreationDate = w.WorkspaceCreationDate
 									}).FirstOrDefault();
 
@@ -482,7 +486,7 @@ namespace GenBOE.DataBridge.DTO
 						&& !(x.IsDeleted == true)
 						&& !x.WorkspaceName.StartsWith("Mock")
 						&& dateCutoff < (new List<DateTime>() { // Selecting all dates, then doing a max after, doubled the execution time
-                            x.BOEs.Select(z => z.UpdateDT).Max(),
+							x.BOEs.Select(z => z.UpdateDT).Max(),
 							x.BOEs.SelectMany(z => z.BOETaskElements).Select(z => z.UpdateDT).Max(),
 							x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.OrdinaryVariables).Select(z => z.UpdateDT).Max(),
 							x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.BOELaborTypes).Select(z => z.UpdateDT).Max(),
@@ -548,11 +552,11 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					result = (from w in gbe.Workspaces
-							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
-							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
-							  where eu.NTID == ntid
-								&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
-								&& w.IsDeleted == false
+						join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
+						join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
+						where eu.NTID == ntid
+						&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
+						&& w.IsDeleted == false
 							  select new NlfWorkspaceDataDTO 
 							  {
 								  WorkspaceId = w.WorkspaceID, 
@@ -596,11 +600,13 @@ namespace GenBOE.DataBridge.DTO
 		/// Get Workspace data by NTID to be used in NLF home grid
 		/// </summary>
 		/// <param name="ntid">user NTID</param>
+		/// <param name="trackingNumbers">list of all tracking numbers tied to a user</param>
 		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
 		[DbQuery]
-		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid)
+		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid, ICollection<string> trackingNumbers)
 		{
 			ICollection<NlfWorkspaceInnerDataDTO> result;
+			ICollection<string> filteredTrackingNumbers;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
@@ -610,8 +616,9 @@ namespace GenBOE.DataBridge.DTO
 							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
 							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
 							  where eu.NTID == ntid
-								&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
-								&& w.IsDeleted == false
+						&& w.CurrentPTMWorkspace
+						&& trackingNumbers.Contains(w.TrackingNumber)
+						&& w.IsDeleted == false
 							  select new NlfWorkspaceInnerDataDTO
 							  {
 								  WorkspaceId = w.WorkspaceID,
@@ -621,7 +628,24 @@ namespace GenBOE.DataBridge.DTO
 								  PTMTrackingNumber = w.TrackingNumber,
 								  WorkspaceCreationDate = w.WorkspaceCreationDate,
 								  EstimatingLead = eu.DisplayName
-							  }).ToList();
+							  }).Distinct().ToList();
+
+					using (genTRACEntities gte = new genTRACEntities())
+					{
+						filteredTrackingNumbers = (from p in gte.Proposals
+												   where trackingNumbers.Contains(p.ProposalTrackingID)
+												   join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
+												   where pur.RoleID == (int)PtmRole.SupplyChainPOCSubs
+													 || pur.RoleID == (int)PtmRole.BackupSubcontractsLead
+													 || pur.RoleID == (int)PtmRole.SupplyChainPOCMatl
+													 || pur.RoleID == (int)PtmRole.BackupMaterialLead
+													 || pur.RoleID == (int)PtmRole.Pricer
+													 || pur.RoleID == (int)PtmRole.BackupPricer
+													 || pur.RoleID == (int)PtmRole.CostVolumeLead
+												   select p.ProposalTrackingID).Distinct().ToList();
+
+						result = result.Where(x => filteredTrackingNumbers.Contains(x.PTMTrackingNumber)).ToList();
+					}
 				}
 			}
 
@@ -716,7 +740,8 @@ namespace GenBOE.DataBridge.DTO
 								  CLINNumbers = w.CLINs.Select(x => x.DisplayedCLINNumber).ToList(),
 								  WBSNumbers = w.WorkBreakdownStructures.Select(x => x.DisplayedWBSNumber).ToList(),
 								  WorkspaceName = w.WorkspaceName,
-								  ShortName = w.WorkspaceShortName
+								  ShortName = w.WorkspaceShortName,
+								  TrackingNumber = w.TrackingNumber
 							  }).ToList();
 				}
 			}
@@ -1159,7 +1184,8 @@ namespace GenBOE.DataBridge.DTO
 						wsToSave.RteSizeLimit,
 						wsToSave.RevisedSubmittalDate,
 						wsToSave.UsingTemplateBOE,
-						wsToSave.EnableSAPConnection).FirstOrDefault());
+						wsToSave.EnableSAPConnection,
+						wsToSave.CurrentPTMWorkspace).FirstOrDefault());
 
 					// if the result ID is not a positive number, something bad went wrong so Log it
 					if (resultID <= 0)

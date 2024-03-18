@@ -16,15 +16,18 @@ namespace IES.Common.Core
 	using Exceptions;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Logging;
 	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Authentication.Negotiate;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Mvc.Controllers;
 	using Microsoft.AspNetCore.Mvc.Filters;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 
 	[ApiController, Authorize]
+	[TypeFilter(typeof(ExceptionFilter))]
 	public abstract class IESController : ControllerBase, IActionFilter
 	{
 		/// <summary>
@@ -38,12 +41,18 @@ namespace IES.Common.Core
 		protected readonly ISecurityInformation securityInformation;
 
 		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="IESController"/> class.
 		/// </summary>
-		protected IESController(ILogger logger, ISecurityInformation securityInformation)
+		protected IESController(ILogger logger, ISecurityInformation securityInformation, IConfiguration configuration)
 		{
 			log = logger;
 			this.securityInformation = securityInformation;
+			this.configuration = configuration;
 		}
 
 		/// <summary>
@@ -54,6 +63,17 @@ namespace IES.Common.Core
 		public string GetUserInfo()
 		{
 			return this.securityInformation.ActiveUserNTID;
+		}
+
+		/// <summary>
+		/// Gets the feature flag key-value pair from the appsettings.
+		/// </summary>
+		/// <returns>Feature flag key-value pairs.</returns>
+		[HttpGet("[action]")]
+		public Dictionary<string, string> GetAppSettingFeatures()
+		{
+			return configuration.GetSection("FeatureFlags").GetChildren()
+				  .ToDictionary(x => x.Key, x => x.Value);
 		}
 
 		/// <summary>

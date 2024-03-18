@@ -110,8 +110,8 @@ namespace GenBOE.ActionLogic.Common
 
 		public static readonly string SPACE_1LMX_CORE = "1LMX - Core";
 		public static readonly string SPACE_1LMX_SERVICES = "1LMX - Services";
-		public static readonly string RMX_1LMX_CORE = "LM-Core";
-		public static readonly string RMX_1LMX_SERVICES = "LM-Services";
+		public static readonly string RMS_1LMX_CORE = "LM-Core";
+		public static readonly string RMS_1LMX_SERVICES = "LM-Services";
 
 		#region TEMPLATE FILES
 
@@ -649,6 +649,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_SAVE_HIDE_GETTING_STARTED_HELP_MENU = "SaveHideGettingStartedHelpMenu";
 		public static readonly string ACTION_SAVE_WORKSPACE_ALLOW_SEARCH = "SaveWorkspaceAllowSearch";
 		public static readonly string ACTION_SAVE_WORKSPACE_IDENTIFICATION = "SaveWorkspaceIdentification";
+		public static readonly string ACTION_UPDATE_CURRENT_WORKSPACE_IDENTIFICATION = "UpdateCurrentWorkspaceIdentification";
 		public static readonly string ACTION_SAVE_WORKSPACE_OUTPUT_FORMAT = "SaveWorkspaceOutputFormat";
 		public static readonly string ACTION_SAVE_WORKSPACE_OUTPUT_FORMAT_NEW_TEMPLATE = "SaveNewOutputFormatTemplate";
 		public static readonly string ACTION_ARCHIVE_OUTPUT_FORMAT_TEMPLATE = "ArchiveOutputFormatTemplate";

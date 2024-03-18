@@ -1088,7 +1088,6 @@
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.ttf" />
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
     <Content Include="Scripts\tinymce\langs\readme.md" />
-    <None Include="Settings.StyleCop" />
     <Content Include="Templates\Export\WorkspaceDataSpaceSystems.xlsx" />
     <Content Include="Templates\Export\SSC_Labor_Rates_example.xlsx" />
     <Content Include="Templates\Export\MST_Labor_Rates_example.xlsx" />
@@ -1122,6 +1121,7 @@
     <Content Include="Templates\Export\CommentsAndResponses.xlsx" />
     <Content Include="Templates\Export\Permissions.xlsx" />
     <Content Include="Templates\Export\PermissionsRMS.xlsx" />
+    <Content Include="Templates\Export\LaborTypesAndSpread_BRCEnabled.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

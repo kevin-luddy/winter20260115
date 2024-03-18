@@ -343,6 +343,12 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="workspace"></param>
         private void PopulateOptionsList(SpreadsheetDocument spreadsheet, FullWorkspace workspace)
         {
+			/* ************************************************************
+			 * PROPH - 1486 - BRC Export
+			 * Export work for Workspace Offline is being Skipped
+			 * due to it being OBE
+			 */
+
             // Create collections of strings for each row in the export file
             ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet(ImportExportConstants.OPTIONS_LISTS);
 

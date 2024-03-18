@@ -6,10 +6,11 @@
     using System.DirectoryServices.ActiveDirectory;
     using System.Linq;
     using System.Security.Principal;
+	using System.Text;
 
-    /// <summary>
-    /// Class to help with Active Directory handling, for Identity Swapping
-    /// </summary>
+	/// <summary>
+	/// Class to help with Active Directory handling, for Identity Swapping
+	/// </summary>
     public class ADClass
     {
         /// <summary>
@@ -142,38 +143,51 @@
                 // token Group searcher
                 using (DirectorySearcher ds = new DirectorySearcher(domainConnection, string.Format("(&(objectClass=user)(sAMAccountName={0}))", userId)))
                 {
-                    SearchResult samResult = ds.FindOne();
+					ds.PropertyNamesOnly = true;
+					SearchResult samResult = ds.FindOne();
 
                     if (samResult != null)
                     {
                         DirectoryEntry theUser = samResult.GetDirectoryEntry();
                         theUser.RefreshCache(new string[] { "tokenGroups" });
 
-                        foreach (byte[] resultBytes in theUser.Properties["tokenGroups"])
-                        {
-                            SecurityIdentifier sid = new SecurityIdentifier(resultBytes, 0);
+						StringBuilder filterStringBuilder = new();
 
-                            using (DirectorySearcher sidSearcher = new DirectorySearcher(domainConnection, string.Format("(objectSid={0})", sid.Value)))
-                            {
-                                sidSearcher.PropertiesToLoad.Add("sAMAccountName");
-                                sidSearcher.PropertiesToLoad.Add("distinguishedname");
-                                sidSearcher.PropertiesToLoad.Add("name");
+						// Just create a single LDAP query for all user SIDs
+						filterStringBuilder.Append("(&(objectCategory=group)(|");
+						foreach (byte[] resultBytes in theUser.Properties["tokenGroups"])
+						{
+							SecurityIdentifier sid = new(resultBytes, 0);
+							filterStringBuilder.AppendFormat("({0}={1})", "objectSid", sid.Value);
+						}
 
-                                SearchResult sidResult = sidSearcher.FindOne();
+						filterStringBuilder.Append("))");
 
-                                if (sidResult != null)
-                                {
-                                    var groupData = new GroupData()
-                                    {
-                                        DisplayName = (string)sidResult.Properties["name"][0],
-                                        NtDomain = this.GetDomainFromDistinguishedName((string)sidResult.Properties["distinguishedname"][0]),
-                                        Ntid = (string)sidResult.Properties["sAMAccountName"][0]
-                                    };
+						using (DirectorySearcher sidSearcher = new(domainConnection, filterStringBuilder.ToString()))
+						{
+							sidSearcher.PropertiesToLoad.Add("sAMAccountName");
+							sidSearcher.PropertiesToLoad.Add("distinguishedname");
+							sidSearcher.PropertiesToLoad.Add("name");
 
-                                    groupsFromAd.Add(groupData);
-                                }
-                            }
-                        }
+							sidSearcher.PageSize = 1000; // Very important to have it here. Otherwise you'll get only 1000 at all. Please refer to DirectorySearcher documentation
+
+							// We do not want to go beyond GC
+							sidSearcher.ReferralChasing = ReferralChasingOption.None;
+
+							SearchResultCollection results = sidSearcher.FindAll();
+
+							foreach (SearchResult sidResult in results)
+							{
+								GroupData groupData = new()
+								{
+									DisplayName = (string)sidResult.Properties["name"][0],
+									NtDomain = this.GetDomainFromDistinguishedName((string)sidResult.Properties["distinguishedname"][0]),
+									Ntid = (string)sidResult.Properties["sAMAccountName"][0]
+								};
+
+								groupsFromAd.Add(groupData);
+							}
+						}
                     }
                 }
 

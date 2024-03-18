@@ -16,14 +16,15 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Objects;
-    using IES.Common.OfficeUtilities;
+	using IES.Common;
+	using IES.Common.OfficeUtilities;
 
-    [ExcludeFromCodeCoverage]
+	[ExcludeFromCodeCoverage]
     public class WorkspaceExporterSpaceSystems:WorkspaceExporter
     {
         public override string WORKSPACE_DATA_EXCEL_MAP_PATH
         {
-            get { return "~/Templates/Export/WorkspaceDataSpaceSystems.xlsx"; }
+            get {return "~/Templates/Export/WorkspaceDataSpaceSystems.xlsx";}
         }
 
         public WorkspaceExporterSpaceSystems(
@@ -101,8 +102,10 @@ namespace GenBOE.ActionLogic.IO.Export
                 // Without this, we won't have the right number of rows.. If this is not there, the resulting Excel file exports, but will then throw an error saying it's corrupted
                 toReturn.Add(this.sEmpty, this.sEmpty);
             }
+	     //this is needed so last row is grey
+	     toReturn.Add(this.sEmpty, this.sEmpty);
 
-            return toReturn;
+	     return toReturn;
         }
     }
 }

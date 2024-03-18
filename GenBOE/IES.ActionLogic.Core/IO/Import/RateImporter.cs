@@ -29,10 +29,10 @@ namespace IES.ActionLogic.Core.IO.Import
 		/// <param name="importedRateCodes">Rate Codes that were found in the import file, used to filter GetRatesByRevision.</param>
 		/// <returns>Collection of imported rates for the current version.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
-		public static Collection<RateDetailModelView> GetRatesFromExcelFile(Stream excelFile, out Collection<string> importedRateCodes)
+		public static Collection<RateDetailModelView> GetRatesFromExcelFile(Stream excelFile, out List<string> importedRateCodes)
 		{
 			Collection<RateDetailModelView> importRateDetails = new();
-			importedRateCodes = new Collection<string>();
+			importedRateCodes = new List<string>();
 			if (excelFile == null)
 			{
 				throw new GenValidationException("Import file is empty.");

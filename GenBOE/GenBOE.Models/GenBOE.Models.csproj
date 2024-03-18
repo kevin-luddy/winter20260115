@@ -588,7 +588,6 @@
       <DependentUpon>BOEEntityModel.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BOEEntityModel.Context.tt">

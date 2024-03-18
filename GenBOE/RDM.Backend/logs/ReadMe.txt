@@ -1,0 +1,1 @@
+﻿This file is needed so logs directory is built when publishing.  Otherwise, bad things happen (RDM will not start in production).

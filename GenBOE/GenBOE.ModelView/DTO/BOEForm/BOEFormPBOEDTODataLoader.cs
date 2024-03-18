@@ -331,7 +331,7 @@ namespace GenBOE.DataBridge.DTO
 
 						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
 													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == workspaceId
-													  join xRef in gbe.BOEFormPBOEResourcesXREFs on b.ResourceID equals xRef.ResourceID
+													  from xRef in gbe.BOEFormPBOEResourcesXREFs where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
 													  where xRef.PBOEFormID == pboe.PBoeID
 													  select b.ValueSpread ?? 0m).ToList();
 
@@ -401,7 +401,7 @@ namespace GenBOE.DataBridge.DTO
 
 						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
 													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == workspaceId
-													  join xRef in gbe.BOEFormPBOEResourcesXREFs on b.ResourceID equals xRef.ResourceID
+													  from xRef in gbe.BOEFormPBOEResourcesXREFs where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
 													  where xRef.PBOEFormID == pboe.PBoeID
 													  select b.ValueSpread ?? 0m).ToList();
 

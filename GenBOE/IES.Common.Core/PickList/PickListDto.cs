@@ -96,5 +96,10 @@ namespace IES.Common.Core.PickList
 		/// Gets or sets the parent identifier.
 		/// </summary>
 		public ICollection<int> ParentIds { get; set; }
+
+		/// <summary>
+		/// Gets or sets the parent names.
+		/// </summary>
+		public ICollection<string> ParentNames { get; set; } = new List<string>();
 	}
 }

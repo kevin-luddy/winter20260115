@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using DocumentFormat.OpenXml.Office2010.PowerPoint;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
@@ -519,10 +520,17 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             ICollection<ResourceDTO> resourcesToSave = new Collection<ResourceDTO>();
 
             // Get a list of all in-use Resource IDs
-            IEnumerable<int> resourceIDs = (from r in this.copiedFromTaskElements
+            IEnumerable<int> rIDs = (from r in this.copiedFromTaskElements
                                     from e in r.taskElementLabors
                                     where e.ResourceID.HasValue
                                     select e.ResourceID.Value).Distinct();
+            // Get a list of all in-use BRC Resource IDs
+            IEnumerable<int> BRCIDs = (from r in this.copiedFromTaskElements
+                                        from e in r.taskElementLabors
+                                        where e.BusinessResourceCodeID.HasValue
+                                        select e.BusinessResourceCodeID.Value).Distinct();
+
+            IEnumerable<int> resourceIDs = (rIDs.Concat(BRCIDs)).Distinct();
 
             // Create a mapping between old Resource IDs and new DTOs for the copied workspace
             Dictionary<int, ResourceDTO> resourceIDMapping = new Dictionary<int, ResourceDTO>();

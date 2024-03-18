@@ -57,7 +57,13 @@ namespace GenBOE.ActionLogic.IO.Import
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Collections.ObjectModel.Collection`1<IES.Common.IO.Import.ImportedBoe>")]
         public WorkofflineImport ImportFromExcelFile(Stream excelFileStream, FullWorkspace ws)
         {
-            if (excelFileStream == null) { throw new ArgumentNullException(nameof(excelFileStream)); }
+			/* ************************************************************
+			 * PROPH - 1486 - BRC Export
+			 * Import work for Workspace Offline is being Skipped
+			 * due to it being OBE
+			 */
+
+			if (excelFileStream == null) { throw new ArgumentNullException(nameof(excelFileStream)); }
             if (ws == null) { throw new ArgumentNullException(nameof(ws)); }
 
             ws.LoadBoesAndTaskElementsRTEData();
