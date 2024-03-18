@@ -661,17 +661,16 @@ namespace GenBOE.Web.Controllers
 		/// <returns>List of Workspace Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf(string trackingNumbers)
+		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf([FromUri]ICollection<string> trackingNumbers)
 		{
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
 			try
 			{
 				if (trackingNumbers != null)
 				{
-					List<string> trackingNumbersList = trackingNumbers.Split(',').ToList();
 					string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
 					ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
-					boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid, trackingNumbersList);
+					boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid, trackingNumbers);
 					result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
 					{
 						WorkspaceId = x.WorkspaceId,
