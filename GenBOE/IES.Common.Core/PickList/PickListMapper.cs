@@ -63,7 +63,7 @@ namespace IES.Common.Core.PickList
 
 					if (gridMv.ContainsParent)
 					{
-						gridMv.Parents = GetSelectListPickList(loader.ParentPickList.Value, null, true, true);
+						gridMv.Parents = GetSelectListPickList(loader.ParentPickList.Value, null, false, true);
 					}
 
 					if (loadChildren && gridMv.ContainsChildren)
@@ -86,7 +86,7 @@ namespace IES.Common.Core.PickList
 		/// <param name="includeEmptySelect">If true, include the "Select PickList type" in the items.</param>
 		/// <param name="includeInactive">If true, include all Inactive items in the dropdown.</param>
 		/// <returns>Dropdown selection</returns>
-		public ICollection<SelectListItem> GetSelectListPickList(PickListEnum pickListType, int? selectedItem = null, bool includeEmptySelect = true, bool includeInactive = false)
+		public ICollection<SelectListItem> GetSelectListPickList(PickListEnum pickListType, int? selectedItem = null, bool includeEmptySelect = false, bool includeInactive = false)
 		{
 			PickListGridMV gridModelView = GetPickListValues(pickListType);
 			ICollection<PickListDto> allPicklistData = gridModelView?.PickLists ?? new List<PickListDto>();

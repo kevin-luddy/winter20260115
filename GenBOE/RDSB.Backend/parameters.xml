@@ -43,20 +43,20 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_HOST_">
 		</parameterentry>
 	</parameter>
-	<parameter name="AuthorizeViewWhosOnlineGroups" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
-		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+	<parameter name="AuthorizeViewWhosOnlineGroups" description="doesn't matter" defaultvalue="__AuthorizeViewWhosOnlineGroups__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_AUTHORIZE_WHOS_ONLINE_GROUPS_">
 		</parameterentry>
 	</parameter>
-	<parameter name="HideNonPortionMarking" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
-		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+	<parameter name="HideNonPortionMarking" description="doesn't matter" defaultvalue="__HideNonPortionMarking__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_HIDE_NON_PORTION_MARKING_">
 		</parameterentry>
 	</parameter>
-	<parameter name="HidePortionMarking" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
-		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+	<parameter name="HidePortionMarking" description="doesn't matter" defaultvalue="__HidePortionMarking__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_HIDE_PORTION_MARKING_">
 		</parameterentry>
 	</parameter>
-	<parameter name="IsProduction" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
-		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+	<parameter name="IsProduction" description="doesn't matter" defaultvalue="__IsProduction__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IS_PRODUCTION_">
 		</parameterentry>
 	</parameter>
 	<parameter name="SplunkToken" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">

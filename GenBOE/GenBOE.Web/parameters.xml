@@ -155,6 +155,14 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UsersAllowedProPricerAccess']/@value">
 		</parameterentry>
 	</parameter>
+    <parameter name="SystemAdminADGroup" description="doesn't matter" defaultvalue="__SystemAdminADGroup__" tags="">
+        <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SystemAdminADGroup']/@value">
+        </parameterentry>
+    </parameter>
+    <parameter name="SubcontractAdminADGroup" description="doesn't matter" defaultvalue="__SubcontractAdminADGroup__" tags="">
+        <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SubcontractAdminADGroup']/@value">
+        </parameterentry>
+    </parameter>
 	<parameter name="EnableSendToProPricerDirectly" description="doesn't matter" defaultvalue="__EnableSendToProPricerDirectly__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableSendToProPricerDirectly']/@value">
 		</parameterentry>

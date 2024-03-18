@@ -247,12 +247,13 @@ namespace GenTRAC.Web.Controllers
 		}
 
 		/// <summary>
-		/// Get Proposal Permissions for NLF for the user retrieved from the authorization token
+		/// Get Proposal Permissions for NLF for the user retrieved from the authorization token and optional ptm tracking number
 		/// </summary>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
 		/// <returns>Proposal Permissions for the current user</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<ICollection<ProposalRoleDto>> GetProposalPermissions()
+		public IESResponse<ICollection<ProposalRoleDto>> GetProposalPermissions(string ptmTrackingNumber = "")
 		{
 			IESResponse<ICollection<ProposalRoleDto>> result = new IESResponse<ICollection<ProposalRoleDto>>();
 
@@ -260,7 +261,7 @@ namespace GenTRAC.Web.Controllers
 			{
 				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				result.Data.Add(proposalLoader.GetProposalRolesForNlfByNtid(ntid));
+				result.Data.Add(proposalLoader.GetProposalRolesForNlfByNtid(ntid, ptmTrackingNumber));
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)

@@ -102,6 +102,11 @@ namespace GenBOE.Web.Controllers
 		private readonly ContractTypeLoader contractTypeLoader;
 
 		/// <summary>
+		/// Security Information
+		/// </summary>
+		private ISecurityInformation securityInformation;
+
+		/// <summary>
 		/// Logger
 		/// </summary>
 		private Logger logger = new Logger("BoeDataAPIController");
@@ -122,7 +127,8 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader)
+		/// <param name="securityInformation">Pick List loader for Contract Types</param>
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, ISecurityInformation securityInformation)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -137,6 +143,7 @@ namespace GenBOE.Web.Controllers
 			this.activeDirectoryUtilities = activeDirectoryUtilities;
 			this.userDataLoader = userDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
+			this.securityInformation = securityInformation;
 		}
 		#endregion
 
@@ -615,6 +622,14 @@ namespace GenBOE.Web.Controllers
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
 			try
 			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+				bool isAdmin = this.securityInformation.IsSystemOrSubcontractAdmin(ntid);
+
+				if (!isAdmin)
+				{ 
+					throw new UnauthorizedAccessException();
+				}
+
 				ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
 				boes = loader.GetAllWorkspaceInnerDataForNlf();
 				result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()

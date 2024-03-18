@@ -16,6 +16,7 @@ namespace IES.Common.Core
 	using Exceptions;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Logging;
 	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Authentication.Negotiate;
 	using Microsoft.AspNetCore.Authorization;
@@ -26,6 +27,7 @@ namespace IES.Common.Core
 	using Microsoft.Extensions.Logging;
 
 	[ApiController, Authorize]
+	[TypeFilter(typeof(ExceptionFilter))]
 	public abstract class IESController : ControllerBase, IActionFilter
 	{
 		/// <summary>

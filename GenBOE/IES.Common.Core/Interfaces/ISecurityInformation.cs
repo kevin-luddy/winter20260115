@@ -32,6 +32,7 @@ namespace IES.Common.Core.Interfaces
 		/// <returns>true if user is a subcontractor and not overridden</returns>
 		bool IsSubcontractorUser(string ntid, bool? isSubcontractor);
 		bool IsAllowedProPricerAccess(string userName);
+		bool IsSystemOrSubcontractAdmin(string userName);
 		bool IsMemberOfADGroupInAppSettingsList(string inUserName, string inADGroupListAppSettingsKey);
 	}
 }

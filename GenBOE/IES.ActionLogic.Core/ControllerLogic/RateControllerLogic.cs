@@ -221,7 +221,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="startYear">Revision Start Year</param>
 		/// <param name="endYear">Revision End Year</param>
 		/// <returns>A list of validation errors (if any).</returns>
-		public ICollection<ValidationMessage> ValidateRateDetailModelViews(Collection<RateDetailModelView> rateDetailModelViews, int startYear, int endYear)
+		public ICollection<ValidationMessage> ValidateRateDetailModelViews(ICollection<RateDetailModelView> rateDetailModelViews, int startYear, int endYear)
 		{
 			if (rateDetailModelViews == null)
 			{

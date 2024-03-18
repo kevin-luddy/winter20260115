@@ -722,7 +722,8 @@ namespace GenBOE.DataBridge.DTO
 								  CLINNumbers = w.CLINs.Select(x => x.DisplayedCLINNumber).ToList(),
 								  WBSNumbers = w.WorkBreakdownStructures.Select(x => x.DisplayedWBSNumber).ToList(),
 								  WorkspaceName = w.WorkspaceName,
-								  ShortName = w.WorkspaceShortName
+								  ShortName = w.WorkspaceShortName,
+								  TrackingNumber = w.TrackingNumber
 							  }).ToList();
 				}
 			}

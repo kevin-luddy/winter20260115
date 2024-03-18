@@ -19,21 +19,19 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// Generate a zip file containing the ProPricer direct and burden rate exports.
 		/// </summary>
 		/// <param name="zipPathFile">The server path where the zip file will be created</param>
-		/// <param name="versionNumber">PPR&amp;D version number</param>
 		/// <param name="rates">PPR&amp;D rates</param>
 		/// <param name="burdenPools">PPR&amp;D ProPricer burden pools</param>
 		/// <param name="burdenElements">PPR&amp;D ProPricer burden elements</param>
 		/// <returns>An ActionResult.</returns>
-		string ExportProPricerData(string zipPathFile, string versionNumber,
-			ICollection<RateDetailModelView> rates, ICollection<BurdenPoolDetailModelView> burdenPools,
-			ICollection<BurdenElementModelView> burdenElements);
+		string ExportProPricerData(string zipPathFile, ICollection<RateDetailModelView> rates, 
+			ICollection<BurdenPoolDetailModelView> burdenPools, ICollection<BurdenElementModelView> burdenElements);
 
 		/// <summary>
 		/// Generates the Full PPRD document
 		/// </summary>
 		/// <param name="id">Revision ID</param>
 		/// <param name="serverFileName">Server File Name</param>
-		Task<IActionResult> GenerateFullPPRD(string id, string serverFileName);
+		Task<IActionResult> GenerateFullPPRD(string id, string serverFileName, bool? portionMarkingRequired);
 
 		/// <summary>
 		/// Generates a file containing revision data as JSON.

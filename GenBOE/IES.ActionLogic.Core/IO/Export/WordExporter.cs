@@ -50,7 +50,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="stream">Stream into which to write the exported Word document.</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
 		/// <param name="tokenService">The token service</param>
-		protected async Task Export(string templateFilePathFull, Action<WordprocessingDocument> populateData, Stream stream, bool portionMarkingRequired, ITokenService tokenService)
+		protected async Task Export(string templateFilePathFull, Action<WordprocessingDocument> populateData, Stream stream, bool? portionMarkingRequired, ITokenService tokenService)
 		{
 			// open a copy of the Excel template file into memory
 			byte[] byteArray = File.ReadAllBytes(templateFilePathFull);
@@ -68,7 +68,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
 		/// <param name="tokenService">The token service</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This is not an issue with MemoryStream, it allows multiple disposals")]
-		protected async Task Export(byte[] byteArray, Action<WordprocessingDocument> populateData, Stream stream, bool portionMarkingRequired, ITokenService tokenService)
+		protected async Task Export(byte[] byteArray, Action<WordprocessingDocument> populateData, Stream stream, bool? portionMarkingRequired, ITokenService tokenService)
 		{
 			if (byteArray == null)
 			{
@@ -80,6 +80,7 @@ namespace IES.ActionLogic.Core.IO.Export
 				throw new ArgumentNullException(nameof(populateData));
 			}
 
+			bool doPortionMarking = portionMarkingRequired.HasValue && portionMarkingRequired.Value;
 			string tempFilename = Path.GetTempFileName();
 			new FileInfo(tempFilename).Attributes |= FileAttributes.Temporary;
 			using (Stream documentStream = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 4096, FileOptions.DeleteOnClose))
@@ -99,7 +100,7 @@ namespace IES.ActionLogic.Core.IO.Export
 						SaveDocument(document);
 					}
 
-					if (!portionMarkingRequired)
+					if (!doPortionMarking)
 					{
 						// write the document from the file into the caller's stream
 						documentStream.Seek(0, SeekOrigin.Begin);
@@ -107,7 +108,7 @@ namespace IES.ActionLogic.Core.IO.Export
 					}
 				}
 
-				if (portionMarkingRequired)
+				if (doPortionMarking)
 				{
 					ByteArrayContent content;
 					byte[] tempBytes;
