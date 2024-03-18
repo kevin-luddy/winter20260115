@@ -63,6 +63,5 @@ namespace GenBOE.Dtos
 		/// Tracking Number
 		/// </summary>
 		public string TrackingNumber { get; set; }
-
 	}
 }
