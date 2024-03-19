@@ -189,7 +189,7 @@ namespace IES.Common
             }
 
             string iesUrl = ConfigurationUtilities.GetAppSetting("IESHomeUrl");
-            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl + "Header?active=" + active;
+            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl;
         }
         
         /// <summary>
@@ -206,7 +206,7 @@ namespace IES.Common
 
             string iesUrl = ConfigurationUtilities.GetAppSetting("IESHomeUrl");
 
-            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl + "Banner?active=" + active;
+            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl;
         }
 
         /// <summary>
