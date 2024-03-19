@@ -102,5 +102,22 @@ namespace IES.Common.Core.Exceptions
 			info.AddValue("ValidationList", ValidationList);
 			base.GetObjectData(info, context);
 		}
+
+		/// <summary>
+		/// Gets the validation messages for serving.
+		/// </summary>
+		/// <param name="ValidationList">List of Validation objects.</param>
+		/// <returns>String collection of the text found in the validation messages.</returns>
+		public ICollection<string>GetValidationMessages(List<ValidationMessage> ValidationList)
+		{
+			ICollection<string> result = new List<string>();
+
+			foreach (ValidationMessage message in ValidationList)
+			{
+				result.Add(message.ValidationIssue);
+			}
+
+			return result;
+		}
 	}
 }
