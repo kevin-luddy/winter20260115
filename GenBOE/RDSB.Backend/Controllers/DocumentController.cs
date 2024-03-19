@@ -21,6 +21,7 @@ namespace RDSB.Backend.Controllers
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
@@ -102,10 +103,24 @@ namespace RDSB.Backend.Controllers
 		/// <param name="id">Selected proposal ID</param>
 		/// <returns>Json</returns>
 		[HttpPost("[action]")]
-		public bool SaveNewDocument(int id)
+		public IESResponse<bool> SaveNewDocument(int id)
 		{
-			this.documentControllerLogic.SaveNewDocument(id);
-			return true;
+			IESResponse<bool> response = new();
+
+			try
+			{
+				this.documentControllerLogic.SaveNewDocument(id);
+				response.Data = true;
+			}
+			catch (GenValidationException ex)
+			{
+				foreach (ValidationMessage issue in ex.ValidationList)
+				{
+					response.Messages.Add(issue.ValidationIssue);
+				}
+			}
+
+			return response;
 		}
 
 		/// <summary>
@@ -116,38 +131,52 @@ namespace RDSB.Backend.Controllers
 		/// <param name="id">The proposal Id, needed for authorization.</param>
 		/// <returns>boolean result of the save</returns>
 		[HttpPost("[action]")]
-		public bool Save(DocumentDetailModelView document, int id)
+		public IESResponse<bool> Save(DocumentDetailModelView document, int id)
 		{
-			if (document == null)
-			{
-				throw new GenValidationException("Document cannot be null.");
-			}
+			IESResponse<bool> response = new();
 
-			if (id != document.ProposalId)
+			try
 			{
-				// id is needed as a param for authorization
-				throw new GenValidationException("The Proposal Id is invalid.");
-			}
-
-			ICollection<ValidationMessage> validationErrors = this.documentControllerLogic.ValidateDocumentDetailModelView(document);
-			if (validationErrors.Any())
-			{
-				throw new GenValidationException(validationErrors);
-			}
-
-			using (TransactionScope scope = new(TransactionScopeOption.Required,
-				new TransactionOptions
+				if (document == null)
 				{
-					IsolationLevel = IsolationLevel.Snapshot,
-					Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
-				}))
-			{
-				this.documentControllerLogic.SaveDocument(document);
+					throw new GenValidationException("Document cannot be null.");
+				}
 
-				scope.Complete();
+				if (id != document.ProposalId)
+				{
+					// id is needed as a param for authorization
+					throw new GenValidationException("The Proposal Id is invalid.");
+				}
+
+				ICollection<ValidationMessage> validationErrors = this.documentControllerLogic.ValidateDocumentDetailModelView(document);
+				if (validationErrors.Any())
+				{
+					throw new GenValidationException(validationErrors);
+				}
+
+				using (TransactionScope scope = new(TransactionScopeOption.Required,
+					new TransactionOptions
+					{
+						IsolationLevel = IsolationLevel.Snapshot,
+						Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
+					}))
+				{
+					this.documentControllerLogic.SaveDocument(document);
+
+					scope.Complete();
+				}
+
+				response.Data = true;
+			}
+			catch (GenValidationException ex)
+			{
+				foreach (ValidationMessage issue in ex.ValidationList)
+				{
+					response.Messages.Add(issue.ValidationIssue);
+				}
 			}
 
-			return true;
+			return response;
 		}
 
 		/// <summary>
@@ -156,11 +185,23 @@ namespace RDSB.Backend.Controllers
 		/// <param name="createIfNotExists">If true, create the RDSB document if it doesn't already exist. If false, only edit existing RDSB document.</param>
 		/// <returns>Detailed Model View</returns>
 		[HttpGet("[action]")]
-		public DocumentDetailModelView GetDetailModelView(int id, bool? createIfNotExists = false)
+		public IESResponse<DocumentDetailModelView> GetDetailModelView(int id, bool? createIfNotExists = false)
 		{
-			DocumentDetailModelView model = this.documentControllerLogic.RetrieveDocumentDetailByProposalId(id, createIfNotExists);
+			IESResponse<DocumentDetailModelView> response = new();
 
-			return model;
+			try
+			{
+				response.Data = this.documentControllerLogic.RetrieveDocumentDetailByProposalId(id, createIfNotExists);
+			}
+			catch (GenValidationException ex)
+			{
+				foreach (ValidationMessage issue in ex.ValidationList)
+				{
+					response.Messages.Add(issue.ValidationIssue);
+				}
+			}
+
+			return response;
 		}
 
 		/// <summary>
