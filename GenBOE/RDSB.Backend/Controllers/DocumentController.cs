@@ -111,6 +111,7 @@ namespace RDSB.Backend.Controllers
 			{
 				this.documentControllerLogic.SaveNewDocument(id);
 				response.Data = true;
+				response.IsSuccessful = true;
 			}
 			catch (GenValidationException ex)
 			{
@@ -167,6 +168,7 @@ namespace RDSB.Backend.Controllers
 				}
 
 				response.Data = true;
+				response.IsSuccessful = true;
 			}
 			catch (GenValidationException ex)
 			{
@@ -192,6 +194,7 @@ namespace RDSB.Backend.Controllers
 			try
 			{
 				response.Data = this.documentControllerLogic.RetrieveDocumentDetailByProposalId(id, createIfNotExists);
+				response.IsSuccessful = true;
 			}
 			catch (GenValidationException ex)
 			{
