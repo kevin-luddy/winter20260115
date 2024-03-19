@@ -115,10 +115,7 @@ namespace RDSB.Backend.Controllers
 			}
 			catch (GenValidationException ex)
 			{
-				foreach (ValidationMessage issue in ex.ValidationList)
-				{
-					response.Messages.Add(issue.ValidationIssue);
-				}
+				response.Messages = ex.ValidationMessages;
 			}
 
 			return response;
@@ -172,10 +169,7 @@ namespace RDSB.Backend.Controllers
 			}
 			catch (GenValidationException ex)
 			{
-				foreach (ValidationMessage issue in ex.ValidationList)
-				{
-					response.Messages.Add(issue.ValidationIssue);
-				}
+				response.Messages = ex.ValidationMessages;
 			}
 
 			return response;
@@ -198,10 +192,7 @@ namespace RDSB.Backend.Controllers
 			}
 			catch (GenValidationException ex)
 			{
-				foreach (ValidationMessage issue in ex.ValidationList)
-				{
-					response.Messages.Add(issue.ValidationIssue);
-				}
+				response.Messages = ex.ValidationMessages;
 			}
 
 			return response;

@@ -17,13 +17,22 @@ namespace IES.Common.Core.Exceptions
 	[Serializable()]
 	public class GenValidationException : Exception
 	{
+		/// <summary>
+		/// List of validation(s).
+		/// </summary>
 
 		public List<ValidationMessage> ValidationList { get; set; }
+
+		/// <summary>
+		/// List of Validation messages.
+		/// </summary>
+		public List<string> ValidationMessages { get; set; }
 
 		protected GenValidationException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 			ValidationList = new List<ValidationMessage>();
+			ValidationMessages = new List<string>();
 		}
 
 		/// <summary>
@@ -36,6 +45,9 @@ namespace IES.Common.Core.Exceptions
 		{
 			ValidationList = new List<ValidationMessage>();
 			ValidationList.Add(new ValidationMessage() { ValidationIssue = message });
+
+			ValidationMessages = new();
+			ValidationMessages.Add(message);
 		}
 
 		/// <summary>
@@ -49,6 +61,8 @@ namespace IES.Common.Core.Exceptions
 			ValidationList = new List<ValidationMessage>();
 			ValidationList.Add(new ValidationMessage() { ValidationIssue = message });
 
+			ValidationMessages = new();
+			ValidationMessages.Add(message);
 		}
 
 		/// <summary>
@@ -60,6 +74,12 @@ namespace IES.Common.Core.Exceptions
 		{
 			ValidationList = new List<ValidationMessage>();
 			ValidationList.AddRange(ValidationListErrors);
+
+			ValidationMessages = new();
+			foreach (ValidationMessage validationMessage in ValidationListErrors)
+			{
+				ValidationMessages.Add(validationMessage.ValidationIssue);
+			}
 		}
 
 		/// <summary>
@@ -73,6 +93,9 @@ namespace IES.Common.Core.Exceptions
 			ValidationList = new List<ValidationMessage>();
 			ValidationMessage vm = new(validationMessage);
 			ValidationList.Add(vm);
+
+			ValidationMessages = new();
+			ValidationMessages.Add(validationMessage);
 		}
 
 		/// <summary>
@@ -82,6 +105,7 @@ namespace IES.Common.Core.Exceptions
 			: base()
 		{
 			ValidationList = new List<ValidationMessage>();
+			ValidationMessages = new ();
 		}
 
 		/// <summary>
@@ -100,6 +124,7 @@ namespace IES.Common.Core.Exceptions
 			}
 
 			info.AddValue("ValidationList", ValidationList);
+			info.AddValue("ValidationMessages", ValidationMessages);
 			base.GetObjectData(info, context);
 		}
 	}
