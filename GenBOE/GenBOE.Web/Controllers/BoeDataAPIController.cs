@@ -710,6 +710,9 @@ namespace GenBOE.Web.Controllers
 				{
 					string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
 					ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
+					//trackingNumbers.Clear();
+					trackingNumbers.Add("17-00009");
+					trackingNumbers.Add("23-00193");
 					boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid, trackingNumbers);
 					result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
 					{
