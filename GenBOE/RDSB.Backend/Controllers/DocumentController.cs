@@ -115,7 +115,7 @@ namespace RDSB.Backend.Controllers
 			}
 			catch (GenValidationException ex)
 			{
-				response.Messages = ex.ValidationMessages;
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return response;
@@ -169,7 +169,7 @@ namespace RDSB.Backend.Controllers
 			}
 			catch (GenValidationException ex)
 			{
-				response.Messages = ex.ValidationMessages;
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return response;
@@ -192,7 +192,7 @@ namespace RDSB.Backend.Controllers
 			}
 			catch (GenValidationException ex)
 			{
-				response.Messages = ex.ValidationMessages;
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return response;
