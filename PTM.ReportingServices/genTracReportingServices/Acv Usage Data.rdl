@@ -6,28 +6,29 @@
     <DataSource Name="genTrac">
       <DataSourceReference>genTrac</DataSourceReference>
       <rd:SecurityType>None</rd:SecurityType>
-      <rd:DataSourceID>66095732-41bd-4f93-b52b-d62b34a78881</rd:DataSourceID>
+      <rd:DataSourceID>3df96a47-f8d2-4e44-ba50-498408c4a7f2</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
     <DataSet Name="DataSet1">
       <Query>
         <DataSourceName>genTrac</DataSourceName>
-        <CommandText>SELECT * FROM AcvUsageData</CommandText>
+        <CommandType>StoredProcedure</CommandType>
+        <CommandText>GetAcvUsageData</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
-        <Field Name="Year">
-          <DataField>Year</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
         <Field Name="Lob">
           <DataField>Lob</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
+          <rd:UserDefined>true</rd:UserDefined>
         </Field>
         <Field Name="Count">
           <DataField>Count</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
+          <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+        <Field Name="Year">
+          <DataField>Year</DataField>
+          <rd:UserDefined>true</rd:UserDefined>
         </Field>
       </Fields>
     </DataSet>
@@ -43,7 +44,7 @@
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Acv Usage Data</Value>
+                    <Value>ACV Usage Data</Value>
                     <Style>
                       <FontFamily>Segoe UI Light</FontFamily>
                       <FontSize>24pt</FontSize>
@@ -114,14 +115,14 @@
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="textbox2">
+                        <Textbox Name="Count">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(Fields!Count.Value)</Value>
+                                  <Value>=Fields!Count.Value</Value>
                                   <Style>
                                     <Color>#333333</Color>
                                   </Style>
@@ -132,7 +133,7 @@
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <rd:DefaultName>Count</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -289,5 +290,5 @@
   <Language>en-US</Language>
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportID>db8ef8ff-2e5d-417f-a562-e9379d7f4f90</rd:ReportID>
+  <rd:ReportID>f7bb341b-1207-43a6-8e4c-c84c960e5d88</rd:ReportID>
 </Report>

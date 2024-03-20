@@ -63,7 +63,7 @@
     <DataSource Include="genTrac.rds" />
   </ItemGroup>
   <ItemGroup>
-    <Report Include="Acv Usage Data.rdl" />
+    <Report Include="ACV Usage Data.rdl" />
     <Report Include="DFARS Non-Standard Responses.rdl" />
     <Report Include="ManagementReport.rdl" />
     <Report Include="PAR Checklist Report.rdl" />
