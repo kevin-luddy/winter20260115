@@ -6,6 +6,7 @@
 
 namespace RDM.Web.Controllers
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Transactions;
@@ -62,7 +63,22 @@ namespace RDM.Web.Controllers
 		[HttpGet("[action]")]
 		public ActionResult GetVersionDifferences(int id, int secondId)
 		{
-			return this.Json(this.controllerLogic.GetVersionDifferences(id, secondId, this.Logic.IsRDMAdminUser, this.Logic.ActiveUser));
+			IESResponse<VersionComparisonModelView> response = new();
+			try
+			{
+				response.Data = this.controllerLogic.GetVersionDifferences(id, secondId, this.Logic.IsRDMAdminUser, this.Logic.ActiveUser);
+				response.IsSuccessful = true;
+			}
+			catch (ArgumentException ae)
+			{
+				response.Messages.Add(ae.Message);
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -89,13 +105,14 @@ namespace RDM.Web.Controllers
 		public ActionResult Publish(string revision, string history, string releaseNotes)
 		{
 			int? newId = null;
-			ICollection<AreaLockData> activeLocks;
+			IESResponse<(int?, ICollection<AreaLockData>)> response = new();
 
-			// lock the revision (all areas)
-			this.homeControllerLogic.LockAllAreas(out bool status, out string message);
-
+			string message = null;
 			try
 			{
+				// lock the revision (all areas)
+				this.homeControllerLogic.LockAllAreas(out bool status, out message);
+			
 				if (status)
 				{
 					this.log.LogDebug($"Revision locked successfully by {this.Logic.ActiveUser.DisplayName}.");
@@ -120,6 +137,7 @@ namespace RDM.Web.Controllers
 						this.controllerLogic.SendPublishEmail(publishedRevision, this.Logic.ActiveUser);
 
 						message = "Publish operation was successful.";
+						response.IsSuccessful = true;
 					}
 				}
 				else
@@ -128,6 +146,10 @@ namespace RDM.Web.Controllers
 					this.log.LogDebug(message);
 				}
 			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
 			catch (GeneralAppException ex)
 			{
 				message = "Publish failed due to a system exception.";
@@ -135,10 +157,18 @@ namespace RDM.Web.Controllers
 			}
 			finally
 			{
-				activeLocks = this.homeControllerLogic.UnlockAllAreas();
+				ICollection<AreaLockData> locks = this.homeControllerLogic.UnlockAllAreas();
+				response.Data = new(newId, locks);
+
+				if (!string.IsNullOrWhiteSpace(message))
+				{
+					response.Messages.Add(message);
+				}
 			}
 
-			return this.Json(new { Status = status, Id = newId, ActiveLocks = activeLocks, Message = message });
+			return this.Json(response);
+
+			// Historical reference { Status = status, Id = newId, ActiveLocks = activeLocks, Message = message }
 		}
 
 		/// <summary>
@@ -150,12 +180,14 @@ namespace RDM.Web.Controllers
 		public ActionResult Rollback(string revision)
 		{
 			int? id = null;
-			ICollection<AreaLockData> activeLocks;
+			IESResponse<(int?, ICollection<AreaLockData>)> response = new();
+			string message = null;
 
-			// lock the revision (all areas)
-			this.homeControllerLogic.LockAllAreas(out bool status, out string message);
 			try
 			{
+				// lock the revision (all areas)
+				this.homeControllerLogic.LockAllAreas(out bool status, out message);
+			
 				if (status)
 				{
 					this.log.LogDebug($"Revision locked successfully by {this.Logic.ActiveUser.DisplayName}.");
@@ -176,6 +208,7 @@ namespace RDM.Web.Controllers
 						}
 
 						message = "Rollback operation was successful.";
+						response.IsSuccessful = true;
 					}
 				}
 				else
@@ -184,6 +217,10 @@ namespace RDM.Web.Controllers
 					this.log.LogDebug(message);
 				}
 			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
 			catch (GeneralAppException ex)
 			{
 				message = "Rollback failed due to a system exception.";
@@ -191,10 +228,18 @@ namespace RDM.Web.Controllers
 			}
 			finally
 			{
-				activeLocks = this.homeControllerLogic.UnlockAllAreas();
+				ICollection<AreaLockData> locks = this.homeControllerLogic.UnlockAllAreas();
+				response.Data = new(id, locks);
+
+				if (!string.IsNullOrWhiteSpace(message))
+				{
+					response.Messages.Add(message);
+				}
 			}
 
-			return this.Json(new { Status = status, Id = id, ActiveLocks = activeLocks, Message = message });
+			return this.Json(response);
+
+			// Historical reference { Status = status, Id = id, ActiveLocks = activeLocks, Message = message }
 		}
 	}
 }

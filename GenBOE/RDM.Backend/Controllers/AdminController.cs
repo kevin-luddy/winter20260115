@@ -19,6 +19,7 @@ namespace RDM.Web.Controllers
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
@@ -82,7 +83,7 @@ namespace RDM.Web.Controllers
 		[HttpGet("[action]")]
 		public ActionResult GetCobraDetailsByVersion(int? id)
 		{
-			ActionResult response;
+			IESResponse<CobraGridModelView> response = new();
 
 			try
 			{
@@ -103,15 +104,16 @@ namespace RDM.Web.Controllers
 					LockInfo = this.homeControllerLogic.GetCurrentLockInfo(LockArea.CobraData)
 				};
 
-				response = this.Json(model);
+				response.Data = model;
+				response.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
 				this.log.LogError(ex, "Unknown Exception");
-				throw new GenValidationException(ex.Message);
+				response.Messages.Add(ex.Message);
 			}
 
-			return response;
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -123,35 +125,45 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult SaveCobraDetails(CobraDetailModelView[] collection)
 		{
-			if (collection == null || collection.None())
+			IESResponse<ICollection<CobraDetailModelView>> response = new();
+			try
 			{
-				throw new GenValidationException("There are no COBRA mapping details being saved.");
-			}
 
-			// Confirm that either user owns lock or area is unlocked
-			this.Logic.VerifyLockForSaving(LockArea.CobraData, collection[0].RevisionId);
-
-			RevisionModelView revision = this.Logic.RevisionMediator.GetById(collection[0].RevisionId);
-			ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateCobraDetailModelViews(collection);
-			if (validationErrors.Any())
-			{
-				throw new GenValidationException(validationErrors);
-			}
-
-			using (TransactionScope scope = new(TransactionScopeOption.Required,
-				new TransactionOptions
+				if (collection == null || collection.None())
 				{
-					IsolationLevel = IsolationLevel.Snapshot,
-					Timeout = new TimeSpan(0, 0, 2 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
-				}))
+					throw new GenValidationException("There are no COBRA mapping details being saved.");
+				}
+
+				// Confirm that either user owns lock or area is unlocked
+				this.Logic.VerifyLockForSaving(LockArea.CobraData, collection[0].RevisionId);
+
+				RevisionModelView revision = this.Logic.RevisionMediator.GetById(collection[0].RevisionId);
+				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateCobraDetailModelViews(collection);
+				if (validationErrors.Any())
+				{
+					throw new GenValidationException(validationErrors);
+				}
+
+				using (TransactionScope scope = new(TransactionScopeOption.Required,
+					new TransactionOptions
+					{
+						IsolationLevel = IsolationLevel.Snapshot,
+						Timeout = new TimeSpan(0, 0, 2 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
+					}))
+				{
+					this.cobraDetailLoader.SaveDetails(collection);
+					scope.Complete();
+				}
+
+				response.Data = this.cobraDetailLoader.GetCobraDetailsByRevision(revision);
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
 			{
-				this.cobraDetailLoader.SaveDetails(collection);
-				scope.Complete();
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			ICollection<CobraDetailModelView> cobraDetails = this.cobraDetailLoader.GetCobraDetailsByRevision(revision);
-
-			return this.Json(cobraDetails);
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -177,34 +189,47 @@ namespace RDM.Web.Controllers
 			{
 				throw new ArgumentNullException(nameof(rateCodes));
 			}
-
-			ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateCodeReplication(rateCodes);
-
-			if (validationErrors.Any())
+			
+			IESResponse<bool> response = new();
+			try
 			{
-				throw new GenValidationException(validationErrors);
-			}
 
-			foreach (RateCodeModelView rate in rateCodes)
-			{
-				if (rate.IsDeleted)
+				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateCodeReplication(rateCodes);
+
+				if (validationErrors.Any())
 				{
-					rate.Updateable = UpdateType.Deleted;
+					throw new GenValidationException(validationErrors);
 				}
-				else
+
+				foreach (RateCodeModelView rate in rateCodes)
 				{
-					rate.Updateable = UpdateType.Upsert;
+					if (rate.IsDeleted)
+					{
+						rate.Updateable = UpdateType.Deleted;
+					}
+					else
+					{
+						rate.Updateable = UpdateType.Upsert;
+					}
 				}
-			}
 
-			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+				{
+					// save them
+					this.controllerLogic.SaveRateCodeReplication(rateCodes);
+					scope.Complete();
+				}
+
+				response.IsSuccessful = true;
+				response.Data = true; 
+				// Old return { Status = true, Message = "Rate Code Replication has been saved." }
+			}
+			catch (GenValidationException ex)
 			{
-				// save them
-				this.controllerLogic.SaveRateCodeReplication(rateCodes);
-				scope.Complete();
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			return this.Json(new { Status = true, Message = "Rate Code Replication has been saved." });
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -265,36 +290,47 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult SaveCobraYearConfiguration(CobraYearGridModelView[] dataToSave)
 		{
-			ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateCobraYearConfigurations(dataToSave);
-
-			if (validationErrors.Any())
+			IESResponse<bool> response = new();
+			try
 			{
-				throw new GenValidationException(validationErrors);
+				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateCobraYearConfigurations(dataToSave);
+
+				if (validationErrors.Any())
+				{
+					throw new GenValidationException(validationErrors);
+				}
+
+				int newId = -1;
+
+				// retrieve all of the current mappings.. mark them all as deleted
+				List<CobraYearGridModelView> currentMappings = this.cobraYearsLoader.GetAll().ToList();
+				currentMappings.ForEach(x => x.Updateable = UpdateType.Deleted);
+
+				// mark all of the data as upsert, this is what we are keeping, appropriately setting IDs for the new items
+				dataToSave.ToList().ForEach(x => { x.Updateable = UpdateType.Upsert; x.Id = x.Id > 0 ? x.Id : newId--; });
+
+				// remove from the current mappings any that we are keeping
+				dataToSave.Where(itemToSave => itemToSave.Id > 0).ToList().ForEach(itemToSave => currentMappings.Remove(currentMappings.First(current => current.Id == itemToSave.Id)));
+
+				// merge them together
+				dataToSave.AddRange(currentMappings);
+
+				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+				{
+					// save them
+					this.cobraYearsLoader.Save(dataToSave);
+					scope.Complete();
+				}
+
+				response.Data = true;
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			int newId = -1;
-
-			// retrieve all of the current mappings.. mark them all as deleted
-			List<CobraYearGridModelView> currentMappings = this.cobraYearsLoader.GetAll().ToList();
-			currentMappings.ForEach(x => x.Updateable = UpdateType.Deleted);
-
-			// mark all of the data as upsert, this is what we are keeping, appropriately setting IDs for the new items
-			dataToSave.ToList().ForEach(x => { x.Updateable = UpdateType.Upsert; x.Id = x.Id > 0 ? x.Id : newId--; });
-
-			// remove from the current mappings any that we are keeping
-			dataToSave.Where(itemToSave => itemToSave.Id > 0).ToList().ForEach(itemToSave => currentMappings.Remove(currentMappings.First(current => current.Id == itemToSave.Id)));
-
-			// merge them together
-			dataToSave.AddRange(currentMappings);
-
-			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
-			{
-				// save them
-				this.cobraYearsLoader.Save(dataToSave);
-				scope.Complete();
-			}
-
-			return new OkResult();
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -308,35 +344,47 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult SaveRevisionConfiguration(string startYear, string endYear, string releaseNotes, string history)
 		{
-			ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateYearConfiguration(startYear, endYear);
-
-			if (validationErrors.Any())
+			IESResponse<bool> response = new();
+			try
 			{
-				throw new GenValidationException(validationErrors);
-			}
+				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateYearConfiguration(startYear, endYear);
 
-			// retrieve the current WIP revision and set the start/end year
-			RevisionModelView revision = this.Logic.WipRevision;
-
-			if (revision == null)
-			{
-				throw new GenValidationException("Revision Configuration could not be saved.  Unable to get current WIP revision.");
-			}
-			else
-			{
-				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+				if (validationErrors.Any())
 				{
-					revision.StartYear = int.Parse(startYear);
-					revision.EndYear = int.Parse(endYear);
-					revision.History = history;
-					revision.ReleaseNotes = releaseNotes;
-					revision.Updateable = UpdateType.Upsert;
-					this.Logic.RevisionMediator.Upsert(revision);
-					scope.Complete();
+					throw new GenValidationException(validationErrors);
 				}
+
+				// retrieve the current WIP revision and set the start/end year
+				RevisionModelView revision = this.Logic.WipRevision;
+
+				if (revision == null)
+				{
+					throw new GenValidationException("Revision Configuration could not be saved.  Unable to get current WIP revision.");
+				}
+				else
+				{
+					using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+					{
+						revision.StartYear = int.Parse(startYear);
+						revision.EndYear = int.Parse(endYear);
+						revision.History = history;
+						revision.ReleaseNotes = releaseNotes;
+						revision.Updateable = UpdateType.Upsert;
+						this.Logic.RevisionMediator.Upsert(revision);
+						scope.Complete();
+					}
+				}
+
+				response.Data = true;
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			return this.Json(new { Status = true, Message = "Revision Configuration has been saved." });
+			// For reference: { Status = true, Message = "Revision Configuration has been saved." }
+			return this.Json(response);
 		}
 
 		/// <summary>

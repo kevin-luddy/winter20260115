@@ -15,6 +15,7 @@ namespace RDM.Web.Controllers
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
@@ -89,49 +90,59 @@ namespace RDM.Web.Controllers
 				throw new ArgumentNullException(nameof(collection));
 			}
 
-			// Client can add new rows, then delete them all - catch it here.
-			Collection<BurdenPoolDetailModelView> filteredCollection = new();
-			foreach (BurdenPoolDetailModelView bpdmv in collection)
+			IESResponse<bool> response = new();
+			try
 			{
-				if (bpdmv.Id > 0 || !bpdmv.IsDeleted)
+				// Client can add new rows, then delete them all - catch it here.
+				Collection<BurdenPoolDetailModelView> filteredCollection = new();
+				foreach (BurdenPoolDetailModelView bpdmv in collection)
 				{
-					filteredCollection.Add(bpdmv);
+					if (bpdmv.Id > 0 || !bpdmv.IsDeleted)
+					{
+						filteredCollection.Add(bpdmv);
+					}
 				}
+
+				if (filteredCollection.Any())
+				{
+					// If we don't have the revisionId in our filteredCollection, get the WIP from DB.
+					int revisionId = 0;
+					BurdenPoolDetailModelView revisionBp = filteredCollection.FirstOrDefault(x => x.RevisionID > 0);
+					if (revisionBp != null)
+					{
+						revisionId = revisionBp.RevisionID;
+					}
+
+					// If we have no revisionIds - get the WIP revision.
+					if (revisionId == 0)
+					{
+						revisionId = this.Logic.WipRevision.Id;
+					}
+
+					// Confirm that either user owns lock or area is unlocked
+					this.Logic.VerifyLockForSaving(LockArea.RDMBurdenPools, revisionId);
+
+					ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateBurdenPools(filteredCollection);
+					if (validationErrors.Any())
+					{
+						throw new GenValidationException(validationErrors);
+					}
+
+					using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+					{
+						this.burdenPoolLoader.SaveBurdenPools(filteredCollection, revisionId);
+						scope.Complete();
+					}
+				}
+				response.Data = true;
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			if (filteredCollection.Any())
-			{
-				// If we don't have the revisionId in our filteredCollection, get the WIP from DB.
-				int revisionId = 0;
-				BurdenPoolDetailModelView revisionBp = filteredCollection.FirstOrDefault(x => x.RevisionID > 0);
-				if (revisionBp != null)
-				{
-					revisionId = revisionBp.RevisionID;
-				}
-
-				// If we have no revisionIds - get the WIP revision.
-				if (revisionId == 0)
-				{
-					revisionId = this.Logic.WipRevision.Id;
-				}
-
-				// Confirm that either user owns lock or area is unlocked
-				this.Logic.VerifyLockForSaving(LockArea.RDMBurdenPools, revisionId);
-
-				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateBurdenPools(filteredCollection);
-				if (validationErrors.Any())
-				{
-					throw new GenValidationException(validationErrors);
-				}
-
-				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
-				{
-					this.burdenPoolLoader.SaveBurdenPools(filteredCollection, revisionId);
-					scope.Complete();
-				}
-			}
-
-			return new OkResult();
+			return this.Json(response);
 		}
 	}
 }
