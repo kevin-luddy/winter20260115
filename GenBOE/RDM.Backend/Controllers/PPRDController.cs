@@ -99,36 +99,47 @@ namespace RDM.Web.Controllers
 				throw new ArgumentNullException(nameof(pprd));
 			}
 
-			#region Validate
-
-			Collection<ValidationMessage> errors = new();
-			if (!this.ModelState.IsValid)
+			IESResponse<bool> response = new();
+			try
 			{
-				errors = CommonUtilities.CreateModelStateValidationErrorList(this.ModelState);
+				#region Validate
+
+				Collection<ValidationMessage> errors = new();
+				if (!this.ModelState.IsValid)
+				{
+					errors = CommonUtilities.CreateModelStateValidationErrorList(this.ModelState);
+				}
+
+				this.controllerLogic.ValidateSections(pprd.ChildNodes, errors);
+				if (errors.Any())
+				{
+					throw new GenValidationException(errors);
+				}
+
+				#endregion
+
+				// Confirm that either user owns lock or area is unlocked
+				this.Logic.VerifyLockForSaving(LockArea.RDMSections, pprd.Revision.Id);
+
+				#region Save
+
+				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+				{
+					this.sectionLoader.UpdateSectionsAndContent(pprd.Revision, pprd.ChildNodes);
+					scope.Complete();
+				}
+
+				#endregion
+
+				response.Data = true;
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			this.controllerLogic.ValidateSections(pprd.ChildNodes, errors);
-			if (errors.Any())
-			{
-				throw new GenValidationException(errors);
-			}
-
-			#endregion
-
-			// Confirm that either user owns lock or area is unlocked
-			this.Logic.VerifyLockForSaving(LockArea.RDMSections, pprd.Revision.Id);
-
-			#region Save
-
-			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
-			{
-				this.sectionLoader.UpdateSectionsAndContent(pprd.Revision, pprd.ChildNodes);
-				scope.Complete();
-			}
-
-			#endregion
-
-			return this.Json(new { Status = true });
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -139,16 +150,27 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult ValidateDeleteSection(int[] sectionIds)
 		{
-			Collection<ValidationMessage> errors = new();
-			RevisionModelView revision = this.Logic.WipRevision;
-			ICollection<OptionModelView> sections = this.sectionLoader.RetrieveSectionsAsOptions(revision);
-			this.controllerLogic.ValidateDeletionSections(sectionIds, errors, sections, revision);
-			if (errors.Any())
+			IESResponse<bool> response = new();
+			try
 			{
-				throw new GenValidationException(errors);
+				Collection<ValidationMessage> errors = new();
+				RevisionModelView revision = this.Logic.WipRevision;
+				ICollection<OptionModelView> sections = this.sectionLoader.RetrieveSectionsAsOptions(revision);
+				this.controllerLogic.ValidateDeletionSections(sectionIds, errors, sections, revision);
+				if (errors.Any())
+				{
+					throw new GenValidationException(errors);
+				}
+
+				response.Data = true;
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			return this.Json(new { Status = true });
+			return this.Json(response);
 		}
 	}
 }

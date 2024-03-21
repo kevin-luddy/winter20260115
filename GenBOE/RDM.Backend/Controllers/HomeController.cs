@@ -12,7 +12,9 @@ namespace RDM.Web.Controllers
 	using IES.Common.Core;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
+	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
@@ -74,10 +76,10 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult Lock(LockArea id)
 		{
-			ValidateArea(id);
-
+			IESResponse<LockModelView> response = new();
 			try
 			{
+				ValidateArea(id);
 
 				LockModelView lockInfo = this.controllerLogic.LockArea(id, false, out bool status, out string message);
 
@@ -86,12 +88,30 @@ namespace RDM.Web.Controllers
 						? $"Lock successfully created in {id.ToDescription()} by {this.Logic.ActiveUser.DisplayName}."
 						: $"Failed to create lock in {id.ToDescription()} for {this.Logic.ActiveUser.DisplayName}. {message}");
 
-				return this.Json(new { Status = status, LockInfo = lockInfo, Message = message });
+				response.Data = lockInfo;
+				response.IsSuccessful = status;
+				if (!status)
+				{
+					response.Messages.Add(message);
+				}
 			}
-			catch (NotImplementedException ex)
+			catch (AuthorizationException ae)
 			{
-				return this.Json(ex);
+				response.Messages.Add(ae.Message);
 			}
+			catch (NotImplementedException ne)
+			{
+				string message = $"Error Locking LockArea: {id}";
+				this.log.LogError(ne, message);
+				response.Messages.Add(message);
+				response.Messages.Add(ne.Message);
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -113,15 +133,30 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult Unlock(LockArea id)
 		{
-			ValidateArea(id);
+			IESResponse<LockModelView> response = new();
+			try
+			{
+				ValidateArea(id);
 
-			LockModelView lockInfo = this.controllerLogic.UnlockArea(id, false);
+				LockModelView lockInfo = this.controllerLogic.UnlockArea(id, false);
 
-			this.log.LogDebug(lockInfo.InUse == null
-				? $"Lock successfully removed in {id.ToDescription()}."
-				: $"Failed to remove lock in {id.ToDescription()} because it was locked by {lockInfo.Editing}.");
+				this.log.LogDebug(lockInfo.InUse == null
+					? $"Lock successfully removed in {id.ToDescription()}."
+					: $"Failed to remove lock in {id.ToDescription()} because it was locked by {lockInfo.Editing}.");
 
-			return this.Json(new { Status = true, LockInfo = lockInfo });
+				response.Data = lockInfo;
+				response.IsSuccessful = true;
+			}
+			catch (AuthorizationException ae)
+			{
+				response.Messages.Add(ae.Message);
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -133,7 +168,10 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult RefreshLock(LockArea id)
 		{
-			ValidateArea(id);
+			IESResponse<LockModelView> response = new();
+			try
+			{
+				ValidateArea(id);
 
 			LockModelView lockInfo = this.controllerLogic.RefreshLockOnArea(id, out bool status, out string message);
 
@@ -141,7 +179,23 @@ namespace RDM.Web.Controllers
 				? $"Lock successfully refreshed in {id.ToDescription()} by {this.Logic.ActiveUser.DisplayName}."
 				: $"Failed to refresh lock in {id.ToDescription()} for {this.Logic.ActiveUser.DisplayName}. {message}");
 
-			return this.Json(new { Status = status, LockInfo = lockInfo, Message = message });
+				response.Data = lockInfo;
+				response.IsSuccessful = status;
+				if (!status)
+				{
+					response.Messages.Add(message);
+				}
+			}
+			catch (AuthorizationException ae)
+			{
+				response.Messages.Add(ae.Message);
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -153,7 +207,7 @@ namespace RDM.Web.Controllers
 		{
 			if (!Enum.IsDefined(typeof(LockArea), areaId))
 			{
-				throw new ArgumentException("Not a valid area to lock.");
+				throw new GenValidationException("Not a valid area to lock.");
 			}
 		}
 
