@@ -274,13 +274,13 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Returns a collection of PBOEs for a given Workspace ID
+		/// Returns a collection of PBOEs for a given PTM Tracking Number
 		/// </summary>
-		/// <param name="workspaceId">Workspace Ids.</param>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
 		/// <returns>The matching DTOs.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		[DbQuery]
-		public ICollection<PBOEDataDTO> GetPBOEsForWorkspace(int workspaceId)
+		public ICollection<PBOEDataDTO> GetPBOEsForTrackingNumber(string ptmTrackingNumber)
 		{
 			List<PBOEDataDTO> toReturn = null;
 
@@ -291,8 +291,8 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					toReturn = (from b in gbe.BOEFormPBOEs
-								where workspaceId.Equals(b.WorkspaceID)
 								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
+								where ptmTrackingNumber.Equals(w.TrackingNumber)
 								orderby b.PBOEFormID
 								select new PBOEDataDTO
 								{
@@ -321,7 +321,8 @@ namespace GenBOE.DataBridge.DTO
 									ProposalDate = b.ProposalDate,
 									ValidityDate = b.ValidityDate,
 									Approver = b.Approver,
-									LeadEstimatorId = w.CostVolumeLeadPricerUserID
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID,
+									WorkspaceId = w.WorkspaceID
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -330,7 +331,7 @@ namespace GenBOE.DataBridge.DTO
 						pboe.SubResources = resourceDTODataLoader.GetResourceNamesByIds(gbe.BOEFormPBOEResourcesXREFs.Where(r => r.PBOEFormID == pboe.PBoeID).Select(r => r.ResourceID).ToList());
 
 						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
-													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == workspaceId
+													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == pboe.WorkspaceId
 													  from xRef in gbe.BOEFormPBOEResourcesXREFs where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
 													  where xRef.PBOEFormID == pboe.PBoeID
 													  select b.ValueSpread ?? 0m).ToList();
