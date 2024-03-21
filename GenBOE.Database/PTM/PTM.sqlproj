@@ -181,6 +181,8 @@
     <Build Include="Release Scripts\Release 2024.4\1 - Release 2024.4.sql" />
     <Build Include="Object Scripts\Stored Procedures\GetAcvUsageData.proc.sql" />
     <Build Include="Release Scripts\Release 2024.5\1 - Release 2024.5.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2024.5 Generated On 2_22_2024.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2024.6 Generated On 3_21_2024.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
