@@ -239,7 +239,7 @@ namespace APTSPropricerApi.Controllers
 			{
 				Data = new List<Table>()
 			};
-			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response, ExportType.Excel);
+			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response.Messages, ExportType.Excel);
 			ReadBatchFile(tempFile, response);
 			response.IsSuccessful = true;
 			return response;
@@ -255,8 +255,7 @@ namespace APTSPropricerApi.Controllers
 		internal ProPricerResponse<byte[]> ExportBatchReportAsPdf(int instanceId, ProPricerExportContainer container, out string tempFile)
 		{
 			ProPricerResponse<byte[]> response = new();
-			//tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Pdf);
-			tempFile = GenerateBatchReportFileAsPdf(instanceId, container.proposalId, container.batchReportId, response, ExportType.Excel);
+			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response.Messages, ExportType.Excel);
 			if (!response.Messages.Any())
 			{
 				try
@@ -350,9 +349,10 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">The connection instance identifier.</param>
 		/// <param name="proposalId">The proposal Id to use for the Batch Report</param>
 		/// <param name="batchReportId">The batch report Id</param>
-		/// <param name="response">The response object used to add error messages into.</param>
+		/// <param name="messages">The object used to add error messages into.</param>
+		/// <param name="exportType">The export type</param>
 		/// <returns>The temporary File location that was generated.</returns>
-		private string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ProPricerResponse<ICollection<Table>> response, ExportType exportType)
+		private string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ICollection<string> messages, ExportType exportType)
 		{
 			string tempFile = null;
 			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
@@ -375,64 +375,12 @@ namespace APTSPropricerApi.Controllers
 						}
 						else
 						{
-							response.Messages.Add("Batch Report was not found or could not be opened in the workspace.");
+							messages.Add("Batch Report was not found or could not be opened in the workspace.");
 						}
 					}
 					else
 					{
-						response.Messages.Add("Proposal was not found or could not be opened in the workspace.");
-					}
-				}
-				finally
-				{
-					proposal?.Close();
-
-					batchReport?.Close();
-
-					ppc.Workspace.Reports.BatchReports.Close();
-				}
-			}
-
-			return tempFile;
-		}
-
-		/// <summary>
-		/// Generates a Batch Report File as PDF
-		/// </summary>
-		/// <param name="instanceId">The connection instance identifier.</param>
-		/// <param name="proposalId">The proposal Id to use for the Batch Report</param>
-		/// <param name="batchReportId">The batch report Id</param>
-		/// <param name="response">The response object used to add error messages into.</param>
-		/// <returns>The temporary File location that was generated.</returns>
-		private string GenerateBatchReportFileAsPdf(int instanceId, string proposalId, string batchReportId, ProPricerResponse<byte[]> response, ExportType exportType)
-		{
-			string tempFile = null;
-			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-			{
-				Proposal proposal = null;
-				BatchReport batchReport = null;
-				try
-				{
-					Guid proposalGuid = new(proposalId);
-					proposal = ppc.Workspace.Proposals.Find(proposalGuid).Value();
-
-					if (proposal != null)
-					{
-						proposal.Open();
-						ppc.Workspace.Reports.BatchReports.Open();
-						batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id.ToString() == batchReportId);
-						if (batchReport != null)
-						{
-							tempFile = Utility.GenerateTempFile(batchReport, proposal, exportType);
-						}
-						else
-						{
-							response.Messages.Add("Batch Report was not found or could not be opened in the workspace.");
-						}
-					}
-					else
-					{
-						response.Messages.Add("Proposal was not found or could not be opened in the workspace.");
+						messages.Add("Proposal was not found or could not be opened in the workspace.");
 					}
 				}
 				finally
