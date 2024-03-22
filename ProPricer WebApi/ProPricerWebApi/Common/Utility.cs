@@ -749,12 +749,12 @@ namespace APTSPropricerApi.Common
 
 		public void AskToContinue(string message)
 		{
-			
+
 		}
 
 		public void OnCurrentTableNotUsed(string message)
 		{
-			
+
 		}
 
 		public Project RequestCurrentProject()

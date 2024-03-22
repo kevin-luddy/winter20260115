@@ -118,7 +118,7 @@ namespace APTSPropricerApi
 			}
 
 			this.configurationService.ConfigureAppBuilder(app);
-			
+
 			ClearOutOldFiles();
 		}
 
