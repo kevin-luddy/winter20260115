@@ -218,8 +218,7 @@ project.lock.json
 *.Specs_*.html
 
 # Appsettings
-# TODO: Uncomment this out after the merge request is created to merge in the deleted appsettings
-# appSettings.Local.json
+appSettings.Local.json
 
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
