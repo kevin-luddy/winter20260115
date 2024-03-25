@@ -14,7 +14,7 @@
       <Query>
         <DataSourceName>genTrac</DataSourceName>
         <CommandType>StoredProcedure</CommandType>
-        <CommandText>GetAcvUsageData</CommandText>
+        <CommandText>GetAcvUsageDataComplete</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
@@ -44,7 +44,7 @@
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>ACV Usage Data Summary - All Proposals</Value>
+                    <Value>ACV Usage Data Summary - Complete Proposals</Value>
                     <Style>
                       <FontFamily>Segoe UI Light</FontFamily>
                       <FontSize>24pt</FontSize>
@@ -57,7 +57,7 @@
             </Paragraphs>
             <rd:DefaultName>textbox1</rd:DefaultName>
             <Height>0.43in</Height>
-            <Width>6.64583in</Width>
+            <Width>7.51042in</Width>
             <Style>
               <PaddingLeft>2pt</PaddingLeft>
               <PaddingRight>2pt</PaddingRight>
@@ -351,7 +351,7 @@
         <Height>1.1in</Height>
         <Style />
       </Body>
-      <Width>7.02083in</Width>
+      <Width>9.65625in</Width>
       <Page>
         <LeftMargin>1in</LeftMargin>
         <RightMargin>1in</RightMargin>
