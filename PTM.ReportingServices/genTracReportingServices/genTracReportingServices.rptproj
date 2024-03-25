@@ -65,6 +65,7 @@
   <ItemGroup>
     <Report Include="ACV Usage Data - Complete.rdl" />
     <Report Include="ACV Usage Data.rdl" />
+    <Report Include="ACV Usage Details.rdl" />
     <Report Include="DFARS Non-Standard Responses.rdl" />
     <Report Include="ManagementReport.rdl" />
     <Report Include="PAR Checklist Report.rdl" />
