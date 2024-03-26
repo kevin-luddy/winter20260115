@@ -2,3 +2,4 @@
 GO
 
 -- Created a new SP GetAcvUsageDataComplete
+-- Created a new SP GetAcvUsageDataDetails

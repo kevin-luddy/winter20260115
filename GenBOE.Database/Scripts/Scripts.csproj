@@ -71,6 +71,7 @@
     <Content Include="Object Scripts\Stored Procedures\deleteBOECustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOEFormIBOE.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOEFormPBOE.sql" />
+    <Content Include="Object Scripts\Stored Procedures\GetPboeIboeFormDataForReport.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOELaborSpreadByBOELaborTypeID.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOELaborType.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOELaborTypeCustomFieldValue.sql" />
@@ -345,7 +346,9 @@
     <Content Include="Release Scripts\Release 2024.05\1 - Release 2024.5 Script.sql" />
     <Content Include="Release Scripts\Release 2024.06\1 - Release 2024.6 Script.sql" />
     <Content Include="Release Scripts\Release 2024.06\2 - Release 2024.6 Script.sql" />
+    <Content Include="Release Scripts\Release 2024.08\1 - Release 2024.8.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.04 Generated On 2_15_2024.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2024.08 Generated On 3_26_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.11 Generated On 4_11_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.5 Generated On 3_8_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2022.15 Generated On 5_16_2022.sql" />
