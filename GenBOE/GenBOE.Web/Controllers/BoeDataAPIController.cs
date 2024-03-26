@@ -998,7 +998,7 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForWorkspace(trackingNumber).Select<PBOEDataDTO, PBOEData>(x =>
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForTrackingNumber(trackingNumber).Select<PBOEDataDTO, PBOEData>(x =>
 					{
 						UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
 						UserDTO leadEstimator = userDataLoader.GetUserByID(x.LeadEstimatorId);
@@ -1036,7 +1036,8 @@ namespace GenBOE.Web.Controllers
 							LeadEstimatorDisplayName = leadEstimator != null ? leadEstimator.DisplayName : string.Empty,
 							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
 							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
-							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty
+							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty,
+							WorkspaceId = x.WorkspaceId 
 						};
 					}).ToList();
 

@@ -19,19 +19,12 @@ namespace GenBOE.DataBridge.DTO
         /// <returns>BOE Forms used by Workspace.</returns>
         ICollection<BOEFormPBOEDTO> GetByWorkspaceId(int wsId);
 
-        /// <summary>
-        /// Returns a collection of PBOE BOE Form DTOs based on the Collection of Ids.
-        /// </summary>
-        /// <param name="workspaceId">Capture Ids.</param>
-        /// <returns>The matching DTOs.</returns>
-        ICollection<PBOEDataDTO> GetPBOEsForWorkspace(int workspaceId);
-
 		/// <summary>
-		/// Returns a collection of PBOEs for a given Workspace ID
+		/// Returns a collection of PBOEs for a given PTM tracking number
 		/// </summary>
-		/// <param name="trackingNumber">Tracking Number</param>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
 		/// <returns>The matching DTOs.</returns>
-		ICollection<PBOEDataDTO> GetPBOEsForWorkspace(string trackingNumber);
+		ICollection<PBOEDataDTO> GetPBOEsForTrackingNumber(string ptmTrackingNumber);
 
 		/// <summary>
 		/// Get a single PBOE from a Workspace ID and PBOE ID.

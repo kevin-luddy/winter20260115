@@ -13,6 +13,7 @@ namespace RDM.Web.Controllers
 	using System.Linq;
 	using System.Reflection;
 	using System.Transactions;
+	using Azure;
 	using IES.ActionLogic.Core.ControllerLogic;
 	using IES.ActionLogic.Core.IO.Export;
 	using IES.ActionLogic.Core.IO.Import;
@@ -22,6 +23,7 @@ namespace RDM.Web.Controllers
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.Common.Core.OfficeUtilities;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
@@ -30,6 +32,7 @@ namespace RDM.Web.Controllers
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
+	using RDM.Backend.Models;
 	using RDM.Web.Common;
 
 	/// <summary>
@@ -79,21 +82,23 @@ namespace RDM.Web.Controllers
 		[HttpGet("[action]")]
 		public ActionResult GetRatesByVersion(int? id)
 		{
-			ActionResult response;
-
+			IESResponse<RateGridModelView> response = new();
 			try
 			{
-				RateGridModelView model = this.controllerLogic.GetRatesByVersion(id, this.Logic.Revisions);
-
-				response = this.Json(model);
+				response.Data = this.controllerLogic.GetRatesByVersion(id, this.Logic.Revisions);
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 			catch (Exception ex)
 			{
 				this.log.LogError(ex, "Unknown Exception.");
-				throw new GenValidationException(ex.Message);
+				response.Messages.Add("Unknown Exception");
 			}
 
-			return response;
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -128,7 +133,15 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult ValidateRateCodes()
 		{
-			return this.ValidateAndImportRateCodes(false);
+			IESResponse <ICollection <RateDetailModelView >>  validationResponse = this.ValidateRateCodesInternal();
+			IESResponse<ValidateRateCodesViewModel> response = new(); 
+			
+			response.Data = new()
+			{
+				InsertRateCodes = validationResponse.Data.Where(x => x.Id < 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList(),
+				UpdateRateCodes = validationResponse.Data.Where(x => x.Id >= 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList()
+			};
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -138,68 +151,83 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult ImportRateCodes()
 		{
-			return this.ValidateAndImportRateCodes(true);
+			IESResponse<ICollection<RateDetailModelView>> response = new();
+
+			IESResponse<ICollection<RateDetailModelView>> validationResponse = this.ValidateRateCodesInternal();
+			if (validationResponse.IsSuccessful)
+			{
+				try
+				{
+					// Save the updated rate codes to the Database for the work in progress version.
+					this.controllerLogic.LoadImportedRateCodes(validationResponse.Data);
+
+					// Refresh the rates from the database.
+					RevisionModelView revision = this.Logic.WipRevision;
+					response.Data = this.rateDetailLoader.GetRatesByRevision(revision);
+					response.IsSuccessful = true;
+				}
+				catch (GenValidationException ex)
+				{
+					response.Messages = ex.GetValidationMessages(ex.ValidationList);
+				}
+			}
+			else
+			{
+				response.Messages = validationResponse.Messages;
+			}
+
+			return this.Json(response);
 		}
 
 		/// <summary>
-		/// Helper method to validate and (optionally) import the rate codes in the file.
+		/// Helper method to import and validate the rate codes in the file.
 		/// </summary>
-		/// <param name="doImport">if true, perform validation and import; otherwise, only perform validation.</param>
 		/// <returns>All rate codes for the WIP version, including imported rate codes.</returns>
 		[NonAction]
-		private ActionResult ValidateAndImportRateCodes(bool doImport)
+		private IESResponse<ICollection<RateDetailModelView>> ValidateRateCodesInternal()
 		{
-			ActionResult response;
+			IESResponse<ICollection<RateDetailModelView>> response = new();
 
-			if (this.Request.Form.Files.Count == 0)
+			try
 			{
-				throw new GenValidationException("No file was sent to Import.");
-			}
-
-			IFormFile importFile = this.Request.Form.Files[0];
-			if (importFile != null && importFile.Length > 0)
-			{
-				RevisionModelView revision = this.Logic.WipRevision;
-
-				// Confirm that either user owns lock or area is unlocked
-				this.Logic.VerifyLockForSaving(LockArea.RDMRates, revision.Id);
-
-				RateGridModelView rates = this.controllerLogic.GetRatesByVersion(revision.Id, this.Logic.Revisions);
-				ICollection<RateDetailModelView> importedRateCodes = RateCodeImporter.ImportFromExcelFile(this.Request.Form.Files[0].OpenReadStream(), rates);
-
-				// Load the existing RateDetails for all the imported Rates.
-				ICollection<RateDetailModelView> existingRateCodes = rates.Rates;
-				// Perform validation
-				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateImportedRateCodes(existingRateCodes.ToArray(), importedRateCodes.ToArray());
-				// Get a collection of rate codes to be updated or inserted.
-				ICollection<RateDetailModelView> updatedRateCodes = this.controllerLogic.GetUpdatedRateCodes(existingRateCodes, importedRateCodes);
-				if (doImport)
+				if (this.Request.Form.Files.Count == 0)
 				{
+					throw new GenValidationException("No file was sent to Import.");
+				}
+
+				IFormFile importFile = this.Request.Form.Files[0];
+				if (importFile != null && importFile.Length > 0)
+				{
+					RevisionModelView revision = this.Logic.WipRevision;
+
+					// Confirm that either user owns lock or area is unlocked
+					this.Logic.VerifyLockForSaving(LockArea.RDMRates, revision.Id);
+
+					RateGridModelView rates = this.controllerLogic.GetRatesByVersion(revision.Id, this.Logic.Revisions);
+					ICollection<RateDetailModelView> importedRateCodes = RateCodeImporter.ImportFromExcelFile(this.Request.Form.Files[0].OpenReadStream(), rates);
+
+					// Load the existing RateDetails for all the imported Rates.
+					ICollection<RateDetailModelView> existingRateCodes = rates.Rates;
+					// Perform validation
+					ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateImportedRateCodes(existingRateCodes.ToArray(), importedRateCodes.ToArray());
+
 					if (validationErrors.Any())
 					{
 						throw new GenValidationException(validationErrors);
 					}
 
-					// Save the updated rate codes to the Database for the work in progress version.
-					this.controllerLogic.LoadImportedRateCodes(updatedRateCodes);
-
-					// Refresh the rates from the database.
-					response = this.Json(this.rateDetailLoader.GetRatesByRevision(revision));
+					// Get a collection of rate codes to be updated or inserted.
+					response.Data = this.controllerLogic.GetUpdatedRateCodes(existingRateCodes, importedRateCodes);
+					response.IsSuccessful = true;
 				}
 				else
 				{
-					// generate validation response
-					response = this.Json(new
-					{
-						ValidationErrors = validationErrors,
-						InsertRateCodes = updatedRateCodes.Where(x => x.Id < 0).OrderBy(x => x.RateCode).Select(x => new { x.RateCode, x.Description }).ToList(),
-						UpdateRateCodes = updatedRateCodes.Where(x => x.Id >= 0).OrderBy(x => x.RateCode).Select(x => new { x.RateCode, x.Description }).ToList()
-					});
+					throw new GenValidationException("Empty file was sent to Import.");
 				}
 			}
-			else
+			catch (GenValidationException ex)
 			{
-				throw new GenValidationException("Empty file was sent to Import.");
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return response;
@@ -212,53 +240,61 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult ImportRates()
 		{
-			ActionResult response;
+			IESResponse<ICollection<RateDetailModelView>> response = new();
 
-			if (this.Request.Form.Files.Count == 0)
+			try
 			{
-				throw new GenValidationException("No file was sent to Import.");
-			}
-
-			IFormFile importFile = this.Request.Form.Files[0];
-			if (importFile != null && importFile.Length > 0)
-			{
-				RevisionModelView revision = this.Logic.WipRevision;
-
-				// Confirm that either user owns lock or area is unlocked
-				this.Logic.VerifyLockForSaving(LockArea.RDMRates, revision.Id);
-
-				Collection<RateDetailModelView> importRateDetails = RateImporter.GetRatesFromExcelFile(importFile.OpenReadStream(), out List<string> importedRateCodes);
-
-				// Retrieve all the rate code replications as well
-				importedRateCodes.AddRange(this.replicationLoader.GetAll().Select(r => r.To));
-
-				// Load the existing RateDetails for all the imported Rates.
-				ICollection<RateDetailModelView> existingRates = this.rateDetailLoader.GetRatesForImport(revision, importedRateCodes.ToArray());
-
-				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateImportedRates(existingRates, importRateDetails);
-				if (validationErrors.Any())
+				if (this.Request.Form.Files.Count == 0)
 				{
-					throw new GenValidationException(validationErrors);
+					throw new GenValidationException("No file was sent to Import.");
 				}
 
-				validationErrors = this.controllerLogic.ValidateRateDetailModelViews(importRateDetails, revision.StartYear, revision.EndYear);
-				if (validationErrors.Any())
+				IFormFile importFile = this.Request.Form.Files[0];
+				if (importFile != null && importFile.Length > 0)
 				{
-					throw new GenValidationException(validationErrors);
+					RevisionModelView revision = this.Logic.WipRevision;
+
+					// Confirm that either user owns lock or area is unlocked
+					this.Logic.VerifyLockForSaving(LockArea.RDMRates, revision.Id);
+
+					Collection<RateDetailModelView> importRateDetails = RateImporter.GetRatesFromExcelFile(importFile.OpenReadStream(), out List<string> importedRateCodes);
+
+					// Retrieve all the rate code replications as well
+					importedRateCodes.AddRange(this.replicationLoader.GetAll().Select(r => r.To));
+
+					// Load the existing RateDetails for all the imported Rates.
+					ICollection<RateDetailModelView> existingRates = this.rateDetailLoader.GetRatesForImport(revision, importedRateCodes.ToArray());
+
+					ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateImportedRates(existingRates, importRateDetails);
+					if (validationErrors.Any())
+					{
+						throw new GenValidationException(validationErrors);
+					}
+
+					validationErrors = this.controllerLogic.ValidateRateDetailModelViews(importRateDetails, revision.StartYear, revision.EndYear);
+					if (validationErrors.Any())
+					{
+						throw new GenValidationException(validationErrors);
+					}
+
+					// Send the updated rates to the Database for the work in progress version.
+					this.controllerLogic.LoadImportedRates(existingRates, importRateDetails);
+
+					// Refresh the rates from the database.
+					response.Data = this.rateDetailLoader.GetRatesByRevision(revision);
+					response.IsSuccessful = true;
 				}
-
-				// Send the updated rates to the Database for the work in progress version.
-				this.controllerLogic.LoadImportedRates(existingRates, importRateDetails);
-
-				// Refresh the rates from the database.
-				response = this.Json(this.rateDetailLoader.GetRatesByRevision(revision));
+				else
+				{
+					throw new GenValidationException("Empty file was sent to Import.");
+				}
 			}
-			else
+			catch (GenValidationException ex)
 			{
-				throw new GenValidationException("Empty file was sent to Import.");
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			return response;
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -352,35 +388,45 @@ namespace RDM.Web.Controllers
 		[HttpPost("[action]")]
 		public ActionResult Save(RateDetailModelView[] collection)
 		{
-			if (collection == null || collection.None())
+			IESResponse<ICollection<RateDetailModelView>> response = new();
+
+			try
 			{
-				throw new GenValidationException("There are no Rates being saved.");
-			}
-
-			// Confirm that either user owns lock or area is unlocked
-			this.Logic.VerifyLockForSaving(LockArea.RDMRates, collection[0].RevisionId);
-
-			RevisionModelView revision = this.Logic.RevisionMediator.GetById(collection[0].RevisionId);
-			ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateDetailModelViews(collection, revision.StartYear, revision.EndYear);
-			if (validationErrors.Any())
-			{
-				throw new GenValidationException(validationErrors);
-			}
-
-			using (TransactionScope scope = new(TransactionScopeOption.Required,
-				new TransactionOptions
+				if (collection == null || collection.None())
 				{
-					IsolationLevel = IsolationLevel.Snapshot,
-					Timeout = new TimeSpan(0, 0, 2 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
-				}))
+					throw new GenValidationException("There are no Rates being saved.");
+				}
+
+				// Confirm that either user owns lock or area is unlocked
+				this.Logic.VerifyLockForSaving(LockArea.RDMRates, collection[0].RevisionId);
+
+				RevisionModelView revision = this.Logic.RevisionMediator.GetById(collection[0].RevisionId);
+				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateDetailModelViews(collection, revision.StartYear, revision.EndYear);
+				if (validationErrors.Any())
+				{
+					throw new GenValidationException(validationErrors);
+				}
+
+				using (TransactionScope scope = new(TransactionScopeOption.Required,
+					new TransactionOptions
+					{
+						IsolationLevel = IsolationLevel.Snapshot,
+						Timeout = new TimeSpan(0, 0, 2 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
+					}))
+				{
+					this.rateDetailLoader.SaveDetails(collection);
+					scope.Complete();
+				}
+
+				response.Data = this.rateDetailLoader.GetRatesByRevision(revision);
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
 			{
-				this.rateDetailLoader.SaveDetails(collection);
-				scope.Complete();
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revision);
-
-			return this.Json(rates);
+			return this.Json(response);
 		}
 	}
 }

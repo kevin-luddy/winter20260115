@@ -345,10 +345,10 @@
     <Content Include="Release Scripts\Release 2024.04\2 - Release 2024.4 Script.sql" />
     <Content Include="Release Scripts\Release 2024.05\1 - Release 2024.5 Script.sql" />
     <Content Include="Release Scripts\Release 2024.06\1 - Release 2024.6 Script.sql" />
+    <Content Include="Release Scripts\Release 2024.06\2 - Release 2024.6 Script.sql" />
     <Content Include="Release Scripts\Release 2024.08\1 - Release 2024.8.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.04 Generated On 2_15_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.08 Generated On 3_26_2024.sql" />
-    <Content Include="_Full Script Files For Specific Versions\BOE - 2024.06 Generated On 3_18_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.11 Generated On 4_11_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.5 Generated On 3_8_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2022.15 Generated On 5_16_2022.sql" />
@@ -386,6 +386,7 @@
     <Content Include="_Full Script Files For Specific Versions\BOE - 2023.42 Generated On 1_17_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.03 Generated On 2_1_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.05 Generated On 2_28_2024.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2024.06 Generated On 3_25_2024.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Insert Application Administrator.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Scrub database data.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genTrac - Insert Application Administrator.sql" />

@@ -72,24 +72,35 @@ namespace RDM.Web.Controllers
 		[HttpGet("[action]")]
 		public ActionResult GetFileAttachments(int? versionId)
 		{
-			ICollection<RevisionModelView> revisions = this.Logic.Revisions;
-
-			RevisionModelView revision = versionId.HasValue ? revisions.FirstOrDefault(r => r.Id == versionId.Value) : revisions.LastOrDefault();
-			if (revision == null)
+			IESResponse<FileAttachmentGridModelView> response = new();
+			try
 			{
-				throw new GenValidationException("Revision not found.");
+				ICollection<RevisionModelView> revisions = this.Logic.Revisions;
+
+				RevisionModelView revision = versionId.HasValue ? revisions.FirstOrDefault(r => r.Id == versionId.Value) : revisions.LastOrDefault();
+				if (revision == null)
+				{
+					throw new GenValidationException("Revision not found.");
+				}
+
+				FileAttachmentGridModelView model = new()
+				{
+					SelectedRevisionId = revision.Id,
+					Sections = this.sectionLoader.RetrieveSectionsAsOptions(revision),
+					Versions = this.Logic.RevisionMediator.GetRevisionOptions(revisions),
+					FileAttachments = this.fileAttachmentLoader.GetByRevision(revision.Id),
+					LockInfo = this.controllerLogic.GetCurrentLockInfo(LockArea.FileAttachments)
+				};
+
+				response.Data = model;
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			FileAttachmentGridModelView model = new()
-			{
-				SelectedRevisionId = revision.Id,
-				Sections = this.sectionLoader.RetrieveSectionsAsOptions(revision),
-				Versions = this.Logic.RevisionMediator.GetRevisionOptions(revisions),
-				FileAttachments = this.fileAttachmentLoader.GetByRevision(revision.Id),
-				LockInfo = this.controllerLogic.GetCurrentLockInfo(LockArea.FileAttachments)
-			};
-
-			return this.Json(model);
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -106,57 +117,69 @@ namespace RDM.Web.Controllers
 				throw new ArgumentNullException(nameof(collection));
 			}
 
-			// Client can add new rows, then delete them all - catch it here.
-			Collection<FileAttachmentRowModelView> filteredCollection = new();
-			foreach (FileAttachmentRowModelView mv in collection)
+			IESResponse<bool> response = new();
+			try
 			{
-				if (mv.Id > 0 || !mv.IsDeleted)
+
+				// Client can add new rows, then delete them all - catch it here.
+				Collection<FileAttachmentRowModelView> filteredCollection = new();
+				foreach (FileAttachmentRowModelView mv in collection)
 				{
-					filteredCollection.Add(mv);
-				}
-			}
-
-			if (filteredCollection.Any())
-			{
-				// If we don't have the revisionId in our filteredCollection, get the WIP from DB.
-				int revisionId = 0;
-				FileAttachmentRowModelView revisionFA = filteredCollection.FirstOrDefault(x => x.RevisionID > 0);
-
-				if (revisionFA != null)
-				{
-					revisionId = revisionFA.RevisionID;
-				}
-
-				// If we have no revisionIds - get the WIP revision.
-				if (revisionId == 0)
-				{
-					revisionId = this.Logic.WipRevision.Id;
-				}
-
-				// Confirm that either user owns lock or area is unlocked
-				this.Logic.VerifyLockForSaving(LockArea.FileAttachments, revisionId);
-
-				// Get the revision's Sections
-				ICollection<OptionModelView> sections = this.sectionLoader.RetrieveSectionsAsOptions(new RevisionModelView { Id = revisionId });
-				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateFileAttachments(filteredCollection, sections);
-				if (validationErrors.Any())
-				{
-					throw new GenValidationException(validationErrors);
-				}
-
-				using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
-				{
-					foreach (FileAttachmentRowModelView filtered in filteredCollection)
+					if (mv.Id > 0 || !mv.IsDeleted)
 					{
-						filtered.RevisionID = revisionId;
-						this.fileAttachmentLoader.Save(filtered);
+						filteredCollection.Add(mv);
+					}
+				}
+
+				if (filteredCollection.Any())
+				{
+					// If we don't have the revisionId in our filteredCollection, get the WIP from DB.
+					int revisionId = 0;
+					FileAttachmentRowModelView revisionFA = filteredCollection.FirstOrDefault(x => x.RevisionID > 0);
+
+					if (revisionFA != null)
+					{
+						revisionId = revisionFA.RevisionID;
 					}
 
-					scope.Complete();
+					// If we have no revisionIds - get the WIP revision.
+					if (revisionId == 0)
+					{
+						revisionId = this.Logic.WipRevision.Id;
+					}
+
+					// Confirm that either user owns lock or area is unlocked
+					this.Logic.VerifyLockForSaving(LockArea.FileAttachments, revisionId);
+
+					// Get the revision's Sections
+					ICollection<OptionModelView> sections = this.sectionLoader.RetrieveSectionsAsOptions(new RevisionModelView { Id = revisionId });
+					ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateFileAttachments(filteredCollection, sections);
+					if (validationErrors.Any())
+					{
+						throw new GenValidationException(validationErrors);
+					}
+
+					using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+					{
+						foreach (FileAttachmentRowModelView filtered in filteredCollection)
+						{
+							filtered.RevisionID = revisionId;
+							this.fileAttachmentLoader.Save(filtered);
+						}
+
+						scope.Complete();
+					}
 				}
+
+				response.Data = true;
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			return new OkResult();
+			return this.Json(response);
 		}
 	}
 }
