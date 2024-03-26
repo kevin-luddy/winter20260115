@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.06, on 3/18/2024.
+    This file was auto-generated for Release: 2024.06, on 3/25/2024.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -21,6 +21,29 @@ PRINT '### Starting file: \Release 2024.06\1 - Release 2024.6 Script.sql';
    ## END ##
 */
 
+
+/*
+    File: \Release 2024.06\2 - Release 2024.6 Script.sql
+*/
+PRINT '### Starting file: \Release 2024.06\2 - Release 2024.6 Script.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.6';
+GO
+
+/*
+	3/25/2025 e374897
+	UPDATE to make workspaces that are 1:1 with a tracking number set to Current
+*/
+
+UPDATE [genBOESpace_UAT].[dbo].[Workspace]
+SET CurrentPTMWorkspace = 1
+WHERE [TrackingNumber] IN 
+(
+	SELECT [TrackingNumber]
+	FROM [genBOESpace_UAT].[dbo].[Workspace]
+	GROUP BY [TrackingNumber]
+	HAVING COUNT([WorkspaceId]) = 1
+);
+GO
 
 /*
     File: \Functions\MapToNewMoqType.sql
