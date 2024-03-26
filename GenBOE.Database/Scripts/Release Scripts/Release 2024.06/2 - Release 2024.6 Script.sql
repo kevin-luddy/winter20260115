@@ -6,12 +6,12 @@ GO
 	UPDATE to make workspaces that are 1:1 with a tracking number set to Current
 */
 
-UPDATE [genBOESpace_UAT].[dbo].[Workspace]
+UPDATE [dbo].[Workspace]
 SET CurrentPTMWorkspace = 1
 WHERE [TrackingNumber] IN 
 (
 	SELECT [TrackingNumber]
-	FROM [genBOESpace_UAT].[dbo].[Workspace]
+	FROM [dbo].[Workspace]
 	GROUP BY [TrackingNumber]
 	HAVING COUNT([WorkspaceId]) = 1
 );
