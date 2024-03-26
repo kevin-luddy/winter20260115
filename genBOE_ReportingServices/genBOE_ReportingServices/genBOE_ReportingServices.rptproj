@@ -78,6 +78,7 @@
     <Report Include="OffloadCostByYear.rdl" />
     <Report Include="OffloadCostSummary.rdl" />
     <Report Include="OffloadDetailedReport.rdl" />
+    <Report Include="Pboe And Iboe Authors and Approvers.rdl" />
     <Report Include="PreVsPostOffloadTotals.rdl" />
     <Report Include="ProjectCLINCostSummary.rdl" />
     <Report Include="PRP.rdl" />
