@@ -187,6 +187,7 @@
     <Build Include="Object Scripts\Stored Procedures\GetAcvUsageDataComplete.proc.sql" />
     <None Include="Release Scripts\Release 2024.7\1 - Release 2024.7.sql" />
     <Build Include="_Full Script Files For Specific Versions\PTM - 2024.7 Generated On 3_25_2024.sql" />
+    <Build Include="Object Scripts\Stored Procedures\GetAcvUsageDataDetails.proc.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
