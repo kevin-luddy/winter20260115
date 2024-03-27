@@ -59,15 +59,16 @@
 		    piwikTracker2.enableLinkTracking();
 
 		    piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", <%:Utilities.PiwikId()%>);          //<!-- BOE  -->
-		    var currentUser = '<%: ViewData["CurrentUserName"] %>';
+            var currentUser = '<%: ViewData["CurrentUserName"] %>';
             // Track each user's visit
+			piwikTracker3.push(['setUserId', '<%: ViewData["CurrentNtid"] %>']);
             piwikTracker3.setCustomVariable(1, "User Account", currentUser, "visit");
             piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
 		    piwikTracker3.trackPageView();
 		    piwikTracker3.enableLinkTracking();
 	    } catch( err ) {}
     };
-    </script>
+	</script>
     <noscript>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
