@@ -667,6 +667,7 @@ namespace GenBOE.DataBridge.DTO
 					result = (from w in gbe.Workspaces
 							  join eti in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eti.ETIUserID
 							  where w.IsDeleted == false
+							  && w.CurrentPTMWorkspace
 							  select new NlfWorkspaceInnerDataDTO
 							  {
 								  WorkspaceId = w.WorkspaceID,
@@ -733,6 +734,7 @@ namespace GenBOE.DataBridge.DTO
 					result = (from w in gbe.Workspaces
 							  join eti in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eti.ETIUserID
 							  where w.TrackingNumber == trackingNumber && w.IsDeleted == false
+							  && w.CurrentPTMWorkspace
 							  select new NlfWorkspaceInnerDataDTO
 							  {
 								  WorkspaceId = w.WorkspaceID,
