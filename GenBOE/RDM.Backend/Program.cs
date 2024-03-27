@@ -24,7 +24,6 @@ config.AddWindowsAuthentication(builder.Services, builder.Configuration);
 builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddScoped<IActiveDirectoryService, ActiveDirectoryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<TokenHandling>();
 
 // Register Mapper
 builder.Services.AddScoped<ICommonDataMapper, CommonDataMapper>();

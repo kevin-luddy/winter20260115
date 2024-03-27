@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
 	using System.Collections.ObjectModel;
 	using System.Data.SqlClient;
 	using System.Linq;
+	using System.Runtime.Remoting.Messaging;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using GenTRAC.Models;
@@ -610,14 +611,29 @@ namespace GenBOE.DataBridge.DTO
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
+				using (genTRACEntities gte = new genTRACEntities())
+				{
+					filteredTrackingNumbers = (from p in gte.Proposals
+											   join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
+											   where (pur.RoleID == (int)PtmRole.SupplyChainPOCSubs
+												 || pur.RoleID == (int)PtmRole.BackupSubcontractsLead
+												 || pur.RoleID == (int)PtmRole.SupplyChainPOCMatl
+												 || pur.RoleID == (int)PtmRole.BackupMaterialLead
+												 || pur.RoleID == (int)PtmRole.Pricer
+												 || pur.RoleID == (int)PtmRole.BackupPricer
+												 || pur.RoleID == (int)PtmRole.CostVolumeLead)
+												 && pur.genTRACUser.NTID == ntid
+											   select p.ProposalTrackingID).Distinct().ToList();
+				}
+
+				filteredTrackingNumbers = filteredTrackingNumbers.Where(x => trackingNumbers.Contains(x)).ToList();
+
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					result = (from w in gbe.Workspaces
-							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
-							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
-							  where eu.NTID == ntid
-						&& w.CurrentPTMWorkspace
-						&& trackingNumbers.Contains(w.TrackingNumber)
+							  join eu in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eu.ETIUserID
+							  where w.CurrentPTMWorkspace
+						&& filteredTrackingNumbers.Contains(w.TrackingNumber)
 						&& w.IsDeleted == false
 							  select new NlfWorkspaceInnerDataDTO
 							  {
@@ -629,23 +645,6 @@ namespace GenBOE.DataBridge.DTO
 								  WorkspaceCreationDate = w.WorkspaceCreationDate,
 								  EstimatingLead = eu.DisplayName
 							  }).Distinct().ToList();
-
-					using (genTRACEntities gte = new genTRACEntities())
-					{
-						filteredTrackingNumbers = (from p in gte.Proposals
-												   where trackingNumbers.Contains(p.ProposalTrackingID)
-												   join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
-												   where pur.RoleID == (int)PtmRole.SupplyChainPOCSubs
-													 || pur.RoleID == (int)PtmRole.BackupSubcontractsLead
-													 || pur.RoleID == (int)PtmRole.SupplyChainPOCMatl
-													 || pur.RoleID == (int)PtmRole.BackupMaterialLead
-													 || pur.RoleID == (int)PtmRole.Pricer
-													 || pur.RoleID == (int)PtmRole.BackupPricer
-													 || pur.RoleID == (int)PtmRole.CostVolumeLead
-												   select p.ProposalTrackingID).Distinct().ToList();
-
-						result = result.Where(x => filteredTrackingNumbers.Contains(x.PTMTrackingNumber)).ToList();
-					}
 				}
 			}
 
@@ -668,6 +667,7 @@ namespace GenBOE.DataBridge.DTO
 					result = (from w in gbe.Workspaces
 							  join eti in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eti.ETIUserID
 							  where w.IsDeleted == false
+							  && w.CurrentPTMWorkspace
 							  select new NlfWorkspaceInnerDataDTO
 							  {
 								  WorkspaceId = w.WorkspaceID,
@@ -718,6 +718,40 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
+		/// Get Workspace Inner Data for a System Admin
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <returns>Collection of Workspace Inner Data</returns>
+		[DbQuery]
+		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataForNlf(string trackingNumber)
+		{
+			ICollection<NlfWorkspaceInnerDataDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  join eti in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eti.ETIUserID
+							  where w.TrackingNumber == trackingNumber && w.IsDeleted == false
+							  && w.CurrentPTMWorkspace
+							  select new NlfWorkspaceInnerDataDTO
+							  {
+								  WorkspaceId = w.WorkspaceID,
+								  WorkspaceUrl = w.WorkspaceShortName,
+								  WorkspaceName = w.WorkspaceName,
+								  LineOfBusiness = w.LineOfBusiness,
+								  PTMTrackingNumber = w.TrackingNumber,
+								  WorkspaceCreationDate = w.WorkspaceCreationDate,
+								  EstimatingLead = eti.DisplayName
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Get Material PBoe Data for a given Workspace
 		/// </summary>
 		/// <param name="workspaceID"></param>
@@ -742,6 +776,68 @@ namespace GenBOE.DataBridge.DTO
 								  WorkspaceName = w.WorkspaceName,
 								  ShortName = w.WorkspaceShortName,
 								  TrackingNumber = w.TrackingNumber
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get Material PBoe Data for a given tracking number
+		/// </summary>
+		/// <param name="trackingNumber">The tracking number</param>
+		/// <returns>Collection of Material PBoe</returns>
+		[DbQuery]
+		public ICollection<MPBoeDataDTO> GetMaterialPBoeForWorkspace(string trackingNumber)
+		{
+			ICollection<MPBoeDataDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  where w.TrackingNumber == trackingNumber
+							  && w.CurrentPTMWorkspace
+							  select new MPBoeDataDTO
+							  {
+								  PTMProposalTitle = w.ProposalTitle,
+								  RFPNumber = w.RFPNumber,
+								  CLINNumbers = w.CLINs.Select(x => x.DisplayedCLINNumber).ToList(),
+								  WBSNumbers = w.WorkBreakdownStructures.Select(x => x.DisplayedWBSNumber).ToList(),
+								  WorkspaceName = w.WorkspaceName,
+								  ShortName = w.WorkspaceShortName,
+								  TrackingNumber = w.TrackingNumber
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get all workspaces given a tracking number
+		/// </summary>
+		/// <param name="trackingNumber">Tracking number</param>
+		/// <returns>Collection of matching workspaces</returns>
+		[DbQuery]
+		public ICollection<WorkspaceDTO> GetWorkspacesByTrackingNumber(string trackingNumber)
+		{
+			ICollection<WorkspaceDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  where w.TrackingNumber == trackingNumber
+							  select new WorkspaceDTO
+							  {
+								  TrackingNumber = w.TrackingNumber,
+								  RFPNumber = w.RFPNumber,
+								  WorkspaceName = w.WorkspaceName,
+								  Id = w.WorkspaceID
 							  }).ToList();
 				}
 			}

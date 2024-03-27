@@ -128,12 +128,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
-				Collection<int> ids = gbe.BOEFormPBOEs.Select(x => x.WorkspaceID).Take(1000).ToCollection();
-				Assert.IsTrue(ids.Count > 0, "no test data?");
+				Collection<string> trackingNumbers = gbe.Workspaces.Select(x => x.TrackingNumber).Take(5).ToCollection();
+				Assert.IsTrue(trackingNumbers.Count > 0, "no test data?");
 
-				foreach (int workspaceId in ids)
+				foreach (string trackingNumber in trackingNumbers)
 				{
-					var item = sut.GetPBOEsForWorkspace(workspaceId);
+					var item = sut.GetPBOEsForTrackingNumber(trackingNumber);
 					Assert.IsNotNull(item);
 				}
 			}

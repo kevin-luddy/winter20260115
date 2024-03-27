@@ -204,5 +204,10 @@ namespace GenBOE.Web.ModelView
 		/// Lead Estimator Email
 		/// </summary>
 		public string LeadEstimatorEmail { get; set; }
+
+		/// <summary>
+		/// Workspace ID
+		/// </summary>
+		public int WorkspaceId { get; set; }
 	}
 }
