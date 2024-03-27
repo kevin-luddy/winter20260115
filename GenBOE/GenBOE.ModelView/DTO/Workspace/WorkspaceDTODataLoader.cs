@@ -797,6 +797,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					result = (from w in gbe.Workspaces
 							  where w.TrackingNumber == trackingNumber
+							  && w.CurrentPTMWorkspace
 							  select new MPBoeDataDTO
 							  {
 								  PTMProposalTitle = w.ProposalTitle,
