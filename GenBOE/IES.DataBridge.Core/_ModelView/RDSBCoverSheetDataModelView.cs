@@ -24,11 +24,11 @@ namespace RDSB.Backend.Models
 		/// <summary>
 		/// Adequate disclosure section.
 		/// </summary>
-		public bool AdequateDisclosure { get; set; }
+		public bool? AdequateDisclosure { get; set; }
 
 		/// <summary>
 		/// Non compliance notification.
 		/// </summary>
-		public bool NoncomplianceNotification {  get; set; }
+		public bool? NoncomplianceNotification {  get; set; }
 	}
 }
