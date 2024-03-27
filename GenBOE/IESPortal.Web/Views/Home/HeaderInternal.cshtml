@@ -66,6 +66,7 @@
             var piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", @IES.Common.Utilities.PiwikId());          //<!-- Space IES  -->
             var currentUser = '@IES.Common.Utilities.CurrentUser()';
             // Track each user's visit
+            piwikTracker3.push(['setUserId', currentUser]);
             piwikTracker3.setCustomVariable(1, "User Account", currentUser, "visit");
             piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
             piwikTracker3.trackPageView();
