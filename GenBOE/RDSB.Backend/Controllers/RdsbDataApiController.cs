@@ -16,6 +16,7 @@ namespace RDSB.Backend.Controllers
 	using GenTRAC.DataBridge.Core.Common.Security;
 	using IES.ActionLogic.Core.ControllerLogic;
 	using IES.Common.Core;
+	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
@@ -31,7 +32,7 @@ namespace RDSB.Backend.Controllers
 	/// <summary>
 	/// RDSB Data API Controller - used to serve up RDSB data for ACV (or other applications as needed)
 	/// </summary>
-	[Authorize]
+	[Authorize(AuthenticationSchemes = CommonConstants.IES_TOKEN_SCHEME)]
 	[Route("api/RdsbDataApi")]
 	public class RdsbDataApiController : IESController
 	{
@@ -41,11 +42,6 @@ namespace RDSB.Backend.Controllers
 		/// PTM Security Mapper
 		/// </summary>
 		private readonly ISecurityMapper securityMapper;
-
-		/// <summary>
-		/// Token Handling
-		/// </summary>
-		private readonly TokenHandling tokenHandler;
 
 		/// <summary>
 		/// Document Controller Logic
@@ -58,11 +54,10 @@ namespace RDSB.Backend.Controllers
 		/// <param name="securityMapper">PTM Security Mapper</param>
 		/// <param name="tokenHandler">Token Handling</param>
 		/// <param name="documentControllerLogic">Document COntroller Logic</param>
-		public RdsbDataApiController(ISecurityMapper securityMapper, TokenHandling tokenHandler, IDocumentControllerLogic documentControllerLogic,
+		public RdsbDataApiController(ISecurityMapper securityMapper, IDocumentControllerLogic documentControllerLogic,
 			ILogger<RdsbDataApiController> logger, ISecurityInformation securityInformation, IConfiguration configuration) : base(logger, securityInformation, configuration)
 		{
 			this.securityMapper = securityMapper;
-			this.tokenHandler = tokenHandler;
 			this.documentControllerLogic = documentControllerLogic;
 		}
 
@@ -80,8 +75,6 @@ namespace RDSB.Backend.Controllers
 
 			try
 			{
-				tokenHandler.AuthenticateUserFromAuthorizationToken();
-
 				toReturn.Data = documentControllerLogic.DoesRdsbRecordExistForProposalId(proposalId);
 				toReturn.IsSuccessful = true;
 			}
@@ -106,15 +99,6 @@ namespace RDSB.Backend.Controllers
 		{
 			try
 			{
-				// validate token and check permissions
-				tokenHandler.AuthenticateUserFromAuthorizationToken();
-
-				ICollection<SecurityPermissionsResponse> roles = this.securityMapper.GetRolesForLoggedInUser().ToList();
-				if (!roles.Any(x => x.ProposalID == proposalId || x.AuthorizedRole == PtmRole.Admin))
-				{
-					return this.Unauthorized();
-				}
-
 				// perform export
 				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/PPRDTemplate.docx");
 				Stream stream = await this.documentControllerLogic.GenerateRDD(proposalId, serverFileName, null, parentSectionNumber, false, portionMarkingRequired);
@@ -137,6 +121,7 @@ namespace RDSB.Backend.Controllers
 		/// </summary>
 		/// <returns>True/false</returns>
 		[HttpGet("[action]")]
+		[AllowAnonymous]
 		public bool IsAlive()
 		{
 			bool result;
@@ -166,8 +151,6 @@ namespace RDSB.Backend.Controllers
 
 			try
 			{
-				tokenHandler.AuthenticateUserFromAuthorizationToken();
-
 				toReturn.Data = new List<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)>() {
 					documentControllerLogic.GetCoverSheetData(proposalId) };
 				toReturn.IsSuccessful = true;
@@ -193,8 +176,6 @@ namespace RDSB.Backend.Controllers
 
 			try
 			{
-				tokenHandler.AuthenticateUserFromAuthorizationToken();
-
 				if (requestData != null)
 				{
 					toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateCodes(requestData.RateCodes, requestData.PtmProposalId);
@@ -226,8 +207,6 @@ namespace RDSB.Backend.Controllers
 
 			try
 			{
-				tokenHandler.AuthenticateUserFromAuthorizationToken();
-
 				if (requestData != null)
 				{
 					toReturn.Data = documentControllerLogic.GetTopLevelSectionsForRateDescriptions(requestData.RateDescriptions, requestData.PtmProposalId);
@@ -259,8 +238,6 @@ namespace RDSB.Backend.Controllers
 
 			try
 			{
-				tokenHandler.AuthenticateUserFromAuthorizationToken();
-
 				addresses.Data = this.documentControllerLogic.GetAddresses(ptmTrackingId);
 				addresses.IsSuccessful = true;
 			}

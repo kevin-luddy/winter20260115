@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 ApplicationConfigurationBase config = new();
 config.ConfigureBasics<Program>(builder, "IES_DATABASE");
-config.AddWindowsAuthentication(builder.Services, builder.Configuration);
+config.AddWindowsAndTokenAuthentication(builder.Services, builder.Configuration);
 
 // Add Custom Services
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
@@ -25,7 +25,6 @@ builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddScoped<IActiveDirectoryService, ActiveDirectoryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ISecurityMapper, SecurityMapper>();
-builder.Services.AddScoped<TokenHandling>();
 builder.Services.AddScoped<IDocumentControllerLogic, DocumentControllerLogic>();
 builder.Services.AddScoped<IWhosOnlineLoader, WhosOnlineLoader>();
 builder.Services.AddScoped<IRateDetailLoader, RateDetailLoader>();

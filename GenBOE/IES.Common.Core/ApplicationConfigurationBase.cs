@@ -5,8 +5,10 @@
 	using System.Security.Principal;
 	using HealthChecks.UI.Client;
 	using IES.Common.Core.Authorization;
+	using IES.Common.Core.Constants;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Logging;
+	using IES.Common.Core.Security;
 	using Microsoft.AspNetCore.Authentication.Negotiate;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Builder;
@@ -47,27 +49,9 @@
 				options.DefaultChallengeScheme = NegotiateDefaults.AuthenticationScheme;
 			})
 				.AddNegotiate();
-			// TODO:  This is future work for genBOE integration
-			//.AddScheme<TokenAuthenticationOptions, TokenAuthenticationSchemeHandler>(
-			//				//	Constants.IES_TOKEN_SCHEME,
-			//				//	opts => { }
-			//				//);
-
+			
 			services.AddAuthorization(options =>
 			{
-				// TODO:  This is future work for genBOE integration
-				//// this lets us put [Authorize(Policy = "OnlyIesToken")] onto Controller
-				//AuthorizationPolicyBuilder onlyIesTokenSchemePolicyBuilder = new(CommonConstants.IES_TOKEN_SCHEME);
-				//options.AddPolicy("OnlyIesToken", onlyIesTokenSchemePolicyBuilder
-				//	.RequireAuthenticatedUser()
-				//	.Build());
-
-				//// this lets us put [Authorize(Policy = "OnlyNegotiate")] onto Controller
-				//AuthorizationPolicyBuilder negotiatePolicyBuilder = new(NegotiateDefaults.AuthenticationScheme);
-				//options.AddPolicy("OnlyNegotiate", negotiatePolicyBuilder
-				//	.RequireAuthenticatedUser()
-				//	.Build());
-
 				options.AddPolicy("OnlyNegotiate", policy =>
 				{
 					policy.AuthenticationSchemes.Add(NegotiateDefaults.AuthenticationScheme);
@@ -76,6 +60,45 @@
 					policy.Requirements.Add(new GroupsCheckRequirement(allowedRoles));
 				});
 
+			});
+
+			services.AddScoped<IAuthorizationHandler, GroupsCheckHandler>();
+		}
+
+		/// <summary>
+		/// Adds Authentication to the site
+		/// </summary>
+		public void AddWindowsAndTokenAuthentication(IServiceCollection services, IConfiguration configuration)
+		{
+			services.AddAuthentication(options =>
+			{
+				options.DefaultScheme = NegotiateDefaults.AuthenticationScheme;
+				options.DefaultChallengeScheme = NegotiateDefaults.AuthenticationScheme;
+			})
+				.AddNegotiate()
+				.AddScheme<TokenAuthenticationOptions, TokenAuthenticationSchemeHandler>(
+					CommonConstants.IES_TOKEN_SCHEME,
+					opts => { }
+				);
+
+			services.AddAuthorization(options =>
+			{
+				// this lets us put [Authorize(Policy = "OnlyIesToken")] onto Controller
+				// or just [Authorize(AuthenticationSchemes = CommonConstants.IES_TOKEN_SCHEME)]
+				AuthorizationPolicyBuilder onlyIesTokenSchemePolicyBuilder = new(CommonConstants.IES_TOKEN_SCHEME);
+				options.AddPolicy("OnlyIesToken", onlyIesTokenSchemePolicyBuilder
+					.RequireAuthenticatedUser()
+					.Build());
+
+				// this lets us put [Authorize(Policy = "OnlyNegotiate")] onto Controller
+				// or just [Authorize]
+				options.AddPolicy("OnlyNegotiate", policy =>
+				{
+					policy.AuthenticationSchemes.Add(NegotiateDefaults.AuthenticationScheme);
+					policy.RequireAuthenticatedUser();
+					string allowedRoles = configuration["AllowedRoles"] ?? string.Empty;
+					policy.Requirements.Add(new GroupsCheckRequirement(allowedRoles));
+				});
 			});
 
 			services.AddScoped<IAuthorizationHandler, GroupsCheckHandler>();
