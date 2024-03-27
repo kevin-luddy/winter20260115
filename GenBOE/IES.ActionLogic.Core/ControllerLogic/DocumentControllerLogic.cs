@@ -27,6 +27,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IO.Export;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Logging;
+	using RDSB.Backend.Models;
 
 	/// <summary>
 	/// Logic for the Document Controller.
@@ -759,7 +760,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
+		public RDSBCoverSheetDataModelView GetCoverSheetData(int proposalId)
 		{
 			return sectionLoader.GetCoverSheetData(proposalId);
 		}

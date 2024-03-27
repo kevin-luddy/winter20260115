@@ -14,6 +14,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using GenTRAC.DataBridge.Core.DTO.Proposal;
 	using IES.Common.Core.Exceptions;
 	using Microsoft.AspNetCore.Mvc;
+	using RDSB.Backend.Models;
 
 	/// <summary>
 	/// Interface for the Document Controller Logic.
@@ -116,7 +117,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId);
+		RDSBCoverSheetDataModelView GetCoverSheetData(int proposalId);
 
 		/// <summary>
 		/// Gets data necessary for CPS Reports
