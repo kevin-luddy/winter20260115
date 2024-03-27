@@ -298,7 +298,6 @@ namespace GenTRAC.Web.Common
             // Update the user status for Who's Online.
             IES.Common.UserData activeUser = this.securityInformation.ActiveUserData;
             this.ViewData["UserAccountName"] = string.Format("{0} {1} ({2})", activeUser.FirstName, activeUser.LastName, activeUser.Ntid);
-			this.ViewData["CurrentNtid"] = activeUser.Ntid;
 
             this.GenTRACControllerLogic.UpdateUsersStatus(activeUser, proposalId);
 

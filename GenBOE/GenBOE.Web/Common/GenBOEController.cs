@@ -534,7 +534,6 @@ namespace GenBOE.Web.Common
             }
 
 			ViewData["CurrentUserName"] = currentUser != null ? currentUser.DisplayName : string.Empty;
-			ViewData["CurrentNtid"] = currentUser != null ? currentUser.Ntid : string.Empty;
 
             bool isAdmin = false;
             bool isSystemAdmin = false;
