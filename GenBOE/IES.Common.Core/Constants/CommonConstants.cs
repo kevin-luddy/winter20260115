@@ -1111,5 +1111,10 @@ namespace IES.Common.Core.Constants
 		/// Name of the property that the NTID is placed into, in the Identity that comes from OAuth2
 		/// </summary>
 		public static readonly string NTID_NAME_IN_IDENTITY = "preferred_username";
+
+		/// <summary>
+		/// The IES Token Scheme name
+		/// </summary>
+		public const string IES_TOKEN_SCHEME = "IES_TOKEN";
 	}
 }
