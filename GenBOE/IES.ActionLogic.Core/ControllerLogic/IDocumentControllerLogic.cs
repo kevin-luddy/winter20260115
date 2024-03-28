@@ -116,7 +116,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId);
+		RDSBCoverSheetDataModelView GetCoverSheetData(int proposalId);
 
 		/// <summary>
 		/// Gets data necessary for CPS Reports
