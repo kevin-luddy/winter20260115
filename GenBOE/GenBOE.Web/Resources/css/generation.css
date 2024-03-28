@@ -7406,14 +7406,6 @@ table#ManageMetricsGroups div[field=GroupName] {
     margin: auto;
 }
 
-.appOfflineFrame {
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 0px;
-    border: 0px;
-}
-
 #formPopulateItems input[type=button],
 #formWidthAdjustment input[type=button] {
     width: 90px;

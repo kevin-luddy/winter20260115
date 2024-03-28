@@ -30,20 +30,14 @@ namespace IESPortal.Web.Controllers
         private ISecurityInformation securityInformation;
 
         /// <summary>
-        /// Offline Application loader
-        /// </summary>
-        private IOfflineApplicationLoader offlineApplicationLoader;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="securityInformation">The security information.</param>
         /// <param name="bannerMediator">The banner mediator.</param>
-        public HomeController(ISecurityInformation securityInformation, BannerMediator bannerMediator, IOfflineApplicationLoader offlineApplicationLoader)
+        public HomeController(ISecurityInformation securityInformation, BannerMediator bannerMediator)
         {
             this.securityInformation = securityInformation;
             this.bannerMediator = bannerMediator;
-            this.offlineApplicationLoader = offlineApplicationLoader;
         }
 
         /// <summary>
@@ -100,18 +94,6 @@ namespace IESPortal.Web.Controllers
             ICollection<BannerModelView> banners = this.bannerMediator.GetAllActiveForApps(active);
 
             return View(banners);
-        }
-
-        public ActionResult AppOffline(string app)
-        {
-            if(string.IsNullOrEmpty(app))
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            OfflineApplicationModelView appData = this.offlineApplicationLoader.GetByApplication(app);
-
-            return View(appData);
         }
 
         /// <summary>
