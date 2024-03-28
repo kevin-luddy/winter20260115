@@ -134,14 +134,13 @@ namespace RDSB.Backend.Controllers
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
 		[HttpGet("[action]")]
-		public IESResponse<ICollection<RDSBCoverSheetDataModelView>> GetCoverSheetData(int proposalId)
+		public IESResponse<RDSBCoverSheetDataModelView> GetCoverSheetData(int proposalId)
 		{
-			IESResponse<ICollection<RDSBCoverSheetDataModelView>> toReturn = new();
+			IESResponse<RDSBCoverSheetDataModelView> toReturn = new();
 
 			try
 			{
-				toReturn.Data = new List<RDSBCoverSheetDataModelView>() {
-					documentControllerLogic.GetCoverSheetData(proposalId) };
+				toReturn.Data = documentControllerLogic.GetCoverSheetData(proposalId);
 				toReturn.IsSuccessful = true;
 			}
 			catch (Exception ex)
