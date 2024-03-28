@@ -293,6 +293,7 @@ namespace GenBOE.DataBridge.DTO
 					toReturn = (from b in gbe.BOEFormPBOEs
 								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
 								where ptmTrackingNumber.Equals(w.TrackingNumber)
+								&& w.CurrentPTMWorkspace
 								orderby b.PBOEFormID
 								select new PBOEDataDTO
 								{
