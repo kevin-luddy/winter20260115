@@ -5245,13 +5245,5 @@ window.addEventListener('message', function (e) {
         case 'setHeight':
             iframe.height(data);
             break;
-        case 'appOffline':
-            if (data === true) {
-                iframe = $(".appOfflineFrame");
-                iframe.height("100%");
-                iframe.css("position", "fixed");
-                iframe.css("z-index", "99999");
-            }
-            break;
     }
 }, false);

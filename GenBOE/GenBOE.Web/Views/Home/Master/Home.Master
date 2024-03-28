@@ -215,7 +215,6 @@
             <span>Validating...</span>
         </div>
     </div>
-    <iframe  class="appOfflineFrame" src="<%:ConfigurationUtilities.AppOfflineUrl(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems ? "BOE SSC" : "BOE RMS")%>"></iframe>
 <script type="text/javascript">
     $(function () {
         $(".nav-bar.left .submenu").each(function () {

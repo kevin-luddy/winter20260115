@@ -143,18 +143,6 @@ namespace IESPortal.Backend.Controllers
 			return headerLinks;
 		}
 
-		[HttpGet("[action]")]
-		public OfflineApplicationModelView GetAppOffline(string app)
-		{
-			if (string.IsNullOrEmpty(app))
-			{
-				throw new ArgumentNullException(nameof(app));
-			}
-
-			OfflineApplicationModelView appData = this.offlineApplicationLoader.GetByApplication(app);
-
-			return appData;
-		}
 		//      private void SetUrls()
 		//      {
 		//          ViewBag.BOEUrl = ConfigurationManager.AppSettings["BOEUrl"];

@@ -1184,14 +1184,6 @@ ui-widget {
     width: 100%;
 }
 
-.appOfflineFrame {
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 0px;
-    border: 0px;
-}
-
 div.bannerContainer
 {
     margin-top: 10px;

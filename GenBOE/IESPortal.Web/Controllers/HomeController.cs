@@ -102,18 +102,6 @@ namespace IESPortal.Web.Controllers
             return View(banners);
         }
 
-        public ActionResult AppOffline(string app)
-        {
-            if(string.IsNullOrEmpty(app))
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            OfflineApplicationModelView appData = this.offlineApplicationLoader.GetByApplication(app);
-
-            return View(appData);
-        }
-
         /// <summary>
         /// Returns the Header for this IES Portal.
         /// </summary>

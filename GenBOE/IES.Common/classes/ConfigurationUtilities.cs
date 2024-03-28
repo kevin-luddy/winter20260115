@@ -209,24 +209,6 @@ namespace IES.Common
             return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl;
         }
 
-        /// <summary>
-        /// IES App Offline Url
-        /// </summary>
-        /// <param name="app">application name</param>
-        /// <returns>url</returns>
-        [SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
-        public static string AppOfflineUrl(string app)
-        {
-            if (string.IsNullOrEmpty(app))
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            string iesUrl = ConfigurationUtilities.GetAppSetting("IESHomeUrl");
-
-            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl + "AppOffline?app=" + app;
-        }
-
         #endregion
     }
 }
