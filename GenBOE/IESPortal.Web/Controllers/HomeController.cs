@@ -30,20 +30,14 @@ namespace IESPortal.Web.Controllers
         private ISecurityInformation securityInformation;
 
         /// <summary>
-        /// Offline Application loader
-        /// </summary>
-        private IOfflineApplicationLoader offlineApplicationLoader;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="securityInformation">The security information.</param>
         /// <param name="bannerMediator">The banner mediator.</param>
-        public HomeController(ISecurityInformation securityInformation, BannerMediator bannerMediator, IOfflineApplicationLoader offlineApplicationLoader)
+        public HomeController(ISecurityInformation securityInformation, BannerMediator bannerMediator)
         {
             this.securityInformation = securityInformation;
             this.bannerMediator = bannerMediator;
-            this.offlineApplicationLoader = offlineApplicationLoader;
         }
 
         /// <summary>
