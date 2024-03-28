@@ -9,19 +9,15 @@ namespace RDSB.Backend.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using System.Linq;
 	using System.Net;
 	using System.Reflection;
 	using System.Threading.Tasks;
-	using GenTRAC.DataBridge.Core.Common.Security;
 	using IES.ActionLogic.Core.ControllerLogic;
 	using IES.Common.Core;
 	using IES.Common.Core.Constants;
-	using IES.Common.Core.Enums;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
 	using IES.Common.Core.OfficeUtilities;
-	using IES.Common.Core.Utilities;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
@@ -39,11 +35,6 @@ namespace RDSB.Backend.Controllers
 		#region Properties & Ctor
 
 		/// <summary>
-		/// PTM Security Mapper
-		/// </summary>
-		private readonly ISecurityMapper securityMapper;
-
-		/// <summary>
 		/// Document Controller Logic
 		/// </summary>
 		private readonly IDocumentControllerLogic documentControllerLogic;
@@ -51,13 +42,11 @@ namespace RDSB.Backend.Controllers
 		/// <summary>
 		/// ctor
 		/// </summary>
-		/// <param name="securityMapper">PTM Security Mapper</param>
 		/// <param name="tokenHandler">Token Handling</param>
 		/// <param name="documentControllerLogic">Document COntroller Logic</param>
-		public RdsbDataApiController(ISecurityMapper securityMapper, IDocumentControllerLogic documentControllerLogic,
+		public RdsbDataApiController(IDocumentControllerLogic documentControllerLogic,
 			ILogger<RdsbDataApiController> logger, ISecurityInformation securityInformation, IConfiguration configuration) : base(logger, securityInformation, configuration)
 		{
-			this.securityMapper = securityMapper;
 			this.documentControllerLogic = documentControllerLogic;
 		}
 
@@ -145,14 +134,13 @@ namespace RDSB.Backend.Controllers
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
 		[HttpGet("[action]")]
-		public IESResponse<ICollection<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)>> GetCoverSheetData(int proposalId)
+		public IESResponse<RDSBCoverSheetDataModelView> GetCoverSheetData(int proposalId)
 		{
-			IESResponse<ICollection<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)>> toReturn = new();
+			IESResponse<RDSBCoverSheetDataModelView> toReturn = new();
 
 			try
 			{
-				toReturn.Data = new List<(string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification)>() {
-					documentControllerLogic.GetCoverSheetData(proposalId) };
+				toReturn.Data = documentControllerLogic.GetCoverSheetData(proposalId);
 				toReturn.IsSuccessful = true;
 			}
 			catch (Exception ex)

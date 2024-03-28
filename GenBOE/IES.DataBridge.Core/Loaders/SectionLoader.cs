@@ -619,12 +619,9 @@ namespace IES.DataBridge.Loaders
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
+		public RDSBCoverSheetDataModelView GetCoverSheetData(int proposalId)
 		{
-			string casbSection = null;
-            string nonCompliance = null;
-			bool adequateDisclosure = false;
-			bool noncomplianceNotification = false;
+			RDSBCoverSheetDataModelView result = new();
 
 			using (IESEntities context = new())
 			{
@@ -634,14 +631,14 @@ namespace IES.DataBridge.Loaders
 				{
 					ICollection<SectionModelView> flatSections = FlattenSections(RetrieveAllSections(new RevisionModelView() { Id = rdmRevision.Value }, true));
 
-					casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
-					nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
-					adequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequate.HasValue && x.IsDisclosureStatementAdequate.Value) ? true : false;
-					noncomplianceNotification = flatSections.Any(x => x.NonComplianceNotification.HasValue && x.NonComplianceNotification.Value) ? true : false;
+					result.CasbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
+					result.NonComplianceSection = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
+					result.AdequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequate.HasValue && x.IsDisclosureStatementAdequate.Value) ? true : false;
+					result.NoncomplianceNotification = flatSections.Any(x => x.NonComplianceNotification.HasValue && x.NonComplianceNotification.Value) ? true : false;
 				}
 			}
 
-			return (casbSection, nonCompliance, adequateDisclosure, noncomplianceNotification);
+			return result;
 		}
 
 		/// <summary>
