@@ -19,7 +19,6 @@ namespace IES.DataBridge.Loaders
 	using IES.DataBridge.ModelViews;
 	using IES.Models;
 	using Microsoft.Extensions.Logging;
-	using RDSB.Backend.Models;
 
 	/// <summary>
 	/// Section Loader

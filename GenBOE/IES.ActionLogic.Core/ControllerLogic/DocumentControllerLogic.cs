@@ -27,7 +27,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IO.Export;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Logging;
-	using RDSB.Backend.Models;
 
 	/// <summary>
 	/// Logic for the Document Controller.

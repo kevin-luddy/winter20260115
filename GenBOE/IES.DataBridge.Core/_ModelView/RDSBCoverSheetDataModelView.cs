@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace RDSB.Backend.Models
+namespace IES.DataBridge.ModelViews
 {
 	/// <summary>
 	/// RDSB Cover Sheet Data.

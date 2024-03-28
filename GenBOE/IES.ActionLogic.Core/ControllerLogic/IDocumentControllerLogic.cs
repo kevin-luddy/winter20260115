@@ -14,7 +14,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using GenTRAC.DataBridge.Core.DTO.Proposal;
 	using IES.Common.Core.Exceptions;
 	using Microsoft.AspNetCore.Mvc;
-	using RDSB.Backend.Models;
 
 	/// <summary>
 	/// Interface for the Document Controller Logic.

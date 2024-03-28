@@ -10,7 +10,6 @@ namespace IES.DataBridge.Loaders
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
-	using RDSB.Backend.Models;
 
 	/// <summary>
 	/// Interface for Section Loader
