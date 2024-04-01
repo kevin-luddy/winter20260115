@@ -146,6 +146,9 @@ namespace GenBOE.ActionLogic.CopyBOE
 			List<int> distinctResourceIDs = (from r in inTaskElement.taskElementLabors
                                        where r.ResourceID.HasValue
                                        select r.ResourceID.Value).Distinct().ToList();
+			distinctResourceIDs.AddRange((from r in inTaskElement.taskElementLabors
+                                        where r.BusinessResourceCodeID.HasValue
+                                        select r.BusinessResourceCodeID.Value).Distinct().ToList());
 
             ICollection<ResourceDTO> resourcesForIds = this._IResourceDTODataLoader.GetByIds(distinctResourceIDs);
 

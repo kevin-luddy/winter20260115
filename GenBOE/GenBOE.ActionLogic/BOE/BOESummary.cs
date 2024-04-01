@@ -168,15 +168,15 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			IEnumerable<BOESummaryGridModelView> result = from boeResourceHours in
                                  (from task in taskElementCollection
                                   from boeResource in task.taskElementLabors
-                                  where boeResource.ResourceID.HasValue
+                                  where boeResource.ResourceID.HasValue || boeResource.BusinessResourceCodeID.HasValue
                                   select new
                                   {
                                       Hours = boeResource.SpreadType == SpreadType.Hours ? boeResource.ValueSpread : 0,
                                       // include discrete cost values, but nothing derived from labor rates
                                       Cost = boeResource.SpreadType == SpreadType.Cost ? Convert.ToDecimal(boeResource.ValueSpread) : 0,
-                                      ResourceID = boeResource.ResourceID.Value,
+                                      ResourceID = boeResource.ResourceID.HasValue ? boeResource.ResourceID.Value : boeResource.BusinessResourceCodeID,
                                       LaborType = this.GetBOESummaryResourceTypeText(boeResource, exportInputs.ResourcesUsedInWsBoes),
-                                      ElementOfCost = exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == boeResource.ResourceID.Value).ElementOfCost
+                                      ElementOfCost = exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == (boeResource.ResourceID.HasValue ? boeResource.ResourceID.Value : boeResource.BusinessResourceCodeID)).ElementOfCost
                                   })
                              orderby boeResourceHours.LaborType
                              group boeResourceHours by boeResourceHours.LaborType into groupedBoeLaborTypes
@@ -415,9 +415,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <returns>The text to display in BOE Summary based on the element of cost type of the resource.</returns>
         private string GetBOESummaryResourceTypeText(ResourceTypeDto laborType, IReadOnlyCollection<ResourceDTO> resourcesFromDb)
         {
-            if (laborType.ResourceID.HasValue)
+            if (laborType.ResourceID.HasValue || laborType.BusinessResourceCodeID.HasValue)
             {
-				ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == laborType.ResourceID.Value);
+				ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == (laborType.ResourceID.HasValue ? laborType.ResourceID.Value : laborType.BusinessResourceCodeID.Value));
 
                 if (resource != null)
                 {

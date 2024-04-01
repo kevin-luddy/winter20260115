@@ -81,7 +81,8 @@ namespace GenBOE.ActionLogic.IO.Export
             ICollection<int> laborsToRemove = new Collection<int>();
             foreach (ResourceTypeDto labor in taskElementLabors)
             {
-                ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
+                int resourceID = labor.ResourceID.HasValue ? (int)labor.ResourceID : (int)labor.BusinessResourceCodeID;
+                ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceID);
                 if (resource == null || !settingsData.ElementsOfCost.Contains((int)resource.ElementOfCost))
                 {
                     laborsToRemove.Add(labor.Id);
@@ -270,7 +271,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
                 else if (currentLevel.Equals(SummaryFieldType.ResourceOrActivityId.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
                 {
-                    foreach (int? resourceId in resourceTypes.Select(x => x.ResourceID).Distinct())
+                    foreach (int? resourceId in resourceTypes.Select(x => x.ResourceID.HasValue ? x.ResourceID : x.BusinessResourceCodeID).Distinct())
                     {
                         TraceTableBoeDataGroup newChild = new TraceTableBoeDataGroup()
                         {
@@ -278,13 +279,13 @@ namespace GenBOE.ActionLogic.IO.Export
                             SummaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceName ?? "NO RESOURCE ID"
                         };
 
-                        ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.ResourceID == resourceId).ToList(), newChild, includeYearlyData, groupingField, customGroupingField);
+                        ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => (x.ResourceID.HasValue ? x.ResourceID : x.BusinessResourceCodeID) == resourceId).ToList(), newChild, includeYearlyData, groupingField, customGroupingField);
                         parent.ChildData.Add(newChild);
                     }
                 }
                 else if (currentLevel.Equals(SummaryFieldType.ResourceDescription.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
                 {
-                    foreach (int? resourceId in resourceTypes.Select(x => x.ResourceID).Distinct())
+                    foreach (int? resourceId in resourceTypes.Select(x => x.ResourceID.HasValue ? x.ResourceID : x.BusinessResourceCodeID).Distinct())
                     {
                         TraceTableBoeDataGroup newChild = new TraceTableBoeDataGroup()
                         {
@@ -292,7 +293,7 @@ namespace GenBOE.ActionLogic.IO.Export
                             SummaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceDesc ?? "NO RESOURCE DESCRIPTION"
                         };
 
-                        ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.ResourceID == resourceId).ToList(), newChild, includeYearlyData, groupingField, customGroupingField);
+                        ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => (x.ResourceID.HasValue ? x.ResourceID : x.BusinessResourceCodeID) == resourceId).ToList(), newChild, includeYearlyData, groupingField, customGroupingField);
                         parent.ChildData.Add(newChild);
                     }
                 }

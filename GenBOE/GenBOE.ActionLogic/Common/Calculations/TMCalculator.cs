@@ -33,16 +33,17 @@ namespace GenBOE.ActionLogic.Common.Calculations
             }
 
             decimal totalCost = 0;
-            try
+	     int resourceID = laborTask.ResourceID.HasValue ? (int)laborTask.ResourceID : (int)laborTask.BusinessResourceCodeID;
+	     try
             { 
-                // Get T&M rates from workspace for this resourceId.
+                // Get T&M rates from workspace for this resourceId or brcId.
                 IReadOnlyCollection<TMResourceRateDTO> wsRates = workspace.TMResourceRatesForWorkspace;
 
-                //Left Join (DefaultIfEmpty()) spreads to T&M spreadRates by resourceId & workspaceId, where laborTask date in T&M resource date range.
-                // Missing T&M Rates will throw NullReferenceException.
+				//Left Join (DefaultIfEmpty()) spreads to T&M spreadRates by resourceId/brcId & workspaceId, where laborTask date in T&M resource date range.
+				// Missing T&M Rates will throw NullReferenceException.
                 totalCost = (from laborSpread in laborTask.LaborSpreads
                     join tmResoureRate in wsRates
-                    on new { res = laborTask.ResourceID.Value, ws = workspace.Id } equals
+                    on new { res = resourceID, ws = workspace.Id } equals
                     new { res = tmResoureRate.ResourceID, ws = tmResoureRate.WorkspaceID } into hrs
                     from hr in hrs.Where(tmResoureRate => tmResoureRate.StartDate.Value <= laborSpread.LaborSpreadDate)
                         .Where(tmResoureRate => tmResoureRate.EndDate.Value >= laborSpread.LaborSpreadDate).DefaultIfEmpty()
@@ -50,7 +51,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
             }
             catch (NullReferenceException)
             {
-                throw new GenValidationException($"T&M Rates are missing for Resource: {laborTask.ResourceID.ToString()}.");
+                throw new GenValidationException($"T&M Rates are missing for Resource: {resourceID.ToString()}.");
             }
             catch (Exception ex)
             {
