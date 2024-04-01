@@ -572,7 +572,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 List<ResourceDTO> resourcesFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id)).ToList(), false).ToList();
 				List<ResourceDTO> businessResourceCodeFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.BusinessResourceCodeID.HasValue).Select(z => z.BusinessResourceCodeID.Value)).Contains(x.Id)).ToList(), true).ToList();
-                TotalLaborSpreadValue = ValidateResourceLabors(workspace, inBOE, boeTasks, LaborTypeMessages, offloadRatesDtos, boeTask, resourcesFromTask);
+                TotalLaborSpreadValue = ValidateResourceLabors(workspace, inBOE, boeTasks, LaborTypeMessages, offloadRatesDtos, boeTask, resourcesFromTask, businessResourceCodeFromTask);
 
                 // only check moq equation total if this is a labor task element
                 if (boeTask.TaskElementType == TaskElementType.Labor)
@@ -856,7 +856,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
             }
         }
 
-        private decimal ValidateResourceLabors(FullWorkspace workspace, FullBoe inBOE, ValidationBOETasks boeTasks, Collection<string> LaborTypeMessages, ICollection<OffloadRatesDTO> offloadRatesDtos, BoeTaskElementDTO boeTask, ICollection<ResourceDTO> resourcesFromTask)
+        private decimal ValidateResourceLabors(FullWorkspace workspace, FullBoe inBOE, ValidationBOETasks boeTasks, Collection<string> LaborTypeMessages, ICollection<OffloadRatesDTO> offloadRatesDtos, BoeTaskElementDTO boeTask, ICollection<ResourceDTO> resourcesFromTask, ICollection<ResourceDTO> businessResourceCodesFromTask)
         {
             decimal TotalLaborSpreadValue = 0;
 
@@ -873,10 +873,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
                     LaborTypeMessages.Add(BoeDTO.PERFORM_ORG_REQUIRED);
                 }
 
-                // need to verfy a Resource exists
-                if (!labor.ResourceID.HasValue)
+				// need to verfy a Resource or Business Resource Code exists
+				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor);
+                if (!string.IsNullOrEmpty(requiredMessage))
                 {
-                    LaborTypeMessages.Add(BoeDTO.RESOURCE_CODE_REQUIRED);
+					LaborTypeMessages.Add(requiredMessage);
                 }
 
                 // BOEs marked as Multi must have a WBS and or CLIN assigned
@@ -960,20 +961,21 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 if (LaborTypeMessages.Any())
                 {
-                    ResourceDTO resource = null;
-                    if (labor.ResourceID.HasValue)
-                    {
-                        resource = resourcesFromTask.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
-                    }
+					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(ref boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask);	
+                    //ResourceDTO resource = null;
+                    //if (labor.ResourceID.HasValue)
+                    //{
+                    //    resource = resourcesFromTask.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
+                    //}
 
-                    if (resource == null)
-                    {
-                        boeLabor.LaborTypeHeader = "Resource Type:";
-                    }
-                    else
-                    {
-                        boeLabor.LaborTypeHeader = "Resource Type: " + (resource.ResourceName ?? string.Empty);
-                    }
+                    //if (resource == null)
+                    //{
+                    //    boeLabor.LaborTypeHeader = "Resource Type:";
+                    //}
+                    //else
+                    //{
+                    //    boeLabor.LaborTypeHeader = "Resource Type: " + (resource.ResourceName ?? string.Empty);
+                    //}
 
                     boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
                     boeTasks.LaborTypes.Add(boeLabor);
@@ -1017,6 +1019,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 }
 
                 TotalLaborSpreadValue = 0;
+
+				/// PROPH-1491-BRCValidation TODO: Do we need to update ODC as well?
 				IEnumerable<ResourceDTO> resourcesFromTask = ws.ResourcesForWsResourceListId.Where(x => (odc.ODCTypes.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id));
 
                 foreach (OtherDirectCostType type in odc.ODCTypes)

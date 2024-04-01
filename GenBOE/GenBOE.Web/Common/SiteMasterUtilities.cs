@@ -295,7 +295,7 @@ namespace GenBOE.Web.Common
 
 		/// <summary>
 		/// Returns Resources / Business Resource Codes based on Company mode and 1LMX or Legacy distinction
-		/// SHARED/DUPLICATED METHOD in GenBOE ActionLogic => IO => ImportExportUtilities.cs
+		/// SHARED/DUPLICATED METHOD in GenBOE ActionLogic => Common => BRCValidationUtility.cs
 		/// </summary>
 		/// <param name="resourceData">Original Resources list</param>
 		/// <param name="isBrc">Bool to signify if Resources are of type Business Resource Codes</param>
