@@ -4,16 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.ActionLogic.IO
+namespace GenBOE.ActionLogic.Common
 {
-	using GenBOE.ActionLogic.Common;
 	using GenBOE.Dtos;
 	using IES.Common;
 	using IES.Common.classes;
 	using System.Collections.Generic;
 	using System.Linq;
 
-	public static class ImportExportUtilities
+	/// <summary>
+	/// Class utilized to validate Business Resource Code
+	/// </summary>
+	public static class BRCValidationUtility
 	{
 		/// <summary>
 		/// Returns Resources / Business Resource Codes based on Company mode and 1LMX or Legacy distinction
@@ -34,7 +36,7 @@ namespace GenBOE.ActionLogic.IO
 					}
 					else
 					{
-						resourceData = resourceData.Where(x =>  x.SegRegion == WebConstants.SPACE_1LMX_CORE || x.SegRegion == WebConstants.SPACE_1LMX_SERVICES).ToList();
+						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.SPACE_1LMX_CORE || x.SegRegion == WebConstants.SPACE_1LMX_SERVICES).ToList();
 					}
 				}
 

@@ -13,7 +13,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
     using System.Linq;
     using Common;
     using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.IO;
+	using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.DTO;
@@ -569,7 +570,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 ValidateFieldLength(workspace.RteSizeLimit, boeTask.Description, "Task Description", TaskElementMessages);
                 ValidateFieldLength(workspace.RteSizeLimit, boeTask.MOQText, "MOQ Rationale", TaskElementMessages);
 
-                List<ResourceDTO> resourcesFromTask = workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id)).ToList();
+                List<ResourceDTO> resourcesFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id)).ToList(), false).ToList();
+				List<ResourceDTO> businessResourceCodeFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.BusinessResourceCodeID.HasValue).Select(z => z.BusinessResourceCodeID.Value)).Contains(x.Id)).ToList(), true).ToList();
                 TotalLaborSpreadValue = ValidateResourceLabors(workspace, inBOE, boeTasks, LaborTypeMessages, offloadRatesDtos, boeTask, resourcesFromTask);
 
                 // only check moq equation total if this is a labor task element
