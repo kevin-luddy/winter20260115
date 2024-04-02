@@ -2269,5 +2269,33 @@ namespace GenTRAC.DataBridge.DTO
 
 			return result;
 		}
+
+		/// <summary>
+		/// Get Lead Estimator and Backup Estimator names for a tracking number
+		/// </summary>
+		/// <param name="trackingNumber">PTM tracking number</param>
+		public ICollection<ProposalRoleDto> GetEstimatorNames(string trackingNumber)
+		{
+			ICollection<ProposalRoleDto> names;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (genTRACEntities gte = new genTRACEntities())
+				{
+					// TO-DO: Look at method above
+					//names = (from p in gte.Proposals
+					//		 join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
+					//		 where p.ProposalTrackingID == trackingNumber
+					//		 && (pur.RoleID == (int)PtmRole.Pricer || pur.RoleID == (int)PtmRole.BackupPricer)
+					//		 select new ProposalRoleDto
+					//		 {
+					//			 TrackingNumber = p.ProposalTrackingID,
+					//			 Role = pur.RoleID
+					//		 }).ToList();
+				}
+			}
+
+			return names;
+		}
 	}
 }
