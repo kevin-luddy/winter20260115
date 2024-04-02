@@ -143,7 +143,7 @@ namespace RPM.Web.Controllers
                 using (StopwatchTimer sw = new StopwatchTimer(this.log))
                 {
                     string url = ConfigurationManager.AppSettings["otis_url"];
-                    Uri uri = new Uri(@url);
+                    Uri uri = SafeUriUtility.safeUri(@url);
                     otisModelViews.Opportunities = otisLoader.GetOTISOpportunityModelView(uri);
                     this.log.Performance("Finished RetrieveOpportunityData().", sw.ElapsedMilliseconds);
                 }

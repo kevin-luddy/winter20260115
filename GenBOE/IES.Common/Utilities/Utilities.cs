@@ -435,7 +435,7 @@ namespace IES.Common
 		/// <returns>PTM Url</returns>
 		public static Uri PTMUrl()
 		{
-			return new Uri(ConfigurationUtilities.GetAppSetting("PTMURL"));
+			return SafeUriUtility.safeUri(ConfigurationUtilities.GetAppSetting("PTMURL"));
 		}
 
 		/// <summary>

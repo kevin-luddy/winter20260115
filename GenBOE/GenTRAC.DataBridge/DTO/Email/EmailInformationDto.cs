@@ -60,7 +60,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 string commonUrl = IES.Common.ConfigurationUtilities.GetAppSetting("ServerURL");
                 string url = string.Format("{0}/proposal/DisplayProposalDetails/id/{1}/#Proposal", commonUrl, this.ProposalId);
-                return new Uri(url);
+                return SafeUriUtility.safeUri(url);
             }
         }
 
@@ -73,7 +73,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 string commonUrl = IES.Common.ConfigurationUtilities.GetAppSetting("ServerURL");
                 string url = string.Format("{0}/proposal/DisplayProposalDetails/id/{1}/#Approvals", commonUrl, this.ProposalId);
-                return new Uri(url);
+                return SafeUriUtility.safeUri(url);
             }
         }
 
@@ -86,7 +86,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 string commonUrl = IES.Common.ConfigurationUtilities.GetAppSetting("ServerURL");
                 string url = string.Format("{0}/proposal/DisplayProposalDetails/id/{1}/#Checklist", commonUrl, this.ProposalId);
-                return new Uri(url);
+                return SafeUriUtility.safeUri(url);
             }
         }
 
@@ -99,7 +99,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 string commonUrl = IES.Common.ConfigurationUtilities.GetAppSetting("ServerURL");
                 string url = string.Format("{0}/proposal/DisplayProposalDetails/id/{1}/#CertificationTimeline", commonUrl, this.ProposalId);
-                return new Uri(url);
+                return SafeUriUtility.safeUri(url);
             }
         }
 
@@ -112,7 +112,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 string commonUrl = IES.Common.ConfigurationUtilities.GetAppSetting("ServerURL");
                 string url = string.Format("{0}/proposal/DisplayProposalDetails/id/{1}/#PSA", commonUrl, this.ProposalId);
-                return new Uri(url);
+                return SafeUriUtility.safeUri(url);
             }
         }
 
@@ -125,7 +125,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 string commonUrl = IES.Common.ConfigurationUtilities.GetAppSetting("ServerURL");
                 string url = string.Format("{0}/proposal/DisplayProposalDetails/id/{1}/#Contracts", commonUrl, this.ProposalId);
-                return new Uri(url);
+                return SafeUriUtility.safeUri(url);
             }
         }
     }

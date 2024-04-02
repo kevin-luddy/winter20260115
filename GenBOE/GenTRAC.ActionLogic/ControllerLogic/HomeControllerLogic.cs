@@ -466,7 +466,7 @@ namespace GenTRAC.ActionLogic
             //    }
             //}
 
-            Uri toReturn = new Uri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Dashboard Report", sb));
+            Uri toReturn = SafeUriUtility.safeUri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Dashboard Report", sb));
             return toReturn;
         }
 
