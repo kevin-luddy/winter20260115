@@ -514,9 +514,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
                     boeExportLabor.Cost = taskElementCostTotal;
 
-                    if (laborType.ResourceID.HasValue)
+                    if (laborType.ResourceID.HasValue || laborType.BusinessResourceCodeID.HasValue)
                     {
-                        ResourceDTO resource = resourcesForLabors.First(x => x.Id == laborType.ResourceID.Value);
+                        ResourceDTO resource = resourcesForLabors.First(x => x.Id == (laborType.ResourceID.HasValue ? laborType.ResourceID.Value : laborType.BusinessResourceCodeID.Value));
 
                         if (exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITH_COST ||
                             exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITHOUT_COST ||
