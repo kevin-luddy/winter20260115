@@ -13,6 +13,7 @@
         controller: '<%:WebConstants.CONTROLLER_BOE %>',
         action: '<%:WebConstants.ACTION_GET_MANAGE_BOE_MODEL %>',
         saveAction: '<%:WebConstants.ACTION_SAVE_MANAGE_BOE %>',
+		resetDraftAction: '<%:WebConstants.ACTION_RESET_DRAFT_BOE %>',
         saveState: '<%:WebConstants.ACTION_SAVE_BOE_STATES %>',
         exportAction: '<%:WebConstants.ACTION_EXPORT_MANAGE_BOE %>',
         exportTemplateAction: '<%:WebConstants.ACTION_EXPORT_MANAGE_BOE_TEMPLATE %>',
@@ -54,6 +55,7 @@
                     <button class="ies-action" id="Import-ManageBOE" data-ng-disabled="isLoading" data-ng-show="isWorkingState" data-ng-click="toggleImport()" type="button">Import</button>
                     <button class="ies-action" id="Export-ManageBOE" data-ng-disabled="isLoading || isExporting" data-ng-click="export(false)" type="button">Export</button>
                     <button class="ies-action" id="BulkAssign-ManageBOE" data-ng-disabled="isLoading || data.length == 0" data-ng-show="isWorkingState" data-ng-click="openBulkAssign()" type="button">Bulk Assign Roles</button>
+                    <button class="ies-action" data-ng-disabled="disableDelete()" data-ng-click="resetDraft()" data-ng-show="isWorkingState" type="button">Reset to Draft</button>
                 </div>
                 <div id="noteMessage" data-ng-show="isDataFiltered()">You are viewing filtered data. <a data-ng-click="clearAllFilters()">Click here</a> to reset all your filters.</div>
                 <div class="search-box float-right">

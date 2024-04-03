@@ -4656,7 +4656,7 @@ table.manage-historical-metrics-grid
 {
     top: 7px;
     left: 0px;
-    margin-left: 500px;
+    margin-left: 600px;
     position: absolute;
     display: inline-block;   
 }
@@ -6503,7 +6503,7 @@ div.popup-div-button {
 }
 
 .labor-spread-labels {
-    width: 299px; 
+    width: 346px; 
     display: inline-block; 
     vertical-align: top;
 }
@@ -7156,7 +7156,7 @@ table.moduled-table {
 
 .boe-details .labor-spread-scroll
 {
-    width: 1035px;
+    width: 990px;
     max-width: none;
     display: inline-block;
     vertical-align: top;
@@ -7225,6 +7225,7 @@ table.moduled-table {
 }
 
 #LaborTypesFixed td.resources,
+#LaborTypesFixed td.business-resource-codes,
 #LaborTypesFixed td.performing-org {
     overflow: visible;
 }
@@ -7403,14 +7404,6 @@ table#ManageMetricsGroups div[field=GroupName] {
 .bannerContainer {
     width: 1400px;
     margin: auto;
-}
-
-.appOfflineFrame {
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 0px;
-    border: 0px;
 }
 
 #formPopulateItems input[type=button],
@@ -8732,4 +8725,8 @@ span.blue-link,
 span.blue-link a{
     color: #5297AD !important;
     text-decoration: none;
+}
+
+#ImportExportPermissionsDialog {
+    display: block;
 }

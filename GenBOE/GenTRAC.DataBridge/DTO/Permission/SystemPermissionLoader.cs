@@ -75,8 +75,8 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    // select the permission IDs from the database
-                    var resultLinq = dbModel.SystemUserRoles.Select(entity => new
+					// select the permission IDs from the database
+					List<SystemPermissionDto> resultLinq = dbModel.SystemUserRoles.Select(entity => new
                                                 {
                                                     Id = entity.SystemUserRoleID,
                                                     UserId = entity.UserID,
@@ -172,7 +172,7 @@ namespace GenTRAC.DataBridge.DTO
                         case PtmRole.Viewer:
                         case PtmRole.SystemPricer:
                         case PtmRole.ProposalSetupAdmin:
-                            var currentlyExists = dbModel.SystemUserRoles.SingleOrDefault(x => x.UserID == dtoToUpsert.UserId && x.RoleID == (int)dtoToUpsert.Role);
+							SystemUserRole currentlyExists = dbModel.SystemUserRoles.SingleOrDefault(x => x.UserID == dtoToUpsert.UserId && x.RoleID == (int)dtoToUpsert.Role);
 
                             if (currentlyExists == null)
                             {

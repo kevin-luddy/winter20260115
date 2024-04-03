@@ -336,7 +336,6 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(IMSTMetricLoader), typeof(MSTMetricLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(ISecurityUserAuthorizationsDataLoader), typeof(SecurityUserAuthorizationsDataLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(SecurityUserAuthorizationsDataLoader), typeof(SecurityUserAuthorizationsDataLoader), GetLifetimeManager(), new InjectionMember[] { });
-            GenBOEUnityContainer.Container.RegisterType(typeof(SecurityGroupAuthorizationsDataLoader), typeof(SecurityGroupAuthorizationsDataLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(IWorkspaceDTODataLoader), typeof(WorkspaceDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IPermissionsDTODataLoader), typeof(PermissionsDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IPermissionsDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IBoeDTODataLoader), typeof(BoeDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());

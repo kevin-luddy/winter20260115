@@ -1,0 +1,194 @@
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace IES.ActionLogic.Core.ControllerLogic
+{
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using IES.DataBridge.Loaders;
+	using IES.DataBridge.ModelViews;
+	using IES.Common.Core.OfficeUtilities;
+	using Mediator;
+	using Microsoft.AspNetCore.Mvc;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Interfaces;
+	using IES.ActionLogic.Core.IO.Export;
+
+	/// <summary>
+	/// Logic for the RDM Reports Controller.
+	/// </summary>
+	public class ReportsControllerLogic : RdmControllerLogic, IReportsControllerLogic
+	{
+		/// <summary>
+		/// PPRD Exporter
+		/// </summary>
+		private readonly IPPRDExporter pprdExporter;
+
+		/// <summary>
+		/// RDM Revision Exporter
+		/// </summary>
+		private readonly IRdmRevisionExporter rdmRevisionExporter;
+
+		/// <summary>
+		/// Rate Detail Loader
+		/// </summary>
+		private readonly IRateDetailLoader rateDetailLoader;
+
+		/// <summary>
+		/// COBRA Detail Loader
+		/// </summary>
+		private readonly ICobraDetailLoader cobraDetailLoader;
+
+		/// <summary>
+		/// Section Loader
+		/// </summary>
+		private readonly ISectionLoader sectionLoader;
+
+		/// <summary>
+		/// The file attachment loader
+		/// </summary>
+		private readonly IFileAttachmentLoader fileAttachmentLoader;
+
+		/// <summary>
+		/// The burden pool loader
+		/// </summary>
+		private readonly IBurdenPoolLoader burdenPoolLoader;
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="pprdExporter">PPRD Exporter</param>
+		/// <param name="rdmRevisionExporter">RDM Revision Exporter</param>
+		/// <param name="rateDetailLoader">Rate Detail Loader</param>
+		/// <param name="cobraDetailLoader">COBRA Detail Loader</param>
+		/// <param name="sectionLoader">Section Loader</param>
+		/// <param name="fileAttachmentLoader">The file attachment loader.</param>
+		/// <param name="burdenPoolLoader">The burden pool loader.</param>
+		/// <param name="revisionMediator">Revision Mediator</param>
+		/// <param name="areaLockingLoader">Area Locking Loader</param>
+		/// <param name="adUtils">AD Utilities</param>
+		/// <param name="securityInfo">Security Information</param>
+		public ReportsControllerLogic(IPPRDExporter pprdExporter, IRdmRevisionExporter rdmRevisionExporter, IRateDetailLoader rateDetailLoader, ICobraDetailLoader cobraDetailLoader, ISectionLoader sectionLoader, IFileAttachmentLoader fileAttachmentLoader,
+			IBurdenPoolLoader burdenPoolLoader, IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
+			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
+		{
+			this.pprdExporter = pprdExporter;
+			this.rdmRevisionExporter = rdmRevisionExporter;
+			this.rateDetailLoader = rateDetailLoader;
+			this.cobraDetailLoader = cobraDetailLoader;
+			this.sectionLoader = sectionLoader;
+			this.fileAttachmentLoader = fileAttachmentLoader;
+			this.burdenPoolLoader = burdenPoolLoader;
+		}
+
+		/// <summary>
+		/// Generate a zip file containing the ProPricer direct and burden rate exports.
+		/// </summary>
+		/// <param name="zipPathFile">The server path where the zip file will be created</param>
+		/// <param name="rates">PPR&amp;D rates</param>
+		/// <param name="burdenPools">PPR&amp;D ProPricer burden pools</param>
+		/// <param name="burdenElements">PPR&amp;D ProPricer burden elements</param>
+		/// <returns>An ActionResult.</returns>
+		public string ExportProPricerData(string zipPathFile, ICollection<RateDetailModelView> rates, 
+			ICollection<BurdenPoolDetailModelView> burdenPools, ICollection<BurdenElementModelView> burdenElements)
+		{
+			RdmProPricerExporter rdmProPricerExporter =
+				new(rates, zipPathFile, burdenPools, burdenElements);
+
+			string exportedFileName = rdmProPricerExporter.ExportReport();
+
+			return exportedFileName;
+		}
+
+		/// <summary>
+		/// Generates the Full PPRD document
+		/// </summary>
+		/// <param name="id">Revision ID</param>
+		/// <param name="serverFileName">Server File Name</param>
+		public async Task<IActionResult> GenerateFullPPRD(string id, string serverFileName, bool? portionMarkingRequired)
+		{
+			if (id == null)
+			{
+				throw new ArgumentNullException(nameof(id));
+			}
+
+			// Get Revision MV
+			RevisionModelView revisionMV;
+
+			if (int.TryParse(id, out int revisonId))
+			{
+				revisionMV = RevisionMediator.GetById(revisonId);
+			}
+			else if (id.Equals(PPRDExporterConstants.WORKINPROGRESSID))
+			{
+				revisionMV = WipRevision;
+			}
+			else
+			{
+				throw new ArgumentException("Revision ID is invalid");
+			}
+
+			string clientFileName = $"FullPPRD_RDM_Rev{revisionMV.Revision}_{DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY)}.docx";
+
+			// Get SectionsMVs
+			ICollection<SectionModelView> sections = sectionLoader.GetAll(revisionMV);
+
+			// No prefix
+			int refNumberPrefixLevel = 0;
+
+			// Get Rates
+			ICollection<RateDetailModelView> rates = rateDetailLoader.GetRatesByRevision(revisionMV);
+
+			// Get File Attachments
+			ICollection<FileAttachmentRowModelView> fileAttachments = fileAttachmentLoader.GetByRevision(revisionMV.Id);
+
+			// TODO - RDM 1.0 - Update to allow user to select number of years
+			return await pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, refNumberPrefixLevel, portionMarkingRequired);
+		}
+
+		/// <summary>
+		/// Generates a file containing revision data as JSON.
+		/// </summary>
+		/// <param name="id">Revision Id to export</param>
+		/// <param name="jsonFilePath">The server path where the JSON file will be created</param>
+		public IActionResult ExportRevisionAsJson(string id, string jsonFilePath)
+		{
+			if (id == null)
+			{
+				throw new ArgumentNullException(nameof(id));
+			}
+
+			// Get Revision MV
+			RevisionModelView revision;
+
+			if (int.TryParse(id, out int revisonId))
+			{
+				revision = RevisionMediator.GetById(revisonId);
+			}
+			else
+			{
+				throw new ArgumentException("Revision ID is invalid");
+			}
+
+			string currentUserDisplayName = AdUtils.GetUserByQualifiedAccount(SecurityInformation.ActiveUserNTID, false).DisplayName;
+			ICollection<SectionModelView> sections = sectionLoader.GetAll(revision);
+			ICollection<RateDetailModelView> rates = rateDetailLoader.GetRatesByRevision(revision);
+			ICollection<CobraDetailModelView> cobraDetails = cobraDetailLoader.GetCobraDetailsByRevision(revision);
+			BurdenPoolGridModelView burdenPoolGridModel = burdenPoolLoader.GetByRevision(revision.Id);
+
+			rdmRevisionExporter.ExportRevisionAsJson(currentUserDisplayName, revision, sections, rates, cobraDetails, burdenPoolGridModel, jsonFilePath);
+			string fileDownloadName = $"Revision{revision.Revision}_{DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY)}.json";
+
+			FileStream fs = new(jsonFilePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+			return new FileStreamResult(fs, ExportFileDownloadBase.GetContentType(fileDownloadName))
+			{
+				FileDownloadName = fileDownloadName
+			};
+		}
+	}
+}

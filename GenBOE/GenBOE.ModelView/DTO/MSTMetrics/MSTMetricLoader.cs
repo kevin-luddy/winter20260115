@@ -507,7 +507,7 @@ namespace GenBOE.DataBridge.DTO
 
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var taskElementIds = (from o in gbe.BOETaskElements
+				List<int> taskElementIds = (from o in gbe.BOETaskElements
                                       where inBoeIds.Contains(o.BOEID)
                                       select o.BOETaskElementID).ToList();
 

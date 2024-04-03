@@ -325,7 +325,7 @@ namespace GenTRAC.ActionLogic
         /// <returns>Can user create workspaces</returns>
         private bool CanUserCreateWorkspaces(string userNtid)
         {
-            var permissionToCheck = new GenBOE.DataBridge.Common.SecurityPermissionsRequested { PageToCheck = SecurityPage.CreateWorkspacePermissions };
+			GenBOE.DataBridge.Common.SecurityPermissionsRequested permissionToCheck = new GenBOE.DataBridge.Common.SecurityPermissionsRequested { PageToCheck = SecurityPage.CreateWorkspacePermissions };
 
             SecurityAuthorization userAuthorization = this.boeSecurityAccess.IsAuthorized(permissionToCheck, null, this.GetBOEPermissionsForUser(userNtid));
 

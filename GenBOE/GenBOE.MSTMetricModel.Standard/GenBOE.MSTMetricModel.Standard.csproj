@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>disable</Nullable>
+    <Configurations>Debug;Release;ReleaseTFSCore</Configurations>
+    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\GenBOE.MSTMetricModel\MSTMetricsModel.Context.cs" Link="MSTMetricsModel.Context.cs" />
+    <Compile Include="..\GenBOE.MSTMetricModel\MSTMetricsModel.cs" Link="MSTMetricsModel.cs" />
+    <Compile Include="..\GenBOE.MSTMetricModel\MSTMetricsModel.Designer.cs" Link="MSTMetricsModel.Designer.cs" />
+    <Compile Include="..\GenBOE.MSTMetricModel\vw_BOE_Data.cs" Link="vw_BOE_Data.cs" />
+    <Compile Include="..\GenBOE.MSTMetricModel\vw_BOE_Definition.cs" Link="vw_BOE_Definition.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+  </ItemGroup>
+
+</Project>

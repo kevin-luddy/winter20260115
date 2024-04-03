@@ -178,7 +178,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
             foreach (Dictionary<string, string> row in allRows)
             {
-                var uniqueBoeIDLinqResults = from r in allRows
+				IEnumerable<Dictionary<string, string>> uniqueBoeIDLinqResults = from r in allRows
                                              where row.ContainsKey(boeIDColumn) && r.ContainsKey(boeIDColumn) && r[boeIDColumn] == row[boeIDColumn]
                                              select r;
 
@@ -556,18 +556,18 @@ namespace GenBOE.ActionLogic.IO.Import
                                         }
                                         else
                                         {
-                                            // since this can't set the changed flag to false, 
-                                            // we really only need to evaluate it if the changed flag is still false
+											// since this can't set the changed flag to false, 
+											// we really only need to evaluate it if the changed flag is still false
 
-                                            // check for changed approvers
-                                            var existingApproversIDs = from x in this._IPermissionsDTOLoader.GetBOEPermissions(new List<int>(){ boeResult.Id }).Where(x => x.Role == Role.Approver).Select(x => x).ToArray()
+											// check for changed approvers
+											IEnumerable<int> existingApproversIDs = from x in this._IPermissionsDTOLoader.GetBOEPermissions(new List<int>(){ boeResult.Id }).Where(x => x.Role == Role.Approver).Select(x => x).ToArray()
                                                                        select x.ETIUserId;
-                                            var newApproversIDs = approverIDs;
+											Collection<int> newApproversIDs = approverIDs;
 
-                                            var addedApprovers = from x in approverIDs
+											IEnumerable<int> addedApprovers = from x in approverIDs
                                                                  where !existingApproversIDs.Contains(x)
                                                                  select x;
-                                            var deletedApprovers = from x in existingApproversIDs
+											IEnumerable<int> deletedApprovers = from x in existingApproversIDs
                                                                    where !newApproversIDs.Contains(x)
                                                                    select x;
 
@@ -576,15 +576,15 @@ namespace GenBOE.ActionLogic.IO.Import
                                                 boeChanged = true;
                                             }
 
-                                            // check for changed Authors
-                                            var existingAuthorsIDs = from x in this._IPermissionsDTOLoader.GetBOEPermissions(new List<int> () { boeResult.Id }).Where(x => x.Role == Role.Author).Select(x => x).ToArray()
+											// check for changed Authors
+											IEnumerable<int> existingAuthorsIDs = from x in this._IPermissionsDTOLoader.GetBOEPermissions(new List<int> () { boeResult.Id }).Where(x => x.Role == Role.Author).Select(x => x).ToArray()
                                                                       select x.ETIUserId;
-                                            var newAuthorsIDs = authorIDs;
+											Collection<int> newAuthorsIDs = authorIDs;
 
-                                            var addedAuthors = from x in authorIDs
+											IEnumerable<int> addedAuthors = from x in authorIDs
                                                                where !existingAuthorsIDs.Contains(x)
                                                                select x;
-                                            var deletedAuthors = from x in existingAuthorsIDs
+											IEnumerable<int> deletedAuthors = from x in existingAuthorsIDs
                                                                  where !newAuthorsIDs.Contains(x)
                                                                  select x;
                                             if (addedAuthors.Count() + deletedAuthors.Count() > 0)
@@ -592,15 +592,15 @@ namespace GenBOE.ActionLogic.IO.Import
                                                 boeChanged = true;
                                             }
 
-                                            // check for changed Subcontractor Authors
-                                            var existingSubcontractorAuthorsIDs = from x in this._IPermissionsDTOLoader.GetBOEPermissions(new List<int>() { boeResult.Id } ).Where(x => x.Role == Role.SubcontractorAuthor).Select(x => x).ToArray()
+											// check for changed Subcontractor Authors
+											IEnumerable<int> existingSubcontractorAuthorsIDs = from x in this._IPermissionsDTOLoader.GetBOEPermissions(new List<int>() { boeResult.Id } ).Where(x => x.Role == Role.SubcontractorAuthor).Select(x => x).ToArray()
                                                                                   select x.ETIUserId;
-                                            var newSubcontractorAuthorsIDs = subcontractorAuthorIDs;
+											Collection<int> newSubcontractorAuthorsIDs = subcontractorAuthorIDs;
 
-                                            var addedSubcontractorAuthors = from x in subcontractorAuthorIDs
+											IEnumerable<int> addedSubcontractorAuthors = from x in subcontractorAuthorIDs
                                                                             where !existingSubcontractorAuthorsIDs.Contains(x)
                                                                             select x;
-                                            var deletedSubcontractorAuthors = from x in existingSubcontractorAuthorsIDs
+											IEnumerable<int> deletedSubcontractorAuthors = from x in existingSubcontractorAuthorsIDs
                                                                               where !newSubcontractorAuthorsIDs.Contains(x)
                                                                               select x;
                                             if (addedSubcontractorAuthors.Count() + deletedSubcontractorAuthors.Count() > 0)
@@ -680,7 +680,7 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 if (user.NTID.Contains('.')) // AD group name
                 {
-                    var members = this.adUtils.GetAdGroupUsers(user.DisplayName);
+					ICollection<UserData> members = this.adUtils.GetAdGroupUsers(user.DisplayName);
 
                     int userId = 0;
                     List<int> userIds = new List<int>();

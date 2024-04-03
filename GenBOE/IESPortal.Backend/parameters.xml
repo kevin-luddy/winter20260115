@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<parameters>
+	<!--  http://colinsalmcorner.com/post/end-to-end-walkthrough-deploying-web-applications-using-team-build-and-release-management
+        The publish profile takes care of the connection strings – but you will have noticed that it doesn’t ask for values for appSettings 
+        (or any other configuration) anywhere. In order to tokenize anything in your web.config other than connection strings, you’ll need to 
+        create a parameters.xml file (yes, it has to be called that) in the root of your web application project. When the build runs, it 
+        will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
+
+	<!--appSettings-->
+	<parameter name="AllowedOrigins" description="doesn't matter" defaultvalue="__AllowedOrigins__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_AllowedOrigins_">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESUrl" description="doesn't matter" defaultvalue="__IESUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IESUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="BOEUrl" description="doesn't matter" defaultvalue="__BOEUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_BOEUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="RPMUrl" description="doesn't matter" defaultvalue="__RPMUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_RPMUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="PTMUrl" description="doesn't matter" defaultvalue="__PTMUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PTMUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="RDMUrl" description="doesn't matter" defaultvalue="__RDMUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_RDMUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="RDSBUrl" description="doesn't matter" defaultvalue="__RDSBUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_RDSBUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="PPUrl" description="doesn't matter" defaultvalue="__PPUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PPUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="ACVUrl" description="doesn't matter" defaultvalue="__ACVUrl__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_ACVUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="NLFUrl" description="doesn't matter" defaultvalue="__NLFUrl__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_NLFUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="EEPPUrl" description="doesn't matter" defaultvalue="__EEPPUrl__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EEPPUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="AdminUrl" description="doesn't matter" defaultvalue="__AdminUrl__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_AdminUrl_">
+		</parameterentry>
+	</parameter>
+	<parameter name="_APPLICATION_VERSION" description="doesn't matter" defaultvalue="__APPLICATION_VERSION__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_APPLICATION_VERSION_">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESPortalAdminGroups" description="doesn't matter" defaultvalue="__IES_PORTAL_ADMIN_GROUPS__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_PORTAL_ADMIN_GROUPS_">
+		</parameterentry>
+	</parameter>
+	<parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_AUTHORITY_">
+		</parameterentry>
+	</parameter>
+	<parameter name="oAuthSecret" description="doesn't matter" defaultvalue="__oAuthSecret__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_SECRET_">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESDatabase" description="doesn't matter" defaultvalue="__IES_Database__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_DATABASE_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SplunkHost" description="doesn't matter" defaultvalue="__Splunk_Host__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_HOST_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SplunkToken" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+		</parameterentry>
+	</parameter>
+	
+	<!--system.web-->
+	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
+		</parameterentry>
+	</parameter>
+	
+	<!--app.config-->
+	<parameter name="ActiveDirectoryPath" description="doesn't matter" defaultvalue="__ActiveDirectoryPath__" tags="">
+		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+	<parameter name="genTracEntities" description="doesn't matter" defaultvalue="__genTracEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='genTracEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+	<parameter name="GenBoeEntities" description="doesn't matter" defaultvalue="__GenBoeEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\IESPortal.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='GenBoeEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+</parameters>

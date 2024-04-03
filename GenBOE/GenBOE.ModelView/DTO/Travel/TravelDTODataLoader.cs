@@ -432,7 +432,7 @@ namespace GenBOE.DataBridge.DTO
 
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var resultsLinq = gbe.upsertTravelTripTaskElement(inTravel.Id, inTravel.TaskID, inTravel.TaskTitle, inTravel.Description, inTravel.BoeID, inTravel.UpdateDate, inTravel.StartDate, inTravel.EndDate, inTravel.BOETaskElementOrder);
+				System.Data.Entity.Core.Objects.ObjectResult<int?> resultsLinq = gbe.upsertTravelTripTaskElement(inTravel.Id, inTravel.TaskID, inTravel.TaskTitle, inTravel.Description, inTravel.BoeID, inTravel.UpdateDate, inTravel.StartDate, inTravel.EndDate, inTravel.BOETaskElementOrder);
 
                 TRAVEL_ID = Convert.ToInt32(resultsLinq.SingleOrDefault());
             }
@@ -478,7 +478,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 if (inTravelTrip.NumOfOccurences == 0)
                 {
-                    var resultsLinq = gbe.upsertTravelTrip(inTravelTrip.TravelTripID, inTravelTrip.GroupID, (int)inTravelTrip.Segment, inTravelTrip.PerfOrgID, inTravelTrip.SystemTripID, inTravelTrip.TripDate, inTravelTrip.NumOfTrips, inTravelTrip.NumOfPeople, inTravelTrip.NumOfDays, inTravelTrip.Purpose, inTravelID, inTravelTrip.UpdateDate);
+					System.Data.Entity.Core.Objects.ObjectResult<int?> resultsLinq = gbe.upsertTravelTrip(inTravelTrip.TravelTripID, inTravelTrip.GroupID, (int)inTravelTrip.Segment, inTravelTrip.PerfOrgID, inTravelTrip.SystemTripID, inTravelTrip.TripDate, inTravelTrip.NumOfTrips, inTravelTrip.NumOfPeople, inTravelTrip.NumOfDays, inTravelTrip.Purpose, inTravelID, inTravelTrip.UpdateDate);
 
 
                     toReturn = Convert.ToInt32(resultsLinq.FirstOrDefault());
@@ -490,7 +490,7 @@ namespace GenBOE.DataBridge.DTO
                         // the first trip saves uses the inputted date
                         if (isFirstTrip)
                         {
-                            var resultsLinq = gbe.upsertTravelTrip(inTravelTrip.TravelTripID, null, (int)inTravelTrip.Segment, inTravelTrip.PerfOrgID, inTravelTrip.SystemTripID, inTravelTrip.TripDate, inTravelTrip.NumOfTrips, inTravelTrip.NumOfPeople, inTravelTrip.NumOfDays, inTravelTrip.Purpose, inTravelID, inTravelTrip.UpdateDate);
+							System.Data.Entity.Core.Objects.ObjectResult<int?> resultsLinq = gbe.upsertTravelTrip(inTravelTrip.TravelTripID, null, (int)inTravelTrip.Segment, inTravelTrip.PerfOrgID, inTravelTrip.SystemTripID, inTravelTrip.TripDate, inTravelTrip.NumOfTrips, inTravelTrip.NumOfPeople, inTravelTrip.NumOfDays, inTravelTrip.Purpose, inTravelID, inTravelTrip.UpdateDate);
 
                             toReturn = Convert.ToInt32(resultsLinq.FirstOrDefault());
                             intervalDate = inTravelTrip.TripDate;
@@ -499,7 +499,7 @@ namespace GenBOE.DataBridge.DTO
                         else
                         {
                             intervalDate = intervalDate.AddMonths(inTravelTrip.NumOfIntervals);
-                            var resultsLinq = gbe.upsertTravelTrip(newTravelTrip, null, (int)inTravelTrip.Segment, inTravelTrip.PerfOrgID, inTravelTrip.SystemTripID, intervalDate, inTravelTrip.NumOfTrips, inTravelTrip.NumOfPeople, inTravelTrip.NumOfDays, string.Empty, inTravelID, inTravelTrip.UpdateDate);
+							System.Data.Entity.Core.Objects.ObjectResult<int?> resultsLinq = gbe.upsertTravelTrip(newTravelTrip, null, (int)inTravelTrip.Segment, inTravelTrip.PerfOrgID, inTravelTrip.SystemTripID, intervalDate, inTravelTrip.NumOfTrips, inTravelTrip.NumOfPeople, inTravelTrip.NumOfDays, string.Empty, inTravelID, inTravelTrip.UpdateDate);
 
                             toReturn = Convert.ToInt32(resultsLinq.FirstOrDefault());
                         }

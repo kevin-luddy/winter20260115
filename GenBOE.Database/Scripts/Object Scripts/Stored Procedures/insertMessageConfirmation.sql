@@ -17,7 +17,7 @@ AS
 /******************************************************************************
 **		 
 **		Name: insertMessageConfirmation
-**		Desc: Inserts a record into the Message Confirmation Table
+**		Desc: Upserts a record into the Message Confirmation Table
 **			
 **		
 **
@@ -28,28 +28,29 @@ AS
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
+**      12/13/2023  e374897             PROPH-1377 Upsert Message Confirmation
+**      12/15/2023  twilson3            Fix @UpdateDT location
 *******************************************************************************/
 SET NOCOUNT ON 
 
 DECLARE	@ErrorMessage varchar (500)
-
+DECLARE @UpdateDT datetime2 = GETDATE()
 IF EXISTS	(SELECT 1 FROM [dbo].[MessageConfirmation] WHERE	
 					 ETIUserId = @ETIUserID AND
 				 	 MessageId = @MessageID
 			)
+			-- Update
 			BEGIN
-				SET @ErrorMessage =   'There is already a record in the database.'
-				RAISERROR (
-					@ErrorMessage, -- Message text.
-			        11, -- Severity,/*Severity Changed to 11*/
-					1 -- State,
-					)
-				RETURN
+				UPDATE [dbo].[MessageConfirmation]
+					SET
+						[UpdateDT] = @UpdateDT
+					WHERE
+						ETIUserId = @ETIUserID AND
+				 		MessageId = @MessageID
 			END
 ELSE
 	BEGIN		
-		
-		DECLARE @UpdateDT datetime2 = GETDATE()
+		-- Insert
 			
 		INSERT INTO [dbo].[MessageConfirmation]
 				   ([ETIUserId]

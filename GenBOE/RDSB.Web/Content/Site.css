@@ -1172,7 +1172,9 @@ ui-widget {
 }
 
 #SaveButton-Document,
-#CancelButton-Document {
+#CancelButton-Document,
+#DownloadButton-Document,
+#DownloadPortionMarkedButton-Document {
     vertical-align: super;
 }
 
@@ -1180,14 +1182,6 @@ ui-widget {
     border: none;
     height: 0;
     width: 100%;
-}
-
-.appOfflineFrame {
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 0px;
-    border: 0px;
 }
 
 div.bannerContainer

@@ -238,7 +238,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 SmeTaskEstimates = "test task estimates",
                 Rationale = "test rationale",
                 SkillMixRationale = "test skill mix",
-                BoeId = GlobalTestCaseSetup.GlobalBOEID
+				HistoricalReferenceExplanation = "test historical reference explanation",
+				BoeId = GlobalTestCaseSetup.GlobalBOEID
             };
 
             MoqTableData moqTableData1 = new MoqTableData()
@@ -336,6 +337,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(expectedMoqTypeSelection.SmeDurationLogic, resultMoqTypeSelection.SmeDurationLogic);
             Assert.AreEqual(expectedMoqTypeSelection.Rationale, resultMoqTypeSelection.Rationale);
             Assert.AreEqual(expectedMoqTypeSelection.SkillMixRationale, resultMoqTypeSelection.SkillMixRationale);
+			Assert.AreEqual(expectedMoqTypeSelection.HistoricalReferenceExplanation, resultMoqTypeSelection.HistoricalReferenceExplanation);
             Assert.AreEqual(expectedMoqTypeSelection.BoeId, resultMoqTypeSelection.BoeId);
 
             // Assert Table Data

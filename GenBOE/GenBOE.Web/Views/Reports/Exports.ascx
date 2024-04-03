@@ -224,7 +224,11 @@
                 '<%: WebConstants.CONTROLLER_WORKSPACE %>',
                 '<%: WebConstants.ACTION_EXPORT_WORKSPACE_COMMENTS_AND_RESPONSES %>');
 
-            GenWidget.prototype.performExport(reportGenerationUrl);
+            GenSession.confirmDialog("Export Report", "The export is a long running process. <br/>Please do not leave this page until the file is available to open/save. <br/>Continue with this export? <br/><br/>Please refrain from clicking the export link multiple times until the download is complete.",
+                function () {
+                    GenWidget.prototype.performExport(reportGenerationUrl);
+                }
+                , null);
         });
 
         // Decrease width of Action column for Project Map

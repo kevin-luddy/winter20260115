@@ -206,7 +206,7 @@ namespace IES.Tests
         /// <returns></returns>
         private IDocumentControllerLogic CreateSut()
         {
-            IDocumentControllerLogic sut = new DocumentControllerLogic(new ProposalLoader(), new DocumentLoader(this.revisionLoader), this.documentDetailLoader, this.AD, this.securityInformation, this.revisionLoader, this.sectionLoader, this.rateDetailLoader, new FileAttachmentLoader(), new PPRDExporter());
+            IDocumentControllerLogic sut = new DocumentControllerLogic(new ProposalLoader(), new DocumentLoader(this.revisionLoader), this.documentDetailLoader, this.AD, this.securityInformation, this.revisionLoader, this.sectionLoader, this.rateDetailLoader, new FileAttachmentLoader(), new PPRDExporter(new TokenService(new MemoryCache())));
 
             return sut;
         }
@@ -545,7 +545,7 @@ namespace IES.Tests
         [TestMethod]
         public void DocumentLoaderSave()
         {
-            var sut = CreateSutLoader();
+			IDocumentLoader sut = CreateSutLoader();
             IList<RevisionModelView> revisions = this.revisionLoader.GetAll().Where(r => r.DatePublished.HasValue).OrderByDescending(r => r.DatePublished).ToList();
             RevisionModelView latestRevision = revisions.First();
 
@@ -639,7 +639,7 @@ namespace IES.Tests
                 Id = -1
             };
 
-            var sut = CreateSutLoader();
+			IDocumentLoader sut = CreateSutLoader();
             int? docId;
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
             {
@@ -661,7 +661,7 @@ namespace IES.Tests
                 Id = -1
             };
 
-            var sut = CreateSutLoader();
+			IDocumentLoader sut = CreateSutLoader();
             int? docId;
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
             {
@@ -807,14 +807,10 @@ namespace IES.Tests
 
             // pulling from QAS, so assuming we are using Proposal tracking # 22-00013 (id 15297) that ties into PPRD Revision 299
             ICollection<string> rateCodes = new string[] { "FXDDAC1234", "XCZDPA1234" };
-            ICollection<(string rateCode, string parentSectionNumber)> results = sut.GetTopLevelSectionsForRateCodes(rateCodes, 15297);
+            ICollection<string> results = sut.GetTopLevelSectionsForRateCodes(rateCodes, 15297);
 
             Assert.IsNotNull(results);
             Assert.AreEqual(2, results.Count);
-            Assert.IsNotNull(results.FirstOrDefault(r => r.rateCode == "FXDDAC1234"));
-            Assert.AreEqual("3", results.FirstOrDefault(r => r.rateCode == "FXDDAC1234").parentSectionNumber);
-            Assert.IsNotNull(results.FirstOrDefault(r => r.rateCode == "XCZDPA1234"));
-            Assert.AreEqual("3", results.FirstOrDefault(r => r.rateCode == "XCZDPA1234").parentSectionNumber);
         }
 
         /// <summary>
@@ -827,14 +823,10 @@ namespace IES.Tests
 
             // pulling from QAS, so assuming we are using Proposal tracking # 22-00013 (id 15297) that ties into PPRD Revision 299
             ICollection<string> rateCodes = new string[] { "Denver FBM", "Titusville Development Lvl 1" };
-            ICollection<(string rateDescription, string parentSectionNumber)> results = sut.GetTopLevelSectionsForRateDescriptions(rateCodes, 15297);
+            ICollection<string> results = sut.GetTopLevelSectionsForRateDescriptions(rateCodes, 15297);
 
             Assert.IsNotNull(results);
             Assert.AreEqual(2, results.Count);
-            Assert.IsNotNull(results.FirstOrDefault(r => r.rateDescription == "Denver FBM"));
-            Assert.AreEqual("3", results.FirstOrDefault(r => r.rateDescription == "Denver FBM").parentSectionNumber);
-            Assert.IsNotNull(results.FirstOrDefault(r => r.rateDescription == "Titusville Development Lvl 1"));
-            Assert.AreEqual("3", results.FirstOrDefault(r => r.rateDescription == "Titusville Development Lvl 1").parentSectionNumber);
         }
 
         /// <summary>

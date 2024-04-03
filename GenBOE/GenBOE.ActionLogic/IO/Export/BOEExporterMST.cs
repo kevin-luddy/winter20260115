@@ -99,7 +99,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 if (tag.Contains("TopTotal")) //if total goes on top of table, add now
                 {
-                    var tr = new TableRow();
+					TableRow tr = new TableRow();
 
                     TableCellProperties labelTCP = new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct },
                         new TableCellBorders(new BottomBorder() { Val = BorderValues.Nil }), new TableCellBorders(new LeftBorder() { Val = BorderValues.Nil }), new GridSpan() { Val = 2 });
@@ -141,7 +141,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 foreach (LaborRollupByDate item in laborRollup)
                 {
-                    var tr2 = new TableRow();
+					TableRow tr2 = new TableRow();
 
                     //so rows won't be split across pages
                     TableRowProperties trp = new TableRowProperties();
@@ -185,7 +185,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 if (!tag.Contains("TopTotal"))
                 {
-                    var tr3 = new TableRow();
+					TableRow tr3 = new TableRow();
 
                     TableCellProperties labelTCP = new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct },
                         new TableCellBorders(new BottomBorder() { Val = BorderValues.Nil }), new TableCellBorders(new LeftBorder() { Val = BorderValues.Nil }));
@@ -268,7 +268,7 @@ namespace GenBOE.ActionLogic.IO.Export
         protected override TableRow CreateRollupHeaderRow(List<string> Headers, string inFont, string inFontSize, bool noAfterSpacing = false)
         {
             TableRowProperties trp = new TableRowProperties(new TableHeader(), new CantSplit());
-            var tr = new TableRow();
+			TableRow tr = new TableRow();
             tr.Append(trp);
             if (Headers != null)
             {
@@ -445,7 +445,7 @@ namespace GenBOE.ActionLogic.IO.Export
         private Collection<LaborRollupByDate> GetAllTasksCostSummaryRollupByYearData(ICollection<BoeTaskElementDTO> LaborElements, ICollection<OtherDirectCostDTO> ODCElements, Collection<BOEExportTaskElementLabor> labors, DateRange dateRange)
         {
             Collection<LaborRollupByDate> Rollup = this.GetODCTravelCostSummaryRollupByYearData(ODCElements, labors, dateRange); //get odc and travel rollup
-            foreach (var rollupYear in Rollup)
+            foreach (LaborRollupByDate rollupYear in Rollup)
             {
                 rollupYear.January += (from e in LaborElements
                                        from f in e.taskElementLabors

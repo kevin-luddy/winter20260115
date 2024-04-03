@@ -8,7 +8,7 @@ namespace GenBOE.DataBridge.DTO
 {
     using System.Collections.Generic;
     using GenBOE.Dtos;
-    using IES.Common;
+	using IES.Common;
 
     public interface IResourceTypeLoader : IBulkDataLoader<ResourceTypeDto>
     {

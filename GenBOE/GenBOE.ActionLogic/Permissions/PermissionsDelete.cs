@@ -104,9 +104,9 @@ namespace GenBOE.ActionLogic.Permissions
 
                 ICollection<BoeDTO> assignedBOEs = new Collection<BoeDTO>();
 
-                // Find all BOEs that the user is assigned to in the given role. Store this off
-                // temporarily. We'll return it if certain criteria are met.
-                var temp_assignedBOEs = (from boeDTO in boeDTOs
+				// Find all BOEs that the user is assigned to in the given role. Store this off
+				// temporarily. We'll return it if certain criteria are met.
+				List<BoeDTO> temp_assignedBOEs = (from boeDTO in boeDTOs
                                         from permissions in permissionsLoader.GetBOEPermissions(new List<int>(){boeDTO.Id})
                                         where permissions.ETIUserId == userID &&
                                         (checkRoles == null || checkRoles.Contains(permissions.Role))
@@ -124,9 +124,9 @@ namespace GenBOE.ActionLogic.Permissions
                     // Get the state of the given workspace
                     WorkspaceState workspaceState = ws.WorkspaceState;
 
-                    // For each assigned BOE get the mapped delete action based on the workspace state
-                    // and the state of the BOE
-                    var actions = (from boeDTO in assignedBOEs
+					// For each assigned BOE get the mapped delete action based on the workspace state
+					// and the state of the BOE
+					List<PermissionDeleteAction> actions = (from boeDTO in assignedBOEs
                                    select GetDeleteAction(workspaceState, boeDTO.State)).ToList();
 
                     // If the set is not null and contains items, let's continue.

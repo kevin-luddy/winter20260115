@@ -479,7 +479,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			foreach (ResourceTypeDto taskResource in taskResources)
 			{
 				
-				if (wsLevelData.OneLmxCustomField != null && taskResource.StartDateValue < Utilities.OneLmxStartDate && taskResource.EndDate > Utilities.OneLmxStartDate)
+				if (wsLevelData.OneLmxCustomField != null && taskResource.EndDate > Utilities.OneLmxStartDate)
 				{
 					// Find the 1LMX Custom Field linkage
 					CustomFieldValueContainer container = taskResource.CustomFieldValueContainers.FirstOrDefault(cf => cf.CustomFieldID == wsLevelData.OneLmxCustomField.Id);
@@ -519,8 +519,11 @@ namespace GenBOE.ActionLogic.IO.Export
 						}
 					}
 				}
-				
-				splitResources.Add(taskResource);
+
+				if (taskResource.LaborSpreads.Any())
+				{
+					splitResources.Add(taskResource);
+				}
 			}
 
 			return splitResources.OrderBy(r => r.TaskElementId).ThenBy(t => t.Id).ThenBy(b => b.StartDate).ToList();
@@ -711,7 +714,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					for (int x = 0; x < wsLevelData.PPInputsToExport.ProPricerTasks.Count; x++)
 					{
 						// get the field associated with this list order
-						var taskField = (from t in wsLevelData.PPInputsToExport.ProPricerTasks
+						ProPricerTasks taskField = (from t in wsLevelData.PPInputsToExport.ProPricerTasks
 										 where t.ListOrder == x
 										 select t).FirstOrDefault();
 
@@ -817,7 +820,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					for (int x = 0; x < wsLevelData.PPInputsToExport.ProPricerResources.Count; x++)
 					{
 						// get the field associated with this list order
-						var taskField = (from t in wsLevelData.PPInputsToExport.ProPricerResources
+						ProPricerResources taskField = (from t in wsLevelData.PPInputsToExport.ProPricerResources
 										 where t.ListOrder == x
 										 select t).FirstOrDefault();
 
@@ -843,7 +846,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							case ProPricerField_Resources.PerformingOrg:
 								if (odcType.PerformingOrgID.HasValue)
 								{
-									var perfOrg = wsLevelData.PerfOrgs.FirstOrDefault(z => z.Id == odcType.PerformingOrgID.Value);
+									PerformingOrgDTO perfOrg = wsLevelData.PerfOrgs.FirstOrDefault(z => z.Id == odcType.PerformingOrgID.Value);
 									newResourceRow.Append(DOUBLE_QUOTE).Append(perfOrg.PerformingOrgName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								}
 								else { newResourceRow.Append(END_FIELD); }
@@ -927,10 +930,10 @@ namespace GenBOE.ActionLogic.IO.Export
 					}
 
 					// Now get all the ODC spreads
-					var CurrentDate = odcType.StartDate.Value;
+					DateTime CurrentDate = odcType.StartDate.Value;
 					while (CurrentDate <= odcType.EndDate.Value)
 					{
-						var odcSpread = (from s in odcType.ODCSpreads
+						OtherDirectCostSpread odcSpread = (from s in odcType.ODCSpreads
 										 where s.ODCSpreadDate.Value.Month == CurrentDate.Month &&
 										  s.ODCSpreadDate.Value.Year == CurrentDate.Year
 										 select s).FirstOrDefault();
@@ -1306,7 +1309,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							newResourceRow.Append(boeTask.IMS_ID).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.PerformingOrg:
-							var perfOrg = wsLevelData.PerfOrgs.First(z => z.Id == labor.PerformingOrgID.Value);
+							PerformingOrgDTO perfOrg = wsLevelData.PerfOrgs.First(z => z.Id == labor.PerformingOrgID.Value);
 							newResourceRow.Append(DOUBLE_QUOTE).Append(perfOrg.PerformingOrgName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.ProPricerTaskID:
@@ -1314,7 +1317,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							break;
 						case ProPricerField_Resources.ResourceID:
 						case ProPricerField_Resources.ProjMapInitialResoure:
-							var resource = wsLevelData.Resources.First(z => z.Id == labor.ResourceID.Value);
+							ResourceDTO resource = wsLevelData.Resources.First(z => z.Id == labor.ResourceID.Value);
 							newResourceRow.Append(DOUBLE_QUOTE).Append(resource.ResourceName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.StartDate:
@@ -1390,7 +1393,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								{
 
 									//check if custom field is within the task
-									var taskCustomValue = CustomFieldValues.FirstOrDefault(c => boeTask.CustomFieldValueContainers.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID));
+									CustomFieldValueDTO taskCustomValue = CustomFieldValues.FirstOrDefault(c => boeTask.CustomFieldValueContainers.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID));
 
 									if (taskCustomValue != null)
 									{
@@ -1413,7 +1416,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							case CustomFieldType.LaborTypeDisplay:
 								if (CustomFieldValues != null && CustomFieldValues.Any())
 								{
-									var resourceCustomValue = CustomFieldValues.FirstOrDefault(c => labor.CustomFieldValueContainers.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID));
+									CustomFieldValueDTO resourceCustomValue = CustomFieldValues.FirstOrDefault(c => labor.CustomFieldValueContainers.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID));
 
 									if (resourceCustomValue != null)
 									{
@@ -1555,7 +1558,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						}
 						break;
 					case ProPricerField_Resources.PerformingOrg:
-						var perfOrg = wsLevelData.PerfOrgs.First(z => z.Id == trip.PerfOrgID);
+						PerformingOrgDTO perfOrg = wsLevelData.PerfOrgs.First(z => z.Id == trip.PerfOrgID);
 						newResourceRow.Append(DOUBLE_QUOTE).Append(perfOrg.PerformingOrgName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 						break;
 					case ProPricerField_Resources.StartDate:
@@ -1657,7 +1660,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			for (int x = 0; x < wsLevelData.PPInputsToExport.ProPricerTasks.Count; x++)
 			{
 				// get the field associated with this list order
-				var taskField = (from t in wsLevelData.PPInputsToExport.ProPricerTasks
+				ProPricerTasks taskField = (from t in wsLevelData.PPInputsToExport.ProPricerTasks
 								 where t.ListOrder == x
 								 select t).FirstOrDefault();
 
@@ -1692,7 +1695,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.ResourceIdForExport).Append(DOUBLE_QUOTE).Append(END_FIELD);
 						break;
 					case ProPricerField_Task.PerformingOrg:
-						var perfOrg = wsLevelData.PerfOrgs.First(z => z.Id == trip.PerfOrgID);
+						PerformingOrgDTO perfOrg = wsLevelData.PerfOrgs.First(z => z.Id == trip.PerfOrgID);
 						NewTaskRow.Append(DOUBLE_QUOTE).Append(perfOrg.PerformingOrgName).Append(DOUBLE_QUOTE).Append(END_FIELD);
 						break;
 					case ProPricerField_Task.TaskTitle:
@@ -1939,14 +1942,14 @@ namespace GenBOE.ActionLogic.IO.Export
 						newResourceRow.Append(END_FIELD);
 						break;
 					case ProPricerField_Resources.PerformingOrg:
-						var perfOrg = wsLevelData.PerfOrgs.First(z => z.Id == perfOrgID);
+						PerformingOrgDTO perfOrg = wsLevelData.PerfOrgs.First(z => z.Id == perfOrgID);
 						newResourceRow.Append(DOUBLE_QUOTE).Append(perfOrg.PerformingOrgName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 						break;
 					case ProPricerField_Resources.ProPricerTaskID:
 						newResourceRow.Append(TRAVEL_TIDN).Append(wsLevelData.ItemCounters.TravelId.ToString(FORMAT)).Append(END_FIELD);
 						break;
 					case ProPricerField_Resources.ResourceID:
-						var Resource = inResources.First(z => z.Id == resource);
+						ResourceDTO Resource = inResources.First(z => z.Id == resource);
 						newResourceRow.Append(DOUBLE_QUOTE).Append(Resource.ResourceName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 						break;
 					case ProPricerField_Resources.StartDate:
@@ -2003,7 +2006,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			for (int x = 0; x < wsLevelData.PPInputsToExport.ProPricerTasks.Count; x++)
 			{
 				// get the field associated with this list order
-				var taskField = (from t in wsLevelData.PPInputsToExport.ProPricerTasks
+				ProPricerTasks taskField = (from t in wsLevelData.PPInputsToExport.ProPricerTasks
 								 where t.ListOrder == x
 								 select t).FirstOrDefault();
 
@@ -2329,7 +2332,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			ICollection<CustomFieldValueDTO> CustomFieldValues)
 		{
 			//check if the custom field is within the boe
-			var boeCustomFields = boeCustomFieldContainers;
+			Collection<CustomFieldValueContainer> boeCustomFields = boeCustomFieldContainers;
 
 			if (boeCustomFields != null)
 			{
@@ -2365,11 +2368,11 @@ namespace GenBOE.ActionLogic.IO.Export
 			ICollection<CustomFieldValueDTO> CustomFieldValues)
 		{
 			//check if the custom field is within the boe
-			var boeCustomFields = boeCustomFieldContainers;
+			Collection<CustomFieldValueContainer> boeCustomFields = boeCustomFieldContainers;
 
 			if (boeCustomFields != null)
 			{
-				var boeCustomValue = CustomFieldValues.FirstOrDefault(c => boeCustomFields.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID));
+				CustomFieldValueDTO boeCustomValue = CustomFieldValues.FirstOrDefault(c => boeCustomFields.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID));
 
 				if (boeCustomValue != null)
 				{

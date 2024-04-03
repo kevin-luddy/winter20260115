@@ -1,0 +1,86 @@
+﻿namespace IES.Common.Core.Utilities
+{
+	using System.Web;
+	using HtmlAgilityPack;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Exceptions;
+
+	/// <summary>
+	/// This class is for general utility functions for the whole solution to use.
+	/// </summary>
+	public static class GenBOEUtilities
+	{
+
+		public static DateTime AdjustDateTimePrecision(DateTime inDateTime)
+		{
+			return AdjustDateTimePrecision(inDateTime, DateTimePrecision.Month);
+		}
+
+		public static DateTime AdjustDateTimePrecision(DateTime inDateTime, DateTimePrecision inPrecision)
+		{
+			DateTime returnDate;
+			switch (inPrecision)
+			{
+				case DateTimePrecision.Day:
+					returnDate = new DateTime(
+						inDateTime.Year,
+						inDateTime.Month,
+						inDateTime.Day,
+						12,
+						0,
+						0,
+						0,
+						inDateTime.Kind);
+					break;
+				case DateTimePrecision.Month:
+					returnDate = new DateTime(
+						inDateTime.Year,
+						inDateTime.Month,
+						15,
+						12,
+						0,
+						0,
+						0,
+						inDateTime.Kind);
+					break;
+				default:
+					returnDate = new DateTime(
+						inDateTime.Year,
+						inDateTime.Month,
+						15,
+						12,
+						0,
+						0,
+						0,
+						inDateTime.Kind);
+					break;
+			}
+			return returnDate;
+		}
+
+		/// <summary>
+		/// Convert HTML to text.
+		/// </summary>
+		/// <param name="html">HTML</param>
+		/// <returns>Text</returns>
+		public static string ConvertHtmlToText(string html)
+		{
+			HtmlDocument document = new();
+			document.LoadHtml(html);
+			string text = HttpUtility.HtmlDecode(document.DocumentNode.InnerText);
+			return text;
+		}
+
+		/// <summary>
+		/// Use the HtmlAgilityPack to identify and remove styling and/or markup that are known to cause problems
+		/// for the "HtmlConverter" third-party HTML conversion utility.
+		/// </summary>
+		/// <param name="html">HTML</param>
+		/// <param name="validationMessages">Repository for validation messages</param>
+		/// <seealso cref="NotesFor.HtmlToOpenXml.HtmlConverter"/>
+		public static string ScrubRichTextForSave(string html, ICollection<ValidationMessage> validationMessages)
+		{
+			return HtmlAgilityPackUtilities.ScrubRichTextForSave(html, validationMessages);
+		}
+	}
+}

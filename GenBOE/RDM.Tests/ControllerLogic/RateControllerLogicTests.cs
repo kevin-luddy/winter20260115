@@ -1016,7 +1016,7 @@ namespace RDM.Tests.ControllerLogic
 
                 // Round the rate to the correct precision.
                 ratePrecision = RateFormatter.GetRatePrecision(RateTarget.Rate, category.GetDescription());
-                rate = decimal.Round((decimal)rate, ratePrecision);
+                rate = decimal.Round(rate, ratePrecision);
 
                 validRateDetails.Add(new RateDetailModelView() { Id = id++, RateCode = rateCode, RateCategory = category, Values = new Collection<RateYearModelView>() { new RateYearModelView() { Year = 2012, Value = rate, Dirty = true } } });
             }
@@ -1176,7 +1176,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateImportedRatesTest_EX1()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.ValidateImportedRates(null, new Collection<RateDetailModelView>());
         }
 
@@ -1187,7 +1187,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateImportedRatesTest_EX2()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.ValidateImportedRates(new Collection<RateDetailModelView>(), null);
         }
 
@@ -1197,7 +1197,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateImportedRatesTest()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             Collection<RateDetailModelView> originals = new Collection<RateDetailModelView>()
             {
                 new RateDetailModelView { RateCode= "RateCode1", RateCategoryDescription = "Direct Labor"},
@@ -1232,7 +1232,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void LoadImportedRatesTest_EX1()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.LoadImportedRates(null, new Collection<RateDetailModelView>());
         }
 
@@ -1243,7 +1243,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(GenValidationException))]
         public void LoadImportedRatesTest_EX2()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.LoadImportedRates(new Collection<RateDetailModelView>(), null);
         }
 
@@ -1254,7 +1254,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(GenValidationException))]
         public void LoadImportedRatesTest_EX3()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             Collection<RateDetailModelView> originals = new Collection<RateDetailModelView>()
             {
                 new RateDetailModelView { RateCode= "RateCode1" }
@@ -1275,7 +1275,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void LoadImportedRatesTest()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             Collection<RateDetailModelView> originals = new Collection<RateDetailModelView>()
             {
                 new RateDetailModelView()
@@ -1390,7 +1390,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateImportedRateCodesTest_EX1()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             RateDetailModelView[] imported = new RateDetailModelView[] { };
             sut.ValidateImportedRates(null, imported);
         }
@@ -1402,7 +1402,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void ValidateImportedRateCodesTest_EX2()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             RateDetailModelView[] existing = new RateDetailModelView[] { };
             sut.ValidateImportedRates(existing, null);
         }
@@ -1415,7 +1415,7 @@ namespace RDM.Tests.ControllerLogic
         {
             RateDetailModelView[] imported = testRateCodes.Values.ToArray();
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<ValidationMessage> validationMessages = sut.ValidateImportedRateCodes(this.originals, imported);
             Assert.AreEqual(0, validationMessages.Count,
                 "Validator should generate no errors since the Rate Codes all valid");
@@ -1429,7 +1429,7 @@ namespace RDM.Tests.ControllerLogic
 		{
 			RateDetailModelView[] imported = oneLMXTestRateCodes.Values.ToArray();
 
-			var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
 			ICollection<ValidationMessage> validationMessages = sut.ValidateImportedRateCodes(this.original1LMXRates, imported);
 			Assert.AreEqual(0, validationMessages.Count,
 				"Validator should generate no errors since the Rate Codes are all valid");
@@ -1448,7 +1448,7 @@ namespace RDM.Tests.ControllerLogic
                 new RateDetailModelView { }
             };
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<ValidationMessage> validationMessages = sut.ValidateImportedRateCodes(this.originals, imported);
             Assert.AreEqual(11, validationMessages.Count,
                 "Validator should generate 11 errors since 2 rows have 3 missing fields each, and the last row has 5 missing fields");
@@ -1460,7 +1460,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateImportedRateCodes_RateCode_NotUnique()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
 
             // Test duplicate rate codes (within imported rate codes)
             RateDetailModelView[] imported = new RateDetailModelView[]
@@ -1478,7 +1478,7 @@ namespace RDM.Tests.ControllerLogic
 		[TestMethod]
 		public void Validate1LMXImportedRateCodes_RateCode_NotUnique()
 		{
-			var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
 
 			// Test duplicate rate codes
 			RateDetailModelView[] imported = new RateDetailModelView[]
@@ -1499,7 +1499,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateImportedRateCodes_ProPricerMappings_Invalid()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
 
             // test case where both ProPricer base and extended descriptions are populated 
             RateDetailModelView[] imported = new RateDetailModelView[] { testRateCodes["FXDDAB"] };
@@ -1529,7 +1529,7 @@ namespace RDM.Tests.ControllerLogic
 		[TestMethod]
 		public void Validate1LMXImportedRateCodes_ProPricerMappings_Invalid()
 		{
-			var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
 
 			// test case where both ProPricer base and extended descriptions are populated 
 			RateDetailModelView[] imported = new RateDetailModelView[] { oneLMXTestRateCodes["1LMX5790"] };
@@ -1560,7 +1560,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void ValidateImportedRateCodes_ProPricerMappings_InvalidResourceType()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
 
             // test case where ProPricer extended descriptions are populated, but ResourceType is something other than Labor.
             RateDetailModelView[] imported = new RateDetailModelView[] { testRateCodes["FXDDAB"] };
@@ -1578,7 +1578,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(GenValidationException))]
         public void LoadImportedRateCodesTest_EX1()
         {
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             sut.LoadImportedRateCodes(null);
         }
 
@@ -1591,7 +1591,7 @@ namespace RDM.Tests.ControllerLogic
         {
             RateDetailModelView[] imported = this.originals.DeepClone();
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             RateDetailModelView[] existing = this.originals.ToArray();
             existing[existing.Length - 1].RateCode = existing[0].RateCode;  // duplicate rate codes
 
@@ -1624,7 +1624,7 @@ namespace RDM.Tests.ControllerLogic
                 }
             }
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<RateDetailModelView> updated = sut.GetUpdatedRateCodes(this.originals, imported);
             Assert.AreEqual(3, updated.Count);
             Assert.AreEqual(3, updated.Where(u => u.Updateable == UpdateType.Upsert).Count());
@@ -1641,7 +1641,7 @@ namespace RDM.Tests.ControllerLogic
         {
             RateDetailModelView[] imported = testRateCodes.Values.ToArray();
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<RateDetailModelView> updated = sut.GetUpdatedRateCodes(this.originals, imported);
             Assert.AreEqual(testRateCodes.Count, updated.Count);
         }
@@ -1654,7 +1654,7 @@ namespace RDM.Tests.ControllerLogic
         {
             RateDetailModelView[] imported = this.originals.ToArray();
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<RateDetailModelView> updated = sut.GetUpdatedRateCodes(this.originals, imported);
             Assert.AreEqual(0, updated.Count);
         }
@@ -1705,7 +1705,7 @@ namespace RDM.Tests.ControllerLogic
                 }
             }
 
-            var sut = CreateSut();
+			RateControllerLogic sut = CreateSut();
             ICollection<RateDetailModelView> updated = sut.GetUpdatedRateCodes(this.originals, imported);
             Assert.AreEqual(testRateCodes.Count + 3, updated.Count);
             Assert.AreEqual(testRateCodes.Count + 3, updated.Where(u => u.Updateable == UpdateType.Upsert).Count());

@@ -57,7 +57,13 @@ namespace GenBOE.ActionLogic.IO.Import
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Collections.ObjectModel.Collection`1<IES.Common.IO.Import.ImportedBoe>")]
         public WorkofflineImport ImportFromExcelFile(Stream excelFileStream, FullWorkspace ws)
         {
-            if (excelFileStream == null) { throw new ArgumentNullException(nameof(excelFileStream)); }
+			/* ************************************************************
+			 * PROPH - 1486 - BRC Export
+			 * Import work for Workspace Offline is being Skipped
+			 * due to it being OBE
+			 */
+
+			if (excelFileStream == null) { throw new ArgumentNullException(nameof(excelFileStream)); }
             if (ws == null) { throw new ArgumentNullException(nameof(ws)); }
 
             ws.LoadBoesAndTaskElementsRTEData();
@@ -1015,14 +1021,14 @@ namespace GenBOE.ActionLogic.IO.Import
                 //First element in validationResults will be reformatted equation, and any other elements are variables found in equation
                 if (validationResults.Count >= 2)
                 {
-                    // only need to worry about sum of boe workspace variables
-                    var allWorkspaceVariables = workspace.WorkspaceVariables;
+					// only need to worry about sum of boe workspace variables
+					IReadOnlyCollection<WorkspaceVariableDTO> allWorkspaceVariables = workspace.WorkspaceVariables;
 
                     foreach (string variable in validationResults)
                     {
                         bool createsCR = false;
-                        //Find a matching WS Variable
-                        var wsVar = (from a in allWorkspaceVariables
+						//Find a matching WS Variable
+						WorkspaceVariableDTO wsVar = (from a in allWorkspaceVariables
                                      where a.WorkspaceVariableName.ToUpper() == variable.ToUpper()
                                      select a).FirstOrDefault();
 
@@ -1030,7 +1036,7 @@ namespace GenBOE.ActionLogic.IO.Import
                         {
                             if (wsVar.ValueType == VarValueType.SumOfBOEs)
                             {
-                                var circularReferenceCache = new VariableCircularReferenceCheckerCache();
+								VariableCircularReferenceCheckerCache circularReferenceCache = new VariableCircularReferenceCheckerCache();
 
                                 createsCR = this._VariableCircularReferenceChecker.WorkspaceVariableCreatesCircularReference(circularReferenceCache, Boe.Id, wsVar, workspace);
                                 if (createsCR)
@@ -1360,9 +1366,9 @@ namespace GenBOE.ActionLogic.IO.Import
             }
             Boolean toReturn = false;
             UserDTO activeUser = workspace.CurrentActiveUser;
-            
-            // retrieve the list of authors on the BOE
-            var authorsList = from x in this._IPermissionsDTOLoader.GetBOEPermissions(new List<int>() { boeDTO.Id })
+
+			// retrieve the list of authors on the BOE
+			IEnumerable<int> authorsList = from x in this._IPermissionsDTOLoader.GetBOEPermissions(new List<int>() { boeDTO.Id })
                               where x.Role == Role.Author || x.Role == Role.SubcontractorAuthor
                               select x.ETIUserId;
 

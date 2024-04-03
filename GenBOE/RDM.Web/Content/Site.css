@@ -1675,13 +1675,21 @@ td .excel-button
     background: transparent url(images/excel.png) 0 0 no-repeat; 
 }
 
-td .word-button
+td .word-button {
+    display: inline-block;
+    vertical-align: middle;
+    width: 32px;
+    height: 32px;
+    background: transparent url(images/word.png) 0 0 no-repeat;
+}
+
+td .word-button-portion-marked 
 {
     display: inline-block;
     vertical-align: middle;
     width: 32px;
     height: 32px;
-    background: transparent url(images/word.png) 0 0 no-repeat; 
+    background: transparent url(images/wordPortionMarked.png) 0 0 no-repeat;
 }
 
 .action-link {
@@ -1727,14 +1735,6 @@ td .word-button
 div.bannerContainer
 {
     margin-top: 10px;
-}
-
-.appOfflineFrame {
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 0px;
-    border: 0px;
 }
 
 .error

@@ -31,6 +31,7 @@ namespace GenBOE.Web.Controllers
 	using IES.Common;
 	using IES.Common.Exceptions;
 	using IES.Common.PickList;
+	using Microsoft.Ajax.Utilities;
 
 	/// <summary>
 	/// BOE Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up BOE data, hence the name.
@@ -86,9 +87,24 @@ namespace GenBOE.Web.Controllers
 		private readonly IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader;
 
 		/// <summary>
+		/// Active Directory Utilities
+		/// </summary>
+		private readonly IActiveDirectoryUtilities activeDirectoryUtilities;
+
+		/// <summary>
+		/// User Data Loader
+		/// </summary>
+		private IUserDTODataLoader userDataLoader { get; set; }
+
+		/// <summary>
 		/// Contract Type loader
 		/// </summary>
 		private readonly ContractTypeLoader contractTypeLoader;
+
+		/// <summary>
+		/// Security Information
+		/// </summary>
+		private ISecurityInformation securityInformation;
 
 		/// <summary>
 		/// Logger
@@ -111,7 +127,8 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, ContractTypeLoader contractTypeLoader)
+		/// <param name="securityInformation">Pick List loader for Contract Types</param>
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, ISecurityInformation securityInformation)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -123,7 +140,10 @@ namespace GenBOE.Web.Controllers
 			this.traceTableExporter = traceTableExporter;
 			this.boeFormControllerLogic = boeFormControllerLogic;
 			this.boeFormPBOEDTODataLoader = boeFormPBOEDTODataLoader;
+			this.activeDirectoryUtilities = activeDirectoryUtilities;
+			this.userDataLoader = userDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
+			this.securityInformation = securityInformation;
 		}
 		#endregion
 
@@ -345,7 +365,7 @@ namespace GenBOE.Web.Controllers
 
 				HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 
-				string fileName = string.Format("genBOE-Export-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty);
+				string fileName = Utilities.StripIllegalFileNameCharacters(string.Format("genBOE-Export-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty));
 
 				MemoryStream stream = new MemoryStream();
 
@@ -422,7 +442,7 @@ namespace GenBOE.Web.Controllers
 		[HttpPost]
 		public IESResponse<TraceTableBoeData> GetWorkspaceDataForTraceTable(string workspaceShortName, TraceTableSettingsData settingsData)
 		{
-            IESResponse<TraceTableBoeData> boeData = new IESResponse<TraceTableBoeData>();
+			IESResponse<TraceTableBoeData> boeData = new IESResponse<TraceTableBoeData>();
 
 			try
 			{
@@ -431,58 +451,58 @@ namespace GenBOE.Web.Controllers
 				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
 				if (this.HasOciPermission(SecurityPage.Reports, workspace))
 				{
-                    boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
-                    boeData.IsSuccessful = true;
+					boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
+					boeData.IsSuccessful = true;
 				}
 
-            }
-            catch (Exception ex)
+			}
+			catch (Exception ex)
 			{
 				logger.Error(ex);
-                boeData.Messages.Add($"Unknown error occurred returning Workspace data for Trace Table: {ex.Message}");
+				boeData.Messages.Add($"Unknown error occurred returning Workspace data for Trace Table: {ex.Message}");
 			}
 
 			return boeData;
 		}
 
-        /// <summary>
-        /// Get the genBOE Workspace data group for use with a Trace Table in ACV
-        /// </summary>
-        /// <param name="workspaceShortName">Workspace short name</param>
-        /// <param name="settingsData">Trace Table Settings Data</param>
-        /// <returns>genBOE Workspace data group for use with a Trace Table in ACV</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [HttpPost]
-        public IESResponse<TraceTableBoeDataGroup> GetWorkspaceDataForTraceTableGroup(string workspaceShortName, TraceTableSettingsData settingsData)
-        {
-            IESResponse<TraceTableBoeDataGroup> boeData = new IESResponse<TraceTableBoeDataGroup>();
+		/// <summary>
+		/// Get the genBOE Workspace data group for use with a Trace Table in ACV
+		/// </summary>
+		/// <param name="workspaceShortName">Workspace short name</param>
+		/// <param name="settingsData">Trace Table Settings Data</param>
+		/// <returns>genBOE Workspace data group for use with a Trace Table in ACV</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
+		public IESResponse<TraceTableBoeDataGroup> GetWorkspaceDataForTraceTableGroup(string workspaceShortName, TraceTableSettingsData settingsData)
+		{
+			IESResponse<TraceTableBoeDataGroup> boeData = new IESResponse<TraceTableBoeDataGroup>();
 
-            try
-            {
-                tokenHandler.AuthenticateUserFromAuthorizationToken();
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-                FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-                if (this.HasOciPermission(SecurityPage.Reports, workspace))
-                {
-                    boeData.Data = traceTableExporter.ExportTraceTableDataGroup(workspace, settingsData);
-                    boeData.IsSuccessful = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex);
-                boeData.Messages.Add($"Unknown error occurred returning Workspace data group for Trace Table: {ex.Message}");
-            }
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				if (this.HasOciPermission(SecurityPage.Reports, workspace))
+				{
+					boeData.Data = traceTableExporter.ExportTraceTableDataGroup(workspace, settingsData);
+					boeData.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				boeData.Messages.Add($"Unknown error occurred returning Workspace data group for Trace Table: {ex.Message}");
+			}
 
-            return boeData;
-        }
+			return boeData;
+		}
 
-        /// <summary>
-        /// Gets all of the IWTA Company Names for a Workspace
-        /// </summary>
-        /// <param name="workspaceShortName">Short name of the workspace</param>
-        /// <returns>HttpResponseMessage</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		/// <summary>
+		/// Gets all of the IWTA Company Names for a Workspace
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<BOEFormData> GetIwtaCompanies(string workspaceShortName)
 		{
@@ -515,12 +535,12 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-        /// <summary>
-        /// Gets all of the Subcontractors for a Workspace
-        /// </summary>
-        /// <param name="workspaceID">Workspace Id</param>
-        /// <returns>HttpResponseMessage</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		/// <summary>
+		/// Gets all of the Subcontractors for a Workspace
+		/// </summary>
+		/// <param name="workspaceID">Workspace Id</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<BOEFormData> GetSubcontractors(int workspaceID)
 		{
@@ -531,6 +551,46 @@ namespace GenBOE.Web.Controllers
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
 				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceID);
+				if (this.HasOciPermission(SecurityPage.ManageBOEForms, workspace))
+				{
+					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
+
+					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
+						new BOEFormData()
+						{
+							PBOEId = p.BOEFormId,
+							Name = p.NLFSupplierName,
+							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost,
+							IsIncomplete = p.IsIncomplete
+						}).ToList();
+					result.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning PBOE data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets all of the Subcontractors for a Workspace
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<BOEFormData> GetSubcontractors(string trackingNumber)
+		{
+			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(trackingNumber);
 				if (this.HasOciPermission(SecurityPage.ManageBOEForms, workspace))
 				{
 					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
@@ -597,56 +657,95 @@ namespace GenBOE.Web.Controllers
 		/// <returns>List of Workspace Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<NlfWorkspaceData> GetNlfWorkspacesForUser()
+		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataForNlf()
 		{
-			IESResponse<NlfWorkspaceData> result = new IESResponse<NlfWorkspaceData>();
-
+			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
 			try
 			{
 				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+				bool isAdmin = this.securityInformation.IsSystemOrSubcontractAdmin(ntid);
 
-				// check if user is system admin
-				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
-
-				ICollection<NlfWorkspaceDataDTO> boes = new Collection<NlfWorkspaceDataDTO>();
-
-				if (isSystemAdmin)
-				{
-					// get all workspaces
-					boes = loader.GetAllWorkspaceDataForNlf();
-				}
-				else
-				{
-					// get workspaces where user is WS Admin or GSCO
-					boes = loader.GetWorkspaceDataByNtidForNlf(ntid);
-				}
-
-				result.Data = boes.Select<NlfWorkspaceDataDTO, NlfWorkspaceData>(x => new NlfWorkspaceData() 
+				if (!isAdmin)
 				{ 
-					WorkspaceId = x.WorkspaceId, 
-					WorkspaceUrl = x.WorkspaceUrl, 
-					WorkspaceName = x.WorkspaceName 
-				}).ToCollection();
+					throw new UnauthorizedAccessException();
+				}
 
+				ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
+				boes = loader.GetAllWorkspaceInnerDataForNlf();
+				result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
+				{
+					WorkspaceId = x.WorkspaceId,
+					WorkspaceUrl = x.WorkspaceUrl,
+					WorkspaceName = x.WorkspaceName,
+					WorkspaceCreationDate = x.WorkspaceCreationDate,
+					PTMTrackingNumber = x.PTMTrackingNumber,
+					EstimatingLead = x.EstimatingLead,
+					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
+					LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
+				}).ToCollection();
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown Error occurred returning NLF Workspace data: {ex.Message}");
+				result.IsSuccessful = false;
 			}
 
 			return result;
 		}
 
 		/// <summary>
-		/// Get workspaces inner data for user (id via token) for use in NLF
+		/// Get workspaces for user (id via token) for use in NLF
 		/// </summary>
-		/// <returns>List of Workspace Inner Data for user for use in NLF</returns>
+		/// <returns>List of Workspace Data for user for use in NLF</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
+		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf([FromBody]ICollection<string> trackingNumbers)
+		{
+			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
+			try
+			{
+				if (trackingNumbers != null)
+				{
+					string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+					ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
+					boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid, trackingNumbers);
+					result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
+					{
+						WorkspaceId = x.WorkspaceId,
+						WorkspaceUrl = x.WorkspaceUrl,
+						WorkspaceName = x.WorkspaceName,
+						WorkspaceCreationDate = x.WorkspaceCreationDate,
+						PTMTrackingNumber = x.PTMTrackingNumber,
+						EstimatingLead = x.EstimatingLead,
+						LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
+						LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
+					}).ToCollection();
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					throw new ArgumentNullException("trackingNumbers");
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning NLF Workspace data: {ex.Message}");
+				result.IsSuccessful = false;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get workspace inner data for user (id via token) for use in NLF using Workspace Id
+		/// </summary>
+		/// <returns>Workspace Inner Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<NlfWorkspaceInnerData> GetNlfWorkspacesInnerDataForUser()
+		public IESResponse<NlfWorkspaceInnerData> GetNlfWorkspaceInnerDataByWorkspaceIdForUser(int workspaceId)
 		{
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
 
@@ -660,15 +759,10 @@ namespace GenBOE.Web.Controllers
 
 				ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
 
-				if (isSystemAdmin)
+				if (isSystemAdmin && workspaceId > 0)
 				{
 					// get all workspaces
-					boes = loader.GetAllWorkspaceInnerDataForNlf();
-				}
-				else
-				{
-					// get workspaces where user is WS Admin or GSCO
-					boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid);
+					boes = loader.GetWorkspaceInnerDataForNlf(workspaceId);
 				}
 
 				result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
@@ -680,7 +774,56 @@ namespace GenBOE.Web.Controllers
 					PTMTrackingNumber = x.PTMTrackingNumber,
 					EstimatingLead = x.EstimatingLead,
 					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
-                    LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
+					LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
+				}).ToCollection();
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning NLF Workspace inner data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get workspace inner data for user (id via token) for use in NLF using Workspace Id
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <returns>Workspace Inner Data for user for use in NLF</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<NlfWorkspaceInnerData> GetNlfWorkspaceInnerDataByTrackingNumberForUser(string trackingNumber)
+		{
+			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// check if user is system admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
+
+				ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
+
+				if (isSystemAdmin && !string.IsNullOrWhiteSpace(trackingNumber))
+				{
+					// get all workspaces
+					boes = loader.GetWorkspaceInnerDataForNlf(trackingNumber);
+				}
+
+				result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
+				{
+					WorkspaceId = x.WorkspaceId,
+					WorkspaceUrl = x.WorkspaceUrl,
+					WorkspaceName = x.WorkspaceName,
+					WorkspaceCreationDate = x.WorkspaceCreationDate,
+					PTMTrackingNumber = x.PTMTrackingNumber,
+					EstimatingLead = x.EstimatingLead,
+					LineOfBusinessId = x.LineOfBusiness is null ? -1 : x.LineOfBusiness.LineOfBusinessID,
+					LineOfBusinessName = x.LineOfBusiness is null ? String.Empty : x.LineOfBusiness.LineOfBusinessName
 				}).ToCollection();
 				result.IsSuccessful = true;
 			}
@@ -700,7 +843,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Collection of Material PBoe Data</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<MPBoeData> GetMaterialPBoeForWorkspace(int workspaceID)
+		public IESResponse<MPBoeData> GetMaterialPBoeForTrackingNumber(string trackingNumber)
 		{
 			IESResponse<MPBoeData> result = new IESResponse<MPBoeData>();
 
@@ -710,25 +853,27 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
 				if (isAllowed)
 				{
-					result.Data = loader.GetMaterialPBoeForWorkspace(workspaceID).Select<MPBoeDataDTO, MPBoeData>(x => new MPBoeData()
+					result.Data = loader.GetMaterialPBoeForWorkspace(trackingNumber).Select<MPBoeDataDTO, MPBoeData>(x => new MPBoeData()
 					{
 						CLINNumbers = x.CLINNumbers,
 						RFPNumber = x.RFPNumber,
 						PTMProposalTitle = x.PTMProposalTitle,
 						WBSNumbers = x.WBSNumbers,
 						WorkspaceName = x.WorkspaceName,
-						ShortName = x.ShortName
+						ShortName = x.ShortName,
+						TrackingNumber = x.TrackingNumber
 					}).ToCollection();
 
 					result.IsSuccessful = true;
 				}
 				else
 				{
-					string message = "Invalid permission to Workspace with ID:" + workspaceID + ".";
+					string message = "Invalid permission to Workspace with tracking number: " + trackingNumber + ".";
 					logger.Error(message + " NTID: " + ntid);
 					result.Messages.Add(message);
 					result.IsSuccessful = false;
@@ -738,7 +883,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with ID: {workspaceID}: {ex.Message}");
+				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
 			}
 
 			return result;
@@ -766,7 +911,7 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					result.Data = new Collection<bool>() {true};
+					result.Data = new Collection<bool>() { true };
 					result.IsSuccessful = true;
 				}
 				else
@@ -788,15 +933,16 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Get all PBOEs for a given Workspace.
+		/// Checks to see if workspace exists and user has authorization to it
 		/// </summary>
-		/// <param name="workspaceID">Workspace ID</param>
-		/// <returns>Collection of PBOEs by Workspace ID</returns>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <returns>Boolean</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<PBOEData> GetPBOEsForWorkspace(int workspaceID)
+		public IESResponse<bool> CheckAuthorizationForTrackingNumber(string trackingNumber)
 		{
-			IESResponse<PBOEData> result = new IESResponse<PBOEData>();
+
+			IESResponse<bool> result = new IESResponse<bool>();
 
 			try
 			{
@@ -804,58 +950,40 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
 				if (isAllowed)
 				{
-					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForWorkspace(workspaceID).Select<PBOEDataDTO, PBOEData>(x => new PBOEData()
-					{
-						PBoeID = x.PBoeID,
-						SupplierName = x.SupplierName,
-						VendorId = x.VendorId,
-						SubResources = x.SubResources,
-						TotalCost = x.TotalCost.GetValueOrDefault(),
-						SupplierProposedValue = x.SupplierProposedValue,
-						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
-						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
-						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
-						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
-						CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
-						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
-						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
-						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
-						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault()
-					}).ToList();
-
+					result.Data = new Collection<bool>() { true };
 					result.IsSuccessful = true;
 				}
 				else
 				{
-					string message = "Invalid permission to Workspace with ID:" + workspaceID + ".";
+					result.Data = new Collection<bool>() { false };
+					string message = "Invalid permission to Workspace with tracking number: " + trackingNumber + ".";
 					logger.Error(message + " NTID: " + ntid);
 					result.Messages.Add(message);
 					result.IsSuccessful = false;
-					result.Data = null;
 				}
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with ID: {workspaceID}: {ex.Message}");
+				result.Messages.Add($"Unknown Error occurred checking authorization for tracking number: {trackingNumber}: {ex.Message}");
 			}
 
 			return result;
 		}
 
 		/// <summary>
-		/// Get a single PBOE from a Workspace ID and PBOE ID.
+		/// Get all PBOEs for a given Workspace.
 		/// </summary>
 		/// <param name="workspaceID">Workspace ID</param>
-		/// <param name="pboeID">PBOE ID</param>
-		/// <returns>Single PBOE by Workspace ID and PBOE ID</returns>
+		/// <returns>Collection of PBOEs by Workspace ID</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<PBOEData> GetPBOEByIDs(int workspaceID, int pboeID)
+		public IESResponse<PBOEData> GetPBOEsForTrackingNumber(string trackingNumber)
 		{
 			IESResponse<PBOEData> result = new IESResponse<PBOEData>();
 
@@ -865,38 +993,59 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				bool isAllowed = permissions.Any(x => x.WorkspaceId == workspaceID || x.AuthorizedRole == Role.SystemAdmin);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
 				if (isAllowed)
 				{
-					result.Data = boeFormPBOEDTODataLoader.GetPBOEByIDs(workspaceID, pboeID).Select<PBOEDataDTO, PBOEData>(x => new PBOEData()
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEsForTrackingNumber(trackingNumber).Select<PBOEDataDTO, PBOEData>(x =>
 					{
-						PBoeID = x.PBoeID,
-						SupplierName = x.SupplierName,
-						VendorId = x.VendorId,
-						SubResources = x.SubResources,
-						TotalCost = x.TotalCost.GetValueOrDefault(),
-						SupplierProposedValue = x.SupplierProposedValue,
-						IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
-						IsCommercialItemException = x.IsCommercialItemException.GetValueOrDefault(),
-						IsCompetitionException = x.IsCompetitionException.GetValueOrDefault(),
-						IsCCoPDOtherException = x.IsCCoPDOtherException.GetValueOrDefault(),
-						IsCCoPDThresholdException = x.IsCCoPDThresholdException.GetValueOrDefault(),
-						PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
-						PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
-						CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
-						CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
-						GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
-						GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
-						CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
-						CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault()
+						UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
+						UserDTO leadEstimator = userDataLoader.GetUserByID(x.LeadEstimatorId);
+
+						return new PBOEData()
+						{
+							PBoeID = x.PBoeID,
+							SupplierName = x.SupplierName,
+							VendorId = x.VendorId,
+							SubResources = x.SubResources,
+							TotalCost = x.TotalCost.GetValueOrDefault(),
+							SupplierProposedValue = x.SupplierProposedValue,
+							IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+							IsCompetitionException = x.IsCompetitionException.GetValueOrDefault(),
+							IsCommercialItemException = x.IsCommercialItemException.GetValueOrDefault(),
+							IsCCoPDThresholdException = x.IsCCoPDThresholdException.GetValueOrDefault(),
+							IsCCoPDOtherException = x.IsCCoPDOtherException.GetValueOrDefault(),
+							ExpectedCCoPDApplicability = x.ExpectedCCoPDApplicability.GetDescription(),
+							PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
+							PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
+							CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
+							CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
+							GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
+							GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
+							CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
+							CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
+							TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
+							TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
+							RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
+							SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
+							ProposalDate = x.ProposalDate,
+							ValidityDate = x.ValidityDate,
+							Approver = x.Approver,
+							LeadEstimatorId = x.LeadEstimatorId,
+							LeadEstimatorDisplayName = leadEstimator != null ? leadEstimator.DisplayName : string.Empty,
+							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
+							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
+							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty,
+							WorkspaceId = x.WorkspaceId 
+						};
 					}).ToList();
 
 					result.IsSuccessful = true;
 				}
 				else
 				{
-					string message = $"Invalid permission to Workspace with ID: {workspaceID} and PBOE ID: {pboeID}."; 
+					string message = "Invalid permission to Workspace with tracking number:" + trackingNumber + ".";
 					logger.Error(message + " NTID: " + ntid);
 					result.Messages.Add(message);
 					result.IsSuccessful = false;
@@ -906,7 +1055,91 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning PBoe Data for given Workspace with ID: {workspaceID} and PBOE ID: {pboeID}: {ex.Message}");
+				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get a single PBOE from a Tracking Number and PBOE ID.
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <param name="pboeID">PBOE ID</param>
+		/// <returns>Single PBOE by Tracking Number and PBOE ID</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<PBOEData> GetPBOEByIDs(string trackingNumber, int pboeID)
+		{
+			IESResponse<PBOEData> result = new IESResponse<PBOEData>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// Check if user is System Admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
+
+				if (isAllowed)
+				{
+					result.Data = boeFormPBOEDTODataLoader.GetPBOEByIDs(trackingNumber, pboeID).Select<PBOEDataDTO, PBOEData>(x =>
+					{
+						UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
+						UserDTO leadEstimator = userDataLoader.GetUserByID(x.LeadEstimatorId);
+
+						return new PBOEData()
+						{
+							PBoeID = x.PBoeID,
+							SupplierName = x.SupplierName,
+							VendorId = x.VendorId,
+							SubResources = x.SubResources,
+							TotalCost = x.TotalCost.GetValueOrDefault(),
+							SupplierProposedValue = x.SupplierProposedValue,
+							IsCCoPD = x.IsCCoPD.GetValueOrDefault(),
+							IsCommercialItemException = x.IsCommercialItemException.GetValueOrDefault(),
+							IsCompetitionException = x.IsCompetitionException.GetValueOrDefault(),
+							IsCCoPDOtherException = x.IsCCoPDOtherException.GetValueOrDefault(),
+							IsCCoPDThresholdException = x.IsCCoPDThresholdException.GetValueOrDefault(),
+							PriceAnalysis = x.PriceAnalysis.GetValueOrDefault(),
+							PriceAnalysisDate = x.PriceAnalysisDate.GetValueOrDefault(),
+							CostAnalysis = x.CostAnalysis.GetValueOrDefault(),
+							CostAnalysisDate = x.CostAnalysisDate.GetValueOrDefault(),
+							GovtPricingReceived = x.GovtPricingReceived.GetValueOrDefault(),
+							GovtPricingReceivedDate = x.GovtPricingReceivedDate.GetValueOrDefault(),
+							CostAnalysisUnqualified = x.CostAnalysisUnqualified.GetValueOrDefault(),
+							CostAnalysisUnqualifiedDate = x.CostAnalysisUnqualifiedDate.GetValueOrDefault(),
+							TechnicalEvaluation = x.TechnicalEvaluation.GetValueOrDefault(),
+							TechnicalEvaluationDate = x.TechnicalEvaluationDate.GetValueOrDefault(),
+							RFPReleaseToSupplierDate = x.RFPReleaseToSupplierDate.GetValueOrDefault(),
+							SupplierNegotiationsDate = x.SupplierNegotiationsDate.GetValueOrDefault(),
+							ProposalDate = x.ProposalDate,
+							ValidityDate = x.ValidityDate,
+							Approver = x.Approver,
+							LeadEstimatorId = x.LeadEstimatorId,
+							LeadEstimatorDisplayName = leadEstimator != null ? leadEstimator.DisplayName : string.Empty,
+							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
+							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
+							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty
+						};
+					}).ToList();
+
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					string message = $"Invalid permission to Workspace with tracking number: {trackingNumber} and PBOE ID: {pboeID}.";
+					logger.Error(message + " NTID: " + ntid);
+					result.Messages.Add(message);
+					result.IsSuccessful = false;
+					result.Data = null;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occured returning PBoe Data for given Workspace with tracking number: {trackingNumber} and PBOE ID: {pboeID}: {ex.Message}");
 			}
 
 			return result;

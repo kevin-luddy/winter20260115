@@ -50,9 +50,9 @@ namespace IES.Common
         public const int PROPOSAL_CLASS_TYPE_NOT_SET = -1;
 
         /// <summary>
-		/// Prefix for the JWT Bearer
-		/// </summary>
-		public static readonly string TOKEN_PREFIX = "Bearer ";
+        /// Prefix for the JWT Bearer
+        /// </summary>
+        public static readonly string TOKEN_PREFIX = "Bearer ";
 
         /// <summary>
         /// The IDIQ Contract Type
@@ -427,15 +427,15 @@ namespace IES.Common
         /// </summary>
         public const int MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH = 125;
 
-		/// <summary>
-		/// Length for MOQ Type WBS Element field for RMS (matches db length)
-		/// </summary>
-		public const int MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH = 12;
+        /// <summary>
+        /// Length for MOQ Type WBS Element field for RMS (matches db length)
+        /// </summary>
+        public const int MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH = 12;
 
-		/// <summary>
-		/// Length for MOQ Type WBS Element field for SSC (matches db length)
-		/// </summary>
-		public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 5000;
+        /// <summary>
+        /// Length for MOQ Type WBS Element field for SSC (matches db length)
+        /// </summary>
+        public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 5000;
 
         #endregion
 
@@ -708,25 +708,69 @@ namespace IES.Common
         /// <summary>
         /// Validation that Proposal has a valid status to be set as Lost
         /// </summary>
-		public const string INVALID_STATUS_FOR_LOST = "The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'.";
+        public const string INVALID_STATUS_FOR_LOST = "The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'.";
 
         /// <summary>
         /// Validation that Customer Due Date is set
         /// </summary>
-		public const string DUE_DATE_REQUIRED_FOR_LOST = "The Customer Due Date is required in order to set the proposal as Lost.";
+        public const string DUE_DATE_REQUIRED_FOR_LOST = "The Customer Due Date is required in order to set the proposal as Lost.";
 
         /// <summary>
         /// Validation that Customer Submittal Date is set
         /// </summary>
-		public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Lost.";
+        public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Lost.";
 
-		#endregion
+        #endregion
+
+        #region Default Address
+
+        /// <summary>
+        /// Default Office
+        /// </summary>
+        public const string DEFAULT_ADDRESS_OFFICE = "Contract Administration Office";
+
+        /// <summary>
+        /// Default Agency
+        /// </summary>
+        public const string DEFAULT_ADDRESS_AGENCY = "Defense Contract Management Agency (DCMA)";
+
+        /// <summary>
+        /// Default LM BA
+        /// </summary>
+        public const string DEFAULT_ADDRESS_LM_BA = "Lockheed Martin Space";
+
+        /// <summary>
+        /// Default Name
+        /// </summary>
+        public const string DEFAULT_ADDRESS_NAME = "DACO, Austin Stone";
+
+        /// <summary>
+        /// Default Street/Building
+        /// </summary>
+        public const string DEFAULT_ADDRESS_STREET = "244 Terminal Road, Building 1040";
+
+        /// <summary>
+        /// Default City, ST
+        /// </summary>
+        public const string DEFAULT_ADDRESS_CITY_ST = "Greenville, SC 29605";
+
+        /// <summary>
+        /// Default Phone
+        /// </summary>
+        public const string DEFAULT_ADDRESS_PHONE = "(864) 934-3579";
+
+        /// <summary>
+        /// Default Email
+        /// </summary>
+        public const string DEFAULT_ADDRESS_EMAIL = "austin.w.stone.civ@mail.mil";
+
+        #endregion
 
 
-		/// <summary>
-		/// SSRS Report Names
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        /// <summary>
+        /// SSRS Report Names
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         public static class SSRSReportName
         {
             /// <summary>

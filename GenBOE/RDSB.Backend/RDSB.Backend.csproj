@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	  <TargetFramework>net6.0-windows</TargetFramework>
+	  <Nullable>disable</Nullable>
+	  <ImplicitUsings>disable</ImplicitUsings>
+	  <Configurations>Debug;Release;ReleaseTFSCore</Configurations>
+	  <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="logs\ReadMe.txt" />
+	  <None Remove="parameters.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="app.config" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="logs\ReadMe.txt" />
+	  <Content Include="parameters.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\IES.ActionLogic.Core\IES.ActionLogic.Core.csproj" />
+	  <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
+	</ItemGroup>
+	
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="web.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Folder Include="Templates\Export\" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Reference Include="IdentitySwap.Core">
+      <HintPath>..\core_libraries\IdentitySwap.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

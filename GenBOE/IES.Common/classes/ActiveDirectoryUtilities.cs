@@ -311,7 +311,7 @@ namespace IES.Common
 
                                         foreach (SearchResult searchResult in results)
                                         {
-                                            var groupData = new GroupData()
+											GroupData groupData = new GroupData()
                                             {
                                                 DisplayName = searchResult.Properties["name"][0].ToString(),
                                                 Ntid = searchResult.Properties["sAMAccountName"][0].ToString()
@@ -583,13 +583,13 @@ namespace IES.Common
                     try
                     {
 
-                        var groupDN = this.GetObjectDistinguishedName(ObjectClass.group, ReturnType.distinguishedName, inGroupName);
+						string groupDN = this.GetObjectDistinguishedName(ObjectClass.group, ReturnType.distinguishedName, inGroupName);
 
                         groupNotFound = false;
 
-                        using (var root = new DirectoryEntry(this.activeDirectoryPath))
+                        using (DirectoryEntry root = new DirectoryEntry(this.activeDirectoryPath))
                         {
-                            var attributesToLoad = new[]
+							string[] attributesToLoad = new[]
                                 {
                                 "displayname",
                                 "distinguishedname",
@@ -609,9 +609,9 @@ namespace IES.Common
                                 "employeeType"
                             };
 
-                            var distinguishedNameWithoutLDAPPrefix = groupDN.Remove(0, 7);
-                            var searchFilter = "(memberOf=" + distinguishedNameWithoutLDAPPrefix + ")";
-                            using (var searcher = new DirectorySearcher(root, searchFilter, attributesToLoad))
+							string distinguishedNameWithoutLDAPPrefix = groupDN.Remove(0, 7);
+							string searchFilter = "(memberOf=" + distinguishedNameWithoutLDAPPrefix + ")";
+                            using (DirectorySearcher searcher = new DirectorySearcher(root, searchFilter, attributesToLoad))
                             {
                                 searcher.PageSize = 1000; // Very important to have it here. Otherwise you'll get only 1000 at all. Please refer to DirectorySearcher documentation
 
@@ -620,18 +620,18 @@ namespace IES.Common
                                     searcher.ClientTimeout = TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS);
                                 }
 
-                                var results = searcher.FindAll();
+								SearchResultCollection results = searcher.FindAll();
 
                                 userNames = (from SearchResult user in results
                                               select new UserData()
                                               {
                                                   DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
-                                                  Ntid = user.Properties["samaccountname"][0].ToString(),
+                                                  Ntid = user.Properties.Contains("samaccountname") ? user.Properties["samaccountname"][0].ToString() : string.Empty,
                                                   FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
                                                   LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
                                                   Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
                                                   Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
-                                                  IsGroup = user.Properties["objectClass"].Contains("group"),
+                                                  IsGroup = user.Properties.Contains("objectClass") && user.Properties["objectClass"].Contains("group"),
                                                   State = user.Properties.Contains("st") ? user.Properties["st"][0].ToString() : string.Empty,
                                                   Company = user.Properties.Contains("company") ? user.Properties["company"][0].ToString() : string.Empty,
                                                   Country = user.Properties.Contains("c") ? user.Properties["c"][0].ToString() : string.Empty,
@@ -639,7 +639,7 @@ namespace IES.Common
                                                   EmployeeId = user.Properties.Contains("lmcEmployeeID") ? user.Properties["lmcEmployeeID"][0].ToString() : string.Empty,
                                                   IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
                                                   IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
-                                              }).ToList() as ICollection<UserData>;
+                                              }).Where(u => !string.IsNullOrWhiteSpace(u.Ntid)).ToList();
                             }
 
                             allUsersAdded = true;

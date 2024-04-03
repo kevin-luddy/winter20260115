@@ -42,5 +42,10 @@ namespace GenBOE.Web.ModelView
 		/// Collection of WBS Numbers ('DisplayedWBSNumber')
 		/// </summary>
 		public ICollection<string> WBSNumbers { get; set; }
+
+		/// <summary>
+		/// Tracking Number
+		/// </summary>
+		public string TrackingNumber { get; set; }
 	}
 }

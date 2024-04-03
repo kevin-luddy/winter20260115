@@ -52,7 +52,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void IsStartEndDateValidTest()
         {
-            var sut = this.CreateSystem();
+            ValidationMethods sut = this.CreateSystem();
 
             bool validWhenNull = true;
             bool canBeEqual = false;
@@ -112,7 +112,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void IsUserTypeValidTest()
         {
-            var sut = this.CreateSystem();
+            ValidationMethods sut = this.CreateSystem();
 
             bool validWhenNull = true;
             UserType requiredType = UserType.NotSet;
@@ -208,7 +208,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void IsStartEndDateValidTest_StartDateNullEndDateWithValue()
         {
-            var sut = this.CreateSystem();
+            ValidationMethods sut = this.CreateSystem();
 
             bool validWhenNull = true;
             bool canBeEqual = true;
@@ -246,7 +246,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void IsStartEndDateValidExceptionTest1()
         {
-            var sut = this.CreateSystem();
+            ValidationMethods sut = this.CreateSystem();
             string errorMessage;
 
             Assert.IsFalse(sut.IsStartEndDateValid("15/15/2011", null, "12/2011", null, null, true, false, true, out errorMessage));
@@ -258,7 +258,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void IsStartEndDateValidExceptionTest2()
         {
-            var sut = this.CreateSystem();
+            ValidationMethods sut = this.CreateSystem();
             string errorMessage;
             Assert.IsFalse(sut.IsStartEndDateValid(new List<int>(), null, "12/2011", null, null, true, false, true, out errorMessage));
         }
@@ -270,7 +270,7 @@ namespace GenTRAC.Tests
         public void IsStartEndDateValidExceptionTest3()
         {
             string errorMessage;
-            var sut = this.CreateSystem();
+            ValidationMethods sut = this.CreateSystem();
             Assert.IsFalse(sut.IsStartEndDateValid("01/2011", null, "15/15/2011", null, null, true, false, true, out errorMessage));
         }
 
@@ -280,7 +280,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void IsStartEndDateValidExceptionTest4()
         {
-            var sut = this.CreateSystem();
+            ValidationMethods sut = this.CreateSystem();
             string errorMessage;
             Assert.IsFalse(sut.IsStartEndDateValid("01/2011", null, new List<int>(), null, null, true, false, true, out errorMessage));
         }

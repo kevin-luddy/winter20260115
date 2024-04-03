@@ -18,11 +18,6 @@ namespace GenBOE.DataBridge.DTO
     {
         private Logger _log = new Logger(typeof(GenBOEMetricsDTODataLoader));
 
-        /// <summary>
-        /// Primary key for LineOfBusiness.LineOfBusinessName = 'None'
-        /// </summary>
-        private const int LINE_OF_BUSINESS_ID_NONE = 1;
-
         // default constructor
         public GenBOEMetricsDTODataLoader( )
         {
@@ -64,7 +59,7 @@ namespace GenBOE.DataBridge.DTO
 
                     Collection<int> validWorkspaceIds = wsData.Select(x => x.WorkspaceID).ToCollection();
 
-                    var boeData = (from boes in gbe.BOEs
+					Collection<int> boeData = (from boes in gbe.BOEs
                                    where validWorkspaceIds.Contains(boes.WorkspaceID)
                                    select boes.BOEStateID).ToCollection();
 
@@ -121,11 +116,11 @@ namespace GenBOE.DataBridge.DTO
                 // Upsert SP
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    var users = (from allUsers in gbe.UserLogs
+					Collection<UserLog> users = (from allUsers in gbe.UserLogs
                                  select allUsers).ToCollection();
-                    var ETIUsers = (from allETIUsers in gbe.ETIusers select allETIUsers).ToCollection();
+					Collection<ETIuser> ETIUsers = (from allETIUsers in gbe.ETIusers select allETIUsers).ToCollection();
                     
-                    foreach (var user in users)
+                    foreach (UserLog user in users)
                     {
                         UserOnlineDetails userDetails = new UserOnlineDetails();
                         userDetails.TimeLastAccessed = user.LogInUpdateDT;

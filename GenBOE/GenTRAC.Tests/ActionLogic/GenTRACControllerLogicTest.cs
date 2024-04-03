@@ -121,7 +121,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_CheckPermissionsTest()
         {
-            var sut = this.CreateSystem();
+            GenTRACControllerLogic sut = this.CreateSystem();
 
             PtmRole highestRole;
             this.secAccess.Setup(x => x.IsAuthorized(It.IsAny<SecurityPermissionsRequested>(), out highestRole)).Returns(SecurityAuthorization.CreateReadUpdateDelete);
@@ -137,7 +137,7 @@ namespace GenTRAC.Tests
         [TestMethod]
         public void C_GetMasterViewTest()
         {
-            var sut = this.CreateSystem();
+            GenTRACControllerLogic sut = this.CreateSystem();
 
             GenTRACMasterModelView result = sut.GetMasterView();
 
@@ -153,7 +153,7 @@ namespace GenTRAC.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void C_CheckPermissionsExceptionTest()
         {
-            var sut = this.CreateSystem();
+            GenTRACControllerLogic sut = this.CreateSystem();
 
             sut.CheckPermissions(null, null);
         }
@@ -189,7 +189,7 @@ namespace GenTRAC.Tests
         {
             int proposalid = 3;
             ProposalDto proposal = new ProposalDto { Id = proposalid, TrackingNumber = "201345", ForecastedTrackingNumber = "F201345" };
-            var sut = this.CreateSystem();
+            GenTRACControllerLogic sut = this.CreateSystem();
 
             this.proposalLoader.Setup(x => x.GetById(proposalid)).Returns(proposal);
             ProposalDto proposalToTest = sut.GetByProposalId(proposalid);
@@ -209,7 +209,7 @@ namespace GenTRAC.Tests
             {
                 Id = 5
             };
-            var sut = this.CreateSystem();
+            GenTRACControllerLogic sut = this.CreateSystem();
 
             this.userMapper.Setup(x => x.GetUsersOnline()).Returns(expectedValue);
             UsersOnlineDTO actualValue = sut.GetUsersOnline();

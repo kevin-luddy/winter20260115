@@ -141,7 +141,7 @@ namespace GenTRAC.Web.Common
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var theModelViews = this.GetHomeMenuItems(context.RouteData.Values["controller"].ToString());
+			ICollection<GenTRACMenuItemModelView> theModelViews = this.GetHomeMenuItems(context.RouteData.Values["controller"].ToString());
 
             return this.PartialView(WebConstants.View.GENTRAC_HOME_MENU, this.FilterMenuItems(theModelViews, null));
         }
@@ -298,6 +298,7 @@ namespace GenTRAC.Web.Common
             // Update the user status for Who's Online.
             IES.Common.UserData activeUser = this.securityInformation.ActiveUserData;
             this.ViewData["UserAccountName"] = string.Format("{0} {1} ({2})", activeUser.FirstName, activeUser.LastName, activeUser.Ntid);
+
             this.GenTRACControllerLogic.UpdateUsersStatus(activeUser, proposalId);
 
             // validate model
@@ -494,11 +495,11 @@ namespace GenTRAC.Web.Common
         [NonAction]
         private ICollection<GenTRACMenuItemModelView> FilterMenuItems(ICollection<GenTRACMenuItemModelView> menuItems, ProposalDto proposal)
         {
-            var toReturn = new List<GenTRACMenuItemModelView>();
+			List<GenTRACMenuItemModelView> toReturn = new List<GenTRACMenuItemModelView>();
 
             int? proposalID = proposal != null ? (int?)proposal.Id : null;
 
-            foreach (var menuItem in menuItems)
+            foreach (GenTRACMenuItemModelView menuItem in menuItems)
             {
                 // For menu items with no sub items, check access
                 // If the menu items has sub items, we'll check access on each
@@ -513,8 +514,8 @@ namespace GenTRAC.Web.Common
                 }
                 else
                 {
-                    // Create a new model View for the inactive top-level menu item
-                    var inactiveMenuItem = new GenTRACMenuItemModelView
+					// Create a new model View for the inactive top-level menu item
+					GenTRACMenuItemModelView inactiveMenuItem = new GenTRACMenuItemModelView
                     {
                         LinkText = menuItem.LinkText,
                         MenuLocation = menuItem.MenuLocation,
@@ -522,7 +523,7 @@ namespace GenTRAC.Web.Common
                     };
 
                     // Iterate the sub items
-                    foreach (var subMenuItem in menuItem.SubMenuItems)
+                    foreach (GenTRACMenuItemModelView subMenuItem in menuItem.SubMenuItems)
                     {
                         // If the user has access to this Security Page, add the sub menu item to the
                         // inactive top-level menu item Model View

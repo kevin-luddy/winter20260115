@@ -76,7 +76,6 @@
     <Folder Include="Release Scripts\Older\Release 2020.5.2" />
     <Folder Include="Release Scripts\Older\Release 2020.2" />
     <Folder Include="Release Scripts\Older\Release 2020.4" />
-    <Folder Include="Release Scripts\Release 2023.3" />
     <Folder Include="Release Scripts\Release 2023.12" />
     <Folder Include="Release Scripts\Older\Release 2021.2" />
     <Folder Include="Release Scripts\Older\Release 2021.23" />
@@ -87,6 +86,11 @@
     <Folder Include="Release Scripts\Older\Release 2022.27" />
     <Folder Include="Release Scripts\Older\Release 2022.34" />
     <Folder Include="Release Scripts\Release 2023.26" />
+    <Folder Include="Release Scripts\Older\Release 2023.3" />
+    <Folder Include="Release Scripts\Release 2024.4" />
+    <Folder Include="Release Scripts\Release 2024.5" />
+    <Folder Include="Release Scripts\Release 2024.6" />
+    <Folder Include="Release Scripts\Release 2024.7" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -158,13 +162,11 @@
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2021.2 Generated On 2_25_2021.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.10 Generated On 3_22_2022.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.15 Generated On 5_16_2022.sql" />
-    <Build Include="Release Scripts\Release 2023.3\Release 2023.3.sql" />
-    <Build Include="_Full Script Files For Specific Versions\PTM - 2023.3 Generated On 3_1_2023.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.27 Generated On 7_27_2022.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.34 Generated On 10_20_2022.sql" />
     <Build Include="Object Scripts\Stored Procedures\CopyPARChecklist.sql" />
     <Build Include="Object Scripts\Stored Procedures\CopyPPRChecklist.sql" />
-    <Build Include="Release Scripts\Release 2023.12\Release 2023.12.sql" />
+    <Build Include="Release Scripts\Release 2023.12\1 - Release 2023.12.sql" />
     <Build Include="Release Scripts\Older\Release 2021.2\Release 2021.2.sql" />
     <Build Include="Release Scripts\Older\Release 2021.23\Release 2021.23.sql" />
     <Build Include="Release Scripts\Older\Release 2021.5\Release 2021.5.sql" />
@@ -173,7 +175,19 @@
     <Build Include="Release Scripts\Older\Release 2022.15\Release 2022.15.sql" />
     <None Include="Release Scripts\Older\Release 2022.27\Release 2022.27.sql" />
     <Build Include="Release Scripts\Older\Release 2022.34\Release 2022.34.sql" />
-    <Build Include="Release Scripts\Release 2023.26\Release 2023.26.sql" />
+    <Build Include="Release Scripts\Release 2023.26\1 - Release 2023.26.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2023.26 Generated On 1_17_2024.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2023.3 Generated On 3_1_2023.sql" />
+    <Build Include="Release Scripts\Older\Release 2023.3\1 - Release 2023.3.sql" />
+    <Build Include="Release Scripts\Release 2024.4\1 - Release 2024.4.sql" />
+    <Build Include="Object Scripts\Stored Procedures\GetAcvUsageData.proc.sql" />
+    <Build Include="Release Scripts\Release 2024.5\1 - Release 2024.5.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2024.5 Generated On 2_22_2024.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2024.6 Generated On 3_21_2024.sql" />
+    <Build Include="Object Scripts\Stored Procedures\GetAcvUsageDataComplete.proc.sql" />
+    <None Include="Release Scripts\Release 2024.7\1 - Release 2024.7.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2024.7 Generated On 3_25_2024.sql" />
+    <Build Include="Object Scripts\Stored Procedures\GetAcvUsageDataDetails.proc.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
@@ -181,5 +195,6 @@
     <None Include="Object Scripts\Table Based Processing\DataMart.sql" />
     <None Include="Object Scripts\X_Data Cleanup\DeleteOrphanedAttachments.sql" />
     <None Include="Object Scripts\Stored Procedures\getProposalRevisionHistory.sql" />
+    <None Include="Release Scripts\Release 2024.6\1 - Release 2024.6.sql" />
   </ItemGroup>
 </Project>

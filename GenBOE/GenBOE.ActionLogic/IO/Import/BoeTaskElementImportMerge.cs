@@ -31,7 +31,7 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 importedBoe.CloneImportedCustomFieldsToContainer();
             }
-            return importedBoe as BoeTaskElementDTO;
+            return importedBoe;
         }
 
         public BoeTaskElementDTO MergeTaskWithData(BoeTaskElementDTO importedData, bool updateAllTaskElementData, WorkspaceDTO workspace)

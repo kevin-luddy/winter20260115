@@ -35,9 +35,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(boeComments));
             }
 
-            var toReturn = string.Empty;
+			string toReturn = string.Empty;
 
-            var worksheet = this.GetExcelExportWorksheet(boeComments);
+			ExcelExportWorksheet worksheet = this.GetExcelExportWorksheet(boeComments);
 
             // Pass the rows to the generic Excel exporter
             toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);            
@@ -60,7 +60,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(boeComments));
             }
 
-            var toReturn = new ExcelExportWorksheet();
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet();
 
             if (boeComments.Count > 0)
             {
@@ -69,9 +69,12 @@ namespace GenBOE.ActionLogic.IO.Export
                     foreach (BOEComment comment in entry.Value)
                     {
                         toReturn.Add(
-                            string.Format($"{entry.Key} {comment.BOETitle}"),
-                            CommonConstants.FORCE_AS_STRING_VALUE + comment.ClinString,
-                            CommonConstants.FORCE_AS_STRING_VALUE + comment.WbsString,
+                            CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + entry.Key,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.BOETitle,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.WbsNumber,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.WbsTitle,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.ClinNumber,
+                            CommonConstants.FORCE_AS_STRING_VALUE + comment.ClinTitle,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.BOEAuthors,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.ReviewerName,
                             CommonConstants.FORCE_AS_STRING_VALUE + comment.CommenterRole,

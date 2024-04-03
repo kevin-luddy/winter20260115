@@ -61,9 +61,9 @@ namespace GenBOE.ActionLogic
             // Get all comments and responses for the current BOE
             ICollection<BOECommentDTO> allComments = this.boeCommentDTOLoader.GetByBoeId(boeID);
 
-            // Get all comments that do not reference any reviewer comments. This
-            // will be the set of reviewer comments.
-            var reviewerComments = from reviewerComment in allComments
+			// Get all comments that do not reference any reviewer comments. This
+			// will be the set of reviewer comments.
+			IEnumerable<BOECommentDTO> reviewerComments = from reviewerComment in allComments
                                    where reviewerComment.BOEResponseToCommentID == null
                                    select reviewerComment;
 
@@ -153,11 +153,13 @@ namespace GenBOE.ActionLogic
                 foreach (BOEComment comment in boeComments)
                 {
                     comment.BOETitle = boe.Title;
-                    comment.ClinString = boe.Clin == null ? string.Empty : boe.Clin.ClinString;
-                    comment.WbsString = boe.Wbs == null ? string.Empty : boe.Wbs.WbsString;
+                    comment.ClinNumber = boe.Clin == null ? string.Empty : boe.Clin.ClinNumber;
+                    comment.ClinTitle = boe.Clin == null ? string.Empty : boe.Clin.ClinTitle;
+                    comment.WbsNumber = boe.Wbs == null ? string.Empty : boe.Wbs.WbsNumber;
+                    comment.WbsTitle = boe.Wbs == null ? string.Empty : boe.Wbs.WbsTitle;
                     comment.BOEAuthors = string.Join("; ", boeAuthors.Select(x => x.DisplayName));
                     comment.CommenterRole = boePermission.Role.ToString();
-                    comment.ReviewerCommentUpdateDT = ((DateTime)comment.ReviewerCommentUpdateDT).AddHours(Convert.ToInt32(ConfigurationUtilities.GetAppSetting("DatabaseESTOffset")));
+                    comment.ReviewerCommentUpdateDT = comment.ReviewerCommentUpdateDT.AddHours(Convert.ToInt32(ConfigurationUtilities.GetAppSetting("DatabaseESTOffset")));
                     if (DateTime.Compare(comment.AuthorResponseUpdateDT.GetValueOrDefault(), DateTime.MinValue) == 0)
                     {
                         comment.AuthorResponseUpdateDT = null;

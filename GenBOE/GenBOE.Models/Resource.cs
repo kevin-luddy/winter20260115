@@ -24,6 +24,7 @@ namespace GenBOE.Models
             this.BOEFormIBOEResourcesXREFs = new HashSet<BOEFormIBOEResourcesXREF>();
             this.BOEFormPBOEResourcesXREFs = new HashSet<BOEFormPBOEResourcesXREF>();
             this.BOELaborTypes = new HashSet<BOELaborType>();
+            this.BOELaborTypes1 = new HashSet<BOELaborType>();
         }
     
         public int ResourceID { get; set; }
@@ -56,5 +57,7 @@ namespace GenBOE.Models
         public virtual ICollection<BOEFormPBOEResourcesXREF> BOEFormPBOEResourcesXREFs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOELaborType> BOELaborTypes1 { get; set; }
     }
 }

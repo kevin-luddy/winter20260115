@@ -1455,8 +1455,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 throw new ArgumentNullException(nameof(advSearchParams));
             }
 
-            // Perform Date Range validation
-            var validator = new DateRangeValidator();
+			// Perform Date Range validation
+			DateRangeValidator validator = new DateRangeValidator();
 
             Collection<Dictionary<string, string>> validationData = new Collection<Dictionary<string, string>>()
                 {
@@ -1985,9 +1985,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                     List<ImportedBoe> updatedBOEs = importResults.Where(w => w.ImportTypes.Contains(BoeImportResult.UpdateBoe)).ToList();
 
-                    var cache = new VariableCircularReferenceCheckerCache();
+					VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
 
-                    foreach (var updatedBOE in updatedBOEs)
+                    foreach (ImportedBoe updatedBOE in updatedBOEs)
                     {
                         if (updatedBOE.Id > 0)
                         {
@@ -2126,11 +2126,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                     foreach (WorkspaceVariableDTO workspaceVariableDTO in boesWithConflict.workspaceVariableConflicts)
                     {
-                        var workspaceVariable = new WorkspaceVariableModelView(workspaceVariableDTO, this._variableSelectBOEtoSumCalculation, copyWorkspace);
+						WorkspaceVariableModelView workspaceVariable = new WorkspaceVariableModelView(workspaceVariableDTO, this._variableSelectBOEtoSumCalculation, copyWorkspace);
 
                         decimal newValue = 0m;
 
-                        var matchingWorkspaceVariable = (from w in workspaceVariables
+						WorkspaceVariableDTO matchingWorkspaceVariable = (from w in workspaceVariables
                                                          where w.WorkspaceVariableName.Equals(workspaceVariable.WorkspaceVariableName, StringComparison.CurrentCultureIgnoreCase)
                                                          select w).FirstOrDefault();
 
@@ -2152,12 +2152,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         boeCopyConflict.workspaceVariableConflicts.Add(workspaceVariable, newValue);
                     }
 
-                    foreach (var workspaceVariableCR in boesWithConflict.workspaceVariableCircularReferences)
+                    foreach (WorkspaceVariableDTO workspaceVariableCR in boesWithConflict.workspaceVariableCircularReferences)
                     {
                         boeCopyConflict.workspaceVariableCircularReferences.Add(new WorkspaceVariableModelView(workspaceVariableCR, this._variableSelectBOEtoSumCalculation, ws));
                     }
 
-                    foreach (var ordinaryVariableCR in boesWithConflict.ordinaryVariableCircularReferences)
+                    foreach (OrdinaryVariableDto ordinaryVariableCR in boesWithConflict.ordinaryVariableCircularReferences)
                     {
                         boeCopyConflict.ordinaryVariableCircularReferences.Add(new BoeTaskOrdinaryVariableModelView(ordinaryVariableCR, this._variableSelectBOEtoSumCalculation, ws));
                     }

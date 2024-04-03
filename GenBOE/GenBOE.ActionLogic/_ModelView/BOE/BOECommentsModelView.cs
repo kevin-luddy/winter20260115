@@ -28,7 +28,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         {
             if (inBoeApprovers != null)
             {
-                var currentApprover = inBoeApprovers.FirstOrDefault(a => a.ETIUserID == currentUserID);
+				BoeApproverResponseDTO currentApprover = inBoeApprovers.FirstOrDefault(a => a.ETIUserID == currentUserID);
 
                 if (currentApprover != null)
                 {
@@ -92,8 +92,10 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.CommentType = BOECommentType.Comment;
             this.BOEId = -1;
             this.BOETitle = string.Empty;
-            this.ClinString = string.Empty;
-            this.WbsString = string.Empty;
+            this.ClinNumber = string.Empty;
+            this.ClinTitle = string.Empty;
+            this.WbsNumber = string.Empty;
+            this.WbsTitle = string.Empty;
             this.BOEAuthors = string.Empty;
             this.CommenterRole = string.Empty;
         }
@@ -194,9 +196,13 @@ namespace GenBOE.ActionLogic.ModelView.BOE
 
         public string BOETitle { get; set;}
 
-        public string ClinString { get; set;}
+        public string ClinNumber { get; set;}
 
-        public string WbsString { get; set; }
+        public string ClinTitle { get; set; }
+
+        public string WbsNumber { get; set; }
+
+        public string WbsTitle { get; set; }
 
         public string BOEAuthors { get; set; }
 

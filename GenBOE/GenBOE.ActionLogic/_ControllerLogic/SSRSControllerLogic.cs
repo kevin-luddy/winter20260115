@@ -1744,7 +1744,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                             client.UseDefaultCredentials = true;
                             client.DownloadFile(link, tempFileLocation);
 
-                            var header = new ContentDisposition(client.ResponseHeaders["Content-Disposition"]);
+							ContentDisposition header = new ContentDisposition(client.ResponseHeaders["Content-Disposition"]);
                             string realFilename = header.FileName;
                             if (realReport != null)
                             {

@@ -19,7 +19,7 @@ namespace GenBOE.Web.Common
                 throw new ArgumentNullException(nameof(bindingContext), "bindingContext cannot be null.");
             }
 
-            var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
+			ValueProviderResult value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
             if (value == null || string.IsNullOrEmpty(value.AttemptedValue))
             {
                 return null;

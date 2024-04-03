@@ -298,6 +298,11 @@ namespace GenBOE.ActionLogic.CopyBOE
                                      from l in t.taskElementLabors
                                      where l.ResourceID.HasValue
                                      select l.ResourceID.Value).ToList();
+            // Add BRC Ids to list
+            resourceIDs.AddRange((from t in inSourceBOE.TaskElements
+                                    from l in t.taskElementLabors
+                                    where l.BusinessResourceCodeID.HasValue
+                                    select l.BusinessResourceCodeID.Value).ToList());
 
             ICollection<ResourceDTO> resourcesToMap = this._IResourceDTODataLoader.GetByIds(resourceIDs);
 
@@ -684,6 +689,11 @@ namespace GenBOE.ActionLogic.CopyBOE
                         if (laborType.ResourceID.HasValue && inResourceIDMapping.ContainsKey(laborType.ResourceID.Value))
                         {
                             laborType.ResourceID = (laborType.ResourceID.HasValue && inResourceIDMapping[laborType.ResourceID.Value] != -1) ? inResourceIDMapping[laborType.ResourceID.Value] : (int?)null;
+                        }
+
+                        if (laborType.BusinessResourceCodeID.HasValue && inResourceIDMapping.ContainsKey(laborType.BusinessResourceCodeID.Value))
+                        {
+                            laborType.BusinessResourceCodeID = (laborType.BusinessResourceCodeID.HasValue && inResourceIDMapping[laborType.BusinessResourceCodeID.Value] != -1) ? inResourceIDMapping[laborType.BusinessResourceCodeID.Value] : (int?)null;
                         }
 
                         if (laborType.PerformingOrgID.HasValue && inPerformingOrgIDMapping.ContainsKey(laborType.PerformingOrgID.Value))

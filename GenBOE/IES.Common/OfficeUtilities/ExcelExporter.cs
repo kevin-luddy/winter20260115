@@ -239,14 +239,14 @@ namespace IES.Common.OfficeUtilities
                     rowIndex = (int)startRow;
                 }
 
-                var originalRows = sheetData.Descendants<Row>().ToList();
+				List<Row> originalRows = sheetData.Descendants<Row>().ToList();
 
                 // Iterate over rows of data and append each as an Excel Row object
                 foreach (ICollection<string> row in worksheetData)
                 {
-                    var originalRow = originalRows.FirstOrDefault(r => r.RowIndex == rowIndex);
+					Row originalRow = originalRows.FirstOrDefault(r => r.RowIndex == rowIndex);
 
-                    var newRow = ExcelUtilities.CreateExcelContentRow(document, rowIndex, columnStyles, originalRow, row.ToArray());
+					Row newRow = ExcelUtilities.CreateExcelContentRow(document, rowIndex, columnStyles, originalRow, row.ToArray());
 
                     if (originalRow != null)
                     {
@@ -279,7 +279,7 @@ namespace IES.Common.OfficeUtilities
             if (worksheetPart != null)
             {
                 SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-                var allRows = sheetData.Descendants<Row>().ToList();
+				List<Row> allRows = sheetData.Descendants<Row>().ToList();
 
                 uint rowIndex = startRow;
 
@@ -370,12 +370,13 @@ namespace IES.Common.OfficeUtilities
         /// For example:
         ///     DefinedName     =>  SequenceOfReferences
         ///     ----------------------------------------
-        ///     CustomField_111 =>  C20 C47 C78
-        ///     Resource        =>  B28:B30 B46:B48
-        ///     PerfOrgs        =>  C28:C30 C46:C48
-        ///     SpreadCurve     =>  F28:F30 F46:F48
-        ///     CustomField_222 =>  I28:I30 I46:I48
-        ///     CustomField_333 =>  J28:J30 J46:J48
+        ///     CustomField_111			=>  C20 C47 C78
+        ///     Resource				=>  B28:B30 B46:B48
+		///     Business ResourceCode	=>	C28:C30 C46:C48
+        ///     PerfOrgs				=>  D28:D30 D46:C48
+        ///     SpreadCurve				=>  G28:G30 G46:G48
+        ///     CustomField_222			=>  J28:J30 J46:J48
+        ///     CustomField_333			=>  K28:K30 K46:K48
         /// </summary>
         /// <param name="definedName"></param>
         /// <param name="colIndex"></param>
@@ -458,7 +459,7 @@ namespace IES.Common.OfficeUtilities
             }
             // Add names
             DefinedNames definedNames = spreadsheet.WorkbookPart.Workbook.GetFirstChild<DefinedNames>();
-            foreach (var newDefinedName in newDefinedNames)
+            foreach (KeyValuePair<string, string> newDefinedName in newDefinedNames)
             {
                 definedNames.AppendChild(new DefinedName() { Name = newDefinedName.Key, Text = newDefinedName.Value });
             }

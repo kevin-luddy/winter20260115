@@ -41,15 +41,15 @@ namespace GenBOE.ActionLogic.Validation
                 throw new InvalidCastException("value");
             }
 
-            var dataToValidate = (ProPricerDTO)value;
+			ProPricerDTO dataToValidate = (ProPricerDTO)value;
 
             if (!dataToValidate.WorkspaceID.HasValue && dataToValidate.WorkspaceID > 0)
             {
                 throw new ArgumentException("Format DTO must not have WorkspaceID defined.");
             }
 
-            // Validate unique format name
-            var duplicateFormatNames = (from f in this.proPricerLoader.GetAllSystemExports()
+			// Validate unique format name
+			bool duplicateFormatNames = (from f in this.proPricerLoader.GetAllSystemExports()
                                         where f.ExportID != dataToValidate.ExportID &&
                                             f.FormatName.Trim().Equals(dataToValidate.FormatName.Trim(), StringComparison.CurrentCultureIgnoreCase)
                                         select f).Any();

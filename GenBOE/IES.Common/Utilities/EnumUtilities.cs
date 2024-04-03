@@ -113,7 +113,7 @@ namespace IES.Common
 
             ICollection<SelectListItem> items = new List<SelectListItem>();
 
-            foreach (var item in Enum.GetValues(enumType))
+            foreach (object item in Enum.GetValues(enumType))
             {
                 // If this is an active item OR if it is an inactive item that is still selected, add it to the list.
                 if (item.IsActive() || (item != null && item.Equals(selectedItem)))

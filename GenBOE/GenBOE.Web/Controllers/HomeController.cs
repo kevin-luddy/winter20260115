@@ -48,7 +48,6 @@ namespace GenBOE.Web.Controllers
         private IHomeControllerLogic homeLogic = null;
         private IWorkspaceDTODataLoader _WorkspaceDTODataLoader = null;
         private ActiveDirectoryUtilities _ADUtils = null;
-        private BoePickListMapper boePickListMapper;
 
         /// <summary>
         /// Constructor
@@ -67,7 +66,6 @@ namespace GenBOE.Web.Controllers
             IPermissionsDTODataLoader permissionsLoader,
             ActiveDirectoryUtilities adUtils,
             IGenBOEControllerLogic inControllerLogic,
-            BoePickListMapper boePickListMapper,
             GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
             GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper,
             IWorkspaceControllerLogic workspaceLogic)
@@ -79,7 +77,6 @@ namespace GenBOE.Web.Controllers
             _WorkspaceDTODataLoader = inWorkspaceDTODataLoader;
             this.homeLogic = homeLogic;
             this._ADUtils = adUtils;
-            this.boePickListMapper = boePickListMapper;
             this.proposalLoader = proposalLoader;
             this.ptmSecurityMapper = ptmSecurityMapper;
             this.workspaceLogic = workspaceLogic;
@@ -353,9 +350,6 @@ namespace GenBOE.Web.Controllers
 
             UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
 
-            ViewData["DisplayECIMessage"] = SiteMasterUtilities.ShowEciForbiddenMessage() &&
-                !this.UserLoader.GetMessageConfirmations(currentUser.UserID).Contains(ConfirmationMessage.ECI_FORBIDDEN);
-
             // Check for Subcontractor users
             if (_SecInfo.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor))
             {
@@ -376,12 +370,12 @@ namespace GenBOE.Web.Controllers
         /// <returns></returns>
         public virtual ViewResult DisplayHomeMasterMenu()
         {
-            var theModelViews = new Collection<GenBOEMasterMenuItemModelView>();
+			Collection<GenBOEMasterMenuItemModelView> theModelViews = new Collection<GenBOEMasterMenuItemModelView>();
 
             Collection<GenBOEMasterMenuItemModelView> MenuItems = GenBOEMasterMenuItemModelView.BuildHomeMasterMenuItems();
 
-            // get the Metric Admin menu so we can add company specific info to it
-            var AdminMenuItem = MenuItems.Where(x => x.linkText == "Admin").Single().subMenuItems.Where(y => y.linkText == "Metrics Administration").SingleOrDefault();
+			// get the Metric Admin menu so we can add company specific info to it
+			GenBOEMasterMenuItemModelView AdminMenuItem = MenuItems.Where(x => x.linkText == "Admin").Single().subMenuItems.Where(y => y.linkText == "Metrics Administration").SingleOrDefault();
 
             if (AdminMenuItem != null)
             {
@@ -404,7 +398,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Iterate over the static collection of Menu Items defined in GenBOEMasterMenuItemModelView
-            foreach (var menuItem in MenuItems)
+            foreach (GenBOEMasterMenuItemModelView menuItem in MenuItems)
             {
                 // For menu items with no sub items, check access
                 if (menuItem.subMenuItems.Count == 0)
@@ -420,14 +414,14 @@ namespace GenBOE.Web.Controllers
                 // If the menu items has sub items, we'll check access on each
                 else
                 {
-                    // Create a new model View for the inactive top-level menu item
-                    var inactiveMenuItem = new GenBOEMasterMenuItemModelView
+					// Create a new model View for the inactive top-level menu item
+					GenBOEMasterMenuItemModelView inactiveMenuItem = new GenBOEMasterMenuItemModelView
                     {
                         linkText = menuItem.linkText
                     };
 
                     // Iterate the sub items
-                    foreach (var subMenuItem in menuItem.subMenuItems)
+                    foreach (GenBOEMasterMenuItemModelView subMenuItem in menuItem.subMenuItems)
                     {
                         // If the user has access to this Security Page (which has a given server action), add the sub menu item to the
                         // inactive top-level menu item Model View
@@ -514,39 +508,6 @@ namespace GenBOE.Web.Controllers
             GenBOEMetricsModelView genBOEMetricsModelView = new GenBOEMetricsModelView(DTOtoSend);
 
             return View(WebConstants.ACTION_HOME_DISPLAY_METRICS_DETAILS, genBOEMetricsModelView);
-        }
-
-        /// <summary>
-        /// Converts the selected lo bs.
-        /// </summary>
-        /// <param name="selectedLobs">The selected lobs.</param>
-        /// <returns></returns>
-        private int[] ConvertSelectedLOBs(string[] selectedLobs)
-        {
-            List<int> ids = new List<int>();
-
-            if (selectedLobs != null && selectedLobs.Any())
-            {
-                PickListGridMV lobMV = this.boePickListMapper.GetPickListValues(PickListEnum.LineOfBusiness);
-                foreach (string lob in selectedLobs)
-                {
-                    if (!string.IsNullOrWhiteSpace(lob))
-                    {
-                        PickListDto dto = lobMV.PickLists.FirstOrDefault(p => p.Text == lob);
-                        if (dto != null)
-                        {
-                            ids.Add(dto.Id);
-                        }
-                        else
-                        {
-                            // somehow the front-end pushed in a bad lob name
-                            this._log.Error("Unknown LOB string selected in homepage filter: " + lob);
-                        }
-                    }
-                }
-            }
-
-            return ids.ToArray();
         }
 
         #endregion Partial Views

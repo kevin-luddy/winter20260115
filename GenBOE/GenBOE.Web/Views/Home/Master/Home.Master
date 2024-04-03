@@ -57,15 +57,14 @@
 		    piwikTracker2.enableLinkTracking();
 
 		    piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", <%:Utilities.PiwikId()%>);          //<!-- BOE  -->
-		    var currentUser = '<%: ViewData["CurrentUserName"] %>';
             // Track each user's visit
-            piwikTracker3.setCustomVariable(1, "User Account", currentUser, "visit");
+			piwikTracker3.push(['setUserId', '<%:IES.Common.Utilities.CurrentUser()%>']);
             piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
 		    piwikTracker3.trackPageView();
 		    piwikTracker3.enableLinkTracking();
 	    } catch( err ) {}
     };
-    </script>
+	</script>
     <noscript>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
@@ -216,7 +215,6 @@
             <span>Validating...</span>
         </div>
     </div>
-    <iframe  class="appOfflineFrame" src="<%:ConfigurationUtilities.AppOfflineUrl(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems ? "BOE SSC" : "BOE RMS")%>"></iframe>
 <script type="text/javascript">
     $(function () {
         $(".nav-bar.left .submenu").each(function () {
@@ -286,7 +284,7 @@
 
 
 
-		var displayEciMessage = '<%: (bool)ViewData["DisplayECIMessage"] %>';
+		var displayEciMessage = '<%: SiteMasterUtilities.ShowEciForbiddenMessage() %>';
 		if (displayEciMessage == "True") {
             GenSession.commonDialog('ECI Forbidden',
 				'<p>You have chosen to access the International genBOE Environment. This genBOE environment is accessible to international users throughout LM as well as within the United States. Export Controlled Information (ECI) is <strong>Forbidden</strong> on this site.</p>' +

@@ -148,9 +148,9 @@ namespace GenTRAC.DataBridge.DTO
                             dbModel.updateProposalPARChecklist(dtoToUpsert.ProposalID, parResponseBuilder.ToString(),
                                 (int)dtoToUpsert.ResponseType, parComment, parUserId, dtoToUpsert.IsSubmit);
 
-                            toReturn = (int?)(from x in dbModel.ProposalChecklists
-                                        where dtoToUpsert.ProposalID == x.ProposalID
-                                        select x.ProposalChecklistID).FirstOrDefault();
+                            toReturn = (from x in dbModel.ProposalChecklists
+										where dtoToUpsert.ProposalID == x.ProposalID
+										select x.ProposalChecklistID).FirstOrDefault();
                         }
                     }
                 }

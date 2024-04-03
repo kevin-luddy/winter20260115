@@ -39,6 +39,10 @@
 	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='HideNonPortionMarking']/@value">
 	</parameterentry>
   </parameter>
+  <parameter name="HidePortionMarking" description="doesn't matter" defaultvalue="__HidePortionMarking__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='HidePortionMarking']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="PTMURL" description="doesn't matter" defaultvalue="__PTMURL__" tags="">
     <parameterValidation kind="AllowEmpty" />
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PTMURL']/@value">
@@ -51,7 +55,15 @@
   <parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
     <parameterValidation kind="AllowEmpty" />
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthDomain']/@value">
-	</parameterentry>
+    </parameterentry>
+  </parameter>
+  <parameter name="oAuthIESClientSecret" description="doesn't matter" defaultvalue="__oAuthIESClientSecret__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthIESClientSecret']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="PortionMarkingAPI" description="doesn't matter" defaultvalue="__PortionMarkingAPI__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PortionMarkingAPI']/@value">
+    </parameterentry>
   </parameter>
 
   <!--system.web-->

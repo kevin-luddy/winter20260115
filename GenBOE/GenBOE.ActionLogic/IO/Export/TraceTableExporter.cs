@@ -141,7 +141,7 @@ namespace GenBOE.ActionLogic.IO.Export
                             }
                             break;
                         case Constants.COLUMN_FIELD_CLIN:
-                            foreach (var clin in workspace.Clins)
+                            foreach (FullClin clin in workspace.Clins)
                             {
                                 parent.SpreadValuesForGroup.Add(clin.ClinString, resourceTypes.Where(r => r.CLINID == clin.Id).SelectMany(s => s.LaborSpreads).Sum(x => x.LaborSpreadValue));
                             }
@@ -157,7 +157,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                             break;
                         case Constants.COLUMN_FIELD_WBS:
-                            foreach (var wbs in workspace.WbsElements)
+                            foreach (FullWbs wbs in workspace.WbsElements)
                             {
                                 parent.SpreadValuesForGroup.Add(wbs.WbsString, resourceTypes.Where(r => r.WBSID == wbs.Id).SelectMany(s => s.LaborSpreads).Sum(x => x.LaborSpreadValue));
                             }

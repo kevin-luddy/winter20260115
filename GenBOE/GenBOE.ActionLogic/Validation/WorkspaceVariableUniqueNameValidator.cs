@@ -37,9 +37,9 @@ namespace GenBOE.ActionLogic.Validation
 
             bool nameUsedByOrdVariable = false;
             bool nameUsedByWSVariable = false;
-            
-            // Get all ordinary variables in the workspace
-            var ordinaryVariables = from boe in workspace.Boes
+
+			// Get all ordinary variables in the workspace
+			IEnumerable<OrdinaryVariableDto> ordinaryVariables = from boe in workspace.Boes
                                     from taskElement in workspace.TaskElements.Where(i => i.BoeID == boe.Id)
                                     from variable in taskElement.OrdinaryVariables
                                     select variable;

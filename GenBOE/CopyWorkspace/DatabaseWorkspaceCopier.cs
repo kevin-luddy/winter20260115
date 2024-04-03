@@ -12,14 +12,13 @@ namespace CopyWorkspace
     using System.Linq;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
 
     public class DatabaseWorkspaceCopier
     {
-        private static Logger logger = new Logger(typeof(DatabaseWorkspaceCopier));
         private IUserDTODataLoader _UserDTODataLoader = null;
         private IWorkspaceVariableDTODataLoader _WorkspaceVariableLoader = null;
         private IPermissionsDTODataLoader _PermissionsLoader = null;
@@ -168,13 +167,13 @@ namespace CopyWorkspace
 
             Dictionary<int, int> performingOrgMapping = new Dictionary<int, int>();
             Dictionary<int, int> resourceMapping = new Dictionary<int, int>();
-            if (copyLaborSpreads)
+			if (copyLaborSpreads)
             {
                 Console.WriteLine("Copying Perf Orgs");
                 performingOrgMapping = this.CopyPerformingOrganizations(newWorkspace, performingOrgsToCopy);
                 Console.WriteLine("Copying Resources");
                 resourceMapping = this.CopyResources(newWorkspace, resourcesToCopy);
-            }
+			}
 
             if (copyTasks)
             {
@@ -414,38 +413,38 @@ namespace CopyWorkspace
         /// <param name="newWorkspace"></param>
         private Dictionary<int, int> CopyPerformingOrganizations(WorkspaceDTO newWorkspace, ICollection<PerformingOrgDTO> performingOrgsToCopy)
         {
-            // Create a collection to map old Performing Organization IDs to new copied ones
-            var toReturn = new Dictionary<int, int>();
+			// Create a collection to map old Performing Organization IDs to new copied ones
+			Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
-            // Create a list of Performing Organizations to save
-            var performingOrganizationsToSave = new Collection<PerformingOrgDTO>();
+			// Create a list of Performing Organizations to save
+			Collection<PerformingOrgDTO> performingOrganizationsToSave = new Collection<PerformingOrgDTO>();
 
-            // Get a list of all in-use Perf Org IDs
-            var taskOrganizationIDs = (from t in this.copiedFromTaskElements
+			// Get a list of all in-use Perf Org IDs
+			IEnumerable<int> taskOrganizationIDs = (from t in this.copiedFromTaskElements
                                         from l in t.taskElementLabors
                                         where l.PerformingOrgID.HasValue
                                         select l.PerformingOrgID.Value).Distinct();
 
-            var ZoneTravelPerfOrgIDs = (from t in this.copiedFromTravelElements
+			IEnumerable<int> ZoneTravelPerfOrgIDs = (from t in this.copiedFromTravelElements
                                         from l in t.MSTTravelTrips
                                         select l.PerfOrgID).Distinct();
 
-            var performingOrganizationIDs = taskOrganizationIDs.Union(ZoneTravelPerfOrgIDs);
+			IEnumerable<int> performingOrganizationIDs = taskOrganizationIDs.Union(ZoneTravelPerfOrgIDs);
 
-            // Create a mapping between old Perf Org IDs and new DTOs for the copied workspace
-            var performingOrganizationIDMapping = new Dictionary<int, PerformingOrgDTO>();
+			// Create a mapping between old Perf Org IDs and new DTOs for the copied workspace
+			Dictionary<int, PerformingOrgDTO> performingOrganizationIDMapping = new Dictionary<int, PerformingOrgDTO>();
             int newItemID = -1;
             HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(performingOrganizationIDs.Distinct().ToList()));
 
             foreach (int performingOrganizationID in performingOrganizationIDs)
             {
-                var performingOrganizationToCopy = perfOrgsFromDb.FirstOrDefault(x => x.Id == performingOrganizationID);
+				PerformingOrgDTO performingOrganizationToCopy = perfOrgsFromDb.FirstOrDefault(x => x.Id == performingOrganizationID);
 
                 // If there is a Performing Organization to copy, let's do it
                 if (performingOrganizationToCopy != null)
                 {
-                    // Get the corresponding Performing Organization from the copied workspace
-                    var newWorkspacePerformingOrganization = this.perfOrgLoader.GetByListIdAndName(newWorkspace.PerfOrgListID, performingOrganizationToCopy.PerformingOrgName);
+					// Get the corresponding Performing Organization from the copied workspace
+					PerformingOrgDTO newWorkspacePerformingOrganization = this.perfOrgLoader.GetByListIdAndName(newWorkspace.PerfOrgListID, performingOrganizationToCopy.PerformingOrgName);
 
                     if (newWorkspacePerformingOrganization != null)
                     {
@@ -498,16 +497,16 @@ namespace CopyWorkspace
         /// <param name="newWorkspace"></param>
         private Dictionary<int, int> CopyResources(WorkspaceDTO newWorkspace, ICollection<ResourceDTO> resourcesToCopy)
         {
-            // Create a collection to map old resource IDs to new copied ones
-            var toReturn = new Dictionary<int, int>();
+			// Create a collection to map old resource IDs to new copied ones
+			Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
-            // Create a list of resources to save
-            var resourcesToSave = new Collection<ResourceDTO>();
+			// Create a list of resources to save
+			Collection<ResourceDTO> resourcesToSave = new Collection<ResourceDTO>();
 
-            var resourceIDs = resourcesToCopy.Select(r => r.Id);
+			IEnumerable<int> resourceIDs = resourcesToCopy.Select(r => r.Id);
 
-            // Create a mapping between old Resource IDs and new DTOs for the copied workspace
-            var resourceIDMapping = new Dictionary<int, ResourceDTO>();
+			// Create a mapping between old Resource IDs and new DTOs for the copied workspace
+			Dictionary<int, ResourceDTO> resourceIDMapping = new Dictionary<int, ResourceDTO>();
 
             int newItemID = -1;
 
@@ -515,13 +514,13 @@ namespace CopyWorkspace
             
             foreach (int resourceID in resourceIDs)
             {
-                var resourceToCopy = resourcesToCopy.FirstOrDefault(x => x.Id == resourceID);
+				ResourceDTO resourceToCopy = resourcesToCopy.FirstOrDefault(x => x.Id == resourceID);
 
                 // If there are resources to copy, let's do it
                 if (resourceToCopy != null)
                 {
-                    // Get the corresponding resource from the copied workspace
-                    var newWorkspaceResource = resourcesForWsListId.FirstOrDefault(x => x.ResourceName == resourceToCopy.ResourceName);
+					// Get the corresponding resource from the copied workspace
+					ResourceDTO newWorkspaceResource = resourcesForWsListId.FirstOrDefault(x => x.ResourceName == resourceToCopy.ResourceName);
 
                     if (newWorkspaceResource != null)
                     {
@@ -576,13 +575,13 @@ namespace CopyWorkspace
         /// </summary>
         private Dictionary<int, int> CopyWorkspaceVariables(FullWorkspace workspaceToCopy, WorkspaceDTO newWorkspace, Dictionary<int, int> boeIDMapping, Dictionary<int, int> wbsIDMapping, Dictionary<int, int> clinIDMapping)
         {
-            // Create a collection to map old variable IDs to new copied ones
-            var toReturn = new Dictionary<int, int>();
+			// Create a collection to map old variable IDs to new copied ones
+			Dictionary<int, int> toReturn = new Dictionary<int, int>();
             bool bfound;
 
-            // Get the variables to copy
-            var currentWorkspaceVariables = workspaceToCopy.WorkspaceVariables;
-            var workspaceVariablesToCopy = new Collection<WorkspaceVariableDTO>();
+			// Get the variables to copy
+			IReadOnlyCollection<WorkspaceVariableDTO> currentWorkspaceVariables = workspaceToCopy.WorkspaceVariables;
+			Collection<WorkspaceVariableDTO> workspaceVariablesToCopy = new Collection<WorkspaceVariableDTO>();
 
             if (currentWorkspaceVariables.Any())
             {
@@ -590,7 +589,7 @@ namespace CopyWorkspace
                 int oldItemID;
 
                 // Iterate through each existing variables and set values to create a copy of it in the new workspace
-                foreach (var workspaceVariable in currentWorkspaceVariables)
+                foreach (WorkspaceVariableDTO workspaceVariable in currentWorkspaceVariables)
                 {
                     WorkspaceVariableDTO newVariable = new WorkspaceVariableDTO();
                     newVariable.InUse = workspaceVariable.InUse;
@@ -608,7 +607,7 @@ namespace CopyWorkspace
                     // Remap Sum of BOEs IDs from old to new
                     if (workspaceVariable.ValueType == VarValueType.SumOfBOEs)
                     {
-                        foreach (var sumOfBOEs in workspaceVariable.SelectedBOEsToSum)
+                        foreach (SelectBOEsToSum sumOfBOEs in workspaceVariable.SelectedBOEsToSum)
                         {
                             int matchingID;
                             if (sumOfBOEs.BoeID.HasValue && boeIDMapping.TryGetValue(sumOfBOEs.BoeID.Value, out matchingID))
@@ -616,22 +615,28 @@ namespace CopyWorkspace
                                 sumOfBOEs.BoeID = matchingID;
                                 newVariable.SelectedBOEsToSum.Add(sumOfBOEs);
                                 if (matchingID > 0)
-                                    bfound = true;
-                            }
+								{
+									bfound = true;
+								}
+							}
                             else if (sumOfBOEs.WBSID.HasValue && wbsIDMapping.TryGetValue(sumOfBOEs.WBSID.Value, out matchingID))
                             {
                                 sumOfBOEs.WBSID = matchingID;
                                 newVariable.SelectedBOEsToSum.Add(sumOfBOEs);
                                 if (matchingID > 0)
-                                    bfound = true;
-                            }
+								{
+									bfound = true;
+								}
+							}
                             else if (sumOfBOEs.CLINID.HasValue && clinIDMapping.TryGetValue(sumOfBOEs.CLINID.Value, out matchingID))
                             {
                                 sumOfBOEs.CLINID = matchingID;
                                 newVariable.SelectedBOEsToSum.Add(sumOfBOEs);
                                 if (matchingID > 0)
-                                    bfound = true;
-                            }
+								{
+									bfound = true;
+								}
+							}
                         }
                     }
                     else if (workspaceVariable.ValueType == VarValueType.Discrete)
@@ -640,11 +645,11 @@ namespace CopyWorkspace
                     }
                     if (!bfound) //check for variables used in tasks of the selected BOEs
                     {
-                        foreach (var taskElement in this.copiedFromTaskElements)
+                        foreach (BoeTaskElementDTO taskElement in this.copiedFromTaskElements)
                         {
                             if (taskElement.WorkspaceVariableIDs.Any())
                             {
-                                foreach (var variableID in taskElement.WorkspaceVariableIDs)
+                                foreach (int variableID in taskElement.WorkspaceVariableIDs)
                                 {
                                     if (variableID == oldItemID)
                                     {
@@ -653,17 +658,23 @@ namespace CopyWorkspace
                                     }
                                 }
                                 if (bfound)
-                                    break;
-                            }
+								{
+									break;
+								}
+							}
                         }
                     }
 
                     if (bfound)
-                        newVariable.Updateable = UpdateType.Upsert;
-                    else
-                        newVariable.Updateable = UpdateType.Deleted;
+					{
+						newVariable.Updateable = UpdateType.Upsert;
+					}
+					else
+					{
+						newVariable.Updateable = UpdateType.Deleted;
+					}
 
-                    newVariable.WorkspaceID = newWorkspace.Id;
+					newVariable.WorkspaceID = newWorkspace.Id;
 
                     workspaceVariablesToCopy.Add(newVariable);
                 }
@@ -703,11 +714,11 @@ namespace CopyWorkspace
 
         private Dictionary<int, int> CopyAllWBS(FullWorkspace workspaceToCopy, FullWorkspace newWorkspace, Dictionary<int, int> ClinIDMapping)
         {
-            // Create a collection to map old WBS Numbers to new copied ones
-            var toReturn = new Dictionary<int, int>();
+			// Create a collection to map old WBS Numbers to new copied ones
+			Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
-            // Get the list of all WBS from the workspace to copy
-            var wbsToCopy = workspaceToCopy.WbsElements.ToList<WbsDTO>();
+			// Get the list of all WBS from the workspace to copy
+			List<WbsDTO> wbsToCopy = workspaceToCopy.WbsElements.ToList<WbsDTO>();
 
             // If there are WBSs, let's copy them
             if (wbsToCopy.Any())
@@ -716,7 +727,7 @@ namespace CopyWorkspace
                 ICollection<FullWbs> newWbsElementsToSave = new Collection<FullWbs>();
                 // Iterate through each existing WBS and set values to create a copy of
                 // it in the new workspace
-                foreach (var wbs in wbsToCopy)
+                foreach (WbsDTO wbs in wbsToCopy)
                 {
                     FullWbs newWbs = this.factory.CreateFullWbs(wbs);
                     newWbs.Id = newItemID--;
@@ -727,11 +738,11 @@ namespace CopyWorkspace
                     // copied CLINs in the new workspace
                     if (wbs.ClinIDs.Any())
                     {
-                        // Create a new collection for the copied CLIN IDs
-                        var newCLINIDs = new Collection<int>();
+						// Create a new collection for the copied CLIN IDs
+						Collection<int> newCLINIDs = new Collection<int>();
 
                         // Iterate over old CLIN IDs and add the IDs of their copy in the new workspace
-                        foreach (var clin in wbs.ClinIDs)
+                        foreach (int clin in wbs.ClinIDs)
                         {
                             newCLINIDs.Add(ClinIDMapping[clin]);
                         }
@@ -769,8 +780,8 @@ namespace CopyWorkspace
         /// <param name="clinMapper">CLIN Mapper</param>
         private Dictionary<int, int> CopyAllCLIN(FullWorkspace workspaceToCopy, WorkspaceDTO newWorkspace)
         {
-            // Create a collection to map old CLIN Numbers to new copied ones
-            var toReturn = new Dictionary<int, int>();
+			// Create a collection to map old CLIN Numbers to new copied ones
+			Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
             // Get the list of all CLINs from the workspace to copy
             IReadOnlyCollection<FullClin> clinsToCopy = workspaceToCopy.Clins;
@@ -817,8 +828,8 @@ namespace CopyWorkspace
         /// <param name="permissionsMapper">The permissions mapper</param>
         private void AddAuthorPermissionForCostLead(WorkspaceDTO newWorkspace)
         {
-            // Save Author Permission for Cost Volume Lead Pricer
-            var authorPermission = new PermissionsDTO();
+			// Save Author Permission for Cost Volume Lead Pricer
+			PermissionsDTO authorPermission = new PermissionsDTO();
             authorPermission.WorkspaceId = newWorkspace.Id;
             authorPermission.Role = Role.Author;
             authorPermission.ETIUserId = newWorkspace.CostVolumeLeadPricerUserID;
@@ -834,11 +845,11 @@ namespace CopyWorkspace
         /// <param name="newWorkspaceID">Workspace to copy to</param>
         private void CopyPotentialPermissions(FullWorkspace workspaceToCopy, WorkspaceDTO newWorkspace, ICollection<PermissionsDTO> boePotentialPermissionsWorkspaceToCopy, IDictionary<int, ICollection<BoeApproverResponseDTO>> approvers, Dictionary<int, int> BOEIDMapping)
         {
-            // Create one list to hold the FROM permissions and one to hold the TO permissions
-            // Set the FROM permissions to the workspace permissions
-            var workspaceToCopyPermissions = workspaceToCopy.WorkspacePermissions; // WorkspaceCopier change for Workspace permissions
-            var newWorkspacePermissions = this._PermissionsLoader.GetWorkspacePermissions(newWorkspace.Id);
-            var permissionsToSave = new Collection<PermissionsDTO>();
+			// Create one list to hold the FROM permissions and one to hold the TO permissions
+			// Set the FROM permissions to the workspace permissions
+			IReadOnlyCollection<PermissionsDTO> workspaceToCopyPermissions = workspaceToCopy.WorkspacePermissions; // WorkspaceCopier change for Workspace permissions
+			Collection<PermissionsDTO> newWorkspacePermissions = this._PermissionsLoader.GetWorkspacePermissions(newWorkspace.Id);
+			Collection<PermissionsDTO> permissionsToSave = new Collection<PermissionsDTO>();
 
             if (workspaceToCopyPermissions.Any())
             {
@@ -846,7 +857,7 @@ namespace CopyWorkspace
 
                 // Set each existing workspace permission to reference the new workspace and reset the
                 // PKID to indicate a new permission
-                foreach (var workspacePermission in workspaceToCopyPermissions)
+                foreach (PermissionsDTO workspacePermission in workspaceToCopyPermissions)
                 {
                     // map the User ID
                     workspacePermission.ETIUserId = this.MapUserId(workspacePermission.ETIUserId);
@@ -875,7 +886,7 @@ namespace CopyWorkspace
             {
                 int newItemID = -1;
 
-                foreach (var workspacePermission in boePotentialPermissionsWorkspaceToCopy)
+                foreach (PermissionsDTO workspacePermission in boePotentialPermissionsWorkspaceToCopy)
                 {
                     // map the User ID
                     workspacePermission.ETIUserId = this.MapUserId(workspacePermission.ETIUserId);
@@ -978,7 +989,7 @@ namespace CopyWorkspace
         private Dictionary<int, int> CopyBOEs(WorkspaceDTO newWorkspace, Collection<FullBoe> BOEToCopy,
             Dictionary<int, int> ClinIDMapping, Dictionary<int, int> WBSIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping)
         {
-            var toReturn = new Dictionary<int, int>();
+			Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
             if (BOEToCopy.Any())
             {
@@ -1044,7 +1055,7 @@ namespace CopyWorkspace
                 }
 
                 // Set all BOEs to not Upsert again. Allows future saves of BOE sub-objects.
-                foreach (var boe in boesToSave)
+                foreach (BoeDTO boe in boesToSave)
                 {
                     boe.Updateable = UpdateType.None;
                 }
@@ -1076,7 +1087,7 @@ namespace CopyWorkspace
             int newItemID = -1;
             int idVal = -1;
 
-            foreach (var taskElement in this.copiedFromTaskElements)
+            foreach (BoeTaskElementDTO taskElement in this.copiedFromTaskElements)
             {
                 BoeTaskElementDTO newTaskElement = new BoeTaskElementDTO();
 
@@ -1086,7 +1097,7 @@ namespace CopyWorkspace
                 taskElement.BoeID = newBoeID;
                 taskElement.Updateable = UpdateType.Upsert;
 
-                foreach (var ordinaryVariable in taskElement.OrdinaryVariables)
+                foreach (OrdinaryVariableDto ordinaryVariable in taskElement.OrdinaryVariables)
                 {
                     OrdinaryVariableDto newOrdinaryVariable = new OrdinaryVariableDto();
                     newOrdinaryVariable.Id = newItemID--;
@@ -1104,7 +1115,7 @@ namespace CopyWorkspace
                     if (ordinaryVariable.ValueType == VarValueType.SumOfBOEs)
                     {
                         //boeSum = -1;
-                        foreach (var sumOfBOEs in ordinaryVariable.SelectedBOEsToSum)
+                        foreach (SelectBOEsToSum sumOfBOEs in ordinaryVariable.SelectedBOEsToSum)
                         {
                             idVal = -1;
                             if (sumOfBOEs.BoeID.HasValue)
@@ -1145,7 +1156,7 @@ namespace CopyWorkspace
                 {
                     Collection<int> newVariableIDs = new Collection<int>();
 
-                    foreach (var variableID in taskElement.WorkspaceVariableIDs)
+                    foreach (int variableID in taskElement.WorkspaceVariableIDs)
                     {
                         newVariableIDs.Add(variableIDMapping[variableID]);
                         taskElement.MOQHoursEquation = taskElement.MOQHoursEquation.Replace(
@@ -1175,7 +1186,7 @@ namespace CopyWorkspace
 
                 if (copyLaborSpreads)
                 {
-                    foreach (var laborType in taskElement.taskElementLabors)
+                    foreach (ResourceTypeDto laborType in taskElement.taskElementLabors)
                     {
 
                         laborType.Id = newItemID--;
@@ -1219,7 +1230,7 @@ namespace CopyWorkspace
 
                         if (laborType.CustomFieldValueContainers.Any())
                         {
-                            foreach (var laborTypeCustomFieldXRefToCopy in laborType.CustomFieldValueContainers)
+                            foreach (CustomFieldValueContainer laborTypeCustomFieldXRefToCopy in laborType.CustomFieldValueContainers)
                             {
                                 laborTypeCustomFieldXRefToCopy.Id = newItemID--;
                                 laborTypeCustomFieldXRefToCopy.ContainerID = laborTypeCustomFieldXRefToCopy.Id;
@@ -1237,7 +1248,7 @@ namespace CopyWorkspace
                             laborType.WBSID = wbsIDMapping[laborType.WBSID.Value];
                         }
                         // copy spreads
-                        foreach (var laborSpread in laborType.LaborSpreads)
+                        foreach (ResourceSpreadDto laborSpread in laborType.LaborSpreads)
                         {
                             laborSpread.BoeID = newBoeID;
                             laborSpread.Id = newItemID--;
@@ -1283,7 +1294,7 @@ namespace CopyWorkspace
 
                 int newItemID = -1;
 
-                foreach (var travelElement in this.copiedFromTravelElements)
+                foreach (TravelDTO travelElement in this.copiedFromTravelElements)
                 {
                     int newBoeID = boeIDMapping[travelElement.BoeID];
 
@@ -1294,7 +1305,7 @@ namespace CopyWorkspace
                     // if there are custom cross refs, let's copy them
                     if (travelElement.CustomFieldValueContainers.Any())
                     {
-                        foreach (var travelElementCustomFieldXRefToCopy in travelElement.CustomFieldValueContainers)
+                        foreach (CustomFieldValueContainer travelElementCustomFieldXRefToCopy in travelElement.CustomFieldValueContainers)
                         {
                             travelElementCustomFieldXRefToCopy.ContainerID = newItemID--;
                             travelElementCustomFieldXRefToCopy.Updateable = UpdateType.Upsert;

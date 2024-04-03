@@ -286,13 +286,13 @@ namespace GenBOE.ActionLogic.Common.Email
             {
                 // get a list of all the users having permissions for this BOE
                 Collection<PermissionsDTO> boeRoles = this.PermissionLoader.GetBOEPermissions(new List<int>() { boeId });
-                var boeRolesWithBoeId = boeRoles.Where(x => x.BOEId.HasValue).ToList();
+				List<PermissionsDTO> boeRolesWithBoeId = boeRoles.Where(x => x.BOEId.HasValue).ToList();
 
-                // mine the list of roles for what we are interested in (authors)
-                var authorsLinqResult = (from r in boeRolesWithBoeId
+				// mine the list of roles for what we are interested in (authors)
+				List<int> authorsLinqResult = (from r in boeRolesWithBoeId
                                          where r.Role == Role.Author
                                          select r.ETIUserId).ToList();
-                var distinctAuthors = from a in authorsLinqResult.Distinct()
+				IEnumerable<UserDTO> distinctAuthors = from a in authorsLinqResult.Distinct()
                                       select this.UserLoader.GetUserByID(a);
                 Collection<UserDTO> authors = new Collection<UserDTO>(distinctAuthors.ToArray());
 
@@ -382,35 +382,35 @@ namespace GenBOE.ActionLogic.Common.Email
 
             // get a list of all the users having permissions for this BOE
             Collection<PermissionsDTO> boeRoles = this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOEForReview.Id });
-            var boeRolesWithBoeId = boeRoles.Where(x => x.BOEId.HasValue).ToList();
+			List<PermissionsDTO> boeRolesWithBoeId = boeRoles.Where(x => x.BOEId.HasValue).ToList();
 
-            // mine the list of roles for what we are interested in (reviewers)
-            var authorsLinqResult = (from r in boeRolesWithBoeId
+			// mine the list of roles for what we are interested in (reviewers)
+			List<int> authorsLinqResult = (from r in boeRolesWithBoeId
                                      where r.Role == Role.Author
                                      select r.ETIUserId).ToList();
-            var distinctAuthors = from a in authorsLinqResult.Distinct()
+			IEnumerable<UserDTO> distinctAuthors = from a in authorsLinqResult.Distinct()
                                   select this.UserLoader.GetUserByID(a);
             Collection<UserDTO> authors = new Collection<UserDTO>(distinctAuthors.ToArray());
 
             // get author id
             int author = boeRolesWithBoeId.Where(a => a.Role == Role.Author).Select(a => a.ETIUserId).FirstOrDefault();
 
-            var approversLinqResult = from r in boeRolesWithBoeId
+			IEnumerable<int> approversLinqResult = from r in boeRolesWithBoeId
                                       where r.Role == Role.Approver
                                       select r.ETIUserId;
-            var distinctApprovers = from a in approversLinqResult.Distinct()
+			IEnumerable<UserDTO> distinctApprovers = from a in approversLinqResult.Distinct()
                                     select this.UserLoader.GetUserByID(a);
             Collection<UserDTO> approvers = new Collection<UserDTO>(distinctApprovers.ToArray());
 
             Collection<PermissionsDTO> wsRoles = this.PermissionLoader.GetWorkspacePermissions(inBOEForReview.WorkspaceID);
-            var wsRolesWithWsId = wsRoles.Where(x => x.WorkspaceId.HasValue);
+			IEnumerable<PermissionsDTO> wsRolesWithWsId = wsRoles.Where(x => x.WorkspaceId.HasValue);
 
-            // get all reviewers except author
-            var reviewersLinqResult = from r in wsRolesWithWsId
+			// get all reviewers except author
+			IEnumerable<int> reviewersLinqResult = from r in wsRolesWithWsId
                                       where r.Role == Role.WorkspaceReviewer
                                             && r.ETIUserId != author
                                       select r.ETIUserId;
-            var distinctReviewers = from a in reviewersLinqResult.Distinct()
+			IEnumerable<UserDTO> distinctReviewers = from a in reviewersLinqResult.Distinct()
                                     select this.UserLoader.GetUserByID(a);
             Collection<UserDTO> reviewers = new Collection<UserDTO>(distinctReviewers.ToArray());
 
@@ -618,18 +618,18 @@ namespace GenBOE.ActionLogic.Common.Email
 
             if (inBOE.AuthorIDs.Any() || inBOE.SubcontractorAuthorIDs.Any())
             {
-                var authors = from a in this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
+				IEnumerable<UserDTO> authors = from a in this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
                         .Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).Select(x => x)
                         .ToArray()
                               select this.UserLoader.GetUserByID(a.ETIUserId);
                 authorEmails = string.Join("; ", authors.Select(x => x.EmailAddress));
             }
 
-            var approver = this.UserLoader.GetUserByID(inApprover.ETIUserID);
+			UserDTO approver = this.UserLoader.GetUserByID(inApprover.ETIUserID);
             IReadOnlyCollection<BoeApproverResponseDTO> boeAppovers = inBOE.ApproverResponses;
-            var approvers = (from a in boeAppovers
+			List<UserDTO> approvers = (from a in boeAppovers
                             select this.UserLoader.GetUserByID(a.ETIUserID)).ToList();
-            var workspace = inBOE.Workspace;
+			FullWorkspace workspace = inBOE.Workspace;
 
             WbsDTO wbs = inBOE.Wbs;
             string wbsNum = wbs == null ? "NO WBS" : wbs.WbsNumber;
@@ -733,19 +733,19 @@ namespace GenBOE.ActionLogic.Common.Email
             string authorEmails = string.Empty;
             if (inBOE.AuthorIDs.Any() || inBOE.SubcontractorAuthorIDs.Any())
             {
-                var authors = from a in this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
+				IEnumerable<UserDTO> authors = from a in this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
                         .Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).Select(x => x)
                         .ToArray()
                               select this.UserLoader.GetUserByID(a.ETIUserId);
                 authorEmails = string.Join("; ", authors.Select(x => x.EmailAddress));
             }
 
-            var rejecter = this.UserLoader.GetUserByID(inRejecter.ETIUserID);
-            var boeApprovers = this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
+			UserDTO rejecter = this.UserLoader.GetUserByID(inRejecter.ETIUserID);
+			PermissionsDTO[] boeApprovers = this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
                 .Where(x => x.Role == Role.Approver).Select(x => x).ToArray();
-            var approvers = from a in boeApprovers
+			IEnumerable<UserDTO> approvers = from a in boeApprovers
                             select this.UserLoader.GetUserByID(a.ETIUserId);
-            var workspace = inBOE.Workspace;
+			FullWorkspace workspace = inBOE.Workspace;
 
             WbsDTO wbs = inBOE.Wbs;
             string wbsNum = wbs == null ? "NO WBS" : wbs.WbsNumber;
@@ -804,22 +804,22 @@ namespace GenBOE.ActionLogic.Common.Email
 
             Collection<PermissionsDTO> boePermissions = this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOEForEdit.Id });
 
-            // get the approvers
-            var boeApprovers = boePermissions.Where(x => x.Role == Role.Approver);
+			// get the approvers
+			IEnumerable<PermissionsDTO> boeApprovers = boePermissions.Where(x => x.Role == Role.Approver);
 
-            // get the authors
-            var boeAuthors = boePermissions.Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor);
+			// get the authors
+			IEnumerable<PermissionsDTO> boeAuthors = boePermissions.Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor);
 
             Collection<UserDTO> approvers = new Collection<UserDTO>();
 
-            foreach (var boeApprover in boeApprovers)
+            foreach (PermissionsDTO boeApprover in boeApprovers)
             {
                 approvers.Add(this.UserLoader.GetUserByID(boeApprover.ETIUserId));
             }
 
             Collection<UserDTO> authors = new Collection<UserDTO>();
 
-            foreach (var boeAuthor in boeAuthors)
+            foreach (PermissionsDTO boeAuthor in boeAuthors)
             {
                 authors.Add(this.UserLoader.GetUserByID(boeAuthor.ETIUserId));
             }
@@ -1229,24 +1229,24 @@ namespace GenBOE.ActionLogic.Common.Email
                 throw new ArgumentNullException(nameof(inBOEForApproval));
             }
 
-            // BODY
-            // The Author has completed work on the following BOE.  You may approve the BOE or reject it to send it back to the Author for rework.
-            // Workspace/Proposal: {0} <br/>
-            // WBS: {1} {2}<br/>
-            // BOE Title: {9}<br/>
-            // CLIN: {3} {4}<br/>
-            // BOE Description: {5} <br/>
-            // BOE Status: {6} <br/>
-            // Author: {7}<br/>
-            // Approver(s): {8}<br/><br/>
-            // {9}
+			// BODY
+			// The Author has completed work on the following BOE.  You may approve the BOE or reject it to send it back to the Author for rework.
+			// Workspace/Proposal: {0} <br/>
+			// WBS: {1} {2}<br/>
+			// BOE Title: {9}<br/>
+			// CLIN: {3} {4}<br/>
+			// BOE Description: {5} <br/>
+			// BOE Status: {6} <br/>
+			// Author: {7}<br/>
+			// Approver(s): {8}<br/><br/>
+			// {9}
 
-            var approversLinqResult = from r in this.PermissionLoader
+			IEnumerable<int> approversLinqResult = from r in this.PermissionLoader
                     .GetBOEPermissions(new List<int>() { inBOEForApproval.Id }).Where(x => x.Role == Role.Approver)
                     .Select(x => x).ToArray()
                                       select r.ETIUserId;
 
-            var distinctApprovers = from a in approversLinqResult
+			IEnumerable<UserDTO> distinctApprovers = from a in approversLinqResult
                                     select this.UserLoader.GetUserByID(a);
             Collection<UserDTO> approvers = new Collection<UserDTO>(distinctApprovers.ToArray());
 
@@ -1329,7 +1329,7 @@ namespace GenBOE.ActionLogic.Common.Email
 
             if (inBOE.AuthorIDs.Any() || inBOE.SubcontractorAuthorIDs.Any())
             {
-                var authors = from a in this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
+				IEnumerable<UserDTO> authors = from a in this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
                         .Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).Select(x => x)
                         .ToArray()
                               select this.UserLoader.GetUserByID(a.ETIUserId);
@@ -1410,10 +1410,10 @@ namespace GenBOE.ActionLogic.Common.Email
             // get workspace Admins
             Collection<PermissionsDTO> adminRoles = this.PermissionLoader.GetWorkspacePermissions(inBOE.WorkspaceID);
 
-            var wsAdminsLinqResult = from r in adminRoles
+			IEnumerable<int> wsAdminsLinqResult = from r in adminRoles
                                      where r.Role == Role.WorkspaceAdmin
                                      select r.ETIUserId;
-            var wsAdminsDistinct = from r in wsAdminsLinqResult.Distinct()
+			IEnumerable<UserDTO> wsAdminsDistinct = from r in wsAdminsLinqResult.Distinct()
                                    select this.UserLoader.GetUserByID(r);
 
             Collection<UserDTO> wsAdmins = new Collection<UserDTO>(wsAdminsDistinct.ToArray());
@@ -1552,9 +1552,9 @@ namespace GenBOE.ActionLogic.Common.Email
                 // and stitch together the info for the email
                 Collection<UserDTO> approvers = new Collection<UserDTO>();
 
-                var approverList = this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
+				PermissionsDTO[] approverList = this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id })
                     .Where(x => x.Role == Role.Approver).Select(x => x).ToArray();
-                foreach (var boeApprover in approverList)
+                foreach (PermissionsDTO boeApprover in approverList)
                 {
                     approvers.Add(this.UserLoader.GetUserByID(boeApprover.ETIUserId));
                 }
@@ -1640,7 +1640,7 @@ namespace GenBOE.ActionLogic.Common.Email
                         <tr><th>Field</th><th>Old Value</th><th>New Value</th></tr>");
 
             string rowsAsHtml = @"<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>";
-            foreach (var row in inFields)
+            foreach (FieldChanged row in inFields)
             {
                 // take each row of information and convert it to html
                 tableHtml.AppendFormat(rowsAsHtml, row.Field, row.OldValue, row.NewValue);
@@ -1846,24 +1846,24 @@ namespace GenBOE.ActionLogic.Common.Email
                 throw new ArgumentNullException(nameof(inBOE));
             }
 
-            // SUBJECT
-            // generation: BOE reassigned to a new Author
-            // BODY
-            // The following BOE has been reassigned to a new Author.  The newly assigned author may now edit the BOE.<br/>
-            // <br/>
-            // Workspace/Proposal: {0}<br/>
-            // WBS: {1} {2}<br/>
-            // BOE Title: {11}<br/>
-            // CLIN: {3} {4}<br/>
-            // BOE Description: {5}<br/>
-            // BOE Status: {6}<br/>
-            // Previous Author: {7}<br/>
-            // Newly Assigned Author: {8}<br/>
-            // Approver(s): {9}<br/>
-            // <br/>
-            // {10}
+			// SUBJECT
+			// generation: BOE reassigned to a new Author
+			// BODY
+			// The following BOE has been reassigned to a new Author.  The newly assigned author may now edit the BOE.<br/>
+			// <br/>
+			// Workspace/Proposal: {0}<br/>
+			// WBS: {1} {2}<br/>
+			// BOE Title: {11}<br/>
+			// CLIN: {3} {4}<br/>
+			// BOE Description: {5}<br/>
+			// BOE Status: {6}<br/>
+			// Previous Author: {7}<br/>
+			// Newly Assigned Author: {8}<br/>
+			// Approver(s): {9}<br/>
+			// <br/>
+			// {10}
 
-            var workspace = inBOE.Workspace;
+			FullWorkspace workspace = inBOE.Workspace;
 
             WbsDTO wbs = inBOE.Wbs;
             string wbsNum = wbs == null ? "NO WBS" : wbs.WbsNumber;
@@ -1875,11 +1875,11 @@ namespace GenBOE.ActionLogic.Common.Email
 
             Collection<PermissionsDTO> boePermissions = this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id });
 
-            var newAuthors = (from a in boePermissions
+			List<UserDTO> newAuthors = (from a in boePermissions
                     .Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).Select(x => x).ToArray()
                              select this.UserLoader.GetUserByID(a.ETIUserId)).ToList();
 
-            var approvers = (from a in boePermissions.Where(x => x.Role == Role.Approver).Select(x => x).ToArray()
+			List<UserDTO> approvers = (from a in boePermissions.Where(x => x.Role == Role.Approver).Select(x => x).ToArray()
                             select this.UserLoader.GetUserByID(a.ETIUserId)).ToList();
 
             string url = this.GetWorkspaceUrl(workspace.Shortname) + @"BOE/EditBOEIndex/boe/" + inBOE.Id;
@@ -1948,26 +1948,26 @@ namespace GenBOE.ActionLogic.Common.Email
                 throw new ArgumentNullException(nameof(inBOE));
             }
 
-            // SUBJECT
-            // generation: BOE reassigned to new Approver(s)
-            // BODY
-            // The following BOE has been reassigned to new Approver(s) and is awaiting approval as shown in the Approval Status below.<br/>
-            // <br/>
-            // Workspace/Proposal: {0}<br/>
-            // WBS: {1} {2}<br/>
-            // BOE Title: {12}<br/>
-            // CLIN: {3} {4}<br/>
-            // BOE Description: {5}<br/>
-            // BOE Status: {6}<br/>
-            // Author: {7}<br/>
-            // Previous Approver(s): {8}<br/>
-            // Newly assigned Approver(s): {9}<br/>
-            // Approval Status:<br/>
-            // {10}<br/>
-            // <br/>
-            // {11}
+			// SUBJECT
+			// generation: BOE reassigned to new Approver(s)
+			// BODY
+			// The following BOE has been reassigned to new Approver(s) and is awaiting approval as shown in the Approval Status below.<br/>
+			// <br/>
+			// Workspace/Proposal: {0}<br/>
+			// WBS: {1} {2}<br/>
+			// BOE Title: {12}<br/>
+			// CLIN: {3} {4}<br/>
+			// BOE Description: {5}<br/>
+			// BOE Status: {6}<br/>
+			// Author: {7}<br/>
+			// Previous Approver(s): {8}<br/>
+			// Newly assigned Approver(s): {9}<br/>
+			// Approval Status:<br/>
+			// {10}<br/>
+			// <br/>
+			// {11}
 
-            var workspace = inBOE.Workspace;
+			FullWorkspace workspace = inBOE.Workspace;
 
             WbsDTO wbs = inBOE.Wbs;
             string wbsNum = wbs == null ? "NO WBS" : wbs.WbsNumber;
@@ -1979,10 +1979,10 @@ namespace GenBOE.ActionLogic.Common.Email
 
             Collection<PermissionsDTO> boePermissions = this.PermissionLoader.GetBOEPermissions(new List<int>() { inBOE.Id });
 
-            var approvers = (from a in boePermissions.Where(x => x.Role == Role.Approver).Select(x => x).ToArray()
+			List<UserDTO> approvers = (from a in boePermissions.Where(x => x.Role == Role.Approver).Select(x => x).ToArray()
                             select this.UserLoader.GetUserByID(a.ETIUserId)).ToList();
 
-            var authors = from a in boePermissions
+			IEnumerable<UserDTO> authors = from a in boePermissions
                     .Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).Select(x => x).ToArray()
                           select this.UserLoader.GetUserByID(a.ETIUserId);
             string authorDisplayNames =
@@ -2081,10 +2081,10 @@ namespace GenBOE.ActionLogic.Common.Email
                                                              where w.Role == Role.WorkspaceReviewer
                                                              select w).ToCollection();
 
-            var adminLinqResult = from r in workspaceAdmins
+			IEnumerable<int> adminLinqResult = from r in workspaceAdmins
                                   select r.ETIUserId;
 
-            var distinctAdmins = from a in adminLinqResult.Distinct()
+			IEnumerable<UserDTO> distinctAdmins = from a in adminLinqResult.Distinct()
                                  select this.UserLoader.GetUserByID(a);
 
             // need to get the list of actual approvers in the workspace, not the potential list
@@ -2092,25 +2092,25 @@ namespace GenBOE.ActionLogic.Common.Email
                                       select b.Id).ToCollection();
             Collection<PermissionsDTO> boePermissions = this.PermissionLoader.GetBOEPermissions(boeIds);
 
-            var approvers = from a in boePermissions.Where(x => x.Role == Role.Approver).Select(x => x).ToArray()
+			IEnumerable<UserDTO> approvers = from a in boePermissions.Where(x => x.Role == Role.Approver).Select(x => x).ToArray()
                             select this.UserLoader.GetUserByID(a.ETIUserId);
 
-            var distinctApprovers = approvers.Distinct();
+			IEnumerable<UserDTO> distinctApprovers = approvers.Distinct();
 
-            // need to get the list of actual authors in the workspace, not the potential list
-            var authors = from a in boePermissions
+			// need to get the list of actual authors in the workspace, not the potential list
+			IEnumerable<UserDTO> authors = from a in boePermissions
                     .Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).Select(x => x).ToArray()
                           select this.UserLoader.GetUserByID(a.ETIUserId);
 
-            var distinctAuthors = authors.Distinct();
+			IEnumerable<UserDTO> distinctAuthors = authors.Distinct();
 
-            var reviewerLinqResult = from r in workspaceReviewers
+			IEnumerable<int> reviewerLinqResult = from r in workspaceReviewers
                                      select r.ETIUserId;
 
-            var distinctReviewers = from a in reviewerLinqResult.Distinct()
+			IEnumerable<UserDTO> distinctReviewers = from a in reviewerLinqResult.Distinct()
                                     select this.UserLoader.GetUserByID(a);
 
-            var distinctUsers = distinctAdmins.Union(distinctApprovers).Union(distinctAuthors).Union(distinctReviewers);
+			IEnumerable<UserDTO> distinctUsers = distinctAdmins.Union(distinctApprovers).Union(distinctAuthors).Union(distinctReviewers);
 
             string emails = string.Join(", ", distinctUsers.Select(x => x.EmailAddress).ToArray());
 
@@ -2182,7 +2182,7 @@ namespace GenBOE.ActionLogic.Common.Email
             string emails = string.Empty;
             if (inBoe.AuthorIDs.Any() || inBoe.SubcontractorAuthorIDs.Any())
             {
-                var authors = from a in this.PermissionLoader.GetBOEPermissions(new List<int>() { inBoe.Id })
+				IEnumerable<UserDTO> authors = from a in this.PermissionLoader.GetBOEPermissions(new List<int>() { inBoe.Id })
                         .Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).Select(x => x)
                         .ToArray()
                               select this.UserLoader.GetUserByID(a.ETIUserId);
@@ -2303,13 +2303,13 @@ namespace GenBOE.ActionLogic.Common.Email
                 // if the boe isn't Approved or Awaiting Approval, do not add this BOE to the email
                 if (boe.State.Equals(BOEState.Approved) || boe.State.Equals(BOEState.AwaitingApproval))
                 {
-                    var authors = from a in boePermissions
+					IEnumerable<UserDTO> authors = from a in boePermissions
                             .Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).Where(x => x.BOEId == boe.Id).Select(x => x)
                             .ToArray()
                                   select this.UserLoader.GetUserByID(a.ETIUserId);
                     emails = string.Join("; ", authors.Select(x => x.DisplayName));
-                    var boeApprovers = boePermissions.Where(x => x.Role == Role.Approver).Where(x => x.BOEId == boe.Id).Select(x => x).ToArray();
-                    var approvers2 = from a in boeApprovers
+					PermissionsDTO[] boeApprovers = boePermissions.Where(x => x.Role == Role.Approver).Where(x => x.BOEId == boe.Id).Select(x => x).ToArray();
+					IEnumerable<UserDTO> approvers2 = from a in boeApprovers
                                      select this.UserLoader.GetUserByID(a.ETIUserId);
                     approvers = new Collection<UserDTO>(approvers2.ToArray());
 
@@ -2570,7 +2570,7 @@ namespace GenBOE.ActionLogic.Common.Email
 
             string rowsAsHtml = @"<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>";
 
-            foreach (var row in inFields)
+            foreach (FieldChanged row in inFields)
             {
                 // take each row of information and convert it to html
                 tableHtml.AppendFormat(rowsAsHtml, row.Field, row.OldValue, row.NewValue);

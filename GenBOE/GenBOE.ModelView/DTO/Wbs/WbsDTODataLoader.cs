@@ -543,9 +543,9 @@ namespace GenBOE.DataBridge.DTO
 
                     Collection<int> clinsInUse = new Collection<int>();
 
-                    var clinsForWbsXref = xrefVals.Where(x => x.WBSID == wbs.Id);
+					IEnumerable<WBS_CLIN_BOE_XREF> clinsForWbsXref = xrefVals.Where(x => x.WBSID == wbs.Id);
 
-                    foreach (var row in clinsForWbsXref)
+                    foreach (WBS_CLIN_BOE_XREF row in clinsForWbsXref)
                     {
                         if (row.CLINID.HasValue && row.BOEID.HasValue)
                         {

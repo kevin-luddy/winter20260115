@@ -12,7 +12,7 @@ namespace CopyWorkspace
     using System.Configuration;
     using System.Linq;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.Dtos;
     using GenBOE.Models;
     using GenBOE.Objects;
     using IES.Common;
@@ -90,7 +90,7 @@ namespace CopyWorkspace
             IReadOnlyCollection<TravelDTO> Travels = ws.Travels;
             IReadOnlyCollection<TripDTO> TravelTrips = ws.TravelTrips;
             IReadOnlyCollection<ResourceDTO> ResourcesUsedInWsBoes = ws.ResourcesForWsResourceListId;
-            IReadOnlyCollection<CustomFieldDTO> CustomFields = ws.CustomFields;
+			IReadOnlyCollection<CustomFieldDTO> CustomFields = ws.CustomFields;
             IDictionary<int, ICollection<BoeApproverResponseDTO>> approvers = new BoeApproverResponseDTODataLoader().GetByWorkspaceId(ws.Id);
             IReadOnlyCollection<CustomFieldValueDTO> CustomFieldValues = ws.CustomFieldValues;
             ICollection<PermissionsDTO> boePotentialPermissions = new PermissionsDTODataLoader(adUtils).GetBOEPotentialPermissionsForWorkspace(ws.Id);
@@ -98,7 +98,7 @@ namespace CopyWorkspace
             ICollection<BOEFormIBOEDTO> iboes = new BOEFormIBOEDTODataLoader().GetByWorkspaceId(ws.Id);
             ICollection<BOEFormPBOEDTO> pboes = new BOEFormPBOEDTODataLoader().GetByWorkspaceId(ws.Id);
 
-            var copiedTemplateTypes = new WorkspaceExportFormatDTODataLoader().GetWorkspaceExportFormatsForWorkspace(ws.Id);
+			Collection<WorkspaceExportFormatDTO> copiedTemplateTypes = new WorkspaceExportFormatDTODataLoader().GetWorkspaceExportFormatsForWorkspace(ws.Id);
 
             Console.WriteLine("Finished Loading Data to copy, changing Database.");
             ChangeDatabase();
@@ -116,7 +116,7 @@ namespace CopyWorkspace
             DatabaseWorkspaceCopier copier = GenBOEUnityContainer.Container.Resolve(typeof(DatabaseWorkspaceCopier)) as DatabaseWorkspaceCopier;
 
             copier.CopyWorkspace(ws, newWs, Boes.ToCollection(), true, true, true, boePotentialPermissions, approvers, ResourcesUsedInWsBoes.ToList(),
-                CustomFieldValues.ToList(), TaskElements.ToList(), Travels.ToList(), PerformingOrgsUsedInBoes.ToList(), iboes, pboes, mappedUserIds, users);
+				CustomFieldValues.ToList(), TaskElements.ToList(), Travels.ToList(), PerformingOrgsUsedInBoes.ToList(), iboes, pboes, mappedUserIds, users);
 
             Console.WriteLine("Done.");
         }
@@ -197,7 +197,7 @@ namespace CopyWorkspace
 
             newWorkspaceDTO.TrackingNumber = ws.TrackingNumber;
 
-            if ((int)newWorkspaceDTO.BOEExportSortByID == 0)
+            if (newWorkspaceDTO.BOEExportSortByID == 0)
             {
                 newWorkspaceDTO.BOEExportSortByID = (int)ExportSortBOEBy.WBS;
             }

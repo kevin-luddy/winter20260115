@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
 	using IES.Common;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
+	using System;
 
 	/// <summary>
 	/// The PBOE INL Form Data Loader Class.
@@ -273,13 +274,13 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Returns a collection of PBOEs for a given Workspace ID
+		/// Returns a collection of PBOEs for a given PTM Tracking Number
 		/// </summary>
-		/// <param name="workspaceId">Workspace Ids.</param>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
 		/// <returns>The matching DTOs.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		[DbQuery]
-		public ICollection<PBOEDataDTO> GetPBOEsForWorkspace(int workspaceId)
+		public ICollection<PBOEDataDTO> GetPBOEsForTrackingNumber(string ptmTrackingNumber)
 		{
 			List<PBOEDataDTO> toReturn = null;
 
@@ -290,7 +291,9 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					toReturn = (from b in gbe.BOEFormPBOEs
-								where workspaceId.Equals(b.WorkspaceID)
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
+								where ptmTrackingNumber.Equals(w.TrackingNumber)
+								&& w.CurrentPTMWorkspace
 								orderby b.PBOEFormID
 								select new PBOEDataDTO
 								{
@@ -299,6 +302,11 @@ namespace GenBOE.DataBridge.DTO
 									VendorId = b.VendorId,
 									SupplierProposedValue = b.SupplierProposedValue,
 									IsCCoPD = ((Ccopd)b.CCoPD & Ccopd.Applies) == Ccopd.Applies,
+									IsCompetitionException = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
+									IsCommercialItemException = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
+									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
+									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
+									ExpectedCCoPDApplicability = ((Ccopd)b.CCoPD),
 									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
 									PriceAnalysisDate = b.PriceAnalysisDate,
 									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
@@ -306,7 +314,16 @@ namespace GenBOE.DataBridge.DTO
 									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
 									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
 									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
-									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID,
+									WorkspaceId = w.WorkspaceID
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -315,8 +332,80 @@ namespace GenBOE.DataBridge.DTO
 						pboe.SubResources = resourceDTODataLoader.GetResourceNamesByIds(gbe.BOEFormPBOEResourcesXREFs.Where(r => r.PBOEFormID == pboe.PBoeID).Select(r => r.ResourceID).ToList());
 
 						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
-													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == workspaceId
-													  join xRef in gbe.BOEFormPBOEResourcesXREFs on b.ResourceID equals xRef.ResourceID
+													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == pboe.WorkspaceId
+													  from xRef in gbe.BOEFormPBOEResourcesXREFs where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+													  where xRef.PBOEFormID == pboe.PBoeID
+													  select b.ValueSpread ?? 0m).ToList();
+
+						pboe.TotalCost = valueSpreads.Sum();
+					}
+				}
+			}
+
+			return toReturn;
+		}
+
+		// <summary>
+		/// Returns a collection of PBOEs for a given tracking number
+		/// </summary>
+		/// <param name="trackingNumber">Tracking number</param>
+		/// <returns>The matching DTOs.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		[DbQuery]
+		public ICollection<PBOEDataDTO> GetPBOEsForWorkspace(string trackingNumber)
+		{
+			List<PBOEDataDTO> toReturn = null;
+
+			ResourceDTODataLoader resourceDTODataLoader = new ResourceDTODataLoader();
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					toReturn = (from b in gbe.BOEFormPBOEs
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
+								where w.TrackingNumber == trackingNumber
+								orderby b.PBOEFormID
+								select new PBOEDataDTO
+								{
+									PBoeID = b.PBOEFormID,
+									SupplierName = b.SupplierName,
+									VendorId = b.VendorId,
+									SupplierProposedValue = b.SupplierProposedValue,
+									IsCCoPD = ((Ccopd)b.CCoPD & Ccopd.Applies) == Ccopd.Applies,
+									IsCompetitionException = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
+									IsCommercialItemException = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
+									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
+									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
+									ExpectedCCoPDApplicability = ((Ccopd)b.CCoPD),
+									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
+									PriceAnalysisDate = b.PriceAnalysisDate,
+									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
+									CostAnalysisDate = b.CostAnalysisDate,
+									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
+									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
+									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID,
+									TrackingNumber = w.TrackingNumber
+								}).ToList();
+
+					// Post processing for sub resources and total cost
+					foreach (PBOEDataDTO pboe in toReturn)
+					{
+						pboe.SubResources = resourceDTODataLoader.GetResourceNamesByIds(gbe.BOEFormPBOEResourcesXREFs.Where(r => r.PBOEFormID == pboe.PBoeID).Select(r => r.ResourceID).ToList());
+
+						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
+													  where b.SpreadTypeID == 2
+													  from xRef in gbe.BOEFormPBOEResourcesXREFs
+													  where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
 													  where xRef.PBOEFormID == pboe.PBoeID
 													  select b.ValueSpread ?? 0m).ToList();
 
@@ -348,6 +437,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					toReturn = (from b in gbe.BOEFormPBOEs
 								where workspaceId.Equals(b.WorkspaceID) && pboeId.Equals(b.PBOEFormID)
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
 								select new PBOEDataDTO
 								{
 									PBoeID = b.PBOEFormID,
@@ -359,6 +449,7 @@ namespace GenBOE.DataBridge.DTO
 									IsCompetitionException = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
 									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
 									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
+									ExpectedCCoPDApplicability = (Ccopd)b.CCoPD,
 									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
 									PriceAnalysisDate = b.PriceAnalysisDate,
 									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
@@ -366,7 +457,15 @@ namespace GenBOE.DataBridge.DTO
 									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
 									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
 									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
-									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID
 								}).ToList();
 
 					// Post processing for sub resources and total cost
@@ -376,7 +475,79 @@ namespace GenBOE.DataBridge.DTO
 
 						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
 													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == workspaceId
-													  join xRef in gbe.BOEFormPBOEResourcesXREFs on b.ResourceID equals xRef.ResourceID
+													  from xRef in gbe.BOEFormPBOEResourcesXREFs where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+													  where xRef.PBOEFormID == pboe.PBoeID
+													  select b.ValueSpread ?? 0m).ToList();
+
+						pboe.TotalCost = valueSpreads.Sum();
+					}
+				}
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Get a single PBOE from a Tracking Number and PBOE ID.
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <param name="pboeId">PBOE ID</param>
+		/// <returns>Single PBOE by Workspace ID and PBOE ID</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		[DbQuery]
+		public ICollection<PBOEDataDTO> GetPBOEByIDs(string trackingNumber, int pboeId)
+		{
+			List<PBOEDataDTO> toReturn = null;
+
+			ResourceDTODataLoader resourceDTODataLoader = new ResourceDTODataLoader();
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					toReturn = (from b in gbe.BOEFormPBOEs
+								join w in gbe.Workspaces on b.WorkspaceID equals w.WorkspaceID
+								where trackingNumber.Equals(w.TrackingNumber) && pboeId.Equals(b.PBOEFormID)
+								select new PBOEDataDTO
+								{
+									PBoeID = b.PBOEFormID,
+									SupplierName = b.SupplierName,
+									VendorId = b.VendorId,
+									SupplierProposedValue = b.SupplierProposedValue,
+									IsCCoPD = ((Ccopd)b.CCoPD & Ccopd.Applies) == Ccopd.Applies,
+									IsCommercialItemException = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
+									IsCompetitionException = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
+									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
+									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
+									ExpectedCCoPDApplicability = (Ccopd)b.CCoPD,
+									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
+									PriceAnalysisDate = b.PriceAnalysisDate,
+									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
+									CostAnalysisDate = b.CostAnalysisDate,
+									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
+									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
+									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
+									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
+									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									ProposalDate = b.ProposalDate,
+									ValidityDate = b.ValidityDate,
+									Approver = b.Approver,
+									LeadEstimatorId = w.CostVolumeLeadPricerUserID,
+									TrackingNumber = w.TrackingNumber
+								}).ToList();
+
+					// Post processing for sub resources and total cost
+					foreach (PBOEDataDTO pboe in toReturn)
+					{
+						pboe.SubResources = resourceDTODataLoader.GetResourceNamesByIds(gbe.BOEFormPBOEResourcesXREFs.Where(r => r.PBOEFormID == pboe.PBoeID).Select(r => r.ResourceID).ToList());
+
+						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
+													  where b.SpreadTypeID == 2
+													  from xRef in gbe.BOEFormPBOEResourcesXREFs
+													  where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
 													  where xRef.PBOEFormID == pboe.PBoeID
 													  select b.ValueSpread ?? 0m).ToList();
 
@@ -413,7 +584,7 @@ namespace GenBOE.DataBridge.DTO
 					string clinList = string.Empty;
 					if (dtoToUpsert.ClinContractTypes != null && dtoToUpsert.ClinContractTypes.Any())
 					{
-						clinList = string.Join(",", dtoToUpsert.ClinContractTypes.Where(c => c.ContractType > 0).Select(c => c.ClinId.ToString() + ":" + ((int)c.ContractType).ToString()));
+						clinList = string.Join(",", dtoToUpsert.ClinContractTypes.Where(c => c.ContractType > 0).Select(c => c.ClinId.ToString() + ":" + c.ContractType.ToString()));
 					}
 
 					Ccopd ccopdValue = CreateCCOPDEnum(dtoToUpsert);

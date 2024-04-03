@@ -687,7 +687,7 @@ namespace GenBOE.DataBridge.DTO
                 {
                     segmentValue = (int)inUpdateResource.Segment;
                 }
-                var results = gbe.upsertWorkspaceResource(
+				System.Data.Entity.Core.Objects.ObjectResult<int?> results = gbe.upsertWorkspaceResource(
                     inUpdateResource.Id,
                     inUpdateResource.ResourceName,
                     inUpdateResource.ResourceDesc,

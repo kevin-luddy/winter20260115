@@ -36,10 +36,10 @@ namespace GenTRAC.Tests.DAL.Common
         [TestMethod]
         public void GetPermissionsForUserTest()
         {
-            var sut = this.CreateSystem();
+			SecurityUserAuthorizationsDataLoader sut = this.CreateSystem();
 
-            var proposal = this.testData.GetProposal();
-            var user = this.testData.GetUser(true, new UserDTO()
+			ProposalDto proposal = this.testData.GetProposal();
+			UserDTO user = this.testData.GetUser(true, new UserDTO()
             {
                 Id = -1,
                 Ntid = "securityusertest" + TestData.CreateRandomWord(3),
@@ -47,7 +47,7 @@ namespace GenTRAC.Tests.DAL.Common
                 Updateable = UpdateType.Upsert
             });
 
-            var expectedResult = this.testData.GetProposalPermission(true, new ProposalPermissionDto()
+			ProposalPermissionDto expectedResult = this.testData.GetProposalPermission(true, new ProposalPermissionDto()
             {
                 ProposalID = proposal.Id,
                 Role = PtmRole.Pricer,
@@ -56,7 +56,7 @@ namespace GenTRAC.Tests.DAL.Common
                 UserId = user.Id
             });
 
-            var result = sut.GetPermissionsForUser(user);
+			System.Collections.Generic.IReadOnlyCollection<SecurityPermissionsResponse> result = sut.GetPermissionsForUser(user);
 
             Assert.AreEqual(2, result.Count); // the one we set up, plus none.
             Assert.AreEqual(1, result.Count(x => x.ProposalID == expectedResult.ProposalID && x.AuthorizedRole == expectedResult.Role));
@@ -68,20 +68,20 @@ namespace GenTRAC.Tests.DAL.Common
         [TestMethod]
         public void GetSystemPermissionsForUserTest()
         {
-            // delete all test users in DB, only run this locally every once in a while to clear out Database
-            // this.testData.DeleteAllTestUsers();
+			// delete all test users in DB, only run this locally every once in a while to clear out Database
+			// this.testData.DeleteAllTestUsers();
 
-            var sut = this.CreateSystem();
+			SecurityUserAuthorizationsDataLoader sut = this.CreateSystem();
 
-            var proposal = this.testData.GetProposal();
-            var user = this.testData.GetUser(true, new UserDTO()
+			ProposalDto proposal = this.testData.GetProposal();
+			UserDTO user = this.testData.GetUser(true, new UserDTO()
             {
                 Id = -1,
                 Ntid = "securityusertest" + TestData.CreateRandomWord(3),
                 Updateable = UpdateType.Upsert
             });
 
-            var expectedResult = this.testData.GetPermission(true, new SystemPermissionDto()
+			SystemPermissionDto expectedResult = this.testData.GetPermission(true, new SystemPermissionDto()
             {
                 Id = -1,
                 Role = PtmRole.Viewer,
@@ -90,7 +90,7 @@ namespace GenTRAC.Tests.DAL.Common
                 LineOfBusinessIDs = new Collection<int>() { 10 }
             });
 
-            var result = sut.GetPermissionsForUser(user);
+			System.Collections.Generic.IReadOnlyCollection<SecurityPermissionsResponse> result = sut.GetPermissionsForUser(user);
             
             // won't know how many results, so just make sure specific proposal added during this test is included
             SecurityPermissionsResponse permission = result.FirstOrDefault(x => x.AuthorizedRole == expectedResult.Role && x.ProposalID == proposal.Id);

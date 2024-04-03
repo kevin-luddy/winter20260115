@@ -136,9 +136,6 @@ namespace GenBOE.Web.Common
                 throw new ArgumentNullException(nameof(ws));
 			}
 
-            // default to false
-			ViewData["DisplayECIMessage"] = false;
-
 			if (ws.Id == 0)
             {
                 // if the workspace doesn't exist .. for example if we are running a system job
@@ -157,15 +154,6 @@ namespace GenBOE.Web.Common
                 model.HeaderFooter = ws.ContainsOCI ?
                     "Organizational Conflict of Interest - Lockheed Martin Proprietary Information" :
                     "Lockheed Martin Proprietary Information";
-
-                if (SiteMasterUtilities.ShowEciForbiddenMessage())
-                {
-                    UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
-                    if (currentUser != null)
-                    {
-                        ViewData["DisplayECIMessage"] = !this.UserLoader.GetMessageConfirmations(currentUser.UserID).Contains(ConfirmationMessage.ECI_FORBIDDEN);
-                    }
-                }
 			}
         }
 
@@ -181,11 +169,11 @@ namespace GenBOE.Web.Common
             // Action Initialize
             Stopwatch sw = InitializeAction(_log, "DisplayMasterMenu", SecurityPage.Home, SecurityAuthorization.Read, ws, null);
 
-            var theModelViews = new Collection<GenBOEMasterMenuItemModelView>();
+			Collection<GenBOEMasterMenuItemModelView> theModelViews = new Collection<GenBOEMasterMenuItemModelView>();
 
             // Iterate over the static collection of Menu Items defined in GenBOEMasterMenuItemModelView
             ICollection<GenBOEMasterMenuItemModelView> MenuItems = GenBOEMasterMenuItemModelView.BuildSiteMasterMenuItems(ws);
-            foreach (var menuItem in MenuItems)
+            foreach (GenBOEMasterMenuItemModelView menuItem in MenuItems)
             {
                 // For menu items with no sub items, check access
                 if (!menuItem.subMenuItems.Any())
@@ -212,15 +200,15 @@ namespace GenBOE.Web.Common
                 // If the menu items has sub items, we'll check access on each
                 else
                 {
-                    // Create a new model View for the inactive top-level menu item
-                    var inactiveMenuItem = new GenBOEMasterMenuItemModelView
+					// Create a new model View for the inactive top-level menu item
+					GenBOEMasterMenuItemModelView inactiveMenuItem = new GenBOEMasterMenuItemModelView
                     {
                         linkText = menuItem.linkText,
                         menuLocation = menuItem.menuLocation
                     };
 
                     // Iterate the sub items
-                    foreach (var subMenuItem in menuItem.subMenuItems)
+                    foreach (GenBOEMasterMenuItemModelView subMenuItem in menuItem.subMenuItems)
                     {
                         bool submenuItemAuthorization = CheckPermissions(subMenuItem.securityPage, ws, null) != SecurityAuthorization.None;
 
@@ -545,7 +533,7 @@ namespace GenBOE.Web.Common
                 ViewData["TimeWhenWorkspaceWasLocked"] = workspace.DateRecalculationStarted;
             }
 
-            ViewData["CurrentUserName"] = currentUser != null ? currentUser.DisplayName : string.Empty;
+			ViewData["CurrentUserName"] = currentUser != null ? currentUser.DisplayName : string.Empty;
 
             bool isAdmin = false;
             bool isSystemAdmin = false;

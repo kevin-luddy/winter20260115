@@ -40,13 +40,13 @@
 			services.AddAuthorization(options =>
 			{
 				// this lets us put [Authorize(Policy = "OnlyIesToken")] onto Controller
-				var onlyIesTokenSchemePolicyBuilder = new AuthorizationPolicyBuilder(Constants.IES_TOKEN_SCHEME);
+				AuthorizationPolicyBuilder onlyIesTokenSchemePolicyBuilder = new(Constants.IES_TOKEN_SCHEME);
 				options.AddPolicy("OnlyIesToken", onlyIesTokenSchemePolicyBuilder
 					.RequireAuthenticatedUser()
 					.Build());
 
 				// this lets us put [Authorize(Policy = "OnlyNegotiate")] onto Controller
-				var negotiatePolicyBuilder = new AuthorizationPolicyBuilder(NegotiateDefaults.AuthenticationScheme);
+				AuthorizationPolicyBuilder negotiatePolicyBuilder = new(NegotiateDefaults.AuthenticationScheme);
 				options.AddPolicy("OnlyNegotiate", negotiatePolicyBuilder
 					.RequireAuthenticatedUser()
 					.Build());
@@ -87,6 +87,7 @@
 			{
 				endpoints.MapControllers();
 				endpoints.MapHealthChecks("/Health", new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
+				endpoints.MapRazorPages();
 			});
 
 			app.Use(async (context, next) =>
@@ -97,6 +98,21 @@
 
 				await next();
 			});
+		}
+
+		/// <summary>
+		/// Override CORS to allow subdomain wildcards
+		/// </summary>
+		/// <param name="services"></param>
+		protected override void ConfigureCors(IServiceCollection services)
+		{
+			string[] allowedOrigins = ConfigurationServiceBase.Configuration["AllowedOrigins"].Split(';');
+			services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+					 builder.WithOrigins(allowedOrigins)
+							 .SetIsOriginAllowedToAllowWildcardSubdomains()
+							 .AllowAnyMethod()
+							 .AllowAnyHeader()
+							 .AllowCredentials()));
 		}
 	}
 }

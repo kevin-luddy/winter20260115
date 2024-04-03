@@ -43,10 +43,10 @@ namespace GenBOE.Tests.Common
         [ExpectedException(typeof(InvalidOperationException))]
         public void TestInvalidTransition()
         {
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
 
-            var emptyTransition = new Mock<IBOEStateTransition>();
+			Mock<IBOEStateTransition> emptyTransition = new Mock<IBOEStateTransition>();
             BOEStateMachine sut = new BOEStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object, null);
@@ -57,10 +57,10 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void NoChangeTest()
         {
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
 
-            var emptyTransition = new Mock<IBOEStateTransition>();
+			Mock<IBOEStateTransition> emptyTransition = new Mock<IBOEStateTransition>();
             BOEStateMachine sut = new BOEStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object, null);
@@ -72,10 +72,10 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void NoneToUnassignedTest()
         {
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
 
-            var emptyTransition = new Mock<IBOEStateTransition>();
+			Mock<IBOEStateTransition> emptyTransition = new Mock<IBOEStateTransition>();
             BOEStateMachine sut = new BOEStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object, null);
@@ -86,10 +86,10 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void UnassignedToDraftTest()
         {
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
 
-            var emptyTransition = new Mock<IBOEStateTransition>();
+			Mock<IBOEStateTransition> emptyTransition = new Mock<IBOEStateTransition>();
             BOEStateMachine sut = new BOEStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object, null);
@@ -100,9 +100,9 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void DraftToAwaitingApprovalTest()
         {
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            var emptyTransition = new Mock<IBOEStateTransition>();
+			Mock<IBOEStateTransition> emptyTransition = new Mock<IBOEStateTransition>();
             BOEStateMachine sut = new BOEStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object, null);
@@ -113,7 +113,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void AwaitingApprovalToDraftTest()
         {
-            var emptyTransition = new Mock<IBOEStateTransition>();
+			Mock<IBOEStateTransition> emptyTransition = new Mock<IBOEStateTransition>();
             BOEStateMachine sut = new BOEStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object, null);
@@ -124,7 +124,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void AwaitingApprovalToApprovedTest()
         {
-            var emptyTransition = new Mock<IBOEStateTransition>();
+			Mock<IBOEStateTransition> emptyTransition = new Mock<IBOEStateTransition>();
             BOEStateMachine sut = new BOEStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object, null);
@@ -135,7 +135,7 @@ namespace GenBOE.Tests.Common
         [TestMethod]
         public void ApprovedToDraftTest()
         {
-            var emptyTransition = new Mock<IBOEStateTransition>();
+			Mock<IBOEStateTransition> emptyTransition = new Mock<IBOEStateTransition>();
             BOEStateMachine sut = new BOEStateMachine(emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object,
                 emptyTransition.Object, emptyTransition.Object, emptyTransition.Object, null);

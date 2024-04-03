@@ -34,8 +34,8 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
 
             FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO { WorkspaceName = workspaceName, Id = workspaceID });
 
@@ -58,8 +58,8 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            var emailer = new Mock<IBoeEmailer>();
-            var workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
+			Mock<IBoeEmailer> emailer = new Mock<IBoeEmailer>();
+			Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
 
             workspaceLoader.Setup(x => x.GetById(workspaceID)).Returns(new WorkspaceDTO { WorkspaceName = workspaceName });
 

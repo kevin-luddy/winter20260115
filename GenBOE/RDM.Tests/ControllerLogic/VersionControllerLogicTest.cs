@@ -142,7 +142,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentException))]
         public void TestGetVersionDifferences_NullRevisions()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
             this.SetupIsRdmAdminUser(true);
             this.SetupNullRevisions();
             sut.GetVersionDifferences(9999, -1, false, userData);
@@ -155,7 +155,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentException))]
         public void TestGetVersionDifferences_EmptyRevisions()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
             this.SetupIsRdmAdminUser(true);
             this.SetupEmptyRevisions();
             VersionComparisonModelView mv = sut.GetVersionDifferences(9999, -1, false, userData);
@@ -168,7 +168,7 @@ namespace RDM.Tests.ControllerLogic
         [ExpectedException(typeof(ArgumentException))]
         public void TestGetVersionDifferences_InvalidId()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
             bool isRdmAdmin = true;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup3Revisions();
@@ -183,7 +183,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestGetVersionDifferences_Admin1Revision_NoEX()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
             bool isRdmAdmin = true;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup1Revision();
@@ -199,7 +199,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestGetVersionDifferences_NonAdmin1Revision_NoEX()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
             bool isRdmAdmin = false;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup1Revision();
@@ -213,7 +213,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestGetVersionDifferences_Admin2Revisions()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
             bool isRdmAdmin = true;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup2Revisions();
@@ -254,7 +254,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestGetVersionDifferences_NonAdmin2Revision_NoEX()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
             bool isRdmAdmin = false;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup2Revisions();
@@ -268,7 +268,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestGetVersionDifferences_3Revisions()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
             bool isRdmAdmin = true;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup3Revisions();
@@ -386,7 +386,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestRatesAreValid()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
 
             this.rateDetailLoader.Setup(x => x.GetRatesByRevision(It.IsAny<RevisionModelView>()))
                 .Returns(this.CreateValidRates());
@@ -400,7 +400,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestRatesAreInvalidBackwardLookingLowerBound()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
 
             this.rateDetailLoader.Setup(x => x.GetRatesByRevision(It.IsAny<RevisionModelView>()))
                 .Returns(this.CreateInvalidRatesBackwardLookingLowerBound());
@@ -416,7 +416,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestRatesAreInvalidBackwardLookingUpperBound()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
 
             this.rateDetailLoader.Setup(x => x.GetRatesByRevision(It.IsAny<RevisionModelView>()))
                 .Returns(this.CreateInvalidRatesBackwardLookingUpperBound());
@@ -432,7 +432,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestRatesAreInvalidForwardLookingLowerBound()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
 
             this.rateDetailLoader.Setup(x => x.GetRatesByRevision(It.IsAny<RevisionModelView>()))
                 .Returns(this.CreateInvalidRatesForwardLookingLowerBound());
@@ -448,7 +448,7 @@ namespace RDM.Tests.ControllerLogic
         [TestMethod]
         public void TestRatesAreInvalidForwardLookingUpperBound()
         {
-            var sut = this.CreateSut();
+			VersionControllerLogic sut = this.CreateSut();
 
             this.rateDetailLoader.Setup(x => x.GetRatesByRevision(It.IsAny<RevisionModelView>()))
                 .Returns(this.CreateInvalidRatesForwardLookingUpperBound());

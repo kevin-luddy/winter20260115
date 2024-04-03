@@ -13,6 +13,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.IO;
 	using System.Linq;
 	using System.Text.RegularExpressions;
+	using System.Threading.Tasks;
 	using System.Transactions;
 	using System.Web;
 	using DataBridge.Loaders;
@@ -572,15 +573,16 @@ namespace IES.ActionLogic.ControllerLogic
 			return details;
 		}
 
-		/// <summary>
-		/// Generates the RDD document for the Proposal Id passed in.
-		/// </summary>
-		/// <param name="proposalId">Proposal ID</param>
-		/// <param name="serverFileName">Server File Name</param>
-		/// <param name="httpResponse">HTTP response object</param>
-		public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse)
+        /// <summary>
+        /// Generates the RDD document for the Proposal Id passed in.
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <param name="serverFileName">Server File Name</param>
+        /// <param name="httpResponse">HTTP response object</param>
+		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
+        public async Task GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, bool portionMarkingRequired)
 		{
-			if (serverFileName == null)
+            if (serverFileName == null)
 			{
 				throw new ArgumentNullException(nameof(serverFileName));
 			}
@@ -603,7 +605,7 @@ namespace IES.ActionLogic.ControllerLogic
 			httpResponse.Clear();
 			httpResponse.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
 
-			this.GenerateRDD(proposalId, serverFileName, httpResponse.OutputStream, modelView);
+			await this.GenerateRDD(proposalId, serverFileName, httpResponse.OutputStream, modelView, null, true, portionMarkingRequired);
 		}
 
         /// <summary>
@@ -616,9 +618,9 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
         /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
         /// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-        public void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
+        public async Task GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
 		{
-			if (serverFileName == null)
+            if (serverFileName == null)
 			{
 				throw new ArgumentNullException(nameof(serverFileName));
 			}
@@ -671,7 +673,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// Get File Attachments
 			ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
-			this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, includeDocumentDetails);
+			await this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, portionMarkingRequired, includeDocumentDetails);
 		}
 
 		/// <summary>
@@ -757,11 +759,11 @@ namespace IES.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB, 2) Non-Compliance data, and 3) Disclosure Statements
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a Cover Sheet creation</returns>
-		public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+		public (string CasbSection, string NonComplianceSection, bool AdequateDisclosure, bool NoncomplianceNotification) GetCoverSheetData(int proposalId)
 		{
 			return sectionLoader.GetCoverSheetData(proposalId);
 		}
@@ -773,14 +775,14 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a CPS Report</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public ICollection<(string rateCode, string parentSectionNumber)> GetTopLevelSectionsForRateCodes(ICollection<string> rateCodes, int proposalId)
+		public ICollection<string> GetTopLevelSectionsForRateCodes(ICollection<string> rateCodes, int proposalId)
 		{
 			if (rateCodes == null)
 			{
 				throw new ArgumentNullException(nameof(rateCodes));
 			}
 
-			List<(string rateCode, string parentSectionNumber)> rateSections = new List<(string rateCode, string parentSectionNumber)>();
+			List<string> rateSections = new List<string>();
 			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
 			if (modelView == null)
 			{
@@ -793,7 +795,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);
 
-			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetAllRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
 
 			foreach (string rateCode in rateCodes)
 			{
@@ -814,19 +816,19 @@ namespace IES.ActionLogic.ControllerLogic
 				{
 					// logg
 					logger.Warn("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode);
-					rateSections.Add((rateCode, string.Empty));
+					rateSections.Add(string.Empty);
 				}
 				else
 				{
 					// now try to find section
 					if (sectionIdToParentSection.TryGetValue(rate.Section, out string parentRefCode))
 					{
-						rateSections.Add((rateCode, parentRefCode));
+						rateSections.Add(parentRefCode);
 					}
 					else
 					{
 						logger.Warn("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Code " + rateCode + " using Rate " + rate.RateCode + " for searching");
-						rateSections.Add((rateCode, string.Empty));
+						rateSections.Add(string.Empty);
 					}
 				}
 			}
@@ -841,14 +843,14 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>Data to support a CPS Report</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public ICollection<(string rateDescription, string parentSectionNumber)> GetTopLevelSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId)
+		public ICollection<string> GetTopLevelSectionsForRateDescriptions(ICollection<string> rateDescriptions, int proposalId)
 		{
 			if (rateDescriptions == null)
 			{
 				throw new ArgumentNullException(nameof(rateDescriptions));
 			}
 
-			List<(string rateCode, string parentSectionNumber)> rateSections = new List<(string rateCode, string parentSectionNumber)>();
+			List<string> rateSections = new List<string>();
 			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
 			if (modelView == null)
 			{
@@ -861,7 +863,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// set all reference numbers to top parent
 			AddSectionsToDictionary(sections, sectionIdToParentSection);
 
-			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
+			ICollection<RdsbRateDetailModelView> rates = rateDetailLoader.GetAllRatesForRdsbDocument(modelView.SelectedRevisionId.Value);
 
 			foreach (string rateDescription in rateDescriptions)
 			{
@@ -876,19 +878,19 @@ namespace IES.ActionLogic.ControllerLogic
 				{
 					// logg
 					logger.Warn("Did not find any matching rate codes in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription);
-					rateSections.Add((rateDescription, string.Empty));
+					rateSections.Add(string.Empty);
 				}
 				else
 				{
 					// now try to find section
 					if (sectionIdToParentSection.TryGetValue(rate.Section, out string parentRefCode))
 					{
-						rateSections.Add((rateDescription, parentRefCode));
+						rateSections.Add(parentRefCode);
 					}
 					else
 					{
 						logger.Warn("Did not find a matching section in Revision " + modelView.SelectedRevisionId.Value + " for Rate Description " + rateDescription + " using Rate " + rate.RateCode + " for searching");
-						rateSections.Add((rateDescription, string.Empty));
+						rateSections.Add(string.Empty);
 					}
 				}
 			}
@@ -899,12 +901,12 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Get all of the addresses based on restricting it to the Include In Cover Sheet property and for the specific PPR&D version
 		/// </summary>
-		/// <param name="revision">The specific version ID of PPR&D</param>
+		/// <param name="ptmTrackingId">The PTM Tracking #/Proposal ID</param>
 		/// <returns>A collection of addresses</returns>
-		public ICollection<SectionAddressModelView> GetAddresses(int revision)
+		public ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId)
 		{
 			ICollection<SectionAddressModelView> sections = new List<SectionAddressModelView>();
-			sections = this.sectionLoader.GetAddresses(revision);
+			sections = this.sectionLoader.GetAddresses(ptmTrackingId);
 
 			return sections;
 		}

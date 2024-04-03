@@ -111,13 +111,13 @@ namespace GenBOE.Web.ModelView
 
             if (inTripDTO.FareLastUpdatedDate.HasValue && inFareUpdatingUser != null)
             {
-                var lastUpdatedByUserName = inFareUpdatingUser.DisplayName;
+				string lastUpdatedByUserName = inFareUpdatingUser.DisplayName;
                 FareLastUpdated = lastUpdatedByUserName + " - " + inTripDTO.FareLastUpdatedDate.Value.ToString("MM/dd/yyyy");
             }
 
             if (inPerDiemDto.LastUpdatedBy.HasValue && inFareUpdatingUser != null)
             {
-                var lastUpdatedByUserName = inFareUpdatingUser.DisplayName;
+				string lastUpdatedByUserName = inFareUpdatingUser.DisplayName;
                 PerDiemLastUpdated = lastUpdatedByUserName + " - " + inPerDiemDto.PerDiemLastUpdatedDate.ToString("MM/dd/yyyy");
             }
 
@@ -130,7 +130,7 @@ namespace GenBOE.Web.ModelView
 
         public LocationDTO GetDepartureLocationDTO()
         {
-            var toReturn = new LocationDTO();
+			LocationDTO toReturn = new LocationDTO();
 
             //toReturn.LocationCode = this.DepartureLocationCode;
             toReturn.Id = this.DepartureLocationID;
@@ -151,7 +151,7 @@ namespace GenBOE.Web.ModelView
 
         public PerDiemDTO GetPerDiemDTO()
         {
-            var toReturn = new PerDiemDTO();
+			PerDiemDTO toReturn = new PerDiemDTO();
 
             toReturn.HotelRate = this.HotelRate;
             toReturn.MIERate = this.MIERate;
@@ -167,7 +167,7 @@ namespace GenBOE.Web.ModelView
 
         public TripDTO GetTripDTO()
         {
-            var toReturn = new TripDTO();
+			TripDTO toReturn = new TripDTO();
 
             toReturn.DepartureLocationID = this.DepartureLocationID;
             toReturn.DestinationLocationID = this.DestinationLocationID;

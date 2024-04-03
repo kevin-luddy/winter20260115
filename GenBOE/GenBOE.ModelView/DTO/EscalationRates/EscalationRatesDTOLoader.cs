@@ -205,7 +205,7 @@ namespace GenBOE.DataBridge.DTO
             // Upsert SP
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var resultsLinq = gbe.upsertTravelEscalationRate(dtoToUpsert.EscalationRateID, dtoToUpsert.Year, dtoToUpsert.DevEscalation, dtoToUpsert.LMSIEscalation, 
+				System.Data.Entity.Core.Objects.ObjectResult<int?> resultsLinq = gbe.upsertTravelEscalationRate(dtoToUpsert.EscalationRateID, dtoToUpsert.Year, dtoToUpsert.DevEscalation, dtoToUpsert.LMSIEscalation, 
                     dtoToUpsert.MiscRate, dtoToUpsert.UpdateDate);
 
                 escalationRateID = Convert.ToInt32(resultsLinq.SingleOrDefault());

@@ -1,0 +1,336 @@
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenTRAC.DataBridge.Core.DTO.User
+{
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Transactions;
+	using GenTRAC.DataBridge.Core.Common;
+	using GenTRAC.DataBridge.Core.Common.LoadersAndMappers;
+	using IES.Common.Core.Configuration;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
+	using IES.Common.Core.Utilities;
+	using Microsoft.Extensions.Logging;
+
+	/// <summary>
+	/// User Dto Data Mapper
+	/// </summary>
+	public class UserMapper : DataMapper<UserDTO, IUserLoader>, IInternalUserMapper
+	{
+		/// <summary>
+		/// Security Information
+		/// </summary>
+		private readonly ISecurityInformation securityInformation;
+
+		/// <summary>
+		/// Active Directory Utilities
+		/// </summary>
+		private readonly IActiveDirectoryService activeDirectoryUtilities;
+
+		/// <summary>
+		/// the cache
+		/// </summary>
+		private readonly ICacheService cache; 
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="inUserDataLoader">User data loader</param>
+		/// <param name="inCacheDataLoader">Cache data loader</param>
+		/// <param name="inSecurityInformation">Security Information</param>
+		/// <param name="inActiveDirectoryUtilities">Active Directory Utilities</param>
+		/// <param name="inCache">Cache</param>
+		public UserMapper(IUserLoader inUserDataLoader,
+						  ICacheDataLoader inCacheDataLoader,
+						  ISecurityInformation inSecurityInformation,
+						  IActiveDirectoryService inActiveDirectoryUtilities,
+						  ICacheService inCache,
+						  ILogger<UserMapper> logger) : base(logger)
+		{
+			
+			this.DataLoader = inUserDataLoader;
+			this.CacheLoader = inCacheDataLoader;
+			securityInformation = inSecurityInformation;
+			activeDirectoryUtilities = inActiveDirectoryUtilities;
+			cache = inCache;
+
+			this.CacheKeyForGetById = CacheConstants.USER;
+		}
+
+		/// <summary>
+		/// Get all user IDs
+		/// </summary>
+		/// <returns>returns all user ids in the system.</returns>
+		public ICollection<int> GetAllIds()
+		{
+			ICollection<int> toReturn = null;
+
+			using (StopwatchTimer sw = new("UserMapper.GetAllIds", Log))
+			{
+				// not cache, hardlinked
+				toReturn = this.DataLoader.GetAllIds();
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Get all users
+		/// </summary>
+		/// <returns>all users</returns>
+		public ICollection<UserDTO> GetAll()
+		{
+			ICollection<UserDTO> toReturn = null;
+
+			using (StopwatchTimer sw = new("UserMapper.GetAllUsers", Log))
+			{
+				// get a list of all user Ids (not cache, hardlinked)
+				ICollection<int> allUserIDs = this.DataLoader.GetAllIds();
+				this.Log.LogTrace("DIRECT - GetAllUserIds", sw.ElapsedMilliseconds);
+
+				if (allUserIDs != null && allUserIDs.Any())
+				{
+					// go through mapper so we take advantage of cache
+					ICollection<UserDTO> allMembers = this.GetDtos(allUserIDs);
+					toReturn = allMembers.OrderBy(x => x.DisplayName).ToArray();
+				}
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Get Users Online from Cache
+		/// </summary>
+		/// <returns>UsersOnlineDTO</returns>
+		public UsersOnlineDTO GetUsersOnline()
+		{
+			UsersOnlineDTO toReturn = null;
+
+			GetUsersOnlineDelegate usersOnlineDelegate = new(this.DataLoader.GetUsersOnline);
+			toReturn = this.CacheLoader.GetData(usersOnlineDelegate, Array.Empty<object>(), CacheConstants.USERS_ONLINE) as UsersOnlineDTO;
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Updates the cached version of the online user status object
+		/// </summary>
+		/// <param name="user">user</param>
+		/// <param name="inTrackingNumber">proposal Tracking number</param>
+		public void UpdateUsersStatus(UserData user, string inTrackingNumber)
+		{
+			UsersOnlineDTO usersOnline = GetUsersOnline();
+
+			usersOnline.UpdateUsersStatus(user, inTrackingNumber);
+
+			cache.Remove(CacheConstants.USERS_ONLINE);
+			cache.Add(CacheConstants.USERS_ONLINE, usersOnline, -1);
+		}
+
+		/// <summary>
+		/// Return a user by looking them up with their AD information
+		/// </summary>
+		/// <param name="inUserData">users AD information</param>
+		/// <returns>user found, null if not found</returns>
+		virtual public UserDTO GetByUserData(UserData inUserData)
+		{
+			if (inUserData == null)
+			{
+				throw new ArgumentNullException(nameof(inUserData));
+			}
+
+			return this.GetByNtid(inUserData.Ntid);
+		}
+
+		/// <summary>
+		/// Return the user dto for the actively logged in user
+		/// </summary>
+		/// <returns>user found, null if not found</returns>
+		virtual public UserDTO GetActiveUser()
+		{
+			return this.GetByNtid(securityInformation.ActiveUserNTID);
+		}
+
+		/// <summary>
+		/// Return a user by looking them up by their Ntid
+		/// NOTE: This will retrieve the user from AD if they do not exist and add
+		/// them into the system/cache.
+		/// </summary>
+		/// <param name="inNtid">users domain to locate them by</param>
+		/// <returns>user found, null if not found</returns>
+		virtual public UserDTO GetByNtid(string inNtid)
+		{
+			if (string.IsNullOrEmpty(inNtid))
+			{
+				throw new ArgumentNullException(inNtid);
+			}
+
+			UserDTO toReturn = null;
+
+			using (StopwatchTimer sw = new("UserMapper.GetByNtid", Log))
+			{
+				if (inNtid.Contains('\\'))
+				{
+					// throw an exception ... not ok to include domain in userid string
+					throw new ArgumentException("Do not include domain in Ntid string - " + inNtid);
+				}
+
+				if (!UserExists(inNtid, out int outUserId))
+				{
+					// add the user from AD
+					bool isGroup = activeDirectoryUtilities.IsGroup(inNtid);
+					UserData adUser = activeDirectoryUtilities.GetUserByQualifiedAccount(inNtid, isGroup);
+					if (adUser != null)
+					{
+						if (Transaction.Current != null)
+						{
+							(this as IInternalDataMapper<UserDTO>).Save(new UserDTO
+							{
+								DisplayName = adUser.DisplayName,
+								EmailAddress = adUser.Email,
+								FirstName = adUser.FirstName,
+								LastName = adUser.LastName,
+								Ntid = adUser.Ntid,
+								PhoneNumber = adUser.Phone,
+								UpdateDate = DateTime.Now,
+								Id = -1,
+								Updateable = UpdateType.Upsert,
+								IsGroup = adUser.IsGroup,
+								IsUsPerson = adUser.IsUsPerson,
+								IsSubcontractor = adUser.IsUsPerson
+							});
+						}
+						else
+						{
+							// need to provide a transaction for the save
+							using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout")) }))
+							{
+								(this as IInternalDataMapper<UserDTO>).Save(new UserDTO
+								{
+									DisplayName = adUser.DisplayName,
+									EmailAddress = adUser.Email,
+									FirstName = adUser.FirstName,
+									LastName = adUser.LastName,
+									Ntid = adUser.Ntid,
+									PhoneNumber = adUser.Phone,
+									UpdateDate = DateTime.Now,
+									Id = -1,
+									Updateable = UpdateType.Upsert,
+									IsGroup = adUser.IsGroup,
+									IsUsPerson = adUser.IsUsPerson,
+									IsSubcontractor = adUser.IsUsPerson
+								});
+								scope.Complete();
+							}
+						}
+					}
+					else
+					{
+						return null;
+					}
+				}
+
+				string key = CacheConstants.USER + inNtid;
+				GetUserByNtidDelegate cacheDelegate = new(this.DataLoader.GetByNtid);
+				toReturn = CacheLoader.GetData(cacheDelegate, new object[] { inNtid }, key) as UserDTO;
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// See if a user exists
+		/// </summary>
+		/// <param name="inUserNtid">user Ntid to check for</param>
+		/// <param name="outUserId">if the user exists, return the id</param>
+		/// <returns>true/false user exists</returns>
+		virtual public bool UserExists(string inUserNtid, out int outUserId)
+		{
+			string key = CacheConstants.USER_EXISTS + inUserNtid;
+
+			if (cache.Contains(key))
+			{
+				int? userId = cache.GetData(key) as int?;
+
+				outUserId = userId.HasValue ? userId.Value : 0;
+			}
+			else
+			{
+				// not found in cache .. load and stuff in cache
+				this.DataLoader.UserExists(inUserNtid, out outUserId);
+
+				if (outUserId != 0)
+				{
+					cache.Add(key, outUserId, 30); // cache for 30 seconds
+				}
+			}
+
+			return outUserId != 0;
+		}
+
+		/// <summary>
+		/// remove cache keys associated with a save
+		/// </summary>
+		/// <param name="dto">the User that was saved</param>
+		public override void ClearCacheKeys(UserDTO dto)
+		{
+			// no need to clear something that is null
+			if (dto != null)
+			{
+				// remove cache
+				CacheLoader.Remove(CacheConstants.USER + dto.Ntid);
+				CacheLoader.Remove(CacheConstants.USER + dto.Id);
+				CacheLoader.Remove(CacheConstants.USERS_ONLINE);
+				cache.Remove(CacheConstants.USER_EXISTS + dto.Ntid);
+			}
+		}
+
+		/// <summary>
+		/// Get all groups
+		/// </summary>
+		/// <returns>all groups</returns>
+		public ICollection<UserDTO> GetAllGroups()
+		{
+			ICollection<UserDTO> toReturn = null;
+
+			using (StopwatchTimer sw = new("UserMapper.GetAllGroups", Log))
+			{
+				// get a list of all group user Ids (not cache, hardlinked)
+				ICollection<int> allGroupUserIDs = this.DataLoader.GetAllGroupIds();
+				this.Log.LogTrace("DIRECT - GetAllGroupIds", sw.ElapsedMilliseconds);
+
+				if (allGroupUserIDs != null && allGroupUserIDs.Any())
+				{
+					// go through mapper so we take advantage of cache
+					ICollection<UserDTO> allMembers = this.GetDtos(allGroupUserIDs);
+					toReturn = allMembers.OrderBy(x => x.DisplayName).ToArray();
+				}
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Get User Dtos by User Ids
+		/// </summary>
+		/// <param name="userIds">collection of user ids</param>
+		/// <returns>collection of user dtos</returns>
+		virtual public ICollection<UserDTO> GetUserDtosByUserIds(ICollection<int> userIds)
+		{
+			ICollection<UserDTO> toReturn = null;
+			// go through mapper so we take advantage of cache
+			ICollection<UserDTO> allMembers = this.GetDtos(userIds);
+			toReturn = allMembers.OrderBy(x => x.DisplayName).ToArray();
+			return toReturn;
+		}
+	}
+}

@@ -108,7 +108,7 @@ namespace GenBOE.Tests.ActionLogic.Import
         public void BOEImportMerge_MergeBoeWithDataTest()
         {
             //Arrange
-            BoeDTO toImport = (BoeDTO)importBoe;
+            BoeDTO toImport = importBoe;
 
             //Act
             BoeDTO result = boeMerger.MergeBoeWithData(toImport);
@@ -127,7 +127,7 @@ namespace GenBOE.Tests.ActionLogic.Import
         public void BOEImportMerge_MergeBoeWithData_IgnoreDuplicateCustomField_Test()
         {
             //Arrange
-            BoeDTO toImport = (BoeDTO)importBoe;
+            BoeDTO toImport = importBoe;
             toMergeBoe.CustomFieldValueContainers.Add(cfc);
 
             //Act

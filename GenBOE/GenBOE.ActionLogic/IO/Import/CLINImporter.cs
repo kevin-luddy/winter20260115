@@ -84,12 +84,12 @@ namespace GenBOE.ActionLogic.IO.Import
                     Collection<ImportedClin> importResults;
 
                     // Open the document as read-only.
-                    using (var document = SpreadsheetDocument.Open(excelFileStream, false))
+                    using (SpreadsheetDocument document = SpreadsheetDocument.Open(excelFileStream, false))
                     {
-                        // Get a collection of all rows in the file, filtering out rows that only have data in
-                        // non import-related columns. Each row is represented as a Key/Value pair Dictionary object
-                        // in an enumerable collection
-                        var allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, ImportExportConstants.CLINS, this.GetRequiredColumns(), this.GetRequiredColumns(), null, null, this.GetTextOnlyColumns());
+						// Get a collection of all rows in the file, filtering out rows that only have data in
+						// non import-related columns. Each row is represented as a Key/Value pair Dictionary object
+						// in an enumerable collection
+						ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, ImportExportConstants.CLINS, this.GetRequiredColumns(), this.GetRequiredColumns(), null, null, this.GetTextOnlyColumns());
 
                         // Turn each row into a DTO object and return the collection
                         importResults = this.CreateImportedClins(allRows, workspace, allContractTypes);
@@ -148,15 +148,15 @@ namespace GenBOE.ActionLogic.IO.Import
                 throw new ArgumentNullException(nameof(allRows));
             }
 
-            // Create the collection to return
-            var toReturn = new Collection<ImportedClin>();
+			// Create the collection to return
+			Collection<ImportedClin> toReturn = new Collection<ImportedClin>();
 
-            // Set the ID counter. New Clin objects must have IDs < 0 and mutiple Clin elements submitted to
-            // the loader must have different IDs. So, we'll go -1, -2, -3, etc.
-            var currentClinID = -1;
+			// Set the ID counter. New Clin objects must have IDs < 0 and mutiple Clin elements submitted to
+			// the loader must have different IDs. So, we'll go -1, -2, -3, etc.
+			int currentClinID = -1;
 
-            // Get all Clins currently in the workspace
-            var existingClinsForWorkspace = workspace.Clins;
+			// Get all Clins currently in the workspace
+			IReadOnlyCollection<FullClin> existingClinsForWorkspace = workspace.Clins;
             
             // For each Dictionary object (representing imported row data)
             foreach (Dictionary<string, string> row in allRows)
@@ -187,10 +187,10 @@ namespace GenBOE.ActionLogic.IO.Import
                 {
                     try
                     {
-                        var clinID = Convert.ToInt32(row[clinIDColumn]);
+						int clinID = Convert.ToInt32(row[clinIDColumn]);
 
-                        // Keep a copy of the old Clin data for comparison
-                        var oldClin = this.factory.CreateFullClin(clinID);
+						// Keep a copy of the old Clin data for comparison
+						FullClin oldClin = this.factory.CreateFullClin(clinID);
 
                         // If there is no existing CLIN with the ID in this row, we'll create a new CLIN
                         if (oldClin == null)
@@ -236,14 +236,14 @@ namespace GenBOE.ActionLogic.IO.Import
                 }
             }
 
-            var toTruncate = from t in toReturn
+			IEnumerable<ImportedClin> toTruncate = from t in toReturn
                              where !string.IsNullOrEmpty(t.ClinTitle) &&
                                 t.ClinTitle.Length > 100 &&
                                 (t.ImportTypes.Contains(ClinImportResult.UpdateClin) ||
                                 t.ImportTypes.Contains(ClinImportResult.CreateClin))
                              select t;
 
-            foreach (var result in toTruncate)
+            foreach (ImportedClin result in toTruncate)
             {
                 result.ImportTypes.Add(ClinImportResult.TruncateTitle);
             }
@@ -341,7 +341,7 @@ namespace GenBOE.ActionLogic.IO.Import
             bool validHeaders = false;
             if (!row.ContainsKey(ImportExportConstants.CLIN_NUMBER_COLUMN_HEADER) || !row.ContainsKey(ImportExportConstants.CLIN_TITLE_COLUMN_HEADER))
             {
-                var addMessage = !toReturn.Any(x => x.ImportTypes.Contains(ClinImportResult.MissingNumberOrTitle));
+				bool addMessage = !toReturn.Any(x => x.ImportTypes.Contains(ClinImportResult.MissingNumberOrTitle));
 
                 // Only add this message once for the entire import
                 if (addMessage)
@@ -397,7 +397,7 @@ namespace GenBOE.ActionLogic.IO.Import
                 throw new ArgumentNullException(nameof(workspace));
             }
 
-            var toReturn = new ImportedClin
+			ImportedClin toReturn = new ImportedClin
             {
                 Id = clinID,
                 ClinNumber = row[ImportExportConstants.CLIN_NUMBER_COLUMN_HEADER],

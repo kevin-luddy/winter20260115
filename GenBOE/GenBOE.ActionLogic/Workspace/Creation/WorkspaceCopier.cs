@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using DocumentFormat.OpenXml.Office2010.PowerPoint;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
@@ -519,10 +520,17 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             ICollection<ResourceDTO> resourcesToSave = new Collection<ResourceDTO>();
 
             // Get a list of all in-use Resource IDs
-            IEnumerable<int> resourceIDs = (from r in this.copiedFromTaskElements
+            IEnumerable<int> rIDs = (from r in this.copiedFromTaskElements
                                     from e in r.taskElementLabors
                                     where e.ResourceID.HasValue
                                     select e.ResourceID.Value).Distinct();
+            // Get a list of all in-use BRC Resource IDs
+            IEnumerable<int> BRCIDs = (from r in this.copiedFromTaskElements
+                                        from e in r.taskElementLabors
+                                        where e.BusinessResourceCodeID.HasValue
+                                        select e.BusinessResourceCodeID.Value).Distinct();
+
+            IEnumerable<int> resourceIDs = (rIDs.Concat(BRCIDs)).Distinct();
 
             // Create a mapping between old Resource IDs and new DTOs for the copied workspace
             Dictionary<int, ResourceDTO> resourceIDMapping = new Dictionary<int, ResourceDTO>();
@@ -1238,9 +1246,10 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                         laborType.Updateable = UpdateType.Upsert;
                         laborType.BoeID = newBoeID;
 
-                        // if the task does not have a performing org or a resource, we will still copy the WS, but we will want to tell the user to double check the new WS..
+                        // if the task does not have a performing org, business resource ID (from the resource) or a resource, we will still copy the WS, but we will want to tell the user to double check the new WS..
                         // because the data will be incomplete/incorrect
                         if (laborType.ResourceID.HasValue) { laborType.ResourceID = Resources[laborType.ResourceID.Value]; } else { finishedCorrectly = false; }
+                        if (laborType.BusinessResourceCodeID.HasValue) { laborType.BusinessResourceCodeID = Resources[laborType.BusinessResourceCodeID.Value]; } else { finishedCorrectly = false; }
                         if (laborType.PerformingOrgID.HasValue) { laborType.PerformingOrgID = perfOrgs[laborType.PerformingOrgID.Value]; } else { finishedCorrectly = false; }
 
                         if (laborType.CustomFieldValueContainers.Any())
