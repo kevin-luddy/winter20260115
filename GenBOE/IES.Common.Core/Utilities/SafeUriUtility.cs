@@ -16,9 +16,9 @@ namespace IES.Common.Core.Utilities
 		/// </summary>
 		private static ILogger logger;
 
-		public static void Initialize(ILoggerFactory loggerFactory)
+		public static void Initialize(ILogger logger)
 		{
-			logger = loggerFactory.CreateLogger(typeof(SafeUriUtility));
+			logger = logger;
 		}
 
         /// <summary>
