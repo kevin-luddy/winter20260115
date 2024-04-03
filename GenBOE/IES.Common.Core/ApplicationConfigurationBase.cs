@@ -9,6 +9,7 @@
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Logging;
 	using IES.Common.Core.Security;
+	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Authentication.Negotiate;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Builder;
@@ -324,6 +325,9 @@
 			app.UseAuthorization();
 			app.UseMiddleware<UserLoggingMiddleware>();
 			app.UseMiddleware<CorrelationMiddleware>();
+
+			Microsoft.Extensions.Logging.ILogger logger = app.Services.GetService<Microsoft.Extensions.Logging.ILogger>(); 
+			SafeUriUtility.Initialize(logger);
 
 			if (app.Environment.IsDevelopment())
 			{

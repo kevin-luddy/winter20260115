@@ -388,7 +388,7 @@ namespace GenBOE.ActionLogic.ModelView
                             linkText = "Help",
                             menuLocation = MenuLocation.Right,
                             securityPage = SecurityPage.Home,
-                            linkUrl = new Uri(SSC_HELP_LINK)
+                            linkUrl = SafeUriUtility.safeUri(SSC_HELP_LINK)
                         });
                 }
                 else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
@@ -402,27 +402,27 @@ namespace GenBOE.ActionLogic.ModelView
                             new GenBOEMasterMenuItemModelView {
                                 securityPage = SecurityPage.Home,
                                 linkText = "Author Training",
-                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLink") + RMS_HELP_AUTHOR_LINK)
+                                linkUrl = SafeUriUtility.safeUri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLink") + RMS_HELP_AUTHOR_LINK)
                             },
                             new GenBOEMasterMenuItemModelView {
                                 securityPage = SecurityPage.Home,
                                 linkText = "Workspace Administrator Training",
-                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLink") + RMS_HELP_WS_ADMIN_LINK)
+                                linkUrl = SafeUriUtility.safeUri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLink") + RMS_HELP_WS_ADMIN_LINK)
                             },
                             new GenBOEMasterMenuItemModelView {
                                 securityPage = SecurityPage.Home,
                                 linkText = "RMS BOE Gold Card",
-                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_GOLD_CARD_LINK)
+                                linkUrl = SafeUriUtility.safeUri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_GOLD_CARD_LINK)
                             },
                             new GenBOEMasterMenuItemModelView {
                                 securityPage = SecurityPage.Home,
                                 linkText = "RMS BOE Writing Training",
-                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_BOE_WRITING_LINK)
+                                linkUrl = SafeUriUtility.safeUri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_BOE_WRITING_LINK)
                             },
                             new GenBOEMasterMenuItemModelView {
                                 securityPage = SecurityPage.Home,
                                 linkText = "All Things BOE",
-                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("AllThingsBoeLink"))
+                                linkUrl = SafeUriUtility.safeUri(ConfigurationUtilities.GetAppSetting("AllThingsBoeLink"))
                             }
                         }
                         });

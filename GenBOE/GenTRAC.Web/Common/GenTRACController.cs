@@ -452,12 +452,12 @@ namespace GenTRAC.Web.Common
                         new GenTRACMenuItemModelView
                         {
                             LinkText = "About PTM",
-                            LinkUrl = new Uri("http://gentracsupport.isgs.lmco.com/about/")
+                            LinkUrl = SafeUriUtility.safeUri("http://gentracsupport.isgs.lmco.com/about/")
                         },
                         new GenTRACMenuItemModelView
                         {
                             LinkText = "PTM Help",
-                            LinkUrl = new Uri("http://gentracsupport.isgs.lmco.com/help/")
+                            LinkUrl = SafeUriUtility.safeUri("http://gentracsupport.isgs.lmco.com/help/")
                         }
                     }
                 }, */

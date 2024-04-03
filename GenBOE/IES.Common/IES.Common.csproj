@@ -393,6 +393,7 @@
     <Compile Include="Utilities\Token\TokenService.cs" />
     <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="Utilities\WebApiConfig.cs" />
+    <Compile Include="Utilities\SafeUriUtility.cs" />
     <Compile Include="Utilities\XmlExtensions.cs" />
     <Compile Include="IESWebConstants.cs" />
     <Compile Include="ValidValuesAttribute.cs" />
