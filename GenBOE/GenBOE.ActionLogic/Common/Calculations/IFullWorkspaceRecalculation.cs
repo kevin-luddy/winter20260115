@@ -148,13 +148,24 @@ namespace GenBOE.ActionLogic.Common.Calculations
         /// <returns>A collection of ODC elements where data doesn't match</returns>
         Collection<OtherDirectCostDTO> GetElementsWithInconsistentODCs(ICollection<FullBoe> boes);
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Throws an exception if the WS contains any task elements that contain discrete spreads and delta is not 0
-        /// </summary>
-        /// <param name="ws">WS to check</param>
-        void ThrowValidationExceptionIfWsContainsTasksWithNonZeroDelta(FullWorkspace ws);
+		#region Validation of Resource And/or Business Resource Code
+
+		/// <summary>
+		/// Gets all Task Elements where Resource And/Or Business Resource Code is missing
+		/// </summary>
+		/// <param name="ws">Workspace to check</param>
+		/// <returns>A Collection of Task Elements with missing Resource and/or Business Resource Code</returns>
+		Collection<BoeTaskElementDTO> GetTaskElementsWithMissingResource(FullWorkspace ws);
+
+		#endregion Validation of Resource And/or Business Resource Code
+
+		/// <summary>
+		/// Throws an exception if the WS contains any task elements that contain discrete spreads and delta is not 0
+		/// </summary>
+		/// <param name="ws">WS to check</param>
+		void ThrowValidationExceptionIfWsContainsTasksWithNonZeroDelta(FullWorkspace ws);
 
         /// <summary>
         /// Generates an error message that can then be displayed to the user, if the WS contains any task elements that contain discrete spreads and delta is not 0

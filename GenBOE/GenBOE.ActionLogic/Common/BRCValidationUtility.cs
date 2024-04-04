@@ -172,5 +172,21 @@ namespace GenBOE.ActionLogic.Common
 				}
 			}
 		}
+
+		public static bool ValidateResourceTypeDto(ResourceTypeDto resourceTypeDto)
+		{
+			bool isValid = true;
+
+			if (!Utilities.IsBRCEnabledForSystem)
+			{
+
+			}
+			else
+			{
+
+			}
+
+			return isValid;
+		}
 	}
 }

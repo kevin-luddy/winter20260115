@@ -115,6 +115,8 @@ namespace GenBOE.ActionLogic.Reporting
 
         HoursAndCost,
 
-        ODC
+        ODC,
+
+		Resource
     }
 }
