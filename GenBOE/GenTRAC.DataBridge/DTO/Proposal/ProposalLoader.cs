@@ -2273,8 +2273,8 @@ namespace GenTRAC.DataBridge.DTO
 		/// <summary>
 		/// Get Lead Estimator and Backup Estimator names for a tracking number
 		/// </summary>
-		/// <param name="trackingNumber">PTM tracking number</param>
-		public ICollection<ProposalRoleDto> GetEstimatorNames(string trackingNumber)
+		/// <param name="ptmTrackingNumber">PTM tracking number</param>
+		public ICollection<ProposalRoleDto> GetEstimatorNames(string ptmTrackingNumber)
 		{
 			ICollection<ProposalRoleDto> names;
 
@@ -2282,16 +2282,18 @@ namespace GenTRAC.DataBridge.DTO
 			{
 				using (genTRACEntities gte = new genTRACEntities())
 				{
-					// TO-DO: Look at method above
-					//names = (from p in gte.Proposals
-					//		 join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
-					//		 where p.ProposalTrackingID == trackingNumber
-					//		 && (pur.RoleID == (int)PtmRole.Pricer || pur.RoleID == (int)PtmRole.BackupPricer)
-					//		 select new ProposalRoleDto
-					//		 {
-					//			 TrackingNumber = p.ProposalTrackingID,
-					//			 Role = pur.RoleID
-					//		 }).ToList();
+					names = (from p in gte.Proposals
+							 join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
+							 join gtu in gte.genTRACUsers on pur.UserID equals gtu.UserID
+							 where p.ProposalTrackingID == ptmTrackingNumber
+							 && (pur.RoleID == (int)PtmRole.Pricer || pur.RoleID == (int)PtmRole.BackupPricer)
+							 select new ProposalRoleDto
+							 {
+								 TrackingNumber = p.ProposalTrackingID,
+								 Role = (PtmRole)pur.RoleID,
+								 UserName = gtu.DisplayName,
+								 NTID = gtu.NTID
+							 }).ToList();
 				}
 			}
 

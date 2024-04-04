@@ -236,7 +236,7 @@ namespace GenTRAC.DataBridge.DTO
 		/// <summary>
 		/// Get Lead Estimator and Backup Estimator names for a tracking number
 		/// </summary>
-		/// <param name="trackingNumber">PTM tracking number</param>
-		ICollection<ProposalRoleDto> GetEstimatorNames(string trackingNumber);
+		/// <param name="ptmTrackingNumber">PTM tracking number</param>
+		ICollection<ProposalRoleDto> GetEstimatorNames(string ptmTrackingNumber);
 	}
 }

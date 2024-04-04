@@ -278,23 +278,37 @@ namespace GenTRAC.Web.Controllers
 		/// <summary>
 		/// Get the Lead Estimator and Backup Estimator names from PTM given a PTM tracking number
 		/// </summary>
-		/// <param name="trackingNumber">PTM tracking number</param>
+		/// <param name="ptmTrackingNumber">PTM tracking number</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<AcvPtmAuthors> GetEstimatorNamesByTrackingNumber(string trackingNumber)
+		public IESResponse<AcvPtmAuthors> GetEstimatorNamesByTrackingNumber(string ptmTrackingNumber)
 		{
 			IESResponse<AcvPtmAuthors> result = new IESResponse<AcvPtmAuthors>();
+			ICollection<ProposalRoleDto> roles;
 
 			try
 			{
-				result.Data = proposalLoader.(trackingNumber);
+				roles = proposalLoader.GetEstimatorNames(ptmTrackingNumber);
+				if (roles == null)
+				{
+					logger.Warn($"No users found for tracking number");
+					result.Messages.Add("No users found for tracking number");
+				}
+				else
+				{
+					AcvPtmAuthors author = new AcvPtmAuthors();
+					author.BackupEstimator = roles.FirstOrDefault(r => r.Role == PtmRole.BackupPricer).NTID ?? string.Empty;
+					author.LeadEstimator = roles.FirstOrDefault(r => r.Role == PtmRole.Pricer).NTID ?? string.Empty;
 
-				result.IsSuccessful = true;
+					result.Data.Add(author);
+					result.IsSuccessful = true;
+				}
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Error occurred attempting to retrieve estimator data by tracking number {trackingNumber}: {ex.Message}");
+				result.Messages.Add($"Error occurred attempting to retrieve estimator data by tracking number {ptmTrackingNumber}: {ex.Message}");
+				result.IsSuccessful = false;
 			}
 
 			return result;

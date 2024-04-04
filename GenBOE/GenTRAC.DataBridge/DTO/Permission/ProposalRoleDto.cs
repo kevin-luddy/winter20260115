@@ -30,5 +30,15 @@ namespace GenTRAC.DataBridge.DTO.Permission
 		/// PTM Role
 		/// </summary>
 		public PtmRole Role { get; set; }
+
+		/// <summary>
+		/// Name of the user
+		/// </summary>
+		public string UserName { get; set; }
+
+		/// <summary>
+		/// NTID of the user
+		/// </summary>
+		public string NTID { get; set; }
 	}
 }

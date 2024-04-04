@@ -12,12 +12,12 @@ namespace GenTRAC.Web.ModelView
 	public class AcvPtmAuthors
 	{
 		/// <summary>
-		/// Lead Estimator's name
+		/// Lead Estimator's NTID
 		/// </summary>
 		public string LeadEstimator { get; set; }
 
 		/// <summary>
-		/// Backup Estimator's name
+		/// Backup Estimator's NTID
 		/// </summary>
 		public string BackupEstimator { get; set; }
 	}
