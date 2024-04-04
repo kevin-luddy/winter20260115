@@ -12,7 +12,8 @@ namespace GenBOE.ActionLogic.Validation
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
-    using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -369,6 +370,14 @@ namespace GenBOE.ActionLogic.Validation
                     dateErrors.Add(GenerateResourceTypeError(resourceType, string.Format(RESOURCE_END_DATE_FAILED,
                         resourceStartDateString, resourceEndDateString, resourceTypeString, resourceTypeValueString)));
                 }
+
+				// Validate the Resource Type, method will return empty string if no errors;
+				string brcValidationErrorMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(resourceType);
+				if (!string.IsNullOrEmpty(brcValidationErrorMessage))
+				{
+					if (returnOnFirstInvalid) { return false; }
+					valueErrors.Add(GenerateResourceTypeError(resourceType, brcValidationErrorMessage));
+				}
 
                 if (resourceType.ValueSpread != resourceType.LaborSpreads.Sum(x => x.LaborSpreadValue))
                 {

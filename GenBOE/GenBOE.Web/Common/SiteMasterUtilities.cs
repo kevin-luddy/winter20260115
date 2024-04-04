@@ -293,46 +293,6 @@ namespace GenBOE.Web.Common
 			return !string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("IsReadOnly")) && ConfigurationUtilities.GetAppSetting("IsReadOnly").ToLower().Equals("true");
 		}
 
-		/// <summary>
-		/// Returns Resources / Business Resource Codes based on Company mode and 1LMX or Legacy distinction
-		/// SHARED/DUPLICATED METHOD in GenBOE ActionLogic => Common => BRCValidationUtility.cs
-		/// </summary>
-		/// <param name="resourceData">Original Resources list</param>
-		/// <param name="isBrc">Bool to signify if Resources are of type Business Resource Codes</param>
-		/// <returns>Filtered list of Resources</returns>
-		public static IReadOnlyCollection<ResourceDTO> GetResourcesBasedOnCompanyMode(IReadOnlyCollection<ResourceDTO> resourceData, bool isBrc)
-		{
-			if (Utilities.IsBRCEnabledForSystem)
-			{
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-				{
-					if (!isBrc)
-					{
-						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.SPACE_1LMX_CORE && x.SegRegion != WebConstants.SPACE_1LMX_SERVICES).ToList();
-					}
-					else
-					{
-						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.SPACE_1LMX_CORE || x.SegRegion == WebConstants.SPACE_1LMX_SERVICES).ToList();
-					}
-				}
-
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-				{
-					if (!isBrc)
-					{
-						resourceData = resourceData.Where(x => x.SegRegion != WebConstants.RMS_1LMX_CORE && x.SegRegion != WebConstants.RMS_1LMX_SERVICES).ToList();
-
-					}
-					else
-					{
-						resourceData = resourceData.Where(x => x.SegRegion == WebConstants.RMS_1LMX_CORE || x.SegRegion == WebConstants.RMS_1LMX_SERVICES).ToList();
-					}
-				}
-			}
-
-			return resourceData;
-		}
-
 		#region A number of settings that were moved into web.config to support classified installations. These methods expose the settings.
 
 		/// <summary>

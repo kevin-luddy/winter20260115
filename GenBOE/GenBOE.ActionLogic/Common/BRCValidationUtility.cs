@@ -21,7 +21,6 @@ namespace GenBOE.ActionLogic.Common
 	{
 		/// <summary>
 		/// Returns Resources / Business Resource Codes based on Company mode and 1LMX or Legacy distinction
-		/// SHARED/DUPLICATED Method in GenBOE Web => Common => SiteMasterUtilites.cs
 		/// </summary>
 		/// <param name="resourceData">Original Resources list</param>
 		/// <param name="isBrc">Bool to signify if Resources are of type Business Resource Codes</param>
@@ -70,7 +69,7 @@ namespace GenBOE.ActionLogic.Common
 
 			if (!Utilities.IsBRCEnabledForSystem)
 			{
-				if (!labor.ResourceID.HasValue)
+				if (labor != null && !labor.ResourceID.HasValue)
 				{
 					requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
 				}
@@ -79,30 +78,33 @@ namespace GenBOE.ActionLogic.Common
 			{
 				DateTime oneLMXStartDate = Utilities.OneLmxStartDate;
 
-				if (labor.EndDateValue < Utilities.OneLmxStartDate && !labor.ResourceID.HasValue)
+				if (labor != null)
 				{
-					requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
-				}
-
-				if (labor.StartDateValue < oneLMXStartDate && labor.EndDateValue > oneLMXStartDate)
-				{
-					if (!labor.ResourceID.HasValue)
+					if (labor.EndDateValue < Utilities.OneLmxStartDate && !labor.ResourceID.HasValue)
 					{
 						requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
 					}
-					else if (!labor.ResourceID.HasValue && !labor.BusinessResourceCodeID.HasValue)
+
+					if (labor.StartDateValue < oneLMXStartDate && labor.EndDateValue > oneLMXStartDate)
 					{
-						requiredMessage = BoeDTO.RESOURCE_AND_BUSINESS_RESOURCE_CODE_REQUIRED;
+						if (!labor.ResourceID.HasValue)
+						{
+							requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
+						}
+						else if (!labor.ResourceID.HasValue && !labor.BusinessResourceCodeID.HasValue)
+						{
+							requiredMessage = BoeDTO.RESOURCE_AND_BUSINESS_RESOURCE_CODE_REQUIRED;
+						}
+						else if (!labor.BusinessResourceCodeID.HasValue)
+						{
+							requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
+						}
 					}
-					else if (!labor.BusinessResourceCodeID.HasValue)
+
+					if (labor.StartDateValue > oneLMXStartDate && !labor.BusinessResourceCodeID.HasValue)
 					{
 						requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
 					}
-				}
-
-				if (labor.StartDateValue > oneLMXStartDate && !labor.BusinessResourceCodeID.HasValue)
-				{
-					requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
 				}
 			}
 
@@ -116,54 +118,57 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="labor">Labor</param>
 		/// <param name="resourcesFromTask">Resources for Task</param>
 		/// <param name="businessResourceCodesFromTask">Business Resource Codes for Task</param>
-		public static void PopulateResourceAndBusinessResourceCodeHeaders(ref ValidationBOELaborType boeLabor, ResourceTypeDto labor, ICollection<ResourceDTO> resourcesFromTask, ICollection<ResourceDTO> businessResourceCodesFromTask)
+		public static void PopulateResourceAndBusinessResourceCodeHeaders(ValidationBOELaborType boeLabor, ResourceTypeDto labor, ICollection<ResourceDTO> resourcesFromTask, ICollection<ResourceDTO> businessResourceCodesFromTask)
 		{
 			ResourceDTO resource = null;
 			ResourceDTO businessResourceCode = null;
 
-			if (!Utilities.IsBRCEnabledForSystem)
+			if (boeLabor != null)
 			{
-				if (labor.ResourceID.HasValue)
+				if (!Utilities.IsBRCEnabledForSystem)
 				{
-					resource = resourcesFromTask.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
-				}
+					if (labor.ResourceID.HasValue)
+					{
+						resource = resourcesFromTask.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
+					}
 
-				if (resource == null)
-				{
-					boeLabor.LaborTypeHeader = "Resource Type:";
+					if (resource == null)
+					{
+						boeLabor.LaborTypeHeader = "Resource Type:";
+					}
+					else
+					{
+						boeLabor.LaborTypeHeader = "Resource Type: " + (resource.ResourceName ?? string.Empty);
+					}
 				}
 				else
 				{
-					boeLabor.LaborTypeHeader = "Resource Type: " + (resource.ResourceName ?? string.Empty);
-				}
-			}
-			else
-			{
-				if (labor.ResourceID.HasValue)
-				{
-					resource = resourcesFromTask.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
-				}
+					if (labor.ResourceID.HasValue)
+					{
+						resource = resourcesFromTask.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
+					}
 
-				if (labor.BusinessResourceCodeID.HasValue)
-				{
-					businessResourceCode = businessResourceCodesFromTask.FirstOrDefault(x => x.Id == labor.BusinessResourceCodeID.Value);
-				}
+					if (labor.BusinessResourceCodeID.HasValue)
+					{
+						businessResourceCode = businessResourceCodesFromTask.FirstOrDefault(x => x.Id == labor.BusinessResourceCodeID.Value);
+					}
 
-				if (resource == null && businessResourceCode == null)
-				{
-					boeLabor.LaborTypeHeader = $"Resource Type: (Not Selected); Business Resource Code Type: (Not Selected)";
-				}
-				else if (resource != null && businessResourceCode != null)
-				{
-					boeLabor.LaborTypeHeader = "Resource Type: " + (resource.ResourceName ?? string.Empty) + " Business Resource Code Type: " + (businessResourceCode.ResourceName ?? string.Empty);
-				}
-				else if (resource != null && businessResourceCode == null)
-				{
-					boeLabor.LaborTypeHeader = "Resource Type: " + (resource.ResourceName ?? string.Empty) + " Business Resource Code Type: (Not Selected)";
-				}
-				else if (resource == null && businessResourceCode != null)
-				{
-					boeLabor.LaborTypeHeader = "Resource Type: (Not Selected); Business Resource Code Type: " + (businessResourceCode.ResourceName ?? string.Empty);
+					if (resource == null && businessResourceCode == null)
+					{
+						boeLabor.LaborTypeHeader = $"Resource Type: (Not Selected); Business Resource Code Type: (Not Selected)";
+					}
+					else if (resource != null && businessResourceCode != null)
+					{
+						boeLabor.LaborTypeHeader = "Resource Type: " + (resource.ResourceName ?? string.Empty) + " Business Resource Code Type: " + (businessResourceCode.ResourceName ?? string.Empty);
+					}
+					else if (resource != null && businessResourceCode == null)
+					{
+						boeLabor.LaborTypeHeader = "Resource Type: " + (resource.ResourceName ?? string.Empty) + " Business Resource Code Type: (Not Selected)";
+					}
+					else if (resource == null && businessResourceCode != null)
+					{
+						boeLabor.LaborTypeHeader = "Resource Type: (Not Selected); Business Resource Code Type: " + (businessResourceCode.ResourceName ?? string.Empty);
+					}
 				}
 			}
 		}

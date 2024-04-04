@@ -961,21 +961,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 if (LaborTypeMessages.Any())
                 {
-					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(ref boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask);	
-                    //ResourceDTO resource = null;
-                    //if (labor.ResourceID.HasValue)
-                    //{
-                    //    resource = resourcesFromTask.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
-                    //}
-
-                    //if (resource == null)
-                    //{
-                    //    boeLabor.LaborTypeHeader = "Resource Type:";
-                    //}
-                    //else
-                    //{
-                    //    boeLabor.LaborTypeHeader = "Resource Type: " + (resource.ResourceName ?? string.Empty);
-                    //}
+					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask);	
 
                     boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
                     boeTasks.LaborTypes.Add(boeLabor);
