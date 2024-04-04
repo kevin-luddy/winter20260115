@@ -656,7 +656,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <returns>List of Workspace Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[HttpGet]
+		[HttpPost]
 		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataForNlf()
 		{
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
