@@ -297,8 +297,10 @@ namespace GenTRAC.Web.Controllers
 				else
 				{
 					AcvPtmAuthors author = new AcvPtmAuthors();
-					author.BackupEstimator = roles.FirstOrDefault(r => r.Role == PtmRole.BackupPricer).NTID ?? string.Empty;
-					author.LeadEstimator = roles.FirstOrDefault(r => r.Role == PtmRole.Pricer).NTID ?? string.Empty;
+					ProposalRoleDto backupPricer = roles.FirstOrDefault(r => r.Role == PtmRole.BackupPricer);
+					ProposalRoleDto leadEstimator = roles.FirstOrDefault(r => r.Role == PtmRole.Pricer);
+					author.BackupEstimator = backupPricer != null ? backupPricer.NTID : string.Empty;
+					author.LeadEstimator = leadEstimator != null ? leadEstimator.NTID : string.Empty;
 
 					result.Data.Add(author);
 					result.IsSuccessful = true;
