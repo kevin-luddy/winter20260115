@@ -31,7 +31,7 @@ BEGIN TRANSACTION UserRoles;
                     (select WorkspaceID from workspace w
                         where w.LineOfBusinessID in (
                             SELECT [LineOfBusinessID]
-                            FROM [GenBOESpace_ProdClone].[dbo].[LineOfBusiness]
+                            FROM [dbo].[LineOfBusiness]
                             where LineOfBusinessName in ('Civil Space',  --
                             'Comm Space',  --
                             'Commercial Launch', --
