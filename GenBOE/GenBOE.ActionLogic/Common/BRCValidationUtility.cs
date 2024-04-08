@@ -177,27 +177,30 @@ namespace GenBOE.ActionLogic.Common
 		{
 			bool isValid = false;
 
-			if (!Utilities.IsBRCEnabledForSystem)
+			if (resourceTypeDto != null)
 			{
-				isValid = resourceTypeDto.ResourceID.HasValue;
-			}
-			else
-			{
-				DateTime oneLmxDate = Utilities.OneLmxStartDate;
-
-				if (resourceTypeDto.EndDate < oneLmxDate)
+				if (!Utilities.IsBRCEnabledForSystem)
 				{
 					isValid = resourceTypeDto.ResourceID.HasValue;
 				}
-
-				if (resourceTypeDto.StartDate < oneLmxDate && resourceTypeDto.EndDate > oneLmxDate)
+				else
 				{
-					isValid = resourceTypeDto.ResourceID.HasValue && resourceTypeDto.BusinessResourceCodeID.HasValue;
-				}
+					DateTime oneLmxDate = Utilities.OneLmxStartDate;
 
-				if (resourceTypeDto.StartDate > oneLmxDate)
-				{
-					isValid = resourceTypeDto.BusinessResourceCodeID.HasValue;
+					if (resourceTypeDto.EndDate < oneLmxDate)
+					{
+						isValid = resourceTypeDto.ResourceID.HasValue;
+					}
+
+					if (resourceTypeDto.StartDate < oneLmxDate && resourceTypeDto.EndDate > oneLmxDate)
+					{
+						isValid = resourceTypeDto.ResourceID.HasValue && resourceTypeDto.BusinessResourceCodeID.HasValue;
+					}
+
+					if (resourceTypeDto.StartDate > oneLmxDate)
+					{
+						isValid = resourceTypeDto.BusinessResourceCodeID.HasValue;
+					}
 				}
 			}
 
