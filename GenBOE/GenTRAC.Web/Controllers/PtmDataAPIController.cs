@@ -188,6 +188,8 @@ namespace GenTRAC.Web.Controllers
 
 			try
 			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
 				int proposalId = this.proposalLoader.GetIdByTrackingNumber(ptmTrackingNumber);
 
 				if (proposalId > 0) 
@@ -288,6 +290,8 @@ namespace GenTRAC.Web.Controllers
 
 			try
 			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
 				roles = proposalLoader.GetEstimatorNames(ptmTrackingNumber);
 				if (roles == null)
 				{
