@@ -837,25 +837,22 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		private Collection<BoeTaskElementDTO> GetAllTaskElementsWithMissingResource(ICollection<BoeTaskElementDTO> taskElements)
 		{
 			Collection<BoeTaskElementDTO> problematicTaskElements = new Collection<BoeTaskElementDTO>();
-			IDictionary<BoeTaskElementDTO, ICollection<ResourceTypeDto>> taskDictionary = new Dictionary<BoeTaskElementDTO, ICollection<ResourceTypeDto>>();
-			//= taskElements.ToDictionary(x => x.BOETaskID);
-			taskElements.ForEach(t => taskDictionary.Add(t, t.taskElementLabors));
-
-			taskDictionary.Values.ForEach(x =>
-			{
-				if (!BRCValidationUtility.ValidateResourceTypeDto(x))
-				{
-					problematicTaskElements.Add(x);
-				}
-			});
 
 			foreach (BoeTaskElementDTO task in taskElements)
 			{
 				foreach (ResourceTypeDto item in task.taskElementLabors)
 				{
+					bool breakLoop = false;
+
 					if (!BRCValidationUtility.ValidateResourceTypeDto(item))
 					{
 						problematicTaskElements.Add(task);
+						breakLoop = true;
+					}
+
+					if (breakLoop)
+					{
+						break;
 					}
 				}
 			}
