@@ -175,15 +175,30 @@ namespace GenBOE.ActionLogic.Common
 
 		public static bool ValidateResourceTypeDto(ResourceTypeDto resourceTypeDto)
 		{
-			bool isValid = true;
+			bool isValid = false;
 
 			if (!Utilities.IsBRCEnabledForSystem)
 			{
-
+				isValid = resourceTypeDto.ResourceID.HasValue;
 			}
 			else
 			{
+				DateTime oneLmxDate = Utilities.OneLmxStartDate;
 
+				if (resourceTypeDto.EndDate < oneLmxDate)
+				{
+					isValid = resourceTypeDto.ResourceID.HasValue;
+				}
+
+				if (resourceTypeDto.StartDate < oneLmxDate && resourceTypeDto.EndDate > oneLmxDate)
+				{
+					isValid = resourceTypeDto.ResourceID.HasValue && resourceTypeDto.BusinessResourceCodeID.HasValue;
+				}
+
+				if (resourceTypeDto.StartDate > oneLmxDate)
+				{
+					isValid = resourceTypeDto.BusinessResourceCodeID.HasValue;
+				}
 			}
 
 			return isValid;
