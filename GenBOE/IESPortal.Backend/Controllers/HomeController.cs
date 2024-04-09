@@ -94,7 +94,7 @@ namespace IESPortal.Backend.Controllers
 				},
 				new HeaderLink
 				{
-					Name = "PRO PRICER",
+					Name = "PROPRICER",
 					Url = configuration["PPUrl"],
 					IsNewWindow = true
 				},
