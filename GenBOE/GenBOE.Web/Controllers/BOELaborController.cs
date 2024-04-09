@@ -1742,6 +1742,8 @@ namespace GenBOE.Web.Controllers
 				ICollection<ImportLaborTypeModelView> laborTypesToUpdate = (from i in importResults
 																			where i.ImportTypes.Contains((int)LaborTypeImportResult.UpdateLaborType)
 																			select i).ToList();
+				
+				ICollection<ResourceDTO> originalResourceList = workspace.ResourcesForWsResourceListId.ToList();
 
 				foreach (ImportLaborTypeModelView laborTypeToUpdate in laborTypesToUpdate)
 				{
@@ -1755,7 +1757,6 @@ namespace GenBOE.Web.Controllers
 
 					// Determine the spread type based on the rate type of the resource.
 					RateType rateType;
-					ICollection<ResourceDTO> originalResourceList = workspace.ResourcesForWsResourceListId.ToList();
 					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false).FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
 					ResourceDTO brcForLabor = null;
 
@@ -1846,7 +1847,6 @@ namespace GenBOE.Web.Controllers
 
 					// Determine the spread type based on the rate type of the resource.
 					RateType rateType;
-					ICollection<ResourceDTO> originalResourceList = workspace.ResourcesForWsResourceListId.ToList();
 					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false).FirstOrDefault(r => r.Id == laborTypeToAdd.ResourceID);
 					ResourceDTO brcForLabor = null;
 
