@@ -995,8 +995,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                     odcType.LaborTypeValidationMsgs = OdcTypeMessages;
                     odcTasks.LaborTypes.Add(odcType);
                 }
-                // validate ODC Start/End Date
 
+                // validate ODC Start/End Date
                 Collection<string> returnMessages = new Collection<string>();
                 returnMessages = this._ValidateStartAndEndDates(inBOE.StartDate, inBOE.EndDate, inBOE, odc.StartDate, odc.EndDate, ws);
                 foreach (string msg in returnMessages)
@@ -1005,8 +1005,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 }
 
                 TotalLaborSpreadValue = 0;
-
-				/// PROPH-1491-BRCValidation TODO: Do we need to update ODC as well?
 				IEnumerable<ResourceDTO> resourcesFromTask = ws.ResourcesForWsResourceListId.Where(x => (odc.ODCTypes.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id));
 
                 foreach (OtherDirectCostType type in odc.ODCTypes)

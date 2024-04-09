@@ -80,7 +80,7 @@ namespace GenBOE.ActionLogic.Common
 
 				if (labor != null)
 				{
-					if (labor.EndDateValue < Utilities.OneLmxStartDate && !labor.ResourceID.HasValue)
+					if (labor.EndDateValue < oneLMXStartDate && !labor.ResourceID.HasValue)
 					{
 						requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
 					}
@@ -134,7 +134,7 @@ namespace GenBOE.ActionLogic.Common
 
 					if (resource == null)
 					{
-						boeLabor.LaborTypeHeader = "Resource Type:";
+						boeLabor.LaborTypeHeader = "Resource Type: (Not Selected)";
 					}
 					else
 					{
@@ -155,7 +155,7 @@ namespace GenBOE.ActionLogic.Common
 
 					if (resource == null && businessResourceCode == null)
 					{
-						boeLabor.LaborTypeHeader = $"Resource Type: (Not Selected); Business Resource Code Type: (Not Selected)";
+						boeLabor.LaborTypeHeader = "Resource Type: (Not Selected); Business Resource Code Type: (Not Selected)";
 					}
 					else if (resource != null && businessResourceCode != null)
 					{
