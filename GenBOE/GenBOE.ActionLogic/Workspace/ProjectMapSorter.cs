@@ -47,8 +47,8 @@ namespace GenBOE.ActionLogic.Workspace
                         {
                             Boe = boe,
                             ClinNumber = fullWorkspace.Clins.FirstOrDefault(c => c.Id == boe.CLINID)?.ClinNumber ?? string.Empty,
-                            ResourceName = fullWorkspace.ResourcesForWsResourceListId.First(r => r.Id == (taskElementLabors.First().ResourceID.HasValue ? taskElementLabors.First().ResourceID : taskElementLabors.First().BusinessResourceCodeID)).ResourceName,
-                            PerfOrgName = fullWorkspace.PerformingOrgsForWsList.First(p => p.Id == taskElementLabors.First().PerformingOrgID).PerformingOrgName
+                            ResourceName = fullWorkspace.ResourcesForWsResourceListId.First(r => r.Id == taskElementLabors.First().ResourceID).ResourceName,
+							PerfOrgName = fullWorkspace.PerformingOrgsForWsList.First(p => p.Id == taskElementLabors.First().PerformingOrgID).PerformingOrgName
                         });
                     }
                 }
