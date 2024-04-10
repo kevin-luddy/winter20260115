@@ -148,7 +148,8 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_ResourceRateType = "ResourceRateType";
         internal const string FieldName_ResourceType = "ResourceType";
         internal const string FieldName_ResourceWBS = "ResourceWBS";
-        internal const string FieldName_RFPNumber = "RFPNumber";
+		internal const string FieldName_BrcID = "BrcID";
+		internal const string FieldName_RFPNumber = "RFPNumber";
         internal const string FieldName_SecondaryResourceName = "SecondaryResourceName";
         internal const string FieldName_SecondaryResourceDescription = "SecondaryResourceDescription";
         internal const string FieldName_Segment = "Segment";

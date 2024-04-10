@@ -28,15 +28,15 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// </summary>
         private Logger logger = new Logger(typeof(BOEExportInputs));
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BOEExportInputs"/> class.
-        /// This method is used when only needing one boe.
-        /// </summary>
-        /// <param name="boe">The boe.</param>
-        /// <param name="workspace">The workspace.</param>
-        /// <exception cref="System.ArgumentNullException">workspace</exception>
-        public BOEExportInputs(FullBoe boe, FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null, 
-            ICollection<MoqTypeSelection> moqTypes = null)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BOEExportInputs"/> class.
+		/// This method is used when only needing one boe.
+		/// </summary>
+		/// <param name="boe">The boe.</param>
+		/// <param name="workspace">The workspace.</param>
+		/// <exception cref="System.ArgumentNullException">workspace</exception>
+		public BOEExportInputs(FullBoe boe, FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null,
+			ICollection<MoqTypeSelection> moqTypes = null)
         {
             if (ReferenceEquals(workspace, null))
             {
@@ -47,7 +47,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.SetRteTemplateOverrides(rteTemplatesOverrides);
             this.SetMoqTypes(moqTypes);
             this.Boes = new List<BoeDTO> { boe }.AsReadOnly();
-            this.TaskElements = workspace.TaskElements;
+			this.TaskElements = workspace.TaskElements;
             this.Workspace = workspace;
 
             // since the resources used may not contain offloaded resources, need to manually get this
@@ -63,9 +63,13 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <param name="allWorkspaceBoes">All of the workspace's boes.</param>
         /// <param name="taskElements">The task elements for entire workspace.</param>
         /// <param name="workspace">The workspace.</param>
+		/// <param name="rteTemplatesOverrides">RTE Template Overrides</param>
+		/// <param name="moqTypes">MOQ Types</param>
+		/// <param name="processLaborTypesForBrc">Should Labor Types be processed for BRCs?</param>
         /// <exception cref="ArgumentNullException">workspace</exception>
         public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements,
-            FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null, ICollection<MoqTypeSelection> moqTypes = null)
+            FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null, 
+			ICollection<MoqTypeSelection> moqTypes = null, bool processLaborTypesForBrc = false)
         {
             if (ReferenceEquals(workspace, null))
             {
@@ -77,7 +81,22 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.SetRteTemplateOverrides(rteTemplatesOverrides);
             this.SetMoqTypes(moqTypes);
             this.Boes = boesToExport.ToList<BoeDTO>().AsReadOnly();
-            this.TaskElements = taskElements.ToList().AsReadOnly();
+
+			if (Utilities.IsBRCEnabledForSystem && processLaborTypesForBrc)
+			{
+				ICollection<BoeTaskElementDTO> taskElementList = taskElements.DeepClone();
+				foreach (BoeTaskElementDTO taskElement in taskElementList)
+				{
+					taskElement.taskElementLabors = ImportExportUtilities.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToCollection();
+				}
+
+				this.TaskElements = taskElementList.ToList().AsReadOnly();
+			}
+			else
+			{
+				this.TaskElements = taskElements.ToList().AsReadOnly();
+			}
+
             this.Workspace = workspace;
 
             // since the resources used may not contain offloaded resources, need to manually get this

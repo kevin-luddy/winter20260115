@@ -541,7 +541,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                         boeExportLabor.ExportFields[BOEExporter.FieldName_TaskTypeDescription] = resource.ResourceDesc;
                         boeExportLabor.ExportFields[BOEExporter.FieldName_ResourceID] = resource.Id.ToString();
                         boeExportLabor.ExportFields[BOEExporter.FieldName_GenBOEResourceID] = laborType.Id.ToString();
-                        if (exportInputs.Workspace.IsProjectMapWorkspace)
+
+						if (exportInputs.Workspace.IsProjectMapWorkspace)
                         {
                             boeExportLabor.ExportFields[BOEExporter.FieldName_ResourceName] = Utilities.FormatResourceNames(resource.ResourceName, this.commonDataMapper.GetSikorskyLegacyResourceID(laborType.LegacyID, allLegacyResources), laborType is SubResourceTypeDto);
                         }
@@ -565,7 +566,12 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                         boeExportLabor.ExportFields[BOEExporter.FieldName_ResourceRateType] = resource.RateType.ToString();
                     }
 
-                    if (laborType.PerformingOrgID.HasValue)
+					if (laborType.BusinessResourceCodeID.HasValue)
+					{
+						boeExportLabor.ExportFields[BOEExporter.FieldName_BrcID] = laborType.BusinessResourceCodeID.ToString();
+					}
+
+					if (laborType.PerformingOrgID.HasValue)
                     {
                         boeExportLabor.ExportFields[BOEExporter.FieldName_PerfOrgId] = laborType.PerformingOrgID.ToString();
                         PerformingOrgDTO perfOrg = performingOrgsFromDb.First(x => x.Id == laborType.PerformingOrgID.Value);

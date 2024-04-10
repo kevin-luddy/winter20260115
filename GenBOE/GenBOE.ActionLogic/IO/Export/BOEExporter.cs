@@ -311,13 +311,14 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string LABOR_CATEGORY_CUSTOM_FIELD = "LaborCategory";
         private const string RIGHTS_IN_DATA_CUSTOM_FIELD = "Rights in Data";
         public const string FieldName_CustomField_RightsInData = "BOE:RightsInData";
+		public const string FieldName_BrcID = "BOE:BrcID";
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Gets the logger.
-        /// </summary>
-        protected Logger Logger { get; private set; }
+		/// <summary>
+		/// Gets the logger.
+		/// </summary>
+		protected Logger Logger { get; private set; }
 
         /// <summary>
         /// Gets the currency formatter.
@@ -933,12 +934,27 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 this.FetchResourceContainerElements(taskContainer.TaskContainer, ResourceContainers);
                                                 ICollection<ResourceTypeDto> resourceTypeDtos = taskElements.Where(t => t.BOETaskID == taskElement.BOETaskID).SelectMany(r => r.taskElementLabors).ToList();
 
-												List<BOEExportTaskElementLabor> orderedResources = taskElement.taskElementLabors
-                                                    .Where(x => x.ExportFields.ContainsKey(FieldName_ResourceID)
-                                                                && x.ExportFields.ContainsKey(FieldName_LaborTypeID)
-                                                                && x.ExportFields.ContainsKey(FieldName_PerfOrg))
-                                                    .OrderBy(o => o.ExportFields[FieldName_ResourceID])
-                                                    .ThenBy(t => t.ExportFields[FieldName_PerfOrg]).ToList();
+												List<BOEExportTaskElementLabor> orderedResources;
+												if (Utilities.IsBRCEnabledForSystem)
+												{
+													orderedResources = taskElement.taskElementLabors
+													.Where(x => x.ExportFields.ContainsKey(FieldName_BrcID)
+																&& x.ExportFields.ContainsKey(FieldName_ResourceID)
+																&& x.ExportFields.ContainsKey(FieldName_LaborTypeID)
+																&& x.ExportFields.ContainsKey(FieldName_PerfOrg))
+													.OrderBy(o => o.ExportFields[FieldName_BrcID])
+													.ThenByDescending(t => t.ExportFields[FieldName_ResourceID])
+													.ThenBy(p => p.ExportFields[FieldName_PerfOrg]).ToList();
+												}
+												else
+												{
+													orderedResources = taskElement.taskElementLabors
+													.Where(x => x.ExportFields.ContainsKey(FieldName_ResourceID)
+																&& x.ExportFields.ContainsKey(FieldName_LaborTypeID)
+																&& x.ExportFields.ContainsKey(FieldName_PerfOrg))
+													.OrderBy(o => o.ExportFields[FieldName_ResourceID])
+													.ThenBy(t => t.ExportFields[FieldName_PerfOrg]).ToList();
+												}
 
                                                 foreach (BOEExportTaskElementLabor resource in orderedResources)
                                                 {
