@@ -73,6 +73,7 @@ AS
 **										a popup will be displayed asking the user to confirm the deletion of both.
 **										See wireframe https://isgs-gen.external.lmco.com/sites/Estimating_Init/doclib14/Wireframes/Resource%20Rates.mht
 **		12/15/17	twilson3			BOEJ-2248 Remove Labor Rates
+**      4/3/24      e302876             PROPH-1617 - update stored procs for BRC
 **										
 *******************************************************************************/
 
@@ -85,7 +86,20 @@ SELECT DISTINCT R.ResourceID AS SystemResourceID
 		INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 		INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
 		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE
+	R.ResourceID IS NOT NULL AND
+	R.ResourceListID = 1 AND
+	R.DeletedFlag = 0 AND
+	W.WorkspaceStateID NOT IN (4,5) /*Not Closed or Complete*/ 
+UNION
+SELECT DISTINCT R.BRCResourceID AS SystemResourceID
+	FROM [dbo].[Resource] R
+		INNER JOIN dbo.BOELaborType LT ON R.BRCResourceID = LT.BRCResourceID
+		INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
+		INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
+		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE 
+	R.BRCResourceID IS NOT NULL AND
 	R.ResourceListID = 1 AND
 	R.DeletedFlag = 0 AND
 	W.WorkspaceStateID NOT IN (4,5) /*Not Closed or Complete*/ 
