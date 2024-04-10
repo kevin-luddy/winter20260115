@@ -1121,7 +1121,9 @@ namespace GenBOE.Web.Controllers
 							LeadEstimatorDisplayName = leadEstimator != null ? leadEstimator.DisplayName : string.Empty,
 							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
 							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
-							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty
+							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty,
+							WorkspaceId = x.WorkspaceId,
+							WorkspaceName = x.WorkspaceName
 						};
 					}).ToList();
 
