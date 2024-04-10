@@ -43,7 +43,7 @@ namespace IES.DataBridge.ModelViews
         }
 
 		/// <summary>
-		/// 
+		/// Initializes a new instance of the <see cref="LockModelView"/> class with edit lock timeout.
 		/// </summary>
 		/// <param name="isReadOnly"></param>
 		/// <param name="isLockAllowed"></param>
