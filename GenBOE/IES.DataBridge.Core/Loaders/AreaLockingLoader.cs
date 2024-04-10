@@ -13,21 +13,22 @@ namespace IES.DataBridge.Loaders
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Loader for Area Locking
 	/// </summary>
 	public class AreaLockingLoader : IAreaLockingLoader
     {
-        /// <summary>
-        /// Cache Object
-        /// </summary>
-        private readonly ICacheService cache;
+		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
 
-        /// <summary>
-        /// Number of seconds to store lock in cache
-        /// </summary>
-        private readonly int secondsToCache = Convert.ToInt32(ConfigurationManager.AppSettings["EditLockTimeoutExpirationMinutes"]) * 60;
+		/// <summary>
+		/// Cache Object
+		/// </summary>
+		private readonly ICacheService cache;
 
         /// <summary>
         /// key for the cache
@@ -43,9 +44,10 @@ namespace IES.DataBridge.Loaders
         /// Constructor
         /// </summary>
         /// <param name="cache">Cache</param>
-        public AreaLockingLoader(ICacheService cacheservice)
+        public AreaLockingLoader(ICacheService cacheservice, IConfiguration configuration)
         {
             this.cache = cacheservice;
+			this.configuration = configuration;
         }
 
         /// <summary>
@@ -62,7 +64,9 @@ namespace IES.DataBridge.Loaders
 
                 string key = this.cacheKey + area;
 
-                this.cache.AddAbsolute(key, data, this.secondsToCache);
+				int secondsToLock = Convert.ToInt32(this.configuration["EditLockTimeoutExpirationMinutes"]) * 60;
+
+				this.cache.AddAbsolute(key, data, secondsToLock);
             }
         }
 

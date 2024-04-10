@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace RDM.Web.Controllers
+namespace RDM.Backend.Controllers
 {
 	using System;
 	using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace RDM.Web.Controllers
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
-	using RDM.Web.Common;
+	using RDM.Backend.Common;
 
 	/// <summary>
 	/// Controller for Reports.

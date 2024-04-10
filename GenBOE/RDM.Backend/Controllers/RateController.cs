@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace RDM.Web.Controllers
+namespace RDM.Backend.Controllers
 {
 	using System;
 	using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace RDM.Web.Controllers
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 	using RDM.Backend.Models;
-	using RDM.Web.Common;
+	using RDM.Backend.Common;
 
 	/// <summary>
 	/// The controller for Rates.

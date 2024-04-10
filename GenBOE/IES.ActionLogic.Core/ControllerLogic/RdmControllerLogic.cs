@@ -17,6 +17,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Abstract base class for RDM Controller Logic classes.
@@ -116,18 +117,24 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		#endregion
 
 		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="RdmControllerLogic"/> class.
 		/// </summary>
 		/// <param name="areaLockingLoader">The area locking loader.</param>
 		/// <param name="revisionMediator">The revision Mediator.</param>
 		/// <param name="adUtils">Active Directory Utilities</param>
 		/// <param name="securityInfo">Security Info</param>
-		protected RdmControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
+		protected RdmControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IConfiguration configuration)
 		{
 			AreaLockingLoader = areaLockingLoader;
 			RevisionMediator = revisionMediator;
 			AdUtils = adUtils;
 			SecurityInformation = securityInfo;
+			this.configuration = configuration;
 		}
 
 		/// <summary>
@@ -149,7 +156,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			{
 				// already locked
 				bool status = ActiveUserOwnsLock(areaLock);
-				lockInfo = new LockModelView(!status, IsLockAllowed(area, false), areaLock.TimeOfLock, areaLock.LockedBy.DisplayName);
+				lockInfo = new LockModelView(!status, IsLockAllowed(area, false), areaLock.TimeOfLock, areaLock.LockedBy.DisplayName, Convert.ToInt32(this.configuration["EditLockTimeoutWarningMinutes"]), Convert.ToInt32(this.configuration["EditLockTimeoutExpirationMinutes"])); 
 			}
 
 			return lockInfo;
