@@ -4167,12 +4167,12 @@ namespace GenBOE.Models
             var enableSAPConnectionParameter = enableSAPConnection.HasValue ?
                 new ObjectParameter("EnableSAPConnection", enableSAPConnection) :
                 new ObjectParameter("EnableSAPConnection", typeof(bool));
-
-			var currentPTMWorkspaceParameter = currentPTMWorkspace.HasValue ?
-				new ObjectParameter("CurrentPTMWorkspace", currentPTMWorkspace) :
-				new ObjectParameter("CurrentPTMWorkspace", typeof(bool));
-
-			return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, workspaceStateIDParameter, contractStartDateParameter, contractEndDateParameter, proposalSubmitDateParameter, workspaceDescriptionParameter, costVolumeLeadPricerETIUserIDParameter, rFPNumberParameter, templateIDParameter, containsOCIParameter, trackingNumberParameter, containsTemplateParameter, numProPricerExportParameter, createdByETIUserIDParameter, proposalStatusIDParameter, statusCommentParameter, performingOrganizationListIDParameter, resourceListIDParameter, updateDTParameter, bOEExportSortByIDParameter, segmentIDParameter, lineOfBusinessIDParameter, contractTypeIDParameter, proposalClassIDParameter, proposalTitleParameter, resourcePrecisionParameter, recalculationStartedDateParameter, costPrecisionParameter, isUsingEquivalentPersonParameter, isUsingTMParameter, projectMapTypeIDParameter, allowGridEditParameter, customSortingParameter, resourceSortingParameter, perfOrgSortingParameter, lastProPricerInstanceParameter, lastProPricerProposalParameter, rteSizeLimitParameter, revisedSubmittalDateParameter, templateBoeParameter, enableSAPConnectionParameter, currentPTMWorkspaceParameter);
+    
+            var currentPTMWorkspaceParameter = currentPTMWorkspace.HasValue ?
+                new ObjectParameter("CurrentPTMWorkspace", currentPTMWorkspace) :
+                new ObjectParameter("CurrentPTMWorkspace", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, workspaceStateIDParameter, contractStartDateParameter, contractEndDateParameter, proposalSubmitDateParameter, workspaceDescriptionParameter, costVolumeLeadPricerETIUserIDParameter, rFPNumberParameter, templateIDParameter, containsOCIParameter, trackingNumberParameter, containsTemplateParameter, numProPricerExportParameter, createdByETIUserIDParameter, proposalStatusIDParameter, statusCommentParameter, performingOrganizationListIDParameter, resourceListIDParameter, updateDTParameter, bOEExportSortByIDParameter, segmentIDParameter, lineOfBusinessIDParameter, contractTypeIDParameter, proposalClassIDParameter, proposalTitleParameter, resourcePrecisionParameter, recalculationStartedDateParameter, costPrecisionParameter, isUsingEquivalentPersonParameter, isUsingTMParameter, projectMapTypeIDParameter, allowGridEditParameter, customSortingParameter, resourceSortingParameter, perfOrgSortingParameter, lastProPricerInstanceParameter, lastProPricerProposalParameter, rteSizeLimitParameter, revisedSubmittalDateParameter, templateBoeParameter, enableSAPConnectionParameter, currentPTMWorkspaceParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertWorkspacePerformingOrganization(Nullable<int> performingOrganizationID, string performingOrganizationName, string performingOrganizationDescription, Nullable<int> performingOrganizationListID, Nullable<System.DateTime> updateDT)
