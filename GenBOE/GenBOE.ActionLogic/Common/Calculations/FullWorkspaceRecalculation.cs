@@ -844,7 +844,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				{
 					bool breakLoop = false;
 
-					if (!BRCValidationUtility.ValidateResourceTypeDto(item))
+					if (string.IsNullOrEmpty(BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(item)))
 					{
 						problematicTaskElements.Add(task);
 						breakLoop = true;

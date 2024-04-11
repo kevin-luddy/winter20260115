@@ -98,6 +98,10 @@ namespace GenBOE.ActionLogic.Reporting
                 {
                     result = "ODC";
                 }
+				else if (this.DiscrepancyEnum == BoeInconsistencyEnum.Resource)
+				{
+					result = "Resource and/or Business Resource Code";
+				}
 
                 return result;
             }

@@ -85,7 +85,7 @@ namespace GenBOE.ActionLogic.Common
 						requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
 					}
 
-					if (labor.StartDateValue < oneLMXStartDate && labor.EndDateValue > oneLMXStartDate)
+					if (labor.StartDateValue < oneLMXStartDate && labor.EndDateValue >= oneLMXStartDate)
 					{
 						if (!labor.ResourceID.HasValue)
 						{
@@ -101,7 +101,7 @@ namespace GenBOE.ActionLogic.Common
 						}
 					}
 
-					if (labor.StartDateValue > oneLMXStartDate && !labor.BusinessResourceCodeID.HasValue)
+					if (labor.StartDateValue >= oneLMXStartDate && !labor.BusinessResourceCodeID.HasValue)
 					{
 						requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
 					}
@@ -171,40 +171,6 @@ namespace GenBOE.ActionLogic.Common
 					}
 				}
 			}
-		}
-
-		public static bool ValidateResourceTypeDto(ResourceTypeDto resourceTypeDto)
-		{
-			bool isValid = false;
-
-			if (resourceTypeDto != null)
-			{
-				if (!Utilities.IsBRCEnabledForSystem)
-				{
-					isValid = resourceTypeDto.ResourceID.HasValue;
-				}
-				else
-				{
-					DateTime oneLmxDate = Utilities.OneLmxStartDate;
-
-					if (resourceTypeDto.EndDate < oneLmxDate)
-					{
-						isValid = resourceTypeDto.ResourceID.HasValue;
-					}
-
-					if (resourceTypeDto.StartDate < oneLmxDate && resourceTypeDto.EndDate > oneLmxDate)
-					{
-						isValid = resourceTypeDto.ResourceID.HasValue && resourceTypeDto.BusinessResourceCodeID.HasValue;
-					}
-
-					if (resourceTypeDto.StartDate > oneLmxDate)
-					{
-						isValid = resourceTypeDto.BusinessResourceCodeID.HasValue;
-					}
-				}
-			}
-
-			return isValid;
 		}
 	}
 }
