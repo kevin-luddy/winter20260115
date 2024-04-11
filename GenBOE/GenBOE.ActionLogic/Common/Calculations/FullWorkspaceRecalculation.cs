@@ -20,18 +20,19 @@ namespace GenBOE.ActionLogic.Common.Calculations
     using IES.Common;
     using IES.Common.classes;
     using IES.Common.Exceptions;
+	using Microsoft.Practices.ObjectBuilder2;
 
-    /// <summary>
-    /// Used to recalculate the entire workspace
-    /// 
-    /// Class Usage -> Need to run methods in the following order:
-    ///     1. (NO DB data modification) RecalculateLaborInAWorkspaceWithoutSaving - this will put all the new data (that needs to be saved) into the 3 Hashsets
-    ///     2. (NO DB data modification) ValidateStateTransitionForBoesEffectedByRecalculation - validate that the Boes can be transitioned correctly
-    ///     3. (DB data modified, should be done in a transaction) SaveDataEffectedByRecalculation - saves all the data from recalculation
-    ///     4. (NO DB data modification) PerformStateTransitionActionsForBoesEffectedByRecalculation - sends out emails and performs any other cleanup due to the state transition changes
-    /// 
-    /// </summary>
-    public class FullWorkspaceRecalculation : IFullWorkspaceRecalculation
+	/// <summary>
+	/// Used to recalculate the entire workspace
+	/// 
+	/// Class Usage -> Need to run methods in the following order:
+	///     1. (NO DB data modification) RecalculateLaborInAWorkspaceWithoutSaving - this will put all the new data (that needs to be saved) into the 3 Hashsets
+	///     2. (NO DB data modification) ValidateStateTransitionForBoesEffectedByRecalculation - validate that the Boes can be transitioned correctly
+	///     3. (DB data modified, should be done in a transaction) SaveDataEffectedByRecalculation - saves all the data from recalculation
+	///     4. (NO DB data modification) PerformStateTransitionActionsForBoesEffectedByRecalculation - sends out emails and performs any other cleanup due to the state transition changes
+	/// 
+	/// </summary>
+	public class FullWorkspaceRecalculation : IFullWorkspaceRecalculation
     {
         #region Properties & Ctor
 
@@ -758,12 +759,12 @@ namespace GenBOE.ActionLogic.Common.Calculations
             return problematicODCElements;
         }
 
-        /// <summary>
-        /// Gets all ODC elements where their costs in spreads do not equal the rolled up types
-        /// </summary>
-        /// <param name="boes">Boes to check</param>
-        /// <returns>A collection of ODC elements where data doesn't match</returns>
-        public Collection<OtherDirectCostDTO> GetElementsWithInconsistentODCs(ICollection<FullBoe> boes)
+		/// <summary>
+		/// Gets all ODC elements where their costs in spreads do not equal the rolled up types
+		/// </summary>
+		/// <param name="boes">Boes to check</param>
+		/// <returns>A collection of ODC elements where data doesn't match</returns>
+		public Collection<OtherDirectCostDTO> GetElementsWithInconsistentODCs(ICollection<FullBoe> boes)
         {
             if (boes == null)
             {
@@ -812,13 +813,60 @@ namespace GenBOE.ActionLogic.Common.Calculations
             }
         }
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Throws an exception if the WS contains any task elements that have non-zero delta
-        /// </summary>
-        /// <param name="ws">WS to check</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Clin"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "nbspnbspnbspnbspnbspTask"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Wbs"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Boe")]
+		#region Validation of Resource And/or Business Resource Code
+
+		/// <summary>
+		/// Gets all Task Elements where Resource And/Or Business Resource Code is missing
+		/// </summary>
+		/// <param name="ws">Workspace to check</param>
+		/// <returns>A Collection of Task Elements with missing Resource and/or Business Resource Code</returns>
+		public Collection<BoeTaskElementDTO> GetTaskElementsWithMissingResource(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			Collection<BoeTaskElementDTO> problematicResourceElements = this.GetAllTaskElementsWithMissingResource(ws.TaskElements.ToList());
+
+			return problematicResourceElements;
+		}
+
+		private Collection<BoeTaskElementDTO> GetAllTaskElementsWithMissingResource(ICollection<BoeTaskElementDTO> taskElements)
+		{
+			Collection<BoeTaskElementDTO> problematicTaskElements = new Collection<BoeTaskElementDTO>();
+
+			foreach (BoeTaskElementDTO task in taskElements)
+			{
+				foreach (ResourceTypeDto item in task.taskElementLabors)
+				{
+					bool breakLoop = false;
+
+					if (string.IsNullOrEmpty(BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(item)))
+					{
+						problematicTaskElements.Add(task);
+						breakLoop = true;
+					}
+
+					if (breakLoop)
+					{
+						break;
+					}
+				}
+			}
+
+			return problematicTaskElements;
+		}
+
+		#endregion Validation of Resource And/or Business Resource Code
+
+		/// <summary>
+		/// Throws an exception if the WS contains any task elements that have non-zero delta
+		/// </summary>
+		/// <param name="ws">WS to check</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Clin"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "nbspnbspnbspnbspnbspTask"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Wbs"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Boe")]
         public void ThrowValidationExceptionIfWsContainsTasksWithNonZeroDelta(FullWorkspace ws)
         {
             if (ws == null)

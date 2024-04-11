@@ -263,7 +263,7 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			ICollection<ResourceDTO> resources = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId, false).ToList();
+			ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), false).ToList();
 
 			ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
@@ -289,7 +289,7 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			ICollection<ResourceDTO> resources = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId, true).ToList();
+			ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true).ToList();
 
 			ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
@@ -1742,6 +1742,8 @@ namespace GenBOE.Web.Controllers
 				ICollection<ImportLaborTypeModelView> laborTypesToUpdate = (from i in importResults
 																			where i.ImportTypes.Contains((int)LaborTypeImportResult.UpdateLaborType)
 																			select i).ToList();
+				
+				ICollection<ResourceDTO> originalResourceList = workspace.ResourcesForWsResourceListId.ToList();
 
 				foreach (ImportLaborTypeModelView laborTypeToUpdate in laborTypesToUpdate)
 				{
@@ -1755,12 +1757,12 @@ namespace GenBOE.Web.Controllers
 
 					// Determine the spread type based on the rate type of the resource.
 					RateType rateType;
-					ResourceDTO resourceForLabor = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId, false).FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
+					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false).FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
 					ResourceDTO brcForLabor = null;
 
 					if (Utilities.IsBRCEnabledForSystem)
 					{
-						brcForLabor = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId, true).FirstOrDefault(r => r.Id == laborTypeToUpdate.BusinessResourceCodeID);
+						brcForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true).FirstOrDefault(r => r.Id == laborTypeToUpdate.BusinessResourceCodeID);
 					}
 
 					// Rate Type Validation not needed here as the import already does it
@@ -1845,12 +1847,12 @@ namespace GenBOE.Web.Controllers
 
 					// Determine the spread type based on the rate type of the resource.
 					RateType rateType;
-					ResourceDTO resourceForLabor = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId, false).FirstOrDefault(r => r.Id == laborTypeToAdd.ResourceID);
+					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false).FirstOrDefault(r => r.Id == laborTypeToAdd.ResourceID);
 					ResourceDTO brcForLabor = null;
 
 					if (Utilities.IsBRCEnabledForSystem)
 					{
-						brcForLabor = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId, true).FirstOrDefault(r => r.Id == laborTypeToAdd.BusinessResourceCodeID);
+						brcForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true).FirstOrDefault(r => r.Id == laborTypeToAdd.BusinessResourceCodeID);
 					}
 
 					// Rate Type Validation not needed here as the import already does it

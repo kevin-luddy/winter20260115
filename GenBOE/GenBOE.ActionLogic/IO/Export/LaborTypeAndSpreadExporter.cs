@@ -88,12 +88,12 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs = inWorkspace.PerformingOrgsForWsList;
 			Collection<SpreadCurveModelView> allCurves = inCommonMapper.getSpreadCurve();
-			ICollection<ResourceDTO> allResourceTypes = ImportExportUtilities.GetResourcesBasedOnCompanyMode(originalResources, false);
+			ICollection<ResourceDTO> allResourceTypes = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResources, false);
 			ICollection<ResourceDTO> allBusinessResourceCodeTypes = new List<ResourceDTO>();
 
 			if (Utilities.IsBRCEnabledForSystem)
 			{
-				allBusinessResourceCodeTypes = ImportExportUtilities.GetResourcesBasedOnCompanyMode(originalResources, true);
+				allBusinessResourceCodeTypes = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResources, true);
 			}
 
 			// Create a new random file name in the specified directory
