@@ -92,14 +92,14 @@ WHERE
 	R.DeletedFlag = 0 AND
 	W.WorkspaceStateID NOT IN (4,5) /*Not Closed or Complete*/ 
 UNION
-SELECT DISTINCT R.BRCResourceID AS SystemResourceID
+SELECT DISTINCT R.ResourceID AS SystemResourceID
 	FROM [dbo].[Resource] R
-		INNER JOIN dbo.BOELaborType LT ON R.BRCResourceID = LT.BRCResourceID
+		INNER JOIN dbo.BOELaborType LT ON R.ResourceID = LT.BRCResourceID
 		INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 		INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
 		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE 
-	R.BRCResourceID IS NOT NULL AND
+	R.ResourceID IS NOT NULL AND
 	R.ResourceListID = 1 AND
 	R.DeletedFlag = 0 AND
 	W.WorkspaceStateID NOT IN (4,5) /*Not Closed or Complete*/ 

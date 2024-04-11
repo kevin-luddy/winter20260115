@@ -67,8 +67,8 @@ UNION
 		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
 	WHERE 
 	T.BRCResourceID IS NOT NULL AND
-	T.BRCResourceID = @BRCResourceID AND 
-	WR.SystemResourceID = @BRCResourceID AND
+	T.BRCResourceID = @ResourceID AND 
+	WR.SystemResourceID = @ResourceID AND
 	W.ResourceListID = @ResourceListID
 UNION
 /* Special Processing for Travel */

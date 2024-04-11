@@ -160,16 +160,6 @@ INSERT INTO @ResultSet (SystemResourceID)
             INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormIBOE] I ON I.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormIBOEResourcesXREF] X on X.[IBOEFormID] = I.[IBOEFormID]
-            WHERE X.ResourceID IS NOT NULL
-
-INSERT INTO @ResultSet (SystemResourceID)
-            SELECT DISTINCT  X.BRCResourceID
-            FROM [dbo].[Resource] R
-            INNER JOIN dbo.WorkspaceResource WR ON R.BRCResourceID = WR.SystemResourceID
-            INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
-			INNER JOIN [dbo].[BOEFormIBOE] I ON I.WorkspaceID = W.WorkspaceID
-			INNER JOIN [dbo].[BOEFormIBOEResourcesXREF] X on X.[IBOEFormID] = I.[IBOEFormID]
-            WHERE X.BRCResourceID IS NOT NULL
 
 -- UNION for INL Forms PBOE
 INSERT INTO @ResultSet (SystemResourceID)
@@ -179,17 +169,6 @@ INSERT INTO @ResultSet (SystemResourceID)
             INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormPBOE] P ON P.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormPBOEResourcesXREF] X on X.[PBOEFormID] = P.[PBOEFormID]
-            WHERE X.ResourceID IS NOT NULL
-
-INSERT INTO @ResultSet (SystemResourceID)
-            SELECT DISTINCT  X.BRCResourceID
-            FROM [dbo].[Resource] R
-            INNER JOIN dbo.WorkspaceResource WR ON R.BRCResourceID = WR.SystemResourceID
-            INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
-			INNER JOIN [dbo].[BOEFormPBOE] P ON P.WorkspaceID = W.WorkspaceID
-			INNER JOIN [dbo].[BOEFormPBOEResourcesXREF] X on X.[PBOEFormID] = P.[PBOEFormID]
-            WHERE X.BRCResourceID IS NOT NULL
-
 
 --for nonzone rms travel trips, add nonzoneresourceids  
 	INSERT INTO @ResultSet (SystemResourceID)

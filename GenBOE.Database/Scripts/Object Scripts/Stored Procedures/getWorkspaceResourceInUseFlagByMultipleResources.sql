@@ -117,7 +117,7 @@ INSERT INTO @ResultSet
 		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
 		INNER JOIN @Resource tR ON T.BRCResourceID = tR.ResourceID
-		INNER JOIN @Resource tR2 ON WR.SystemResourceID = tR2.BRCResourceID
+		INNER JOIN @Resource tR2 ON WR.SystemResourceID = tR2.ResourceID
 	WHERE 
 	T.BRCResourceID IS NOT NULL AND
 	W.ResourceListID = @ResourceListID
