@@ -5505,5 +5505,45 @@ namespace GenBOE.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertMessageConfirmation", eTIUserIDParameter, messageIDParameter);
         }
+    
+        public virtual ObjectResult<Nullable<int>> getResourceInUseFlagByResourceListID1(Nullable<int> resourceListID)
+        {
+            var resourceListIDParameter = resourceListID.HasValue ?
+                new ObjectParameter("ResourceListID", resourceListID) :
+                new ObjectParameter("ResourceListID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getResourceInUseFlagByResourceListID1", resourceListIDParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> getSystemResourceInUseFlag1()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getSystemResourceInUseFlag1");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> getWorkspaceResourceInUseFlagByMultipleResources1(string resourceID, Nullable<int> resourceListID)
+        {
+            var resourceIDParameter = resourceID != null ?
+                new ObjectParameter("ResourceID", resourceID) :
+                new ObjectParameter("ResourceID", typeof(string));
+    
+            var resourceListIDParameter = resourceListID.HasValue ?
+                new ObjectParameter("ResourceListID", resourceListID) :
+                new ObjectParameter("ResourceListID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceResourceInUseFlagByMultipleResources1", resourceIDParameter, resourceListIDParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> getWorkspaceResourceInUseFlagByResourceID1(Nullable<int> resourceID, Nullable<int> resourceListID)
+        {
+            var resourceIDParameter = resourceID.HasValue ?
+                new ObjectParameter("ResourceID", resourceID) :
+                new ObjectParameter("ResourceID", typeof(int));
+    
+            var resourceListIDParameter = resourceListID.HasValue ?
+                new ObjectParameter("ResourceListID", resourceListID) :
+                new ObjectParameter("ResourceListID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceResourceInUseFlagByResourceID1", resourceIDParameter, resourceListIDParameter);
+        }
     }
 }

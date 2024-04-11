@@ -4687,12 +4687,16 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
           <Parameter Name="SearchResultsThreshold" Type="int" Mode="In" />
         </Function>
+        <Function Name="getResourceInUseFlagByResourceListID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ResourceListID" Type="int" Mode="In" />
+        </Function>
         <Function Name="getResourceInUseFlagBySystemResourceID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceID" Type="int" Mode="In" />
         </Function>
         <Function Name="getSystemPermissions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="NTID" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="getSystemResourceInUseFlag" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="getWorkspaceHistoryLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
         </Function>
@@ -4711,6 +4715,14 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
         </Function>
         <Function Name="getWorkspacePermissions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="NTID" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="getWorkspaceResourceInUseFlagByMultipleResources" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ResourceID" Type="varchar(max)" Mode="In" />
+          <Parameter Name="ResourceListID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="getWorkspaceResourceInUseFlagByResourceID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ResourceID" Type="int" Mode="In" />
+          <Parameter Name="ResourceListID" Type="int" Mode="In" />
         </Function>
         <Function Name="getWorkspaceVariableByTaskElementID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BOETaskElementID" Type="int" Mode="In" />
@@ -12404,6 +12416,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			<End Role="Resource" EntitySet="Resources" />
 			<End Role="BOELaborType" EntitySet="BOELaborTypes" />
 		  </AssociationSet>
+          <FunctionImport Name="getResourceInUseFlagByResourceListID1" ReturnType="Collection(Int32)">
+            <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="getSystemResourceInUseFlag1" ReturnType="Collection(Int32)" />
+          <FunctionImport Name="getWorkspaceResourceInUseFlagByMultipleResources1" ReturnType="Collection(Int32)">
+            <Parameter Name="ResourceID" Mode="In" Type="String" />
+            <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="getWorkspaceResourceInUseFlagByResourceID1" ReturnType="Collection(Int32)">
+            <Parameter Name="ResourceID" Mode="In" Type="Int32" />
+            <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
+          </FunctionImport>
 		</EntityContainer>
 		<ComplexType Name="getBOEForFindReplace_Result">
 		  <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -16227,6 +16251,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</EntityTypeMapping>
 		  </EntitySetMapping>
 		  <FunctionImportMapping FunctionImportName="insertMessageConfirmation" FunctionName="GenBOE.Models.Store.insertMessageConfirmation" />
+          <FunctionImportMapping FunctionImportName="getResourceInUseFlagByResourceListID1" FunctionName="GenBOE.Models.Store.getResourceInUseFlagByResourceListID" />
+          <FunctionImportMapping FunctionImportName="getSystemResourceInUseFlag1" FunctionName="GenBOE.Models.Store.getSystemResourceInUseFlag" />
+          <FunctionImportMapping FunctionImportName="getWorkspaceResourceInUseFlagByMultipleResources1" FunctionName="GenBOE.Models.Store.getWorkspaceResourceInUseFlagByMultipleResources" />
+          <FunctionImportMapping FunctionImportName="getWorkspaceResourceInUseFlagByResourceID1" FunctionName="GenBOE.Models.Store.getWorkspaceResourceInUseFlagByResourceID" />
 		</EntityContainerMapping>
 	  </Mapping>
 	</edmx:Mappings>
