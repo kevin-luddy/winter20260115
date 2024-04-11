@@ -397,7 +397,7 @@ namespace GenTRAC.ActionLogic.Email
 			if (isEeppTurnedOn)
 			{
 				emailContent.Body += $"Please open the <a href=\"{eEppUrl}\">Electronic Executive Planning Panel (eEPP)</a> module to initialize the eEPP record. Failure to promptly initialize the record will result in the "
-								+ "inability to properly record and document the EPP in the Corporate database. Note: Initialization requires the completion of the field included on the \"Details\" tab. All other information "
+								+ "inability to properly record and document the EPP in the Corporate database. Note: Initialization requires the completion of the fields included on the \"Details\" tab. All other information "
 								+ "(tabs) may be recorded when the EPP takes place. <BR /><BR />";
 			}
 
