@@ -1581,6 +1581,27 @@ namespace GenTRAC.Tests.DAL.Loader
 		}
 
 		/// <summary>
+		/// Test GetAcvHeaderDataByProposalId for when CCoPD is true
+		/// </summary>
+		[TestMethod]
+		public void GetAcvHeaderDataByProposalId_NullContracts()
+		{
+			Proposal testProposal;
+
+			// get a proposal with CCoPD set to true to test with
+			using (genTRACEntities dbModel = new genTRACEntities())
+			{
+				testProposal = dbModel.Proposals.Include("ProposalContractsDatas").Where(x => !x.ProposalContractsDatas.Any()).FirstOrDefault();
+			}
+
+			ProposalLoader sut = this.CreateSystem();
+
+			AcvHeaderDataDto result = sut.GetAcvHeaderDataByProposalId(testProposal.ProposalID);
+
+			Assert.AreEqual(string.Empty, result.CCLogNumber);
+		}
+
+		/// <summary>
 		/// Test GetAcvHeaderDataByProposalId for when CCoPD is false and Revised Anticipated Delivery Date is available
 		/// </summary>
 		[TestMethod]
