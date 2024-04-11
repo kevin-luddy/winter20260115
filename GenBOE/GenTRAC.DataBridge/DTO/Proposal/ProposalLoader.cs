@@ -2229,7 +2229,8 @@ namespace GenTRAC.DataBridge.DTO
 						ProposalStatus = x.ProposalStatusLU.ProposalStatus,
 						// Set date to null if CCoPD required so it will be populated in ACV
 						CostVolumeSubmittalDate = x.CCPDRequired.HasValue && x.CCPDRequired.Value ? null
-							: x.RevisedSubmittalDate.HasValue ? x.RevisedSubmittalDate : x.AnticipatedDeliveryDate
+							: x.RevisedSubmittalDate.HasValue ? x.RevisedSubmittalDate : x.AnticipatedDeliveryDate,
+						CCLogNumber = x.ProposalContractsDatas.Any() ? x.ProposalContractsDatas.FirstOrDefault().ContractsCorrespondLogNumber : string.Empty
 					}).FirstOrDefault();
 				}
 			}
