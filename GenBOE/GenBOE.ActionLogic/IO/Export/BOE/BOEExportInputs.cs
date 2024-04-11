@@ -71,6 +71,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null, 
 			ICollection<MoqTypeSelection> moqTypes = null, bool processLaborTypesForBrc = false)
         {
+			_ = taskElements ?? throw new ArgumentNullException(nameof(taskElements));
             if (ReferenceEquals(workspace, null))
             {
                 throw new ArgumentNullException(nameof(workspace));
@@ -84,18 +85,13 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (Utilities.IsBRCEnabledForSystem && processLaborTypesForBrc)
 			{
-				ICollection<BoeTaskElementDTO> taskElementList = taskElements.DeepClone();
-				foreach (BoeTaskElementDTO taskElement in taskElementList)
+				foreach (BoeTaskElementDTO taskElement in taskElements)
 				{
 					taskElement.taskElementLabors = ImportExportUtilities.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToCollection();
 				}
-
-				this.TaskElements = taskElementList.ToList().AsReadOnly();
 			}
-			else
-			{
-				this.TaskElements = taskElements.ToList().AsReadOnly();
-			}
+			
+			this.TaskElements = taskElements.ToList().AsReadOnly();
 
             this.Workspace = workspace;
 
