@@ -398,13 +398,13 @@ namespace GenTRAC.ActionLogic.Email
 			{
 				emailContent.Body += $"Please open the <a href=\"{eEppUrl}\">Electronic Executive Planning Panel (eEPP)</a> module to initialize the eEPP record. Failure to promptly initialize the record will result in the "
 								+ "inability to properly record and document the EPP in the Corporate database. Note: Initialization requires the completion of the field included on the \"Details\" tab. All other information "
-								+ "(tabs) may be recorded when the EPP takes place. <BR /><BR />"
-								+ $"As the proposal submittal date approaches, navigate to the <a href=\"{ptmUrl}\">{proposal.ProposalTrackingNumber}</a> PTM record to complete the information in the \"Contracts\" tab. "
-								+ "The timeliness of the completion of this information will ensure that the data is available for use in the Automated Cost Volume (ACV) for Cost Volume development by the Cost Volume " 
-								+ "Lead/Estimator. Failure to complete this information will result in Cost Volume development delays.<BR /><BR />";
+								+ "(tabs) may be recorded when the EPP takes place. <BR /><BR />";
 			}
 
-			emailContent.Body += "<b>General Information:</b><BR />"
+			emailContent.Body += $"As the proposal submittal date approaches, navigate to the <a href=\"{ptmUrl}\">{proposal.ProposalTrackingNumber}</a> PTM record to complete the information in the \"Contracts\" tab. "
+								+ "The timeliness of the completion of this information will ensure that the data is available for use in the Automated Cost Volume (ACV) for Cost Volume development by the Cost Volume "
+								+ "Lead/Estimator. Failure to complete this information will result in Cost Volume development delays.<BR /><BR />"
+								+ "<b>General Information:</b><BR />"
 								+ $"Program Name: { programName}<BR />"
 								+ $"Line of Business: { lob }<BR />"
 								+ $"Program Area: { pa }<BR />"
