@@ -84,8 +84,7 @@ namespace GenBOE.ActionLogic.Common
 					{
 						requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
 					}
-
-					if (labor.StartDateValue < oneLMXStartDate && labor.EndDateValue >= oneLMXStartDate)
+					else if (labor.StartDateValue < oneLMXStartDate && labor.EndDateValue >= oneLMXStartDate)
 					{
 						if (!labor.ResourceID.HasValue)
 						{
@@ -100,8 +99,7 @@ namespace GenBOE.ActionLogic.Common
 							requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
 						}
 					}
-
-					if (labor.StartDateValue >= oneLMXStartDate && !labor.BusinessResourceCodeID.HasValue)
+					else if (labor.StartDateValue >= oneLMXStartDate && !labor.BusinessResourceCodeID.HasValue)
 					{
 						requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
 					}
