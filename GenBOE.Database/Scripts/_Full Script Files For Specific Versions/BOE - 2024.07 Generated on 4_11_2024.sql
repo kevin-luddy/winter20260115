@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.07, on 4/10/2024.
+    This file was auto-generated for Release: 2024.07, on 4/11/2024.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -17850,16 +17850,6 @@ INSERT INTO @ResultSet (SystemResourceID)
             INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormIBOE] I ON I.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormIBOEResourcesXREF] X on X.[IBOEFormID] = I.[IBOEFormID]
-            WHERE X.ResourceID IS NOT NULL
-
-INSERT INTO @ResultSet (SystemResourceID)
-            SELECT DISTINCT  X.BRCResourceID
-            FROM [dbo].[Resource] R
-            INNER JOIN dbo.WorkspaceResource WR ON R.BRCResourceID = WR.SystemResourceID
-            INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
-			INNER JOIN [dbo].[BOEFormIBOE] I ON I.WorkspaceID = W.WorkspaceID
-			INNER JOIN [dbo].[BOEFormIBOEResourcesXREF] X on X.[IBOEFormID] = I.[IBOEFormID]
-            WHERE X.BRCResourceID IS NOT NULL
 
 -- UNION for INL Forms PBOE
 INSERT INTO @ResultSet (SystemResourceID)
@@ -17869,17 +17859,6 @@ INSERT INTO @ResultSet (SystemResourceID)
             INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormPBOE] P ON P.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormPBOEResourcesXREF] X on X.[PBOEFormID] = P.[PBOEFormID]
-            WHERE X.ResourceID IS NOT NULL
-
-INSERT INTO @ResultSet (SystemResourceID)
-            SELECT DISTINCT  X.BRCResourceID
-            FROM [dbo].[Resource] R
-            INNER JOIN dbo.WorkspaceResource WR ON R.BRCResourceID = WR.SystemResourceID
-            INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
-			INNER JOIN [dbo].[BOEFormPBOE] P ON P.WorkspaceID = W.WorkspaceID
-			INNER JOIN [dbo].[BOEFormPBOEResourcesXREF] X on X.[PBOEFormID] = P.[PBOEFormID]
-            WHERE X.BRCResourceID IS NOT NULL
-
 
 --for nonzone rms travel trips, add nonzoneresourceids  
 	INSERT INTO @ResultSet (SystemResourceID)
@@ -18175,14 +18154,14 @@ WHERE
 	R.DeletedFlag = 0 AND
 	W.WorkspaceStateID NOT IN (4,5) /*Not Closed or Complete*/ 
 UNION
-SELECT DISTINCT R.BRCResourceID AS SystemResourceID
+SELECT DISTINCT R.ResourceID AS SystemResourceID
 	FROM [dbo].[Resource] R
-		INNER JOIN dbo.BOELaborType LT ON R.BRCResourceID = LT.BRCResourceID
+		INNER JOIN dbo.BOELaborType LT ON R.ResourceID = LT.BRCResourceID
 		INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 		INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
 		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE 
-	R.BRCResourceID IS NOT NULL AND
+	R.ResourceID IS NOT NULL AND
 	R.ResourceListID = 1 AND
 	R.DeletedFlag = 0 AND
 	W.WorkspaceStateID NOT IN (4,5) /*Not Closed or Complete*/ 
@@ -18598,7 +18577,7 @@ INSERT INTO @ResultSet
 		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
 		INNER JOIN @Resource tR ON T.BRCResourceID = tR.ResourceID
-		INNER JOIN @Resource tR2 ON WR.SystemResourceID = tR2.BRCResourceID
+		INNER JOIN @Resource tR2 ON WR.SystemResourceID = tR2.ResourceID
 	WHERE 
 	T.BRCResourceID IS NOT NULL AND
 	W.ResourceListID = @ResourceListID
@@ -18718,8 +18697,8 @@ UNION
 		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
 	WHERE 
 	T.BRCResourceID IS NOT NULL AND
-	T.BRCResourceID = @BRCResourceID AND 
-	WR.SystemResourceID = @BRCResourceID AND
+	T.BRCResourceID = @ResourceID AND 
+	WR.SystemResourceID = @ResourceID AND
 	W.ResourceListID = @ResourceListID
 UNION
 /* Special Processing for Travel */
