@@ -30,10 +30,15 @@ namespace IES.DataBridge.Loaders
 		/// </summary>
 		private readonly ICacheService cache;
 
-        /// <summary>
-        /// key for the cache
-        /// </summary>
-        private readonly string cacheKey = "AreaLock_";
+		/// <summary>
+		/// Seconds to lock (pulled from appsettings.json using configuration in ctor)
+		/// </summary>
+		private int secondsToLock = 0;
+
+		/// <summary>
+		/// key for the cache
+		/// </summary>
+		private readonly string cacheKey = "AreaLock_";
 
         /// <summary>
         /// An object for locking items while modifying cache
@@ -48,7 +53,8 @@ namespace IES.DataBridge.Loaders
         {
             this.cache = cacheservice;
 			this.configuration = configuration;
-        }
+			this.secondsToLock = Convert.ToInt32(this.configuration["EditLockTimeoutExpirationMinutes"]) * 60;
+		}
 
         /// <summary>
         /// Adds lock for area to cache - can add new lock or extend existing
@@ -64,9 +70,7 @@ namespace IES.DataBridge.Loaders
 
                 string key = this.cacheKey + area;
 
-				int secondsToLock = Convert.ToInt32(this.configuration["EditLockTimeoutExpirationMinutes"]) * 60;
-
-				this.cache.AddAbsolute(key, data, secondsToLock);
+				this.cache.AddAbsolute(key, data, this.secondsToLock);
             }
         }
 
