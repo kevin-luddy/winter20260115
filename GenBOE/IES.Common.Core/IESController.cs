@@ -77,6 +77,16 @@ namespace IES.Common.Core
 		}
 
 		/// <summary>
+		/// Get the release version.
+		/// </summary>
+		/// <returns>Release version and date.</returns>
+		[HttpGet("[action]")]
+		public string GetReleaseVersion()
+		{
+			return CommonUtilities.VersionAndUpdatedDate;
+		}
+
+		/// <summary>
 		/// Convert HTML to text.
 		/// </summary>
 		/// <param name="html">HTML</param>

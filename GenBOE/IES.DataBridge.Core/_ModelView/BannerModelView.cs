@@ -71,7 +71,6 @@ namespace IES.DataBridge.ModelViews
         /// <summary>
         /// Gets or sets the banner text.
         /// </summary>
-        [Required]
         public string BannerText { get; set; }
 
         /// <summary>

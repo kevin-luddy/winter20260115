@@ -349,7 +349,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             
             sb.Append("&nonce=");
 
-            Uri toReturn = new Uri($"{WebConfigurationManager.AppSettings["ReportServerLocation"]}/{WebConfigurationManager.AppSettings["ReportServerFolderName"]}/{reportName}{sb}");
+            Uri toReturn = SafeUriUtility.safeUri($"{WebConfigurationManager.AppSettings["ReportServerLocation"]}/{WebConfigurationManager.AppSettings["ReportServerFolderName"]}/{reportName}{sb}");
 
             return toReturn;
         }

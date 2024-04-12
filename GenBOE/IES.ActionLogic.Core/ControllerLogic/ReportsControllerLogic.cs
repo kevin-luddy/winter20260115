@@ -17,12 +17,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Interfaces;
 	using IES.ActionLogic.Core.IO.Export;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Logic for the RDM Reports Controller.
 	/// </summary>
 	public class ReportsControllerLogic : RdmControllerLogic, IReportsControllerLogic
 	{
+		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
 		/// <summary>
 		/// PPRD Exporter
 		/// </summary>
@@ -73,8 +79,8 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="adUtils">AD Utilities</param>
 		/// <param name="securityInfo">Security Information</param>
 		public ReportsControllerLogic(IPPRDExporter pprdExporter, IRdmRevisionExporter rdmRevisionExporter, IRateDetailLoader rateDetailLoader, ICobraDetailLoader cobraDetailLoader, ISectionLoader sectionLoader, IFileAttachmentLoader fileAttachmentLoader,
-			IBurdenPoolLoader burdenPoolLoader, IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
-			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
+			IBurdenPoolLoader burdenPoolLoader, IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IConfiguration configuration)
+			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo, configuration)
 		{
 			this.pprdExporter = pprdExporter;
 			this.rdmRevisionExporter = rdmRevisionExporter;
@@ -83,6 +89,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			this.sectionLoader = sectionLoader;
 			this.fileAttachmentLoader = fileAttachmentLoader;
 			this.burdenPoolLoader = burdenPoolLoader;
+			this.configuration = configuration;
 		}
 
 		/// <summary>

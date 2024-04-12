@@ -25,6 +25,7 @@ namespace GenBOE.Dtos
 		{
 			this.PBoeID = -1;
 			this.WorkspaceId = -1;
+			this.WorkspaceName = null;
 			this.SupplierName = null;
 			this.VendorId = null;
 			this.SubResources = null;
@@ -72,6 +73,11 @@ namespace GenBOE.Dtos
 		/// Gets or sets the Workspace ID
 		/// </summary>
 		public int WorkspaceId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Workspace Name
+		/// </summary>
+		public string WorkspaceName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the name of the supplier.

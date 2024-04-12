@@ -393,6 +393,7 @@
     <Content Include="_Other Scripts\Classified Helpers\genTrac - Scrub database data.sql" />
     <Content Include="_Other Scripts\Classified Helpers\IES - Scrub database data.sql" />
     <Content Include="_Other Scripts\Create Default WS.sql" />
+    <Content Include="_Other Scripts\Classified Helpers\genBOE - Insert Application Administrator.sql" />
     <Content Include="_Other Scripts\Custom Field Stuff\Abandoned Open Ended CF Values.sql" />
     <Content Include="_Other Scripts\Custom Field Stuff\Duplicated CF XREF Values.sql" />
     <Content Include="_Other Scripts\Custom Field Stuff\Duplicated Open Ended CF Values.sql" />
@@ -428,6 +429,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Release Scripts\Release 2023.04\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="_Other Scripts\AddLobWorkspaceAdmins.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

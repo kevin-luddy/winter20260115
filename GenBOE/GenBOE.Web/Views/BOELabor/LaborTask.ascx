@@ -1379,11 +1379,12 @@
 			<div class="form-row duplicate-task-list">
 				<table id="DuplicateLaborTypesGrid" class="sortable grid readonly" style="width: 100%;">
 					<colgroup>
+						<col width="6%" />
+						<col width="20%" />
+						<col data-ng-show="IsBRCEnabled" width="20%" />
+						<col width="14%" />
 						<col width="8%" />
-						<col width="28%" />
-						<col width="16%" />
-						<col width="12%" />
-						<col width="12%" />
+						<col width="8%" />
 						<col width="12%" />
 						<col width="12%" />
 					</colgroup>
@@ -1391,6 +1392,7 @@
 						<tr>
 							<th># Dups</th>
 							<th class="sort resource">Resource</th>
+							<th data-ng-show="IsBRCEnabled" class="sort businessResourceCode">Business Resource Code</th>
 							<th class="sort perfOrg">Performing Org</th>
 							<th class="sort startDate">Start Date</th>
 							<th class="sort endDate">End Date</th>
@@ -1405,6 +1407,9 @@
 							</td>
 							<td>
 								<span title="{{item.ResourceDescription}}">{{item.ResourceDescription}}</span>
+							</td>
+							<td data-ng-show="IsBRCEnabled">
+								<span title="{{item.BusinessResourceCodeDescription}}">{{item.BusinessResourceCodeDescription}}</span>
 							</td>
 							<td>
 								<span>{{item.PerformingOrgName}}</span>

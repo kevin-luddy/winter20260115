@@ -1035,14 +1035,6 @@ div.bannerContainer
     width:985px;
 }
 
-.appOfflineFrame {
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 0px;
-    border: 0px;
-}
-
 .user-name {
     width: 74px;
 }

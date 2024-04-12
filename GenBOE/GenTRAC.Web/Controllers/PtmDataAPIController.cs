@@ -10,6 +10,7 @@ namespace GenTRAC.Web.Controllers
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Runtime.Remoting.Messaging;
 	using System.Web.Http;
 	using GenTRAC.DataBridge.Common.Security;
 	using GenTRAC.DataBridge.DTO;
@@ -187,6 +188,8 @@ namespace GenTRAC.Web.Controllers
 
 			try
 			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
 				int proposalId = this.proposalLoader.GetIdByTrackingNumber(ptmTrackingNumber);
 
 				if (proposalId > 0) 
@@ -268,6 +271,49 @@ namespace GenTRAC.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occured returning Proposal Permissions: {ex.Message}");
+				result.IsSuccessful = false;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get the Lead Estimator and Backup Estimator names from PTM given a PTM tracking number
+		/// </summary>
+		/// <param name="ptmTrackingNumber">PTM tracking number</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<AcvPtmAuthors> GetEstimatorNamesByTrackingNumber(string ptmTrackingNumber)
+		{
+			IESResponse<AcvPtmAuthors> result = new IESResponse<AcvPtmAuthors>();
+			ICollection<ProposalRoleDto> roles;
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				roles = proposalLoader.GetEstimatorNames(ptmTrackingNumber);
+				if (roles == null)
+				{
+					logger.Warn($"No users found for tracking number");
+					result.Messages.Add("No users found for tracking number");
+				}
+				else
+				{
+					AcvPtmAuthors author = new AcvPtmAuthors();
+					ProposalRoleDto backupPricer = roles.FirstOrDefault(r => r.Role == PtmRole.BackupPricer);
+					ProposalRoleDto leadEstimator = roles.FirstOrDefault(r => r.Role == PtmRole.Pricer);
+					author.BackupEstimator = backupPricer != null ? backupPricer.NTID : string.Empty;
+					author.LeadEstimator = leadEstimator != null ? leadEstimator.NTID : string.Empty;
+
+					result.Data.Add(author);
+					result.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Error occurred attempting to retrieve estimator data by tracking number {ptmTrackingNumber}: {ex.Message}");
 				result.IsSuccessful = false;
 			}
 

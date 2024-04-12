@@ -176,7 +176,9 @@ namespace GenBOE.DataBridge.DTO
         public const string MOQ_TEXT_REQUIRED = "{0} is required.";
         public const string DATA_SOURCE_REQUIRED = "Sources of Data is required.";
         public const string RESOURCE_CODE_REQUIRED = "Resource is required.";
-        public const string PERFORM_ORG_REQUIRED = "Performing Org is required.";
+        public const string BUSINESS_RESOURCE_CODE_REQUIRED = "Business Resource Code is required.";
+        public const string RESOURCE_AND_BUSINESS_RESOURCE_CODE_REQUIRED = "Resource and Business Resource Code is required.";
+		public const string PERFORM_ORG_REQUIRED = "Performing Org is required.";
         public const string CLIN_WBS_REQUIRED = "A CLIN and/or WBS is required.";
         public const string TOTAL_LABOR_SPREAD_INVALID = "Total Resource Spread must equal MOQ Equation Total.";
         public const string ONE_TASK_ELEMENT_REQUIRED = "At least one task for an element of cost is required.";

@@ -536,7 +536,9 @@ namespace GenBOE.DataBridge.DTO
 									ValidityDate = b.ValidityDate,
 									Approver = b.Approver,
 									LeadEstimatorId = w.CostVolumeLeadPricerUserID,
-									TrackingNumber = w.TrackingNumber
+									TrackingNumber = w.TrackingNumber,
+									WorkspaceId = w.WorkspaceID,
+									WorkspaceName = w.WorkspaceName
 								}).ToList();
 
 					// Post processing for sub resources and total cost

@@ -62,7 +62,7 @@ namespace IES.Common
 			string authority = ConfigurationManager.AppSettings["oAuthDomain"];
 			this.clientId = ConfigurationManager.AppSettings["oAuthIESClientId"];
 			this.clientSecret = ConfigurationManager.AppSettings["oAuthIESClientSecret"];
-			this._client.BaseAddress = new Uri(authority);
+			this._client.BaseAddress = SafeUriUtility.safeUri(authority);
 			_client.DefaultRequestHeaders.Add("cache-control", "no-cache");
 		}
 

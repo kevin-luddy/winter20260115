@@ -14,12 +14,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Interfaces;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Logic for the BurdenPool Controller.
 	/// </summary>
 	public class BurdenPoolControllerLogic : RdmControllerLogic, IBurdenPoolControllerLogic
 	{
+		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BurdenPoolControllerLogic"/> class.
 		/// </summary>
@@ -28,9 +34,10 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="adUtils">AD Utilities</param>
 		/// <param name="securityInfo">Security Information</param>
 		public BurdenPoolControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator,
-			IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
-			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
+			IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IConfiguration configuration)
+			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo, configuration)
 		{
+			this.configuration = configuration;
 		}
 
 		/// <summary>

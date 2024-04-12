@@ -21,12 +21,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Logic for the Version Controller
 	/// </summary>
 	public class VersionControllerLogic : RdmControllerLogic, IVersionControllerLogic
 	{
+		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
 		/// <summary>
 		/// Rate Detail Loader
 		/// </summary>
@@ -47,11 +53,12 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="securityInfo">Security Information</param>
 		/// <param name="emailer">The emailer.</param>
 		public VersionControllerLogic(IRateDetailLoader rateDetailLoader,
-			IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IIESEmailer emailer)
-			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
+			IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IIESEmailer emailer, IConfiguration configuration)
+			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo, configuration)
 		{
 			this.rateDetailLoader = rateDetailLoader;
 			this.emailer = emailer;
+			this.configuration = configuration;
 		}
 
 		/// <summary>

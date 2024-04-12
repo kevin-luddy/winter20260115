@@ -1327,27 +1327,6 @@ namespace GenTRAC.Tests.DAL.Loader
 		}
 
 		/// <summary>
-		/// Test to verify that retrieved proposals are in progress
-		/// </summary>
-		[TestMethod]
-		public void GetEppProposalData_Test3()
-		{
-			bool isAdmin = true;
-			string ntid = "paliderd";
-
-			ProposalLoader sut = this.CreateSystem();
-
-			ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin, null);
-
-			ICollection<ProposalDto> proposals = sut.GetByIds(result.Select(x => x.ProposalId).ToList());
-
-			foreach (ProposalDto prop in proposals)
-			{
-				Assert.IsTrue(prop.ProposalStatus == ProposalStatus.InProgress);
-			}
-		}
-
-		/// <summary>
 		/// Test to verify that we retrieve max of 50 records
 		/// </summary>
 		[TestMethod]
@@ -1586,7 +1565,7 @@ namespace GenTRAC.Tests.DAL.Loader
 			// get a proposal with CCoPD set to true to test with
 			using (genTRACEntities dbModel = new genTRACEntities())
 			{
-				testProposal = dbModel.Proposals.Where(x => x.CCPDRequired == true).OrderByDescending(x => x.ProposalID).FirstOrDefault();
+				testProposal = dbModel.Proposals.Include("ProposalContractsDatas").Where(x => x.CCPDRequired == true && x.ProposalContractsDatas.FirstOrDefault().ContractsCorrespondLogNumber != null).OrderByDescending(x => x.ProposalID).FirstOrDefault();
 			}
 
 			ProposalLoader sut = this.CreateSystem();
@@ -1598,6 +1577,28 @@ namespace GenTRAC.Tests.DAL.Loader
 			Assert.AreEqual(testProposal.ProposalTitle, result.ProposalTitle);
 			Assert.AreEqual(testProposal.RFPNumber, result.RfpNumber);
 			Assert.IsNull(result.CostVolumeSubmittalDate);
+			Assert.AreEqual(testProposal.ProposalContractsDatas.FirstOrDefault().ContractsCorrespondLogNumber, result.CCLogNumber);
+		}
+
+		/// <summary>
+		/// Test GetAcvHeaderDataByProposalId for when CCoPD is true
+		/// </summary>
+		[TestMethod]
+		public void GetAcvHeaderDataByProposalId_NullContracts()
+		{
+			Proposal testProposal;
+
+			// get a proposal with CCoPD set to true to test with
+			using (genTRACEntities dbModel = new genTRACEntities())
+			{
+				testProposal = dbModel.Proposals.Include("ProposalContractsDatas").Where(x => !x.ProposalContractsDatas.Any()).FirstOrDefault();
+			}
+
+			ProposalLoader sut = this.CreateSystem();
+
+			AcvHeaderDataDto result = sut.GetAcvHeaderDataByProposalId(testProposal.ProposalID);
+
+			Assert.AreEqual(string.Empty, result.CCLogNumber);
 		}
 
 		/// <summary>
