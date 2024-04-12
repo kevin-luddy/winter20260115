@@ -724,7 +724,8 @@ SELECT
 		WHEN p.ContractActionTypeOtherText IS NULL THEN aT.ContractActionType
 		ELSE aT.ContractActionType + ': ' + p.ContractActionTypeOtherText
 	END AS ContractActionType,
-	PC.CostThroughCom
+	PC.CostThroughCom,
+	ppr.Response AS NlfResponse
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -851,6 +852,12 @@ SELECT
 	-- end of Proposal Contract Data
 
 	LEFT OUTER JOIN ContractActionTypeLU aT ON p.ContractActionType = aT.ID
+	LEFT OUTER JOIN
+			(SELECT xref.ProposalID, ppr.SortOrder, ppr.ChecklistText, r.Response
+				FROM ProposalPPRChecklistXREF xref 
+					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
+					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%NLF Forms%')) AS ppr
+			ON ppr.ProposalId = p.ProposalId 
 GO
 
 
@@ -2313,6 +2320,7 @@ SELECT V.[ProposalID]
 	 ,V.ContractActionType
 	 ,V.CostThroughCom
 	 ,V.CustomerDueDate
+	 ,V.NlfResponse
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
