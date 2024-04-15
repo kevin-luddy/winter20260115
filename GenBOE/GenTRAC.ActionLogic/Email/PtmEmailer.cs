@@ -401,7 +401,7 @@ namespace GenTRAC.ActionLogic.Email
 								+ "(tabs) may be recorded when the EPP takes place. <BR /><BR />";
 			}
 
-			emailContent.Body += $"As the proposal submittal date approaches, navigate to the <a href=\"{ptmUrl}\">{proposal.ProposalTrackingNumber}</a> PTM record to complete the information in the \"Contracts\" tab. "
+			emailContent.Body += $"As the proposal submittal date approaches, navigate to the <a href=\"{ptmUrl}/proposal/DisplayProposalDetails/id/{proposal.ProposalID}/#Proposal\">{proposal.ProposalTrackingNumber}</a> PTM record to complete the information in the \"Contracts\" tab. "
 								+ "The timeliness of the completion of this information will ensure that the data is available for use in the Automated Cost Volume (ACV) for Cost Volume development by the Cost Volume "
 								+ "Lead/Estimator. Failure to complete this information will result in Cost Volume development delays.<BR /><BR />"
 								+ "<b>General Information:</b><BR />"
