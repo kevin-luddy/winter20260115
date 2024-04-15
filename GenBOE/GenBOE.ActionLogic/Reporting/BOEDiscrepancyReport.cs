@@ -66,7 +66,12 @@ namespace GenBOE.ActionLogic.Reporting
             HashSet<BoeTaskElementDTO> laborHourTaskElements = new HashSet<BoeTaskElementDTO>(this.wsRecalc.GetTaskElementsWithNonZeroDeltaLabor(ws));
             HashSet<BoeTaskElementDTO> costTaskElements = new HashSet<BoeTaskElementDTO>(this.wsRecalc.GetTaskElementsWithInconsistentCosts(ws));
             HashSet<OtherDirectCostDTO> odcTaskElements = new HashSet<OtherDirectCostDTO>(this.wsRecalc.GetElementsWithInconsistentODCs(ws));
-			HashSet<BoeTaskElementDTO> resourceTaskElements = new HashSet<BoeTaskElementDTO>(this.wsRecalc.GetTaskElementsWithMissingResource(ws));
+			HashSet<BoeTaskElementDTO> resourceTaskElements = new HashSet<BoeTaskElementDTO>();
+
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				resourceTaskElements.AddRange(this.wsRecalc.GetTaskElementsWithMissingResource(ws));
+			}
 
             if (laborHourTaskElements.Any() || costTaskElements.Any() || odcTaskElements.Any() || resourceTaskElements.Any())
             {
@@ -79,7 +84,10 @@ namespace GenBOE.ActionLogic.Reporting
                 ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Hours, laborHourTaskElements, ws);
                 ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Cost, costTaskElements, ws);
                 ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.ODC, odcTaskElements, ws);
-				ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Resource, resourceTaskElements, ws);
+				if (Utilities.IsBRCEnabledForSystem)
+				{
+					ProcessTaskElements(allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Resource, resourceTaskElements, ws);
+				}
             }
 
             #region Grouping/Consolidating things into matching BOEs and Task Elements
