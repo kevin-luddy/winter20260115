@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.Common
 	using IES.Common.classes;
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Linq;
 
 	/// <summary>
@@ -169,6 +170,52 @@ namespace GenBOE.ActionLogic.Common
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Process the labor types for BRC in order to display the proper details in exports
+		/// </summary>
+		/// <param name="taskElementLabors">the task element labors</param>
+		/// <returns>The labor types properly processed for resource vs BRC</returns>
+		public static ICollection<ResourceTypeDto> ProcessLaborTypesForBrc(ICollection<ResourceTypeDto> taskElementLabors)
+		{
+			_ = taskElementLabors ?? throw new ArgumentNullException(nameof(taskElementLabors));
+
+			ICollection<ResourceTypeDto> laborTypes = new Collection<ResourceTypeDto>();
+
+			foreach (ResourceTypeDto laborType in taskElementLabors)
+			{
+				if (laborType.StartDate < Utilities.OneLmxStartDate && laborType.EndDate >= Utilities.OneLmxStartDate && laborType.BusinessResourceCodeID != null)
+				{
+					// Resource and BRC - split labor type into 2, one for Resource and one for BRC
+					ResourceTypeDto resourceLaborType = laborType.DeepClone();
+					resourceLaborType.LaborSpreads = resourceLaborType.LaborSpreads.Where(x => x.LaborSpreadDate < Utilities.OneLmxStartDate).ToCollection();
+					resourceLaborType.ValueSpread = resourceLaborType.LaborSpreads.Sum(x => x.LaborSpreadValue);
+					resourceLaborType.EndDate = resourceLaborType.LaborSpreads.Last().LaborSpreadDate;
+					laborTypes.Add(resourceLaborType);
+
+					ResourceTypeDto brcLaborType = laborType.DeepClone();
+					brcLaborType.ResourceID = brcLaborType.BusinessResourceCodeID;
+					brcLaborType.LaborSpreads = brcLaborType.LaborSpreads.Where(x => x.LaborSpreadDate >= Utilities.OneLmxStartDate).ToCollection();
+					brcLaborType.ValueSpread = brcLaborType.LaborSpreads.Sum(x => x.LaborSpreadValue);
+					brcLaborType.StartDate = brcLaborType.LaborSpreads.First().LaborSpreadDate;
+					laborTypes.Add(brcLaborType);
+				}
+				else if (laborType.StartDate >= Utilities.OneLmxStartDate && laborType.BusinessResourceCodeID != null)
+				{
+					// BRC Only - Change the resource ID to the BRC ID before adding
+					ResourceTypeDto brcLaborType = laborType.DeepClone();
+					brcLaborType.ResourceID = brcLaborType.BusinessResourceCodeID;
+					laborTypes.Add(brcLaborType);
+				}
+				else
+				{
+					// Resource Only - add the labor type as usual
+					laborTypes.Add(laborType);
+				}
+			}
+
+			return laborTypes;
 		}
 	}
 }
