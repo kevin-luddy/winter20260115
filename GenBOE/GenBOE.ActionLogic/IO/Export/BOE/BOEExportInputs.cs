@@ -6,22 +6,23 @@
 
 namespace GenBOE.ActionLogic.IO.Export.BOE
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.PickList;
-    using Microsoft.Practices.Unity;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.PickList;
+	using Microsoft.Practices.Unity;
 
-    /// <summary>
-    /// Inputs used for the BOE Exporters.
-    /// </summary>
-    public class BOEExportInputs
+	/// <summary>
+	/// Inputs used for the BOE Exporters.
+	/// </summary>
+	public class BOEExportInputs
     {
         /// <summary>
         /// The logger.
@@ -87,7 +88,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			{
 				foreach (BoeTaskElementDTO taskElement in taskElements)
 				{
-					taskElement.taskElementLabors = ImportExportUtilities.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToCollection();
+					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToCollection();
 				}
 			}
 			

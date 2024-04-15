@@ -16,12 +16,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// PPRD Controller Logic
 	/// </summary>
 	public class PPRDControllerLogic : RdmControllerLogic, IPPRDControllerLogic
 	{
+		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
 		/// <summary>
 		/// The file attachment loader
 		/// </summary>
@@ -36,10 +42,11 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="adUtils">AD Utilities</param>
 		/// <param name="securityInfo">Security Information</param>
 		public PPRDControllerLogic(IFileAttachmentLoader fileAttachmentLoader,
-			IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
-			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
+			IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IConfiguration configuration)
+			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo, configuration)
 		{
 			this.fileAttachmentLoader = fileAttachmentLoader;
+			this.configuration = configuration;
 		}
 
 		/// <summary>

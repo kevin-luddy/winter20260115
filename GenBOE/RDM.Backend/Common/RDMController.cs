@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------
 
 
-namespace RDM.Web.Common
+namespace RDM.Backend.Common
 {
 	using System;
 	using System.Collections.ObjectModel;

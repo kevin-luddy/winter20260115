@@ -42,27 +42,34 @@ namespace IES.DataBridge.ModelViews
             this.Editing = editing;
         }
 
-        /// <summary>
-        /// Gets the number of minutes a lock may be held before displaying a timeout warning message.
-        /// </summary>
-        public int EditLockTimeoutWarningMinutes
-        {
-            get
-            {
-                return Convert.ToInt32(ConfigurationManager.AppSettings["EditLockTimeoutWarningMinutes"]);
-            }
-        }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LockModelView"/> class with edit lock timeout.
+		/// </summary>
+		/// <param name="isReadOnly"></param>
+		/// <param name="isLockAllowed"></param>
+		/// <param name="inUse"></param>
+		/// <param name="editing"></param>
+		/// <param name="editLockTimeoutWarningMinutes"></param>
+		/// <param name="editLockTimeoutExpirationMinutes"></param>
+		public LockModelView(bool isReadOnly, bool isLockAllowed, DateTime? inUse, string editing, int editLockTimeoutWarningMinutes, int editLockTimeoutExpirationMinutes)
+		{
+			this.IsReadOnly = isReadOnly;
+			this.IsLockAllowed = isLockAllowed;
+			this.InUse = inUse;
+			this.Editing = editing;
+			this.EditLockTimeoutExpirationMinutes = editLockTimeoutExpirationMinutes;
+			this.EditLockTimeoutWarningMinutes = editLockTimeoutWarningMinutes;
+		}
+
+		/// <summary>
+		/// Gets the number of minutes a lock may be held before displaying a timeout warning message.
+		/// </summarye
+		public int EditLockTimeoutWarningMinutes { get; set; }
 
         /// <summary>
         /// Gets the number of minutes a lock may be held before timout due to inactivity.
         /// </summary>
-        public int EditLockTimeoutExpirationMinutes
-        {
-            get
-            {
-                return Convert.ToInt32(ConfigurationManager.AppSettings["EditLockTimeoutExpirationMinutes"]);
-            }
-        }
+        public int EditLockTimeoutExpirationMinutes { get; set; }
         
         /// <summary>
         /// True if read-only access is allowed; False if edit access is allowed.

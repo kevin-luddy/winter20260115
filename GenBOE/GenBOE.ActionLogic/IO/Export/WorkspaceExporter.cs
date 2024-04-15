@@ -1209,7 +1209,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     this.FormatMOQEquation(task, exportInputs);
 
-                    foreach (MOQType moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType).Distinct())
+                    foreach (MoqTypeSelection moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id))
                     {
                         IList<string> row = new List<string>()
                         {
@@ -1218,8 +1218,9 @@ namespace GenBOE.ActionLogic.IO.Export
                             task.BOETaskID,
                             task.TaskTitle,
                             this.GetMOQEquation(task, exportInputs),
-                            moqType.GetDescription()
-                        };
+                            moqType.SelectedMOQType.GetDescription(),
+							RTEUtilities.TurnHTMLIntoPlainText(moqType.Rationale ?? string.Empty)
+						};
 
                         toReturn.Add(row);
                     }
