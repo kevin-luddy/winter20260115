@@ -808,12 +808,12 @@
 						<gen-validation data-errors="laborSpreadErrors"></gen-validation>
 						<gen-validation data-classtype="'warning-'" data-errors="laborSpreadPasteErrors"></gen-validation>
 						<div id="LaborSpreadGridBlock" data-ng-cloak>
-							<div class="labor-spread-labels">
+							<div data-ng-class="{'labor-spread-labels-brc': IsBRCEnabled }" class="labor-spread-labels">
 								<table class="header-rows">
 									<thead>
 										<tr>
 											<th>Resource</th>
-											<th data-ng-show="IsBRCEnabled">Business Resource Code</th>
+											<th data-ng-if="IsBRCEnabled">Business Resource Code</th>
 											<th>Performing Org</th>
 										</tr>
 									</thead>
@@ -828,7 +828,7 @@
 										%>
 										<tr data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false } track by item.BOELaborTypeID">
 											<td title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
-											<td title="{{item.BusinessResourceCodeName}}" data-ng-show="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
+											<td title="{{item.BusinessResourceCodeName}}" data-ng-if="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
 											<td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
 										</tr>
 										<tr id="LaborSpreadHeaderDividerRow" class="subheader">
@@ -851,7 +851,7 @@
 									</tbody>
 								</table>
 							</div>
-							<div data-ng-if="(tableData | filter: { Deleted: false, NewLaborType: false }).length > 0" class="labor-spread-scroll">
+							<div data-ng-if="(tableData | filter: { Deleted: false, NewLaborType: false }).length > 0" data-ng-class="{'labor-spread-scroll-brc': IsBRCEnabled}" class="labor-spread-scroll">
 								<table class="data" name="LaborSpreadData">
 									<thead>
 										<tr>
