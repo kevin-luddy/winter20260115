@@ -144,6 +144,7 @@ namespace IES.Common
                                     ds.PropertiesToLoad.Add("displayname");
                                     ds.PropertiesToLoad.Add("mail");
                                     ds.PropertiesToLoad.Add("telephonenumber");
+									ds.PropertiesToLoad.Add("mobile");
                                     ds.PropertiesToLoad.Add("lmcUSAPersonIndicator");
                                     ds.PropertiesToLoad.Add("employeeType");
                                 }
@@ -191,7 +192,7 @@ namespace IES.Common
                                         DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
                                         Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
                                         Ntid = inNtid,
-                                        Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
+                                        Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : user.Properties.Contains("mobile") ? user.Properties["mobile"][0].ToString() : string.Empty,
                                         IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
                                         IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
                                     };
@@ -598,6 +599,7 @@ namespace IES.Common
                                 "sn",
                                 "mail",
                                 "telephonenumber",
+								"mobile",
                                 "objectClass",
                                 "st",
                                 "company",
@@ -630,7 +632,7 @@ namespace IES.Common
                                                   FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
                                                   LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
                                                   Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
-                                                  Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
+                                                  Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : user.Properties.Contains("mobile") ? user.Properties["mobile"][0].ToString() : string.Empty,
                                                   IsGroup = user.Properties.Contains("objectClass") && user.Properties["objectClass"].Contains("group"),
                                                   State = user.Properties.Contains("st") ? user.Properties["st"][0].ToString() : string.Empty,
                                                   Company = user.Properties.Contains("company") ? user.Properties["company"][0].ToString() : string.Empty,
@@ -845,6 +847,7 @@ namespace IES.Common
                     "sn",
                     "name",
                     "telephonenumber",
+					"mobile",
                     "company",
                     "title",
                     "mail",
@@ -897,14 +900,15 @@ namespace IES.Common
 
                 // For users only, we remove periods from their Display Names
                 string displayName = isUserNotGroup ? this.GetPropertyValue("name", adproperties).Replace(".", "") : this.GetPropertyValue("name", adproperties);
+				string phone = this.GetPropertyValue("telephonenumber", adproperties);
 
-                result.Add(new UserData
+				result.Add(new UserData
                 {
                     Ntid = accountName,
                     FirstName = this.GetPropertyValue("givenName", adproperties),
                     LastName = this.GetPropertyValue("sn", adproperties),
                     DisplayName = displayName,
-                    Phone = this.GetPropertyValue("telephonenumber", adproperties),
+                    Phone = !string.IsNullOrEmpty(phone) ? phone : this.GetPropertyValue("mobile", adproperties),
                     Company = this.GetPropertyValue("company", adproperties),
                     Email = this.GetPropertyValue("mail", adproperties),
                     State = this.GetPropertyValue("st", adproperties),
