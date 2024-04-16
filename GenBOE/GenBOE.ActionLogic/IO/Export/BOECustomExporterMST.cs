@@ -448,11 +448,25 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.ResourceInfoAndSpreadTables))
                 {
-                    IOrderedEnumerable<BOEExportTaskElementLabor> orderedResources = laborTaskElement.taskElementLabors
-                        .Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceID)
-                        && c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_PerformingOrgID))
-                        .OrderBy(o => o.ExportFields[BOEExporterConstants.FieldName_ResourceID])
-                        .ThenBy(p => p.ExportFields[BOEExporterConstants.FieldName_PerformingOrgID]);
+					IOrderedEnumerable<BOEExportTaskElementLabor> orderedResources;
+					if (Utilities.IsBRCEnabledForSystem)
+					{
+						orderedResources = laborTaskElement.taskElementLabors
+						.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_BrcID)
+						&& c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceID)
+						&& c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_PerformingOrgID))
+						.OrderBy(o => o.ExportFields[BOEExporterConstants.FieldName_BrcID])
+						.ThenByDescending(r => r.ExportFields[BOEExporterConstants.FieldName_ResourceID])
+						.ThenBy(p => p.ExportFields[BOEExporterConstants.FieldName_PerformingOrgID]);
+					} 
+					else
+					{
+						orderedResources = laborTaskElement.taskElementLabors
+						.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceID)
+						&& c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_PerformingOrgID))
+						.OrderBy(o => o.ExportFields[BOEExporterConstants.FieldName_ResourceID])
+						.ThenBy(p => p.ExportFields[BOEExporterConstants.FieldName_PerformingOrgID]);
+					}
 
                     SdtElement currentInsertionPoint = laborResourceContainerTemplateElement;
 

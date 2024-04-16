@@ -12,7 +12,8 @@ namespace GenBOE.ActionLogic.Validation
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
-    using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -53,11 +54,12 @@ namespace GenBOE.ActionLogic.Validation
 
         private static string DATES_HEADER = "<b><i>The following errors are due to dates which are outside of the period of performance.  Please adjust the dates to fall within the " 
             + "period of performance.  Using the \"Recalculate Task Element\" button will automatically adjust the resource dates.  *Note:  Any discrete spreads which fall outside of " 
-            + "the adjusted period of performance will be deleted and a delta value may remain.</i></b><br />";
+            + "the adjusted period of performance will be deleted and a delta value may remain.<br />This error must be cleared prior to any other changes because any changes made before the error is cleared may be lost.</i></b><br />";
 
         private static string VALUES_HEADER = "<br /><b><i>The following errors are due to value issues.  Resources using a spread curve may be automatically corrected "
             + "by clicking the \"Recalculate Task Element\" button.  Resources using a discrete spread (cost or {0}) will require manual adjustment.  "
-            + "*Note:  Any discrete spreads that fall outside of the adjusted period of performance will be deleted and a delta value may remain.</i></b><br />";
+            + "*Note:  Any discrete spreads that fall outside of the adjusted period of performance will be deleted and a delta value may remain.<br />" 
+			+ "This error must be cleared prior to any other changes because any changes made before the error is cleared may be lost.</i></b><br />";
 
         #endregion
 
@@ -369,6 +371,14 @@ namespace GenBOE.ActionLogic.Validation
                     dateErrors.Add(GenerateResourceTypeError(resourceType, string.Format(RESOURCE_END_DATE_FAILED,
                         resourceStartDateString, resourceEndDateString, resourceTypeString, resourceTypeValueString)));
                 }
+
+				// Validate the Resource Type, method will return empty string if no errors;
+				string brcValidationErrorMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(resourceType);
+				if (!string.IsNullOrEmpty(brcValidationErrorMessage))
+				{
+					if (returnOnFirstInvalid) { return false; }
+					valueErrors.Add(GenerateResourceTypeError(resourceType, brcValidationErrorMessage));
+				}
 
                 if (resourceType.ValueSpread != resourceType.LaborSpreads.Sum(x => x.LaborSpreadValue))
                 {

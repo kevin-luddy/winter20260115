@@ -39,6 +39,14 @@ namespace GenBOE.ActionLogic.IO.Export
         protected string sEmpty { get { return string.Empty; } }
         protected string sMultiple { get { return "Multiple"; } }
 
+		/// <summary>
+		/// A string for building a Task URL. Requires 3 parameters:
+		///		Parameter 1: Workspace Short Name
+		///		Parameter 2: BOE Id
+		///		Parameter 3: Task Id
+		/// </summary>
+		private readonly string taskUrlString = ConfigurationUtilities.GetAppSetting("ServerURL") + "/{0}/BOE/EditBOEIndex/boe/{1}#LMLabor/task/{2}";
+
         private IPermissionsDTODataLoader permissionsDTOLoader;
         private ICustomFieldValueDTODataLoader customFieldValueDTODataLoader;
         private IBOEStatusReport boeStatusReport;
@@ -496,7 +504,8 @@ namespace GenBOE.ActionLogic.IO.Export
                         this.sEmpty, this.sEmpty,
                             boe.IsMultiClinWbs ? this.sYes : this.sNo,
                             boe.isMaterial ?  this.sYes: this.sNo,
-                            taskID,
+							string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+							taskID,
                             task.TaskTitle,
                             taskDescription,
                             this.GetMOQEquation(task, exportInputs),
@@ -1052,7 +1061,8 @@ namespace GenBOE.ActionLogic.IO.Export
                             row.AddRange(
                                 new string[]
                                 {
-                                    taskID,
+									string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+									taskID,
                                     task.TaskTitle,
                                     this.GetTaskMoqType(task, exportInputs),
                                     wbsTitle,
@@ -1170,7 +1180,8 @@ namespace GenBOE.ActionLogic.IO.Export
                         row.AddRange(
                             new string[]
                                 {
-                                    task.TaskID,
+									string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+									task.TaskID,
                                     task.TaskTitle,
                                     this.sEmpty,
                                     wbs != null ? CommonConstants.FORCE_AS_STRING_VALUE + wbs.WbsTitle : this.sEmpty,
@@ -1209,17 +1220,19 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     this.FormatMOQEquation(task, exportInputs);
 
-                    foreach (MOQType moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType).Distinct())
+                    foreach (MoqTypeSelection moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id))
                     {
                         IList<string> row = new List<string>()
                         {
                             boe.Id.ToString(),
                             boe.Title ?? this.sEmpty,
-                            task.BOETaskID,
+							string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+							task.BOETaskID,
                             task.TaskTitle,
                             this.GetMOQEquation(task, exportInputs),
-                            moqType.GetDescription()
-                        };
+                            moqType.SelectedMOQType.GetDescription(),
+							RTEUtilities.TurnHTMLIntoPlainText(moqType.Rationale ?? string.Empty)
+						};
 
                         toReturn.Add(row);
                     }
@@ -1279,7 +1292,8 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 boe.Id.ToString(),
                 boe.Title ?? this.sEmpty,
-                task.BOETaskID,
+				string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+				task.BOETaskID,
                 task.TaskTitle,
                 selectedMoqType,
                 table.TableName,
@@ -1372,6 +1386,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         boe.Id.ToString(),
                         boe.Title ?? this.sEmpty,
                         boe.isMaterial ?  "Material BOE": "BOE",
+						this.sEmpty, // Task URL
                         this.sEmpty, // Task ID
                         this.sEmpty, // Task Title
                         this.sEmpty, // MOQ Equation
@@ -1646,6 +1661,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     new string[] {
                             boe.Id.ToString(),
                             "ODC Task",
+							this.sEmpty, // Task URL
                             odc.Id.ToString(),
                             odc.TaskTitle,
                             this.sEmpty, // MOQ Equation
@@ -1966,7 +1982,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
             return new string[]
             {
-                taskID,
+				string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+				taskID,
                 task.TaskTitle,
                 this.GetMOQEquation(task, exportInputs),
                 this.GetTaskMoqType(task, exportInputs)

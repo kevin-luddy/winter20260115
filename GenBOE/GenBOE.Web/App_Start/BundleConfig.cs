@@ -61,7 +61,7 @@ namespace GenBOE.Web
                 "~/Resources/js/ActiveDirectorySearch.js",
                 "~/Resources/js/UserLookupWidget.js",
                 "~/Scripts/jquery.validate.js",
-                "~/Resources/js/Scripts/additional-methods.js",
+                "~/Scripts/additional-methods.js",
                 "~/Scripts/jquery.validate.unobtrusive.js"
                 ));
 

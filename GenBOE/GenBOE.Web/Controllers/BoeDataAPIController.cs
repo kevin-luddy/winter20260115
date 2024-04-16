@@ -656,7 +656,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <returns>List of Workspace Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[HttpGet]
+		[HttpPost]
 		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataForNlf()
 		{
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
@@ -1121,7 +1121,9 @@ namespace GenBOE.Web.Controllers
 							LeadEstimatorDisplayName = leadEstimator != null ? leadEstimator.DisplayName : string.Empty,
 							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
 							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
-							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty
+							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty,
+							WorkspaceId = x.WorkspaceId,
+							WorkspaceName = x.WorkspaceName
 						};
 					}).ToList();
 

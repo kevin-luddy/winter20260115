@@ -259,8 +259,8 @@ namespace GenBOE.ActionLogic.IO.Import
 			Collection<FullWbs> wsWBS = new Collection<FullWbs>(workspace.WbsElementsNoMultiWbs.ToCollection());
 			Collection<ClinDTO> wsClins = new Collection<ClinDTO>(workspace.ClinsNoMultiClin.ToCollection<ClinDTO>());
 			//ResourceList and Business ResourceCodeList
-			ICollection<ResourceDTO> resourceList = ImportExportUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), false);
-			ICollection<ResourceDTO> businessResourceCodeList = ImportExportUtilities.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), true);
+			ICollection<ResourceDTO> resourceList = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), false);
+			ICollection<ResourceDTO> businessResourceCodeList = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), true);
 
 			if (allRows.Any())
 			{

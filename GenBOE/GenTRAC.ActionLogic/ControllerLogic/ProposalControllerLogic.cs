@@ -222,6 +222,14 @@ namespace GenTRAC.ActionLogic
 				throw new ArgumentNullException(nameof(proposalComments));
 			}
 
+			if (proposalApprovalsInfo == null)
+			{
+				throw new ArgumentNullException(nameof(proposalApprovalsInfo));
+			}
+
+			bool shouldSendEmail = false;
+			int? proposalId = null;
+
 			using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveNewProposal", this.log))
 			{
 				ProposalPermissionDto pricerPermission = null;
@@ -229,6 +237,19 @@ namespace GenTRAC.ActionLogic
 
 				// Pricer is required during validation unless this is a forecast proposal
 				bool isForecasted = proposalInfo.ProposalClassText == Constants.PROPOSAL_CLASS_FORECASTED;
+
+				// if new proposal, as long as not FORECASTED -> send EMAIL
+				shouldSendEmail = proposalInfo.ProposalID == -1 && !isForecasted;
+				if (proposalInfo.ProposalID > 0 && !isForecasted)
+				{
+					ProposalDto existingRecord = ProposalLoader.GetById(proposalInfo.ProposalID);
+
+					if (existingRecord != null)
+					{
+						// if changing from FORECASTED to not -> send EMAIL
+						shouldSendEmail = !string.IsNullOrEmpty(existingRecord.ForecastedTrackingNumber);
+					}
+				}
 
 				ProposalChecklistType proposalChecklistType = ProposalChecklistType.Default;
 				if (ProposalChecklistType.InternationalCommercial.IsActive())
@@ -302,7 +323,7 @@ namespace GenTRAC.ActionLogic
 					this.CopyApprovalCertificationData(newProposal, proposalApprovalsInfo);
 				}
 
-				int? proposalId = this.ProposalMediator.SaveProposal(newProposal);
+				proposalId = this.ProposalMediator.SaveProposal(newProposal);
 
 				// If not Forecast proposal
 				if (!isForecasted)
@@ -321,9 +342,30 @@ namespace GenTRAC.ActionLogic
 					this.CacheLoader.Remove(IES.Common.CacheConstants.PPR_CHECKLIST_ID_BY_PROPOSAL_ID + proposalId);
 					this.CacheLoader.Remove(IES.Common.CacheConstants.PAR_CHECKLIST_ID_BY_PROPOSAL_ID + proposalId);
 				}
-
-				return proposalId;
 			}
+
+			if (shouldSendEmail)
+			{
+				UserDTO contractsLead = this.userLoader.GetByNtid(proposalUserInfo.ContractsPOCNtId);
+				UserDTO contractsBackup = this.userLoader.GetByNtid(proposalUserInfo.BackupContractsPOCNtId);
+				string lobEstimatingManager = this.userLoader.GetByNtid(proposalApprovalsInfo.LOBEstimatingLeadMgrNtid).DisplayName;
+				string leadEstimator = this.userLoader.GetByNtid(proposalApprovalsInfo.LeadEstimatorNtid).DisplayName;
+				string lob = pickListMapper.GetPickListValues(PickListEnum.LineOfBusiness).PickLists.First(x => x.Id == int.Parse(proposalGeneralInfo.LineOfBusiness)).Text;
+				string pa = pickListMapper.GetPickListValues(PickListEnum.ProgramArea).PickLists.First(x => x.Id == int.Parse(proposalGeneralInfo.ProgramArea)).Text;
+
+				if (proposalId.HasValue)
+				{
+					ProposalDto updatedProposal = ProposalLoader.GetById(proposalId.Value);
+					proposalInfo.ProposalTrackingNumber = updatedProposal.TrackingNumber;
+					proposalInfo.ProposalID = proposalId.Value;
+				}
+
+				this.emailer.SendPtmRecordCreationEmail(this.securityInformation.ActiveUserData, contractsLead, contractsBackup, proposalInfo, WebConfigurationManager.AppSettings["EnableEppIntegration"] == "true", 
+															WebConfigurationManager.AppSettings["eEPPUrl"], WebConfigurationManager.AppSettings["ServerURL"], proposalGeneralInfo.ProgramName,
+															lob, pa, leadEstimator, proposalUserInfo.CostVolumeLeadDisplayName, lobEstimatingManager, proposalUserInfo.ProposalMgrDisplayName);
+			}
+
+			return proposalId;
 		}
 
 		/// <summary>

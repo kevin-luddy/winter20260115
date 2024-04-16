@@ -209,5 +209,10 @@ namespace GenBOE.Web.ModelView
 		/// Workspace ID
 		/// </summary>
 		public int WorkspaceId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Workspace Name
+		/// </summary>
+		public string WorkspaceName { get; set; }
 	}
 }
