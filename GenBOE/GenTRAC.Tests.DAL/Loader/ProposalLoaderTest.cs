@@ -1565,7 +1565,7 @@ namespace GenTRAC.Tests.DAL.Loader
 			// get a proposal with CCoPD set to true to test with
 			using (genTRACEntities dbModel = new genTRACEntities())
 			{
-				testProposal = dbModel.Proposals.Include("ProposalContractsDatas").Where(x => x.CCPDRequired == true && x.ProposalContractsDatas.FirstOrDefault().ContractsCorrespondLogNumber != null).OrderByDescending(x => x.ProposalID).FirstOrDefault();
+				testProposal = dbModel.Proposals.Include("ProposalContractsDatas1").Where(x => x.CCPDRequired == true && x.ProposalContractsDatas1.FirstOrDefault().ContractsCorrespondLogNumber != null).OrderByDescending(x => x.ProposalID).FirstOrDefault();
 			}
 
 			ProposalLoader sut = this.CreateSystem();
@@ -1577,7 +1577,7 @@ namespace GenTRAC.Tests.DAL.Loader
 			Assert.AreEqual(testProposal.ProposalTitle, result.ProposalTitle);
 			Assert.AreEqual(testProposal.RFPNumber, result.RfpNumber);
 			Assert.IsNull(result.CostVolumeSubmittalDate);
-			Assert.AreEqual(testProposal.ProposalContractsDatas.FirstOrDefault().ContractsCorrespondLogNumber, result.CCLogNumber);
+			Assert.AreEqual(testProposal.ProposalContractsDatas1.FirstOrDefault().ContractsCorrespondLogNumber, result.CCLogNumber);
 		}
 
 		/// <summary>
