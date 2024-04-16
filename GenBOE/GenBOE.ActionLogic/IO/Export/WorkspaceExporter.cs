@@ -45,7 +45,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		///		Parameter 2: BOE Id
 		///		Parameter 3: Task Id
 		/// </summary>
-		private readonly string taskUrlString = ConfigurationUtilities.GetAppSetting("ServerURL") + "/{0}/BOE/EditBOEIndex/boe/{1}#LMLabor/task/{2}";
+		protected string TaskUrlString => ConfigurationUtilities.GetAppSetting("ServerURL") + "/{0}/BOE/EditBOEIndex/boe/{1}#LMLabor/task/{2}";
 
         private IPermissionsDTODataLoader permissionsDTOLoader;
         private ICustomFieldValueDTODataLoader customFieldValueDTODataLoader;
@@ -504,7 +504,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         this.sEmpty, this.sEmpty,
                             boe.IsMultiClinWbs ? this.sYes : this.sNo,
                             boe.isMaterial ?  this.sYes: this.sNo,
-							string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+							string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
 							taskID,
                             task.TaskTitle,
                             taskDescription,
@@ -1061,7 +1061,7 @@ namespace GenBOE.ActionLogic.IO.Export
                             row.AddRange(
                                 new string[]
                                 {
-									string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+									string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
 									taskID,
                                     task.TaskTitle,
                                     this.GetTaskMoqType(task, exportInputs),
@@ -1180,7 +1180,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         row.AddRange(
                             new string[]
                                 {
-									string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+									string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
 									task.TaskID,
                                     task.TaskTitle,
                                     this.sEmpty,
@@ -1226,7 +1226,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         {
                             boe.Id.ToString(),
                             boe.Title ?? this.sEmpty,
-							string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+							string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
 							task.BOETaskID,
                             task.TaskTitle,
                             this.GetMOQEquation(task, exportInputs),
@@ -1292,7 +1292,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 boe.Id.ToString(),
                 boe.Title ?? this.sEmpty,
-				string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+				string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
 				task.BOETaskID,
                 task.TaskTitle,
                 selectedMoqType,
@@ -1982,7 +1982,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             return new string[]
             {
-				string.Format(taskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+				string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
 				taskID,
                 task.TaskTitle,
                 this.GetMOQEquation(task, exportInputs),
