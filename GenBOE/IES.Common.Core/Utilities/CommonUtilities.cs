@@ -801,7 +801,12 @@ namespace IES.Common.Core.Utilities
 		/// <returns>Property Value if it exists, empty string otherwise</returns>
 		public static string TryGetPropertyValue(PropertyCollection propertyCollection, string propertyName, StringManipulation stringManipulation = StringManipulation.None)
 		{
-			string toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;
+			string toReturn = string.Empty;
+
+			if (propertyCollection != null)
+			{
+				toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;
+			}
 
 			switch (stringManipulation)
 			{
@@ -824,7 +829,12 @@ namespace IES.Common.Core.Utilities
 		/// <returns>Property Value if it exists, empty string otherwise</returns>
 		public static string TryGetPropertyValue(ResultPropertyCollection propertyCollection, string propertyName, StringManipulation stringManipulation = StringManipulation.None)
 		{
-			string toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;
+			string toReturn = string.Empty;
+
+			if (propertyCollection != null)
+			{
+				toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;
+			}
 
 			switch (stringManipulation)
 			{
