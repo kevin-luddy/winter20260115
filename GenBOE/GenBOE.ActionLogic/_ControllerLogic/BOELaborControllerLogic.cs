@@ -3766,7 +3766,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
 					// Call Swagger Client
-					StringResult result = await iesSapClient.ApiQueryParserFormulateStringAsync(filters);
+					StringResult result = await iesSapClient.ApiQueryParserFormulateStringAsync(GetCompanyConfigurationForSAP(), filters);
 					response.Messages = result.Messages;
 					response.IsSuccessful = result.IsSuccessful;
 					response.Data.Add(result.Data);
@@ -3806,7 +3806,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
 					// Call Swagger Client
-					QueryViewModelICollectionResult result = await iesSapClient.ApiQueryParserParseStringAsync(text);
+					QueryViewModelICollectionResult result = await iesSapClient.ApiQueryParserParseStringAsync(text, GetCompanyConfigurationForSAP());
 					response.Messages = result.Messages;
 					response.IsSuccessful = result.IsSuccessful;
 					response.Data = result.Data;
@@ -3839,8 +3839,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
 				// Convert company configuration
-				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration =
-					(ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
 
 				// Convert table data
 
@@ -3887,8 +3886,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
 				// Convert company configuration
-				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration =
-					(ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
 
 				// Convert table data
 				ICollection<DataTableViewModel> dataTables = tableData.Select(t =>
@@ -3922,6 +3920,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return response;
+		}
+
+		private ActionLogic.IESSAPClient.CompanyConfiguration GetCompanyConfigurationForSAP()
+		{
+			return (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
 		}
 	}
 
