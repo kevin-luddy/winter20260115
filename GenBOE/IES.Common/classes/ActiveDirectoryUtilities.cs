@@ -144,6 +144,7 @@ namespace IES.Common
                                     ds.PropertiesToLoad.Add("displayname");
                                     ds.PropertiesToLoad.Add("mail");
                                     ds.PropertiesToLoad.Add("telephonenumber");
+									ds.PropertiesToLoad.Add("mobile");
                                     ds.PropertiesToLoad.Add("lmcUSAPersonIndicator");
                                     ds.PropertiesToLoad.Add("employeeType");
                                 }
@@ -184,15 +185,15 @@ namespace IES.Common
 
                                 if (!isGroup)
                                 {
-                                    currentAccount = new UserData
-                                    {
-                                        FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
-                                        LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
-                                        DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
-                                        Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
+									currentAccount = new UserData
+									{
+										FirstName = Utilities.TryGetPropertyValue(user.Properties, "givenname"),
+                                        LastName = Utilities.TryGetPropertyValue(user.Properties, "sn"),
+                                        DisplayName = Utilities.TryGetPropertyValue(user.Properties, "displayname"),
+                                        Email = Utilities.TryGetPropertyValue(user.Properties, "mail"),
                                         Ntid = inNtid,
-                                        Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
-                                        IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
+                                        Phone = Utilities.GetUserPhoneNumber(user.Properties),
+                                        IsUsPerson =user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
                                         IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
                                     };
                                 }
@@ -598,6 +599,7 @@ namespace IES.Common
                                 "sn",
                                 "mail",
                                 "telephonenumber",
+								"mobile",
                                 "objectClass",
                                 "st",
                                 "company",
@@ -622,21 +624,21 @@ namespace IES.Common
 
 								SearchResultCollection results = searcher.FindAll();
 
-                                userNames = (from SearchResult user in results
+								userNames = (from SearchResult user in results
                                               select new UserData()
                                               {
-                                                  DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
-                                                  Ntid = user.Properties.Contains("samaccountname") ? user.Properties["samaccountname"][0].ToString() : string.Empty,
-                                                  FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
-                                                  LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
-                                                  Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
-                                                  Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : string.Empty,
+                                                  DisplayName = Utilities.TryGetPropertyValue(user.Properties, "displayname"),
+                                                  Ntid = Utilities.TryGetPropertyValue(user.Properties, "samaccountname"),
+                                                  FirstName = Utilities.TryGetPropertyValue(user.Properties, "givenname"),
+                                                  LastName = Utilities.TryGetPropertyValue(user.Properties, "sn"),
+                                                  Email = Utilities.TryGetPropertyValue(user.Properties, "mail", Enums.StringManipulation.ToLower),
+                                                  Phone = Utilities.GetUserPhoneNumber(user.Properties),
                                                   IsGroup = user.Properties.Contains("objectClass") && user.Properties["objectClass"].Contains("group"),
-                                                  State = user.Properties.Contains("st") ? user.Properties["st"][0].ToString() : string.Empty,
-                                                  Company = user.Properties.Contains("company") ? user.Properties["company"][0].ToString() : string.Empty,
-                                                  Country = user.Properties.Contains("c") ? user.Properties["c"][0].ToString() : string.Empty,
-                                                  Title = user.Properties.Contains("title") ? user.Properties["title"][0].ToString() : string.Empty,
-                                                  EmployeeId = user.Properties.Contains("lmcEmployeeID") ? user.Properties["lmcEmployeeID"][0].ToString() : string.Empty,
+                                                  State = Utilities.TryGetPropertyValue(user.Properties, "st"),
+                                                  Company = Utilities.TryGetPropertyValue(user.Properties, "company"),
+                                                  Country = Utilities.TryGetPropertyValue(user.Properties, "c"),
+                                                  Title = Utilities.TryGetPropertyValue(user.Properties, "title"),
+                                                  EmployeeId = Utilities.TryGetPropertyValue(user.Properties, "lmcEmployeeID"),
                                                   IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
                                                   IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
                                               }).Where(u => !string.IsNullOrWhiteSpace(u.Ntid)).ToList();
@@ -845,6 +847,7 @@ namespace IES.Common
                     "sn",
                     "name",
                     "telephonenumber",
+					"mobile",
                     "company",
                     "title",
                     "mail",
@@ -897,14 +900,15 @@ namespace IES.Common
 
                 // For users only, we remove periods from their Display Names
                 string displayName = isUserNotGroup ? this.GetPropertyValue("name", adproperties).Replace(".", "") : this.GetPropertyValue("name", adproperties);
+				string phone = this.GetPropertyValue("telephonenumber", adproperties);
 
-                result.Add(new UserData
+				result.Add(new UserData
                 {
                     Ntid = accountName,
                     FirstName = this.GetPropertyValue("givenName", adproperties),
                     LastName = this.GetPropertyValue("sn", adproperties),
                     DisplayName = displayName,
-                    Phone = this.GetPropertyValue("telephonenumber", adproperties),
+                    Phone = !string.IsNullOrEmpty(phone) ? phone : this.GetPropertyValue("mobile", adproperties),
                     Company = this.GetPropertyValue("company", adproperties),
                     Email = this.GetPropertyValue("mail", adproperties),
                     State = this.GetPropertyValue("st", adproperties),

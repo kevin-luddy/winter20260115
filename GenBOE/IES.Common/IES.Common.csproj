@@ -326,6 +326,7 @@
     <Compile Include="Enums\MOQType.cs" />
     <Compile Include="Enums\RDMChangeType.cs" />
     <Compile Include="Enums\RichTextDbColumn.cs" />
+    <Compile Include="Enums\StringManipulation.cs" />
     <Compile Include="Exceptions\AuthorizationException.cs" />
     <Compile Include="Exceptions\HandleErrorAttribute.cs" />
     <Compile Include="Exceptions\ValidationMessage.cs" />
