@@ -107,6 +107,10 @@ namespace GenBOE.ActionLogic.IO.Import
                 {
                     originalLaborType.ResourceID = importedLaborType.ResourceID;
                 }
+                if (importedLaborType.BusinessResourceCodeID.HasValue)
+                {
+                    originalLaborType.BusinessResourceCodeID = importedLaborType.BusinessResourceCodeID;
+                }
                 if (importedLaborType.PerformingOrgID.HasValue)
                 {
                     originalLaborType.PerformingOrgID = importedLaborType.PerformingOrgID;

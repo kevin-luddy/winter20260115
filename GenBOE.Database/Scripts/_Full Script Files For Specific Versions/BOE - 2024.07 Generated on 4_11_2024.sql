@@ -1,18 +1,30 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.08, on 3/26/2024.
+    This file was auto-generated for Release: 2024.07, on 4/11/2024.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2024.08\1 - Release 2024.8.sql
+    File: \Release 2024.07\1 - Release 2024.7.sql
 */
-PRINT '### Starting file: \Release 2024.08\1 - Release 2024.8.sql';
-EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.8';
+PRINT '### Starting file: \Release 2024.07\1 - Release 2024.7.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.7';
 GO
 
 -- Created a new SP GetPboeIboeFormDataForReport
 
+
+/*
+    File: \Release 2024.07\2 - Release.2024.7.sql
+*/
+PRINT '### Starting file: \Release 2024.07\2 - Release.2024.7.sql';
+-- 4/8/2024 - e302876 - PROPH-1617 Added BRC resource ID to remaining stored procs
+-- Stored procs changed:
+-- getLaborType.sql - removed proc, not used
+-- getResourceInUseFlagByResourceListID.sql
+-- getSystemResourceInUseFlag.sql
+-- getWorkspaceResourceInUseFlagByMultipleResources.sql
+-- getWorkspaceResourceInUseFlagByResourceID.sql
 
 /*
     File: \Functions\MapToNewMoqType.sql
@@ -17167,68 +17179,7 @@ IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[getLa
 
 GO
 
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE PROCEDURE [dbo].[getLaborType]
-(
-	@WorkspaceID int
-)
-AS
-/******************************************************************************
-**		 
-**		Name: getLaborType
-**		Desc: Returns Workspace BOE Labor Types
-**			
-**		
-**
-**		Auth: Don Canuso
-**		Date: 5/23/14
-*******************************************************************************
-**		Change History
-*******************************************************************************
-**		Date:		Author:				Description:
-**		10/14/15	mbasquil			BOEJ-342 Resource level WBS/CLIN
-**		4/25/2017	twilson3			BOEJ-2121 Project Map updates
-**		5/22/2017	Dusan				BOEJ-2181 Add Add/Delete column
-**		8/17/2017	Dusan				BOEJ-2469 Add Old Resource (2.16.1)
-**		10/2/2017	twilson3			BOEJ-2520 Cleanup DB, remove old ProjectMap columns
-*******************************************************************************/
-SET NOCOUNT ON 
-/*DECLARE @WorkspaceID int=1239*/
-
-SELECT 
-	[LT].[BOELaborTypeID], 
-	[LT].[UpdateDT], 
-	[LT].[ResourceID], 
-	[LT].[PerformingOrganizationID], 
-	[LT].[BOELaborTypeStartDate], 
-	[LT].[BOELaborTypeEndDate], 
-	[LT].[SpreadCurveID],
-	 [LT].[PercentSpread], 
-	 [LT].[ValueSpread], 
-	 [LT].[BOETaskElementID], 
-	 [LT].[SpreadTypeID], 
-	 [LT].[PercentSpreadLocked], 
-	 [LT].[HourSpreadLocked],
-	 [LT].WBSID,
-	 [LT].CLINID,
-	 [B].[BOEID],
-	 [LT].[CanOffload]	 
-FROM [dbo].[BOELaborType] AS LT
-INNER JOIN 
-	(SELECT [BOETaskElementID], [BOEID] FROM [dbo].[BOETaskElement]) TE 
-		ON [LT].[BOETaskElementID] = [TE].[BOETaskElementID]
-INNER JOIN 
-	(
-		SELECT [BOEID] FROM [dbo].[BOE]
-		WHERE [WorkspaceID] = @WorkspaceID
-	) B 
-		ON [TE].[BOEID] = [B].[BOEID]
-
-GO
+-- PROPH-1676 - e302876 - removed getLaborType since it is never used
 
 /*
     File: \Stored Procedures\getOrdinaryVariableByTaskElementID.sql
@@ -17772,7 +17723,8 @@ AS
 **			5/24/2017	brunworg				BOEJ-2125 Remove T&M Resource 
 **                                              Rates, they don't make in use.
 **			12/15/17	twilson3				BOEJ-2248 Remove Labor Rates
-**		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		    6/25/19		twilson3			    BOEJ-3964 - Remove in-use flag, MaterialXref
+**          4/3/24      e302876                 PROPH-1617 - update stored procs for BRC
 *******************************************************************************/
 SET NOCOUNT ON 
       
@@ -17834,6 +17786,7 @@ FROM  [dbo].[BOELaborType] T
             INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
             INNER JOIN @BOE B ON TE.BOEID = B.BOEID
             INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE T.ResourceID IS NOT NULL
             /*Regardless of whether it is in this table, the fact that is is
             used in your BOE is what is relevant so removing this
             INNER JOIN @WorkspaceResource WR 
@@ -17843,8 +17796,13 @@ WHERE
 WR.ResourceListID = @ResourceListID 
 */
 
-
-
+INSERT INTO @ResultSet (SystemResourceID)
+SELECT DISTINCT T.BRCResourceID 
+FROM  [dbo].[BOELaborType] T
+            INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
+            INNER JOIN @BOE B ON TE.BOEID = B.BOEID
+            INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE T.BRCResourceID IS NOT NULL
 
 
 --UNION
@@ -17901,7 +17859,6 @@ INSERT INTO @ResultSet (SystemResourceID)
             INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormPBOE] P ON P.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormPBOEResourcesXREF] X on X.[PBOEFormID] = P.[PBOEFormID]
-
 
 --for nonzone rms travel trips, add nonzoneresourceids  
 	INSERT INTO @ResultSet (SystemResourceID)
@@ -18178,6 +18135,7 @@ AS
 **										a popup will be displayed asking the user to confirm the deletion of both.
 **										See wireframe https://isgs-gen.external.lmco.com/sites/Estimating_Init/doclib14/Wireframes/Resource%20Rates.mht
 **		12/15/17	twilson3			BOEJ-2248 Remove Labor Rates
+**      4/3/24      e302876             PROPH-1617 - update stored procs for BRC
 **										
 *******************************************************************************/
 
@@ -18190,7 +18148,20 @@ SELECT DISTINCT R.ResourceID AS SystemResourceID
 		INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 		INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
 		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE
+	R.ResourceID IS NOT NULL AND
+	R.ResourceListID = 1 AND
+	R.DeletedFlag = 0 AND
+	W.WorkspaceStateID NOT IN (4,5) /*Not Closed or Complete*/ 
+UNION
+SELECT DISTINCT R.ResourceID AS SystemResourceID
+	FROM [dbo].[Resource] R
+		INNER JOIN dbo.BOELaborType LT ON R.ResourceID = LT.BRCResourceID
+		INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
+		INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
+		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE 
+	R.ResourceID IS NOT NULL AND
 	R.ResourceListID = 1 AND
 	R.DeletedFlag = 0 AND
 	W.WorkspaceStateID NOT IN (4,5) /*Not Closed or Complete*/ 
@@ -18530,6 +18501,7 @@ AS
 **										except it will take multiple Resource IDs and return 
 **										only the list of the Resource IDs that are in use.
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**      4/3/24      e302876             PROPH-1617 - update stored procs for BRC
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -18592,9 +18564,22 @@ INSERT INTO @ResultSet
 		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
 		INNER JOIN @Resource tR ON T.ResourceID = tR.ResourceID
 		INNER JOIN @Resource tR2 ON WR.SystemResourceID = tR2.ResourceID
-	WHERE 
+	WHERE
+	T.ResourceID IS NOT NULL AND
 	/*T.ResourceID = @ResourceID AND */
 	/*WR.SystemResourceID = @ResourceID AND*/
+	W.ResourceListID = @ResourceListID
+
+INSERT INTO @ResultSet
+	SELECT T.BRCResourceID FROM  [dbo].[BOELaborType] T
+		INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
+		INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
+		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
+		INNER JOIN @Resource tR ON T.BRCResourceID = tR.ResourceID
+		INNER JOIN @Resource tR2 ON WR.SystemResourceID = tR2.ResourceID
+	WHERE 
+	T.BRCResourceID IS NOT NULL AND
 	W.ResourceListID = @ResourceListID
 
 INSERT INTO @ResultSet
@@ -18674,6 +18659,7 @@ AS
 **		--------	--------			---------------------------------------
 **		11/28/12	dcanuso				Make sure Resource is not Deleted (Delete Flag)
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**      4/3/24      e302876             PROPH-1617 - update stored procs for BRC
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -18699,10 +18685,21 @@ UNION
 		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
 	WHERE 
+	T.ResourceID IS NOT NULL AND
 	T.ResourceID = @ResourceID AND 
 	WR.SystemResourceID = @ResourceID AND
 	W.ResourceListID = @ResourceListID
-
+UNION
+	SELECT T.BRCResourceID FROM  [dbo].[BOELaborType] T
+		INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
+		INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
+		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
+	WHERE 
+	T.BRCResourceID IS NOT NULL AND
+	T.BRCResourceID = @ResourceID AND 
+	WR.SystemResourceID = @ResourceID AND
+	W.ResourceListID = @ResourceListID
 UNION
 /* Special Processing for Travel */
 		/* Special Processing for Travel */

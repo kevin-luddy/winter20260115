@@ -1,0 +1,7 @@
+﻿-- 4/8/2024 - e302876 - PROPH-1617 Added BRC resource ID to remaining stored procs
+-- Stored procs changed:
+-- getLaborType.sql - removed proc, not used
+-- getResourceInUseFlagByResourceListID.sql
+-- getSystemResourceInUseFlag.sql
+-- getWorkspaceResourceInUseFlagByMultipleResources.sql
+-- getWorkspaceResourceInUseFlagByResourceID.sql

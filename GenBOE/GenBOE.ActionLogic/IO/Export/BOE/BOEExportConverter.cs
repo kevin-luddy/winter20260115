@@ -518,7 +518,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                     {
                         ResourceDTO resource = resourcesForLabors.First(x => x.Id == laborType.ResourceID.Value);
 
-                        if (exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITH_COST ||
+						if (exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITH_COST ||
                             exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITHOUT_COST ||
                             exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_STANDARD_PORTRAIT_WITHOUT_COST_2 ||
                             exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.LMSI_GSM_O_LANDSACPE_WITH_TIME_PHASED_SUMMARIES)
