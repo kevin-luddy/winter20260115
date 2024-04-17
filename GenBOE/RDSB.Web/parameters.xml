@@ -11,6 +11,11 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESHomeUrl']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="IESBannerUrl" description="doesn't matter" defaultvalue="__IESBannerUrl__" tags="">
+	<parameterValidation kind="AllowEmpty" />
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESBannerUrl']/@value">
+	</parameterentry>
+  </parameter>
   <parameter name="PiwikId" description="doesn't matter" defaultvalue="__PiwikId__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PiwikId']/@value">
     </parameterentry>
