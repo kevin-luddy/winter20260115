@@ -25,6 +25,7 @@ namespace IES.DataBridge.ModelViews
             this.IsLockAllowed = false;
             this.InUse = null;
             this.Editing = string.Empty;
+			this.Ntid = string.Empty;
         }
 
         /// <summary>
@@ -49,14 +50,16 @@ namespace IES.DataBridge.ModelViews
 		/// <param name="isLockAllowed"></param>
 		/// <param name="inUse"></param>
 		/// <param name="editing"></param>
+		/// <param name="ntid"></param>
 		/// <param name="editLockTimeoutWarningMinutes"></param>
 		/// <param name="editLockTimeoutExpirationMinutes"></param>
-		public LockModelView(bool isReadOnly, bool isLockAllowed, DateTime? inUse, string editing, int editLockTimeoutWarningMinutes, int editLockTimeoutExpirationMinutes)
+		public LockModelView(bool isReadOnly, bool isLockAllowed, DateTime? inUse, string editing, string ntid, int editLockTimeoutWarningMinutes, int editLockTimeoutExpirationMinutes)
 		{
 			this.IsReadOnly = isReadOnly;
 			this.IsLockAllowed = isLockAllowed;
 			this.InUse = inUse;
 			this.Editing = editing;
+			this.Ntid = ntid;
 			this.EditLockTimeoutExpirationMinutes = editLockTimeoutExpirationMinutes;
 			this.EditLockTimeoutWarningMinutes = editLockTimeoutWarningMinutes;
 		}
@@ -90,5 +93,10 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets the full name of the user who is currently editing the document; null if not locked for edit.
         /// </summary>
         public string Editing { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets the Ntid of the user who is currently editing the document; null if not locked for edit.
+		/// </summary>
+		public string Ntid { get; set; }
+	}
 }
