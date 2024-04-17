@@ -15,12 +15,14 @@ namespace IES.Common.Core.Services
 	using System.Text;
 	using System.Threading;
 	using System.Xml.Linq;
+	using IES.Common;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
 	using IES.Common.Core.Utilities;
+	using IES.Common.Enums;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>
@@ -181,12 +183,12 @@ namespace IES.Common.Core.Services
 									{
 										currentAccount = new UserData
 										{
-											FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
-											LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
-											DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
-											Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
+											FirstName = CommonUtilities.TryGetPropertyValue(user.Properties, "givenname"),
+											LastName = CommonUtilities.TryGetPropertyValue(user.Properties, "sn"),
+											DisplayName = CommonUtilities.TryGetPropertyValue(user.Properties, "displayname"),
+											Email = CommonUtilities.TryGetPropertyValue(user.Properties, "mail", StringManipulation.ToLower),
 											Ntid = inNtid,
-											Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : user.Properties.Contains("mobile") ? user.Properties["mobile"][0].ToString() : string.Empty,
+											Phone = CommonUtilities.GetUserPhoneNumber(user.Properties),
 											IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y" : null,
 											IsSubcontractor = user.Properties.Contains("employeeType") ? user.Properties["employeeType"][0].ToString().ToUpper() != "E" : null
 										};
@@ -631,18 +633,18 @@ namespace IES.Common.Core.Services
 									userNames = (from SearchResult user in results
 												 select new UserData()
 												 {
-													 DisplayName = user.Properties.Contains("displayname") ? user.Properties["displayname"][0].ToString() : string.Empty,
-													 Ntid = user.Properties.Contains("samaccountname") ? user.Properties["samaccountname"][0].ToString() : string.Empty,
-													 FirstName = user.Properties.Contains("givenname") ? user.Properties["givenname"][0].ToString() : string.Empty,
-													 LastName = user.Properties.Contains("sn") ? user.Properties["sn"][0].ToString() : string.Empty,
-													 Email = user.Properties.Contains("mail") ? user.Properties["mail"][0].ToString().ToLower() : string.Empty,
-													 Phone = user.Properties.Contains("telephonenumber") ? user.Properties["telephonenumber"][0].ToString() : user.Properties.Contains("mobile") ? user.Properties["mobile"][0].ToString() : string.Empty,
+													 DisplayName = CommonUtilities.TryGetPropertyValue(user.Properties, "displayname"),
+													 Ntid = CommonUtilities.TryGetPropertyValue(user.Properties, "samaccountname"),
+													 FirstName = CommonUtilities.TryGetPropertyValue(user.Properties, "givenname"),
+													 LastName = CommonUtilities.TryGetPropertyValue(user.Properties, "sn"),
+													 Email = CommonUtilities.TryGetPropertyValue(user.Properties, "mail", StringManipulation.ToLower),
+													 Phone = CommonUtilities.GetUserPhoneNumber(user.Properties),
 													 IsGroup = user.Properties.Contains("objectClass") && user.Properties["objectClass"].Contains("group"),
-													 State = user.Properties.Contains("st") ? user.Properties["st"][0].ToString() : string.Empty,
-													 Company = user.Properties.Contains("company") ? user.Properties["company"][0].ToString() : string.Empty,
-													 Country = user.Properties.Contains("c") ? user.Properties["c"][0].ToString() : string.Empty,
-													 Title = user.Properties.Contains("title") ? user.Properties["title"][0].ToString() : string.Empty,
-													 EmployeeId = user.Properties.Contains("lmcEmployeeID") ? user.Properties["lmcEmployeeID"][0].ToString() : string.Empty,
+													 State = CommonUtilities.TryGetPropertyValue(user.Properties, "st"),
+													 Company = CommonUtilities.TryGetPropertyValue(user.Properties, "company"),
+													 Country = CommonUtilities.TryGetPropertyValue(user.Properties, "c"),
+													 Title = CommonUtilities.TryGetPropertyValue(user.Properties, "title"),
+													 EmployeeId = CommonUtilities.TryGetPropertyValue(user.Properties, "lmcEmployeeID"),
 													 IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y" : null,
 													 IsSubcontractor = user.Properties.Contains("employeeType") ? user.Properties["employeeType"][0].ToString().ToUpper() != "E" : null
 												 }).Where(u => !string.IsNullOrWhiteSpace(u.Ntid)).ToList();
