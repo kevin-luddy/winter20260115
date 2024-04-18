@@ -170,16 +170,9 @@
             </div>
         </div>
         <% Html.RenderAction(WebConstants.ACTION_SHARED_DISPLAY_MASTER_MENU, WebConstants.CONTROLLER_GENBOE); %>
-        <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) { %>
-            <div class="bannerContainer">
-                <iframe class="bannerframe" id="bannerIFrameSpace" src='<%: ConfigurationUtilities.IESBannerUrl("BOESSC") %>'></iframe>
-            </div>
-        <% } %>
-        <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) { %>
-            <div class="bannerContainer">
-                <iframe class="bannerframe" id="bannerIFrameRMS" src='<%: ConfigurationUtilities.IESBannerUrl("BOERMS") %>'></iframe>
-            </div>
-        <% } %>
+        <div class="bannerContainer">
+            <iframe class="bannerframe" id="bannerIFrameSpace" src='<%: ConfigurationUtilities.IESBannerUrl(ConfigurationUtilities.IESBannerApp) %>'></iframe>
+        </div>
         <div class="main">
             <div id="Notification" class="notification-bar display-none">
                 <div class="notification">

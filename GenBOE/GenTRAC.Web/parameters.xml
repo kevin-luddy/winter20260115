@@ -57,6 +57,11 @@
 	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESBannerUrl']/@value">
 	</parameterentry>
   </parameter>
+  <parameter name="IESBannerApp" description="doesn't matter" defaultvalue="__IESBannerApp__" tags="">
+	<parameterValidation kind="AllowEmpty" />
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESBannerApp']/@value">
+	</parameterentry>
+  </parameter>
   <parameter name="ClientValidationEnabled" description="doesn't matter" defaultvalue="__ClientValidationEnabled__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ClientValidationEnabled']/@value">
     </parameterentry>

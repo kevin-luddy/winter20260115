@@ -28,6 +28,11 @@
 	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESBannerUrl']/@value">
 	</parameterentry>
   </parameter>
+	<parameter name="IESBannerApp" description="doesn't matter" defaultvalue="__IESBannerApp__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESBannerApp']/@value">
+		</parameterentry>
+	</parameter>
   <parameter name="EstimatingDataGroupDL" description="doesn't matter" defaultvalue="__EstimatingDataGroupDL__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EstimatingDataGroupDL']/@value">
     </parameterentry>
