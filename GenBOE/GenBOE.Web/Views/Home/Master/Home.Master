@@ -160,12 +160,12 @@
         <% Html.RenderAction(WebConstants.ACTION_HOME_DISPLAY_MASTER_MENU, WebConstants.CONTROLLER_HOME); %>
         <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) { %>
             <div class="bannerContainer">
-                <iframe class="bannerframe" id="bannerIFrameSpace" src='<%: ConfigurationUtilities.IESBannerUrl(SiteMasterUtilities.IESBannerApp + "/maintenancebanner") %>?url=BOESSC'></iframe>
+                <iframe class="bannerframe" id="bannerIFrameSpace" src='<%: ConfigurationUtilities.IESBannerUrl("BOESSC") %>'></iframe>
             </div>
         <% } %>
         <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) { %>
             <div class="bannerContainer">
-                <iframe class="bannerframe" id="bannerIFrameRMS" src='<%: ConfigurationUtilities.IESBannerUrl(SiteMasterUtilities.IESBannerApp + "/maintenancebanner") %>?url=BOERMS'></iframe>
+                <iframe class="bannerframe" id="bannerIFrameRMS" src='<%: ConfigurationUtilities.IESBannerUrl("BOERMS") %>'></iframe>
             </div>
         <% } %>
         <div class="main">
