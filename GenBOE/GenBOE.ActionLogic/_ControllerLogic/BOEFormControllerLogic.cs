@@ -12,8 +12,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.IO;
     using System.Linq;
     using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.IO;
+	using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -352,7 +354,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {
-                foreach (ResourceTypeDto laborTask in taskElement.taskElementLabors)
+                //get brc labors based on 1lmx start date
+                List<ResourceTypeDto> taskElementLabors = (List<ResourceTypeDto>)BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors);
+
+                foreach (ResourceTypeDto laborTask in taskElementLabors)
                 {
                     if (laborTask.ValueSpread.HasValue && laborTask.ResourceID.HasValue && dto.ResourceIds.Contains(laborTask.ResourceID.Value))
                     {
@@ -661,8 +666,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         else
                         {
                             validationErrors.Add(new ValidationMessage(string.Format("The T&M rates for resource {0} do not cover the entire period of performance {1:MM/yyyy} - {2:MM/yyyy}.", 
-                                resource.ResourceName, workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => z.ResourceID == resourceId)).Min(x => x.StartDate), 
-                                workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => z.ResourceID == resourceId)).Max(x => x.EndDate))));
+                                resource.ResourceName, workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => (z.ResourceID.HasValue && z.ResourceID == resourceId) || (z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resourceId))).Min(x => x.StartDate), 
+                                workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => (z.ResourceID.HasValue && z.ResourceID == resourceId) || (z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resourceId))).Max(x => x.EndDate))));
                         }
                     }
                 }
@@ -693,7 +698,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             if (startAndEndDatesValid)
             {
                 // get start/end dates based on when the resource is actually used
-                Collection<ResourceTypeDto> resourceUsages = workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => z.ResourceID == resourceId)).ToCollection();
+                Collection<ResourceTypeDto> resourceUsages = workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => (z.ResourceID.HasValue && z.ResourceID == resourceId) || (z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resourceId))).ToCollection();
                 if (resourceUsages.Any())
                 {
                     DateTime resourceUsageStartDate = resourceUsages.Min(x => x.StartDateValue);

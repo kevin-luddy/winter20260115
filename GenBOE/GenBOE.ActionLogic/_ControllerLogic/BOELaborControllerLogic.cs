@@ -608,7 +608,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					break;
 				}
 
-				if (labor.ResourceID != originalLabor.ResourceID
+				if ((labor.ResourceID.HasValue && labor.ResourceID != originalLabor.ResourceID)
+					|| (labor.BusinessResourceCodeID.HasValue && labor.BusinessResourceCodeID != originalLabor.BusinessResourceCodeID)
 					|| labor.PerformingOrgID != originalLabor.PerformingOrgID
 					|| labor.StartDate != originalLabor.StartDate.Value.ToMonthString()
 					|| labor.EndDate != originalLabor.EndDate.Value.ToMonthString()
@@ -898,7 +899,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 
 					if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
-						&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
+						&& (dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
 					{
 						validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
 					}

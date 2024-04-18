@@ -9,7 +9,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.IO;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.ZoneTravel;
 	using GenBOE.DataBridge.DTO;
@@ -167,7 +169,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			IEnumerable<BOESummaryGridModelView> result = from boeResourceHours in
 								 (from task in taskElementCollection
-								  from boeResource in task.taskElementLabors
+								  from boeResource in BRCValidationUtility.ProcessLaborTypesForBrc(task.taskElementLabors)
 								  where boeResource.ResourceID.HasValue
 								  select new
 								  {

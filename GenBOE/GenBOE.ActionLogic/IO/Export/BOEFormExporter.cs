@@ -229,7 +229,10 @@ namespace GenBOE.ActionLogic.IO.Export
             foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {
                 BoeDTO boe = workspace.Boes.First(b => b.Id == taskElement.BoeID);
-                foreach (ResourceTypeDto laborTask in taskElement.taskElementLabors)
+                //get brc labors based on 1lmx start date
+                List<ResourceTypeDto> taskElementLabors = (List<ResourceTypeDto>)ImportExportUtilities.ProcessLaborTypesForBrc(taskElement.taskElementLabors);
+
+                foreach (ResourceTypeDto laborTask in taskElementLabors)
                 {
                     int? clinId = boe.IsMultiClinWbs ? laborTask.CLINID : boe.CLINID;
                     int? wbsId = boe.IsMultiClinWbs ? laborTask.WBSID : boe.WBSID;
