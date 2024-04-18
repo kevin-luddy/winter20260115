@@ -114,6 +114,24 @@ namespace IES.DataBridge.ModelViews
         /// </summary>
         public string ReleaseNotes { get; set; }
 
+		/// <summary>
+		/// Formats the Date Published as a string (for JSON-returning purposes)
+		/// </summary>
+		public string DatePublishedAsString
+		{
+			get
+			{
+				if (this.DatePublished.HasValue)
+				{
+					return this.DatePublished.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+				}
+				else
+				{
+					return string.Empty;
+				}
+			}
+		}
+
         /// <summary>
         /// Gets boolean value indicating if revision is work-in-progress or published.
         /// </summary>
