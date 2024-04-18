@@ -15521,8 +15521,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</ResultMapping>
 		  </FunctionImportMapping>
 		  <FunctionImportMapping FunctionImportName="getPerformingOrganizationInUseFlagByPerformingOrganizationListID" FunctionName="GenBOE.Models.Store.getPerformingOrganizationInUseFlagByPerformingOrganizationListID" />
+		  <FunctionImportMapping FunctionImportName="getResourceInUseFlagByResourceListID" FunctionName="GenBOE.Models.Store.getResourceInUseFlagByResourceListID" />
 		  <FunctionImportMapping FunctionImportName="getResourceInUseFlagBySystemResourceID" FunctionName="GenBOE.Models.Store.getResourceInUseFlagBySystemResourceID" />
 		  <FunctionImportMapping FunctionImportName="getSystemPermissions" FunctionName="GenBOE.Models.Store.getSystemPermissions" />
+		  <FunctionImportMapping FunctionImportName="getSystemResourceInUseFlag" FunctionName="GenBOE.Models.Store.getSystemResourceInUseFlag" />
 		  <FunctionImportMapping FunctionImportName="getWorkspaceHistoryLog" FunctionName="GenBOE.Models.Store.getWorkspaceHistoryLog">
 			<ResultMapping>
 			  <ComplexTypeMapping TypeName="GenBOE.Models.getWorkspaceHistoryLog_Result">
@@ -15544,6 +15546,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			  </ComplexTypeMapping>
 			</ResultMapping>
 		  </FunctionImportMapping>
+		  <FunctionImportMapping FunctionImportName="getWorkspaceResourceInUseFlagByMultipleResources" FunctionName="GenBOE.Models.Store.getWorkspaceResourceInUseFlagByMultipleResources" />
+		  <FunctionImportMapping FunctionImportName="getWorkspaceResourceInUseFlagByResourceID" FunctionName="GenBOE.Models.Store.getWorkspaceResourceInUseFlagByResourceID" />
 		  <FunctionImportMapping FunctionImportName="getWorkspaceVariableByTaskElementID" FunctionName="GenBOE.Models.Store.getWorkspaceVariableByTaskElementID">
 			<ResultMapping>
 			  <ComplexTypeMapping TypeName="GenBOE.Models.getWorkspaceVariableByTaskElementID_Result">
@@ -16251,10 +16255,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</EntityTypeMapping>
 		  </EntitySetMapping>
 		  <FunctionImportMapping FunctionImportName="insertMessageConfirmation" FunctionName="GenBOE.Models.Store.insertMessageConfirmation" />
-          <FunctionImportMapping FunctionImportName="getResourceInUseFlagByResourceListID1" FunctionName="GenBOE.Models.Store.getResourceInUseFlagByResourceListID" />
-          <FunctionImportMapping FunctionImportName="getSystemResourceInUseFlag1" FunctionName="GenBOE.Models.Store.getSystemResourceInUseFlag" />
-          <FunctionImportMapping FunctionImportName="getWorkspaceResourceInUseFlagByMultipleResources1" FunctionName="GenBOE.Models.Store.getWorkspaceResourceInUseFlagByMultipleResources" />
-          <FunctionImportMapping FunctionImportName="getWorkspaceResourceInUseFlagByResourceID1" FunctionName="GenBOE.Models.Store.getWorkspaceResourceInUseFlagByResourceID" />
 		</EntityContainerMapping>
 	  </Mapping>
 	</edmx:Mappings>
