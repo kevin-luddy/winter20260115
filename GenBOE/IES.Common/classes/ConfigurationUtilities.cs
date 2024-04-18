@@ -209,17 +209,6 @@ namespace IES.Common
             return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl;
         }
 
-		/// <summary>
-		/// Gets the IES Banner App name
-		/// </summary>
-		public static string IESBannerApp
-		{
-			get
-			{
-				return ConfigurationUtilities.GetAppSetting("IESBannerApp");
-			}
-		}
-
 		#endregion
 	}
 }
