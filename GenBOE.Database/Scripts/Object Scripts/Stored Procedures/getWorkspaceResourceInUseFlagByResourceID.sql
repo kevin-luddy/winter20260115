@@ -29,6 +29,7 @@ AS
 **		--------	--------			---------------------------------------
 **		11/28/12	dcanuso				Make sure Resource is not Deleted (Delete Flag)
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**      4/3/24      e302876             PROPH-1617 - update stored procs for BRC
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -54,10 +55,21 @@ UNION
 		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
 	WHERE 
+	T.ResourceID IS NOT NULL AND
 	T.ResourceID = @ResourceID AND 
 	WR.SystemResourceID = @ResourceID AND
 	W.ResourceListID = @ResourceListID
-
+UNION
+	SELECT T.BRCResourceID FROM  [dbo].[BOELaborType] T
+		INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
+		INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
+		INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+		INNER JOIN dbo.WorkspaceResource WR ON W.WorkspaceID = WR.WorkspaceID
+	WHERE 
+	T.BRCResourceID IS NOT NULL AND
+	T.BRCResourceID = @ResourceID AND 
+	WR.SystemResourceID = @ResourceID AND
+	W.ResourceListID = @ResourceListID
 UNION
 /* Special Processing for Travel */
 		/* Special Processing for Travel */

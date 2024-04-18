@@ -143,9 +143,12 @@ namespace GenBOE.ActionLogic.CopyBOE
         private ICollection<ResourceDTO> GetResourceConflicts(BoeTaskElementDTO inTaskElement, IReadOnlyCollection<ResourceDTO> inDestinationResources)
         {
 			// Get resources used by the tasks that have matching resources in the new workspace
-			List<int> distinctResourceIDs = (from r in inTaskElement.taskElementLabors
+			List<int> distinctResourceIDs = ((from r in inTaskElement.taskElementLabors
                                        where r.ResourceID.HasValue
-                                       select r.ResourceID.Value).Distinct().ToList();
+                                       select r.ResourceID.Value)
+									   .Union(from r in inTaskElement.taskElementLabors
+                                        where r.BusinessResourceCodeID.HasValue
+                                        select r.BusinessResourceCodeID.Value)).Distinct().ToList();
 
             ICollection<ResourceDTO> resourcesForIds = this._IResourceDTODataLoader.GetByIds(distinctResourceIDs);
 

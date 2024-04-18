@@ -297,12 +297,11 @@ namespace GenBOE.ActionLogic.CopyBOE
             List<int> resourceIDs = (from t in inSourceBOE.TaskElements
                                      from l in t.taskElementLabors
                                      where l.ResourceID.HasValue
-                                     select l.ResourceID.Value).ToList();
-            // Add BRC Ids to list
-            resourceIDs.AddRange((from t in inSourceBOE.TaskElements
-                                    from l in t.taskElementLabors
-                                    where l.BusinessResourceCodeID.HasValue
-                                    select l.BusinessResourceCodeID.Value).ToList());
+                                     select l.ResourceID.Value)
+                                     .Union(from t in inSourceBOE.TaskElements
+                                     from l in t.taskElementLabors
+                                     where l.BusinessResourceCodeID.HasValue
+                                     select l.BusinessResourceCodeID.Value).ToList();
 
             ICollection<ResourceDTO> resourcesToMap = this._IResourceDTODataLoader.GetByIds(resourceIDs);
 

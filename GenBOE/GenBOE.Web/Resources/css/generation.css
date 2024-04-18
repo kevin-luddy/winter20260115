@@ -6503,9 +6503,17 @@ div.popup-div-button {
 }
 
 .labor-spread-labels {
-    width: 346px; 
-    display: inline-block; 
+    width: 299px;
+    display: inline-block;
     vertical-align: top;
+}
+
+.labor-spread-labels-brc {
+    width: 346px !important; 
+}
+
+.header-rows {
+    width: 100%;
 }
 
 #LaborSpreadGridBlock.ReadOnly td.ResourceName,
@@ -7154,13 +7162,17 @@ table.moduled-table {
     max-width: none;
 }
 
-.boe-details .labor-spread-scroll
-{
-    width: 990px;
+.boe-details .labor-spread-scroll {
+    width: 1035px;
     max-width: none;
     display: inline-block;
     vertical-align: top;
     overflow: auto;
+}
+
+.boe-details .labor-spread-scroll-brc
+{
+    width: 990px !important;
 }
 
 .task-element-grid #TaskElementGrid
