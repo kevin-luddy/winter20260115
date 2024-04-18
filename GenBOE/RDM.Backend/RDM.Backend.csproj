@@ -17,11 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx" />
+    <EmbeddedResource Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx" />
     <Content Include="app_offlineX.htm" />
-    <Content Include="Templates\Export\CobraExport.xlsx" />
-    <Content Include="Templates\Export\RateCodesImportExample.xlsx" />
-    <Content Include="Templates\Export\RatesImportExample.xlsx" />
+    <EmbeddedResource Include="Templates\Export\CobraExport.xlsx" />
+    <EmbeddedResource Include="Templates\Export\RateCodesImportExample.xlsx" />
+    <EmbeddedResource Include="Templates\Export\RatesImportExample.xlsx" />
     <Content Include="logs\ReadMe.txt" />
     <Content Include="parameters.xml" />
   </ItemGroup>
