@@ -1357,7 +1357,8 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(RestoreDefaultOptions), typeof(RestoreDefaultOptions), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                                                     new ResolvedParameter(typeof(IInUseDataLoader)),
                                                                                                                                                     new ResolvedParameter(typeof(IWorkspaceDTODataLoader)),
-                                                                                                                                                    new ResolvedParameter(typeof(IPerformingOrgDTODataLoader))));
+                                                                                                                                                    new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
+																																					new ResolvedParameter(typeof(IResourceDTODataLoader))));
 
             GenBOEUnityContainer.Container.RegisterType(typeof(PerfOrgSearch), typeof(PerfOrgSearch), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IPerformingOrgDTODataLoader))));
             GenBOEUnityContainer.Container.RegisterType(typeof(NestedWBSUtilities), typeof(NestedWBSUtilities), GetLifetimeManager(), new InjectionMember[] { });
