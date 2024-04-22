@@ -201,12 +201,11 @@ namespace RDM.Backend.Controllers
 			try
 			{
 				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/PPRDTemplate.docx");
-
 				this.reportsControllerLogic.GenerateFullPPRD(id, serverFileName, portionMarkingRequired);
 			}
 			catch (GeneralAppException e)
 			{
-				this.log.LogError(e, "Unknown Exception");
+				this.log.LogError(e, "Error generating full PPR&D doc");
 				result = this.CreateTextFileWithErrorMessage(e.Message);
 			}
 

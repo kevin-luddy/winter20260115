@@ -356,7 +356,9 @@ namespace RDM.Backend.Controllers
 		{
 			try
 			{
-				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/RateCodesImportExample.xlsx");
+				//string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/RateCodesImportExample.xlsx");
+				string projectDirectory = Directory.GetCurrentDirectory();
+				string serverFileName = Path.Combine(projectDirectory, "Templates", "Export", "RateCodesImportExample.xlsx");
 				RateGridModelView rates = this.controllerLogic.GetRatesByVersion(id, this.Logic.Revisions);
 
 				// Call the export function and get back the file name of the populated file.
