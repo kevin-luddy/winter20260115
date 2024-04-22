@@ -257,10 +257,10 @@
         </div>
 
         @{Html.RenderAction(WebConstants.Action.GENTRAC_DISPLAY_HOME_MENU, WebConstants.Controller.GEN_TRAC, new { context = ViewContext });}
-        @{ if (!string.IsNullOrEmpty(ConfigurationUtilities.IESBannerUrl("PTM")))
+        @{ if (!string.IsNullOrEmpty(ConfigurationUtilities.IESBannerUrl(ConfigurationUtilities.IESBannerApp)))
             {
                 <div class="bannerContainer">
-                    <iframe class="bannerframe" id="bannerIFrame" src="@ConfigurationUtilities.IESBannerUrl("PTM")"></iframe>
+                    <iframe class="bannerframe" src="@ConfigurationUtilities.IESBannerUrl(ConfigurationUtilities.IESBannerApp)"></iframe>
                 </div>
             }
         }

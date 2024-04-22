@@ -357,6 +357,7 @@ namespace GenTRAC.ActionLogic
 				{
 					ProposalDto updatedProposal = ProposalLoader.GetById(proposalId.Value);
 					proposalInfo.ProposalTrackingNumber = updatedProposal.TrackingNumber;
+					proposalInfo.ProposalID = proposalId.Value;
 				}
 
 				this.emailer.SendPtmRecordCreationEmail(this.securityInformation.ActiveUserData, contractsLead, contractsBackup, proposalInfo, WebConfigurationManager.AppSettings["EnableEppIntegration"] == "true", 

@@ -118,7 +118,7 @@ namespace GenBOE.Web.Common
 		{
 			bool displayBanner = false;
 
-			if (IESBannerApp == Constants.BOE_SPACE_INTERNATIONAL_APP_NAME)
+			if (ConfigurationUtilities.GetAppSetting("IESBannerApp") == Constants.BOE_SPACE_INTERNATIONAL_APP_NAME)
 			{
 				HttpCookie cookie = HttpContext.Current.Request.Cookies[WebConstants.ECI_FORBIDDEN_BANNER];
 
@@ -374,17 +374,6 @@ namespace GenBOE.Web.Common
 			get
 			{
 				return ConfigurationUtilities.GetAppSetting("UnclassifiedBannerText");
-			}
-		}
-
-		/// <summary>
-		/// Gets the IES Banner App name
-		/// </summary>
-		public static string IESBannerApp
-		{
-			get
-			{
-				return ConfigurationUtilities.GetAppSetting("IESBannerApp");
 			}
 		}
 	}

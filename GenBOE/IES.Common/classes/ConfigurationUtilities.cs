@@ -204,11 +204,22 @@ namespace IES.Common
                 throw new ArgumentNullException(nameof(active));
             }
 
-            string iesUrl = ConfigurationUtilities.GetAppSetting("IESHomeUrl");
+            string iesUrl = ConfigurationUtilities.GetAppSetting("IESBannerUrl") + active;
 
             return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl;
         }
 
-        #endregion
-    }
+		/// <summary>
+		/// Gets the IES Banner App name
+		/// </summary>
+		public static string IESBannerApp
+		{
+			get
+			{
+				return ConfigurationUtilities.GetAppSetting("IESBannerApp");
+			}
+		}
+
+		#endregion
+	}
 }

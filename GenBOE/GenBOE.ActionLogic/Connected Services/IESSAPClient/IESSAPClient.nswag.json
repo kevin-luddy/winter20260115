@@ -222,6 +222,13 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "companyConfiguration",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyConfiguration"
+            }
           }
         ],
         "responses": {
@@ -254,6 +261,15 @@
           "QueryParser"
         ],
         "operationId": "FormulateString",
+        "parameters": [
+          {
+            "name": "companyConfiguration",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyConfiguration"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json-patch+json": {
@@ -541,6 +557,13 @@
               "type": "string"
             }
           },
+          "warnings": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
           "isSuccessful": {
             "type": "boolean",
             "readOnly": true
@@ -585,6 +608,13 @@
             "$ref": "#/components/schemas/CalculateActualsViewModel"
           },
           "messages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "warnings": {
             "type": "array",
             "nullable": true,
             "items": {
@@ -696,6 +726,13 @@
               "type": "string"
             }
           },
+          "warnings": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
           "isSuccessful": {
             "type": "boolean",
             "readOnly": true
@@ -790,6 +827,13 @@
               "type": "string"
             }
           },
+          "warnings": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
           "isSuccessful": {
             "type": "boolean",
             "readOnly": true
@@ -811,7 +855,8 @@
           "NotFound",
           "NotAuthorized",
           "InvalidInput",
-          "HttpFailure"
+          "HttpFailure",
+          "Warnings"
         ]
       },
       "StringResult": {
@@ -823,6 +868,13 @@
             "nullable": true
           },
           "messages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "warnings": {
             "type": "array",
             "nullable": true,
             "items": {

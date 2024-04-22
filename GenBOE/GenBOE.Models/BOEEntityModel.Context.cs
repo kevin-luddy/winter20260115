@@ -4167,12 +4167,12 @@ namespace GenBOE.Models
             var enableSAPConnectionParameter = enableSAPConnection.HasValue ?
                 new ObjectParameter("EnableSAPConnection", enableSAPConnection) :
                 new ObjectParameter("EnableSAPConnection", typeof(bool));
-
-			var currentPTMWorkspaceParameter = currentPTMWorkspace.HasValue ?
-				new ObjectParameter("CurrentPTMWorkspace", currentPTMWorkspace) :
-				new ObjectParameter("CurrentPTMWorkspace", typeof(bool));
-
-			return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, workspaceStateIDParameter, contractStartDateParameter, contractEndDateParameter, proposalSubmitDateParameter, workspaceDescriptionParameter, costVolumeLeadPricerETIUserIDParameter, rFPNumberParameter, templateIDParameter, containsOCIParameter, trackingNumberParameter, containsTemplateParameter, numProPricerExportParameter, createdByETIUserIDParameter, proposalStatusIDParameter, statusCommentParameter, performingOrganizationListIDParameter, resourceListIDParameter, updateDTParameter, bOEExportSortByIDParameter, segmentIDParameter, lineOfBusinessIDParameter, contractTypeIDParameter, proposalClassIDParameter, proposalTitleParameter, resourcePrecisionParameter, recalculationStartedDateParameter, costPrecisionParameter, isUsingEquivalentPersonParameter, isUsingTMParameter, projectMapTypeIDParameter, allowGridEditParameter, customSortingParameter, resourceSortingParameter, perfOrgSortingParameter, lastProPricerInstanceParameter, lastProPricerProposalParameter, rteSizeLimitParameter, revisedSubmittalDateParameter, templateBoeParameter, enableSAPConnectionParameter, currentPTMWorkspaceParameter);
+    
+            var currentPTMWorkspaceParameter = currentPTMWorkspace.HasValue ?
+                new ObjectParameter("CurrentPTMWorkspace", currentPTMWorkspace) :
+                new ObjectParameter("CurrentPTMWorkspace", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, workspaceStateIDParameter, contractStartDateParameter, contractEndDateParameter, proposalSubmitDateParameter, workspaceDescriptionParameter, costVolumeLeadPricerETIUserIDParameter, rFPNumberParameter, templateIDParameter, containsOCIParameter, trackingNumberParameter, containsTemplateParameter, numProPricerExportParameter, createdByETIUserIDParameter, proposalStatusIDParameter, statusCommentParameter, performingOrganizationListIDParameter, resourceListIDParameter, updateDTParameter, bOEExportSortByIDParameter, segmentIDParameter, lineOfBusinessIDParameter, contractTypeIDParameter, proposalClassIDParameter, proposalTitleParameter, resourcePrecisionParameter, recalculationStartedDateParameter, costPrecisionParameter, isUsingEquivalentPersonParameter, isUsingTMParameter, projectMapTypeIDParameter, allowGridEditParameter, customSortingParameter, resourceSortingParameter, perfOrgSortingParameter, lastProPricerInstanceParameter, lastProPricerProposalParameter, rteSizeLimitParameter, revisedSubmittalDateParameter, templateBoeParameter, enableSAPConnectionParameter, currentPTMWorkspaceParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertWorkspacePerformingOrganization(Nullable<int> performingOrganizationID, string performingOrganizationName, string performingOrganizationDescription, Nullable<int> performingOrganizationListID, Nullable<System.DateTime> updateDT)
@@ -5504,6 +5504,46 @@ namespace GenBOE.Models
                 new ObjectParameter("MessageID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertMessageConfirmation", eTIUserIDParameter, messageIDParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> getResourceInUseFlagByResourceListID1(Nullable<int> resourceListID)
+        {
+            var resourceListIDParameter = resourceListID.HasValue ?
+                new ObjectParameter("ResourceListID", resourceListID) :
+                new ObjectParameter("ResourceListID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getResourceInUseFlagByResourceListID1", resourceListIDParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> getSystemResourceInUseFlag1()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getSystemResourceInUseFlag1");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> getWorkspaceResourceInUseFlagByMultipleResources1(string resourceID, Nullable<int> resourceListID)
+        {
+            var resourceIDParameter = resourceID != null ?
+                new ObjectParameter("ResourceID", resourceID) :
+                new ObjectParameter("ResourceID", typeof(string));
+    
+            var resourceListIDParameter = resourceListID.HasValue ?
+                new ObjectParameter("ResourceListID", resourceListID) :
+                new ObjectParameter("ResourceListID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceResourceInUseFlagByMultipleResources1", resourceIDParameter, resourceListIDParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> getWorkspaceResourceInUseFlagByResourceID1(Nullable<int> resourceID, Nullable<int> resourceListID)
+        {
+            var resourceIDParameter = resourceID.HasValue ?
+                new ObjectParameter("ResourceID", resourceID) :
+                new ObjectParameter("ResourceID", typeof(int));
+    
+            var resourceListIDParameter = resourceListID.HasValue ?
+                new ObjectParameter("ResourceListID", resourceListID) :
+                new ObjectParameter("ResourceListID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceResourceInUseFlagByResourceID1", resourceIDParameter, resourceListIDParameter);
         }
     }
 }

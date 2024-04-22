@@ -9,6 +9,7 @@ namespace IES.Common.Core.Utilities
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
 	using System.Net.Http;
@@ -18,6 +19,7 @@ namespace IES.Common.Core.Utilities
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
+	using IES.Common.Enums;
 	using Microsoft.AspNetCore.Mvc.ModelBinding;
 	using Microsoft.Net.Http.Headers;
 	using PickList;
@@ -788,6 +790,86 @@ namespace IES.Common.Core.Utilities
 			string path = Path.Combine(HostEnvironmentWebpath, fileName);
 
 			return path;
+		}
+
+		/// <summary>
+		/// Get Property Value if it exists
+		/// </summary>
+		/// <param name="propertyCollection">Collection of Properties to traverse through</param>
+		/// <param name="propertyName">Property Value to retrieve</param>
+		/// <param name="stringManipulation">Determines how to manipulate string for return</param>
+		/// <returns>Property Value if it exists, empty string otherwise</returns>
+		public static string TryGetPropertyValue(PropertyCollection propertyCollection, string propertyName, StringManipulation stringManipulation = StringManipulation.None)
+		{
+			string toReturn = string.Empty;
+
+			if (propertyCollection != null)
+			{
+				toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;
+			}
+
+			switch (stringManipulation)
+			{
+				case StringManipulation.ToLower:
+					return string.IsNullOrEmpty(toReturn) ? toReturn : toReturn.ToLower();
+				case StringManipulation.ToUpper:
+					return string.IsNullOrEmpty(toReturn) ? toReturn : toReturn.ToUpper();
+				case StringManipulation.None:
+				default:
+					return toReturn;
+			}
+		}
+
+		/// <summary>
+		/// Get Property Value if it exists
+		/// </summary>
+		/// <param name="propertyCollection">Collection of Properties to traverse through</param>
+		/// <param name="propertyName">Property Value to retrieve</param>
+		/// <param name="stringManipulation">Determines how to manipulate string for return</param>
+		/// <returns>Property Value if it exists, empty string otherwise</returns>
+		public static string TryGetPropertyValue(ResultPropertyCollection propertyCollection, string propertyName, StringManipulation stringManipulation = StringManipulation.None)
+		{
+			string toReturn = string.Empty;
+
+			if (propertyCollection != null)
+			{
+				toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;
+			}
+
+			switch (stringManipulation)
+			{
+				case StringManipulation.ToLower:
+					return string.IsNullOrEmpty(toReturn) ? toReturn : toReturn.ToLower();
+				case StringManipulation.ToUpper:
+					return string.IsNullOrEmpty(toReturn) ? toReturn : toReturn.ToUpper();
+				case StringManipulation.None:
+				default:
+					return toReturn;
+			}
+		}
+
+		/// <summary>
+		/// Get User phone number
+		/// </summary>
+		/// <param name="propertyCollection">Collection of Properties to traverse through</param>
+		/// <returns>Business phone number by default but if that does not exist, then it returns mobile number</returns>
+		public static string GetUserPhoneNumber(ResultPropertyCollection propertyCollection)
+		{
+			string phone = TryGetPropertyValue(propertyCollection, "telephonenumber");
+
+			return !string.IsNullOrEmpty(phone) ? phone : TryGetPropertyValue(propertyCollection, "mobile");
+		}
+
+		/// <summary>
+		/// Get User phone number
+		/// </summary>
+		/// <param name="propertyCollection">Collection of Properties to traverse through</param>
+		/// <returns>Business phone number by default but if that does not exist, then it returns mobile number</returns>
+		public static string GetUserPhoneNumber(PropertyCollection propertyCollection)
+		{
+			string phone = TryGetPropertyValue(propertyCollection, "telephonenumber");
+
+			return !string.IsNullOrEmpty(phone) ? phone : TryGetPropertyValue(propertyCollection, "mobile");
 		}
 	}
 }

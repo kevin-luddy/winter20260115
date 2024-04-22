@@ -33,7 +33,8 @@ AS
 **			5/24/2017	brunworg				BOEJ-2125 Remove T&M Resource 
 **                                              Rates, they don't make in use.
 **			12/15/17	twilson3				BOEJ-2248 Remove Labor Rates
-**		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		    6/25/19		twilson3			    BOEJ-3964 - Remove in-use flag, MaterialXref
+**          4/3/24      e302876                 PROPH-1617 - update stored procs for BRC
 *******************************************************************************/
 SET NOCOUNT ON 
       
@@ -95,6 +96,7 @@ FROM  [dbo].[BOELaborType] T
             INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
             INNER JOIN @BOE B ON TE.BOEID = B.BOEID
             INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE T.ResourceID IS NOT NULL
             /*Regardless of whether it is in this table, the fact that is is
             used in your BOE is what is relevant so removing this
             INNER JOIN @WorkspaceResource WR 
@@ -104,8 +106,13 @@ WHERE
 WR.ResourceListID = @ResourceListID 
 */
 
-
-
+INSERT INTO @ResultSet (SystemResourceID)
+SELECT DISTINCT T.BRCResourceID 
+FROM  [dbo].[BOELaborType] T
+            INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
+            INNER JOIN @BOE B ON TE.BOEID = B.BOEID
+            INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE T.BRCResourceID IS NOT NULL
 
 
 --UNION
@@ -162,7 +169,6 @@ INSERT INTO @ResultSet (SystemResourceID)
             INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormPBOE] P ON P.WorkspaceID = W.WorkspaceID
 			INNER JOIN [dbo].[BOEFormPBOEResourcesXREF] X on X.[PBOEFormID] = P.[PBOEFormID]
-
 
 --for nonzone rms travel trips, add nonzoneresourceids  
 	INSERT INTO @ResultSet (SystemResourceID)

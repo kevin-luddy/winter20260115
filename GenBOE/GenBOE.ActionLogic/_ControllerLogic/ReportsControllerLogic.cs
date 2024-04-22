@@ -182,7 +182,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 boes = ProjectMapSorter.OrderBoes(boes, workspace).ToList();
             }
 
-            exportInputs = new BOEExportInputs(boes, workspace.Boes.ToList(), tasks, workspace, rteTemplateOverrides, workspace.MoqTypeSelections.ToList());
+            exportInputs = new BOEExportInputs(boes, workspace.Boes.ToList(), tasks, workspace, rteTemplateOverrides, workspace.MoqTypeSelections.ToList(), true);
             exportInputs.SummarizeByCustomField = summarizeByCustomField;
 
             if (isCustomExport)

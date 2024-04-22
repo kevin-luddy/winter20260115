@@ -156,7 +156,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			{
 				// already locked
 				bool status = ActiveUserOwnsLock(areaLock);
-				lockInfo = new LockModelView(!status, IsLockAllowed(area, false), areaLock.TimeOfLock, areaLock.LockedBy.DisplayName, Convert.ToInt32(this.configuration["EditLockTimeoutWarningMinutes"]), Convert.ToInt32(this.configuration["EditLockTimeoutExpirationMinutes"])); 
+				lockInfo = new LockModelView(!status, IsLockAllowed(area, false), areaLock.TimeOfLock, areaLock.LockedBy.DisplayName, areaLock.LockedBy.Ntid, Convert.ToInt32(this.configuration["EditLockTimeoutWarningMinutes"]), Convert.ToInt32(this.configuration["EditLockTimeoutExpirationMinutes"])); 
 			}
 
 			return lockInfo;

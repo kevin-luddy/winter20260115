@@ -518,7 +518,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                     {
                         ResourceDTO resource = resourcesForLabors.First(x => x.Id == laborType.ResourceID.Value);
 
-                        if (exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITH_COST ||
+						if (exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITH_COST ||
                             exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITHOUT_COST ||
                             exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_STANDARD_PORTRAIT_WITHOUT_COST_2 ||
                             exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.LMSI_GSM_O_LANDSACPE_WITH_TIME_PHASED_SUMMARIES)
@@ -541,7 +541,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                         boeExportLabor.ExportFields[BOEExporter.FieldName_TaskTypeDescription] = resource.ResourceDesc;
                         boeExportLabor.ExportFields[BOEExporter.FieldName_ResourceID] = resource.Id.ToString();
                         boeExportLabor.ExportFields[BOEExporter.FieldName_GenBOEResourceID] = laborType.Id.ToString();
-                        if (exportInputs.Workspace.IsProjectMapWorkspace)
+
+						if (exportInputs.Workspace.IsProjectMapWorkspace)
                         {
                             boeExportLabor.ExportFields[BOEExporter.FieldName_ResourceName] = Utilities.FormatResourceNames(resource.ResourceName, this.commonDataMapper.GetSikorskyLegacyResourceID(laborType.LegacyID, allLegacyResources), laborType is SubResourceTypeDto);
                         }
@@ -565,7 +566,13 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                         boeExportLabor.ExportFields[BOEExporter.FieldName_ResourceRateType] = resource.RateType.ToString();
                     }
 
-                    if (laborType.PerformingOrgID.HasValue)
+					if (Utilities.IsBRCEnabledForSystem)
+					{
+						boeExportLabor.ExportFields[BOEExporter.FieldName_BrcID] = laborType.BusinessResourceCodeID.HasValue 
+							? laborType.BusinessResourceCodeID.ToString() : string.Empty;
+					}
+
+					if (laborType.PerformingOrgID.HasValue)
                     {
                         boeExportLabor.ExportFields[BOEExporter.FieldName_PerfOrgId] = laborType.PerformingOrgID.ToString();
                         PerformingOrgDTO perfOrg = performingOrgsFromDb.First(x => x.Id == laborType.PerformingOrgID.Value);

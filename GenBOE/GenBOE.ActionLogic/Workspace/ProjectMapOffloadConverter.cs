@@ -67,7 +67,7 @@ namespace GenBOE.ActionLogic.Workspace
                     {
                         PerformingOrgDTO perfOrg = workspace.PerformingOrgsForWsList.FirstOrDefault(p => p.Id == laborResource.PerformingOrgID);
                         ResourceDTO resource = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborResource.ResourceID);
-                        WbsDTO wbs = workspace.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
+						WbsDTO wbs = workspace.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                         FullClin clin = workspace.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
 
                         // Project map -> activity is fed from BOE. Standard -> fed from task. (facepalm)
