@@ -16,7 +16,8 @@ namespace GenBOE.ActionLogic.IO.Export
     using System.Web;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
-    using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -230,7 +231,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 BoeDTO boe = workspace.Boes.First(b => b.Id == taskElement.BoeID);
                 //get brc labors based on 1lmx start date
-                List<ResourceTypeDto> taskElementLabors = (List<ResourceTypeDto>)ImportExportUtilities.ProcessLaborTypesForBrc(taskElement.taskElementLabors);
+                List<ResourceTypeDto> taskElementLabors = (List<ResourceTypeDto>)BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors);
 
                 foreach (ResourceTypeDto laborTask in taskElementLabors)
                 {
