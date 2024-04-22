@@ -327,7 +327,7 @@ namespace GenBOE.ActionLogic.CustomFields
 		}
 
 		/// <summary>
-		/// Get resources in System Resources that will be added to Workspace Reources
+		/// Get resources in System Resources that will be added to Workspace Resources
 		/// </summary>
 		/// <param name="workspaceResources">Workspace-level resources</param>
 		/// <param name="systemResources">System-level resources</param>
