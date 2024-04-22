@@ -58,21 +58,38 @@ namespace IES.DataBridge.Loaders
 
             using (IESEntities context = new IESEntities())
             {
-                ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
+				//            ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
+				//if (sectionsOnly)
+				//            {
+				//                // Filter out Sections that don't have a Content Type of Section
+				//                sectionsForRevision = sectionsForRevision
+				//		.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section).ToCollection();
+				//}
+
+				//            if (sectionIds != null)
+				//            {
+				//                int sectionType = (int)SectionContentType.Section;
+				//	sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID)).ToCollection();
+				//}
+
+				//ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
+				IQueryable<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id));
 				if (sectionsOnly)
-                {
-                    // Filter out Sections that don't have a Content Type of Section
-                    sectionsForRevision = sectionsForRevision
-						.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section).ToCollection();
+				{
+					// Filter out Sections that don't have a Content Type of Section
+					sectionsForRevision = sectionsForRevision
+						//.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section).ToCollection();
+						.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section);
 				}
 
-                if (sectionIds != null)
-                {
-                    int sectionType = (int)SectionContentType.Section;
-					sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID)).ToCollection();
+				if (sectionIds != null)
+				{
+					int sectionType = (int)SectionContentType.Section;
+					//sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID)).ToCollection();
+					sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID));
 				}
 
-				sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
+				/*sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
 				{
 					Id = r.ID,
 					UpdateDate = r.UpdateDate,
@@ -80,7 +97,8 @@ namespace IES.DataBridge.Loaders
 					ParentId = r.ParentID,
 					DisplayOrder = r.DisplayOrder,
 					Title = r.Title,
-					TextContent = r.TextContent,
+					//TextContent = r.TextContent,
+					TextContent = string.Empty,
 					ContentType = (SectionContentType)r.SectionContentTypeID,
 					IsInternalSection = r.IsInternalSection,
 					DisplayRateCode = r.DisplayRateCode,
@@ -90,6 +108,37 @@ namespace IES.DataBridge.Loaders
 					IsDisclosureStatementAdequate = r.IsDisclosureStatementAdequate is null ? false : r.IsDisclosureStatementAdequate.Value,
 					SectionContainsNonCompliance = r.SectionContainsNonCompliance,
 					NonComplianceNotification = r.NonComplianceNotification is null ? false : r.NonComplianceNotification.Value,
+					Office = r.Office,
+					Agency = r.Agency,
+					LMBA = r.LMBA,
+					Name = r.Name,
+					Street = r.Street,
+					CityST = r.CityST,
+					Phone = r.Phone,
+					Email = r.Email,
+					Other = r.Other,
+					IncludeInCoversheet = r.IncludeInCoversheet,
+				}).ToList();*/
+
+				sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
+				{
+					Id = r.ID,
+					UpdateDate = r.UpdateDate,
+					RevisionId = r.RevisionID,
+					ParentId = r.ParentID,
+					DisplayOrder = r.DisplayOrder,
+					Title = r.Title,
+					//TextContent = r.TextContent,
+					TextContent = string.Empty,
+					ContentType = (SectionContentType)r.SectionContentTypeID,
+					IsInternalSection = r.IsInternalSection,
+					DisplayRateCode = r.DisplayRateCode,
+					RevisionUniqueSectionId = r.RevisionUniqueSectionId,
+					IsRdsbRequired = r.IsRdsbRequired,
+					SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
+					IsDisclosureStatementAdequate = r.IsDisclosureStatementAdequate == null ? false : r.IsDisclosureStatementAdequate.Value,
+					SectionContainsNonCompliance = r.SectionContainsNonCompliance,
+					NonComplianceNotification = r.NonComplianceNotification == null ? false : r.NonComplianceNotification.Value,
 					Office = r.Office,
 					Agency = r.Agency,
 					LMBA = r.LMBA,
