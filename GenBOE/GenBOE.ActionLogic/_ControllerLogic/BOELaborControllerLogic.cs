@@ -883,32 +883,35 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
 			{
-				if (Utilities.IsBRCEnabledForSystem)
+				if (dto.Updateable != UpdateType.Deleted)
 				{
-					// do validation per row item
-					if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
+					if (Utilities.IsBRCEnabledForSystem)
 					{
-						validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
-					}
+						// do validation per row item
+						if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
+						}
 
-					if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
-						&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
-						&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
-					{
-						validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
-					}
+						if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
+							&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
+							&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
+						}
 
-					if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
-						&& (dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
-					{
-						validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+						if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
+							&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+						}
 					}
-				}
-				else
-				{
-					if (dto.ResourceID == null || dto.ResourceID == 0)
+					else
 					{
-						validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
+						if (dto.ResourceID == null || dto.ResourceID == 0)
+						{
+							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
+						}
 					}
 				}
 			}
@@ -3767,7 +3770,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
 					// Call Swagger Client
-					StringResult result = await iesSapClient.ApiQueryParserFormulateStringAsync(filters);
+					StringResult result = await iesSapClient.ApiQueryParserFormulateStringAsync(GetCompanyConfigurationForSAP(), filters);
 					response.Messages = result.Messages;
 					response.IsSuccessful = result.IsSuccessful;
 					response.Data.Add(result.Data);
@@ -3807,7 +3810,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
 					// Call Swagger Client
-					QueryViewModelICollectionResult result = await iesSapClient.ApiQueryParserParseStringAsync(text);
+					QueryViewModelICollectionResult result = await iesSapClient.ApiQueryParserParseStringAsync(text, GetCompanyConfigurationForSAP());
 					response.Messages = result.Messages;
 					response.IsSuccessful = result.IsSuccessful;
 					response.Data = result.Data;
@@ -3840,8 +3843,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
 				// Convert company configuration
-				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration =
-					(ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
 
 				// Convert table data
 
@@ -3888,8 +3890,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
 				// Convert company configuration
-				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration =
-					(ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
 
 				// Convert table data
 				ICollection<DataTableViewModel> dataTables = tableData.Select(t =>
@@ -3923,6 +3924,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return response;
+		}
+
+		private ActionLogic.IESSAPClient.CompanyConfiguration GetCompanyConfigurationForSAP()
+		{
+			return (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
 		}
 	}
 

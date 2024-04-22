@@ -210,7 +210,8 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 boe.Id.ToString(),
                 boe.Title ?? this.sEmpty,
-                task.BOETaskID,
+				string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+				task.BOETaskID,
                 task.TaskTitle,
                 selectedMoqType,
                 table.TableName,

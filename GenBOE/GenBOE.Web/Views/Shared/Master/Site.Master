@@ -171,7 +171,7 @@
         </div>
         <% Html.RenderAction(WebConstants.ACTION_SHARED_DISPLAY_MASTER_MENU, WebConstants.CONTROLLER_GENBOE); %>
         <div class="bannerContainer">
-            <iframe class="bannerframe" id="bannerIFrame" src="<%:ConfigurationUtilities.IESBannerUrl(SiteMasterUtilities.IESBannerApp)%>"></iframe>
+            <iframe class="bannerframe" id="bannerIFrameSpace" src='<%: ConfigurationUtilities.IESBannerUrl(ConfigurationUtilities.IESBannerApp) %>'></iframe>
         </div>
         <div class="main">
             <div id="Notification" class="notification-bar display-none">

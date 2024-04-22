@@ -1,850 +1,902 @@
 {
-  "openapi": "3.0.1",
-  "info": {
-    "title": "IES SAP API",
-    "version": "v_APPVERSION_"
-  },
-  "paths": {
-    "/api/QueryFilter/GetAllOperators": {
-      "get": {
-        "tags": [
-          "QueryFilter"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/QueryOperatorViewModel"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/QueryOperatorViewModel"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/QueryOperatorViewModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/QueryFilter/GetAllFieldsForCompanyCode": {
-      "get": {
-        "tags": [
-          "QueryFilter"
-        ],
-        "parameters": [
-          {
-            "name": "company",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/CompanyConfiguration"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/QueryFieldViewModel"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/QueryFieldViewModel"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/QueryFieldViewModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/QueryFilter/GetAllNonDateOperatorOptionsDescriptions": {
-      "get": {
-        "tags": [
-          "QueryFilter"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/QueryFilter/GetAllDateOperatorOptionDescriptions": {
-      "get": {
-        "tags": [
-          "QueryFilter"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DateDescriptionAttribute"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DateDescriptionAttribute"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DateDescriptionAttribute"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/QueryFilter/GetAllFieldOptionDescriptions": {
-      "get": {
-        "tags": [
-          "QueryFilter"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/QueryParser/ParseString": {
-      "post": {
-        "tags": [
-          "QueryParser"
-        ],
-        "parameters": [
-          {
-            "name": "queryString",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/QueryViewModelICollectionResult"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QueryViewModelICollectionResult"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QueryViewModelICollectionResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/QueryParser/FormulateString": {
-      "post": {
-        "tags": [
-          "QueryParser"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/QueryViewModel"
-                }
-              }
-            },
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/QueryViewModel"
-                }
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/QueryViewModel"
-                }
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/QueryViewModel"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/StringResult"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StringResult"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StringResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/QueryParser/IsQueryValid": {
-      "post": {
-        "tags": [
-          "QueryParser"
-        ],
-        "parameters": [
-          {
-            "name": "companyConfiguration",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/CompanyConfiguration"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DataTableViewModel"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DataTableViewModel"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DataTableViewModel"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DataTableViewModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/BooleanResult"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BooleanResult"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BooleanResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/QueryParser/CalculateActuals": {
-      "post": {
-        "tags": [
-          "QueryParser"
-        ],
-        "parameters": [
-          {
-            "name": "companyConfiguration",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/CompanyConfiguration"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/DataTableViewModel"
-                }
-              }
-            },
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/DataTableViewModel"
-                }
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/DataTableViewModel"
-                }
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/DataTableViewModel"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CalculateActualsViewModelResult"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CalculateActualsViewModelResult"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CalculateActualsViewModelResult"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/QueryParser/ExportActuals": {
-      "post": {
-        "tags": [
-          "QueryParser"
-        ],
-        "parameters": [
-          {
-            "name": "companyConfiguration",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/CompanyConfiguration"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DataTableViewModel"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DataTableViewModel"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DataTableViewModel"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DataTableViewModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ExportActualsViewModelResult"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ExportActualsViewModelResult"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ExportActualsViewModelResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "BooleanResult": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "boolean"
-          },
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "isSuccessful": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/ResultStatus"
-          },
-          "correlationId": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "CalculateActualsViewModel": {
-        "type": "object",
-        "properties": {
-          "wbsHours": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "totalHours": {
-            "type": "number",
-            "format": "double"
-          },
-          "tableId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "contractNumber": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "CalculateActualsViewModelResult": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/CalculateActualsViewModel"
-          },
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "isSuccessful": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/ResultStatus"
-          },
-          "correlationId": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "CompanyConfiguration": {
-        "enum": [
-          "None",
-          "ISGS",
-          "SpaceSystems",
-          "MST"
-        ],
-        "type": "string"
-      },
-      "DataTableViewModel": {
-        "type": "object",
-        "properties": {
-          "wbsElement": {
-            "type": "string",
-            "nullable": true
-          },
-          "poPStart": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "poPEnd": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "isWeekly": {
-            "type": "boolean"
-          },
-          "filters": {
-            "type": "string",
-            "nullable": true
-          },
-          "tableId": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "DateDescriptionAttribute": {
-        "type": "object",
-        "properties": {
-          "typeId": {
-            "nullable": true,
-            "readOnly": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "dropdownDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "textualDescription": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ExportActualsViewModel": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "string",
-            "format": "byte",
-            "nullable": true
-          },
-          "fileName": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ExportActualsViewModelResult": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/ExportActualsViewModel"
-          },
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "isSuccessful": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/ResultStatus"
-          },
-          "correlationId": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "QueryFieldViewModel": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "value": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "QueryOperatorViewModel": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "value": {
-            "type": "string",
-            "nullable": true
-          },
-          "dropdownText": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "QueryViewModel": {
-        "type": "object",
-        "properties": {
-          "startParens": {
-            "type": "boolean"
-          },
-          "endParens": {
-            "type": "boolean"
-          },
-          "field": {
-            "type": "string",
-            "nullable": true
-          },
-          "operator": {
-            "type": "string",
-            "nullable": true
-          },
-          "value": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "join": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "QueryViewModelICollectionResult": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/QueryViewModel"
-            },
-            "nullable": true
-          },
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "isSuccessful": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/ResultStatus"
-          },
-          "correlationId": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ResultStatus": {
-        "enum": [
-          "Ok",
-          "Failed",
-          "NotFound",
-          "NotAuthorized",
-          "InvalidInput",
-          "HttpFailure"
-        ],
-        "type": "string"
-      },
-      "StringResult": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "string",
-            "nullable": true
-          },
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "isSuccessful": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/ResultStatus"
-          },
-          "correlationId": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      }
-    },
-    "securitySchemes": {
-      "Bearer": {
-        "type": "http",
-        "description": "Enter JWT Bearer token **_only_**",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    }
-  },
-  "security": [
-    {
-      "Bearer": []
-    }
-  ]
+	"openapi": "3.0.1",
+	"info": {
+		"title": "IES SAP API",
+		"version": "v_APPVERSION_"
+	},
+	"paths": {
+		"/api/QueryFilter/GetAllOperators": {
+			"get": {
+				"tags": [
+					"QueryFilter"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/QueryOperatorViewModel"
+									}
+								}
+							},
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/QueryOperatorViewModel"
+									}
+								}
+							},
+							"text/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/QueryOperatorViewModel"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/QueryFilter/GetAllFieldsForCompanyCode": {
+			"get": {
+				"tags": [
+					"QueryFilter"
+				],
+				"parameters": [
+					{
+						"name": "company",
+						"in": "query",
+						"schema": {
+							"$ref": "#/components/schemas/CompanyConfiguration"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/QueryFieldViewModel"
+									}
+								}
+							},
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/QueryFieldViewModel"
+									}
+								}
+							},
+							"text/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/QueryFieldViewModel"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/QueryFilter/GetAllNonDateOperatorOptionsDescriptions": {
+			"get": {
+				"tags": [
+					"QueryFilter"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							},
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							},
+							"text/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/QueryFilter/GetAllDateOperatorOptionDescriptions": {
+			"get": {
+				"tags": [
+					"QueryFilter"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/DateDescriptionAttribute"
+									}
+								}
+							},
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/DateDescriptionAttribute"
+									}
+								}
+							},
+							"text/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/DateDescriptionAttribute"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/QueryFilter/GetAllFieldOptionDescriptions": {
+			"get": {
+				"tags": [
+					"QueryFilter"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							},
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							},
+							"text/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/QueryParser/ParseString": {
+			"post": {
+				"tags": [
+					"QueryParser"
+				],
+				"parameters": [
+					{
+						"name": "queryString",
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "companyConfiguration",
+						"in": "query",
+						"schema": {
+							"$ref": "#/components/schemas/CompanyConfiguration"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"$ref": "#/components/schemas/QueryViewModelICollectionResult"
+								}
+							},
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/QueryViewModelICollectionResult"
+								}
+							},
+							"text/json": {
+								"schema": {
+									"$ref": "#/components/schemas/QueryViewModelICollectionResult"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/QueryParser/FormulateString": {
+			"post": {
+				"tags": [
+					"QueryParser"
+				],
+				"parameters": [
+					{
+						"name": "companyConfiguration",
+						"in": "query",
+						"schema": {
+							"$ref": "#/components/schemas/CompanyConfiguration"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json-patch+json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/QueryViewModel"
+								}
+							}
+						},
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/QueryViewModel"
+								}
+							}
+						},
+						"text/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/QueryViewModel"
+								}
+							}
+						},
+						"application/*+json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/QueryViewModel"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"$ref": "#/components/schemas/StringResult"
+								}
+							},
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StringResult"
+								}
+							},
+							"text/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StringResult"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/QueryParser/IsQueryValid": {
+			"post": {
+				"tags": [
+					"QueryParser"
+				],
+				"parameters": [
+					{
+						"name": "companyConfiguration",
+						"in": "query",
+						"schema": {
+							"$ref": "#/components/schemas/CompanyConfiguration"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json-patch+json": {
+							"schema": {
+								"$ref": "#/components/schemas/DataTableViewModel"
+							}
+						},
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DataTableViewModel"
+							}
+						},
+						"text/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DataTableViewModel"
+							}
+						},
+						"application/*+json": {
+							"schema": {
+								"$ref": "#/components/schemas/DataTableViewModel"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"$ref": "#/components/schemas/BooleanResult"
+								}
+							},
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BooleanResult"
+								}
+							},
+							"text/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BooleanResult"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/QueryParser/CalculateActuals": {
+			"post": {
+				"tags": [
+					"QueryParser"
+				],
+				"parameters": [
+					{
+						"name": "companyConfiguration",
+						"in": "query",
+						"schema": {
+							"$ref": "#/components/schemas/CompanyConfiguration"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json-patch+json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/DataTableViewModel"
+								}
+							}
+						},
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/DataTableViewModel"
+								}
+							}
+						},
+						"text/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/DataTableViewModel"
+								}
+							}
+						},
+						"application/*+json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/DataTableViewModel"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/CalculateActualsViewModelResult"
+									}
+								}
+							},
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/CalculateActualsViewModelResult"
+									}
+								}
+							},
+							"text/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/CalculateActualsViewModelResult"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/QueryParser/ExportActuals": {
+			"post": {
+				"tags": [
+					"QueryParser"
+				],
+				"parameters": [
+					{
+						"name": "companyConfiguration",
+						"in": "query",
+						"schema": {
+							"$ref": "#/components/schemas/CompanyConfiguration"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json-patch+json": {
+							"schema": {
+								"$ref": "#/components/schemas/DataTableViewModel"
+							}
+						},
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DataTableViewModel"
+							}
+						},
+						"text/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DataTableViewModel"
+							}
+						},
+						"application/*+json": {
+							"schema": {
+								"$ref": "#/components/schemas/DataTableViewModel"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"$ref": "#/components/schemas/ExportActualsViewModelResult"
+								}
+							},
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ExportActualsViewModelResult"
+								}
+							},
+							"text/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ExportActualsViewModelResult"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"BooleanResult": {
+				"type": "object",
+				"properties": {
+					"data": {
+						"type": "boolean"
+					},
+					"messages": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"warnings": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"isSuccessful": {
+						"type": "boolean",
+						"readOnly": true
+					},
+					"status": {
+						"$ref": "#/components/schemas/ResultStatus"
+					},
+					"correlationId": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"CalculateActualsViewModel": {
+				"type": "object",
+				"properties": {
+					"wbsHours": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"totalHours": {
+						"type": "number",
+						"format": "double"
+					},
+					"tableId": {
+						"type": "integer",
+						"format": "int32"
+					},
+					"contractNumber": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"CalculateActualsViewModelResult": {
+				"type": "object",
+				"properties": {
+					"data": {
+						"$ref": "#/components/schemas/CalculateActualsViewModel"
+					},
+					"messages": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"warnings": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"isSuccessful": {
+						"type": "boolean",
+						"readOnly": true
+					},
+					"status": {
+						"$ref": "#/components/schemas/ResultStatus"
+					},
+					"correlationId": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"CompanyConfiguration": {
+				"enum": [
+					"None",
+					"ISGS",
+					"SpaceSystems",
+					"MST"
+				],
+				"type": "string"
+			},
+			"DataTableViewModel": {
+				"type": "object",
+				"properties": {
+					"wbsElement": {
+						"type": "string",
+						"nullable": true
+					},
+					"poPStart": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"poPEnd": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"isWeekly": {
+						"type": "boolean"
+					},
+					"filters": {
+						"type": "string",
+						"nullable": true
+					},
+					"tableId": {
+						"type": "integer",
+						"format": "int32"
+					}
+				},
+				"additionalProperties": false
+			},
+			"DateDescriptionAttribute": {
+				"type": "object",
+				"properties": {
+					"typeId": {
+						"nullable": true,
+						"readOnly": true
+					},
+					"description": {
+						"type": "string",
+						"nullable": true,
+						"readOnly": true
+					},
+					"dropdownDescription": {
+						"type": "string",
+						"nullable": true
+					},
+					"textualDescription": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"ExportActualsViewModel": {
+				"type": "object",
+				"properties": {
+					"data": {
+						"type": "string",
+						"format": "byte",
+						"nullable": true
+					},
+					"fileName": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"ExportActualsViewModelResult": {
+				"type": "object",
+				"properties": {
+					"data": {
+						"$ref": "#/components/schemas/ExportActualsViewModel"
+					},
+					"messages": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"warnings": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"isSuccessful": {
+						"type": "boolean",
+						"readOnly": true
+					},
+					"status": {
+						"$ref": "#/components/schemas/ResultStatus"
+					},
+					"correlationId": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"QueryFieldViewModel": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"nullable": true
+					},
+					"value": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"QueryOperatorViewModel": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"nullable": true
+					},
+					"value": {
+						"type": "string",
+						"nullable": true
+					},
+					"dropdownText": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"QueryViewModel": {
+				"type": "object",
+				"properties": {
+					"startParens": {
+						"type": "boolean"
+					},
+					"endParens": {
+						"type": "boolean"
+					},
+					"field": {
+						"type": "string",
+						"nullable": true
+					},
+					"operator": {
+						"type": "string",
+						"nullable": true
+					},
+					"value": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"join": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"QueryViewModelICollectionResult": {
+				"type": "object",
+				"properties": {
+					"data": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/QueryViewModel"
+						},
+						"nullable": true
+					},
+					"messages": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"warnings": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"isSuccessful": {
+						"type": "boolean",
+						"readOnly": true
+					},
+					"status": {
+						"$ref": "#/components/schemas/ResultStatus"
+					},
+					"correlationId": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"ResultStatus": {
+				"enum": [
+					"Ok",
+					"Failed",
+					"NotFound",
+					"NotAuthorized",
+					"InvalidInput",
+					"HttpFailure",
+					"Warnings"
+				],
+				"type": "string"
+			},
+			"StringResult": {
+				"type": "object",
+				"properties": {
+					"data": {
+						"type": "string",
+						"nullable": true
+					},
+					"messages": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"warnings": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"isSuccessful": {
+						"type": "boolean",
+						"readOnly": true
+					},
+					"status": {
+						"$ref": "#/components/schemas/ResultStatus"
+					},
+					"correlationId": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"Bearer": {
+				"type": "http",
+				"description": "Enter JWT Bearer token **_only_**",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		}
+	},
+	"security": [
+		{
+			"Bearer": []
+		}
+	]
 }

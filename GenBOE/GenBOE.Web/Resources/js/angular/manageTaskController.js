@@ -1556,7 +1556,7 @@
 					}
 				}
 
-				if (startDate < oneLmxCutOff && endDate > oneLmxCutOff) {
+				if (startDate < oneLmxCutOff && endDate >= oneLmxCutOff) {
 					if (input === undefined || (typeof input === 'string' && (input.length === 0
 						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 						item.IsResourceValid = false;
@@ -1583,14 +1583,14 @@
 		var input = item.BusinessResourceCodeInput;
 
 		if (!item.NewLaborType) {
-			if (startDate > oneLmxCutOff) {
+			if (startDate >= oneLmxCutOff) {
 				if (input === undefined || (typeof input === 'string' && (input.length === 0
 					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 					item.IsBusinessResourceCodeValid = false;
 				}
 			}
 
-			if (startDate < oneLmxCutOff && endDate > oneLmxCutOff) {
+			if (startDate < oneLmxCutOff && endDate >= oneLmxCutOff) {
 				if (input === undefined || (typeof input === 'string' && (input.length === 0
 					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 					item.IsBusinessResourceCodeValid = false;
