@@ -238,7 +238,7 @@ namespace GenBOE.ActionLogic.CustomFields
 				Collection<RestoreOptionChanged> resourcesChanged = GetChangedResources(workspaceResources, systemResources, resourceIDsInUse);
 				restoreOptions.OptionChanged = resourcesChanged;
 
-				// the Resourcess that have been marked as changed should be added to the collection to save
+				// the Resources that have been marked as changed should be added to the collection to save
 				ICollection<ResourceDTO> resourcesChangedToSave = (from r in resourcesChanged
 																   select new ResourceDTO
 																   {
