@@ -36,17 +36,48 @@ namespace GenBOE.ActionLogic.CustomFields
             this.Desc = string.Empty;
             this.SegRegion = string.Empty;
             this.LaborType = string.Empty;
-            this.ElementOfCostName = string.Empty;
- 
+            this.ElementOfCostName = string.Empty; 
         }
 
+		/// <summary>
+		/// Perf Org/Resource ID
+		/// </summary>
         public int ID { get; set; }
+
+		/// <summary>
+		/// Perf Org/Resource Name
+		/// </summary>
         public string Name { get; set; }
+
+		/// <summary>
+		/// Perf Org/Resource Description
+		/// </summary>
         public string Desc { get; set; }
+
+		/// <summary>
+		/// Resource Segment Region
+		/// </summary>
         public string SegRegion { get; set; }
+
+		/// <summary>
+		/// Resource Labor Type
+		/// </summary>
         public string LaborType { get; set; }
+
+		/// <summary>
+		/// Resource Element of Cost Name
+		/// </summary>
         public string ElementOfCostName { get; set; }
+
+		/// <summary>
+		/// Resource Element of Cost
+		/// </summary>
         public ElementOfCostType ElementofCost { get; set; }
+
+		/// <summary>
+		/// Resource Rate Type
+		/// </summary>
+		public RateType RateType { get; set; }
     }
 
     public class RestoreOptionChanged : UpdateableDTO
@@ -59,26 +90,86 @@ namespace GenBOE.ActionLogic.CustomFields
             this.SegRegion = string.Empty;
             this.LaborType = string.Empty;
             this.ElementOfCostName = string.Empty;
-            this.ChangedToID = string.Empty;
+            this.ChangedToName = string.Empty;
             this.ChangedToDesc = string.Empty;
             this.ChangedToSegRegion = string.Empty;
             this.ChangedToLaborType = string.Empty;
             this.ChangedToElementOfCostName = string.Empty;
         }
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public string Desc { get; set; }
-        public string SegRegion { get; set; }
-        public string LaborType { get; set; }
-        public string ElementOfCostName { get; set; }
-        public ElementOfCostType ElementOfCost { get; set; }
-        public string ChangedToID { get; set; }
-        public string ChangedToDesc { get; set; }
-        public string ChangedToSegRegion { get; set; }
-        public string ChangedToLaborType { get; set; }
-        public string ChangedToElementOfCostName { get; set; }
-        public ElementOfCostType ChangedElementOfCost { get; set; }
-    }
 
-   
+		/// <summary>
+		/// Perf Org/Resource ID
+		/// </summary>
+		public int ID { get; set; }
+
+		/// <summary>
+		/// Perf Org/Resource original Name
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Perf Org/Resource original description
+		/// </summary>
+		public string Desc { get; set; }
+
+		/// <summary>
+		/// Resource original segment region
+		/// </summary>
+        public string SegRegion { get; set; }
+
+		/// <summary>
+		/// Resource original labor type
+		/// </summary>
+		public string LaborType { get; set; }
+
+		/// <summary>
+		/// Resource original element of cost name
+		/// </summary>
+		public string ElementOfCostName { get; set; }
+
+		/// <summary>
+		/// Resource original element of cost
+		/// </summary>
+		public ElementOfCostType ElementOfCost { get; set; }
+
+		/// <summary>
+		/// Resource original rate type
+		/// </summary>
+		public RateType RateType { get; set; }
+
+		/// <summary>
+		/// Perf Org/Resource changed-to name
+		/// </summary>
+        public string ChangedToName { get; set; }
+
+		/// <summary>
+		/// Perf Org/Resource changed-to description
+		/// </summary>
+		public string ChangedToDesc { get; set; }
+
+		/// <summary>
+		/// Resource changed-to segment region
+		/// </summary>
+		public string ChangedToSegRegion { get; set; }
+
+		/// <summary>
+		/// Resource changed-to labor type
+		/// </summary>
+		public string ChangedToLaborType { get; set; }
+
+		/// <summary>
+		/// Resource changed-to element of cost name
+		/// </summary>
+		public string ChangedToElementOfCostName { get; set; }
+
+		/// <summary>
+		/// Resource changed-to element of cost
+		/// </summary>
+		public ElementOfCostType ChangedToElementOfCost { get; set; }
+
+		/// <summary>
+		/// Resource changed-to rate type
+		/// </summary>
+		public RateType ChangedToRateType { get; set; }
+    }   
 }

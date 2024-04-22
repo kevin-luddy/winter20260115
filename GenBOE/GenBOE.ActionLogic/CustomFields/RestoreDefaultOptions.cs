@@ -111,7 +111,7 @@ namespace GenBOE.ActionLogic.CustomFields
 						 ID = c.Id,
 						 Name = c.PerformingOrgName,
 						 Desc = c.PerformingOrgDesc,
-						 ChangedToID = p.PerformingOrgName,
+						 ChangedToName = p.PerformingOrgName,
 						 ChangedToDesc = p.PerformingOrgDesc,
 						 UpdateDate = c.UpdateDate
 					 }).ToList();
@@ -124,7 +124,7 @@ namespace GenBOE.ActionLogic.CustomFields
 																	   select new PerformingOrgDTO
 																	   {
 																		   Id = po.ID,
-																		   PerformingOrgName = po.ChangedToID,
+																		   PerformingOrgName = po.ChangedToName,
 																		   PerformingOrgDesc = po.ChangedToDesc,
 																		   UpdateDate = po.UpdateDate,
 																		   Updateable = UpdateType.Upsert
@@ -215,6 +215,10 @@ namespace GenBOE.ActionLogic.CustomFields
 														  {
 															  ResourceName = r.Name,
 															  ResourceDesc = r.Desc,
+															  SegRegion = r.SegRegion,
+															  LaborType = r.LaborType,
+															  RateType = r.RateType,
+															  ElementOfCost = r.ElementofCost,
 															  Updateable = UpdateType.Upsert
 														  }).ToList();
 
@@ -239,8 +243,12 @@ namespace GenBOE.ActionLogic.CustomFields
 																   select new ResourceDTO
 																   {
 																	   Id = r.ID,
-																	   ResourceName = r.ChangedToID,
+																	   ResourceName = r.ChangedToName,
 																	   ResourceDesc = r.ChangedToDesc,
+																	   SegRegion = r.ChangedToSegRegion,
+																	   LaborType = r.ChangedToLaborType,
+																	   RateType = r.ChangedToRateType,
+																	   ElementOfCost = r.ChangedToElementOfCost,
 																	   UpdateDate = r.UpdateDate,
 																	   Updateable = UpdateType.Upsert
 																   }).ToList();
@@ -258,6 +266,10 @@ namespace GenBOE.ActionLogic.CustomFields
 																	  Id = r.ID,
 																	  ResourceName = r.Name,
 																	  ResourceDesc = r.Desc,
+																	  SegRegion = r.SegRegion,
+																	  LaborType= r.LaborType,
+																	  RateType = r.RateType,
+																	  ElementOfCost = r.ElementofCost,
 																	  UpdateDate = r.UpdateDate,
 																	  Updateable = UpdateType.Deleted
 																  }).ToList();
@@ -272,7 +284,9 @@ namespace GenBOE.ActionLogic.CustomFields
 																Name = r.ResourceName,
 																Desc = r.ResourceDesc,
 																SegRegion = r.SegRegion,
-																LaborType = r.LaborType
+																LaborType = r.LaborType,
+																RateType = r.RateType,
+																ElementofCost = r.ElementOfCost
 															}).ToCollection();
 
 				// Since these options couldn't be changed, do not need to add to the saveResourceList, just add to restore options
@@ -329,6 +343,8 @@ namespace GenBOE.ActionLogic.CustomFields
 						Desc = s.ResourceDesc,
 						SegRegion = s.SegRegion,
 						LaborType = s.LaborType,
+						ElementofCost = s.ElementOfCost,
+						RateType = s.RateType
 					}).ToCollection();
 		}
 
@@ -346,7 +362,9 @@ namespace GenBOE.ActionLogic.CustomFields
 					where w.ResourceName == s.ResourceName 
 						&& (w.ResourceDesc != s.ResourceDesc 
 							|| w.SegRegion != s.SegRegion 
-							|| w.LaborType != s.LaborType) 
+							|| w.LaborType != s.LaborType
+							|| w.RateType != s.RateType
+							|| w.ElementOfCost != s.ElementOfCost) 
 						&& !resourceIDsInUse.Contains(w.Id)
 					select new RestoreOptionChanged
 					{
@@ -355,10 +373,14 @@ namespace GenBOE.ActionLogic.CustomFields
 						Desc = w.ResourceDesc,
 						SegRegion = w.SegRegion,
 						LaborType = w.LaborType,
-						ChangedToID = s.ResourceName,
+						ElementOfCost = w.ElementOfCost,
+						RateType = w.RateType,
+						ChangedToName = s.ResourceName,
 						ChangedToDesc = s.ResourceDesc,
 						ChangedToSegRegion = s.SegRegion,
 						ChangedToLaborType = s.LaborType,
+						ChangedToElementOfCost = s.ElementOfCost,
+						ChangedToRateType = s.RateType,
 						UpdateDate = w.UpdateDate
 					}).ToCollection();
 		}
@@ -382,6 +404,8 @@ namespace GenBOE.ActionLogic.CustomFields
 						Desc = w.ResourceDesc,
 						SegRegion = w.SegRegion,
 						LaborType = w.LaborType,
+						ElementofCost = w.ElementOfCost,
+						RateType = w.RateType,
 						UpdateDate = w.UpdateDate
 					}).ToCollection();
 		}
