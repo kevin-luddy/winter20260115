@@ -162,8 +162,8 @@ namespace GenBOE.Tests.ActionLogic
             decimal cost = 0;
             foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {
-                //get brc labors based on 1lmx start date
-                List<ResourceTypeDto> taskElementLabors = (List<ResourceTypeDto>)BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors);
+				//get brc labors based on 1lmx start date
+				ICollection<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors);
 
                 foreach (ResourceTypeDto laborTask in taskElementLabors)
                 {
