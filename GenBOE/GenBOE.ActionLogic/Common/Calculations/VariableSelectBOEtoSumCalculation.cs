@@ -15,7 +15,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
     using GenBOE.Dtos;
     using IES.Common;
 
-    public abstract class VariableSelectBOEtoSumCalculation : IVariableSelectBOEtoSumCalculation
+    public class VariableSelectBOEtoSumCalculation : IVariableSelectBOEtoSumCalculation
     {
         #region Private Fields and Constructor
 
@@ -187,15 +187,18 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <returns>total</returns>
 		/// <exception cref="System.ArgumentNullException">inSumVariableResourceTypes or dataForSumOfBoeCalc</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		public abstract decimal GetTotalBasedOnBoeID(int boeId, Collection<int> sumVariableResourceTypes, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc);
+	    public virtual decimal GetTotalBasedOnBoeID(int boeId, Collection<int> sumVariableResourceTypes, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
+	    {
+		    throw new NotImplementedException();
+	    }
 
-        /// <summary>
-        /// Get task variable total based on what's currently saved in the database
-        /// </summary>
-        /// <param name="taskVar">task variable</param>
-        /// <param name="dataForSumOfBoeCalc">The data for sum of boe calculation.</param>
-        /// <returns>total</returns>
-        public virtual decimal GetTaskVarLabelTotal(OrdinaryVariableDto taskVar, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
+		/// <summary>
+		/// Get task variable total based on what's currently saved in the database
+		/// </summary>
+		/// <param name="taskVar">task variable</param>
+		/// <param name="dataForSumOfBoeCalc">The data for sum of boe calculation.</param>
+		/// <returns>total</returns>
+		public virtual decimal GetTaskVarLabelTotal(OrdinaryVariableDto taskVar, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
         {
             if (taskVar == null)
             {
@@ -241,5 +244,6 @@ namespace GenBOE.ActionLogic.Common.Calculations
 
             return toReturn;  // decimal variable values should NOT be adjusted for decimal precision
         }
-    }
+
+	}
 }
