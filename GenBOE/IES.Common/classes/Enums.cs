@@ -635,6 +635,7 @@ namespace IES.Common
 		ProjMapClassOfCost = 73,
 		ProjMapOldResource = 74,
 		ResourceSegmentRegion = 76,
+		ProjMapResourceSegmentRegion = 78
 	}
 
 	/// <summary>
@@ -670,7 +671,8 @@ namespace IES.Common
 		ProjMapSpreadCode = 70,
 		ProjMapStartDate = 71,
 		ProjMapOldResource = 75,
-		ResourceSegmentRegion = 77
+		ResourceSegmentRegion = 77,
+		ProjMapResourceSegmentRegion = 79
 	}
 
 	/// <summary>
