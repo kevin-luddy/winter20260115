@@ -365,7 +365,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         {
                             totalCost += laborTask.ValueSpread.Value;
                         }
-                        if (laborTask.SpreadType == SpreadType.Hours)
+                        if (workspace.IsUsingTM && laborTask.SpreadType == SpreadType.Hours)
                         {
                             ResourceDTO resource = this.resourceLoader.GetById(laborTask.ResourceID.Value);
                             if (!resourceIdsWithValidTMRates.Contains(laborTask.ResourceID.Value))
@@ -373,8 +373,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                 hasValidTMRates = false;
                             }
 
-                            if (workspace.IsUsingTM && hasValidTMRates &&
-                                (resource.ElementOfCost == ElementOfCostType.IWTA ||
+                            if (hasValidTMRates && (resource.ElementOfCost == ElementOfCostType.IWTA ||
                                  resource.ElementOfCost == ElementOfCostType.Sub) &&
                                 resource.RateType == RateType.Hours)
                             {
