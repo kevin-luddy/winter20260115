@@ -56,7 +56,7 @@ namespace IES.DataBridge.Loaders
             ICollection<SectionModelView> sectionDetailsByRevision = null;
             ICollection<SectionModelView> sectionsToReturn = new List<SectionModelView>();
 
-			using (IESEntities context = new())
+			using (IESEntities context = new IESEntities())
 			{
 				ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
 				if (sectionsOnly)
