@@ -6,7 +6,9 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System;
+	using IES.Common.Core.Constants;
+	using Microsoft.VisualBasic;
+	using System;
 
     /// <summary>
     /// A Model View class for a PPR&amp;D Revision
@@ -123,7 +125,7 @@ namespace IES.DataBridge.ModelViews
 			{
 				if (this.DatePublished.HasValue)
 				{
-					return this.DatePublished.Value.ToString("yyyy-MM-ddTHH:mm:ss");
+					return this.DatePublished.Value.ToString(CommonConstants.DATETIME_STRING_FORMAT);
 				}
 				else
 				{

@@ -962,5 +962,11 @@ namespace IES.Common
         /// Key value for Column Field where there is NO WBS.
         /// </summary>
         public const string COLUMN_FIELD_KEY_NO_WBS = "NO WBS";
-    }
+
+		/// <summary>
+		/// Date format in yyyy-MM-ddTHH:mm:ss, mainly used for returning a DateTime as a string with JSON for easy parsing
+		/// </summary>
+		public const string DATETIME_STRING_FORMAT = "yyyy-MM-ddTHH:mm:ss";
+
+	}
 }
