@@ -82,7 +82,7 @@ namespace RDM.Backend.Controllers
 		[HttpGet("[action]")]
 		public ActionResult GetRatesByVersion(int? id)
 		{
-			/*IESResponse<RateGridModelView> response = new();
+			IESResponse<RateGridModelView> response = new();
 			try
 			{
 				response.Data = this.controllerLogic.GetRatesByVersion(id, this.Logic.Revisions);
@@ -98,23 +98,7 @@ namespace RDM.Backend.Controllers
 				response.Messages.Add("Error exporting rates by version");
 			}
 
-			return this.Json(response);*/
-
-			ActionResult response;
-
-			try
-			{
-				RateGridModelView model = this.controllerLogic.GetRatesByVersion(id, this.Logic.Revisions);
-
-				response = this.Json(model);
-			}
-			catch (Exception ex)
-			{
-				this.log.LogError(ex, "Error exporting rates by version");
-				throw new GenValidationException(ex.Message);
-			}
-
-			return response;
+			return this.Json(response);
 		}
 
 		/// <summary>
@@ -373,8 +357,6 @@ namespace RDM.Backend.Controllers
 			try
 			{
 				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/RateCodesImportExample.xlsx");
-				//string projectDirectory = Directory.GetCurrentDirectory();
-				//string serverFileName = Path.Combine(projectDirectory, "Templates", "Export", "RateCodesImportExample.xlsx");
 				RateGridModelView rates = this.controllerLogic.GetRatesByVersion(id, this.Logic.Revisions);
 
 				// Call the export function and get back the file name of the populated file.

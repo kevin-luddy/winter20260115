@@ -238,7 +238,7 @@ namespace IES.Common
         /// <summary>
         /// The default number of seconds for a TransactionScope timeout
         /// </summary>
-        public const int DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT = 300;
+        public const int DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT = 60;
 
         /// <summary>
         /// The default number of seconds for a TransactionScope timeout when copying a workspace
