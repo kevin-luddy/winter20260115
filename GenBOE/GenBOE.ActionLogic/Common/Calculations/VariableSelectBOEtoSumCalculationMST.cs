@@ -47,7 +47,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
             decimal toReturn = 0;
 
             List<BoeTaskElementDTO> boeTaskElements = dataForSumOfBoeCalc.BoeIdToTaskElements.ContainsKey(boeId) ? dataForSumOfBoeCalc.BoeIdToTaskElements[boeId] : new List<BoeTaskElementDTO>();
-
+            //list of all resources and BRCs in boe
             ICollection<ResourceDTO> Resources = dataForSumOfBoeCalc.BoeIdToResources.ContainsKey(boeId) ? dataForSumOfBoeCalc.BoeIdToResources[boeId] : new List<ResourceDTO>();
 
             HashSet<int> MSTToSearch = new HashSet<int>(Resources.Where(x => x.ElementOfCost == ElementOfCostType.LMLabor && x.Segment.Equals(SegmentType.RMS)).Select(x => x.Id));
@@ -58,19 +58,19 @@ namespace GenBOE.ActionLogic.Common.Calculations
             {
                 foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
                 {
-                    if (labor.ResourceID.HasValue && labor.LaborSpreads.Any() && labor.SpreadType == SpreadType.Hours)
+                    if ((labor.ResourceID.HasValue || labor.BusinessResourceCodeID.HasValue) && labor.LaborSpreads.Any() && labor.SpreadType == SpreadType.Hours)
                     {
-                        if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.MSTLMLabor) && MSTToSearch.Contains(labor.ResourceID.Value))
+                        if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.MSTLMLabor) && MSTToSearch.Contains(labor.ResourceID.HasValue ? labor.ResourceID.Value : labor.BusinessResourceCodeID.Value))
                         {
                             toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
                         }
                         else if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.MSTLOEIWTA)
-                            && (boeTask.TaskElementType == TaskElementType.Labor) && IWTAToSearch.Contains(labor.ResourceID.Value))
+                            && (boeTask.TaskElementType == TaskElementType.Labor) && IWTAToSearch.Contains(labor.ResourceID.HasValue ? labor.ResourceID.Value : labor.BusinessResourceCodeID.Value))
                         {
                             toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
                         }
                         else if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.MSTLOESub)
-                            && (boeTask.TaskElementType == TaskElementType.Labor) && SubToSearch.Contains(labor.ResourceID.Value))
+                            && (boeTask.TaskElementType == TaskElementType.Labor) && SubToSearch.Contains(labor.ResourceID.HasValue ? labor.ResourceID.Value : labor.BusinessResourceCodeID.Value))
                         {
                             toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
                         }
