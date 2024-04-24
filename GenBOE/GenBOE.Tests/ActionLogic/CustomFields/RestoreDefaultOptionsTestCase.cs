@@ -157,7 +157,7 @@ namespace GenBOE.Tests.ActionLogic.CustomFields
 			Assert.IsFalse(result.OptionDeleted.Any(x => x.Name == resourceName5));
 			Assert.IsTrue(result.OptionNotChanged.Any(x => x.Name == resourceName3));
 			Assert.IsTrue(result.OptionNotChanged.Any(x => x.Name == resourceName5));
-			Assert.IsTrue(result.OptionNotChanged.Any(x => x.Name == resourceName7));
+			Assert.IsFalse(result.OptionNotChanged.Any(x => x.Name == resourceName7));
 		}
 
 		/// <summary>

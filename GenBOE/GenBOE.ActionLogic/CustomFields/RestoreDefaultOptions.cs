@@ -261,36 +261,24 @@ namespace GenBOE.ActionLogic.CustomFields
 
 				// the Resources that have been marked as deleted should be added to the collection to save
 				ICollection<ResourceDTO> resourcesDeletedToSave = (from r in resourcesDeleted
-																  select new ResourceDTO
-																  {
-																	  Id = r.ID,
-																	  ResourceName = r.Name,
-																	  ResourceDesc = r.Desc,
-																	  SegRegion = r.SegRegion,
-																	  LaborType= r.LaborType,
-																	  RateType = r.RateType,
-																	  ElementOfCost = r.ElementofCost,
-																	  UpdateDate = r.UpdateDate,
-																	  Updateable = UpdateType.Deleted
-																  }).ToList();
+																   select new ResourceDTO
+																   {
+																	   Id = r.ID,
+																	   ResourceName = r.Name,
+																	   ResourceDesc = r.Desc,
+																	   SegRegion = r.SegRegion,
+																	   LaborType = r.LaborType,
+																	   RateType = r.RateType,
+																	   ElementOfCost = r.ElementofCost,
+																	   UpdateDate = r.UpdateDate,
+																	   Updateable = UpdateType.Deleted
+																   }).ToList();
 
 				saveResourceList.AddRange(resourcesDeletedToSave);
 
 				// find the options that could not be edited because they are in use in the Workspace Resource List
-				Collection<RestoreOption> resourcesInUse = (from r in workspaceResources
-															where resourceIDsInUse.Contains(r.Id)
-															select new RestoreOption
-															{
-																Name = r.ResourceName,
-																Desc = r.ResourceDesc,
-																SegRegion = r.SegRegion,
-																LaborType = r.LaborType,
-																RateType = r.RateType,
-																ElementofCost = r.ElementOfCost
-															}).ToCollection();
-
 				// Since these options couldn't be changed, do not need to add to the saveResourceList, just add to restore options
-				restoreOptions.OptionNotChanged = resourcesInUse;
+				restoreOptions.OptionNotChanged = GetUnchangedInUseResources(workspaceResources, systemResources, resourceIDsInUse); ;
 
 				// save the resources so it can be in sync with the system resource list
 				this.resourceLoader.SaveWorkspaceResources(workspace, saveResourceList.ToCollection());
@@ -359,12 +347,12 @@ namespace GenBOE.ActionLogic.CustomFields
 		{
 			return (from s in systemResources
 					from w in workspaceResources
-					where w.ResourceName == s.ResourceName 
-						&& (w.ResourceDesc != s.ResourceDesc 
-							|| w.SegRegion != s.SegRegion 
+					where w.ResourceName == s.ResourceName
+						&& (w.ResourceDesc != s.ResourceDesc
+							|| w.SegRegion != s.SegRegion
 							|| w.LaborType != s.LaborType
 							|| w.RateType != s.RateType
-							|| w.ElementOfCost != s.ElementOfCost) 
+							|| w.ElementOfCost != s.ElementOfCost)
 						&& !resourceIDsInUse.Contains(w.Id)
 					select new RestoreOptionChanged
 					{
@@ -408,6 +396,36 @@ namespace GenBOE.ActionLogic.CustomFields
 						RateType = w.RateType,
 						UpdateDate = w.UpdateDate
 					}).ToCollection();
+		}
+
+		/// <summary>
+		/// Get resources that are in-use and won't be changed or deleted
+		/// </summary>
+		/// <param name="workspaceResources">Workspace-level resources</param>
+		/// <param name="systemResources">System-level resources</param>
+		/// <param name="resourceIDsInUse">IDs for Workspace-level resources that are in use</param>
+		/// <returns>Collection of RestoreOption containing Resources that are in-use and won't be changed/deleted</returns>
+		private Collection<RestoreOption> GetUnchangedInUseResources(IReadOnlyCollection<ResourceDTO> workspaceResources, ICollection<ResourceDTO> systemResources, HashSet<int> resourceIDsInUse)
+		{
+			return workspaceResources.Where(w => resourceIDsInUse.Contains(w.Id)
+				&& (!systemResources.Any(s => s.ResourceName == w.ResourceName)
+				|| systemResources.Any(s => s.ResourceName == w.ResourceName
+					&& (w.ResourceDesc != s.ResourceDesc
+						|| w.SegRegion != s.SegRegion
+						|| w.LaborType != s.LaborType
+						|| w.RateType != s.RateType
+						|| w.ElementOfCost != s.ElementOfCost))))
+				.Select(r => new RestoreOption
+				{
+					ID = r.Id,
+					Name = r.ResourceName,
+					Desc = r.ResourceDesc,
+					SegRegion = r.SegRegion,
+					LaborType = r.LaborType,
+					ElementofCost = r.ElementOfCost,
+					RateType = r.RateType,
+					UpdateDate = r.UpdateDate
+				}).ToCollection();
 		}
 	}
 }
