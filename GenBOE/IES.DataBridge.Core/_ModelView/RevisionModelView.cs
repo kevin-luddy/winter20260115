@@ -6,7 +6,9 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System;
+	using IES.Common.Core.Constants;
+	using Microsoft.VisualBasic;
+	using System;
 
     /// <summary>
     /// A Model View class for a PPR&amp;D Revision
@@ -113,6 +115,24 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets the release notes for the revision
         /// </summary>
         public string ReleaseNotes { get; set; }
+
+		/// <summary>
+		/// Formats the Date Published as a string (for JSON-returning purposes)
+		/// </summary>
+		public string DatePublishedAsString
+		{
+			get
+			{
+				if (this.DatePublished.HasValue)
+				{
+					return this.DatePublished.Value.ToString(CommonConstants.DATETIME_STRING_FORMAT);
+				}
+				else
+				{
+					return string.Empty;
+				}
+			}
+		}
 
         /// <summary>
         /// Gets boolean value indicating if revision is work-in-progress or published.
