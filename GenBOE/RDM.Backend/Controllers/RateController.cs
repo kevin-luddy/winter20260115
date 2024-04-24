@@ -94,8 +94,8 @@ namespace RDM.Backend.Controllers
 			}
 			catch (Exception ex)
 			{
-				this.log.LogError(ex, "Error exporting rates by version");
-				response.Messages.Add("Error exporting rates by version");
+				this.log.LogError(ex, CommonConstants.ERROR_GETTING_RATES_FOR_VERSION);
+				response.Messages.Add(CommonConstants.ERROR_GETTING_RATES_FOR_VERSION);
 			}
 
 			return this.Json(response);

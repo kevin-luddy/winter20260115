@@ -968,5 +968,9 @@ namespace IES.Common
 		/// </summary>
 		public const string DATETIME_STRING_FORMAT = "yyyy-MM-ddTHH:mm:ss";
 
+		/// <summary>
+		/// Error message when exporting (getting JSON) rates for version
+		/// </summary>
+		public const string ERROR_GETTING_RATES_FOR_VERSION = "Error exporting rates for version";
 	}
 }
