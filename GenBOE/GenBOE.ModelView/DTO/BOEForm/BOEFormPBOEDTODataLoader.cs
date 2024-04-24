@@ -331,10 +331,11 @@ namespace GenBOE.DataBridge.DTO
 					{
 						pboe.SubResources = resourceDTODataLoader.GetResourceNamesByIds(gbe.BOEFormPBOEResourcesXREFs.Where(r => r.PBOEFormID == pboe.PBoeID).Select(r => r.ResourceID).ToList());
 
-						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
-													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == pboe.WorkspaceId
-													  from xRef in gbe.BOEFormPBOEResourcesXREFs where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+						List<decimal> valueSpreads = (from xRef in gbe.BOEFormPBOEResourcesXREFs
 													  where xRef.PBOEFormID == pboe.PBoeID
+													  from b in gbe.BOELaborTypes
+													  where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == pboe.WorkspaceId
 													  select b.ValueSpread ?? 0m).ToList();
 
 						pboe.TotalCost = valueSpreads.Sum();
@@ -402,11 +403,11 @@ namespace GenBOE.DataBridge.DTO
 					{
 						pboe.SubResources = resourceDTODataLoader.GetResourceNamesByIds(gbe.BOEFormPBOEResourcesXREFs.Where(r => r.PBOEFormID == pboe.PBoeID).Select(r => r.ResourceID).ToList());
 
-						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
-													  where b.SpreadTypeID == 2
-													  from xRef in gbe.BOEFormPBOEResourcesXREFs
-													  where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+						List<decimal> valueSpreads = (from xRef in gbe.BOEFormPBOEResourcesXREFs
 													  where xRef.PBOEFormID == pboe.PBoeID
+													  from b in gbe.BOELaborTypes
+													  where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+													  where b.SpreadTypeID == 2
 													  select b.ValueSpread ?? 0m).ToList();
 
 						pboe.TotalCost = valueSpreads.Sum();
@@ -473,10 +474,11 @@ namespace GenBOE.DataBridge.DTO
 					{
 						pboe.SubResources = resourceDTODataLoader.GetResourceNamesByIds(gbe.BOEFormPBOEResourcesXREFs.Where(r => r.PBOEFormID == pboe.PBoeID).Select(r => r.ResourceID).ToList());
 
-						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
-													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == workspaceId
-													  from xRef in gbe.BOEFormPBOEResourcesXREFs where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+						List<decimal> valueSpreads = (from xRef in gbe.BOEFormPBOEResourcesXREFs
 													  where xRef.PBOEFormID == pboe.PBoeID
+													  from b in gbe.BOELaborTypes
+													  where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+													  where b.SpreadTypeID == 2 && b.BOETaskElement.BOE.WorkspaceID == workspaceId
 													  select b.ValueSpread ?? 0m).ToList();
 
 						pboe.TotalCost = valueSpreads.Sum();
@@ -546,11 +548,11 @@ namespace GenBOE.DataBridge.DTO
 					{
 						pboe.SubResources = resourceDTODataLoader.GetResourceNamesByIds(gbe.BOEFormPBOEResourcesXREFs.Where(r => r.PBOEFormID == pboe.PBoeID).Select(r => r.ResourceID).ToList());
 
-						List<decimal> valueSpreads = (from b in gbe.BOELaborTypes
-													  where b.SpreadTypeID == 2
-													  from xRef in gbe.BOEFormPBOEResourcesXREFs
-													  where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+						List<decimal> valueSpreads = (from xRef in gbe.BOEFormPBOEResourcesXREFs
 													  where xRef.PBOEFormID == pboe.PBoeID
+													  from b in gbe.BOELaborTypes
+													  where b.ResourceID == xRef.ResourceID || b.BRCResourceID == xRef.ResourceID
+													  where b.SpreadTypeID == 2
 													  select b.ValueSpread ?? 0m).ToList();
 
 						pboe.TotalCost = valueSpreads.Sum();

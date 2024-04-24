@@ -1139,6 +1139,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							case ProPricerField_Task.ProjMapOldResource:
 								newTaskRow.Append(DOUBLE_QUOTE).Append(this.commonDataMapper.GetSikorskyLegacyResourceID(resourceTypeEntry.LegacyID, this.allLegacyResources)).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								break;
+							case ProPricerField_Task.ProjMapResourceSegmentRegion:
 							case ProPricerField_Task.ResourceSegmentRegion:
 								string resourceSegRegion = wsLevelData.Resources.First(i => i.Id == resourceTypeEntry.ResourceID.Value).SegRegion;
 								newTaskRow.Append(DOUBLE_QUOTE).Append(resourceSegRegion.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
@@ -1368,6 +1369,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						case ProPricerField_Resources.ProjMapOldResource:
 							newResourceRow.Append(DOUBLE_QUOTE).Append(this.commonDataMapper.GetSikorskyLegacyResourceID(labor.LegacyID, this.allLegacyResources)).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
+						case ProPricerField_Resources.ProjMapResourceSegmentRegion:
 						case ProPricerField_Resources.ResourceSegmentRegion:
 							string resourceSegRegion = wsLevelData.Resources.First(z => z.Id == labor.ResourceID.Value).SegRegion;
 							newResourceRow.Append(DOUBLE_QUOTE).Append(resourceSegRegion.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);

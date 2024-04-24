@@ -20,7 +20,7 @@
     <div class="title"><%: Model.OptionChanged.Count %> options changed:</div>
     <ul>
         <% foreach (RestoreOptionChanged item in Model.OptionChanged) { %>
-            <li><%: item.Name%>, <%: item.Desc %> changed to <%: item.ChangedToID %>, <%: item.ChangedToDesc %></li>
+            <li><%: item.Name%>, <%: item.Desc %> changed to <%: item.ChangedToName %>, <%: item.ChangedToDesc %></li>
         <% } %>
     </ul>
 

@@ -216,6 +216,8 @@ namespace GenBOE.ActionLogic
                 {
                     List<BoeTaskElementDTO> boeElements = wsTaskElements.Where(t => t.BoeID == fullBoe.Id).ToList();
                     HashSet<int> resourceIds = new HashSet<int>(boeElements.SelectMany(a => a.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(b => b.ResourceID.Value)).Distinct().ToCollection());
+                    // add BRC resources to list - but don't duplicate tasks if it has both resource and brc
+                    resourceIds.AddRange(new HashSet<int>(boeElements.SelectMany(a => a.taskElementLabors.Where(x => x.BusinessResourceCodeID.HasValue).Select(b => b.BusinessResourceCodeID.Value)).Distinct().ToCollection()));
                     ICollection<ResourceDTO> resources = wsResources.Where(r => resourceIds.Contains(r.Id)).ToCollection();
 
                     lock (LOCK)
@@ -287,6 +289,10 @@ namespace GenBOE.ActionLogic
                                     {
                                         resourceIds.Add(foundLT.ResourceID.Value);
                                     }
+                                    if (foundLT.BusinessResourceCodeID.HasValue && !resourceIds.Contains(foundLT.BusinessResourceCodeID.Value))
+                                    {
+                                        resourceIds.Add(foundLT.BusinessResourceCodeID.Value);
+                                    }
                                 }
                             }
                             else
@@ -297,6 +303,10 @@ namespace GenBOE.ActionLogic
                                 if (lt.ResourceID.HasValue && !resourceIds.Contains(lt.ResourceID.Value))
                                 {
                                     resourceIds.Add(lt.ResourceID.Value);
+                                }
+                                if (lt.BusinessResourceCodeID.HasValue && !resourceIds.Contains(lt.BusinessResourceCodeID.Value))
+                                {
+                                    resourceIds.Add(lt.BusinessResourceCodeID.Value);
                                 }
                             }
                         }
@@ -343,6 +353,10 @@ namespace GenBOE.ActionLogic
                         {
                             resourceIds.Add(lt.ResourceID.Value);
                         }
+                        if (lt.BusinessResourceCodeID.HasValue && !resourceIds.Contains(lt.BusinessResourceCodeID.Value))
+                        {
+                            resourceIds.Add(lt.BusinessResourceCodeID.Value);
+                        }
                     }
                 }
             }
@@ -366,6 +380,10 @@ namespace GenBOE.ActionLogic
                         if (lt.ResourceID.HasValue && !resourceIds.Contains(lt.ResourceID.Value))
                         {
                             resourceIds.Add(lt.ResourceID.Value);
+                        }
+                        if (lt.BusinessResourceCodeID.HasValue && !resourceIds.Contains(lt.BusinessResourceCodeID.Value))
+                        {
+                            resourceIds.Add(lt.BusinessResourceCodeID.Value);
                         }
                     }
                 }
