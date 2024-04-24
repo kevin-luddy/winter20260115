@@ -169,7 +169,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			IEnumerable<BOESummaryGridModelView> result = from boeResourceHours in
 								 (from task in taskElementCollection
-								  from boeResource in BRCValidationUtility.ProcessLaborTypesForBrc(task.taskElementLabors)
+								  from boeResource in BRCValidationUtility.ProcessLaborTypesForBrc(task.taskElementLabors).ToList()
 								  where boeResource.ResourceID.HasValue
 								  select new
 								  {

@@ -355,7 +355,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {
                 //get brc labors based on 1lmx start date
-                List<ResourceTypeDto> taskElementLabors = (List<ResourceTypeDto>)BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors);
+                List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToList();
 
                 foreach (ResourceTypeDto laborTask in taskElementLabors)
                 {
