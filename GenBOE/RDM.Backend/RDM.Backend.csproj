@@ -10,6 +10,7 @@
     <None Remove="app_offlineX.htm" />
     <None Remove="logs\log-20240312.csv" />
     <None Remove="Templates\Export\CobraExport.xlsx" />
+    <None Remove="Templates\Export\PPRDTemplate.docx" />
     <None Remove="Templates\Export\RateCodesImportExample.xlsx" />
     <None Remove="Templates\Export\RatesImportExample.xlsx" />
     <None Remove="logs\ReadMe.txt" />
@@ -17,9 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx" />
     <Content Include="app_offlineX.htm" />
     <EmbeddedResource Include="Templates\Export\CobraExport.xlsx" />
+    <EmbeddedResource Include="Templates\Export\PPRDTemplate.docx" />
     <EmbeddedResource Include="Templates\Export\RateCodesImportExample.xlsx" />
     <EmbeddedResource Include="Templates\Export\RatesImportExample.xlsx" />
     <Content Include="logs\ReadMe.txt" />
