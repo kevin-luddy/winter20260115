@@ -201,7 +201,8 @@ namespace RDM.Backend.Controllers
 			IActionResult result;
 			try
 			{
-				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/PPRDTemplate.docx");
+				string projectDirectory = Directory.GetCurrentDirectory();
+				string serverFileName = Path.Combine(projectDirectory, "Templates", "Export", "PPRDTemplate.docx");
 				result = await this.reportsControllerLogic.GenerateFullPPRD(id, serverFileName, portionMarkingRequired);
 			}
 			catch (GeneralAppException e)
