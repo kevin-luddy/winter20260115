@@ -1,9 +1,9 @@
 ﻿-- Drop SPs first
-IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteResourcetviaTableParameter]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[deleteResourcetviaTableParameter];
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteWorkspaceResourcetviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[deleteWorkspaceResourcetviaTableParameter];
 GO
-IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[insertResourceviaTableParameter]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[insertResourceviaTableParameter];
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[insertWorkspaceResourceviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[insertWorkspaceResourceviaTableParameter];
 GO
 IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updateWorkspaceResourcetviaTableParameter]') AND type in (N'P', N'PC'))
 	DROP PROCEDURE [dbo].[updateWorkspaceResourcetviaTableParameter];
@@ -11,11 +11,11 @@ GO
 
 -- Drop types 2nd
 IF  EXISTS (SELECT * FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'TT_OrdinaryVariable' AND ss.name = N'dbo')
-	DROP TYPE [dbo].[TT_Resource];
+	DROP TYPE [dbo].[TT_WorkspaceResource];
 GO
 
 -- Recreate types 3rd
-CREATE TYPE [dbo].[TT_Resource] AS TABLE(
+CREATE TYPE [dbo].[TT_WorkspaceResource] AS TABLE(
 	[ResourceID] [int] NOT NULL,
 	[UpdateDT] [datetime2](7) NOT NULL,
 	[ResourceName] [varchar](20) NOT NULL,
@@ -36,9 +36,9 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE PROCEDURE [dbo].[insertResourceviaTableParameter]
+CREATE PROCEDURE [dbo].[insertWorkspaceResourceviaTableParameter]
 (
-@ResourceTableParameter [dbo].[TT_Resource] READONLY
+@ResourceTableParameter [dbo].[TT_WorkspaceResource] READONLY
 )
 AS
 /******************************************************************************
@@ -139,9 +139,9 @@ IF @@ERROR = 0
 	SELECT ResourceID FROM @InsertedResource
 
 GO
-CREATE PROCEDURE [dbo].[deleteResourcetviaTableParameter]
+CREATE PROCEDURE [dbo].[deleteWorkspaceResourcetviaTableParameter]
 (
-@WorkspaceResourceTableParameter [dbo].[TT_Resource] READONLY
+@WorkspaceResourceTableParameter [dbo].[TT_WorkspaceResource] READONLY
 )
 AS
 /******************************************************************************
@@ -268,7 +268,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[updateWorkspaceResourcetviaTableParameter]
 (
-@WorkspaceResourceTableParameter [dbo].[TT_Resource] READONLY
+@WorkspaceResourceTableParameter [dbo].[TT_WorkspaceResource] READONLY
 )
 AS
 /******************************************************************************
@@ -396,3 +396,31 @@ JOIN dbo.ODCTaskElement te ON ot.ODCTaskElementID = te.ODCTaskElementID
 JOIN dbo.BOE b ON te.BOEID = b.BOEID
 WHERE ot.ResourceID = ir.ResourceID AND b.WorkspaceID = ir.WorkspaceID	
 
+/*
+	ResourceListID > 1
+*/
+
+DECLARE @InUseTable TABLE (
+	ResourceID INT NOT NULL,
+	WorkspaceID INT NOT NULL,
+	ResourceListID INT,
+	InUse BIT NOT NULL
+)
+INSERT INTO @InUseTable (ResourceID, WorkspaceID, InUse)
+SELECT 
+	ISNULL(wrp.ResourceID, t.ResourceID) AS ResourceID,
+	ISNULL(wrp.WorkspaceID, t.WorkspaceID) AS WorkspaceID,
+	wrp.ResourceListID,
+	CASE 
+		WHEN wrp.ResourceID IS NULL THEN 0
+		ELSE 1
+	END AS InUse
+FROM 
+	@WorkspaceResourceTableParameter AS wrp
+FULL OUTER JOIN 
+	@temp AS t
+ON 
+	wrp.ResourceID = t.ResourceID
+	AND wrp.WorkspaceID = t.WorkspaceID
+WHERE 
+	t.ResourceID IS NULL

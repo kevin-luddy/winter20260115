@@ -13,7 +13,7 @@ AS
 /******************************************************************************
 **		 
 **		Name:	[getWorkspaceResourceInUseFlag]
-**		Desc:	Returns all ResourceID that are InUse
+**		Desc:	Returns all Workspace ResourceID that are InUse
 **			
 **
 **		Auth: Tommy Lee
@@ -23,7 +23,7 @@ AS
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		04/24/24	e374897				Returns all Resource ID that are InUse
+**		04/24/24	e374897				Returns all Workspace Resource ID that are InUse
 *******************************************************************************/
 SET NOCOUNT ON
 
