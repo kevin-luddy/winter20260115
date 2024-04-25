@@ -165,6 +165,7 @@
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceIDByWorkspaceAdvancedSearch.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspacePermissions.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlag.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlagByMultipleResources.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlagByResourceID.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceVariableByTaskElementID.sql" />
@@ -287,6 +288,7 @@
     <Content Include="Object Scripts\Table Based Processing\TaskElementCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementWorkspaceVariableViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\WorkspaceResourceViaTable.sql" />
     <Content Include="Object Scripts\Views\UsersWithRolesReport.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\ErrorLogs.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\Fix Boe Level Duplicated CF XREF Values.sql" />
