@@ -1,12 +1,12 @@
 ﻿-- Drop SPs first
-IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteBOETaskElementCustomFieldValueviaTableParameter]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[deleteBOETaskElementCustomFieldValueviaTableParameter];
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteResourcetviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[deleteResourcetviaTableParameter];
 GO
-IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[insertBOETaskElementCustomFieldValueviaTableParameter]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[insertBOETaskElementCustomFieldValueviaTableParameter];
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[insertResourceviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[insertResourceviaTableParameter];
 GO
-IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updateBOETaskElementCustomFieldValueviaTableParameter]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[updateBOETaskElementCustomFieldValueviaTableParameter];
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updateWorkspaceResourcetviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[updateWorkspaceResourcetviaTableParameter];
 GO
 
 -- Drop types 2nd
@@ -36,9 +36,9 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE PROCEDURE [dbo].[insertWorkspaceResourceviaTableParameter]
+CREATE PROCEDURE [dbo].[insertResourceviaTableParameter]
 (
-@WorkspaceResourceTableParameter [dbo].[TT_Resource] READONLY
+@ResourceTableParameter [dbo].[TT_Resource] READONLY
 )
 AS
 /******************************************************************************
@@ -139,7 +139,7 @@ IF @@ERROR = 0
 	SELECT ResourceID FROM @InsertedResource
 
 GO
-CREATE PROCEDURE [dbo].[deleteWorkspaceResourcetviaTableParameter]
+CREATE PROCEDURE [dbo].[deleteResourcetviaTableParameter]
 (
 @WorkspaceResourceTableParameter [dbo].[TT_Resource] READONLY
 )
@@ -264,3 +264,135 @@ BEGIN
 	AND
 	ResourceListID IN (SELECT ResourceListID FROM @InUseTable WHERE InUse = 0)
 END
+
+GO
+CREATE PROCEDURE [dbo].[updateWorkspaceResourcetviaTableParameter]
+(
+@WorkspaceResourceTableParameter [dbo].[TT_Resource] READONLY
+)
+AS
+/******************************************************************************
+**		 
+**		Name: upsertWorkspaceResource
+**		Desc: Insert/Update into Resource Table
+**			
+**		
+**
+**		Auth: Don Canuso
+**		Date: 1/21/11
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			---------------------------------------
+**		2/4/11		dcanuso				Added Flag Processing:
+**										Add: Workspace.ResourceChangeFlag
+**										IF SA Changes a Global Resource – Set All Workspace.ResourceChangeFlag = 1
+**										IF WS Admin changes a Workspace Resource, set Workspace.ResourceChangeFlag = 1  
+**										for specific workspace
+**										Added Resource In Use Flag		
+**		3/23/11		dcanuso				Added Error when editing In Use row	
+**		5/23/11		dcanuso				Added 2 new variables
+**		6/2/11		dcanuso				Burden Pool removed
+**		6/13/11		dcanuso				New Resource Table columns added
+**		8/2/11		dcanuso				WI 4436: remove the column Company 
+**										from the Resource table and any SPs.
+**		8/2/11		dcanuso				WI TBD: remove the column Labor Category 
+**										from the Resource table and any SPs.
+**		9/15/11		dcanuso				Resource.ResourceName and Segment Region
+**										updated to varchar (30)
+**		9/27/11		dcanuso				Resource.ResourceDescription, Segment Region,
+**										Labor Type updated to varchar (50)
+**		2/7/2012	dcanuso				WI 7145 - Resource Update allowed
+**										When In Use, ResourceName and CostElementID 
+**										can not be updated
+**										When NOT in use, all can be updated
+**										InUse Updates
+**		7/24/12		dcanuso				WI8960: SP will be used for non-System Resources
+**		8/7/12		dcanuso				WI 10278: Resource Redesign 
+**										In Use will no longer be stored in DB
+**		11/1/12		dcanuso				Meetings with SE caused some Business 
+**										Rule changes - Rqmt doc will be created
+**		1/28/13		dcanuso				WI 14779 Remove Workspace.ResourceChangeFlag
+**		7/25/13		dcanuso				WI 19369 Changes for Labor Tab
+**      1/25/16     kotwickm			Updating desc to 100 for SSC
+**		12/15/17	twilson3			BOEJ-2248 Remove Labor Rates
+**		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+*******************************************************************************/
+SET NOCOUNT ON 
+
+DECLARE @UpdateDT datetime2 = GETDATE()
+
+DECLARE @InsertedResource AS Table (ResourceID int, ResourceListID int, WorkspaceID int)
+
+DECLARE @temp TABLE (ResourceID int, ResourceListID int)
+
+INSERT INTO @temp (ResourceID, ResourceListID, WorkspaceID)
+SELECT r.ResourceID, r.ResourceListID, w.WorkspaceID FROM [dbo].[Resource] r
+JOIN [dbo].[Workspace] w ON r.[ResourceListID] = w.[ResourceListID]
+
+
+/*
+	If Resource belongs to Resource List is 1, 
+	Delete WSR, 
+	Add Resource, 
+	Add WSR
+*/
+
+DELETE wr
+FROM dbo.WorkspaceResource wr
+JOIN @temp t ON wr.ResourceID = t.ResourceID
+WHERE wr.ResourceListID = 1
+
+
+INSERT INTO [dbo].[Resource]
+	([ResourceName]
+	,[ResourceDescription]
+	,[SegmentRegion]
+	,[LaborType]
+	,[SegmentID]
+	,[ResourceListID]
+	,[CostElementID]
+	,[UpdateDT]
+	,[RateTypeID]
+	)
+OUTPUT inserted.ResrouceID INTO @InsertedResource
+SELECT ResourceName
+	,ResourceDescription
+	,SegmentRegion
+	,LaborType
+	,SegmentID
+	,ResourceListID
+	,CostElementID
+	,@UpdateDT
+	,RateTypeID
+FROM @WorkspaceResourceTableParameter
+
+
+INSERT INTO [dbo].[WorkspaceResource]
+	([SystemResourceID]
+    ,[ResourceListID]
+    ,[WorkspaceID])
+SELECT ResourceID
+	,ResourceListID
+	,WorkspaceID
+FROM @InsertedResource
+
+
+UPDATE lt
+SET lt.ResourceID = ir.ResourceID
+FROM dbo.BOELaborType lt
+JOIN @InsertedResource ir ON lt.ResourceID = ir.ResourceID AND lt.ResourceListID = ir.ResourceListID
+JOIN dbo.BOETaskElement te ON lt.BOETaskElementID = te.BOETaskElementID
+JOIN dbo.BOE b ON te.BOEID = b.BOEID
+WHERE lt.ResourceID = ir.ResourceID AND b.WorkspaceID = ir.WorkspaceID
+			
+
+UPDATE ot
+SET ot.ResourceID = ir.ResourceID
+FROM dbo.ODCType ot
+JOIN @InsertedResource ir ON ot.ResourceID = ir.ResourceID AND ot.ResourceListID = ir.ResourceListID
+JOIN dbo.ODCTaskElement te ON ot.ODCTaskElementID = te.ODCTaskElementID
+JOIN dbo.BOE b ON te.BOEID = b.BOEID
+WHERE ot.ResourceID = ir.ResourceID AND b.WorkspaceID = ir.WorkspaceID	
+
