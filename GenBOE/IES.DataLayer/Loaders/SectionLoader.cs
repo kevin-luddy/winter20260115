@@ -56,19 +56,19 @@ namespace IES.DataBridge.Loaders
             ICollection<SectionModelView> sectionDetailsByRevision = null;
             ICollection<SectionModelView> sectionsToReturn = new List<SectionModelView>();
 
-            using (IESEntities context = new IESEntities())
-            {
-                ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
+			using (IESEntities context = new IESEntities())
+			{
+				ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
 				if (sectionsOnly)
-                {
-                    // Filter out Sections that don't have a Content Type of Section
-                    sectionsForRevision = sectionsForRevision
+				{
+					// Filter out Sections that don't have a Content Type of Section
+					sectionsForRevision = sectionsForRevision
 						.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section).ToCollection();
 				}
 
-                if (sectionIds != null)
-                {
-                    int sectionType = (int)SectionContentType.Section;
+				if (sectionIds != null)
+				{
+					int sectionType = (int)SectionContentType.Section;
 					sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID)).ToCollection();
 				}
 

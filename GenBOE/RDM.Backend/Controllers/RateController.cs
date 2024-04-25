@@ -94,8 +94,8 @@ namespace RDM.Backend.Controllers
 			}
 			catch (Exception ex)
 			{
-				this.log.LogError(ex, "Unknown Exception.");
-				response.Messages.Add("Unknown Exception");
+				this.log.LogError(ex, CommonConstants.ERROR_GETTING_RATES_FOR_VERSION);
+				response.Messages.Add(CommonConstants.ERROR_GETTING_RATES_FOR_VERSION);
 			}
 
 			return this.Json(response);

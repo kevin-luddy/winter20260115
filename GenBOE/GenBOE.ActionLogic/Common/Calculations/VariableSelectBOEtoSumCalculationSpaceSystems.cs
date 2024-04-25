@@ -62,17 +62,17 @@ namespace GenBOE.ActionLogic.Common.Calculations
             {
                 foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
                 {
-                    if (labor.ResourceID.HasValue && labor.LaborSpreads.Any() && labor.SpreadType == SpreadType.Hours)
+                    if ((labor.ResourceID.HasValue || labor.BusinessResourceCodeID.HasValue) && labor.LaborSpreads.Any() && labor.SpreadType == SpreadType.Hours)
                     {
-                        if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.SSCLMLabor) && sscToSearch.Contains(labor.ResourceID.Value))
+                        if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.SSCLMLabor) && sscToSearch.Contains(labor.ResourceID.HasValue ? labor.ResourceID.Value : labor.BusinessResourceCodeID.Value))
                         {
                             toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
                         }
-                        else if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.SSCLOEIWTA) && (boeTask.TaskElementType == TaskElementType.Labor) && iwtaToSearch.Contains(labor.ResourceID.Value))
+                        else if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.SSCLOEIWTA) && (boeTask.TaskElementType == TaskElementType.Labor) && iwtaToSearch.Contains(labor.ResourceID.HasValue ? labor.ResourceID.Value : labor.BusinessResourceCodeID.Value))
                         {
                             toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
                         }
-                        else if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.SSCLOESub) && (boeTask.TaskElementType == TaskElementType.Labor) && subToSearch.Contains(labor.ResourceID.Value))
+                        else if (sumVariableResourceTypes.Contains((int)SumVariableResourceType.SSCLOESub) && (boeTask.TaskElementType == TaskElementType.Labor) && subToSearch.Contains(labor.ResourceID.HasValue ? labor.ResourceID.Value : labor.BusinessResourceCodeID.Value))
                         {
                             toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
                         }

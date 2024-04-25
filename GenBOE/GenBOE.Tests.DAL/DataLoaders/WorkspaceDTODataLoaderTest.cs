@@ -1138,8 +1138,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             var odcsRestored = odcLoader.GetByBoeIds(boesRestored.Select(x => x.Id).ToList());
             OtherDirectCostDTODataLoaderTest.VerifyCollections(odcsFromDb, odcsRestored, true);
 
-            var resourcesFromDb = resourceLoder.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
-            var resourcesRestored = resourceLoder.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
+            var resourcesFromDb = resourceLoder.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID.HasValue ? (int)z.ResourceID : (int)z.BusinessResourceCodeID).Distinct().ToList());
+            var resourcesRestored = resourceLoder.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID.HasValue ? (int)z.ResourceID : (int)z.BusinessResourceCodeID).Distinct().ToList());
             ResourceDTODataLoaderTest.VerifyCollections(resourcesFromDb, resourcesRestored, true);
 
             var wsVarsFromDb = wsVarLoader.GetByWorkspaceID(wsFromDb.Id);
@@ -1150,8 +1150,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             var ppRestored = ppLoader.GetByWorkspaceId(wsRestoredFromBackupId);
             ProPricerDTODataLoaderTest.VerifyCollections(ppFromDb, ppRestored, true);
 
-            var perfOrgsFromDb = perfOrgLoader.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
-            var perfOrgsRestored = perfOrgLoader.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
+            var perfOrgsFromDb = perfOrgLoader.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID.HasValue ? (int)z.ResourceID : (int)z.BusinessResourceCodeID).Distinct().ToList());
+            var perfOrgsRestored = perfOrgLoader.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID.HasValue ? (int)z.ResourceID : (int)z.BusinessResourceCodeID).Distinct().ToList());
             Assert.AreEqual(perfOrgsFromDb.Count, perfOrgsRestored.Count);
             for (int i = 0; i < perfOrgsFromDb.Count; i++)
             {

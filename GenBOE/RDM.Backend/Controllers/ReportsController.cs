@@ -11,6 +11,7 @@ namespace RDM.Backend.Controllers
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
+	using System.Threading.Tasks;
 	using IES.ActionLogic.Core.ControllerLogic;
 	using IES.ActionLogic.Core.IO.Export;
 	using IES.Common.Core.Constants;
@@ -195,18 +196,18 @@ namespace RDM.Backend.Controllers
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
 		/// <returns>The Word file representing full PPRD.</returns>
 		[HttpGet("[action]")]
-		public IActionResult GenerateFullPPRD(string id, bool? portionMarkingRequired)
+		public async Task<IActionResult> GenerateFullPPRD(string id, bool? portionMarkingRequired)
 		{
-			IActionResult result = new EmptyResult();
+			IActionResult result;
 			try
 			{
-				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/PPRDTemplate.docx");
-
-				this.reportsControllerLogic.GenerateFullPPRD(id, serverFileName, portionMarkingRequired);
+				string projectDirectory = Directory.GetCurrentDirectory();
+				string serverFileName = Path.Combine(projectDirectory, "Templates", "Export", "PPRDTemplate.docx");
+				result = await this.reportsControllerLogic.GenerateFullPPRD(id, serverFileName, portionMarkingRequired);
 			}
 			catch (GeneralAppException e)
 			{
-				this.log.LogError(e, "Unknown Exception");
+				this.log.LogError(e, "Error generating full PPR&D doc");
 				result = this.CreateTextFileWithErrorMessage(e.Message);
 			}
 

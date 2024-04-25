@@ -10,6 +10,7 @@
     <None Remove="app_offlineX.htm" />
     <None Remove="logs\log-20240312.csv" />
     <None Remove="Templates\Export\CobraExport.xlsx" />
+    <None Remove="Templates\Export\PPRDTemplate.docx" />
     <None Remove="Templates\Export\RateCodesImportExample.xlsx" />
     <None Remove="Templates\Export\RatesImportExample.xlsx" />
     <None Remove="logs\ReadMe.txt" />

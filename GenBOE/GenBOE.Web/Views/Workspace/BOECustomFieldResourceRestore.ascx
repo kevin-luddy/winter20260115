@@ -10,21 +10,31 @@
 <div class="restored-resources">
     <div>The restore of <%: ViewData["SYSTEM_LIST_NAME"] %> was successful.</div>
 
-    <div class="title"><%: Model.OptionAdded.Count %> options added:</div>
-
-    <div class="title"><%: Model.OptionDeleted.Count %> options deleted:</div>
-
-    <div class="title"><%: Model.OptionChanged.Count %> options changed:</div>
-    <ul>
-        <% foreach (RestoreOptionChanged item in Model.OptionChanged) { %>
-            <li><%: item.Name%>, <%: item.Desc %>, <%: item.SegRegion %>, <%: item.LaborType %>, <%: item.ElementOfCostName %> changed to <%: item.ChangedToName %>, <%: item.ChangedToDesc %>, <%: item.ChangedToSegRegion %>, <%: item.ChangedToLaborType %>, <%: item.ChangedToElementOfCostName %></li>
+    <div class="title"><%: Model.OptionAdded.Count %> Resources added:</div>
+	<ul>
+        <% foreach (RestoreOption item in Model.OptionAdded) { %>
+            <li><%: item.Name %>, <%: item.Desc %>, <%: item.SegRegion %>, <%: item.LaborType %>, <%: item.RateType.GetDescription() %>, <%: item.ElementofCost.GetDescription() %></li>
         <% } %>
     </ul>
 
-    <div class="title"><%: Model.OptionNotChanged.Count %> options could not be changed or deleted because they are in use by at least one BOE:</div>
+    <div class="title"><%: Model.OptionDeleted.Count %> Resources deleted:</div>
+    <ul>
+        <% foreach (RestoreOption item in Model.OptionDeleted) { %>
+            <li><%: item.Name%>, <%: item.Desc %>, <%: item.SegRegion %>, <%: item.LaborType %>, <%: item.RateType.GetDescription() %>, <%: item.ElementofCost.GetDescription() %></li>
+        <% } %>
+    </ul>
+
+    <div class="title"><%: Model.OptionChanged.Count %> Resources changed:</div>
+    <ul>
+        <% foreach (RestoreOptionChanged item in Model.OptionChanged) { %>
+            <li><%: item.Name%>, <%: item.Desc %>, <%: item.SegRegion %>, <%: item.LaborType %>, <%: item.RateType.GetDescription() %>, <%: item.ElementOfCost.GetDescription() %> changed to <%: item.ChangedToName %>, <%: item.ChangedToDesc %>, <%: item.ChangedToSegRegion %>, <%: item.ChangedToLaborType %>, <%: item.ChangedToRateType.GetDescription() %>, <%: item.ChangedToElementOfCost.GetDescription() %></li>
+        <% } %>
+    </ul>
+
+    <div class="title"><%: Model.OptionNotChanged.Count %> Resources could not be changed or deleted because they are in use by at least one BOE:</div>
     <ul>
         <% foreach (RestoreOption item in Model.OptionNotChanged) { %>
-            <li><%: item.Name%>, <%: item.Desc %>, <%: item.SegRegion %>, <%: item.LaborType %>, <%: item.ElementOfCostName %></li>
+            <li><%: item.Name%>, <%: item.Desc %>, <%: item.SegRegion %>, <%: item.LaborType %>, <%: item.RateType.GetDescription() %>, <%: item.ElementofCost.GetDescription() %></li>
         <% } %>
     </ul>
 </div>
