@@ -641,6 +641,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_REFRESH_VARIABLE_BOE_SUM_BY_CLIN = "RefreshVariableBOESumByCLIN";
 		public static readonly string ACTION_REFRESH_VARIABLE_BOE_SUM_BY_WBS = "RefreshVariableBOESumByWBS";
 		public static readonly string ACTION_RESTORE_CUSTOM_FIELD_PERFORMING_ORGANIZATIONS = "RestoreCustomFieldPerformingOrganizations";
+		public static readonly string ACTION_RESTORE_CUSTOM_FIELD_RESOURCES = "RestoreCustomFieldResources";
 		public static readonly string ACTION_RESTORE_WORKSPACE_VERSION = "RestoreWorkspaceVersion";
 		public static readonly string ACTION_EXPORT_WORKSPACE_VERSION = "ExportWorkspaceVersion";
 		public static readonly string ACTION_SAVE_CUSTOM_FIELDS = "SaveCustomFields";
