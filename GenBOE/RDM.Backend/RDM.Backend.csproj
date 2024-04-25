@@ -17,11 +17,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx" />
+    <Content Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="app_offlineX.htm" />
-    <Content Include="Templates\Export\CobraExport.xlsx" />
-    <Content Include="Templates\Export\RateCodesImportExample.xlsx" />
-    <Content Include="Templates\Export\RatesImportExample.xlsx" />
+    <Content Include="Templates\Export\CobraExport.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Export\RateCodesImportExample.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Export\RatesImportExample.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="logs\ReadMe.txt" />
     <Content Include="parameters.xml" />
   </ItemGroup>
