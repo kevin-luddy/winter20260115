@@ -18,11 +18,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="app_offlineX.htm" />
-    <EmbeddedResource Include="Templates\Export\CobraExport.xlsx" />
-    <EmbeddedResource Include="Templates\Export\PPRDTemplate.docx" />
-    <EmbeddedResource Include="Templates\Export\RateCodesImportExample.xlsx" />
-    <EmbeddedResource Include="Templates\Export\RatesImportExample.xlsx" />
+    <Content Include="Templates\Export\CobraExport.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Export\RateCodesImportExample.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Export\RatesImportExample.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="logs\ReadMe.txt" />
     <Content Include="parameters.xml" />
   </ItemGroup>
