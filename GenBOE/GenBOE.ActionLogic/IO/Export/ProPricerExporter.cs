@@ -285,6 +285,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				// need to update the resources since the new offloaded labor resources might use subcontractor resources not added
 				ICollection<int> resourceIds = wsDataForExport.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
 						.Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
+						.Union(wsDataForExport.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
 				wsDataForExport.Resources = this.retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
