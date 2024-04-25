@@ -459,7 +459,8 @@ namespace GenBOE.ActionLogic.IO.Export
 					if (!Utilities.IsBRCEnabledForSystem && has1LMXResources)
 					{
 						taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
-					} else if(Utilities.IsBRCEnabledForSystem)
+					} 
+					else if(Utilities.IsBRCEnabledForSystem)
 					{
 						taskResourcesEntriesForElementOfCost = BRCValidationUtility.ProcessLaborTypesForBrc(boeTask.taskElementLabors).ToList();
 					}
