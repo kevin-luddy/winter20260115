@@ -562,13 +562,24 @@ namespace GenBOE.ActionLogic.Common
 
                 boe.TemplateQuestionsAndAnswers = workspace.TemplateQuestionsAndAnswers.Where(x => x.BoeId == boe.Id).ToList();
 
+				// Used in assigning a psuedo id for sub resources.
+				int startingIndex = -1;
+
                 foreach (BoeTaskElementDTO taskElement in boe.TaskElements)
                 {
                     originalTaskHours = 0;
                     offloadedTaskHours = 0;
 
                     decimal taskElementTotalHoursOffloaded = 0m;
-                    Collection<ResourceTypeDto> resources = taskElement.taskElementLabors;
+
+					if (Utilities.IsBRCEnabledForSystem)
+					{
+						taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, startingIndex).ToCollection();
+						startingIndex = taskElement.taskElementLabors.Select(x => x.Id).Min() - 1;
+					}
+
+					Collection<ResourceTypeDto> resources = taskElement.taskElementLabors;
+					
                     // Create a new list that is ordered with new sub resources inserted directly after the resources they were created from.
                     Collection<ResourceTypeDto> newResourceList = new Collection<ResourceTypeDto>();
                     foreach (ResourceTypeDto laborResource in resources)
@@ -659,11 +670,11 @@ namespace GenBOE.ActionLogic.Common
                 decimal offloadedBoeHours = 0;
                 decimal percentOffload = 0;
 
-                foreach (BoeTaskElementDTO taskElement in boe.TaskElements)
+				foreach (BoeTaskElementDTO taskElement in boe.TaskElements)
                 {
                     bool taskElementOffloaded = false;
 
-                    if (!taskElement.WasDescriptionSet)
+					if (!taskElement.WasDescriptionSet)
                     {
                         throw new GenValidationException("RTE Fields must be set on Project Map Workspaces when Offloading");
                     }

@@ -608,7 +608,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					break;
 				}
 
-				if (labor.ResourceID != originalLabor.ResourceID
+				if ((labor.ResourceID.HasValue && labor.ResourceID != originalLabor.ResourceID)
+					|| (labor.BusinessResourceCodeID.HasValue && labor.BusinessResourceCodeID != originalLabor.BusinessResourceCodeID)
 					|| labor.PerformingOrgID != originalLabor.PerformingOrgID
 					|| labor.StartDate != originalLabor.StartDate.Value.ToMonthString()
 					|| labor.EndDate != originalLabor.EndDate.Value.ToMonthString()

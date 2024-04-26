@@ -178,85 +178,27 @@ namespace GenBOE.ActionLogic.Common.Calculations
             return toReturn;  // decimal variable values should NOT be adjusted for decimal precision
         }
 
-        /// <summary>
-        /// Get the total value of Boes that are associated with a BOE ID
-        /// </summary>
-        /// <param name="boeId">The boe identifier.</param>
-        /// <param name="sumVariableResourceTypes">The sum variable resource types.</param>
-        /// <param name="dataForSumOfBoeCalc">The data for sum of boe calculate.</param>
-        /// <returns>total</returns>
-        /// <exception cref="System.ArgumentNullException">inSumVariableResourceTypes or dataForSumOfBoeCalc</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        public virtual decimal GetTotalBasedOnBoeID(int boeId, Collection<int> sumVariableResourceTypes, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
-        {
-            if (sumVariableResourceTypes == null)
-            {
-                throw new ArgumentNullException(nameof(sumVariableResourceTypes));
-            }
+		/// <summary>
+		/// Get the total value of Boes that are associated with a BOE ID
+		/// </summary>
+		/// <param name="boeId">The boe identifier.</param>
+		/// <param name="sumVariableResourceTypes">The sum variable resource types.</param>
+		/// <param name="dataForSumOfBoeCalc">The data for sum of boe calculate.</param>
+		/// <returns>total</returns>
+		/// <exception cref="System.ArgumentNullException">inSumVariableResourceTypes or dataForSumOfBoeCalc</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+	    public virtual decimal GetTotalBasedOnBoeID(int boeId, Collection<int> sumVariableResourceTypes, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
+	    {
+		    throw new NotImplementedException();
+	    }
 
-            if (dataForSumOfBoeCalc == null)
-            {
-                throw new ArgumentNullException(nameof(dataForSumOfBoeCalc));
-            }
-
-            decimal toReturn = 0;
-
-            List<BoeTaskElementDTO> boeTaskElements = dataForSumOfBoeCalc.BoeIdToTaskElements.ContainsKey(boeId) ? dataForSumOfBoeCalc.BoeIdToTaskElements[boeId] : new List<BoeTaskElementDTO>();
-            HashSet<ResourceDTO> resources = dataForSumOfBoeCalc.BoeIdToResources.ContainsKey(boeId) ? new HashSet<ResourceDTO>(dataForSumOfBoeCalc.BoeIdToResources[boeId]) : new HashSet<ResourceDTO>();
-
-            HashSet<int> dsToSearch = new HashSet<int>(resources.Where(x => x.ElementOfCost == ElementOfCostType.LMLabor && x.Segment.Equals(SegmentType.DS)).Select(x => x.Id));
-            HashSet<int> esToSearch = new HashSet<int>(resources.Where(x => x.ElementOfCost == ElementOfCostType.LMLabor && x.Segment.Equals(SegmentType.ES)).Select(x => x.Id));
-            HashSet<int> tsToSearch = new HashSet<int>(resources.Where(x => x.ElementOfCost == ElementOfCostType.LMLabor && x.Segment.Equals(SegmentType.TS)).Select(x => x.Id));
-            HashSet<int> lsToSearch = new HashSet<int>(resources.Where(x => x.ElementOfCost == ElementOfCostType.LMLabor && x.Segment.Equals(SegmentType.LS)).Select(x => x.Id));
-            HashSet<int> iwtaToSearch = new HashSet<int>(resources.Where(x => x.ElementOfCost == ElementOfCostType.IWTA).Select(x => x.Id));
-            HashSet<int> subToSearch = new HashSet<int>(resources.Where(x => x.ElementOfCost == ElementOfCostType.Sub).Select(x => x.Id));
-
-            HashSet<int> variableResourceTypes = new HashSet<int>(sumVariableResourceTypes);
-
-            foreach (BoeTaskElementDTO boeTask in boeTaskElements)
-            {
-                foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
-                {
-                    if (labor.ResourceID.HasValue && labor.LaborSpreads.Any() && labor.SpreadType == SpreadType.Hours)
-                    {
-                        if (variableResourceTypes.Contains((int)SumVariableResourceType.DSLabor) && dsToSearch.Contains(labor.ResourceID.Value))
-                        {
-                            toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
-                        }
-                        else if (variableResourceTypes.Contains((int)SumVariableResourceType.ESLabor) && esToSearch.Contains(labor.ResourceID.Value))
-                        {
-                            toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
-                        }
-                        else if (variableResourceTypes.Contains((int)SumVariableResourceType.TSLabor) && tsToSearch.Contains(labor.ResourceID.Value))
-                        {
-                            toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
-                        }
-                        else if (variableResourceTypes.Contains((int)SumVariableResourceType.LSLabor) && lsToSearch.Contains(labor.ResourceID.Value))
-                        {
-                            toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
-                        }
-                        else if (variableResourceTypes.Contains((int)SumVariableResourceType.LOEIWTA) && (boeTask.TaskElementType == TaskElementType.Labor) && iwtaToSearch.Contains(labor.ResourceID.Value))
-                        {
-                            toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
-                        }
-                        else if (variableResourceTypes.Contains((int)SumVariableResourceType.LOESub) && (boeTask.TaskElementType == TaskElementType.Labor) && subToSearch.Contains(labor.ResourceID.Value))
-                        {
-                            toReturn = toReturn + labor.LaborSpreads.Sum(x => x.LaborSpreadValue);
-                        }
-                    }
-                }
-            }
-
-            return toReturn;  // decimal variable values should NOT be adjusted for decimal precision
-        }
-
-        /// <summary>
-        /// Get task variable total based on what's currently saved in the database
-        /// </summary>
-        /// <param name="taskVar">task variable</param>
-        /// <param name="dataForSumOfBoeCalc">The data for sum of boe calculation.</param>
-        /// <returns>total</returns>
-        public virtual decimal GetTaskVarLabelTotal(OrdinaryVariableDto taskVar, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
+		/// <summary>
+		/// Get task variable total based on what's currently saved in the database
+		/// </summary>
+		/// <param name="taskVar">task variable</param>
+		/// <param name="dataForSumOfBoeCalc">The data for sum of boe calculation.</param>
+		/// <returns>total</returns>
+		public virtual decimal GetTaskVarLabelTotal(OrdinaryVariableDto taskVar, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
         {
             if (taskVar == null)
             {
@@ -302,5 +244,6 @@ namespace GenBOE.ActionLogic.Common.Calculations
 
             return toReturn;  // decimal variable values should NOT be adjusted for decimal precision
         }
-    }
+
+	}
 }

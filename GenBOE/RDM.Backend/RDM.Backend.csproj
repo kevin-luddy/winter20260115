@@ -10,6 +10,7 @@
     <None Remove="app_offlineX.htm" />
     <None Remove="logs\log-20240312.csv" />
     <None Remove="Templates\Export\CobraExport.xlsx" />
+    <None Remove="Templates\Export\PPRDTemplate.docx" />
     <None Remove="Templates\Export\RateCodesImportExample.xlsx" />
     <None Remove="Templates\Export\RatesImportExample.xlsx" />
     <None Remove="logs\ReadMe.txt" />
@@ -17,11 +18,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx" />
+    <Content Include="..\PPRDTemplate.docx" Link="Templates\Export\PPRDTemplate.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="app_offlineX.htm" />
-    <Content Include="Templates\Export\CobraExport.xlsx" />
-    <Content Include="Templates\Export\RateCodesImportExample.xlsx" />
-    <Content Include="Templates\Export\RatesImportExample.xlsx" />
+    <Content Include="Templates\Export\CobraExport.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Export\RateCodesImportExample.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Export\RatesImportExample.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="logs\ReadMe.txt" />
     <Content Include="parameters.xml" />
   </ItemGroup>

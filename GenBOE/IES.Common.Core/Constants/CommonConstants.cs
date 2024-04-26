@@ -1116,5 +1116,15 @@ namespace IES.Common.Core.Constants
 		/// The IES Token Scheme name
 		/// </summary>
 		public const string IES_TOKEN_SCHEME = "IES_TOKEN";
+
+		/// <summary>
+		/// Date format in yyyy-MM-ddTHH:mm:ss, mainly used for returning a DateTime as a string with JSON for easy parsing
+		/// </summary>
+		public const string DATETIME_STRING_FORMAT = "yyyy-MM-ddTHH:mm:ss";
+
+		/// <summary>
+		/// Error message when exporting (getting JSON) rates for version
+		/// </summary>
+		public const string ERROR_GETTING_RATES_FOR_VERSION = "Error exporting rates for version";
 	}
 }

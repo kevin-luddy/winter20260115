@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
@@ -76,6 +77,9 @@ namespace GenBOE.ActionLogic.IO.Export
 				.SelectMany(x => x.TaskElements)
 				.SelectMany(x => x.taskElementLabors)
 				.Where(x => (int)x.SpreadType == settingsData.RateType).ToList();
+
+			// filter labors on brc by 1lmx start date
+			taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElementLabors).ToList();
 
 			// Filter by element of cost from the settings data
 			ICollection<int> laborsToRemove = new Collection<int>();

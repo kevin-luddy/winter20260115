@@ -70,9 +70,9 @@
             {
                 @Html.Partial("MainMenu")
             }
-            @if (!string.IsNullOrEmpty(ConfigurationUtilities.IESBannerUrl("RDM")))
+            @if (!string.IsNullOrEmpty(ConfigurationUtilities.IESBannerUrl(ConfigurationUtilities.IESBannerApp)))
             {
-                <iframe class="bannerframe" src="@ConfigurationUtilities.IESBannerUrl("RDM")"></iframe>
+                <iframe class="bannerframe" src="@ConfigurationUtilities.IESBannerUrl(ConfigurationUtilities.IESBannerApp)"></iframe>
             }
             <div id="IEPerformanceBanner" class="WarningBanner display-none">If you are experiencing performance issues, please try using Chrome or Firefox.</div>
             @RenderBody()
