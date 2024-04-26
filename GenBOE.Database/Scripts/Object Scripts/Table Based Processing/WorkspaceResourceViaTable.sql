@@ -321,6 +321,8 @@ AS
 *******************************************************************************/
 SET NOCOUNT ON 
 
+DECLARE @ErrorMessage varchar (500)
+
 DECLARE @UpdateDT datetime2 = GETDATE()
 
 DECLARE @InsertedResource AS Table (ResourceID int, ResourceListID int, WorkspaceID int)
@@ -400,27 +402,49 @@ WHERE ot.ResourceID = ir.ResourceID AND b.WorkspaceID = ir.WorkspaceID
 	ResourceListID > 1
 */
 
-DECLARE @InUseTable TABLE (
-	ResourceID INT NOT NULL,
-	WorkspaceID INT NOT NULL,
-	ResourceListID INT,
-	InUse BIT NOT NULL
+DECLARE @temp TABLE (ResourceID int)
+INSERT @temp EXECUTE [dbo].[getWorkspaceResourceInUseFlag]
+
+IF NOT EXISTS (
+	SELECT *
+	FROM dbo.[Resource] r
+	WHERE r.UpdateDT <> @UpdateDT AND r.ResourceID IN (SELECT ResourceID FROM @WorkspaceResourceTableParameter)
 )
-INSERT INTO @InUseTable (ResourceID, WorkspaceID, InUse)
-SELECT 
-	ISNULL(wrp.ResourceID, t.ResourceID) AS ResourceID,
-	ISNULL(wrp.WorkspaceID, t.WorkspaceID) AS WorkspaceID,
-	wrp.ResourceListID,
-	CASE 
-		WHEN wrp.ResourceID IS NULL THEN 0
-		ELSE 1
-	END AS InUse
-FROM 
-	@WorkspaceResourceTableParameter AS wrp
-FULL OUTER JOIN 
-	@temp AS t
-ON 
-	wrp.ResourceID = t.ResourceID
-	AND wrp.WorkspaceID = t.WorkspaceID
-WHERE 
-	t.ResourceID IS NULL
+	BEGIN
+		UPDATE r
+		SET r.ResourceDescription = wr.ResourceDescription
+			,r.SegmentRegion = wr.SegmentRegion
+			,r.LaborType = wr.LaborType
+			,r.ResourceListID = wr.ResourceListID
+			,r.UpdateDt = @UpdateDT
+			,r.RateTypeID = wr.RateTypeID
+		FROM [dbo].[Resource] r
+		JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID
+		JOIN @temp t ON wr.ResourceID = t.ResourceID
+
+
+		UPDATE r
+		SET r.ResourceName = wr.ResourceName
+			,r.ResourceDescription = wr.ResourceDescription
+			,r.SegmentRegion = wr.SegmentRegion
+			,r.LaborType = wr.LaborType
+			,r.ResourceListID = wr.ResourceListID
+			,r.UpdateDt = @UpdateDT
+			,r.RateTypeID = wr.RateTypeID
+		FROM [dbo].[Resource] r
+		JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID
+		FULL OUTER JOIN @temp t ON wr.ResourceID = t.ResourceID
+	END
+ELSE
+	BEGIN
+		SET @ErrorMessage = 'There are resources that has been updated and is out of sync with the data in your browser. Please refresh your data.'
+		RAISERROR (
+			@ErrorMessage,
+			11,
+			1
+		)
+		RETURN
+	END
+IF @@ERROR = 0
+	SELECT ResourceID FROM @WorkspaceResourceTableParameter
+GO
