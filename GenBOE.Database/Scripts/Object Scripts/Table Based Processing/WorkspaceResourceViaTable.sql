@@ -350,7 +350,7 @@ IF NOT EXISTS (
 		WHERE 
 			t.SystemResourceID IS NULL
 
-
+		/* Updates for those that are InUse */
 		UPDATE r
 		SET r.ResourceDescription = wr.ResourceDescription
 			,r.SegmentRegion = wr.SegmentRegion
@@ -359,23 +359,25 @@ IF NOT EXISTS (
 			,r.UpdateDt = @UpdateDT
 			,r.RateTypeID = wr.RateTypeID
 		FROM [dbo].[Resource] r
-			JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID
+			JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID AND r.ResourceListID = wr.ResourceListId
 			JOIN @InUseTable i ON wr.ResourceID = i.ResourceID
 		WHERE 
 			wr.ResourceListID > 1
-			AND i.InUse = 0
+			AND i.InUse = 1
 
-
+		/* Updates for those that are NOT InUse */
 		UPDATE r
 		SET r.ResourceName = wr.ResourceName
 			,r.ResourceDescription = wr.ResourceDescription
 			,r.SegmentRegion = wr.SegmentRegion
 			,r.LaborType = wr.LaborType
+			,r.SegmentID = wr.SegmentID
 			,r.ResourceListID = wr.ResourceListID
+			,r.CostElementID = wr.CostElementID
 			,r.UpdateDt = @UpdateDT
 			,r.RateTypeID = wr.RateTypeID
 		FROM [dbo].[Resource] r
-			JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID
+			JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID AND r.ResourceListID = wr.ResourceListId
 			JOIN @InUseTable i ON wr.ResourceID = i.ResourceID
 		WHERE 
 			wr.ResourceListID > 1
