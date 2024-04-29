@@ -300,7 +300,7 @@ FROM @InsertedSystemResource
 UPDATE dbo.BOELaborType
 SET lt.ResourceID = isr.ResourceID
 FROM dbo.BOELaborType lt
-JOIN @InsertedResource iSr ON lt.ResourceID = isr.ResourceID AND lt.ResourceListID = isr.ResourceListID
+JOIN @InsertedSystemResource iSr ON lt.ResourceID = isr.ResourceID AND lt.ResourceListID = isr.ResourceListID
 JOIN dbo.BOETaskElement te ON lt.BOETaskElementID = te.BOETaskElementID
 JOIN dbo.BOE b ON te.BOEID = b.BOEID
 WHERE lt.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID
@@ -309,7 +309,7 @@ WHERE lt.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID
 UPDATE dbo.ODCType
 SET ot.ResourceID = isr.ResourceID
 FROM dbo.ODCType ot
-JOIN @InsertedResource isr ON ot.ResourceID = isr.ResourceID AND ot.ResourceListID = isr.ResourceListID
+JOIN @InsertedSystemResource isr ON ot.ResourceID = isr.ResourceID AND ot.ResourceListID = isr.ResourceListID
 JOIN dbo.ODCTaskElement te ON ot.ODCTaskElementID = te.ODCTaskElementID
 JOIN dbo.BOE b ON te.BOEID = b.BOEID
 WHERE ot.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID	
@@ -325,8 +325,6 @@ IF NOT EXISTS (
 	WHERE r.UpdateDT <> @UpdateDT AND wr.ResourceListID > 1
 )
 	BEGIN
-		DECLARE @InsertedResource AS Table (ResourceID int, ResourceListID int, WorkspaceID int)
-
 		DECLARE @temp TABLE (SystemResourceID int)
 		INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
 
