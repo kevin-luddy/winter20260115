@@ -44,7 +44,7 @@ CREATE PROCEDURE [dbo].[insertWorkspaceResourceviaTableParameter]
 AS
 /******************************************************************************
 **		 
-**		Name: insertWorkspaceResourceviaTableParameter
+**		Name: insertWorkspaceResource
 **		Desc: Bulk Insert Resource
 **			
 **		
@@ -115,8 +115,8 @@ CREATE PROCEDURE [dbo].[deleteWorkspaceResourcetviaTableParameter]
 AS
 /******************************************************************************
 **		 
-**		Name: [deleteResourceviaTableParameter]
-**		Desc: Bulk Delete Resource
+**		Name: [deleteWorkspaceResource]
+**		Desc: Bulk Delete Workspace Resource
 **			
 **
 **		Auth: Tommy Lee
@@ -183,13 +183,8 @@ SELECT
 		WHEN wrp.ResourceID IS NULL THEN 0
 		ELSE 1
 	END AS InUse
-FROM 
-	@WorkspaceResourceTableParameter AS wrp
-FULL OUTER JOIN 
-	@temp AS t
-ON 
-	wrp.ResourceID = t.SystemResourceID
-	AND wrp.WorkspaceID = t.WorkspaceID
+FROM @WorkspaceResourceTableParameter AS wrp
+	FULL OUTER JOIN @temp AS t ON wrp.ResourceID = t.SystemResourceID AND wrp.WorkspaceID = t.WorkspaceID
 WHERE 
 	t.SystemResourceID IS NULL
 
@@ -226,8 +221,8 @@ CREATE PROCEDURE [dbo].[updateWorkspaceResourcetviaTableParameter]
 AS
 /******************************************************************************
 **		 
-**		Name: updateWorkspaceResourcetviaTableParameter
-**		Desc: Bulk Update Resources
+**		Name: updateWorkspaceResource
+**		Desc: Bulk Update Workspace Resources
 **			
 **		
 **
@@ -246,14 +241,13 @@ DECLARE @ErrorMessage varchar (500)
 
 DECLARE @UpdateDT datetime2 = GETDATE()
 
-DECLARE @InsertedResource AS Table (ResourceID int, ResourceListID int, WorkspaceID int)
+-- @InsertedSystemResource will only have ResourceListID = 1 because of WHERE ResourceListID = 1
+DECLARE @InsertedSystemResource AS Table (ResourceID int, ResourceListID int, WorkspaceID int)
 
-DECLARE @temp TABLE (ResourceID int, ResourceListID int)
-
+DECLARE @temp TABLE (ResourceID int, ResourceListID int, WorkspaceID int)
 INSERT INTO @temp (ResourceID, ResourceListID, WorkspaceID)
 SELECT r.ResourceID, r.ResourceListID, w.WorkspaceID FROM [dbo].[Resource] r
 JOIN [dbo].[Workspace] w ON r.[ResourceListID] = w.[ResourceListID]
-
 
 /*
 	If Resource belongs to Resource List is 1, 
@@ -279,7 +273,7 @@ INSERT INTO [dbo].[Resource]
 	,[UpdateDT]
 	,[RateTypeID]
 	)
-OUTPUT inserted.ResrouceID INTO @InsertedResource
+OUTPUT inserted.ResourceID INTO @InsertedSystemResource
 SELECT ResourceName
 	,ResourceDescription
 	,SegmentRegion
@@ -290,6 +284,7 @@ SELECT ResourceName
 	,@UpdateDT
 	,RateTypeID
 FROM @WorkspaceResourceTableParameter
+WHERE ResourceListID = 1
 
 
 INSERT INTO [dbo].[WorkspaceResource]
@@ -299,39 +294,65 @@ INSERT INTO [dbo].[WorkspaceResource]
 SELECT ResourceID
 	,ResourceListID
 	,WorkspaceID
-FROM @InsertedResource
+FROM @InsertedSystemResource
 
 
-UPDATE lt
-SET lt.ResourceID = ir.ResourceID
+UPDATE dbo.BOELaborType
+SET lt.ResourceID = isr.ResourceID
 FROM dbo.BOELaborType lt
-JOIN @InsertedResource ir ON lt.ResourceID = ir.ResourceID AND lt.ResourceListID = ir.ResourceListID
+JOIN @InsertedResource iSr ON lt.ResourceID = isr.ResourceID AND lt.ResourceListID = isr.ResourceListID
 JOIN dbo.BOETaskElement te ON lt.BOETaskElementID = te.BOETaskElementID
 JOIN dbo.BOE b ON te.BOEID = b.BOEID
-WHERE lt.ResourceID = ir.ResourceID AND b.WorkspaceID = ir.WorkspaceID
+WHERE lt.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID
 			
 
-UPDATE ot
-SET ot.ResourceID = ir.ResourceID
+UPDATE dbo.ODCType
+SET ot.ResourceID = isr.ResourceID
 FROM dbo.ODCType ot
-JOIN @InsertedResource ir ON ot.ResourceID = ir.ResourceID AND ot.ResourceListID = ir.ResourceListID
+JOIN @InsertedResource isr ON ot.ResourceID = isr.ResourceID AND ot.ResourceListID = isr.ResourceListID
 JOIN dbo.ODCTaskElement te ON ot.ODCTaskElementID = te.ODCTaskElementID
 JOIN dbo.BOE b ON te.BOEID = b.BOEID
-WHERE ot.ResourceID = ir.ResourceID AND b.WorkspaceID = ir.WorkspaceID	
+WHERE ot.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID	
 
 /*
 	ResourceListID > 1
 */
 
-DECLARE @temp TABLE (SystemResourceID int)
-INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
-
 IF NOT EXISTS (
 	SELECT *
 	FROM dbo.[Resource] r
-	WHERE r.UpdateDT <> @UpdateDT AND r.ResourceID IN (SELECT ResourceID FROM @WorkspaceResourceTableParameter)
+		JOIN @WorkspaceResourceTableParameter wr ON wr.ResourceID = r.SystemResourceID
+	WHERE r.UpdateDT <> @UpdateDT AND wr.ResourceListID > 1
 )
 	BEGIN
+		DECLARE @InsertedResource AS Table (ResourceID int, ResourceListID int, WorkspaceID int)
+
+		DECLARE @temp TABLE (SystemResourceID int)
+		INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
+
+		-- Create a table to set InUse Flag
+		DECLARE @InUseTable TABLE (
+			ResourceID INT NOT NULL,
+			WorkspaceID INT NOT NULL,
+			ResourceListID INT,
+			InUse BIT NOT NULL
+		)
+		INSERT INTO @InUseTable (ResourceID, WorkspaceID, InUse)
+		SELECT 
+			ISNULL(wrp.ResourceID, t.ResourceID) AS ResourceID,
+			ISNULL(wrp.WorkspaceID, t.WorkspaceID) AS WorkspaceID,
+			wrp.ResourceListID,
+			CASE 
+				WHEN wrp.ResourceID IS NULL THEN 0
+				ELSE 1
+			END AS InUse
+		FROM 
+			@WorkspaceResourceTableParameter AS wrp
+			FULL OUTER JOIN @temp AS t ON wrp.ResourceID = t.SystemResourceID AND wrp.WorkspaceID = t.WorkspaceID
+		WHERE 
+			t.SystemResourceID IS NULL
+
+
 		UPDATE r
 		SET r.ResourceDescription = wr.ResourceDescription
 			,r.SegmentRegion = wr.SegmentRegion
@@ -340,8 +361,11 @@ IF NOT EXISTS (
 			,r.UpdateDt = @UpdateDT
 			,r.RateTypeID = wr.RateTypeID
 		FROM [dbo].[Resource] r
-		JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID
-		JOIN @temp t ON wr.ResourceID = t.ResourceID
+			JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID
+			JOIN @InUseTable i ON wr.ResourceID = i.ResourceID
+		WHERE 
+			wr.ResourceListID > 1
+			AND i.InUse = 0
 
 
 		UPDATE r
@@ -353,8 +377,11 @@ IF NOT EXISTS (
 			,r.UpdateDt = @UpdateDT
 			,r.RateTypeID = wr.RateTypeID
 		FROM [dbo].[Resource] r
-		JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID
-		FULL OUTER JOIN @temp t ON wr.ResourceID = t.ResourceID
+			JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID
+			JOIN @InUseTable i ON wr.ResourceID = i.ResourceID
+		WHERE 
+			wr.ResourceListID > 1
+			AND i.InUse = 0
 	END
 ELSE
 	BEGIN
