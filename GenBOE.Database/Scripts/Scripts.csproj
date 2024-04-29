@@ -165,7 +165,6 @@
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceIDByWorkspaceAdvancedSearch.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspacePermissions.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlag.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlagByMultipleResources.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlagByResourceID.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceVariableByTaskElementID.sql" />
@@ -283,6 +282,7 @@
     <Content Include="Object Scripts\Table Based Processing\OrdinaryVarSumVarViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\ProjectMapSpreadViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\ProjectMapViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\ResourceInUseFlagByResourceListIDViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\SumOfBoe_OrdinaryVarViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\SumOfBoe_WorkspaceVarViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementCustomFieldViaTable.sql" />

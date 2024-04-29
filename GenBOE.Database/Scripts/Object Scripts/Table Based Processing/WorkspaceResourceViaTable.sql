@@ -161,8 +161,8 @@ SET NOCOUNT ON
 
 DECLARE @ErrorMessage varchar (500)
 
-DECLARE @temp TABLE (ResourceID int)
-INSERT @temp EXECUTE [dbo].[getWorkspaceResourceInUseFlag]
+DECLARE @temp TABLE (ResourceListID int)
+INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListID]
 
 -- Create a table to set InUse Flag for all resource ids
 DECLARE @InUseTable TABLE (
@@ -321,8 +321,8 @@ WHERE ot.ResourceID = ir.ResourceID AND b.WorkspaceID = ir.WorkspaceID
 	ResourceListID > 1
 */
 
-DECLARE @temp TABLE (ResourceID int)
-INSERT @temp EXECUTE [dbo].[getWorkspaceResourceInUseFlag]
+DECLARE @temp TABLE (ResourceListID int)
+INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListID]
 
 IF NOT EXISTS (
 	SELECT *
