@@ -16,6 +16,7 @@ GO
 
 -- Recreate types 3rd
 CREATE TYPE [dbo].[TT_WorkspaceResource] AS TABLE(
+	-- the ResourceID is actually the SystemResourceID
 	[ResourceID] [int] NOT NULL,
 	[UpdateDT] [datetime2](7) NOT NULL,
 	[ResourceName] [varchar](20) NOT NULL,
@@ -161,10 +162,12 @@ SET NOCOUNT ON
 
 DECLARE @ErrorMessage varchar (500)
 
-DECLARE @temp TABLE (ResourceListID int)
-INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListID]
+DECLARE @temp TABLE (SystemResourceID int)
+-- This will return a list of all system resource ids that are in use
+INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
 
--- Create a table to set InUse Flag for all resource ids
+
+-- Create a table to set InUse Flag
 DECLARE @InUseTable TABLE (
 	ResourceID INT NOT NULL,
 	WorkspaceID INT NOT NULL,
@@ -185,35 +188,34 @@ FROM
 FULL OUTER JOIN 
 	@temp AS t
 ON 
-	wrp.ResourceID = t.ResourceID
+	wrp.ResourceID = t.SystemResourceID
 	AND wrp.WorkspaceID = t.WorkspaceID
 WHERE 
-	t.ResourceID IS NULL
+	t.SystemResourceID IS NULL
 
 -- Delete all the non InUse ResourceID
 
-DELETE FROM dbo.TMResourceRate
+DELETE dbo.TMResourceRate
+FROM dbo.TMResourceRate tmr
+	JOIN @InUseTable i ON i.ResourceID = tmr.TMResourceID AND tmr.WorkspaceID = i.WorkspaceID
 WHERE
-	TMResourceID IN (SELECT ResourceID FROM @InUseTable WHERE InUse = 0)
-	AND
-	WorkspaceID IN (SELECT WorkspaceID FROM @InUseTable WHERE InUse = 0)
+	i.InUse = 0
 
-DELETE FROM dbo.WorkspaceResource 
+DELETE dbo.WorkspaceResource 
+FROM dbo.WorkspaceResource wr
+	JOIN @InUseTable i ON i.ResourceID = wr.SystemResourceID AND i.WorkspaceID = wr.WorkspaceID
 WHERE
-	TMResourceID IN (SELECT ResourceID FROM @InUseTable WHERE InUse = 0)
-	AND
-	WorkspaceID IN (SELECT WorkspaceID FROM @InUseTable WHERE InUse = 0)
+	i.InUse = 0
 
 
 IF @ResourceType > 1
 BEGIN
-	DELETE FROM [dbo].[Resource] 
+	DELETE dbo.Resource
+	FROM dbo.Resource r
+		JOIN @InUseTable i on i.ResourceID = r.ResourceID AND i.ResourceListID = r.ResourceListID
 	WHERE 
-	TMResourceID IN (SELECT ResourceID FROM @InUseTable WHERE InUse = 0)
-	AND
-	WorkspaceID IN (SELECT WorkspaceID FROM @InUseTable WHERE InUse = 0)
-	AND
-	ResourceListID IN (SELECT ResourceListID FROM @InUseTable WHERE InUse = 0)
+		-- equivalent to r.ResourceListID != 1
+		r.ResourceListID <> 1
 END
 
 GO
@@ -321,8 +323,8 @@ WHERE ot.ResourceID = ir.ResourceID AND b.WorkspaceID = ir.WorkspaceID
 	ResourceListID > 1
 */
 
-DECLARE @temp TABLE (ResourceListID int)
-INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListID]
+DECLARE @temp TABLE (SystemResourceID int)
+INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
 
 IF NOT EXISTS (
 	SELECT *
