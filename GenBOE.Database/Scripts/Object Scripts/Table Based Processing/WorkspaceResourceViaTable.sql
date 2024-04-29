@@ -10,7 +10,7 @@ IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updat
 GO
 
 -- Drop types 2nd
-IF  EXISTS (SELECT * FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'TT_OrdinaryVariable' AND ss.name = N'dbo')
+IF  EXISTS (SELECT * FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'TT_WorkspaceResource' AND ss.name = N'dbo')
 	DROP TYPE [dbo].[TT_WorkspaceResource];
 GO
 
@@ -43,51 +43,19 @@ CREATE PROCEDURE [dbo].[insertWorkspaceResourceviaTableParameter]
 AS
 /******************************************************************************
 **		 
-**		Name: upsertWorkspaceResource
-**		Desc: Insert/Update into Resource Table
+**		Name: insertWorkspaceResourceviaTableParameter
+**		Desc: Bulk Insert Resource
 **			
 **		
 **
-**		Auth: Don Canuso
-**		Date: 1/21/11
+**		Auth: Tommy Lee
+**		Date: 4/29/24
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		2/4/11		dcanuso				Added Flag Processing:
-**										Add: Workspace.ResourceChangeFlag
-**										IF SA Changes a Global Resource – Set All Workspace.ResourceChangeFlag = 1
-**										IF WS Admin changes a Workspace Resource, set Workspace.ResourceChangeFlag = 1  
-**										for specific workspace
-**										Added Resource In Use Flag		
-**		3/23/11		dcanuso				Added Error when editing In Use row	
-**		5/23/11		dcanuso				Added 2 new variables
-**		6/2/11		dcanuso				Burden Pool removed
-**		6/13/11		dcanuso				New Resource Table columns added
-**		8/2/11		dcanuso				WI 4436: remove the column Company 
-**										from the Resource table and any SPs.
-**		8/2/11		dcanuso				WI TBD: remove the column Labor Category 
-**										from the Resource table and any SPs.
-**		9/15/11		dcanuso				Resource.ResourceName and Segment Region
-**										updated to varchar (30)
-**		9/27/11		dcanuso				Resource.ResourceDescription, Segment Region,
-**										Labor Type updated to varchar (50)
-**		2/7/2012	dcanuso				WI 7145 - Resource Update allowed
-**										When In Use, ResourceName and CostElementID 
-**										can not be updated
-**										When NOT in use, all can be updated
-**										InUse Updates
-**		7/24/12		dcanuso				WI8960: SP will be used for non-System Resources
-**		8/7/12		dcanuso				WI 10278: Resource Redesign 
-**										In Use will no longer be stored in DB
-**		11/1/12		dcanuso				Meetings with SE caused some Business 
-**										Rule changes - Rqmt doc will be created
-**		1/28/13		dcanuso				WI 14779 Remove Workspace.ResourceChangeFlag
-**		7/25/13		dcanuso				WI 19369 Changes for Labor Tab
-**      1/25/16     kotwickm			Updating desc to 100 for SSC
-**		12/15/17	twilson3			BOEJ-2248 Remove Labor Rates
-**		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		2/4/11		dcanuso				Bulk Insert Resources
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -146,39 +114,22 @@ CREATE PROCEDURE [dbo].[deleteWorkspaceResourcetviaTableParameter]
 AS
 /******************************************************************************
 **		 
-**		Name: [deleteResourceByResourceID]
-**		Desc: Delete Resource based on its ResourceID
+**		Name: [deleteResourceviaTableParameter]
+**		Desc: Bulk Delete Resource
 **			
 **
-**		Auth: Don Canuso
-**		Date: 1/24/11
+**		Auth: Tommy Lee
+**		Date: 4/29/24
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		2/3/11		dcanuso				Adding addition WHERE to only allow
-**										deletions of non-InUse Resource
-**		3/23/11		dcanuso				Added Flag Processing:
-**										Add: Workspace.ResourceChangeFlag
-**										IF SA Changes a Global Resource – Set All Workspace.ResourceChangeFlag = 1
-**										IF WS Admin changes a Workspace Resource, set Workspace.ResourceChangeFlag = 1  
-**										for specific workspace
-**										Added Resource In Use Flag			
-**										Added Error if editing In Use row
-**		11/30/11	dcanuso				See Note Below
-**		1/18/12		dcanuso				Updates to WRR/LRR/Locking
-**		2/7/12		dcanuso				Additional InUse Changes
-**		7/24/12		dcanuso				WI8960
-**		8/7/12		dcanuso				WI 10278: Resource Redesign 
-**										In Use will no longer be stored in DB
-**		2/5/13		dcanuso				WI 14477
-**		5/4/2017	brunworg			BOEJ-2125 Add T&M Resource Rates
-**		12/15/17	twilson3			BOEJ-2248 Remove Labor Rates
+**		4/29/24		e374897				Bulk Delete Resource
 ******************************************************************************/
 
 /*
-11/30/11 Note from Wireframe:
+Note from Wireframe:
 a.       In the System Administrator Default Resources table, 
 the Resource that has a rate in the Manage Labor Resource Rates table 
 that is not “In use”, will have a checkbox where it is able to be deleted.
@@ -273,51 +224,19 @@ CREATE PROCEDURE [dbo].[updateWorkspaceResourcetviaTableParameter]
 AS
 /******************************************************************************
 **		 
-**		Name: upsertWorkspaceResource
-**		Desc: Insert/Update into Resource Table
+**		Name: updateWorkspaceResourcetviaTableParameter
+**		Desc: Bulk Update Resources
 **			
 **		
 **
-**		Auth: Don Canuso
-**		Date: 1/21/11
+**		Auth: Tommy Lee
+**		Date: 4/29/24
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		2/4/11		dcanuso				Added Flag Processing:
-**										Add: Workspace.ResourceChangeFlag
-**										IF SA Changes a Global Resource – Set All Workspace.ResourceChangeFlag = 1
-**										IF WS Admin changes a Workspace Resource, set Workspace.ResourceChangeFlag = 1  
-**										for specific workspace
-**										Added Resource In Use Flag		
-**		3/23/11		dcanuso				Added Error when editing In Use row	
-**		5/23/11		dcanuso				Added 2 new variables
-**		6/2/11		dcanuso				Burden Pool removed
-**		6/13/11		dcanuso				New Resource Table columns added
-**		8/2/11		dcanuso				WI 4436: remove the column Company 
-**										from the Resource table and any SPs.
-**		8/2/11		dcanuso				WI TBD: remove the column Labor Category 
-**										from the Resource table and any SPs.
-**		9/15/11		dcanuso				Resource.ResourceName and Segment Region
-**										updated to varchar (30)
-**		9/27/11		dcanuso				Resource.ResourceDescription, Segment Region,
-**										Labor Type updated to varchar (50)
-**		2/7/2012	dcanuso				WI 7145 - Resource Update allowed
-**										When In Use, ResourceName and CostElementID 
-**										can not be updated
-**										When NOT in use, all can be updated
-**										InUse Updates
-**		7/24/12		dcanuso				WI8960: SP will be used for non-System Resources
-**		8/7/12		dcanuso				WI 10278: Resource Redesign 
-**										In Use will no longer be stored in DB
-**		11/1/12		dcanuso				Meetings with SE caused some Business 
-**										Rule changes - Rqmt doc will be created
-**		1/28/13		dcanuso				WI 14779 Remove Workspace.ResourceChangeFlag
-**		7/25/13		dcanuso				WI 19369 Changes for Labor Tab
-**      1/25/16     kotwickm			Updating desc to 100 for SSC
-**		12/15/17	twilson3			BOEJ-2248 Remove Labor Rates
-**		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		4/29/24		e374897				Bulk Update Resources
 *******************************************************************************/
 SET NOCOUNT ON 
 
