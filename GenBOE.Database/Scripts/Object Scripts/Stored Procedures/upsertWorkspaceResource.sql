@@ -326,7 +326,7 @@ ELSE
 	ELSE /*Update Dates Don't Match*/
 			BEGIN
 
-					SET @ErrorMessage =   'The Resource with Name ' + @ResourceName + ' have been updated and is out of sync with the data in your browser.  Please refresh your data.'
+					SET @ErrorMessage =   'The Resource with Name ' + @ResourceName + ' has been updated and is out of sync with the data in your browser.  Please refresh your data.'
 					RAISERROR (
 						@ErrorMessage, -- Message text.
 						11, -- Severity,/*Severity Changed to 11*/
