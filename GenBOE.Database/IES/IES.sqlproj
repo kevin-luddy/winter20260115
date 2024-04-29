@@ -169,7 +169,6 @@
     <Build Include="Release Scripts\Older\Release 2023.24\1 - Release 2022.24 Script.sql" />
     <Build Include="Release Scripts\Release 2023.36\1 - Release 2023.36 Script.sql" />
     <Build Include="Release Scripts\Release 2023.44\1 - Release 2023.44 Script.sql" />
-    <Build Include="_Full Script Files For Specific Versions\IES - 2023.44 Generated On 1_17_2024.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2022.x Generated On 6_14_2023.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2023.24 Generated On 7_12_2023.sql" />
     <Build Include="Release Scripts\Older\Release 2023.29\1 - Release 2023.29 Script.sql" />
