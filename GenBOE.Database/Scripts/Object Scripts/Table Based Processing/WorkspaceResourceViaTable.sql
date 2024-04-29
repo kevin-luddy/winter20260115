@@ -356,7 +356,7 @@ IF NOT EXISTS (
 	END
 ELSE
 	BEGIN
-		SET @ErrorMessage = 'There are resources that has been updated and is out of sync with the data in your browser. Please refresh your data.'
+		SET @ErrorMessage = 'There are resources that have been updated and is out of sync with the data in your browser. Please refresh your data.'
 		RAISERROR (
 			@ErrorMessage,
 			11,
