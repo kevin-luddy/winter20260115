@@ -235,6 +235,7 @@ namespace GenBOE.ActionLogic.Common
                 EndDateValue = laborResource.EndDateValue,
                 PerformingOrgID = laborResource.PerformingOrgID,
                 ResourceID = subResource.Id,
+				BusinessResourceCodeID = subResource.Id, // Setting BRC ID to the subResource ID for instances when BRC ID overwrites Resource ID
                 SubResourceName = subResource.ResourceName,
                 SpreadType = SpreadType.Cost,
                 SpreadCurveID = SpreadCurves.DiscreteCost,
