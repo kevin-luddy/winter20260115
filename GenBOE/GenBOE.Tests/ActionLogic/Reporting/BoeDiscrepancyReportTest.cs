@@ -70,7 +70,7 @@ namespace GenBOE.Tests.ActionLogic.Common
         public void GetReportTest_Exception()
         {
             BOEDiscrepancyReport sut = this.CreateSystem();
-            sut.GetReport(null);
+            sut.GetReport(null, false);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace GenBOE.Tests.ActionLogic.Common
             this.WsRecalculation.Setup(x => x.GetTaskElementsWithInconsistentCosts(ws)).Returns(new Collection<BoeTaskElementDTO>());
             this.WsRecalculation.Setup(x => x.GetElementsWithInconsistentODCs(ws)).Returns(new Collection<OtherDirectCostDTO>());
 
-            ICollection<BoeDiscrepancyReportModelView> result = sut.GetReport(ws);
+            ICollection<BoeDiscrepancyReportModelView> result = sut.GetReport(ws, false);
 
             Assert.IsFalse(result.Any());
         }
@@ -287,7 +287,7 @@ namespace GenBOE.Tests.ActionLogic.Common
 
             #endregion
 
-            ICollection<BoeDiscrepancyReportModelView> result = sut.GetReport(ws);
+            ICollection<BoeDiscrepancyReportModelView> result = sut.GetReport(ws, false);
 
             #region Setup Expected Data
 
