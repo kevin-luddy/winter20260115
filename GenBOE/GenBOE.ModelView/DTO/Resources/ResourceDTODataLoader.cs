@@ -570,49 +570,50 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
+		/// Bulk Save Workspace Resources
+		/// Not Implemented
+		/// </summary>
+		/// <param name="dtosToSave"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="ArgumentException"></exception>
+		public override IDictionary<int, int> BulkSave(ICollection<ResourceDTO> dtosToSave)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
 		/// save the workspace resources
 		/// </summary>
 		/// <param name="inWorkspaceResources">workspace resources</param>
 		/// <returns></returns>
-		virtual public Dictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
+		virtual public IDictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
         {
+			if (inWorkspaceResources == null)
+			{
+				throw new ArgumentNullException(nameof(inWorkspaceResources));
+			}
 
-            if (inWorkspaceResources == null)
-            {
-                throw new ArgumentNullException(nameof(inWorkspaceResources));
-            }
-            if (inWorkspace == null)
-            {
-                throw new ArgumentNullException(nameof(inWorkspace));
-            }
+			if (inWorkspaceResources.Any(x => x.Updateable == UpdateType.None))
+			{
+				throw new ArgumentException("One or more Resources has UpdateType of None,", nameof(inWorkspaceResources));
+			}
 
-            Dictionary<int, int> toReturn = new Dictionary<int, int>();
+			IDictionary<int, int> toReturn = new Dictionary<int, int>();
 
-            foreach (ResourceDTO resource in inWorkspaceResources)
-            {
-                int originalResourceId = resource.Id;
-                if (resource.Updateable == UpdateType.None)
-                {
-                    throw new ArgumentException("please supply the Updateable argument");
-                }
+			inWorkspaceResources.Where(x => x.Updateable == UpdateType.Upsert).Select(resource =>
+			{
+				resource.LaborType = resource.LaborType.Trim();
+				resource.ResourceDesc = resource.ResourceDesc.Trim();
+				resource.ResourceName = resource.ResourceName.Trim();
+				resource.SegRegion = resource.SegRegion.Trim();
+				resource.ResourceListId = inWorkspace.ResourceListID;
+				return resource;
+			});
 
-                if (resource.Updateable == UpdateType.Deleted)
-                {
-                    DeleteWorkspaceResource(resource, inWorkspace.ResourceListID);
+			toReturn = base.BulkSave(inWorkspaceResources);
 
-                    toReturn.Add(originalResourceId, resource.Id);
-                }
-                else if (resource.Updateable == UpdateType.Upsert)
-                {
-                    resource.LaborType = resource.LaborType.Trim();
-                    resource.ResourceDesc = resource.ResourceDesc.Trim();
-                    resource.ResourceName = resource.ResourceName.Trim();
-                    resource.SegRegion = resource.SegRegion.Trim();
-
-                    toReturn.Add(originalResourceId, UpdateWorkspaceResource(resource, inWorkspace.ResourceListID));
-                }
-            }
-            return toReturn;
+			return toReturn;
         }
 
 		/// <summary>
@@ -821,7 +822,10 @@ namespace GenBOE.DataBridge.DTO
         }
 
 		/// <summary>
-		/// Converst the ResourceDTO into a Resource entity
+		/// Convert the ResourceDTO into a Resource entity
+		/// that will be used in the bulkInsert, bulkUpdate, and bulkUpdate
+		/// This is used on ICollection<TEntityType> entitiesToInsert = dtosToInsert.Select(d => this.ConvertDtoToEntity(d)).ToCollection();
+		/// And the TEntityType is what is used to insert the values and match the column to the parameters
 		/// </summary>
 		/// <param name="dtoToConvert"></param>
 		/// <returns>Resource class</returns>
@@ -835,13 +839,17 @@ namespace GenBOE.DataBridge.DTO
 
 			Resource entity = new Resource()
 			{
+				// These match up with the TT_WorkspaceResource User Defined Table
 				ResourceID = dtoToConvert.Id,
 				UpdateDT = dtoToConvert.UpdateDate,
 				ResourceName = dtoToConvert.ResourceName,
 				ResourceDescription = dtoToConvert.ResourceDesc,
-				LaborType = dtoToConvert.LaborType,
-				CostElementID = (int)dtoToConvert.ElementOfCost,
 				SegmentRegion = dtoToConvert.SegRegion,
+				LaborType = dtoToConvert.LaborType,
+				SegmentID = (int)dtoToConvert.Segment,
+				ResourceListID = dtoToConvert.ResourceListId,
+				CostElementID = (int)dtoToConvert.ElementOfCost,
+				DeletedFlag = dtoToConvert.DeletedFlag,
 				RateTypeID = (int)dtoToConvert.RateType
 			};
 			return entity;
