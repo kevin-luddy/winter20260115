@@ -22,7 +22,7 @@
     // Create Discrepancy Validator.
     var validateDiscrepancyUrl = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                 '<%: WebConstants.CONTROLLER_REPORTS %>',
-                '<%: WebConstants.ACTION_VALIDATE_BOES_FOR_DISCREPANCIES %>', '');
+		'<%: WebConstants.ACTION_VALIDATE_BOES_FOR_DISCREPANCIES %>', '');
     var DiscrepancyValidator = InitializeDiscrepancyValidator(validateDiscrepancyUrl);
 
     ExportsWidget.doExport = function (reportName, reportID, ssrsUrl) {

@@ -2056,7 +2056,7 @@ namespace GenBOE.Web.Controllers
                 // Initialize Action
                 Stopwatch sw = this.InitializeAction(this.log, "ValidateBoesForDiscrepancies", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
-                theModelViews = this.reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, false);
+                theModelViews = this.reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, true, true);
 
                 // Finalize Action
                 this.FinalizeAction(this.log, "ValidateBoesForDiscrepancies", sw);
