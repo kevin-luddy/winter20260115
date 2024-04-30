@@ -719,66 +719,6 @@ namespace GenBOE.DataBridge.DTO
 
         }
 
-        /// <summary>
-        /// update a workspace resource
-        /// </summary>
-        /// <param name="inUpdateResource">default resource</param>
-        private int UpdateWorkspaceResource(ResourceDTO inUpdateResource, int inWorkspaceResourceListID)
-        {
-            if (inUpdateResource == null)
-            {
-                throw new ArgumentNullException(nameof(inUpdateResource));
-            }
-
-            int? segmentValue = null;
-            int resultID = 0;
-
-
-            using (GenBoeEntities gbe = new GenBoeEntities())
-            {
-                if (inUpdateResource.Segment != SegmentType.None)
-                {
-                    segmentValue = (int)inUpdateResource.Segment;
-                }
-				System.Data.Entity.Core.Objects.ObjectResult<int?> results = gbe.upsertWorkspaceResource(
-                    inUpdateResource.Id,
-                    inUpdateResource.ResourceName,
-                    inUpdateResource.ResourceDesc,
-                    inUpdateResource.SegRegion,
-                    inUpdateResource.LaborType,
-                    segmentValue,
-                    inWorkspaceResourceListID,
-                    (int)inUpdateResource.ElementOfCost,
-                    inUpdateResource.UpdateDate,
-                    (int)inUpdateResource.RateType);
-
-                foreach (int? result in results)
-                    {
-                        resultID = Convert.ToInt32(result);
-                    }
-                
-
-                // if the result ID is not a positive number, something bad went wrong so log it
-                if (resultID < 0)
-                {
-                    _log.Error("The returned ID from upsertResource SP was negative");
-
-                }
-                else
-                {
-                    // If this was a new resource, set the new ID on the DTO for later use, if necessary
-                    if (inUpdateResource.Id < 0)
-                    {
-                        inUpdateResource.Id = resultID;
-                    }
-                }
-            }
-
-
-            return resultID;
-
-        }
-
         #endregion 
 
         #region Private Helpers
