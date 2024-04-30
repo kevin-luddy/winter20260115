@@ -14,7 +14,7 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
 
-    public class ResourceDTODataLoader : IResourceDTODataLoader
+    public class ResourceDTODataLoader : BulkDataLoader<ResourceDTO, Resource>, IResourceDTODataLoader
     {
         private Logger _log = new Logger(typeof(ResourceDTODataLoader));
 
@@ -108,7 +108,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inResourceIDs">resource IDs</param>
         /// <returns>resource data</returns>
         [DbQuery]
-        virtual public ICollection<ResourceDTO> GetByIds(ICollection<int> inResourceIDs)
+        override public ICollection<ResourceDTO> GetByIds(ICollection<int> inResourceIDs)
         {
             if (inResourceIDs == null) { throw new ArgumentNullException(nameof(inResourceIDs)); }
 
@@ -529,12 +529,52 @@ namespace GenBOE.DataBridge.DTO
             return toReturn;
         }
 
-        /// <summary>
-        /// save the workspace resources
-        /// </summary>
-        /// <param name="inWorkspaceResources">workspace resources</param>
-        /// <returns></returns>
-        virtual public Dictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
+		/// <summary>
+		/// Provides the metadata to support bulk save processing for Workspace Resources
+		/// </summary>
+		/// <returns>Meta data required for bulk save processing</returns>
+		public override BulkSaveMetaData CreateBulkSaveMetaData()
+		{
+			BulkSaveMetaData metaData = new BulkSaveMetaData(Constants.BOE_DB_CONTEXT_NAME);
+
+			metaData.BulkDeleteStoredProcedureName = "deleteWorkspaceResourcetviaTableParameter";
+			metaData.BulkInsertStoredProcedureName = "insertWorkspaceResourceviaTableParameter";
+			metaData.BulkUpdateStoredProcedureName = "updateWorkspaceResourceviaTableParameter";
+
+			metaData.BulkInsertStoredProcedureReturnsUpdateDate = true;
+			metaData.BulkUpdateStoredProcedureReturnsUpdateDate = true;
+
+			metaData.DBTableTypeName = "TT_WorkspaceResource";
+
+			metaData.StoredProcedureTableTypeParameterName = "@ResourceTableParameter";
+
+			metaData.EntityPropertiesToMapToDataTable = new Collection<string>()
+			{
+				"ResourceID", "UpdateDT", "ResourceName", "ResourceDescription", "SegmentRegion", "LaborType", "SegmentID",
+				"ResourceListID", "CostElementID", "DeletedFlag", "RateTypeID"
+			};
+
+			return metaData;
+		}
+
+		/// <summary>
+		/// Upsert Resource DTO
+		/// Not implemented as there are upserts for System/Workspace Resource DTO
+		/// </summary>
+		/// <param name="resource"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		override protected int? Upsert(ResourceDTO resource)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// save the workspace resources
+		/// </summary>
+		/// <param name="inWorkspaceResources">workspace resources</param>
+		/// <returns></returns>
+		virtual public Dictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
         {
 
             if (inWorkspaceResources == null)
@@ -575,11 +615,23 @@ namespace GenBOE.DataBridge.DTO
             return toReturn;
         }
 
-        /// <summary>
-        /// Delete a system resource
-        /// </summary>
-        /// <param name="inDeleteResource"></param>
-        private void DeleteSystemResource(ResourceDTO inDeleteResource)
+		/// <summary>
+		/// Delete ResourceDTO
+		/// Not implemented for existing Delete System/Workspace Resource
+		/// </summary>
+		/// <param name="dtoToDelete"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		protected override int? Delete(ResourceDTO dtoToDelete)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Delete a system resource
+		/// </summary>
+		/// <param name="inDeleteResource"></param>
+		private void DeleteSystemResource(ResourceDTO inDeleteResource)
         {
             if (inDeleteResource == null)
             {
@@ -767,6 +819,33 @@ namespace GenBOE.DataBridge.DTO
 
             return result;
         }
-        #endregion
-    }
+
+		/// <summary>
+		/// Converst the ResourceDTO into a Resource entity
+		/// </summary>
+		/// <param name="dtoToConvert"></param>
+		/// <returns>Resource class</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		protected override Resource ConvertDtoToEntity(ResourceDTO dtoToConvert)
+		{
+			if (dtoToConvert == null)
+			{
+				throw new ArgumentNullException(nameof(dtoToConvert));
+			}
+
+			Resource entity = new Resource()
+			{
+				ResourceID = dtoToConvert.Id,
+				UpdateDT = dtoToConvert.UpdateDate,
+				ResourceName = dtoToConvert.ResourceName,
+				ResourceDescription = dtoToConvert.ResourceDesc,
+				LaborType = dtoToConvert.LaborType,
+				CostElementID = (int)dtoToConvert.ElementOfCost,
+				SegmentRegion = dtoToConvert.SegRegion,
+				RateTypeID = (int)dtoToConvert.RateType
+			};
+			return entity;
+		}
+		#endregion
+	}
 }
