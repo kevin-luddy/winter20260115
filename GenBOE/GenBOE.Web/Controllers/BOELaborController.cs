@@ -195,7 +195,7 @@ namespace GenBOE.Web.Controllers
 
 			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
 			
-			bool missingBRCs = true;
+			bool missingBRCs = false;
 			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
 				//check if ws contains BRCs, if not, mark tasks as read only
