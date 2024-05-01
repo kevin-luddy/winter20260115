@@ -233,7 +233,7 @@ namespace IES.Common.Core
 		/// </summary>
 		/// <param name="errorMessages">List of error messages</param>
 		/// <returns>Text file</returns>
-		protected IActionResult CreateTextFileWithErrorMessage(params string[] errorMessages)
+		protected async Task<IActionResult> CreateTextFileWithErrorMessage(params string[] errorMessages)
 		{
 			Response.Headers.Clear();
 			Response.ContentType = "text/plain";
@@ -246,8 +246,8 @@ namespace IES.Common.Core
 				foreach (string errorMessage in errorMessages)
 				{
 					byte[] errorContent = Encoding.ASCII.GetBytes(errorMessage);
-					Response.Body.Write(errorContent, 0, errorContent.Length);
-					Response.Body.Write(newline, 0, newline.Length);
+					await Response.Body.WriteAsync(errorContent, 0, errorContent.Length);
+					await Response.Body.WriteAsync(newline, 0, newline.Length);
 				}
 			}
 
@@ -263,7 +263,7 @@ namespace IES.Common.Core
 		/// </summary>
 		/// <param name="ex">Exception</param>
 		/// <returns>Text file</returns>
-		protected IActionResult CreateTextFileWithErrorMessage(Exception ex)
+		protected async Task<IActionResult> CreateTextFileWithErrorMessage(Exception ex)
 		{
 			if (ex == null)
 			{
@@ -271,13 +271,13 @@ namespace IES.Common.Core
 			}
 			else if (ConfigurationUtilities.GetAppSetting<bool>("LocalDebug"))
 			{
-				return CreateTextFileWithErrorMessage(ex.ToDisplayString());
+				return await CreateTextFileWithErrorMessage(ex.ToDisplayString());
 			}
 			else
 			{
 				string supportLink = CommonUtilities.ServiceCentralLink();
 
-				return CreateTextFileWithErrorMessage(
+				return await CreateTextFileWithErrorMessage(
 					$"An error has occurred.  This might be the result of invalid data.  If the data is valid, and the error persists, please create a ticket with IES Helpdesk at {supportLink}.");
 			}
 		}

@@ -217,7 +217,7 @@ namespace RDSB.Backend.Controllers
 			catch (GeneralAppException e)
 			{
 				this.log.LogError(e, "Error publishing/generating a PPRD document");
-				result = this.CreateTextFileWithErrorMessage(e.Message);
+				result = await this.CreateTextFileWithErrorMessage(e.Message);
 			}
 
 			return result;
