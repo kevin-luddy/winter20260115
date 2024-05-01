@@ -561,10 +561,10 @@ namespace GenBOE.DataBridge.DTO
 		/// Upsert Resource DTO
 		/// Not implemented as there are upserts for System/Workspace Resource DTO
 		/// </summary>
-		/// <param name="resource"></param>
+		/// <param name="dtoToUpsert"></param>
 		/// <returns></returns>
 		/// <exception cref="NotImplementedException"></exception>
-		override protected int? Upsert(ResourceDTO resource)
+		override protected int? Upsert(ResourceDTO dtoToUpsert)
 		{
 			throw new NotImplementedException();
 		}
@@ -601,7 +601,7 @@ namespace GenBOE.DataBridge.DTO
 
 			IDictionary<int, int> toReturn = new Dictionary<int, int>();
 
-			inWorkspaceResources.Where(x => x.Updateable == UpdateType.Upsert).Select(resource =>
+			inWorkspaceResources.Select(resource =>
 			{
 				resource.LaborType = resource.LaborType.Trim();
 				resource.ResourceDesc = resource.ResourceDesc.Trim();
@@ -611,7 +611,11 @@ namespace GenBOE.DataBridge.DTO
 				return resource;
 			});
 
-			toReturn = base.BulkSave(inWorkspaceResources);
+			// Upsert Workspace Resource
+			toReturn = base.BulkSave(inWorkspaceResources.Where(x => x.Updateable == UpdateType.Upsert).ToList());
+
+			// Bulk Delete Workspace Resources
+			base.BulkDelete(inWorkspaceResources.Where(x => x.Updateable == UpdateType.Deleted).ToList(), this.CreateBulkSaveMetaData());
 
 			return toReturn;
         }
@@ -644,25 +648,6 @@ namespace GenBOE.DataBridge.DTO
                 gbe.deleteSystemResourceByResourceID(inDeleteResource.Id, inDeleteResource.UpdateDate);
 
             }
-        }
-
-        /// <summary>
-        /// delete a workspace resource
-        /// </summary>
-        /// <param name="inDeleteResource"></param>
-        private void DeleteWorkspaceResource(ResourceDTO inDeleteResource, int inWorkspaceResourceListID)
-        {
-            if (inDeleteResource == null)
-            {
-                throw new ArgumentNullException(nameof(inDeleteResource));
-            }
-
-            using (GenBoeEntities gbe = new GenBoeEntities())
-            {
-                gbe.deleteWorkspaceResourceByResourceID(inDeleteResource.Id, inWorkspaceResourceListID);
-
-            }
-
         }
 
         /// <summary>
@@ -789,7 +774,7 @@ namespace GenBOE.DataBridge.DTO
 				SegmentID = (int)dtoToConvert.Segment,
 				ResourceListID = dtoToConvert.ResourceListId,
 				CostElementID = (int)dtoToConvert.ElementOfCost,
-				DeletedFlag = dtoToConvert.DeletedFlag,
+				DeletedFlag = dtoToConvert.Deleted,
 				RateTypeID = (int)dtoToConvert.RateType
 			};
 			return entity;

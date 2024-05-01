@@ -21,7 +21,7 @@ namespace GenBOE.Dtos
             Segment = SegmentType.None;
             RateType = RateType.NotSet;
             CalculatedSegment = SegmentType.None;
-			DeletedFlag = false;
+			Deleted = false;
 			ResourceListId = -1;
 			isSystemResource = false;
         }
@@ -35,7 +35,7 @@ namespace GenBOE.Dtos
         public SegmentType Segment { get; set; }
         public RateType RateType { get; set; }
         public SegmentType CalculatedSegment { get; set; }
-		public bool DeletedFlag { get; set; }
+		public bool Deleted { get; set; }
 		public int ResourceListId { get; set; }
 
         // used only to determine if this resource is a system or workspace resource for caching purposes
