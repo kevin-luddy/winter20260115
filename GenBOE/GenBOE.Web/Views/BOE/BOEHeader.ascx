@@ -27,6 +27,8 @@
     bool showCustomQuestions = DataSourceAnswers.Any();
     int numberQuestions = showCustomQuestions ? DataSourceAnswers.Count : 1;
     bool readOnlyMode = Html.GetViewDataValue<bool>("IsReadOnlyMode", false);
+    bool missingBrcCodes = Html.GetViewDataValue<bool>("MissingBrcCodes", false);
+
 %>
 
 <script type="text/javascript">
@@ -121,6 +123,11 @@
            { %>
         <div class="form-row">
             <ul class="validation-box"></ul>
+             <%if (missingBrcCodes) { %>
+                <div class="validation-box" style="display:block;">
+                    Contact Workspace Admin - Read Only Mode - BOE date range is past 1LMX boundary and missing BRC codes
+                </div>
+             <% } %>
         </div>
         <%: Html.HiddenFor(model => model.BOEID) %>
         <%: Html.HiddenFor(model => model.UpdateDateLong) %>

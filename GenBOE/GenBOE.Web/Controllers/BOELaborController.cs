@@ -194,9 +194,21 @@ namespace GenBOE.Web.Controllers
 			};
 
 			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
+			
+			bool missingBRCs = true;
+			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			{
+				//check if ws contains BRCs, if not, mark tasks as read only
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				//if no brcs in ws, display warning
+				if (resources.Count == 0)
+				{
+					missingBRCs = true;
+				}
+			}
 
 			ViewData["Order_Of_ResourceTypes"] = orderOfResourceTypes;
-			string viewName = isReadOnly || (ws.WorkspaceState != WorkspaceState.Working && !(ws.WorkspaceState == WorkspaceState.Locked && boe.State == BOEState.Draft))
+			string viewName = isReadOnly || (ws.WorkspaceState != WorkspaceState.Working && !(ws.WorkspaceState == WorkspaceState.Locked && boe.State == BOEState.Draft)) || missingBRCs
 				? WebConstants.VIEW_LABOR_TASK_STATIC
 				: WebConstants.VIEW_LABOR_TASK;
 

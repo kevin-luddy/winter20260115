@@ -7,6 +7,7 @@
 namespace GenBOE.Web.Controllers
 {
 	using System;
+	using System.CodeDom;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
@@ -436,6 +437,18 @@ namespace GenBOE.Web.Controllers
 
 			SecurityAuthorization boeDateShiftAuthorization = CheckPermissions(SecurityPage.BoeTaskDates, ws, boeID);
 			ViewData["ALLOW_DATE_SHIFT"] = (boeDateShiftAuthorization == SecurityAuthorization.CreateReadUpdateDelete);
+
+			//if start date before and end date after, must have resource and brc, if both after, must have brc
+			//set view data for boe header to display read only warning
+			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			{
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				//if no brcs in ws, display warning
+				if (resources.Count == 0)
+				{
+					ViewData["MissingBrcCodes"] = true;
+				}
+			}
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_HEADER, _ControllerLogic.CreateBOEHeaderMV(boe, ws));
 
