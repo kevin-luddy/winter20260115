@@ -612,10 +612,7 @@ namespace GenBOE.DataBridge.DTO
 			});
 
 			// Upsert Workspace Resource
-			toReturn = base.BulkSave(inWorkspaceResources.Where(x => x.Updateable == UpdateType.Upsert).ToList());
-
-			// Bulk Delete Workspace Resources
-			base.BulkDelete(inWorkspaceResources.Where(x => x.Updateable == UpdateType.Deleted).ToList(), this.CreateBulkSaveMetaData());
+			toReturn = base.BulkSave(inWorkspaceResources);
 
 			return toReturn;
         }
