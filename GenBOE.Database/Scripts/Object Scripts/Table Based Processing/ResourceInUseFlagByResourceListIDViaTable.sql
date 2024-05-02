@@ -68,15 +68,13 @@ INSERT INTO @ResultSet (SystemResourceID)
 SELECT DISTINCT  T.ResourceID 
 FROM  [dbo].[ODCType] T
             INNER JOIN dbo.ODCTaskElement TE ON T.ODCTaskElementID = TE.ODCTaskElementID  
-            INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
-            INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
+            INNER JOIN @BOE B ON TE.BOEID = B.BOEID
 
 INSERT INTO @ResultSet (SystemResourceID)
 SELECT DISTINCT T.ResourceID 
 FROM  [dbo].[BOELaborType] T
             INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
             INNER JOIN @BOE B ON TE.BOEID = B.BOEID
-            INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE T.ResourceID IS NOT NULL
 
 INSERT INTO @ResultSet (SystemResourceID)
@@ -84,7 +82,6 @@ SELECT DISTINCT T.BRCResourceID
 FROM  [dbo].[BOELaborType] T
             INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
             INNER JOIN @BOE B ON TE.BOEID = B.BOEID
-            INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE T.BRCResourceID IS NOT NULL
 
 
