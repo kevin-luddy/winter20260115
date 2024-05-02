@@ -282,11 +282,13 @@
     <Content Include="Object Scripts\Table Based Processing\OrdinaryVarSumVarViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\ProjectMapSpreadViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\ProjectMapViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\ResourceInUseFlagByResourceListIDViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\SumOfBoe_OrdinaryVarViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\SumOfBoe_WorkspaceVarViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementWorkspaceVariableViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\WorkspaceResourceViaTable.sql" />
     <Content Include="Object Scripts\Views\UsersWithRolesReport.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\ErrorLogs.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\Fix Boe Level Duplicated CF XREF Values.sql" />
