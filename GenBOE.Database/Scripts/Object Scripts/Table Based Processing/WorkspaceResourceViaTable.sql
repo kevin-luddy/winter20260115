@@ -44,7 +44,7 @@ CREATE PROCEDURE [dbo].[insertWorkspaceResourceviaTableParameter]
 AS
 /******************************************************************************
 **		 
-**		Name: insertWorkspaceResource
+**		Name: insertWorkspaceResourceviaTableParameter
 **		Desc: Bulk Insert Resource
 **			
 **		
@@ -56,7 +56,7 @@ AS
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		2/4/11		dcanuso				Bulk Insert Resources
+**		4/29/24		e374897				Bulk Insert Resources
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -221,7 +221,7 @@ CREATE PROCEDURE [dbo].[updateWorkspaceResourcetviaTableParameter]
 AS
 /******************************************************************************
 **		 
-**		Name: updateWorkspaceResource
+**		Name: updateWorkspaceResourcetviaTableParameter
 **		Desc: Bulk Update Workspace Resources
 **			
 **		
@@ -256,143 +256,153 @@ JOIN [dbo].[Workspace] w ON r.[ResourceListID] = w.[ResourceListID]
 	Add WSR
 */
 
-DELETE wr
-FROM dbo.WorkspaceResource wr
-JOIN @temp t ON wr.ResourceID = t.ResourceID
-WHERE wr.ResourceListID = 1
+-- Setting up to check if the Resources being updated are System Resources
+-- ResourceListID will be uniform throughout resources as these are set by the Workspace
+DECLARE @IsSystem INT;
+-- If ResourceListID = 1, it will be 0, else it will be 1
+SELECT @IsSystem = SUM(CASE WHEN ResourceListID <> 1 THEN 1 ELSE 0 END)
+FROM @temp t
+
+-- then we do a sum of @IsSystem and if @IsSystem = 0, then we are working with System Resources
+IF @IsSystem = 0
+	BEGIN 
+		DELETE wr
+		FROM dbo.WorkspaceResource wr
+			JOIN @temp t ON wr.ResourceID = t.ResourceID
 
 
-INSERT INTO [dbo].[Resource]
-	([ResourceName]
-	,[ResourceDescription]
-	,[SegmentRegion]
-	,[LaborType]
-	,[SegmentID]
-	,[ResourceListID]
-	,[CostElementID]
-	,[UpdateDT]
-	,[RateTypeID]
-	)
-OUTPUT inserted.ResourceID INTO @InsertedSystemResource
-SELECT ResourceName
-	,ResourceDescription
-	,SegmentRegion
-	,LaborType
-	,SegmentID
-	,ResourceListID
-	,CostElementID
-	,@UpdateDT
-	,RateTypeID
-FROM @WorkspaceResourceTableParameter
-WHERE ResourceListID = 1
+		INSERT INTO [dbo].[Resource]
+			([ResourceName]
+			,[ResourceDescription]
+			,[SegmentRegion]
+			,[LaborType]
+			,[SegmentID]
+			,[ResourceListID]
+			,[CostElementID]
+			,[UpdateDT]
+			,[RateTypeID]
+			)
+		OUTPUT inserted.ResourceID INTO @InsertedSystemResource
+		SELECT ResourceName
+			,ResourceDescription
+			,SegmentRegion
+			,LaborType
+			,SegmentID
+			,ResourceListID
+			,CostElementID
+			,@UpdateDT
+			,RateTypeID
+		FROM @WorkspaceResourceTableParameter
 
 
-INSERT INTO [dbo].[WorkspaceResource]
-	([SystemResourceID]
-    ,[ResourceListID]
-    ,[WorkspaceID])
-SELECT ResourceID
-	,ResourceListID
-	,WorkspaceID
-FROM @InsertedSystemResource
+		INSERT INTO [dbo].[WorkspaceResource]
+			([SystemResourceID]
+			,[ResourceListID]
+			,[WorkspaceID])
+		SELECT ResourceID
+			,ResourceListID
+			,WorkspaceID
+		FROM @InsertedSystemResource
 
 
-UPDATE dbo.BOELaborType
-SET lt.ResourceID = isr.ResourceID
-FROM dbo.BOELaborType lt
-JOIN @InsertedSystemResource iSr ON lt.ResourceID = isr.ResourceID AND lt.ResourceListID = isr.ResourceListID
-JOIN dbo.BOETaskElement te ON lt.BOETaskElementID = te.BOETaskElementID
-JOIN dbo.BOE b ON te.BOEID = b.BOEID
-WHERE lt.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID
+		UPDATE dbo.BOELaborType
+		SET lt.ResourceID = isr.ResourceID
+		FROM dbo.BOELaborType lt
+			JOIN @InsertedSystemResource iSr ON lt.ResourceID = isr.ResourceID AND lt.ResourceListID = isr.ResourceListID
+			JOIN dbo.BOETaskElement te ON lt.BOETaskElementID = te.BOETaskElementID
+			JOIN dbo.BOE b ON te.BOEID = b.BOEID
+		WHERE lt.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID
 			
 
-UPDATE dbo.ODCType
-SET ot.ResourceID = isr.ResourceID
-FROM dbo.ODCType ot
-JOIN @InsertedSystemResource isr ON ot.ResourceID = isr.ResourceID AND ot.ResourceListID = isr.ResourceListID
-JOIN dbo.ODCTaskElement te ON ot.ODCTaskElementID = te.ODCTaskElementID
-JOIN dbo.BOE b ON te.BOEID = b.BOEID
-WHERE ot.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID	
-
-/*
-	ResourceListID > 1
-*/
-
-IF NOT EXISTS (
-	SELECT *
-	FROM dbo.[Resource] r
-		JOIN @WorkspaceResourceTableParameter wr ON wr.ResourceID = r.SystemResourceID
-	WHERE r.UpdateDT <> @UpdateDT AND wr.ResourceListID > 1
-)
-	BEGIN
-		DECLARE @temp TABLE (SystemResourceID int)
-		INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
-
-		-- Create a table to set InUse Flag
-		DECLARE @InUseTable TABLE (
-			ResourceID INT NOT NULL,
-			WorkspaceID INT NOT NULL,
-			ResourceListID INT,
-			InUse BIT NOT NULL
-		)
-		INSERT INTO @InUseTable (ResourceID, WorkspaceID, InUse)
-		SELECT 
-			ISNULL(wrp.ResourceID, t.ResourceID) AS ResourceID,
-			ISNULL(wrp.WorkspaceID, t.WorkspaceID) AS WorkspaceID,
-			wrp.ResourceListID,
-			CASE 
-				WHEN wrp.ResourceID IS NULL THEN 0
-				ELSE 1
-			END AS InUse
-		FROM 
-			@WorkspaceResourceTableParameter AS wrp
-			FULL OUTER JOIN @temp AS t ON wrp.ResourceID = t.SystemResourceID AND wrp.WorkspaceID = t.WorkspaceID
-		WHERE 
-			t.SystemResourceID IS NULL
-
-		/* Updates for those that are InUse */
-		UPDATE r
-		SET r.ResourceDescription = wr.ResourceDescription
-			,r.SegmentRegion = wr.SegmentRegion
-			,r.LaborType = wr.LaborType
-			,r.ResourceListID = wr.ResourceListID
-			,r.UpdateDt = @UpdateDT
-			,r.RateTypeID = wr.RateTypeID
-		FROM [dbo].[Resource] r
-			JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID AND r.ResourceListID = wr.ResourceListId
-			JOIN @InUseTable i ON wr.ResourceID = i.ResourceID
-		WHERE 
-			wr.ResourceListID > 1
-			AND i.InUse = 1
-
-		/* Updates for those that are NOT InUse */
-		UPDATE r
-		SET r.ResourceName = wr.ResourceName
-			,r.ResourceDescription = wr.ResourceDescription
-			,r.SegmentRegion = wr.SegmentRegion
-			,r.LaborType = wr.LaborType
-			,r.SegmentID = wr.SegmentID
-			,r.ResourceListID = wr.ResourceListID
-			,r.CostElementID = wr.CostElementID
-			,r.UpdateDt = @UpdateDT
-			,r.RateTypeID = wr.RateTypeID
-		FROM [dbo].[Resource] r
-			JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID AND r.ResourceListID = wr.ResourceListId
-			JOIN @InUseTable i ON wr.ResourceID = i.ResourceID
-		WHERE 
-			wr.ResourceListID > 1
-			AND i.InUse = 0
+		UPDATE dbo.ODCType
+		SET ot.ResourceID = isr.ResourceID
+		FROM dbo.ODCType ot
+			JOIN @InsertedSystemResource isr ON ot.ResourceID = isr.ResourceID AND ot.ResourceListID = isr.ResourceListID
+			JOIN dbo.ODCTaskElement te ON ot.ODCTaskElementID = te.ODCTaskElementID
+			JOIN dbo.BOE b ON te.BOEID = b.BOEID
+		WHERE ot.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID
 	END
-ELSE
+
+ELSE -- All ResourceIDList > 1
 	BEGIN
-		SET @ErrorMessage = 'There are resources that have been updated and is out of sync with the data in your browser. Please refresh your data.'
-		RAISERROR (
-			@ErrorMessage,
-			11,
-			1
+		IF NOT EXISTS (
+			SELECT *
+			FROM dbo.[Resource] r
+				JOIN @WorkspaceResourceTableParameter wr ON wr.ResourceID = r.SystemResourceID
+			WHERE r.UpdateDT <> @UpdateDT
 		)
-		RETURN
-	END
+		BEGIN
+			DECLARE @temp TABLE (SystemResourceID int)
+			INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
+
+			-- Create a table to set InUse Flag
+			DECLARE @InUseTable TABLE (
+				ResourceID INT NOT NULL,
+				WorkspaceID INT NOT NULL,
+				ResourceListID INT,
+				InUse BIT NOT NULL
+			)
+			INSERT INTO @InUseTable (ResourceID, WorkspaceID, InUse)
+			SELECT 
+				ISNULL(wrp.ResourceID, t.ResourceID) AS ResourceID,
+				ISNULL(wrp.WorkspaceID, t.WorkspaceID) AS WorkspaceID,
+				wrp.ResourceListID,
+				CASE 
+					WHEN wrp.ResourceID IS NULL THEN 0
+					ELSE 1
+				END AS InUse
+			FROM 
+				@WorkspaceResourceTableParameter AS wrp
+				FULL OUTER JOIN @temp AS t ON wrp.ResourceID = t.SystemResourceID AND wrp.WorkspaceID = t.WorkspaceID
+			WHERE 
+				t.SystemResourceID IS NULL
+
+			/* Updates for those that are InUse */
+			UPDATE r
+			SET r.ResourceDescription = wr.ResourceDescription
+				,r.SegmentRegion = wr.SegmentRegion
+				,r.LaborType = wr.LaborType
+				,r.ResourceListID = wr.ResourceListID
+				,r.UpdateDt = @UpdateDT
+				,r.RateTypeID = wr.RateTypeID
+			FROM [dbo].[Resource] r
+				JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID AND r.ResourceListID = wr.ResourceListId
+				JOIN @InUseTable i ON wr.ResourceID = i.ResourceID
+			WHERE 
+				wr.ResourceListID > 1
+				AND i.InUse = 1
+
+			/* Updates for those that are NOT InUse */
+			UPDATE r
+			SET r.ResourceName = wr.ResourceName
+				,r.ResourceDescription = wr.ResourceDescription
+				,r.SegmentRegion = wr.SegmentRegion
+				,r.LaborType = wr.LaborType
+				,r.SegmentID = wr.SegmentID
+				,r.ResourceListID = wr.ResourceListID
+				,r.CostElementID = wr.CostElementID
+				,r.UpdateDt = @UpdateDT
+				,r.RateTypeID = wr.RateTypeID
+			FROM [dbo].[Resource] r
+				JOIN @WorkspaceResourceTableParameter wr ON r.ResourceID = wr.ResourceID AND r.ResourceListID = wr.ResourceListId
+				JOIN @InUseTable i ON wr.ResourceID = i.ResourceID
+			WHERE 
+				wr.ResourceListID > 1
+				AND i.InUse = 0
+		END
+		ELSE
+			BEGIN
+				SET @ErrorMessage = 'There are resources that have been updated and is out of sync with the data in your browser. Please refresh your data.'
+				RAISERROR (
+					@ErrorMessage,
+					11,
+					1
+				)
+				RETURN
+			END
+		END
 IF @@ERROR = 0
 	SELECT ResourceID FROM @WorkspaceResourceTableParameter
 GO
+
+
