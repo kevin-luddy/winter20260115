@@ -88,7 +88,7 @@ SELECT ResourceName
 	,@UpdateDT
 	,0 /*Flag set to false for new*/
 	,RateTypeID
-FROM @WorkspaceResourceTableParameter
+FROM @ResourceTableParameter
 
            
 SELECT @ResourceID = ResourceID FROM @InsertedResource
@@ -162,7 +162,7 @@ SET NOCOUNT ON
 
 DECLARE @ErrorMessage varchar (500)
 
-DECLARE @ResourceListIDParam TABLE (ResourceListID int)
+DECLARE @SystemResourceListIDParam TABLE (ResourceListID int)
 INSERT INTO @SystemResourceListIDParam
 SELECT ResourceListID
 FROM @WorkspaceResourceTableParameter
@@ -179,17 +179,16 @@ DECLARE @InUseTable TABLE (
 	ResourceListID INT,
 	InUse BIT NOT NULL
 )
-INSERT INTO @InUseTable (ResourceID, WorkspaceID, InUse)
+INSERT INTO @InUseTable (ResourceID, InUse)
 SELECT 
-	ISNULL(wrp.ResourceID, t.ResourceID) AS ResourceID,
-	ISNULL(wrp.WorkspaceID, t.WorkspaceID) AS WorkspaceID,
+	ISNULL(wrp.ResourceID, t.SystemResourceID) AS ResourceID,
 	wrp.ResourceListID,
 	CASE 
 		WHEN wrp.ResourceID IS NULL THEN 0
 		ELSE 1
 	END AS InUse
 FROM @WorkspaceResourceTableParameter AS wrp
-	FULL OUTER JOIN @temp AS t ON wrp.ResourceID = t.SystemResourceID AND wrp.WorkspaceID = t.WorkspaceID
+	FULL OUTER JOIN @temp AS t ON wrp.ResourceID = t.SystemResourceID
 WHERE 
 	t.SystemResourceID IS NULL
 
@@ -208,7 +207,13 @@ WHERE
 	i.InUse = 0
 
 
-IF @ResourceType > 1
+
+DECLARE @IsSystem INT;
+-- If ResourceListID = 1, it will be 0, else it will be 1
+SELECT @IsSystem = SUM(CASE WHEN ResourceListID <> 1 THEN 1 ELSE 0 END)
+FROM @WorkspaceResourceTableParameter wrt
+-- Checking if these are workspace resources as they are allowed to be deleted this way
+IF @IsSystem > 0
 BEGIN
 	DELETE dbo.Resource
 	FROM dbo.Resource r
@@ -273,7 +278,7 @@ IF @IsSystem = 0
 	BEGIN 
 		DELETE wr
 		FROM dbo.WorkspaceResource wr
-			JOIN @temp t ON wr.ResourceID = t.ResourceID
+			JOIN @temp t ON wr.SystemResourceID = t.ResourceID
 
 
 		INSERT INTO [dbo].[Resource]
@@ -311,18 +316,18 @@ IF @IsSystem = 0
 
 
 		UPDATE dbo.BOELaborType
-		SET lt.ResourceID = isr.ResourceID
+		SET ResourceID = isr.ResourceID
 		FROM dbo.BOELaborType lt
-			JOIN @InsertedSystemResource iSr ON lt.ResourceID = isr.ResourceID AND lt.ResourceListID = isr.ResourceListID
+			JOIN @InsertedSystemResource iSr ON lt.ResourceID = isr.ResourceID
 			JOIN dbo.BOETaskElement te ON lt.BOETaskElementID = te.BOETaskElementID
 			JOIN dbo.BOE b ON te.BOEID = b.BOEID
 		WHERE lt.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID
 			
 
 		UPDATE dbo.ODCType
-		SET ot.ResourceID = isr.ResourceID
+		SET ResourceID = isr.ResourceID
 		FROM dbo.ODCType ot
-			JOIN @InsertedSystemResource isr ON ot.ResourceID = isr.ResourceID AND ot.ResourceListID = isr.ResourceListID
+			JOIN @InsertedSystemResource isr ON ot.ResourceID = isr.ResourceID
 			JOIN dbo.ODCTaskElement te ON ot.ODCTaskElementID = te.ODCTaskElementID
 			JOIN dbo.BOE b ON te.BOEID = b.BOEID
 		WHERE ot.ResourceID = isr.ResourceID AND b.WorkspaceID = isr.WorkspaceID
@@ -333,17 +338,17 @@ ELSE -- All ResourceIDList > 1
 		IF NOT EXISTS (
 			SELECT *
 			FROM dbo.[Resource] r
-				JOIN @WorkspaceResourceTableParameter wr ON wr.ResourceID = r.SystemResourceID
+				JOIN @WorkspaceResourceTableParameter wr ON wr.ResourceID = r.ResourceID
 			WHERE r.UpdateDT <> @UpdateDT
 		)
 		BEGIN
 			DECLARE @ResourceListIDParam TABLE (ResourceListID int)
-			INSERT INTO @SystemResourceListIDParam
+			INSERT INTO @ResourceListIDParam
 			SELECT ResourceListID
 			FROM @WorkspaceResourceTableParameter
 
-			DECLARE @temp TABLE (SystemResourceID int)
-			INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter] @ResourceListIDParam
+			DECLARE @SystemTemp TABLE (SystemResourceID int)
+			INSERT @SystemTemp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter] @ResourceListIDParam
 
 			-- Create a table to set InUse Flag
 			DECLARE @InUseTable TABLE (
@@ -354,16 +359,14 @@ ELSE -- All ResourceIDList > 1
 			)
 			INSERT INTO @InUseTable (ResourceID, WorkspaceID, InUse)
 			SELECT 
-				ISNULL(wrp.ResourceID, t.ResourceID) AS ResourceID,
-				ISNULL(wrp.WorkspaceID, t.WorkspaceID) AS WorkspaceID,
+				ISNULL(wrp.ResourceID, t.SystemResourceID) AS ResourceID,
 				wrp.ResourceListID,
 				CASE 
 					WHEN wrp.ResourceID IS NULL THEN 0
 					ELSE 1
 				END AS InUse
-			FROM 
-				@WorkspaceResourceTableParameter AS wrp
-				FULL OUTER JOIN @temp AS t ON wrp.ResourceID = t.SystemResourceID AND wrp.WorkspaceID = t.WorkspaceID
+			FROM @WorkspaceResourceTableParameter AS wrp
+				FULL OUTER JOIN @SystemTemp AS t ON wrp.ResourceID = t.SystemResourceID
 			WHERE 
 				t.SystemResourceID IS NULL
 
