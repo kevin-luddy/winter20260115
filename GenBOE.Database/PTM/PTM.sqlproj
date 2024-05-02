@@ -198,6 +198,6 @@
     <None Include="Object Scripts\X_Data Cleanup\DeleteOrphanedAttachments.sql" />
     <None Include="Object Scripts\Stored Procedures\getProposalRevisionHistory.sql" />
     <None Include="Release Scripts\Release 2024.6\1 - Release 2024.6.sql" />
-    <None Include="Release Scripts\Release 2024.8\1 - Release 2024.8" />
+    <None Include="Release Scripts\Release 2024.8\1 - Release 2024.8.sql" />
   </ItemGroup>
 </Project>
