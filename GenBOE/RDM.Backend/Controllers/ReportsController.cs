@@ -114,7 +114,7 @@ namespace RDM.Backend.Controllers
 		/// <param name="id">Revision Id</param>
 		/// <returns>An ActionResult.</returns>
 		[HttpGet("[action]")]
-		public IActionResult ExportCobraData(int id)
+		public async Task<IActionResult> ExportCobraData(int id)
 		{
 			try
 			{
@@ -147,7 +147,7 @@ namespace RDM.Backend.Controllers
 			catch (GeneralAppException ex)
 			{
 				this.log.LogError(ex, "Unknown Exception");
-				return this.CreateTextFileWithErrorMessage(ex);
+				return await this.CreateTextFileWithErrorMessage(ex);
 			}
 		}
 
@@ -157,7 +157,7 @@ namespace RDM.Backend.Controllers
 		/// <param name="id">Revision Id</param>
 		/// <returns>An ActionResult.</returns>
 		[HttpGet("[action]")]
-		public IActionResult ExportProPricerData(int id)
+		public async Task<IActionResult> ExportProPricerData(int id)
 		{
 			try
 			{
@@ -185,7 +185,7 @@ namespace RDM.Backend.Controllers
 			catch (GeneralAppException ex)
 			{
 				this.log.LogError(ex, "Unknown Exception");
-				return this.CreateTextFileWithErrorMessage(ex);
+				return await this.CreateTextFileWithErrorMessage(ex);
 			}
 		}
 
@@ -208,7 +208,7 @@ namespace RDM.Backend.Controllers
 			catch (GeneralAppException e)
 			{
 				this.log.LogError(e, "Error generating full PPR&D doc");
-				result = this.CreateTextFileWithErrorMessage(e.Message);
+				result = await this.CreateTextFileWithErrorMessage(e.Message);
 			}
 
 			return result;
@@ -220,7 +220,7 @@ namespace RDM.Backend.Controllers
 		/// <param name="id">Revision Id</param>
 		/// <returns>An ActionResult.</returns>
 		[HttpGet("[action]")]
-		public IActionResult ExportRevisionAsJson(string id)
+		public async Task<IActionResult> ExportRevisionAsJson(string id)
 		{
 			try
 			{
@@ -232,7 +232,7 @@ namespace RDM.Backend.Controllers
 			catch (GeneralAppException ex)
 			{
 				this.log.LogError(ex, "Unknown Exception");
-				return this.CreateTextFileWithErrorMessage(ex);
+				return await this.CreateTextFileWithErrorMessage(ex);
 			}
 		}
 	}
