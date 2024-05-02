@@ -162,9 +162,14 @@ SET NOCOUNT ON
 
 DECLARE @ErrorMessage varchar (500)
 
+DECLARE @ResourceListIDParam TABLE (ResourceListID int)
+INSERT INTO @SystemResourceListIDParam
+SELECT ResourceListID
+FROM @WorkspaceResourceTableParameter
+
 DECLARE @temp TABLE (SystemResourceID int)
 -- This will return a list of all system resource ids that are in use
-INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
+INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter] @ResourceListIDParam
 
 
 -- Create a table to set InUse Flag
@@ -332,8 +337,13 @@ ELSE -- All ResourceIDList > 1
 			WHERE r.UpdateDT <> @UpdateDT
 		)
 		BEGIN
+			DECLARE @ResourceListIDParam TABLE (ResourceListID int)
+			INSERT INTO @SystemResourceListIDParam
+			SELECT ResourceListID
+			FROM @WorkspaceResourceTableParameter
+
 			DECLARE @temp TABLE (SystemResourceID int)
-			INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
+			INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter] @ResourceListIDParam
 
 			-- Create a table to set InUse Flag
 			DECLARE @InUseTable TABLE (
