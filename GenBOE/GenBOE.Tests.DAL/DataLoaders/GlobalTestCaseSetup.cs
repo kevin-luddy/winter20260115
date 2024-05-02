@@ -838,7 +838,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 gbe.OutputFormatTemplates.Add(outputFormat);
                 gbe.SaveChanges();
 
-                var outputFormatTemplateId = from w in gbe.OutputFormatTemplates
+				IQueryable<int> outputFormatTemplateId = from w in gbe.OutputFormatTemplates
                                       where w.Template == "Mock_" + tempName
                                       select w.TemplateID;
                 _GlobalWorkspaceTemplateID = outputFormatTemplateId.FirstOrDefault();
@@ -868,7 +868,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 gbe.Workspaces.Add(NewWorkspace);
                 gbe.SaveChanges();
 
-                var getSpaces = from w in gbe.Workspaces
+				IQueryable<int> getSpaces = from w in gbe.Workspaces
                                 where w.WorkspaceName == "Mock_" + tempName
                                 select w.WorkspaceID;
 
@@ -923,7 +923,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             // create 3 new CLINS
             for (int x = 0; x < 2; x++)
             {
-                var singleCLIN = new ClinDTO();
+				ClinDTO singleCLIN = new ClinDTO();
                 singleCLIN.Id = clinIDCount;
                 singleCLIN.ClinNumber = "Moq" + MOQObject.randomNumberGenerator.Next().ToString() + x.ToString();
                 singleCLIN.ClinTitle = Guid.NewGuid().ToString();
@@ -1019,10 +1019,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 // create users to be used for author and approver
                 // TBD: If we want to associate roles, we will have to add it here 
                 _Users = _CreateUsers(workspaceID, boeToUse, inNumberOfAuthors, inNumberOfApprovers, inNumberOfReviewers, inNumberOfSysAdmins, inNumberOfWorkspaceAdmins, inNumberOfMetricAdmins);
-                var author = from u in _Users
+				IEnumerable<UserCreated> author = from u in _Users
                              where ((Role)(u.Role)).Equals(Role.Author)
                              select u;
-                var approvers = from u in _Users
+				IEnumerable<UserCreated> approvers = from u in _Users
                                 where ((Role)(u.Role)).Equals(Role.Approver)
                                 select u;
 
@@ -1305,7 +1305,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var getWBSForBOE = from w in gbe.WorkBreakdownStructures
+                IQueryable<int> getWBSForBOE = from w in gbe.WorkBreakdownStructures
                                    where w.WorkspaceID == GlobalWorkspaceID && w.WBSTitle == _GlobalwbsTitleEnd
                                    select w.WBSID;
                 WBSID = Convert.ToInt32(getWBSForBOE.FirstOrDefault());
@@ -1319,7 +1319,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             ClinDTODataLoader manageCLINDataLoader = new ClinDTODataLoader();
 
-            var singleCLIN = new ClinDTO();
+			ClinDTO singleCLIN = new ClinDTO();
             singleCLIN.Id = -1;
             singleCLIN.ClinNumber = "Moq" + MOQObject.randomNumberGenerator.Next().ToString();
             singleCLIN.ClinTitle = Guid.NewGuid().ToString();
@@ -1649,7 +1649,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 WorkspaceDTO tempWorkspace = new WorkspaceDTO();
                 tempWorkspace.ResourceListID = GlobalResourceListID;
 
-                Dictionary<int, int> resources = resourceLoader.SaveWorkspaceResources(tempWorkspace, resources2);
+                IDictionary<int, int> resources = resourceLoader.SaveWorkspaceResources(tempWorkspace, resources2);
 
                 if (resources.ContainsKey(-1))
                 {
@@ -5357,7 +5357,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             string lName = Guid.NewGuid().ToString().Substring(0, 10);
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                var user = (from u in gbe.ETIusers
+				ETIuser user = (from u in gbe.ETIusers
 
                             select u).First();
 
@@ -5377,7 +5377,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
         public static int GetSystemTrip()
         {
-            var sut = new TripDTODataLoader();
+			TripDTODataLoader sut = new TripDTODataLoader();
 
             // create a trip 
             TripDTO trip = new TripDTO();
