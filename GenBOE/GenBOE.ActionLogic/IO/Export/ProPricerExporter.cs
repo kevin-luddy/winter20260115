@@ -13,6 +13,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.IO;
 	using System.Linq;
 	using System.Text;
+	using DocumentFormat.OpenXml.Office2010.PowerPoint;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.ModelView;
@@ -2275,6 +2276,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			collectionsOfInputs.ODCLaborElements = new Collection<BoeTaskElementDTO>((from t in taskElements
 																					  from t2 in t.taskElementLabors
 																					  where t.taskElementLabors.Any() &&
+																					  t2.ResourceID.HasValue &&
 																					  odcResourceIDs.Contains(t2.ResourceID.Value)
 																					  select t).Distinct().ToArray());
 		}
