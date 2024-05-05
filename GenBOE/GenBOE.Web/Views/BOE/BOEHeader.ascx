@@ -125,7 +125,7 @@
             <ul class="validation-box"></ul>
              <%if (missingBrcCodes) { %>
                 <div class="validation-box" style="display:block;">
-                    Contact Workspace Admin - Read Only Mode - BOE date range is past 1LMX boundary and missing BRC codes
+                    Warning: The workspace period of performance crosses into the 1LMX common disclosure period and requires Business Resource Codes (BRCs) for estimating. BOE authoring will be restricted to textual updates until BRCs have been loaded. Please notify your Workspace Administrator.
                 </div>
              <% } %>
         </div>
