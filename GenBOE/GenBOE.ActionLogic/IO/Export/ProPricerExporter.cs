@@ -13,7 +13,6 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.IO;
 	using System.Linq;
 	using System.Text;
-	using DocumentFormat.OpenXml.Office2010.PowerPoint;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.ModelView;
