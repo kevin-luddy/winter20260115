@@ -768,6 +768,28 @@ namespace GenBOE.Web.Controllers
 			return toReturn;
 		}
 
+		/// <summary>
+		/// Display the Confidence Report Button in a BOE
+		/// </summary>
+		/// <param name="workspace">Workspace Shortname</param>
+		/// <param name="boeID">BOE ID</param>
+		/// <returns>ViewResult for Confidence Report Button</returns>
+		public ViewResult DisplayConfidenceReportButton(string workspace, int boeID)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			
+			ViewData["BOEID"] = boeID;
+			ViewData["HideConfidenceReport"] = !Utilities.IsConfidenceReportEnabled;
+			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT);
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, sw);
+			return toReturn;
+		}
+
 		#endregion Edit BOE
 
 		#region Manage BOE

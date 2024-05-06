@@ -299,6 +299,7 @@
     <Compile Include="ModelView\ResourceTypeRowModelView.cs" />
     <Compile Include="ModelView\PermissionModelView.cs" />
     <Compile Include="ModelView\UpdateWorkspaceResourceRateModelView.cs" />
+    <Content Include="Views\BOE\BOEConfidenceReportResults.ascx" />
     <Content Include="app_offlineX.htm" />
     <Compile Include="Controllers\BOEHistoryController.cs" />
     <Compile Include="Controllers\BOELaborController.cs" />
@@ -916,6 +917,7 @@
     <Content Include="Views\BOEZoneTravel\BOEZoneTravelGrid.ascx" />
     <Content Include="Views\BOEZoneTravel\ZoneTravelTrips.ascx" />
     <Content Include="Views\BOEZoneTravel\ZoneTravelTripsGrid.ascx" />
+    <Content Include="Views\BOE\BOEConfidenceReport.ascx" />
     <Content Include="Views\BOE\BOEProjectMapAdvancedSearch.ascx" />
     <Content Include="Views\BOE\BOEHeaderDescription.ascx" />
     <Content Include="Views\BOE\BOEHeaderISGSTitle.ascx" />
@@ -931,6 +933,7 @@
     <Content Include="Views\Home\GenBoeMetrics.aspx" />
     <Content Include="Views\Home\GenBOEMetricsWhosOnlineIndex.aspx" />
     <Content Include="Views\Reports\AdditionalReports.ascx" />
+    <Content Include="Views\Reports\BOEConfidenceReportResults.ascx" />
     <Content Include="Views\Reports\CustomerReports.ascx" />
     <Content Include="Views\Reports\FinanceReports.ascx" />
     <Content Include="Views\Reports\INLFormExportSelectorGrid.ascx" />
