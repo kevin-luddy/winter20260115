@@ -5,8 +5,8 @@ GO
 IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[insertWorkspaceResourceviaTableParameter]') AND type in (N'P', N'PC'))
 	DROP PROCEDURE [dbo].[insertWorkspaceResourceviaTableParameter];
 GO
-IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updateWorkspaceResourcetviaTableParameter]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[updateWorkspaceResourcetviaTableParameter];
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updateWorkspaceResourceviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[updateWorkspaceResourceviaTableParameter];
 GO
 
 -- Drop types 2nd
@@ -27,7 +27,8 @@ CREATE TYPE [dbo].[TT_WorkspaceResource] AS TABLE(
 	[ResourceListID] [int] NOT NULL,
 	[CostElementID] [int] NOT NULL,
 	[DeletedFlag] [bit] NOT NULL,
-	[RateTypeID] [int] NOT NULL
+	[RateTypeID] [int] NOT NULL,
+	[OrderID] [int] NOT NULL
 );
 GO
 
@@ -39,7 +40,7 @@ GO
 
 CREATE PROCEDURE [dbo].[insertWorkspaceResourceviaTableParameter]
 (
-@ResourceTableParameter [dbo].[TT_WorkspaceResource] READONLY
+@WorkspaceResourceTableParameter [dbo].[TT_WorkspaceResource] READONLY
 )
 AS
 /******************************************************************************
@@ -88,7 +89,7 @@ SELECT ResourceName
 	,@UpdateDT
 	,0 /*Flag set to false for new*/
 	,RateTypeID
-FROM @ResourceTableParameter
+FROM @WorkspaceResourceTableParameter
       
       
 INSERT INTO [dbo].[WorkspaceResource]
@@ -159,7 +160,7 @@ SET NOCOUNT ON
 
 DECLARE @ErrorMessage varchar (500)
 
-DECLARE @SystemResourceListIDParam TABLE (ResourceListID int)
+DECLARE @SystemResourceListIDParam TT_ResourceListID
 INSERT INTO @SystemResourceListIDParam
 SELECT ResourceListID
 FROM @WorkspaceResourceTableParameter
@@ -171,8 +172,7 @@ INSERT @temp EXECUTE [dbo].[getResourceInUseFlagByResourceListIDviaTableParamete
 
 -- Create a table to set InUse Flag
 DECLARE @InUseTable TABLE (
-	ResourceID INT NOT NULL,
-	WorkspaceID INT NOT NULL,
+	ResourceID INT NULL,
 	ResourceListID INT,
 	InUse BIT NOT NULL
 )
@@ -193,13 +193,13 @@ WHERE
 
 DELETE dbo.TMResourceRate
 FROM dbo.TMResourceRate tmr
-	JOIN @InUseTable i ON i.ResourceID = tmr.TMResourceID AND tmr.WorkspaceID = i.WorkspaceID
+	JOIN @InUseTable i ON i.ResourceID = tmr.TMResourceID
 WHERE
 	i.InUse = 0
 
 DELETE dbo.WorkspaceResource 
 FROM dbo.WorkspaceResource wr
-	JOIN @InUseTable i ON i.ResourceID = wr.SystemResourceID AND i.WorkspaceID = wr.WorkspaceID
+	JOIN @InUseTable i ON i.ResourceID = wr.SystemResourceID
 WHERE
 	i.InUse = 0
 
@@ -221,14 +221,14 @@ BEGIN
 END
 
 GO
-CREATE PROCEDURE [dbo].[updateWorkspaceResourcetviaTableParameter]
+CREATE PROCEDURE [dbo].[updateWorkspaceResourceviaTableParameter]
 (
 @WorkspaceResourceTableParameter [dbo].[TT_WorkspaceResource] READONLY
 )
 AS
 /******************************************************************************
 **		 
-**		Name: updateWorkspaceResourcetviaTableParameter
+**		Name: updateWorkspaceResourceviaTableParameter
 **		Desc: Bulk Update Workspace Resources
 **			
 **		
