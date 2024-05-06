@@ -2275,8 +2275,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			collectionsOfInputs.ODCLaborElements = new Collection<BoeTaskElementDTO>((from t in taskElements
 																					  from t2 in t.taskElementLabors
 																					  where t.taskElementLabors.Any() &&
-																					  t2.ResourceID.HasValue &&
-																					  odcResourceIDs.Contains(t2.ResourceID.Value)
+																					  odcResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																					  select t).Distinct().ToArray());
 		}
 
