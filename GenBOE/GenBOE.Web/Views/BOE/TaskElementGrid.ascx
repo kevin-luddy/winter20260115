@@ -3,6 +3,7 @@
 
 <% 
     var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
+    bool missingBrcCodes = Html.GetViewDataValue < bool > ("MissingBrcCodes", false);
 %>
 <script type="text/javascript">
 
@@ -35,9 +36,19 @@
             </div>
         <% } %>
         <div class="buttons">
-            <button id="AddTaskElement" name="add-task-element" class="ies-action" type="button">+ Add task element</button>
+            <%if (missingBrcCodes) { %>
+                <button id="AddTaskElement" name="add-task-element" class="ies-action" disabled="disabled" type="button">+ Add task element</button>
+            <% } %>
+            <%else { %>
+                <button id="AddTaskElement" name="add-task-element" class="ies-action" type="button">+ Add task element</button>
+            <% } %>
             <button id="ReOrderTaskElement" onclick="TaskElementGrid.displayReOrderTaskElementDialog()" class="ies" type="button">Sort tasks</button>
-            <button id="DuplicateTask" onclick="TaskElementGrid.displayDuplicateTaskElementDialog()" class="ies" type="button">Duplicate tasks</button>
+            <%if (missingBrcCodes) { %>
+                <button id="DuplicateTask" disabled="disabled" class="ies" type="button">Duplicate tasks</button>
+            <% } %>
+            <%else { %>
+                <button id="DuplicateTask" onclick="TaskElementGrid.displayDuplicateTaskElementDialog()" class="ies" type="button">Duplicate tasks</button>
+            <% } %>
             <div id="DuplicateTaskElementDialog-Loader" class="loader display-none"></div>
         </div>
         <table id="TaskElementGrid" class="sortable grid readonly">
