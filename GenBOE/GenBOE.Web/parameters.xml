@@ -197,6 +197,10 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableBRC']/@value">
 		</parameterentry>
 	</parameter>
+	<parameter name="EnableConfidenceReport" description="doesn't matter" defaultvalue="__EnableConfidenceReport__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableConfidenceReport']/@value">
+		</parameterentry>
+	</parameter>
 	<!--system.web-->
 	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">

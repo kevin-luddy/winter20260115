@@ -177,7 +177,26 @@
                         $('#report').html(response);
                     }
                 });
-            }
+			}
+			else if (params.reportID == <%: (int)Reports.ConfidenceReport %>)
+			{
+				$('#report').children().remove();
+				$('#report').html('<div class="loader"></div>');
+
+				reportUrl = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+					'<%: WebConstants.CONTROLLER_REPORTS %>',
+					'<%: WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS %>',
+					'');
+
+				$.ajax({
+					type: "POST",
+					url: reportUrl,
+					dataType: 'html',
+					success: function (response) {
+						$('#report').html(response);
+					}
+				});
+			}
             else { // SSRS reports
                 // first get the Nonce from the backend
                 var nonceUrl = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
@@ -213,7 +232,7 @@
 
             }
         }); 
-    </script>
+	</script>
     <div id="report">
         <div class="module">
             <div class="module-header">

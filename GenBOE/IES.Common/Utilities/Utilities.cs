@@ -805,6 +805,30 @@ namespace IES.Common
 			}
 		}
 
+
+		/// <summary>
+		/// Private for Is Confidence Report Enabled, used to cache value
+		/// </summary>
+		private static bool? isConfidenceReportEnabled;
+
+		/// <summary>
+		/// Indicates whether Confidence Report is enabled
+		/// </summary>
+		public static bool IsConfidenceReportEnabled
+		{
+			get
+			{
+				if (isConfidenceReportEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableConfidenceReport"), out bool value);
+					isConfidenceReportEnabled = value;
+				}
+
+				return isConfidenceReportEnabled.Value;
+			}
+			internal set => isConfidenceReportEnabled = value;
+		}
+
 		/// <summary>
 		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
 		/// to not point at unclassified locations that are not accessible.

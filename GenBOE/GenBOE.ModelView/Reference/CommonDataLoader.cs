@@ -387,6 +387,7 @@ namespace GenBOE.DataBridge.Common
                             case (int)Reports.WorkspaceActivity:
                             case (int)Reports.BoeDiscrepancy:
                             case (int)Reports.ValidateAllBOE:
+							case (int)Reports.ConfidenceReport:
                                 report.ReportType = ReportType.View;
                                 break;
 
