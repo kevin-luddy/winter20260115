@@ -299,7 +299,6 @@
     <Compile Include="ModelView\ResourceTypeRowModelView.cs" />
     <Compile Include="ModelView\PermissionModelView.cs" />
     <Compile Include="ModelView\UpdateWorkspaceResourceRateModelView.cs" />
-    <Content Include="Views\BOE\BOEConfidenceReportResults.ascx" />
     <Content Include="app_offlineX.htm" />
     <Compile Include="Controllers\BOEHistoryController.cs" />
     <Compile Include="Controllers\BOELaborController.cs" />

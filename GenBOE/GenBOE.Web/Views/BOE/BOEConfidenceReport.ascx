@@ -16,7 +16,7 @@
 			'<%: WebConstants.CONTROLLER_REPORTS %>',
 			'<%: WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS %>',
 			'boe/<%: ViewData["BOEID"] %>');
-		console.log('url', url);
+
 		window.open(url);
 	};
 </script>
