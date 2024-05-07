@@ -24,7 +24,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void L_TestUniqueResourceNameDesc()
         {
-            var sut = new ResourceDTODataLoader();
+			ResourceDTODataLoader sut = new ResourceDTODataLoader();
             // add brand new resource
             Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
             string resourceName1 = "TwentyCharactersDone";
@@ -46,7 +46,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void L_SaveUpsertResources()
         {
-            var sut = new ResourceDTODataLoader();
+			ResourceDTODataLoader sut = new ResourceDTODataLoader();
             Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
 
             // add brand new resources
@@ -60,7 +60,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             WorkspaceDTO tempWorkspace = new WorkspaceDTO();
             tempWorkspace.ResourceListID = this.ResourceList.ResourceListID;
 
-            Dictionary<int, int> ids = sut.SaveWorkspaceResources(tempWorkspace, resources);
+            IDictionary<int, int> ids = sut.SaveWorkspaceResources(tempWorkspace, resources);
             Assert.AreEqual(2, ids.Count);
 
             ResourceDTO firstSaved = sut.GetByIds(new Collection<int> { ids[-1] }).First();
@@ -116,7 +116,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void L_GetResourceIDsByListID()
         {
-            var sut = new ResourceDTODataLoader();
+			ResourceDTODataLoader sut = new ResourceDTODataLoader();
 
             ICollection<int> resourceIDs = sut.GetByListId(this.Workspace.ResourceListID).Select(x => x.Id).ToList();
             Assert.IsTrue(resourceIDs.Count > 0, "no resource IDs were found for the given works'aces resource list id");
@@ -129,7 +129,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void L_GetResourceByNameAndListID()
         {
-            var sut = new ResourceDTODataLoader();
+			ResourceDTODataLoader sut = new ResourceDTODataLoader();
 
             // should return a null resource and not an error
             ResourceDTO resource = sut.GetByNameAndListId("", CommonConstants.GLOBAL_LIST_ID);
@@ -139,7 +139,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void L_GetResourceIDByResourceDescription()
         {
-            var sut = new ResourceDTODataLoader();
+			ResourceDTODataLoader sut = new ResourceDTODataLoader();
 
             int resourceID = sut.GetByDescriptionAndListId(this.Resource.ResourceDesc, this.Workspace.ResourceListID).Id;
             Assert.IsTrue(resourceID > 0, "no resource ID was found with that description");
@@ -158,7 +158,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void L_SaveUpsertSystemResources()
         {
-            var sut = new ResourceDTODataLoader();
+			ResourceDTODataLoader sut = new ResourceDTODataLoader();
             Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
 
             // add brand new resources

@@ -42,7 +42,7 @@ SET NOCOUNT ON
 -- temp table to hold all the workspace involved with the worklist id
 DECLARE @Workspace TABLE (WorkspaceID INT, ResourceListID int) 
 INSERT INTO @Workspace
-SELECT WorkspaceID, ResourceListID 
+SELECT w.WorkspaceID, w.ResourceListID 
 FROM dbo.Workspace w
     INNER JOIN @ResourceListIDParameter r ON r.ResourceListID = w.ResourceListID
 

@@ -4572,6 +4572,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="ResourceID" Type="int" Mode="In" />
           <Parameter Name="ResourceListID" Type="int" Mode="In" />
         </Function>
+        <Function Name="deleteWorkspaceResourceviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteWorkspaceRMSTravelEscalationRate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
         </Function>
@@ -4690,6 +4691,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
         <Function Name="getResourceInUseFlagByResourceListID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceListID" Type="int" Mode="In" />
         </Function>
+        <Function Name="getResourceInUseFlagByResourceListIDviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="getResourceInUseFlagBySystemResourceID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceID" Type="int" Mode="In" />
         </Function>
@@ -4887,6 +4889,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="RoleID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
+        <Function Name="insertWorkspaceResourceviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertWorkspaceUserRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ETIUserID" Type="int" Mode="In" />
           <Parameter Name="RoleID" Type="int" Mode="In" />
@@ -4991,6 +4994,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
           <Parameter Name="Delete" Type="bit" Mode="In" />
         </Function>
+        <Function Name="updateWorkspaceResourceviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="updateWorkspaceStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
           <Parameter Name="WorkspaceStateID" Type="int" Mode="In" />
@@ -10907,7 +10911,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           </FunctionImport>
 		  <FunctionImport Name="getResourceInUseFlagByResourceListID" ReturnType="Collection(Int32)">
 		  <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
-		  </FunctionImport>
+          </FunctionImport>
 		  <FunctionImport Name="getResourceInUseFlagBySystemResourceID" ReturnType="Collection(Int32)">
           <Parameter Name="ResourceID" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -10936,12 +10940,12 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           </FunctionImport>
 		  <FunctionImport Name="getWorkspaceResourceInUseFlagByMultipleResources" ReturnType="Collection(Int32)">
 			<Parameter Name="ResourceID" Mode="In" Type="String" />
-			<Parameter Name="ResourceListID" Mode="In" Type="Int32" />
-		  </FunctionImport>
+            <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
+          </FunctionImport>
 		  <FunctionImport Name="getWorkspaceResourceInUseFlagByResourceID" ReturnType="Collection(Int32)">
 			<Parameter Name="ResourceID" Mode="In" Type="Int32" />
-			<Parameter Name="ResourceListID" Mode="In" Type="Int32" />
-		  </FunctionImport>
+            <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
+          </FunctionImport>
 		  <FunctionImport Name="getWorkspaceVariableByTaskElementID" ReturnType="Collection(GenBOE.Models.getWorkspaceVariableByTaskElementID_Result)">
           <Parameter Name="BOETaskElementID" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -12428,6 +12432,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="ResourceID" Mode="In" Type="Int32" />
             <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
           </FunctionImport>
+          <FunctionImport Name="deleteWorkspaceResourceviaTableParameter" />
+          <FunctionImport Name="getResourceInUseFlagByResourceListIDviaTableParameter" />
+          <FunctionImport Name="insertWorkspaceResourceviaTableParameter" />
+          <FunctionImport Name="updateWorkspaceResourceviaTableParameter" />
 		</EntityContainer>
 		<ComplexType Name="getBOEForFindReplace_Result">
 		  <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -16255,6 +16263,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</EntityTypeMapping>
 		  </EntitySetMapping>
 		  <FunctionImportMapping FunctionImportName="insertMessageConfirmation" FunctionName="GenBOE.Models.Store.insertMessageConfirmation" />
+          <FunctionImportMapping FunctionImportName="deleteWorkspaceResourceviaTableParameter" FunctionName="GenBOE.Models.Store.deleteWorkspaceResourceviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="getResourceInUseFlagByResourceListIDviaTableParameter" FunctionName="GenBOE.Models.Store.getResourceInUseFlagByResourceListIDviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="insertWorkspaceResourceviaTableParameter" FunctionName="GenBOE.Models.Store.insertWorkspaceResourceviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="updateWorkspaceResourceviaTableParameter" FunctionName="GenBOE.Models.Store.updateWorkspaceResourceviaTableParameter" />
 		</EntityContainerMapping>
 	  </Mapping>
 	</edmx:Mappings>

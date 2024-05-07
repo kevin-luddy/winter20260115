@@ -18,7 +18,7 @@ namespace GenBOE.DataBridge.DTO
         int GlobalListID { get; }
 
         Dictionary<int, int> SaveSystemResources(ICollection<ResourceDTO> inSystemResources);
-        Dictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources);
+        IDictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources);
         ICollection<ResourceDTO> GetByListId(int inResourceListID);
         ICollection<ResourceDTO> GetByIds(ICollection<int> inResourceIDs);
 
