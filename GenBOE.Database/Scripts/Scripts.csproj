@@ -351,6 +351,7 @@
     <Content Include="Release Scripts\Release 2024.09\1 - Release 2024.09 Script.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.04 Generated On 2_15_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.08 Generated On 4_29_2024.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2024.09 Generated On 5_7_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.11 Generated On 4_11_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.5 Generated On 3_8_2023.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2022.15 Generated On 5_16_2022.sql" />
