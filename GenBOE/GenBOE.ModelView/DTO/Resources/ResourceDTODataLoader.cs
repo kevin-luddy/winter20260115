@@ -537,7 +537,7 @@ namespace GenBOE.DataBridge.DTO
 		{
 			BulkSaveMetaData metaData = new BulkSaveMetaData(Constants.BOE_DB_CONTEXT_NAME);
 
-			metaData.BulkDeleteStoredProcedureName = "deleteWorkspaceResourcetviaTableParameter";
+			metaData.BulkDeleteStoredProcedureName = "deleteWorkspaceResourceviaTableParameter";
 			metaData.BulkInsertStoredProcedureName = "insertWorkspaceResourceviaTableParameter";
 			metaData.BulkUpdateStoredProcedureName = "updateWorkspaceResourceviaTableParameter";
 
