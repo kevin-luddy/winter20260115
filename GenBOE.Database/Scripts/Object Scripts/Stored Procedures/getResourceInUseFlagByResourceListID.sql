@@ -1,6 +1,15 @@
-﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[getResourceInUseFlagByResourceListID]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[getResourceInUseFlagByResourceListID];
+﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter];
 
+GO
+
+IF  EXISTS (SELECT * FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'TT_ResourceListID' AND ss.name = N'dbo')
+    DROP TYPE [dbo].[TT_ResourceListID];
+GO
+
+CREATE TYPE [dbo].[TT_ResourceListID] AS TABLE(
+    [ResourceListID] [int] NULL
+);
 GO
 
 SET ANSI_NULLS ON
@@ -8,110 +17,71 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[getResourceInUseFlagByResourceListID]
+CREATE PROCEDURE [dbo].[getResourceInUseFlagByResourceListIDviaTableParameter]
 (
-@ResourceListID int
+@ResourceListIDParameter [dbo].[TT_ResourceListID] READONLY
 )
 AS
 /******************************************************************************
 **          
-**          Name: [getResourceInUseFlagByResourceListID]
+**          Name: [getResourceInUseFlagByResourceListIDviaTableParameter]
 **          Desc: Returns Resource In Use Flag
 **                
 **
-**          Auth: Don Canuso
-**          Date: 7/25/2012
+**          Auth: Tommy Lee
+**          Date: 4/29/2024
 *******************************************************************************
 **          Change History
 *******************************************************************************
 **          Date:       Author:                       Description:
 **          --------    --------                ---------------------------------------
-**          11/30/12    dcanuso                 WI 13466 to Fix Performance
-**          4/9/13      dcanuso                 BUG 17425  WRR DOES NOT MAKE IN USE
-**			11/9/16		tglick					Added rms non zone travel resources
-**			5/4/2017	brunworg				BOEJ-2125 Add T&M Resource Rates
-**			5/24/2017	brunworg				BOEJ-2125 Remove T&M Resource 
-**                                              Rates, they don't make in use.
-**			12/15/17	twilson3				BOEJ-2248 Remove Labor Rates
-**		    6/25/19		twilson3			    BOEJ-3964 - Remove in-use flag, MaterialXref
-**          4/3/24      e302876                 PROPH-1617 - update stored procs for BRC
+**          04/29/24    e374897                 Returns resource in use flag by resource list id
 *******************************************************************************/
 SET NOCOUNT ON 
-      
-IF @ResourceListID >1  /*Not the Default List Resource*/
-BEGIN
 
+-- temp table to hold all the workspace involved with the worklist id
 DECLARE @Workspace TABLE (WorkspaceID INT, ResourceListID int) 
 INSERT INTO @Workspace
-SELECT WorkspaceID, ResourceListID 
-FROM dbo.Workspace 
-WHERE ResourceListID = @ResourceListID
+SELECT w.WorkspaceID, w.ResourceListID 
+FROM dbo.Workspace w
+    INNER JOIN @ResourceListIDParameter r ON r.ResourceListID = w.ResourceListID
 
 
-
+-- temp BOE table to get all the BOE IDs associated with the workspace id from the @Workspace temp table
 DECLARE @BOE TABLE
 (
 BOEID int PRIMARY KEY,
 WorkspaceID int
 )
 INSERT INTO @BOE
-SELECT B.BOEID, B.WorkspaceID 
+SELECT DISTINCT B.BOEID, B.WorkspaceID 
 FROM dbo.BOE B
-      INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
+    INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
 
 
-/*
-DECLARE @WorkspaceResource TABLE 
-(SystemResourceID int,ResourceListID int, WorkspaceID int)
-INSERT INTO @WorkspaceResource
-SELECT WR.[SystemResourceID]
-      ,WR.[ResourceListID]
-      ,WR.[WorkspaceID]
-FROM [dbo].[WorkspaceResource] WR
-      INNER JOIN @Workspace W ON WR.WorkspaceID = W.WorkspaceID
-*/
-
+-- What will be returned at the end of this procedure
 DECLARE @ResultSet TABLE (SystemResourceID int)
 
 
 --UNION
 INSERT INTO @ResultSet (SystemResourceID)
-SELECT DISTINCT  T.ResourceID 
+SELECT DISTINCT T.ResourceID 
 FROM  [dbo].[ODCType] T
             INNER JOIN dbo.ODCTaskElement TE ON T.ODCTaskElementID = TE.ODCTaskElementID  
-            INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
-            INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
-            /*
-            INNER JOIN @WorkspaceResource WR 
-                  ON    W.WorkspaceID = WR.WorkspaceID AND
-                        T.ResourceID = WR.SystemResourceID
-WHERE 
-WR.ResourceListID = @ResourceListID 
-*/
---UNION
+            INNER JOIN @BOE B ON TE.BOEID = B.BOEID
 
 INSERT INTO @ResultSet (SystemResourceID)
 SELECT DISTINCT T.ResourceID 
 FROM  [dbo].[BOELaborType] T
             INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
             INNER JOIN @BOE B ON TE.BOEID = B.BOEID
-            INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE T.ResourceID IS NOT NULL
-            /*Regardless of whether it is in this table, the fact that is is
-            used in your BOE is what is relevant so removing this
-            INNER JOIN @WorkspaceResource WR 
-                  ON    W.WorkspaceID = WR.WorkspaceID AND
-                        T.ResourceID = WR.SystemResourceID
-WHERE 
-WR.ResourceListID = @ResourceListID 
-*/
 
 INSERT INTO @ResultSet (SystemResourceID)
 SELECT DISTINCT T.BRCResourceID 
 FROM  [dbo].[BOELaborType] T
             INNER JOIN dbo.BOETaskElement TE ON T.BOETaskElementID = TE.BOETaskElementID
             INNER JOIN @BOE B ON TE.BOEID = B.BOEID
-            INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE T.BRCResourceID IS NOT NULL
 
 
@@ -149,8 +119,13 @@ INSERT INTO @ResultSet (SystemResourceID)
       W.WorkspaceStateID NOT IN (4,5)/*Closed/Complete*/      AND                                 
       */
       R.SegmentID = TT.SegmentID AND
-      R.CostElementID = 6 /*Travel*/ AND
+      R.CostElementID = 6 /*Travel*/
+      /*
       WR.ResourceListID = @ResourceListID 
+      is removed because the INNER JOIN @Workspace will already have the correct ResourceListID
+      So no need for INNER JOIN @ResourceListIDParameter ON ResourceListID
+      */
+
 
 -- UNION for INL Forms IBOE
 INSERT INTO @ResultSet (SystemResourceID)
@@ -171,26 +146,24 @@ INSERT INTO @ResultSet (SystemResourceID)
 			INNER JOIN [dbo].[BOEFormPBOEResourcesXREF] X on X.[PBOEFormID] = P.[PBOEFormID]
 
 --for nonzone rms travel trips, add nonzoneresourceids  
-	INSERT INTO @ResultSet (SystemResourceID)
-            SELECT DISTINCT  R.ResourceID FROM [dbo].[Resource] R
-            INNER JOIN dbo.WorkspaceResource WR ON R.ResourceID = WR.SystemResourceID
-            INNER JOIN @Workspace W ON WR.resourcelistid = W.resourcelistid
-            INNER JOIN dbo.BOE B ON W.WorkspaceID = B.WorkspaceID
-            INNER JOIN dbo.TravelTripTaskElement TE ON B.BOEID = TE.BOEID
-            INNER JOIN dbo.MstTravelTrip TT ON TE.TravelTripTaskElementID = TT.TravelTripTaskElementID 
-      WHERE 
-      R.SegmentID = TT.SegmentID AND
-      R.CostElementID = 6 /*Travel*/ AND
-	  TT.NonZoneResourceID = R.ResourceID AND
-      WR.ResourceListID = @ResourceListID 
+INSERT INTO @ResultSet (SystemResourceID)
+    SELECT DISTINCT  R.ResourceID FROM [dbo].[Resource] R
+    INNER JOIN dbo.WorkspaceResource WR ON R.ResourceID = WR.SystemResourceID
+    INNER JOIN @Workspace W ON WR.resourcelistid = W.resourcelistid
+    INNER JOIN dbo.BOE B ON W.WorkspaceID = B.WorkspaceID
+    INNER JOIN dbo.TravelTripTaskElement TE ON B.BOEID = TE.BOEID
+    INNER JOIN dbo.MstTravelTrip TT ON TE.TravelTripTaskElementID = TT.TravelTripTaskElementID 
+WHERE 
+R.SegmentID = TT.SegmentID AND
+R.CostElementID = 6 /*Travel*/ AND
+TT.NonZoneResourceID = R.ResourceID
+/*
+    WR.ResourceListID = @ResourceListID 
+    is removed because the INNER JOIN @Workspace will already have the correct ResourceListID
+    So no need for INNER JOIN @ResourceListIDParameter ON ResourceListID
+*/
 -- end added for rms travel nonzoneresourceid's 
 
 
-      SELECT DISTINCT SystemResourceID FROM  @ResultSet 
-      WHERE SystemResourceID IS NOT NULL
-      
-END
-
-
-GO
-
+SELECT DISTINCT SystemResourceID FROM  @ResultSet 
+WHERE SystemResourceID IS NOT NULL

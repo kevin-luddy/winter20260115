@@ -103,7 +103,7 @@ FROM @InsertedResource r
 JOIN dbo.Workspace w on r.ResourceListID = w.ResourceListID
 
 IF @@ERROR = 0
-	SELECT ResourceID FROM @InsertedResource
+	SELECT ResourceID, @UpdateDT FROM @InsertedResource
 
 GO
 CREATE PROCEDURE [dbo].[deleteWorkspaceResourcetviaTableParameter]
@@ -218,6 +218,7 @@ BEGIN
 	WHERE 
 		-- equivalent to r.ResourceListID != 1
 		r.ResourceListID <> 1
+	AND i.InUse = 0
 END
 
 GO
@@ -339,10 +340,10 @@ ELSE -- All ResourceIDList > 1
 			SELECT *
 			FROM dbo.[Resource] r
 				JOIN @WorkspaceResourceTableParameter wr ON wr.ResourceID = r.ResourceID
-			WHERE r.UpdateDT <> @UpdateDT
+			WHERE wr.UpdateDT <> r.UpdateDT
 		)
 		BEGIN
-			DECLARE @ResourceListIDParam TABLE (ResourceListID int)
+			DECLARE @ResourceListIDParam TT_ResourceListID
 			INSERT INTO @ResourceListIDParam
 			SELECT ResourceListID
 			FROM @WorkspaceResourceTableParameter
@@ -414,5 +415,5 @@ ELSE -- All ResourceIDList > 1
 			END
 		END
 IF @@ERROR = 0
-	SELECT ResourceID FROM @WorkspaceResourceTableParameter
+	SELECT ResourceID, @UpdateDT FROM @WorkspaceResourceTableParameter
 GO

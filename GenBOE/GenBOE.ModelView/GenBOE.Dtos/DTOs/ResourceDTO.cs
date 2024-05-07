@@ -89,5 +89,14 @@ namespace GenBOE.Dtos
                 return resourceTypeCategory;
             }
         }
-    }
+
+		/// <summary>
+		/// Propagates the new 'parent' DTO Id to all 'child' DTOs in collections.
+		/// </summary>
+		/// <param name="newParentId">new id of the parent DTO</param>
+		protected override void PropagateNewParentIdToChildDTOs(int newParentId)
+		{
+			// do nothing
+		}
+	}
 }

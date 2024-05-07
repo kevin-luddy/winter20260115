@@ -546,7 +546,7 @@ namespace GenBOE.DataBridge.DTO
 
 			metaData.DBTableTypeName = "TT_WorkspaceResource";
 
-			metaData.StoredProcedureTableTypeParameterName = "@ResourceTableParameter";
+			metaData.StoredProcedureTableTypeParameterName = "@WorkspaceResourceTableParameter";
 
 			metaData.EntityPropertiesToMapToDataTable = new Collection<string>()
 			{
@@ -601,14 +601,13 @@ namespace GenBOE.DataBridge.DTO
 
 			IDictionary<int, int> toReturn = new Dictionary<int, int>();
 
-			inWorkspaceResources.Select(resource =>
+			inWorkspaceResources.ToList().ForEach(resource =>
 			{
 				resource.LaborType = resource.LaborType.Trim();
 				resource.ResourceDesc = resource.ResourceDesc.Trim();
 				resource.ResourceName = resource.ResourceName.Trim();
 				resource.SegRegion = resource.SegRegion.Trim();
 				resource.ResourceListId = inWorkspace.ResourceListID;
-				return resource;
 			});
 
 			// Upsert Workspace Resource
