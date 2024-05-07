@@ -435,7 +435,7 @@ namespace IES.Common
         /// <summary>
         /// Length for MOQ Type WBS Element field for SSC (matches db length)
         /// </summary>
-        public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 5000;
+        public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 8000;
 
         #endregion
 
