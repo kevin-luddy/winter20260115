@@ -23,7 +23,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.ControllerLogic;
-	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.Metrics;
@@ -325,6 +324,19 @@ namespace GenBOE.Web.Controllers
 			}
 
 			ViewData["Order_Of_TaskElements"] = orderOfTaskElements;
+
+			//if start date before and end date after, must have resource and brc, if both after, must have brc
+			//set view data for task grid to disable "add task element" and "duplicate task"
+			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			{
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspaceObject.ResourcesForWsResourceListId.ToList(), true);
+				//if no brcs in ws, display warning
+				if (resources.Count == 0)
+				{
+					ViewData["MissingBrcCodes"] = true;
+				}
+			}
+
 			sw.Stop();
 			_log.Performance("Finished BOEController.DisplayTaskElementGrid.", sw.ElapsedMilliseconds);
 
@@ -436,6 +448,18 @@ namespace GenBOE.Web.Controllers
 
 			SecurityAuthorization boeDateShiftAuthorization = CheckPermissions(SecurityPage.BoeTaskDates, ws, boeID);
 			ViewData["ALLOW_DATE_SHIFT"] = (boeDateShiftAuthorization == SecurityAuthorization.CreateReadUpdateDelete);
+
+			//if start date before and end date after, must have resource and brc, if both after, must have brc
+			//set view data for boe header to display read only warning
+			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			{
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				//if no brcs in ws, display warning
+				if (resources.Count == 0)
+				{
+					ViewData["MissingBrcCodes"] = true;
+				}
+			}
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_HEADER, _ControllerLogic.CreateBOEHeaderMV(boe, ws));
 

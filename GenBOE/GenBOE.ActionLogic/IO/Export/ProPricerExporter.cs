@@ -2245,37 +2245,37 @@ namespace GenBOE.ActionLogic.IO.Export
 			collectionsOfInputs.LaborElements = new Collection<BoeTaskElementDTO>(((from t in taskElements
 																					from t2 in t.taskElementLabors
 																					where t.taskElementLabors.Any() &&
-																					laborResourceIDs.Contains(t2.ResourceID.Value)
+																					laborResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																					select t)).Distinct().ToArray());
 
 			collectionsOfInputs.IWTAElements = new Collection<BoeTaskElementDTO>(((from t in taskElements
 																				   from t2 in t.taskElementLabors
 																				   where t.taskElementLabors.Any() &&
-																				   iwtaResourceIDs.Contains(t2.ResourceID.Value)
+																				   iwtaResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																				   select t)).Distinct().ToArray());
 
 			collectionsOfInputs.SubcontractorElements = new Collection<BoeTaskElementDTO>(((from t in taskElements
 																							from t2 in t.taskElementLabors
 																							where t.taskElementLabors.Any() &&
-																							subContractorResourceIDs.Contains(t2.ResourceID.Value)
+																							subContractorResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																							select t)).Distinct().ToArray());
 
 			collectionsOfInputs.MaterialLaborElements = new Collection<BoeTaskElementDTO>(((from t in taskElements
 																							from t2 in t.taskElementLabors
 																							where t.taskElementLabors.Any() &&
-																							materialResourceIDs.Contains(t2.ResourceID.Value)
+																							materialResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																							select t)).Distinct().ToArray());
 
 			collectionsOfInputs.TravelLaborElements = new Collection<BoeTaskElementDTO>((from t in taskElements
 																						 from t2 in t.taskElementLabors
 																						 where t.taskElementLabors.Any() &&
-																						 travelResourceIDs.Contains(t2.ResourceID.Value)
+																						 travelResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																						 select t).Distinct().ToArray());
 
 			collectionsOfInputs.ODCLaborElements = new Collection<BoeTaskElementDTO>((from t in taskElements
 																					  from t2 in t.taskElementLabors
 																					  where t.taskElementLabors.Any() &&
-																					  odcResourceIDs.Contains(t2.ResourceID.Value)
+																					  odcResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																					  select t).Distinct().ToArray());
 		}
 

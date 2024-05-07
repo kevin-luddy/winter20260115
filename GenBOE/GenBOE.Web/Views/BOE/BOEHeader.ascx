@@ -27,6 +27,8 @@
     bool showCustomQuestions = DataSourceAnswers.Any();
     int numberQuestions = showCustomQuestions ? DataSourceAnswers.Count : 1;
     bool readOnlyMode = Html.GetViewDataValue<bool>("IsReadOnlyMode", false);
+    bool missingBrcCodes = Html.GetViewDataValue<bool>("MissingBrcCodes", false);
+
 %>
 
 <script type="text/javascript">
@@ -121,6 +123,11 @@
            { %>
         <div class="form-row">
             <ul class="validation-box"></ul>
+             <%if (missingBrcCodes) { %>
+                <div class="validation-box" style="display:block;">
+                    Warning: The workspace period of performance crosses into the 1LMX common disclosure period and requires Business Resource Codes (BRCs) for estimating. BOE authoring will be restricted to textual updates until BRCs have been loaded. Please notify your Workspace Administrator.
+                </div>
+             <% } %>
         </div>
         <%: Html.HiddenFor(model => model.BOEID) %>
         <%: Html.HiddenFor(model => model.UpdateDateLong) %>
