@@ -531,35 +531,38 @@ namespace GenBOE.ActionLogic.DateShift
                         }
                     }
 
-					if (previousStartDate < oneLMXStartDate)
+					if (Utilities.IsBRCEnabledForSystem)
 					{
-						if (shiftedStartDate.HasValue && shiftedStartDate.Value >= oneLMXStartDate)
+						if (previousStartDate < oneLMXStartDate)
 						{
-							AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the right of");
+							if (shiftedStartDate.HasValue && shiftedStartDate.Value >= oneLMXStartDate)
+							{
+								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the right of");
+							}
 						}
-					}
 
-					if (previousEndDate < oneLMXStartDate)
-					{
-						if (shiftedEndDate.HasValue && shiftedEndDate.Value >= oneLMXStartDate)
+						if (previousEndDate < oneLMXStartDate)
 						{
-							AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource", "End Date", "shifted to the right of");
+							if (shiftedEndDate.HasValue && shiftedEndDate.Value >= oneLMXStartDate)
+							{
+								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource", "End Date", "shifted to the right of");
+							}
 						}
-					}
 
-					if (previousStartDate >= oneLMXStartDate)
-					{
-						if (shiftedStartDate.HasValue && shiftedStartDate.Value < oneLMXStartDate)
+						if (previousStartDate >= oneLMXStartDate)
 						{
-							AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the left of");
+							if (shiftedStartDate.HasValue && shiftedStartDate.Value < oneLMXStartDate)
+							{
+								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the left of");
+							}
 						}
-					}
 
-					if (previousEndDate >= oneLMXStartDate)
-					{
-						if (shiftedEndDate.HasValue && shiftedEndDate.Value < oneLMXStartDate)
+						if (previousEndDate >= oneLMXStartDate)
 						{
-							AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "End Date", "shifted to the left of");
+							if (shiftedEndDate.HasValue && shiftedEndDate.Value < oneLMXStartDate)
+							{
+								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "End Date", "shifted to the left of");
+							}
 						}
 					}
                 }
