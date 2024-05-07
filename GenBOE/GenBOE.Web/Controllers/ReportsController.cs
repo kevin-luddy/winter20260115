@@ -883,7 +883,7 @@ namespace GenBOE.Web.Controllers
 		public virtual ViewResult DisplayConfidenceReportResults(string workspace, int? boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			// TODO - security page on these 2 methods
+
 			// Initialize Action
 			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS, boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
