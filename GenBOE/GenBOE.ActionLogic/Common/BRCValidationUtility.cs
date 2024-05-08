@@ -179,6 +179,11 @@ namespace GenBOE.ActionLogic.Common
 		/// <returns>The labor types properly processed for resource vs BRC</returns>
 		public static ICollection<ResourceTypeDto> ProcessLaborTypesForBrc(ICollection<ResourceTypeDto> taskElementLabors)
 		{
+			if (!Utilities.IsBRCEnabledForSystem)
+			{
+				return taskElementLabors;
+			}
+
 			_ = taskElementLabors ?? throw new ArgumentNullException(nameof(taskElementLabors));
 
 			ICollection<ResourceTypeDto> laborTypes = new Collection<ResourceTypeDto>();
