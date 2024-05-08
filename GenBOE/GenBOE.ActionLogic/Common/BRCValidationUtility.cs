@@ -176,9 +176,15 @@ namespace GenBOE.ActionLogic.Common
 		/// Process the labor types for BRC in order to display the proper details in exports
 		/// </summary>
 		/// <param name="taskElementLabors">the task element labors</param>
+		/// <param name="startingNewId">Starting new psuedo ID for Sub Reource Type</param>
 		/// <returns>The labor types properly processed for resource vs BRC</returns>
-		public static ICollection<ResourceTypeDto> ProcessLaborTypesForBrc(ICollection<ResourceTypeDto> taskElementLabors)
+		public static ICollection<ResourceTypeDto> ProcessLaborTypesForBrc(ICollection<ResourceTypeDto> taskElementLabors, int startingNewId = -1)
 		{
+			if (!Utilities.IsBRCEnabledForSystem)
+			{
+				return taskElementLabors;
+			}
+
 			_ = taskElementLabors ?? throw new ArgumentNullException(nameof(taskElementLabors));
 
 			ICollection<ResourceTypeDto> laborTypes = new Collection<ResourceTypeDto>();
@@ -196,6 +202,8 @@ namespace GenBOE.ActionLogic.Common
 
 					ResourceTypeDto brcLaborType = laborType.DeepClone();
 					brcLaborType.ResourceID = brcLaborType.BusinessResourceCodeID;
+					// Assigns a fake subresource type ID for proper identification during parsing of the Existing Spread.
+					brcLaborType.Id = startingNewId--;
 					brcLaborType.LaborSpreads = brcLaborType.LaborSpreads.Where(x => x.LaborSpreadDate >= Utilities.OneLmxStartDate).ToCollection();
 					brcLaborType.ValueSpread = brcLaborType.LaborSpreads.Sum(x => x.LaborSpreadValue);
 					brcLaborType.StartDate = brcLaborType.LaborSpreads.First().LaborSpreadDate;
@@ -205,6 +213,8 @@ namespace GenBOE.ActionLogic.Common
 				{
 					// BRC Only - Change the resource ID to the BRC ID before adding
 					ResourceTypeDto brcLaborType = laborType.DeepClone();
+					// Assigns a fake subresource type ID for proper identification during parsing of the Existing Spread.
+					brcLaborType.Id = startingNewId--;
 					brcLaborType.ResourceID = brcLaborType.BusinessResourceCodeID;
 					laborTypes.Add(brcLaborType);
 				}

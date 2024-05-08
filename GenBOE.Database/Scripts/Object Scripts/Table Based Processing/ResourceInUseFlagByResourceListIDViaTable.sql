@@ -54,7 +54,7 @@ BOEID int PRIMARY KEY,
 WorkspaceID int
 )
 INSERT INTO @BOE
-SELECT DISTINCT B.BOEID, B.WorkspaceID 
+SELECT B.BOEID, B.WorkspaceID 
 FROM dbo.BOE B
     INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
 
@@ -65,7 +65,7 @@ DECLARE @ResultSet TABLE (SystemResourceID int)
 
 --UNION
 INSERT INTO @ResultSet (SystemResourceID)
-SELECT DISTINCT T.ResourceID 
+SELECT DISTINCT  T.ResourceID 
 FROM  [dbo].[ODCType] T
             INNER JOIN dbo.ODCTaskElement TE ON T.ODCTaskElementID = TE.ODCTaskElementID  
             INNER JOIN @BOE B ON TE.BOEID = B.BOEID

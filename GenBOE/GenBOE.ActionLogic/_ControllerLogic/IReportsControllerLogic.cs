@@ -66,15 +66,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>Metric name to task element mappings.</returns>
         MetricNameTaskElementMappingDTO GetMetricNameTaskElementMappingDTO(FullWorkspace workspace);
 
-        /// <summary>
-        /// Generates Data for the Boe Discrepancy Report. Used by both the page and also Excel export..
-        /// 
-        /// This is cached for 5 minutes in case the user wants to export the data, so that way we don't have to keep rerunning all the data..
-        /// </summary>
-        /// <param name="ws">workspace</param>
-        /// <param name="clearCache">Should be cleared when the web report is being displayed, to get a clean view; for the export we should be using cache</param>
-        /// <returns>Data for the Boe Discrepancy Report</returns>
-        ICollection<BoeDiscrepancyReportModelView> GenerateDataForBoeDiscrepancyReport(FullWorkspace ws, bool clearCache);
+		/// <summary>
+		/// Generates Data for the Boe Discrepancy Report. Used by both the page and also Excel export..
+		/// 
+		/// This is cached for 5 minutes in case the user wants to export the data, so that way we don't have to keep rerunning all the data..
+		/// </summary>
+		/// <param name="ws">workspace</param>
+		/// <param name="clearCache">Should be cleared when the web report is being displayed, to get a clean view; for the export we should be using cache</param>
+		/// <param name="processResources">Should Resources be processed for missing Resources/BRCs? 
+		///		This should typically only be true when running export to ProPricer or All BOEs Report as additional validation</param>
+		/// <returns>Data for the Boe Discrepancy Report</returns>
+		ICollection<BoeDiscrepancyReportModelView> GenerateDataForBoeDiscrepancyReport(FullWorkspace ws, bool clearCache, bool processResources = false);
         
         /// <summary>
         /// Performs Validation for DisplayInlFormExportGrid

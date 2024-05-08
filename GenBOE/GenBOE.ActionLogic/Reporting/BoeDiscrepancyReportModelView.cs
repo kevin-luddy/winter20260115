@@ -100,7 +100,7 @@ namespace GenBOE.ActionLogic.Reporting
                 }
 				else if (this.DiscrepancyEnum == BoeInconsistencyEnum.Resource)
 				{
-					result = "Resource and/or Business Resource Code";
+					result = "One or more Labor Type missing Resource and/or Business Resource Code";
 				}
 
                 return result;

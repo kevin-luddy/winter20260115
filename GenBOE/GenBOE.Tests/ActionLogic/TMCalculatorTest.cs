@@ -9,6 +9,7 @@ namespace GenBOE.Tests.ActionLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
@@ -161,7 +162,10 @@ namespace GenBOE.Tests.ActionLogic
             decimal cost = 0;
             foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {
-                foreach (ResourceTypeDto laborTask in taskElement.taskElementLabors)
+				//get brc labors based on 1lmx start date
+				ICollection<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors);
+
+                foreach (ResourceTypeDto laborTask in taskElementLabors)
                 {
                     cost = sut.TotalCostForTaskSpread(workspace, laborTask);
                 }

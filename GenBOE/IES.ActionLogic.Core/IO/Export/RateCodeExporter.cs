@@ -11,9 +11,11 @@ namespace IES.ActionLogic.Core.IO.Export
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Reflection;
 	using Common;
 	using DataBridge.ModelViews;
 	using DocumentFormat.OpenXml.Packaging;
+	using DocumentFormat.OpenXml.Spreadsheet;
 	using IES.Common.Core;
 	using IES.Common.Core.OfficeUtilities;
 
@@ -334,6 +336,30 @@ namespace IES.ActionLogic.Core.IO.Export
 			ExcelExporter.AddDataValidations(dataValidationReferences, worksheetPart);
 		}
 
+		/// <summary>
+		/// Get csv headers
+		/// </summary>
+		/// <param name="startYear">starting year</param>
+		/// <param name="endYear">ending year</param>
+		/// <returns>Headers</returns>
+		private static ICollection<string> GetCsvHeaders(int startYear, int endYear)
+		{
+			Collection<string> headers = new()
+			{
+				ImportExportConstants.RATE_CATEGORY_COLUMN_HEADER,
+				ImportExportConstants.RATE_DESCRIPTION_COLUMN_HEADER,
+				ImportExportConstants.RATE_CODE_COLUMN_HEADER,
+				
+			};
+
+			for (int i = startYear; i <= endYear; i++)
+			{
+				headers.Add(i.ToString());
+			}
+
+			return headers;
+		}
+
 		private static Collection<string> GetHeaders()
 		{
 			return new Collection<string>()
@@ -632,6 +658,209 @@ namespace IES.ActionLogic.Core.IO.Export
 				data.GovernmentBurdenPoolId.HasValue ? rates.GovernmentBurdenPools.Single(x => x.Id == data.GovernmentBurdenPoolId).Label : string.Empty,
 				data.CommercialBurdenPoolId.HasValue ? rates.CommercialBurdenPools.Single(x => x.Id == data.CommercialBurdenPoolId).Label : string.Empty
 			};
+		}
+
+		/// <summary>
+		/// Exports the rates to CSV file.  Expanded will expand the rates to their full size.
+		/// </summary>
+		/// <param name="rates">The rates to export</param>
+		/// <param name="expanded">The expanded rates</param>
+		/// <returns>Filename for csv generated.</returns>
+		public static string ExportToExcelFileWithYears(ICollection<RateDetailModelView> rates, bool expanded)
+		{
+			string toReturn = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/" + Path.GetRandomFileName() + ".xlsx");
+
+			// Create the document object in memory
+			using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Create(toReturn, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+			{
+				// Add a WorkbookPart to the document.
+				WorkbookPart workbookPart = spreadsheet.AddWorkbookPart();
+				workbookPart.Workbook = new Workbook();
+
+				// Add a WorksheetPart to the WorkbookPart.
+				WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+				worksheetPart.Worksheet = new Worksheet(new SheetData());
+
+				// Add Sheets to the Workbook.
+				Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
+
+				// Append a new worksheet and associate it with the workbook.
+				Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Rate Codes" };
+				sheets.Append(sheet);
+
+				PopulateRateCodesWithYears(rates, spreadsheet, expanded);
+			}
+
+			// Return the file path
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Populates the Rate Codes with years
+		/// </summary>
+		/// <param name="rates">The rates to populate</param>
+		/// <param name="spreadsheet">The spreadsheet to update</param>
+		/// <param name="expanded">Whether to expand the ratecodes</param>
+		/// <exception cref="NotImplementedException"></exception>
+		private static void PopulateRateCodesWithYears(ICollection<RateDetailModelView> rates, SpreadsheetDocument spreadsheet, bool expanded)
+		{
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet worksheet = new();
+			if (rates.Any())
+			{
+				int minYear = rates.Min(r => r.Values.First().Year);
+				int maxYear = rates.Max(r => r.Values.Last().Year);
+
+				ICollection<string> headers = GetCsvHeaders(minYear, maxYear);
+				worksheet.Add(headers);
+
+				foreach (RateDetailModelView data in rates)
+				{
+					AddRowAsStringCollection(worksheet, data, minYear, maxYear, expanded);
+				}
+			}
+
+			// Export the data to the worksheet
+			WorksheetPart worksheetPart = ExcelUtilities.GetSpecifiedWorksheetPart(spreadsheet, string.Empty);
+			ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, worksheet, 1);
+
+			// save the worksheet
+			worksheetPart.Worksheet.Save();
+		}
+
+		/// <summary>
+		/// Adds the row as a string collection.  Expands as necessary
+		/// </summary>
+		/// <param name="worksheet">Excel worksheet</param>
+		/// <param name="data">The data to add.</param>
+		/// <param name="minYear">The min Year for values</param>
+		/// <param name="maxYear">The max year for values</param>
+		/// <param name="expanded">whether to expand the rate</param>
+		private static void AddRowAsStringCollection(ExcelExportWorksheet worksheet, RateDetailModelView data, int minYear, int maxYear, bool expanded)
+		{
+			if (expanded && data.GenerateAdditionalDirectLaborRates)
+			{
+				if (data.DisclosureType == IES.Common.Core.Enums.DisclosureType.OneLMX)
+				{
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription11, data.RateCode + "11", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription12, data.RateCode + "12", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription13, data.RateCode + "13", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription14, data.RateCode + "14", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription15, data.RateCode + "15", minYear, maxYear));
+
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription21, data.RateCode + "21", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription22, data.RateCode + "22", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription23, data.RateCode + "23", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription24, data.RateCode + "24", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription25, data.RateCode + "25", minYear, maxYear));
+
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription31, data.RateCode + "31", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription32, data.RateCode + "32", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription33, data.RateCode + "33", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription34, data.RateCode + "34", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription35, data.RateCode + "35", minYear, maxYear));
+
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription41, data.RateCode + "41", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription42, data.RateCode + "42", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription43, data.RateCode + "43", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription44, data.RateCode + "44", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription45, data.RateCode + "45", minYear, maxYear));
+					
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription51, data.RateCode + "51", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription52, data.RateCode + "52", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription53, data.RateCode + "53", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription54, data.RateCode + "54", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription55, data.RateCode + "55", minYear, maxYear));
+					
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription61, data.RateCode + "61", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription62, data.RateCode + "62", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription63, data.RateCode + "63", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription64, data.RateCode + "64", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription65, data.RateCode + "65", minYear, maxYear));
+					
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription71, data.RateCode + "71", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription72, data.RateCode + "72", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription73, data.RateCode + "73", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription74, data.RateCode + "74", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription75, data.RateCode + "75", minYear, maxYear));
+					
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription81, data.RateCode + "81", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription82, data.RateCode + "82", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription83, data.RateCode + "83", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription84, data.RateCode + "84", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription85, data.RateCode + "85", minYear, maxYear));
+					
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription91, data.RateCode + "91", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription92, data.RateCode + "92", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription93, data.RateCode + "93", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription94, data.RateCode + "94", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription95, data.RateCode + "95", minYear, maxYear));
+				}
+				else
+				{
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription1, data.RateCode + "1", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription2, data.RateCode + "2", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription3, data.RateCode + "3", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription4, data.RateCode + "4", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription5, data.RateCode + "5", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription6, data.RateCode + "6", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription7, data.RateCode + "7", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription8, data.RateCode + "8", minYear, maxYear));
+					AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.RateDescription9, data.RateCode + "9", minYear, maxYear));
+
+
+				}
+			}
+			else
+			{
+				AddRowIfNotEmpty(worksheet, GetRowAsStringCollection(data.Values, data.RateCategoryDescription, data.Description, data.RateCode, minYear, maxYear));
+			}
+		}
+
+		/// <summary>
+		/// Null check for empty row
+		/// </summary>
+		/// <param name="worksheet">Worksheet</param>
+		/// <param name="collection">row to add to worksheet</param>
+		private static void AddRowIfNotEmpty(ExcelExportWorksheet worksheet, Collection<string> collection)
+		{
+			if (collection != null)
+			{
+				worksheet.Add(collection);
+			}
+		}
+
+		/// <summary>
+		/// Gets the row as a string collection
+		/// </summary>
+		/// <param name="values">Year values</param>
+		/// <param name="category">rate category</param>
+		/// <param name="description">rate description</param>
+		/// <param name="rateCode">rate code</param>
+		/// <param name="minYear">min year</param>
+		/// <param name="maxYear">max year</param>
+		/// <returns></returns>
+		private static Collection<string> GetRowAsStringCollection(ICollection<RateYearModelView> values, string category, string description, string rateCode,  int minYear, int maxYear)
+		{
+			if (string.IsNullOrWhiteSpace(description))
+			{
+				return null;
+			}
+
+			Collection<string> row = new Collection<string>()
+			{
+				category,
+				description,
+				rateCode
+			};
+
+			for (int i = minYear; i <= maxYear; i++)
+			{
+				decimal? value = values.FirstOrDefault(v => v.Year == i)?.Value;
+				row.Add(value?.ToString() ?? string.Empty);
+			}
+
+			return row;
 		}
 #pragma warning restore CA1505
 	}

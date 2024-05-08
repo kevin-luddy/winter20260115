@@ -230,8 +230,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			List<ResourceTypeDto> taskElementResourceTypes = workspace.TaskElements.SelectMany(x => x.taskElementLabors).ToList();
 			List<int> perfOrgIdsFromDb = workspace.PerformingOrgsUsedInBoes.Select(x => x.Id).ToList();
 
-			if (taskElementResourceTypes.Any(r => !r.ResourceID.HasValue))
-			{ throw new GenValidationException("Not all Task Element Labor Types have a Resource. Please make sure that your data is correct. Task Element data export failed."); }
+			if (taskElementResourceTypes.Any(r => !r.ResourceID.HasValue && !r.BusinessResourceCodeID.HasValue))
+			{ throw new GenValidationException("Not all Task Element Labor Types have a Resource and/or a Business Resource. Please make sure that your data is correct. Task Element data export failed."); }
 
 			if (taskElementResourceTypes.Any(r => !r.PerformingOrgID.HasValue) || taskElementResourceTypes.Any(r => !perfOrgIdsFromDb.Contains(r.PerformingOrgID.Value)))
 			{ throw new GenValidationException("Not all Task Element Labor Types have a Performing Org. Please make sure that your data is correct. Task Element data export failed."); }
@@ -242,6 +242,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			Collection<FullBoe> boes = workspace.Boes.ToCollection();
 
 			// Resources
+			// lists for labor, sub, material, iwta should be populated with both resources and BRCs
 			Collection<int> laborResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.LMLabor).Select(r => r.Id).ToCollection();
 			Collection<int> iwtaResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.IWTA).Select(r => r.Id).ToCollection();
 			Collection<int> subContractorResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.Sub).Select(r => r.Id).ToCollection();
@@ -284,14 +285,22 @@ namespace GenBOE.ActionLogic.IO.Export
 				// need to update the resources since the new offloaded labor resources might use subcontractor resources not added
 				ICollection<int> resourceIds = wsDataForExport.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
 						.Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
+						.Union(wsDataForExport.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
 				wsDataForExport.Resources = this.retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
+			}else if (Utilities.IsBRCEnabledForSystem)
+			{
+				ICollection<int> resourceIds = wsDataForExport.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
+						.Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
+						.Union(wsDataForExport.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
+						.Distinct().ToList();
+				wsDataForExport.Resources = this.retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
 			}
-
+			//to remove
 			bool has1LMXResources = oneLMXResourceIDs.Any();
 
-			if (has1LMXResources)
+			if (!Utilities.IsBRCEnabledForSystem && has1LMXResources)
 			{
 				ICollection<ResourceDTO> resourceDTOs = this.retriever.GetResourcesByIds(oneLMXResourceIDs);
 				wsDataForExport.Resources = resourceDTOs.Union(wsDataForExport.Resources).ToList().AsReadOnly();
@@ -316,7 +325,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		{
 			Collection<int> oneLmxResourceIds = new Collection<int>();
 
-			if (oneLmxCF != null)
+			if (!Utilities.IsBRCEnabledForSystem && oneLmxCF != null)
 			{
 				// need to get IDs from this custom field into the list of Ids used
 				List<string> resourceNames = workspace.CustomFieldValues.Where(c => c.CustomFieldID == oneLmxCF.Id).Select(f => f.CustomFieldValueName).ToList();
@@ -420,8 +429,12 @@ namespace GenBOE.ActionLogic.IO.Export
 					if (boeTask.TotalHours != 0 || boeTask.TotalCost != 0 || offloading || boeTask.taskElementLabors.Any(l => l.ValueSpread != 0))
 					{
 						List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value)).ToList();
-
-						if (has1LMXResources)
+						if (Utilities.IsBRCEnabledForSystem)
+						{
+							//clone resources with brc
+							taskResourcesEntriesForElementOfCost = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost).ToList();
+						}
+						if (!Utilities.IsBRCEnabledForSystem && has1LMXResources)
 						{
 							taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
 						}
@@ -443,9 +456,13 @@ namespace GenBOE.ActionLogic.IO.Export
 				foreach (BoeTaskElementDTO boeTask in taskElements)
 				{
 					List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value)).ToList();
-					if (has1LMXResources)
+					if (!Utilities.IsBRCEnabledForSystem && has1LMXResources)
 					{
 						taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
+					} 
+					else if(Utilities.IsBRCEnabledForSystem)
+					{
+						taskResourcesEntriesForElementOfCost = BRCValidationUtility.ProcessLaborTypesForBrc(boeTask.taskElementLabors).ToList();
 					}
 
 					foreach (ResourceTypeDto labor in taskResourcesEntriesForElementOfCost)
@@ -984,6 +1001,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				bool generateNewTask = firstResourceTypeEntry || !wsLevelData.IsProjectMapWorkspace;
 
 				// Not generating new Task if this is a split resource for 1LMX
+				//keep this for brc in general
 				if (generateNewTask && previousResourceTypeId == resourceTypeEntry.Id)
 				{
 					generateNewTask = false;
@@ -1139,6 +1157,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							case ProPricerField_Task.ProjMapOldResource:
 								newTaskRow.Append(DOUBLE_QUOTE).Append(this.commonDataMapper.GetSikorskyLegacyResourceID(resourceTypeEntry.LegacyID, this.allLegacyResources)).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								break;
+							case ProPricerField_Task.ProjMapResourceSegmentRegion:
 							case ProPricerField_Task.ResourceSegmentRegion:
 								string resourceSegRegion = wsLevelData.Resources.First(i => i.Id == resourceTypeEntry.ResourceID.Value).SegRegion;
 								newTaskRow.Append(DOUBLE_QUOTE).Append(resourceSegRegion.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
@@ -1368,6 +1387,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						case ProPricerField_Resources.ProjMapOldResource:
 							newResourceRow.Append(DOUBLE_QUOTE).Append(this.commonDataMapper.GetSikorskyLegacyResourceID(labor.LegacyID, this.allLegacyResources)).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
+						case ProPricerField_Resources.ProjMapResourceSegmentRegion:
 						case ProPricerField_Resources.ResourceSegmentRegion:
 							string resourceSegRegion = wsLevelData.Resources.First(z => z.Id == labor.ResourceID.Value).SegRegion;
 							newResourceRow.Append(DOUBLE_QUOTE).Append(resourceSegRegion.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
@@ -2225,37 +2245,37 @@ namespace GenBOE.ActionLogic.IO.Export
 			collectionsOfInputs.LaborElements = new Collection<BoeTaskElementDTO>(((from t in taskElements
 																					from t2 in t.taskElementLabors
 																					where t.taskElementLabors.Any() &&
-																					laborResourceIDs.Contains(t2.ResourceID.Value)
+																					laborResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																					select t)).Distinct().ToArray());
 
 			collectionsOfInputs.IWTAElements = new Collection<BoeTaskElementDTO>(((from t in taskElements
 																				   from t2 in t.taskElementLabors
 																				   where t.taskElementLabors.Any() &&
-																				   iwtaResourceIDs.Contains(t2.ResourceID.Value)
+																				   iwtaResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																				   select t)).Distinct().ToArray());
 
 			collectionsOfInputs.SubcontractorElements = new Collection<BoeTaskElementDTO>(((from t in taskElements
 																							from t2 in t.taskElementLabors
 																							where t.taskElementLabors.Any() &&
-																							subContractorResourceIDs.Contains(t2.ResourceID.Value)
+																							subContractorResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																							select t)).Distinct().ToArray());
 
 			collectionsOfInputs.MaterialLaborElements = new Collection<BoeTaskElementDTO>(((from t in taskElements
 																							from t2 in t.taskElementLabors
 																							where t.taskElementLabors.Any() &&
-																							materialResourceIDs.Contains(t2.ResourceID.Value)
+																							materialResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																							select t)).Distinct().ToArray());
 
 			collectionsOfInputs.TravelLaborElements = new Collection<BoeTaskElementDTO>((from t in taskElements
 																						 from t2 in t.taskElementLabors
 																						 where t.taskElementLabors.Any() &&
-																						 travelResourceIDs.Contains(t2.ResourceID.Value)
+																						 travelResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																						 select t).Distinct().ToArray());
 
 			collectionsOfInputs.ODCLaborElements = new Collection<BoeTaskElementDTO>((from t in taskElements
 																					  from t2 in t.taskElementLabors
 																					  where t.taskElementLabors.Any() &&
-																					  odcResourceIDs.Contains(t2.ResourceID.Value)
+																					  odcResourceIDs.Contains(t2.ResourceID.HasValue ? t2.ResourceID.Value : t2.BusinessResourceCodeID.Value)
 																					  select t).Distinct().ToArray());
 		}
 

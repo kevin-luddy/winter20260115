@@ -111,7 +111,7 @@ namespace GenBOE.Web.Controllers
 		/// Workspace Exporter
 		/// </summary>
 		private WorkspaceExporter workspaceExporter;
-		
+
 		/// <summary>
 		/// Reports Controller Logic
 		/// </summary>
@@ -135,7 +135,7 @@ namespace GenBOE.Web.Controllers
 		private const int SYSTEM_PERF_ORG_LIST_ID = 1;
 
 		private const string WORKSPACE_COPY_ERROR = "The workspace has been successfully copied, but may contain errors due to missing data in the original workspace.  Please run the \"Validate All BOEs\" report to find any errors.";
-		
+
 		private const int WORKSPACE_NAME_TRUNCATE_INDEX = 87;
 		private const int WORKSPACE_SHORT_NAME_TRUNCATE_INDEX = 14;
 
@@ -396,7 +396,7 @@ namespace GenBOE.Web.Controllers
 
 			// Action Initialize
 			Stopwatch sw = InitializeAction(_log, "ExportProjectMapData", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
-						
+
 			ActionResult result = new EmptyResult();
 			try
 			{
@@ -417,7 +417,7 @@ namespace GenBOE.Web.Controllers
 				{
 					modelViews = ProjectMapOffloadConverter.ConvertToProjectMap(ws, false, false);
 				}
-				
+
 				string templateName = Server.MapPath(PROJECT_MAP_EXPORT_TEMPLATE);
 				// Call the export function in the business layer and get back the file name of the populated template.
 				string exportedFileName = ProjectMapExporter.ExportToExcelFile(templateName, modelViews, ws, offload);
@@ -442,7 +442,7 @@ namespace GenBOE.Web.Controllers
 
 				result = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", supportLink));
 			}
-			
+
 			// Finalize Action
 			FinalizeAction(_log, "ExportProjectMapData", sw);
 			return result;
@@ -556,7 +556,7 @@ namespace GenBOE.Web.Controllers
 				{
 					string errorString = ex6.Message;
 					string warningString = string.Empty;
-					
+
 					if (ex6.ValidationList.Any())
 					{
 						warningString = ConvertValidationsToString(ex6.ValidationList.Where(v => v.TreatAsWarning).ToList(), ProjectMapValidationOffset.ExcelImport);
@@ -682,7 +682,7 @@ namespace GenBOE.Web.Controllers
 					message = ConvertValidationsToString(ex.ValidationList, ProjectMapValidationOffset.GridSave);
 				}
 			}
-			return Json(new {status = status, message = message});
+			return Json(new { status = status, message = message });
 		}
 
 		/// <summary>
@@ -898,28 +898,28 @@ namespace GenBOE.Web.Controllers
 								foreach (BoeImportResult resultType in boe.ImportTypes)
 								{
 									boemv = new ImportWorkofflineBOEResultsModelView()
-										{
-											Title = boe.Title,
-											Description = boe.Description,
-											SourcesOfData = boe.DataSource,
-											WBSNumber = WBSDTONumber,
-											WBSTitle = WBSDTOTitle,
-											CLINNumber = CLINDTONumber,
-											CLINTitle = CLINDTOTitle,
-											ImportType = (int)resultType
-										};
+									{
+										Title = boe.Title,
+										Description = boe.Description,
+										SourcesOfData = boe.DataSource,
+										WBSNumber = WBSDTONumber,
+										WBSTitle = WBSDTOTitle,
+										CLINNumber = CLINDTONumber,
+										CLINTitle = CLINDTOTitle,
+										ImportType = (int)resultType
+									};
 
 									// Get the custom fields
 									foreach (WorkofflineImportedCustomField customfield in boe.ImportedCustomFields)
 									{
 										ImportWorkofflineCustomFieldModelView cfmv = new ImportWorkofflineCustomFieldModelView()
-											{
-												CustomFieldID = customfield.ImportedCustomFieldID,
-												CustomFieldValueID = customfield.ImportedCustomFieldValueID,
-												CustomFieldIDDecription = customfield.ImportedCustomFieldIDDecription,
-												CustomFieldName = customfield.ImportedCustomFieldName,
-												IsOpenEnded = customfield.IsOpenEnded
-											};
+										{
+											CustomFieldID = customfield.ImportedCustomFieldID,
+											CustomFieldValueID = customfield.ImportedCustomFieldValueID,
+											CustomFieldIDDecription = customfield.ImportedCustomFieldIDDecription,
+											CustomFieldName = customfield.ImportedCustomFieldName,
+											IsOpenEnded = customfield.IsOpenEnded
+										};
 										boemv.CustomFields.Add(cfmv);
 									}
 
@@ -937,7 +937,7 @@ namespace GenBOE.Web.Controllers
 								}
 
 								foreach (WorkofflineImportedTaskElement taskElement in boe.ImportedTaskElements)
-								{                                    
+								{
 									ImportWorkofflineTaskElementResultsModelView temv = null;
 									foreach (TaskElementImportResult resultType in taskElement.ImportTypes)
 									{
@@ -1013,7 +1013,7 @@ namespace GenBOE.Web.Controllers
 												TaskID = taskElement.BOETaskID,
 												TaskTitle = taskElement.TaskTitle,
 												BOETitle = boe.Title,
-												WbsID =  resourceType.WBSID < 0 ? null: resourceType.WBSID,
+												WbsID = resourceType.WBSID < 0 ? null : resourceType.WBSID,
 												ClinID = resourceType.CLINID < 0 ? null : resourceType.CLINID,
 												BOEWBSNumber = WBSDTONumber,
 												BOEWBSTitle = WBSDTOTitle,
@@ -1113,7 +1113,7 @@ namespace GenBOE.Web.Controllers
 							theModelView.ResourceSpreadNotUpdate = (resourceSpreadsNotUpdate.Distinct()).Count();
 						}
 					}
-					
+
 					if (theModelView.ImportTypes.Contains((int)WorkofflineImportResult.FileError) ||
 						theModelView.ImportTypes.Contains((int)WorkofflineImportResult.WorkspaceIDMissingOrInvalid))
 					{
@@ -1225,9 +1225,9 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_EXPORT_BOE_MODEL, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
-			
+
 			ICollection<ExportBOEModelView> theModelViews = _ControllerLogic.GetExportBOEModelData(ws);
-			
+
 			// sort the items by WBS
 			ICollection<ExportBOEModelView> sortedModelViews = new Collection<ExportBOEModelView>((from x in theModelViews
 																								   orderby x.PaddedWbsName, x.PaddedClinName
@@ -1249,11 +1249,11 @@ namespace GenBOE.Web.Controllers
 			int currentUserID = ws.CurrentActiveUser.UserID;
 
 			Collection<PermissionsDTO> userPermissions = (from p in this.PermissionsLoader.GetWorkspacePermissions(ws.Id)
-														 where p.Role == Role.WorkspaceAdmin && p.ETIUserId == currentUserID
-														 select p).ToCollection();
+														  where p.Role == Role.WorkspaceAdmin && p.ETIUserId == currentUserID
+														  select p).ToCollection();
 			UpdateWorkspaceResourceRateModelView theModelView = new UpdateWorkspaceResourceRateModelView();
 			theModelView.ShowZoneTravelRatesDialog = false;
-			
+
 			#region Decide if Zone Travel Rates Dialog should be displayed
 			{
 				if (!ws.IsProjectMapWorkspace)
@@ -1393,7 +1393,7 @@ namespace GenBOE.Web.Controllers
 
 			// Perform Action
 			IWorkspaceIdentificationModelView workspaceModelView = this._ControllerLogic.GetWorkspaceIdentificationModelView(ws);
-			
+
 			// We load the server url here so that we have access to the Request object
 			workspaceModelView.ApplicationURL = new System.Uri(ConfigurationUtilities.GetAppSetting("ServerURL", Request.Url.Host) + "/" + workspaceModelView.ShortName);
 
@@ -1425,7 +1425,7 @@ namespace GenBOE.Web.Controllers
 			this.GetTrackingNumberOptionList(workspaceModelView);
 
 			// gather up contract types
-			ViewData["SelectedContractTypes"] = string.Join(",", ws.SelectedContractTypes.Select(i => i)); 
+			ViewData["SelectedContractTypes"] = string.Join(",", ws.SelectedContractTypes.Select(i => i));
 
 			ViewResult toReturn = this.View(_ControllerLogic.WorkspaceIdentificationViewName, workspaceModelView);
 
@@ -1491,7 +1491,7 @@ namespace GenBOE.Web.Controllers
 		{
 			ICollection<PickListDto> dtos = this.boePickListMapper.GetPickListValues(PickListEnum.ContractType).PickLists;
 			int[] result = dtos.Where(d => ws.SelectedContractTypes.Contains(d.Id)).Select(s => s.Id).ToArray();
-			
+
 			return result;
 		}
 
@@ -1624,15 +1624,15 @@ namespace GenBOE.Web.Controllers
 			foreach (WorkspaceExportFormatDTO exportFormat in exportFormats.OrderBy(x => x.ExportFormat.TemplateId))
 			{
 				if (exportFormat.IsActive || ws.TemplateID == exportFormat.ExportFormat.TemplateId)
-			{
-				outputFormatTypes.Add(new SelectListItemWithTitle
 				{
-					Title = exportFormat.ExportFormatDescription,
-					Text = exportFormat.ExportFormatName,
+					outputFormatTypes.Add(new SelectListItemWithTitle
+					{
+						Title = exportFormat.ExportFormatDescription,
+						Text = exportFormat.ExportFormatName,
 						Value = exportFormat.ExportFormat.TemplateId.ToString(),
-					Selected = (ws.TemplateID == exportFormat.ExportFormat.TemplateId) ? true : false
-				});
-			}
+						Selected = (ws.TemplateID == exportFormat.ExportFormat.TemplateId) ? true : false
+					});
+				}
 			}
 
 			ViewData["ExportFormatTypes"] = outputFormatTypes.OrderBy(x => x.Text).ToList();
@@ -1801,7 +1801,7 @@ namespace GenBOE.Web.Controllers
 
 			return toReturn;
 		}
-		
+
 		/// <summary>
 		/// Display the BOE Custom Field page
 		/// </summary>
@@ -1829,8 +1829,8 @@ namespace GenBOE.Web.Controllers
 				metaData.inUse = customFieldValues.Any(x => x.CustomFieldValueInUseFlag);
 
 				options = new Collection<BOECustomFieldOptionModelView>((from v in customFieldValues
-					select new BOECustomFieldOptionModelView(v)).ToArray());
-				
+																		 select new BOECustomFieldOptionModelView(v)).ToArray());
+
 				if (ws.CustomFieldSorting == CustomFieldSorting.ID)
 				{
 					options = options.OrderBy(x => x.ID).ToCollection();
@@ -1871,6 +1871,7 @@ namespace GenBOE.Web.Controllers
 			ResourceListDTO systemList = _ResourceListLoader.GetResourceList(_ResourceLoader.GlobalListID);
 			ViewData["SYSTEM_LIST_NAME"] = systemList.ResourceListName;
 			ViewData["SYSTEM_LIST_ID"] = ws.ResourceListID;
+			ViewData["RESOURCES_CHANGED"] = _RestoreDefaultOptions.ResourcesHaveChanged(ws);
 
 			// gather up element of cost types
 			ICollection<SelectListItem> elementOfCostTypes = _CommonDataMapper.GetElementOfCostTypes().Select(x => new SelectListItem
@@ -1888,7 +1889,7 @@ namespace GenBOE.Web.Controllers
 				Text = x.RateTypeName,
 				Value = x.RateTypeID.ToString()
 			}).ToList();
-		   ViewData["RateTypes"] = new Collection<SelectListItem>() { new SelectListItem { Text = "Select Rate Type", Value = "0" } }.Union(rateTypes);
+			ViewData["RateTypes"] = new Collection<SelectListItem>() { new SelectListItem { Text = "Select Rate Type", Value = "0" } }.Union(rateTypes);
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_RESOURCE);
 
@@ -1930,12 +1931,12 @@ namespace GenBOE.Web.Controllers
 			Collection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
 			ICollection<ResourceDTO> resources = _ResourceLoader.GetGlobalResources();
-			
+
 			foreach (ResourceDTO resource in resources)
 			{
 				string ElementOfCostDisplay = allElementOfCostTypes[(int)resource.ElementOfCost].ElementOfCostName;
 				string rateTypeDisplay = resource.RateType.GetDescription();
-				
+
 				//note: in use is not shown on this popup so no extra calls are needed to get it
 				theModelViews.Add(new BOECustomFieldResourceModelView(resource, rateTypeDisplay, ElementOfCostDisplay));
 			}
@@ -1986,7 +1987,7 @@ namespace GenBOE.Web.Controllers
 				backupBoes.Add(bk.Id, boes);
 				model.Add(new WorkspaceVersionModelView(bk, (UserDTODataLoader)this.UserLoader, boes));
 			}
-			
+
 			ViewBag.IsSystemAdmin = CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.None;
 
 			// Finalize Action
@@ -2149,8 +2150,8 @@ namespace GenBOE.Web.Controllers
 			// Check to see if WS admin
 			UserDTO user = ws.CurrentActiveUser;
 			Collection<PermissionsDTO> wsAdminPermissions = (from p in this.PermissionsLoader.GetWorkspacePermissions(ws.Id)
-													  where (p.Role == Role.WorkspaceAdmin) && p.ETIUserId == user.UserID
-													  select p).ToCollection();
+															 where (p.Role == Role.WorkspaceAdmin) && p.ETIUserId == user.UserID
+															 select p).ToCollection();
 
 			// Check to see if System Admin
 			bool isSystemAdmin = CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.None;
@@ -2201,9 +2202,9 @@ namespace GenBOE.Web.Controllers
 
 			// Perform Action
 			UserDTO user = ws.CurrentActiveUser;
-			Collection<PermissionsDTO> permissions = (from p in this.PermissionsLoader.GetWorkspacePermissions(ws.Id) 
+			Collection<PermissionsDTO> permissions = (from p in this.PermissionsLoader.GetWorkspacePermissions(ws.Id)
 													  where p.Role == Role.WorkspaceAdmin && p.ETIUserId == user.UserID
-													 select p).ToCollection();
+													  select p).ToCollection();
 
 			// convert to ModelView
 			GettingStartedHelpModelView theModelView = new GettingStartedHelpModelView();
@@ -2294,11 +2295,11 @@ namespace GenBOE.Web.Controllers
 					// delete any existing (unallocated) DB entries that are not included in the import file
 					List<TMResourceRateDTO> toBeDeleted =
 					(from X in this.tmResourceRateLoader.GetByWorkspaceId(ws.Id)  // existing DB entries
-						join I in imported on X.ResourceRateID equals I.ResourceRateID into G
-						from D in G.DefaultIfEmpty()
-						where D == null &&  // not in the import file
-							  !_InUseDataLoader.GetInUse(InUseDataType.WorkspaceResources, X.ResourceID, ws.ResourceListID)  // unallocated
-						select X).Select(c => { c.Updateable = UpdateType.Deleted; c.WorkspaceID = ws.Id; return c; }).ToList();
+					 join I in imported on X.ResourceRateID equals I.ResourceRateID into G
+					 from D in G.DefaultIfEmpty()
+					 where D == null &&  // not in the import file
+						   !_InUseDataLoader.GetInUse(InUseDataType.WorkspaceResources, X.ResourceID, ws.ResourceListID)  // unallocated
+					 select X).Select(c => { c.Updateable = UpdateType.Deleted; c.WorkspaceID = ws.Id; return c; }).ToList();
 
 					toSave.AddRange(toBeDeleted);
 				}
@@ -2454,13 +2455,13 @@ namespace GenBOE.Web.Controllers
 
 			// create the model view
 			List<ChooseWorkspaceModelView> wsModelViews = (from w in workspaceDtos
-															orderby w.WorkspaceName
-															select new ChooseWorkspaceModelView
-															{
-																WorkspaceShortname = w.Shortname,
-																WorkspaceName = w.WorkspaceName,
-																WorkspaceId = w.Id
-															}).ToList();
+														   orderby w.WorkspaceName
+														   select new ChooseWorkspaceModelView
+														   {
+															   WorkspaceShortname = w.Shortname,
+															   WorkspaceName = w.WorkspaceName,
+															   WorkspaceId = w.Id
+														   }).ToList();
 
 
 			// Render the workspace dropdown menu with the filtered workspace list
@@ -2493,7 +2494,7 @@ namespace GenBOE.Web.Controllers
 		public ViewResult DisplayWorkspaceSearch()
 		{
 			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceSearch", SecurityPage.Home, SecurityAuthorization.Read, null, null);
-			
+
 			Collection<SelectListItem> projectMapTypes = new Collection<SelectListItem>();
 
 			projectMapTypes.Add(new SelectListItem
@@ -2584,7 +2585,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			ViewResult toReturn = View(WebConstants.VIEW_ADD_WORKSPACE_RESOURCE_RATE_TM, modelView);
- 
+
 			// Finalize Action
 			FinalizeAction(_log, "DisplayAddWorkspaceResourceRateTM", sw);
 			return toReturn;
@@ -2712,7 +2713,7 @@ namespace GenBOE.Web.Controllers
 
 			theModelView.isReadOnly = SiteMasterUtilities.IsReadOnly();
 
-			if (CheckPermissions(SecurityPage.SystemAdmin, null, null) == SecurityAuthorization.CreateReadUpdateDelete) 
+			if (CheckPermissions(SecurityPage.SystemAdmin, null, null) == SecurityAuthorization.CreateReadUpdateDelete)
 			{
 				theModelView.isReadOnly = false;
 			};
@@ -2806,7 +2807,7 @@ namespace GenBOE.Web.Controllers
 				}
 
 				bool optionsEdited = false;
-				
+
 				if (customFieldsMV.CustomFieldMetaData.isOpenEnded)
 				{
 					// clear out any values if the field used to not be open ended
@@ -2979,7 +2980,7 @@ namespace GenBOE.Web.Controllers
 				 *    5. Changing the Type of a custom field.
 				 * 
 				 */
-				if ( customFieldTypeChanged || (isRequired && (isNewCustomField || requiredChanged || openEndedChanged || customFieldNameChanged || optionsEdited)))
+				if (customFieldTypeChanged || (isRequired && (isNewCustomField || requiredChanged || openEndedChanged || customFieldNameChanged || optionsEdited)))
 				{
 					// Update all BOEs that are in awaiting approval, approved or locked-draft back to draft.
 					boesBackToDraft = ws.Boes.Where(x => x.State == BOEState.Approved || x.State == BOEState.AwaitingApproval || x.State == BOEState.DraftLocked).ToCollection<FullBoe>();
@@ -2997,8 +2998,12 @@ namespace GenBOE.Web.Controllers
 					if ((okToProceed = customFieldsMV.UserHasConfirmed) == false)
 					{
 						// send response back to UI indicating that user confirmation is needed
-						result = Json(new { Status = false, NeedUserConfirmation = true,
-							UserConfirmationMessage = "Adding or editing a required Custom Field, or changing a custom field level, will set all BOEs in this workspace back to Draft.  Do you wish to continue?" });
+						result = Json(new
+						{
+							Status = false,
+							NeedUserConfirmation = true,
+							UserConfirmationMessage = "Adding or editing a required Custom Field, or changing a custom field level, will set all BOEs in this workspace back to Draft.  Do you wish to continue?"
+						});
 					}
 				}
 				else if (customFieldTypeChanged && customFieldValueInUse)
@@ -3010,8 +3015,12 @@ namespace GenBOE.Web.Controllers
 					if ((okToProceed = customFieldsMV.UserHasConfirmed) == false)
 					{
 						// send response back to UI indicating that user confirmation is needed
-						result = Json(new { Status = false, NeedUserConfirmation = true,
-							UserConfirmationMessage = "This custom field is currently in use.  Changing the level from " + customFieldDisplayIdOriginal.ToDescription() + " to " + customFieldDisplayId.ToDescription() + " will clear all existing usages.  Do you wish to continue?" });
+						result = Json(new
+						{
+							Status = false,
+							NeedUserConfirmation = true,
+							UserConfirmationMessage = "This custom field is currently in use.  Changing the level from " + customFieldDisplayIdOriginal.ToDescription() + " to " + customFieldDisplayId.ToDescription() + " will clear all existing usages.  Do you wish to continue?"
+						});
 					}
 				}
 				else
@@ -3242,7 +3251,7 @@ namespace GenBOE.Web.Controllers
 				WorkspaceState originalWsState = ws.WorkspaceState;
 
 				try
-				{                   
+				{
 					// Setup hashsets to keep track of data from recalculation; this will need to be saved in the transaction
 					HashSet<BoeTaskElementDTO> tasksToSave = new HashSet<BoeTaskElementDTO>();
 					HashSet<WorkspaceVariableDTO> workspaceVariablesToSave = new HashSet<WorkspaceVariableDTO>();
@@ -3253,7 +3262,7 @@ namespace GenBOE.Web.Controllers
 
 					TimeSpan timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT));
 
-					
+
 					if (decimalPrecisionChanged || costDecimalPrecisionChanged)
 					{
 						this._ControllerLogic.ChangeTheWorkspaceStateDuringRecalculation(ws, currentUserID, WorkspaceState.Initialization, DateTime.Now);
@@ -3368,7 +3377,7 @@ namespace GenBOE.Web.Controllers
 				if (issues.Any())
 				{
 					string warning = "<b>Your last action was successful.</b><br />The RTE limit is exceeded in at least one instance, please ask the authors to review the data.";
-					
+
 					return Json(new { Status = true, Message = warning });
 				}
 			}
@@ -3423,7 +3432,7 @@ namespace GenBOE.Web.Controllers
 		public ActionResult SaveWorkspaceOutputFormat(string workspace, int inOutputFormatId, int inSortById)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
-		   
+
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceOutputFormat", SecurityPage.WorkspaceSettingsOutputFormatTemplate, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
@@ -3690,7 +3699,7 @@ namespace GenBOE.Web.Controllers
 
 					foreach (WorkspaceVariableDTO wvar in validatedWorkspaceVariables)
 					{
-							ValidationErrors.Add(new ValidationMessage("- " + wvar.WorkspaceVariableName));
+						ValidationErrors.Add(new ValidationMessage("- " + wvar.WorkspaceVariableName));
 					}
 				}
 
@@ -3707,17 +3716,17 @@ namespace GenBOE.Web.Controllers
 				// if they did, we need to send an email to the BOE Author
 				IReadOnlyCollection<WorkspaceVariableDTO> originalWorkspaceVars = ws.WorkspaceVariables;
 				IEnumerable<WorkspaceVariableDTO> changedWorkspaceVars = from o in originalWorkspaceVars
-										   from m in modifiedWorkspaceVariables
-										   where o.Id == m.Id &&
-												 (o.WorkspaceVariableValue != m.WorkspaceVariableValue ||
-												  o.ValueType != m.ValueType ||
-												  o.SelectedBOEsToSum.Where(b => b.BoeID.HasValue).Select(b => b.BoeID).Except(m.SelectedBOEsToSum.Where(b => b.BoeID.HasValue).Select(b => b.BoeID)).Count() > 0 ||
-												  o.SelectedBOEsToSum.Where(b => b.WBSID.HasValue).Select(b => b.WBSID).Except(m.SelectedBOEsToSum.Where(b => b.WBSID.HasValue).Select(b => b.WBSID)).Count() > 0 ||
-												  o.SelectedBOEsToSum.Where(b => b.CLINID.HasValue).Select(b => b.CLINID).Except(m.SelectedBOEsToSum.Where(b => b.CLINID.HasValue).Select(b => b.CLINID)).Count() > 0 ||
-												  m.SelectedBOEsToSum.Where(b => b.BoeID.HasValue).Select(b => b.BoeID).Except(o.SelectedBOEsToSum.Where(b => b.BoeID.HasValue).Select(b => b.BoeID)).Count() > 0 ||
-												  m.SelectedBOEsToSum.Where(b => b.WBSID.HasValue).Select(b => b.WBSID).Except(o.SelectedBOEsToSum.Where(b => b.WBSID.HasValue).Select(b => b.WBSID)).Count() > 0 ||
-												  m.SelectedBOEsToSum.Where(b => b.CLINID.HasValue).Select(b => b.CLINID).Except(o.SelectedBOEsToSum.Where(b => b.CLINID.HasValue).Select(b => b.CLINID)).Count() > 0)
-										   select o;
+																		 from m in modifiedWorkspaceVariables
+																		 where o.Id == m.Id &&
+																			   (o.WorkspaceVariableValue != m.WorkspaceVariableValue ||
+																				o.ValueType != m.ValueType ||
+																				o.SelectedBOEsToSum.Where(b => b.BoeID.HasValue).Select(b => b.BoeID).Except(m.SelectedBOEsToSum.Where(b => b.BoeID.HasValue).Select(b => b.BoeID)).Count() > 0 ||
+																				o.SelectedBOEsToSum.Where(b => b.WBSID.HasValue).Select(b => b.WBSID).Except(m.SelectedBOEsToSum.Where(b => b.WBSID.HasValue).Select(b => b.WBSID)).Count() > 0 ||
+																				o.SelectedBOEsToSum.Where(b => b.CLINID.HasValue).Select(b => b.CLINID).Except(m.SelectedBOEsToSum.Where(b => b.CLINID.HasValue).Select(b => b.CLINID)).Count() > 0 ||
+																				m.SelectedBOEsToSum.Where(b => b.BoeID.HasValue).Select(b => b.BoeID).Except(o.SelectedBOEsToSum.Where(b => b.BoeID.HasValue).Select(b => b.BoeID)).Count() > 0 ||
+																				m.SelectedBOEsToSum.Where(b => b.WBSID.HasValue).Select(b => b.WBSID).Except(o.SelectedBOEsToSum.Where(b => b.WBSID.HasValue).Select(b => b.WBSID)).Count() > 0 ||
+																				m.SelectedBOEsToSum.Where(b => b.CLINID.HasValue).Select(b => b.CLINID).Except(o.SelectedBOEsToSum.Where(b => b.CLINID.HasValue).Select(b => b.CLINID)).Count() > 0)
+																		 select o;
 
 
 
@@ -3728,21 +3737,21 @@ namespace GenBOE.Web.Controllers
 					ICollection<WorkspaceVariableDTO> allNonModifiedVariables = ws.WorkspaceVariables.Where(i => !modifiedWorkspaceVariables.Select(x => x.Id).Contains(i.Id)).ToCollection<WorkspaceVariableDTO>();
 					List<WorkspaceVariableDTO> allVariables = new List<WorkspaceVariableDTO>(allNonModifiedVariables);
 					allVariables.AddRange(modifiedWorkspaceVariables.Where(x => x.Updateable != UpdateType.Deleted)); // from UI
-					// determine if new/modified variables are duplicates within our WS vars and across Task Vars
+																													  // determine if new/modified variables are duplicates within our WS vars and across Task Vars
 					foreach (WorkspaceVariableDTO variable in modifiedWorkspaceVariables)
 					{
-							Collection<ValidationMessage> validationMessages = _WSVarUniqueValidator.Validate(variable.WorkspaceVariableName, allVariables, ws);
-							validationErrors.AddRange(validationMessages);
+						Collection<ValidationMessage> validationMessages = _WSVarUniqueValidator.Validate(variable.WorkspaceVariableName, allVariables, ws);
+						validationErrors.AddRange(validationMessages);
 					}
 				}
 
 				// Get all deleted variables that are currently in use. These must not be deleted.
 				IEnumerable<ValidationMessage> invalidDeletions = from m in modifiedWorkspaceVariables
-									   from o in originalWorkspaceVars
-									   where m.Id == o.Id &&
-											 m.Updateable == UpdateType.Deleted &&
-											 o.InUse
-									   select new ValidationMessage(String.Format("'{0}' is used in at least one BOE and cannot be deleted.", m.WorkspaceVariableName));
+																  from o in originalWorkspaceVars
+																  where m.Id == o.Id &&
+																		m.Updateable == UpdateType.Deleted &&
+																		o.InUse
+																  select new ValidationMessage(String.Format("'{0}' is used in at least one BOE and cannot be deleted.", m.WorkspaceVariableName));
 
 				validationErrors.AddRange(invalidDeletions);
 
@@ -3816,7 +3825,7 @@ namespace GenBOE.Web.Controllers
 								this.FullWsRecalc.PerformStateTransitionActionsForBoesEffectedByRecalculation(ws, boesToTransition, originalWsBoes);
 								this._ControllerLogic.ChangeTheWorkspaceStateDuringRecalculation(ws, currentUserID, originalWsState, null);
 							}
-					   
+
 						}
 					}
 
@@ -4024,7 +4033,7 @@ namespace GenBOE.Web.Controllers
 			Collection<InUseResourceChangedValueContainer> inUseResourceChangedContainer = new Collection<InUseResourceChangedValueContainer>();
 
 			BOECustomFieldResourceModelView singleEditMV = null;
-			Dictionary<int, int> resourceSaveResultsDictionary = null;
+			IDictionary<int, int> resourceSaveResultsDictionary = null;
 
 			/** Valid Model Check */
 			if (ModelState.IsValid)
@@ -4059,7 +4068,7 @@ namespace GenBOE.Web.Controllers
 				Collection<FieldChanged> fieldsChanged = new Collection<FieldChanged>();
 
 				ICollection<ResourceDTO> resourcesFromDb = this._ResourceLoader.GetByIds(resources.Select(x => x.CustomFieldOptionID).Distinct().ToList());
-				
+
 				foreach (BOECustomFieldResourceModelView resource in resources)
 				{
 					if (resource.Deleted == false)
@@ -4187,8 +4196,8 @@ namespace GenBOE.Web.Controllers
 
 						if (newResource != null)
 						{
-						_emailer.SendBOEAuthorsApproversInUseResourceUpdated(newResource, resourceChanged.Changes, WorkspaceAdmin, ws);
-				}
+							_emailer.SendBOEAuthorsApproversInUseResourceUpdated(newResource, resourceChanged.Changes, WorkspaceAdmin, ws);
+						}
 					}
 
 					ProcessResourceIdUpdates(ws, resourceSaveResultsDictionary, resourceDTOs.Where(r => r.Updateable == UpdateType.Deleted).Select(rd => rd.Id).ToList());
@@ -4207,8 +4216,8 @@ namespace GenBOE.Web.Controllers
 
 				string elementOfCost = _CommonDataMapper.GetElementOfCostTypesDictionary()[(int)resource.ElementOfCost].ElementOfCostName;
 				string rateTypeName = resource.RateType.GetDescription();
-				
-				singleEditMV = new BOECustomFieldResourceModelView(resource,  rateTypeName, elementOfCost);
+
+				singleEditMV = new BOECustomFieldResourceModelView(resource, rateTypeName, elementOfCost);
 
 				toReturn = Json(singleEditMV);
 			}
@@ -4359,10 +4368,10 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Restores the list of resources to the global list.
+		/// Restores the list of performing orgs to the global list.
 		/// </summary>
-		/// <param name="workspace"></param>
-		/// <returns></returns>
+		/// <param name="workspace">workspace</param>
+		/// <returns>Perf Org restore view result</returns>
 		public ViewResult RestoreCustomFieldPerformingOrganizations(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -4391,6 +4400,43 @@ namespace GenBOE.Web.Controllers
 			}
 			// Finalize Action
 			FinalizeAction(_log, "RestoreCustomFieldPerformingOrganizations", sw);
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Restores the list of resources to the global list.
+		/// </summary>
+		/// <param name="workspace">workspace</param>
+		/// <returns>Resource Retore view result</returns>
+		public ViewResult RestoreCustomFieldResources(string workspace)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, "RestoreCustomFieldResources", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+			RestoreOptionData restoreResults = null;
+			ViewResult toReturn = null;
+
+			/** Valid Model Check */
+			if (ModelState.IsValid)
+			{
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				{
+					restoreResults = _RestoreDefaultOptions.RestoreSystemResources(ws);
+					scope.Complete();
+				}
+
+				toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_RESOURCE_RESTORE, restoreResults);
+			}
+			else
+			{
+				throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
+			}
+
+			// Finalize Action
+			FinalizeAction(_log, "RestoreCustomFieldResources", sw);
 
 			return toReturn;
 		}
@@ -4523,7 +4569,7 @@ namespace GenBOE.Web.Controllers
 			Dictionary<string, Stream> zipContents = new Dictionary<string, Stream>();
 
 			string workspaceDataReportLocation = this._ControllerLogic.CreateWorkspaceDataReportForVersion(tempWs, excelTemplateLocaiton, metricTaskElementMappings, ws.WorkspaceName, versionId);
-			
+
 			try
 			{
 				using (FileStream workspaceDataStream = new FileStream(workspaceDataReportLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose))
@@ -4673,7 +4719,7 @@ namespace GenBOE.Web.Controllers
 
 			ICollection<ResourceDTO> resourcesFromDb = this._ResourceLoader.GetByIds(resources.PagedIndexes.Distinct().ToList());
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
-			
+
 			for (int i = resources.StartArrayIndex; i <= resources.EndArrayIndex; i++)
 			{
 				ResourceDTO resourceDTO = resourcesFromDb.First(x => x.Id == resources.PagedIndexes[i]);
@@ -4686,7 +4732,7 @@ namespace GenBOE.Web.Controllers
 
 				string ElementOfCostDisplay = allElementOfCostTypes[(int)resourceDTO.ElementOfCost].ElementOfCostName;
 				string rateTypeDisplay = resourceDTO.RateType.GetDescription();
-				
+
 				BOECustomFieldResourceModelView mv = new BOECustomFieldResourceModelView(resourceDTO, rateTypeDisplay, ElementOfCostDisplay);
 				if (resourceIDsInUse.Contains(mv.CustomFieldOptionID))
 				{
@@ -4951,9 +4997,18 @@ namespace GenBOE.Web.Controllers
 				throw new GenValidationException("PTM Tracking Number is invalid. Please delete the current Tracking Number and choose another from the dropdown list.");
 			}
 
-			return Json(new { TrackingNumberRevision = nextRevision, LOBId = lobId, RFPNumber = rfpNumber, ContractTypes = selectedContractTypes,
-				Title = title, ProposalClassId = proposalClassId, AnticipatedDeliveryDate = anticipatedDeliveryDate, RevisedSubmittalDate = revisedSubmittalDate,
-				UsingTemplateBoe = usingTemplateBoe, IsSAPEnabledConfig = isSAPEnabledConfig
+			return Json(new
+			{
+				TrackingNumberRevision = nextRevision,
+				LOBId = lobId,
+				RFPNumber = rfpNumber,
+				ContractTypes = selectedContractTypes,
+				Title = title,
+				ProposalClassId = proposalClassId,
+				AnticipatedDeliveryDate = anticipatedDeliveryDate,
+				RevisedSubmittalDate = revisedSubmittalDate,
+				UsingTemplateBoe = usingTemplateBoe,
+				IsSAPEnabledConfig = isSAPEnabledConfig
 			});
 		}
 
@@ -4995,10 +5050,10 @@ namespace GenBOE.Web.Controllers
 				IList<int> revisions = new List<int>();
 
 				// confirm the extracted values are numbers and convert them to ints
-				foreach(string revision in revisionStrings)
+				foreach (string revision in revisionStrings)
 				{
 					int revisionNumber;
-					if(int.TryParse(revision, out revisionNumber))
+					if (int.TryParse(revision, out revisionNumber))
 					{
 						revisions.Add(revisionNumber);
 					}
@@ -5013,7 +5068,7 @@ namespace GenBOE.Web.Controllers
 			return nextRevision;
 		}
 
-		
+
 		public JsonResult GetExactCopyData(int WorkspaceToCopyID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(WorkspaceToCopyID);
@@ -5054,7 +5109,7 @@ namespace GenBOE.Web.Controllers
 			UserDTO LeadPricer = this.UserLoader.GetUserByID(ws.CostVolumeLeadPricerUserID);
 
 			int[] selectedContractTypes = this.GetSelectedContractTypeOptionList(ws);
-			return Json(new {Name= newWsName, ShortName= newWsShortName, DisplayName= LeadPricer.DisplayName, CostVolumeLeadPricerNTID = LeadPricer.NTID, LOBId= ws.LineOfBusiness.Id, ProposalClass= (ws.ProposalClass.Id).ToString(), ContractTypes = selectedContractTypes });
+			return Json(new { Name = newWsName, ShortName = newWsShortName, DisplayName = LeadPricer.DisplayName, CostVolumeLeadPricerNTID = LeadPricer.NTID, LOBId = ws.LineOfBusiness.Id, ProposalClass = (ws.ProposalClass.Id).ToString(), ContractTypes = selectedContractTypes });
 		}
 
 		public JsonResult IsWorkspaceNameAvailable(String value)
@@ -5066,7 +5121,7 @@ namespace GenBOE.Web.Controllers
 			if (ws == null || ws.Id == -1)
 			{
 				result = true;
-		}
+			}
 
 			return Json(new { Status = result });
 		}
@@ -5145,7 +5200,7 @@ namespace GenBOE.Web.Controllers
 			int newWorkspaceID;
 			UserDTO createdByUserDTO = this.UserLoader.GetUserForActiveUser();
 			WorkspaceDTO newWorkspaceDTO;
-			
+
 			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 			{
 				if (newWorkspace.WSExactCopy.HasValue && newWorkspace.WSExactCopy.Value)
@@ -5233,7 +5288,7 @@ namespace GenBOE.Web.Controllers
 					newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
 					newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
 					newWorkspaceDTO.CurrentPTMWorkspace = newWorkspace.CurrentPTMWorkspace;
-					
+
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
 						newWorkspaceDTO.ProposalTitle = newWorkspace.ProposalTitle;
@@ -5247,7 +5302,7 @@ namespace GenBOE.Web.Controllers
 					}
 
 					// supply an initial output template id (from the default set)
-					newWorkspaceDTO.TemplateID = (int) (newWorkspaceDTO.IsProjectMapWorkspace ? 
+					newWorkspaceDTO.TemplateID = (int)(newWorkspaceDTO.IsProjectMapWorkspace ?
 						ExcelReportTemplateType.RMS_SIKORSKY_PROJECT_MAP : _ControllerLogic.GetDefaultReportTemplateType());
 
 					newWorkspaceDTO.ResourceDecimalPrecision = newWorkspace.ResourceDecimalPrecision;
@@ -5282,7 +5337,7 @@ namespace GenBOE.Web.Controllers
 					}
 
 					// Set Project Map Workspaces to Working state - they can't be set to Initialization
-					if(newWorkspaceDTO.IsProjectMapWorkspace)
+					if (newWorkspaceDTO.IsProjectMapWorkspace)
 					{
 						newWorkspaceDTO.WorkspaceState = WorkspaceState.Working;
 					}
@@ -5382,7 +5437,7 @@ namespace GenBOE.Web.Controllers
 		public JsonResult CreateSikorskyCustomFields(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			
+
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CREATE_SIKORSKY_CUSTOM_FIELDS, SecurityPage.BoeCustomFields, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
@@ -5473,7 +5528,7 @@ namespace GenBOE.Web.Controllers
 					scope.Complete();
 				}
 
-				#endregion               
+				#endregion
 
 				// this checks to see if there are any discrete spreads that the user needs to deal with manually
 				string errorMessage = (finishedWithoutErrors ? string.Empty : errorMessage = WORKSPACE_COPY_ERROR + "<BR />")
@@ -5637,17 +5692,17 @@ namespace GenBOE.Web.Controllers
 						SecurityAuthorization authorization = CheckPermissions(SecurityPage.WorkspaceAdminPermissions, ws, null);
 						if (authorization == SecurityAuthorization.None)
 						{
-								if (ws.AllowSearch && !ws.ContainsOCI && (ws.WorkspaceState == WorkspaceState.Complete))
-								{
-									theModelView.PagedIndexes.Add(ws.Id);
-								}
+							if (ws.AllowSearch && !ws.ContainsOCI && (ws.WorkspaceState == WorkspaceState.Complete))
+							{
+								theModelView.PagedIndexes.Add(ws.Id);
+							}
 						}
 						else
 						{
-								if (ws.AllowSearch && !ws.ContainsOCI)
-								{
-									theModelView.PagedIndexes.Add(ws.Id);
-								}
+							if (ws.AllowSearch && !ws.ContainsOCI)
+							{
+								theModelView.PagedIndexes.Add(ws.Id);
+							}
 						}
 					}
 
@@ -5656,10 +5711,10 @@ namespace GenBOE.Web.Controllers
 						for (int i = theModelView.StartArrayIndex; i <= theModelView.EndArrayIndex; i++)
 						{
 							WorkspaceDTO ws = (from x in theWorkspaces
-												where x.Id == theModelView.PagedIndexes[i]
-												select x).FirstOrDefault();
+											   where x.Id == theModelView.PagedIndexes[i]
+											   select x).FirstOrDefault();
 							theModelView.WorkspaceResults.Add(GetWorkspaceSearchResult(ws));
-						}   
+						}
 					}
 				}
 			}
@@ -5857,7 +5912,7 @@ namespace GenBOE.Web.Controllers
 						using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 						{
 							IDictionary<int, int> SavedWBSIDs = this.wbsLoader.Save(newAtremisImporting.WBSs);
-							
+
 							foreach (BoeDTO BOE in newAtremisImporting.BOEs)
 							{
 								BOE.WBSID = SavedWBSIDs[BOE.WBSID.Value];
@@ -6135,9 +6190,9 @@ namespace GenBOE.Web.Controllers
 
 						// get list of deleted resources. This query only pulls back rows that are in the database(availableToDelete) but not in the excel file(newResources)
 						availableToDelete = (from a in availableToDelete
-											where !(from n in newResources
-													select n.Id).Contains(a.Id)
-											select a).ToList();
+											 where !(from n in newResources
+													 select n.Id).Contains(a.Id)
+											 select a).ToList();
 
 						// in use resources cannot be deleted so mark them as such and then remove them from the final availableToDelete list
 						HashSet<int> resourceIDsInUse = _InUseDataLoader.GetWorkspaceResourceIDsInUseByListID(ws.ResourceListID);
@@ -6218,7 +6273,7 @@ namespace GenBOE.Web.Controllers
 
 						if (toSave.Any())
 						{
-							Dictionary<int, int> resourceSaveResultsDictionary = null;
+							IDictionary<int, int> resourceSaveResultsDictionary = null;
 							using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 							{
 								// Save all three lists
@@ -6499,8 +6554,8 @@ namespace GenBOE.Web.Controllers
 
 						// Get workspace perf org that aren't being used 
 						ICollection<PerformingOrgDTO> unusedPerformingOrgs = (from c in currentPerformingOrgs
-							where !perfOrgIdsInUse.Contains(c.Id)
-							select c).ToCollection();
+																			  where !perfOrgIdsInUse.Contains(c.Id)
+																			  select c).ToCollection();
 
 						// Process Adds
 						ICollection<PerformingOrgDTO> addedPerformingOrgs =
@@ -6541,30 +6596,30 @@ namespace GenBOE.Web.Controllers
 						// Process Changes
 						ICollection<PerformingOrgDTO> changedPerformingOrgs =
 						(from newPerformingOrg in newPerformingOrgs
-							from unusedPerformingOrg in unusedPerformingOrgs
-							where newPerformingOrg.PerformingOrgName.Equals(unusedPerformingOrg.PerformingOrgName,
-									  StringComparison.CurrentCultureIgnoreCase) &&
-								  newPerformingOrg.PerformingOrgDesc != unusedPerformingOrg.PerformingOrgDesc
-							select new PerformingOrgDTO
-							{
+						 from unusedPerformingOrg in unusedPerformingOrgs
+						 where newPerformingOrg.PerformingOrgName.Equals(unusedPerformingOrg.PerformingOrgName,
+								   StringComparison.CurrentCultureIgnoreCase) &&
+							   newPerformingOrg.PerformingOrgDesc != unusedPerformingOrg.PerformingOrgDesc
+						 select new PerformingOrgDTO
+						 {
 
-								Id = unusedPerformingOrg.Id,
-								PerformingOrgName = unusedPerformingOrg.PerformingOrgName,
-								PerformingOrgDesc = newPerformingOrg.PerformingOrgDesc,
-								UpdateDate = unusedPerformingOrg.UpdateDate,
-								Updateable = UpdateType.Upsert
-							}).ToCollection();
+							 Id = unusedPerformingOrg.Id,
+							 PerformingOrgName = unusedPerformingOrg.PerformingOrgName,
+							 PerformingOrgDesc = newPerformingOrg.PerformingOrgDesc,
+							 UpdateDate = unusedPerformingOrg.UpdateDate,
+							 Updateable = UpdateType.Upsert
+						 }).ToCollection();
 
 						// Get original copies of the performing orgs being changed to display before and after values on the UI
 						var changedPerformingOrgsWithOriginals = from changedPerformingOrg in changedPerformingOrgs
-							from unusedPerformingOrg in unusedPerformingOrgs
-							where changedPerformingOrg.PerformingOrgName.Equals(unusedPerformingOrg.PerformingOrgName,
-								StringComparison.CurrentCultureIgnoreCase)
-							select new
-							{
-								Old = unusedPerformingOrg,
-								New = changedPerformingOrg
-							};
+																 from unusedPerformingOrg in unusedPerformingOrgs
+																 where changedPerformingOrg.PerformingOrgName.Equals(unusedPerformingOrg.PerformingOrgName,
+																	 StringComparison.CurrentCultureIgnoreCase)
+																 select new
+																 {
+																	 Old = unusedPerformingOrg,
+																	 New = changedPerformingOrg
+																 };
 
 						// Process Deletes
 						ICollection<PerformingOrgDTO> deletedPerformingOrgs =
@@ -6744,20 +6799,20 @@ namespace GenBOE.Web.Controllers
 
 						// Process Changes
 						IEnumerable<CustomFieldValueDTO> changedCustomFieldValues = from newCustomFieldValue in newCustomFieldValues
-													   from unusedCustomFieldValue in unusedCustomFieldValues
-													   where newCustomFieldValue.CustomFieldValueName.Equals(unusedCustomFieldValue.CustomFieldValueName, StringComparison.CurrentCultureIgnoreCase) &&
-															 newCustomFieldValue.CustomFieldValueName != unusedCustomFieldValue.CustomFieldValueDescription
-													   select new CustomFieldValueDTO
-													   {
-														   Id = unusedCustomFieldValue.CustomFieldValueID,
-														   CustomFieldID = unusedCustomFieldValue.CustomFieldID,
-														   CustomFieldValueID = unusedCustomFieldValue.CustomFieldValueID,
-														   CustomFieldValueName = unusedCustomFieldValue.CustomFieldValueName,
-														   CustomFieldValueDescription = newCustomFieldValue.CustomFieldValueDescription,
-														   CustomFieldValueInUseFlag = unusedCustomFieldValue.CustomFieldValueInUseFlag,
-														   UpdateDate = unusedCustomFieldValue.UpdateDate,
-														   Updateable = UpdateType.Upsert
-													   };
+																					from unusedCustomFieldValue in unusedCustomFieldValues
+																					where newCustomFieldValue.CustomFieldValueName.Equals(unusedCustomFieldValue.CustomFieldValueName, StringComparison.CurrentCultureIgnoreCase) &&
+																						  newCustomFieldValue.CustomFieldValueName != unusedCustomFieldValue.CustomFieldValueDescription
+																					select new CustomFieldValueDTO
+																					{
+																						Id = unusedCustomFieldValue.CustomFieldValueID,
+																						CustomFieldID = unusedCustomFieldValue.CustomFieldID,
+																						CustomFieldValueID = unusedCustomFieldValue.CustomFieldValueID,
+																						CustomFieldValueName = unusedCustomFieldValue.CustomFieldValueName,
+																						CustomFieldValueDescription = newCustomFieldValue.CustomFieldValueDescription,
+																						CustomFieldValueInUseFlag = unusedCustomFieldValue.CustomFieldValueInUseFlag,
+																						UpdateDate = unusedCustomFieldValue.UpdateDate,
+																						Updateable = UpdateType.Upsert
+																					};
 
 						// Get original copies of the performing orgs being changed to display before and after values on the UI
 						var changedCustomFieldValuesWithOriginals = from changedCustomFieldValue in changedCustomFieldValues
@@ -6927,7 +6982,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			ICollection<FullBoe> boeObjects = this.Factory.CreateFullBoesWithRteData(boeIDs);
-			
+
 
 			// Get Workoffline template file name
 			string templateFileName = Server.MapPath(ImportExportConstants.PATH_TO_WORKOFFLINE_TEMPLATE);
@@ -7089,8 +7144,8 @@ namespace GenBOE.Web.Controllers
 			HashSet<PermissionsDTO> workspacePermissions = new HashSet<PermissionsDTO>(this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id));
 
 			bool isUserPotentialBOESubcontractorAuthor = (from p in workspacePermissions
-														 where p.ETIUserId == currentUser.UserID && p.Role == Role.SubcontractorAuthor
-														 select p).Any();
+														  where p.ETIUserId == currentUser.UserID && p.Role == Role.SubcontractorAuthor
+														  select p).Any();
 
 			List<int> boeIds = workspace.Boes.Select(x => x.Id).ToList();
 			HashSet<PermissionsDTO> rolesForBoes = new HashSet<PermissionsDTO>(this.PermissionsLoader.GetBOEPermissions(boeIds));
@@ -7112,8 +7167,8 @@ namespace GenBOE.Web.Controllers
 				//  Subcontractors should only see those BOEs (on the workspace homepage) they are assigned to and they should only ever be assigned the "Subcontractor Author" role.
 				if (isUserPotentialBOESubcontractorAuthor &&
 					!(from b in boeRoles
-					where b.ETIUserId == currentUser.UserID && b.Role == Role.SubcontractorAuthor
-					select b).Any())
+					  where b.ETIUserId == currentUser.UserID && b.Role == Role.SubcontractorAuthor
+					  select b).Any())
 				{
 					continue;   // Skip this BOE -- Subcontractor is not assigned the "Subcontractor Author" role
 				}
@@ -7299,7 +7354,7 @@ namespace GenBOE.Web.Controllers
 			ImportWorkofflineBOEResultsModelView boeCopy = new ImportWorkofflineBOEResultsModelView();
 			boeCopy.ImportType = boe.ImportType;
 			boeCopy.BOEID = boe.BOEID;
-			
+
 			//only child collections get imported if boe is in bad state
 			if ((BoeImportResult)boe.ImportType == BoeImportResult.UpdateBoe)
 			{
@@ -7315,7 +7370,7 @@ namespace GenBOE.Web.Controllers
 
 				//trim custom fields that were not set
 				boeCopy.CustomFields = boe.CustomFields.Where(w => w.CustomFieldID != 0 && w.CustomFieldValueID != 0).ToCollection();
-			}             
+			}
 
 			return boeCopy;
 		}
@@ -7502,7 +7557,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="ws">The workspace to use when updating T&amp;M Rates.</param>
 		/// <param name="resourceSaveResultsDictionary">A dictionary keyed by old Resource Id to the new Resource Id after Resources are saved.</param>
 		/// <param name="removedIds">A list of the Resource Ids that were deleted.</param>
-		private void ProcessResourceIdUpdates(FullWorkspace ws, Dictionary<int, int> resourceSaveResultsDictionary, ICollection<int> deletedIds)
+		private void ProcessResourceIdUpdates(FullWorkspace ws, IDictionary<int, int> resourceSaveResultsDictionary, ICollection<int> deletedIds)
 		{
 			// Update T&M Rates based on changes 
 			if (ws.IsUsingTM)
@@ -7591,7 +7646,7 @@ namespace GenBOE.Web.Controllers
 
 				if (workspaceStatus == -1) // all active
 				{
-					allowedWorkspaceStates.Add(WorkspaceState.Initialization); 
+					allowedWorkspaceStates.Add(WorkspaceState.Initialization);
 					allowedWorkspaceStates.Add(WorkspaceState.Working);
 					allowedWorkspaceStates.Add(WorkspaceState.Locked);
 				}
@@ -7599,7 +7654,7 @@ namespace GenBOE.Web.Controllers
 				{
 					allowedWorkspaceStates.Add((WorkspaceState)workspaceStatus.Value);
 				}
-	
+
 				workspaceDtos = workspaceDtos.Where(x => allowedWorkspaceStates.Contains(x.WorkspaceState)).ToCollection();
 			}
 

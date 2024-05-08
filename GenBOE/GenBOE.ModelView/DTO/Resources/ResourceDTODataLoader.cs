@@ -14,7 +14,7 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Dtos;
     using GenBOE.Models;
 
-    public class ResourceDTODataLoader : IResourceDTODataLoader
+    public class ResourceDTODataLoader : BulkDataLoader<ResourceDTO, Resource>, IResourceDTODataLoader
     {
         private Logger _log = new Logger(typeof(ResourceDTODataLoader));
 
@@ -108,7 +108,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inResourceIDs">resource IDs</param>
         /// <returns>resource data</returns>
         [DbQuery]
-        virtual public ICollection<ResourceDTO> GetByIds(ICollection<int> inResourceIDs)
+        override public ICollection<ResourceDTO> GetByIds(ICollection<int> inResourceIDs)
         {
             if (inResourceIDs == null) { throw new ArgumentNullException(nameof(inResourceIDs)); }
 
@@ -529,57 +529,110 @@ namespace GenBOE.DataBridge.DTO
             return toReturn;
         }
 
-        /// <summary>
-        /// save the workspace resources
-        /// </summary>
-        /// <param name="inWorkspaceResources">workspace resources</param>
-        /// <returns></returns>
-        virtual public Dictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
+		/// <summary>
+		/// Provides the metadata to support bulk save processing for Workspace Resources
+		/// </summary>
+		/// <returns>Meta data required for bulk save processing</returns>
+		public override BulkSaveMetaData CreateBulkSaveMetaData()
+		{
+			BulkSaveMetaData metaData = new BulkSaveMetaData(Constants.BOE_DB_CONTEXT_NAME);
+
+			metaData.BulkDeleteStoredProcedureName = "deleteWorkspaceResourceviaTableParameter";
+			metaData.BulkInsertStoredProcedureName = "insertWorkspaceResourceviaTableParameter";
+			metaData.BulkUpdateStoredProcedureName = "updateWorkspaceResourceviaTableParameter";
+
+			metaData.BulkInsertStoredProcedureReturnsUpdateDate = true;
+			metaData.BulkUpdateStoredProcedureReturnsUpdateDate = true;
+
+			metaData.DBTableTypeName = "TT_WorkspaceResource";
+
+			metaData.StoredProcedureTableTypeParameterName = "@WorkspaceResourceTableParameter";
+
+			metaData.EntityPropertiesToMapToDataTable = new Collection<string>()
+			{
+				"ResourceID", "UpdateDT", "ResourceName", "ResourceDescription", "SegmentRegion", "LaborType", "SegmentID",
+				"ResourceListID", "CostElementID", "DeletedFlag", "RateTypeID"
+			};
+
+			return metaData;
+		}
+
+		/// <summary>
+		/// Upsert Resource DTO
+		/// Not implemented as there are upserts for System/Workspace Resource DTO
+		/// </summary>
+		/// <param name="dtoToUpsert"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		override protected int? Upsert(ResourceDTO dtoToUpsert)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Bulk Save Workspace Resources
+		/// Not Implemented
+		/// </summary>
+		/// <param name="dtosToSave"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="ArgumentException"></exception>
+		public override IDictionary<int, int> BulkSave(ICollection<ResourceDTO> dtosToSave)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// save the workspace resources
+		/// </summary>
+		/// <param name="inWorkspaceResources">workspace resources</param>
+		/// <returns></returns>
+		virtual public IDictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
         {
+			if (inWorkspaceResources == null)
+			{
+				throw new ArgumentNullException(nameof(inWorkspaceResources));
+			}
 
-            if (inWorkspaceResources == null)
-            {
-                throw new ArgumentNullException(nameof(inWorkspaceResources));
-            }
-            if (inWorkspace == null)
-            {
-                throw new ArgumentNullException(nameof(inWorkspace));
-            }
+			if (inWorkspaceResources.Any(x => x.Updateable == UpdateType.None))
+			{
+				throw new ArgumentException("One or more Resources has UpdateType of None,", nameof(inWorkspaceResources));
+			}
 
-            Dictionary<int, int> toReturn = new Dictionary<int, int>();
+			IDictionary<int, int> toReturn = new Dictionary<int, int>();
 
-            foreach (ResourceDTO resource in inWorkspaceResources)
-            {
-                int originalResourceId = resource.Id;
-                if (resource.Updateable == UpdateType.None)
-                {
-                    throw new ArgumentException("please supply the Updateable argument");
-                }
+			inWorkspaceResources.ToList().ForEach(resource =>
+			{
+				resource.LaborType = resource.LaborType.Trim();
+				resource.ResourceDesc = resource.ResourceDesc.Trim();
+				resource.ResourceName = resource.ResourceName.Trim();
+				resource.SegRegion = resource.SegRegion.Trim();
+				resource.ResourceListId = inWorkspace.ResourceListID;
+			});
 
-                if (resource.Updateable == UpdateType.Deleted)
-                {
-                    DeleteWorkspaceResource(resource, inWorkspace.ResourceListID);
+			// Upsert Workspace Resource
+			toReturn = base.BulkSave(inWorkspaceResources);
 
-                    toReturn.Add(originalResourceId, resource.Id);
-                }
-                else if (resource.Updateable == UpdateType.Upsert)
-                {
-                    resource.LaborType = resource.LaborType.Trim();
-                    resource.ResourceDesc = resource.ResourceDesc.Trim();
-                    resource.ResourceName = resource.ResourceName.Trim();
-                    resource.SegRegion = resource.SegRegion.Trim();
-
-                    toReturn.Add(originalResourceId, UpdateWorkspaceResource(resource, inWorkspace.ResourceListID));
-                }
-            }
-            return toReturn;
+			return toReturn;
         }
 
-        /// <summary>
-        /// Delete a system resource
-        /// </summary>
-        /// <param name="inDeleteResource"></param>
-        private void DeleteSystemResource(ResourceDTO inDeleteResource)
+		/// <summary>
+		/// Delete ResourceDTO
+		/// Not implemented for existing Delete System/Workspace Resource
+		/// </summary>
+		/// <param name="dtoToDelete"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		protected override int? Delete(ResourceDTO dtoToDelete)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Delete a system resource
+		/// </summary>
+		/// <param name="inDeleteResource"></param>
+		private void DeleteSystemResource(ResourceDTO inDeleteResource)
         {
             if (inDeleteResource == null)
             {
@@ -591,25 +644,6 @@ namespace GenBOE.DataBridge.DTO
                 gbe.deleteSystemResourceByResourceID(inDeleteResource.Id, inDeleteResource.UpdateDate);
 
             }
-        }
-
-        /// <summary>
-        /// delete a workspace resource
-        /// </summary>
-        /// <param name="inDeleteResource"></param>
-        private void DeleteWorkspaceResource(ResourceDTO inDeleteResource, int inWorkspaceResourceListID)
-        {
-            if (inDeleteResource == null)
-            {
-                throw new ArgumentNullException(nameof(inDeleteResource));
-            }
-
-            using (GenBoeEntities gbe = new GenBoeEntities())
-            {
-                gbe.deleteWorkspaceResourceByResourceID(inDeleteResource.Id, inWorkspaceResourceListID);
-
-            }
-
         }
 
         /// <summary>
@@ -644,66 +678,6 @@ namespace GenBOE.DataBridge.DTO
                     (int)inUpdateResource.ElementOfCost,
                     inUpdateResource.UpdateDate,
                     (int)inUpdateResource.RateType).FirstOrDefault());
-
-                // if the result ID is not a positive number, something bad went wrong so log it
-                if (resultID < 0)
-                {
-                    _log.Error("The returned ID from upsertResource SP was negative");
-
-                }
-                else
-                {
-                    // If this was a new resource, set the new ID on the DTO for later use, if necessary
-                    if (inUpdateResource.Id < 0)
-                    {
-                        inUpdateResource.Id = resultID;
-                    }
-                }
-            }
-
-
-            return resultID;
-
-        }
-
-        /// <summary>
-        /// update a workspace resource
-        /// </summary>
-        /// <param name="inUpdateResource">default resource</param>
-        private int UpdateWorkspaceResource(ResourceDTO inUpdateResource, int inWorkspaceResourceListID)
-        {
-            if (inUpdateResource == null)
-            {
-                throw new ArgumentNullException(nameof(inUpdateResource));
-            }
-
-            int? segmentValue = null;
-            int resultID = 0;
-
-
-            using (GenBoeEntities gbe = new GenBoeEntities())
-            {
-                if (inUpdateResource.Segment != SegmentType.None)
-                {
-                    segmentValue = (int)inUpdateResource.Segment;
-                }
-				System.Data.Entity.Core.Objects.ObjectResult<int?> results = gbe.upsertWorkspaceResource(
-                    inUpdateResource.Id,
-                    inUpdateResource.ResourceName,
-                    inUpdateResource.ResourceDesc,
-                    inUpdateResource.SegRegion,
-                    inUpdateResource.LaborType,
-                    segmentValue,
-                    inWorkspaceResourceListID,
-                    (int)inUpdateResource.ElementOfCost,
-                    inUpdateResource.UpdateDate,
-                    (int)inUpdateResource.RateType);
-
-                foreach (int? result in results)
-                    {
-                        resultID = Convert.ToInt32(result);
-                    }
-                
 
                 // if the result ID is not a positive number, something bad went wrong so log it
                 if (resultID < 0)
@@ -767,6 +741,40 @@ namespace GenBOE.DataBridge.DTO
 
             return result;
         }
-        #endregion
-    }
+
+		/// <summary>
+		/// Convert the ResourceDTO into a Resource entity
+		/// that will be used in the bulkInsert, bulkUpdate, and bulkUpdate
+		/// This is used on ICollection<TEntityType> entitiesToInsert = dtosToInsert.Select(d => this.ConvertDtoToEntity(d)).ToCollection();
+		/// And the TEntityType is what is used to insert the values and match the column to the parameters
+		/// </summary>
+		/// <param name="dtoToConvert"></param>
+		/// <returns>Resource class</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		protected override Resource ConvertDtoToEntity(ResourceDTO dtoToConvert)
+		{
+			if (dtoToConvert == null)
+			{
+				throw new ArgumentNullException(nameof(dtoToConvert));
+			}
+
+			Resource entity = new Resource()
+			{
+				// These match up with the TT_WorkspaceResource User Defined Table
+				ResourceID = dtoToConvert.Id,
+				UpdateDT = dtoToConvert.UpdateDate,
+				ResourceName = dtoToConvert.ResourceName,
+				ResourceDescription = dtoToConvert.ResourceDesc,
+				SegmentRegion = dtoToConvert.SegRegion,
+				LaborType = dtoToConvert.LaborType,
+				SegmentID = (int)dtoToConvert.Segment,
+				ResourceListID = dtoToConvert.ResourceListId,
+				CostElementID = (int)dtoToConvert.ElementOfCost,
+				DeletedFlag = dtoToConvert.Deleted,
+				RateTypeID = (int)dtoToConvert.RateType
+			};
+			return entity;
+		}
+		#endregion
+	}
 }

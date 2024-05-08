@@ -12,8 +12,8 @@ namespace RDM.Backend.Controllers
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
+	using System.Threading.Tasks;
 	using System.Transactions;
-	using Azure;
 	using IES.ActionLogic.Core.ControllerLogic;
 	using IES.ActionLogic.Core.IO.Export;
 	using IES.ActionLogic.Core.IO.Import;
@@ -32,8 +32,8 @@ namespace RDM.Backend.Controllers
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
-	using RDM.Backend.Models;
 	using RDM.Backend.Common;
+	using RDM.Backend.Models;
 
 	/// <summary>
 	/// The controller for Rates.
@@ -94,8 +94,8 @@ namespace RDM.Backend.Controllers
 			}
 			catch (Exception ex)
 			{
-				this.log.LogError(ex, "Unknown Exception.");
-				response.Messages.Add("Unknown Exception");
+				this.log.LogError(ex, CommonConstants.ERROR_GETTING_RATES_FOR_VERSION);
+				response.Messages.Add(CommonConstants.ERROR_GETTING_RATES_FOR_VERSION);
 			}
 
 			return this.Json(response);
@@ -318,7 +318,7 @@ namespace RDM.Backend.Controllers
 		/// <param name="id">Revision Id</param>
 		/// <returns>File contents</returns>
 		[HttpGet("[action]")]
-		public IActionResult DownloadRateCodesImportExample(int? id)
+		public async Task<IActionResult> DownloadRateCodesImportExample(int? id)
 		{
 			try
 			{
@@ -342,9 +342,57 @@ namespace RDM.Backend.Controllers
 			catch (GeneralAppException e)
 			{
 				this.log.LogError(e, "Unknown Exception.");
-				return this.CreateTextFileWithErrorMessage(e.Message);
+				return await this.CreateTextFileWithErrorMessage(e.Message);
 			}
 		}
+
+		/// <summary>
+		/// Export rates file from Homepage and Reports page
+		/// </summary>
+		/// <param name="id">Revision Id</param>
+		/// <returns>File contents</returns>
+		[HttpGet("[action]")]
+		public async Task<IActionResult> ExportRates(int? id, bool expanded = false)
+		{
+			try
+			{
+				RevisionModelView revision = id.HasValue ? this.Logic.Revisions.FirstOrDefault(r => r.Id == id.Value) : this.Logic.Revisions.LastOrDefault();
+				if (revision == null)
+				{
+					throw new GenValidationException("Revision not found.");
+				}
+				ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revision);
+				// Call the export function and get back the file name of the populated file.
+				string exportedFileName = RateCodeExporter.ExportToExcelFileWithYears(rates, expanded);
+
+				string dateString = DateTime.Now.ToShortDateString().Replace('\\', '-').Replace('/', '-');
+				string fileName = "Rates_RDM_" + revision.Revision + "_" + dateString + ".xlsx";
+				// Generate a custom ActionResult to cause a file download to the client
+				FileStream fs = new(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+				return this.File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.GetContentType(fileName),
+					fileDownloadName: fileName);
+			}
+			catch (GeneralAppException e)
+			{
+				this.log.LogError(e, "Unknown Exception.");
+				return await this.CreateTextFileWithErrorMessage(e.Message);
+			}
+			catch (GenValidationException ex)
+			{
+				string message = string.Join(' ', ex.GetValidationMessages(ex.ValidationList));
+				this.log.LogError(ex, "Validation exception exporting rates");
+				return await this.CreateTextFileWithErrorMessage(message);
+			}
+			catch (Exception ex)
+			{
+				this.log.LogError(ex, CommonConstants.ERROR_GETTING_RATES_FOR_VERSION);
+				return await this.CreateTextFileWithErrorMessage(CommonConstants.ERROR_GETTING_RATES_FOR_VERSION);
+			}
+		}
+
 
 		/// <summary>
 		/// Export rate codes file.
@@ -352,7 +400,7 @@ namespace RDM.Backend.Controllers
 		/// <param name="id">Revision Id</param>
 		/// <returns>File contents</returns>
 		[HttpGet("[action]")]
-		public IActionResult ExportRateCodes(int? id)
+		public async Task<IActionResult> ExportRateCodes(int? id)
 		{
 			try
 			{
@@ -375,7 +423,7 @@ namespace RDM.Backend.Controllers
 			catch (GeneralAppException e)
 			{
 				this.log.LogError(e, "Unknown Exception.");
-				return this.CreateTextFileWithErrorMessage(e.Message);
+				return await this.CreateTextFileWithErrorMessage(e.Message);
 			}
 		}
 

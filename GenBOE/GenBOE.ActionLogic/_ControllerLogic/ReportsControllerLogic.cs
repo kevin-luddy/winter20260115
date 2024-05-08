@@ -363,9 +363,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="ws">workspace</param>
         /// <param name="clearCache">Should be cleared when the web report is being displayed, to get a clean view; 
-        ///                             For the export we should be using cache (since you can ONLY export once the web report has been generated.</param>
+        ///                             For the export we should be using cache (since you can ONLY export once the web report has been generated).</param>
+		/// <param name="processResources">Should Resources be processed for missing Resources/BRCs? 
+		///		This should typically only be true when running export to ProPricer or All BOEs Report as additional validation</param>
         /// <returns>Data for the Boe Discrepancy Report</returns>
-        public ICollection<BoeDiscrepancyReportModelView> GenerateDataForBoeDiscrepancyReport(FullWorkspace ws, bool clearCache)
+        public ICollection<BoeDiscrepancyReportModelView> GenerateDataForBoeDiscrepancyReport(FullWorkspace ws, bool clearCache, bool processResources = false)
         {
             if (ws == null)
             {
@@ -384,7 +386,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             else
             {
                 this.cache.Remove(key);
-                theModelViews = this.boeDiscrepancyReport.GetReport(ws);
+                theModelViews = this.boeDiscrepancyReport.GetReport(ws, processResources);
 
                 if (theModelViews != null)
                 {

@@ -247,8 +247,9 @@ namespace IES.Common
 		[Description("WBS Summary of Hours, ODC Costs")]
 		WbsBoeReport = 38,
 		[Description("All BOEs broken down in segments")]
-		AllBOEsSegmented = 39
-
+		AllBOEsSegmented = 39,
+		[Description("Confidence Report")]
+		ConfidenceReport = 40
 	}
 
 	/// <summary>
@@ -635,6 +636,7 @@ namespace IES.Common
 		ProjMapClassOfCost = 73,
 		ProjMapOldResource = 74,
 		ResourceSegmentRegion = 76,
+		ProjMapResourceSegmentRegion = 78
 	}
 
 	/// <summary>
@@ -670,7 +672,8 @@ namespace IES.Common
 		ProjMapSpreadCode = 70,
 		ProjMapStartDate = 71,
 		ProjMapOldResource = 75,
-		ResourceSegmentRegion = 77
+		ResourceSegmentRegion = 77,
+		ProjMapResourceSegmentRegion = 79
 	}
 
 	/// <summary>
