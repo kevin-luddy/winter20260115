@@ -167,3 +167,5 @@ TT.NonZoneResourceID = R.ResourceID
 
 SELECT DISTINCT SystemResourceID FROM  @ResultSet 
 WHERE SystemResourceID IS NOT NULL
+
+GO
