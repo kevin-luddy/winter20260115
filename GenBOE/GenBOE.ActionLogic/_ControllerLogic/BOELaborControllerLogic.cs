@@ -1028,7 +1028,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 							// If PoP Query Type is set to monthly, bump the PoP Start and End to safeguard any timezone offsetting issues
 							// First by 10 hours to get the correct month, then to the middle of the month
-							if (table.QueryType.Equals(MoqTableData.MONTHLY))
+							if (table.QueryType == MoqTableData.MONTHLY)
 							{
 								table.PoPStart = table.PoPStart.HasValue ? table.PoPStart.Value.AddHours(10) : table.PoPStart;
 								table.PoPEnd = table.PoPEnd.HasValue ? table.PoPEnd.Value.AddHours(10) : table.PoPEnd;
