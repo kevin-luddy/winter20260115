@@ -245,7 +245,7 @@
                     <button type="button" class="ies" title="Mark this Proposal as No Bid" onclick="ContractsInfoWidget.setNoBid()" @(Model.NoBidButtonEnabled ? string.Empty : "disabled")>Mark Proposal as No Bid</button>
                 }
             }
-            <button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Lost</button>
+            <button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Not Awarded</button>
             <button id="proposal-complete" type="button" class="ies" @(Model.CompleteButtonEnabled ? string.Empty : "disabled")>Complete</button>
         </div>
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
