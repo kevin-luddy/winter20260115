@@ -157,7 +157,6 @@
     <Content Include="Object Scripts\Stored Procedures\getProjectMapIDForProjectMapAdvancedSearch.sql" />
     <Content Include="Object Scripts\Stored Procedures\getProjectMapIDForProjectMapQuickSearch.sql" />
     <Content Include="Object Scripts\Stored Procedures\getReportXml.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getResourceInUseFlagByResourceListID.sql" />
     <Content Include="Object Scripts\Stored Procedures\getResourceInUseFlagBySystemResourceID.sql" />
     <Content Include="Object Scripts\Stored Procedures\getSystemPermissions.sql" />
     <Content Include="Object Scripts\Stored Procedures\getSystemResourceInUseFlag.sql" />

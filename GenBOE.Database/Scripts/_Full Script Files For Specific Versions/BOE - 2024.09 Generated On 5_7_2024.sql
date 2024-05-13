@@ -17882,6 +17882,7 @@ TT.NonZoneResourceID = R.ResourceID
 SELECT DISTINCT SystemResourceID FROM  @ResultSet 
 WHERE SystemResourceID IS NOT NULL
 
+GO
 
 /*
     File: \Stored Procedures\getResourceInUseFlagBySystemResourceID.sql
@@ -37801,7 +37802,7 @@ BOEID int PRIMARY KEY,
 WorkspaceID int
 )
 INSERT INTO @BOE
-SELECT B.BOEID, B.WorkspaceID 
+SELECT DISTINCT B.BOEID, B.WorkspaceID 
 FROM dbo.BOE B
     INNER JOIN @Workspace W ON B.WorkspaceID = W.WorkspaceID
 
@@ -37915,6 +37916,7 @@ TT.NonZoneResourceID = R.ResourceID
 SELECT DISTINCT SystemResourceID FROM  @ResultSet 
 WHERE SystemResourceID IS NOT NULL
 
+GO
 
 /*
     File: \Table Based Processing\SumOfBoe_OrdinaryVarViaTable.sql

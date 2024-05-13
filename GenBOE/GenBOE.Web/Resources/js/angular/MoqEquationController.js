@@ -177,7 +177,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 
 		selectedItem.TableData = [];
-		$scope.CreateNewTable(selectedItem.TableData);
+		if (selectedItem.SelectedMOQType == $scope.model.HistoricalMoqType || selectedItem.SelectedMOQType == $scope.model.ComparativeMoqType) {
+			$scope.CreateNewTable(selectedItem.TableData);
+		}
+
 		$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
 		MOQEquationFieldWidget.setDirty();
 	}
