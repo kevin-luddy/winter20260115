@@ -344,7 +344,7 @@
 												<div title="{{item.ResourceDescription}}">{{item.ResourceDescription}}</div>
 											</td>
 											<td data-ng-show="IsBRCEnabled">
-												<div title="{{item.BusinessResourceDescription}}">{{item.BusinessResourceDescription}}</div>
+												<div title="{{item.BusinessResourceCodeDescription}}">{{item.BusinessResourceCodeDescription}}</div>
 											</td>
 											<td>
 												<div title="{{item.PerformingOrgName}}">{{item.PerformingOrgName}}</div>
@@ -435,11 +435,12 @@
 				<div id="LaborSpreadGridContent" class="clear labor-spread-grid-content">
 					<gen-validation data-errors="laborSpreadErrors"></gen-validation>
 					<div id="LaborSpreadGridBlock" class="ReadOnly">
-						<div class="labor-spread-labels">
+						<div data-ng-class="{'labor-spread-labels-brc': IsBRCEnabled }" class="labor-spread-labels">
 							<table class="header-rows">
 								<thead>
 									<tr>
 										<th>Resource</th>
+										<th data-ng-if="IsBRCEnabled">Business Resource Code</th>
 										<th>Performing Org</th>
 										<th class="display-none">&nbsp;</th>
 									</tr>
@@ -454,30 +455,31 @@
 										 */
 									%>
 									<tr data-ng-repeat="item in tableData | filter: { Deleted: false }">
-										<td class="ResourceName" title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
+										<td title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
+										<td title="{{item.BusinessResourceCodeName}}" data-ng-if="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
 										<td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
 									</tr>
 									<tr id="LaborSpreadHeaderDividerRow" class="subheader">
-										<td colspan="2" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
+										<td colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
 									</tr>
 									<tr>
-										<td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
+										<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
 									</tr>
 									<tr>
-										<td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
+										<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
 									</tr>
 									<tr>
-										<td class="subheader" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
+										<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
 										<td class="hours-total">{{totalSpreadHours}}</td>
 									</tr>
 									<tr>
-										<td class="subheader" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
+										<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
 										<td class="cost-total"><span class="labor-spread-currency">$</span>{{ totalSpreadCost}}</td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
-						<div data-ng-if="(tableData | filter: { Deleted: false }).length > 0" class="labor-spread-scroll">
+						<div data-ng-if="(tableData | filter: { Deleted: false }).length > 0"  data-ng-class="{'labor-spread-scroll-brc': IsBRCEnabled}" class="labor-spread-scroll">
 							<table class="data" name="LaborSpreadData">
 								<thead>
 									<tr>

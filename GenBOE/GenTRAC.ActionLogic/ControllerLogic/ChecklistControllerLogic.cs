@@ -137,7 +137,7 @@ namespace GenTRAC.ActionLogic
                 sb.Append(string.Format("&{0}={1}", Constants.Report.PROPOSAL_ADEQUACY_REVIEW_ID, reportParameters.ChecklistVersion));
             }
             
-            Uri toReturn = new Uri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "PAR Checklist Report", sb));
+            Uri toReturn = SafeUriUtility.safeUri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "PAR Checklist Report", sb));
             return toReturn;
         }
 

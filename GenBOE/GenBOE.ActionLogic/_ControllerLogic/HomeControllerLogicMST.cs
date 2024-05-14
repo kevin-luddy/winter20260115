@@ -32,7 +32,7 @@ namespace GenBOE.ActionLogic
             if (theModelView != null)
             {
                 // MST uses metrics from external PMM site
-                theModelView.linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("MstMetricsUrl"));
+                theModelView.linkUrl = SafeUriUtility.safeUri(ConfigurationUtilities.GetAppSetting("MstMetricsUrl"));
                 theModelView.securityPage = SecurityPage.SystemAdmin;
             }
         }

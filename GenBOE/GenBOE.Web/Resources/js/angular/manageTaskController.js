@@ -834,7 +834,7 @@
 		var dataArray = [];
 
 		angular.forEach($scope.tableData, function (item, key) {
-			if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && item.ResourceID !== undefined && !item.Deleted) {
+			if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && (item.ResourceID !== undefined || item.BusinessResourceCodeID !== undefined) && !item.Deleted) {
 				// now check hours or cost depending on resource type
 				var spreadValueString;
 				if (item.RateType === ManageTaskModel.RateTypeCost) {
@@ -1145,12 +1145,16 @@
 
 		if (TaskElementDetailsWidget.isAnyDirty() && !TaskElementDetailsWidget.waitingBeforeSubmit) {
 			var invalidResources = $("#LaborTypesFixed td.resources.inputError").length > 0;
+			var invalidBusinessResourceCodes = ManageTaskModel.IsBRCEnabled && $("#LaborTypesFixed td.business-resource-codes.inputError").length > 0;
 			var invalidPerfOrgs = $("#LaborTypesFixed td.performing-org.inputError").length > 0;
 
-			if ($scope.invalidSpreads || invalidResources || invalidPerfOrgs) {
+			if ($scope.invalidSpreads || invalidResources || invalidBusinessResourceCodes || invalidPerfOrgs) {
 				var invalidArray = [];
 				if (invalidResources) {
 					invalidArray.push("Resources");
+				}
+				if (invalidBusinessResourceCodes) {
+					invalidArray.push("Business Resource Codes");
 				}
 				if (invalidPerfOrgs) {
 					invalidArray.push("Performing Orgs");
@@ -1525,26 +1529,80 @@
 		$scope.checkIfNewRowNeeded(item);
 	};
 
-	$scope.isResourceValid = function (input, models) {
-		result = true;
+	$scope.getAndSetIsResourceValid = function (item, models, callBusinessResourceCode) {
+		item.IsResourceValid = true;
 
-		if (input === undefined || (typeof input === 'string' && (input.length === 0
-			|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-			result = false;
+		// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
+		// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
+		var startDate = item.StartDate.toDate();
+		var endDate = item.EndDate.toDate();
+		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.split(' ')[0].toDate();
+		var input = item.ResourceInput;
+		
+		if (!$scope.IsBRCEnabled) {
+			if (!item.NewLaborType) {
+				if (input === undefined || (typeof input === 'string' && (input.length === 0
+					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+					item.IsResourceValid = false;
+				}
+			}
+		}
+		else {
+			if (!item.NewLaborType) {
+				if (endDate < oneLmxCutOff) {
+					if (input === undefined || (typeof input === 'string' && (input.length === 0
+						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+						item.IsResourceValid = false;
+					}
+				}
+
+				if (startDate < oneLmxCutOff && endDate >= oneLmxCutOff) {
+					if (input === undefined || (typeof input === 'string' && (input.length === 0
+						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+						item.IsResourceValid = false;
+					}
+
+					if (callBusinessResourceCode) {
+						item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
+					}
+				}
+			}
 		}
 
-		return result;
+		return item.IsResourceValid;
 	}
 
-	$scope.isBusinessResouceCodeValid = function (input, models) {
-		result = true;
+	$scope.getAndSetIsBusinessResourceCodeValid = function (item, models, callResource) {
+		item.IsBusinessResourceCodeValid = true;
 
-		if (input === undefined || (typeof input === 'string' && (input.length === 0
-			|| models.filter(function (r) { return r.BusinessResourceCodeDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-			result = false;
+		// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
+		// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
+		var startDate = item.StartDate.toDate();
+		var endDate = item.EndDate.toDate();
+		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.split(' ')[0].toDate();
+		var input = item.BusinessResourceCodeInput;
+
+		if (!item.NewLaborType) {
+			if (startDate >= oneLmxCutOff) {
+				if (input === undefined || (typeof input === 'string' && (input.length === 0
+					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+					item.IsBusinessResourceCodeValid = false;
+				}
+			}
+
+			if (startDate < oneLmxCutOff && endDate >= oneLmxCutOff) {
+				if (input === undefined || (typeof input === 'string' && (input.length === 0
+					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+					item.IsBusinessResourceCodeValid = false;
+				}
+
+				if (callResource) {
+					item.IsResourceValid = $scope.getAndSetIsResourceValid(item, $scope.ResourceModels, false);
+				}
+			}
 		}
 
-		return result;
+		return item.IsBusinessResourceCodeValid;
 	}
 
 	$scope.isPerfOrgValid = function (input, models) {
@@ -1732,7 +1790,7 @@
 
 	$scope.recalculateSpreads = function (item) {
 		// validate everything is kosher for the row
-		if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && item.ResourceID !== undefined) {
+		if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && (item.ResourceID !== undefined || item.BusinessResourceCodeID !== undefined)) {
 			// now check hours or cost depending on resource type
 			var spreadValueString;
 			if (item.RateType === ManageTaskModel.RateTypeCost) {
@@ -1872,6 +1930,11 @@
 		item.ResourceInput = '';
 		// update Resource which sets Dirty
 		$scope.resourceUpdated(item);
+
+		if ($scope.IsBRCEnabled) {
+			item.BusinessResourceCodeInput = '';
+			$scope.businessResourceCodeUpdated(item);
+		}
 
 		$scope.checkIfNewRowNeeded(item);
 	};
@@ -2085,7 +2148,7 @@
 
 				if (item.BusinessResourceCodeDescription) {
 					item.BusinessResourceCodeInput = $scope.BusinessResourceCodeModels.find(function (res) {
-						return res.BusinessResourceCodeDesc == item.BusinessResourceCodeDescription
+						return res.ResourceDesc == item.BusinessResourceCodeDescription
 					});
 				}
 
@@ -2096,6 +2159,7 @@
 				}
 			} else {
 				item.ResourceInput = item.ResourceDescription;
+				item.BusinessResourceCodeInput = item.BusinessResourceCodeDescription;
 				item.PerfOrgInput = item.PerformingOrgName;
 			}
 		});

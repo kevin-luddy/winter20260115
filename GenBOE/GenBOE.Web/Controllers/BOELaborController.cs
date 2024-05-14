@@ -194,9 +194,21 @@ namespace GenBOE.Web.Controllers
 			};
 
 			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
+			
+			bool missingBRCs = false;
+			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			{
+				//check if ws contains BRCs, if not, mark tasks as read only
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				//if no brcs in ws, display warning
+				if (resources.Count == 0)
+				{
+					missingBRCs = true;
+				}
+			}
 
 			ViewData["Order_Of_ResourceTypes"] = orderOfResourceTypes;
-			string viewName = isReadOnly || (ws.WorkspaceState != WorkspaceState.Working && !(ws.WorkspaceState == WorkspaceState.Locked && boe.State == BOEState.Draft))
+			string viewName = isReadOnly || (ws.WorkspaceState != WorkspaceState.Working && !(ws.WorkspaceState == WorkspaceState.Locked && boe.State == BOEState.Draft)) || missingBRCs
 				? WebConstants.VIEW_LABOR_TASK_STATIC
 				: WebConstants.VIEW_LABOR_TASK;
 
@@ -263,7 +275,7 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			ICollection<ResourceDTO> resources = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId, false).ToList();
+			ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), false).ToList();
 
 			ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
@@ -289,7 +301,7 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			ICollection<ResourceDTO> resources = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId, true).ToList();
+			ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true).ToList();
 
 			ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
@@ -589,6 +601,16 @@ namespace GenBOE.Web.Controllers
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
 			ViewData["SAPWorkspaceBeforeCutoff"] = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
 			ViewData["HistoricalReferenceExplanationIsRequired"] = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
+
+			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			{
+				//check if ws contains BRCs, if not, mark moq equation as read only
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				if (resources.Count == 0)
+				{
+					ViewData["READONLY"] = true;
+				}
+			}
 
 			ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
 
@@ -1203,7 +1225,16 @@ namespace GenBOE.Web.Controllers
 				DataRelationshipVerifier.VerifyDataRelation(thisTaskElement, boeID);
 			}
 
-			string templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread.xlsx";
+			string templateName;
+
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread_BRCEnabled.xlsx";
+			}
+			else
+			{
+				templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread.xlsx";
+			}
 
 			string exportedFileName = LaborTypeAndSpreadExporter.ExportToExcelFile(Server.MapPath(templateName), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement, boeID, isTemplate);
 
@@ -1733,6 +1764,8 @@ namespace GenBOE.Web.Controllers
 				ICollection<ImportLaborTypeModelView> laborTypesToUpdate = (from i in importResults
 																			where i.ImportTypes.Contains((int)LaborTypeImportResult.UpdateLaborType)
 																			select i).ToList();
+				
+				ICollection<ResourceDTO> originalResourceList = workspace.ResourcesForWsResourceListId.ToList();
 
 				foreach (ImportLaborTypeModelView laborTypeToUpdate in laborTypesToUpdate)
 				{
@@ -1742,13 +1775,21 @@ namespace GenBOE.Web.Controllers
 					thisLT.StartDateValue = laborTypeToUpdate.StartDate;
 					thisLT.SpreadCurveID = (SpreadCurves)laborTypeToUpdate.SpreadCurveID;
 					thisLT.ResourceID = laborTypeToUpdate.ResourceID;
+					thisLT.BusinessResourceCodeID = laborTypeToUpdate.BusinessResourceCodeID;
 
 					// Determine the spread type based on the rate type of the resource.
-					ResourceDTO resourceForLabor = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
-					if (resourceForLabor != null)
+					RateType rateType;
+					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false).FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
+					ResourceDTO brcForLabor = null;
+
+					if (Utilities.IsBRCEnabledForSystem)
 					{
-						thisLT.SpreadType = resourceForLabor.RateType == RateType.Cost ? SpreadType.Cost : SpreadType.Hours;
+						brcForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true).FirstOrDefault(r => r.Id == laborTypeToUpdate.BusinessResourceCodeID);
 					}
+
+					// Rate Type Validation not needed here as the import already does it
+					rateType = resourceForLabor?.RateType ?? brcForLabor.RateType;
+					thisLT.SpreadType = rateType == RateType.Cost ? SpreadType.Cost : SpreadType.Hours;
 
 					thisLT.PerformingOrgID = laborTypeToUpdate.PerformingOrgID;
 					thisLT.Updateable = UpdateType.Upsert;
@@ -1815,6 +1856,7 @@ namespace GenBOE.Web.Controllers
 					newLT.StartDateValue = laborTypeToAdd.StartDate;
 					newLT.SpreadCurveID = (SpreadCurves)laborTypeToAdd.SpreadCurveID;
 					newLT.ResourceID = laborTypeToAdd.ResourceID;
+					newLT.BusinessResourceCodeID = laborTypeToAdd.BusinessResourceCodeID;
 					newLT.PerformingOrgID = laborTypeToAdd.PerformingOrgID;
 					newLT.Updateable = UpdateType.Upsert;
 					newLT.PercentSpreadLocked = laborTypeToAdd.PercentSpreadLocked;
@@ -1826,8 +1868,18 @@ namespace GenBOE.Web.Controllers
 					newLT.CustomFieldValueContainers = laborTypeToAdd.CustomFieldValueContainers.ToContainers();
 
 					// Determine the spread type based on the rate type of the resource.
-					ResourceDTO resourceForLabor = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTypeToAdd.ResourceID);
-					newLT.SpreadType = resourceForLabor != null && resourceForLabor.RateType == RateType.Cost ? SpreadType.Cost : SpreadType.Hours;
+					RateType rateType;
+					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false).FirstOrDefault(r => r.Id == laborTypeToAdd.ResourceID);
+					ResourceDTO brcForLabor = null;
+
+					if (Utilities.IsBRCEnabledForSystem)
+					{
+						brcForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true).FirstOrDefault(r => r.Id == laborTypeToAdd.BusinessResourceCodeID);
+					}
+
+					// Rate Type Validation not needed here as the import already does it
+					rateType = resourceForLabor?.RateType ?? brcForLabor.RateType;
+					newLT.SpreadType = rateType == RateType.Cost ? SpreadType.Cost : SpreadType.Hours;
 
 					if (newLT.SpreadCurveID != SpreadCurves.DiscreteHours && newLT.SpreadType == SpreadType.Hours)
 					{
@@ -1908,7 +1960,6 @@ namespace GenBOE.Web.Controllers
 
 				// Process task variable and workspace variable dependencies
 				this._BoeLaborControllerLogic.ProcessAllVariableDependencies(boeID, workspace);
-
 			}
 		}
 

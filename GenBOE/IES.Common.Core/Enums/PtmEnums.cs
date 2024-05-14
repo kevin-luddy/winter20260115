@@ -446,7 +446,7 @@ namespace IES.Common.Core.Enums
 		/// <summary>
 		/// Lost
 		/// </summary>
-		[Description("Lost")]
+		[Description("Not Awarded")]
 		Lost = 10
 	}
 
@@ -898,7 +898,7 @@ namespace IES.Common.Core.Enums
 		/// <summary>
 		/// Lost
 		/// </summary>
-		[Description("Lost")]
+		[Description("Not Awarded")]
 		Lost = 3,
 
 		/// <summary>
@@ -1181,7 +1181,7 @@ namespace IES.Common.Core.Enums
 		/// <summary>
 		/// Lost
 		/// </summary>
-		[Description("Lost")]
+		[Description("Not Awarded")]
 		Lost = 10,
 
 		/// <summary>

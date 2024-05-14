@@ -1,173 +1,194 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <parameters>
-  <!--  http://colinsalmcorner.com/post/end-to-end-walkthrough-deploying-web-applications-using-team-build-and-release-management
-        The publish profile takes care of the connection strings – but you will have noticed that it doesn’t ask for values for appSettings 
-        (or any other configuration) anywhere. In order to tokenize anything in your web.config other than connection strings, you’ll need to 
-        create a parameters.xml file (yes, it has to be called that) in the root of your web application project. When the build runs, it 
-        will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
-  
-  <!--appSettings-->
+	<!--  http://colinsalmcorner.com/post/end-to-end-walkthrough-deploying-web-applications-using-team-build-and-release-management
+		The publish profile takes care of the connection strings – but you will have noticed that it doesn’t ask for values for appSettings 
+		(or any other configuration) anywhere. In order to tokenize anything in your web.config other than connection strings, you’ll need to 
+		create a parameters.xml file (yes, it has to be called that) in the root of your web application project. When the build runs, it 
+		will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
 
-  <parameter name="ShowIesHeader" description="doesn't matter" defaultvalue="__ShowIesHeader__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowIesHeader']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="IsReadOnly" description="doesn't matter" defaultvalue="__IsReadOnly__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsReadOnly']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="UnclassifiedBannerText" description="doesn't matter" defaultvalue="__UnclassifiedBannerText__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UnclassifiedBannerText']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="IESBannerApp" description="doesn't matter" defaultvalue="__IESBannerApp__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESBannerApp']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="ShutOffExternalLinksForClassifiedInstall" description="doesn't matter" defaultvalue="__ShutOffExternalLinksForClassifiedInstall__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShutOffExternalLinksForClassifiedInstall']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="OverrideSubNonUs" description="doesn't matter" defaultvalue="__OverrideSubNonUs__" tags="">
-	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='OverrideSubNonUs']/@value">
-	</parameterentry>
-</parameter>
-<parameter name="SAPSpaceStartDate" description="doesn't matter" defaultvalue="__SAPSpaceStartDate__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SAPSpaceStartDate']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="IESSAPUrl" description="doesn't matter" defaultvalue="__IESSAPUrl__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESSAPUrl']/@value">
-    </parameterentry>
-  </parameter>
+	<!--appSettings-->
+
+	<parameter name="RemoveEmptySpans" description="doesn't matter" defaultvalue="__RemoveEmptySpans__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RemoveEmptySpans']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="HistoricalReferenceExplanationStartDate" description="doesn't matter" defaultvalue="__HistoricalReferenceExplanationStartDate__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='HistoricalReferenceExplanationStartDate']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ShowIesHeader" description="doesn't matter" defaultvalue="__ShowIesHeader__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowIesHeader']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IsReadOnly" description="doesn't matter" defaultvalue="__IsReadOnly__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsReadOnly']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="UnclassifiedBannerText" description="doesn't matter" defaultvalue="__UnclassifiedBannerText__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UnclassifiedBannerText']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESBannerApp" description="doesn't matter" defaultvalue="__IESBannerApp__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESBannerApp']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ShutOffExternalLinksForClassifiedInstall" description="doesn't matter" defaultvalue="__ShutOffExternalLinksForClassifiedInstall__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShutOffExternalLinksForClassifiedInstall']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="OverrideSubNonUs" description="doesn't matter" defaultvalue="__OverrideSubNonUs__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='OverrideSubNonUs']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="SAPSpaceStartDate" description="doesn't matter" defaultvalue="__SAPSpaceStartDate__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SAPSpaceStartDate']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESSAPUrl" description="doesn't matter" defaultvalue="__IESSAPUrl__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESSAPUrl']/@value">
+		</parameterentry>
+	</parameter>
 	<parameter name="oAuthIESClientSecret" description="doesn't matter" defaultvalue="__oAuthIESClientSecret__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthIESClientSecret']/@value">
 		</parameterentry>
 	</parameter>
-  <parameter name="ProPricerApiUrl" description="doesn't matter" defaultvalue="__ProPricerApiUrl__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ProPricerApiUrl']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="ServerURL" description="doesn't matter" defaultvalue="__ServerURL__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ServerURL']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="MstMetricsUrl" description="doesn't matter" defaultvalue="__MstMetricsUrl__" tags="">
-    <parameterValidation kind="AllowEmpty" />
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MstMetricsUrl']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="SubsTreatedAsLmEmployees" description="doesn't matter" defaultvalue="__SubsTreatedAsLmEmployees__" tags="">
-    <parameterValidation kind="AllowEmpty" />
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SubsTreatedAsLmEmployees']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="CompanyConfiguration" description="doesn't matter" defaultvalue="__CompanyConfiguration__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='CompanyConfiguration']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="MaxDegreeOfParallelism" description="doesn't matter" defaultvalue="__MaxDegreeOfParallelism__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MaxDegreeOfParallelism']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="ADGroupsAllowedToSwapIdentity" description="doesn't matter" defaultvalue="__ADGroupsAllowedToSwapIdentity__" tags="">
-    <parameterValidation kind="AllowEmpty" />
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ADGroupsAllowedToSwapIdentity']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="ProdUrlBoe" description="doesn't matter" defaultvalue="__ProdUrlBoe__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ProdUrlBoe']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="IsBOEFormVisible" description="doesn't matter" defaultvalue="__IsBOEFormVisible__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsBOEFormVisible']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="IsPortionMarkingEnabled" description="doesn't matter" defaultvalue="__IsPortionMarkingEnabled__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsPortionMarkingEnabled']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="DisableAllEmails" description="doesn't matter" defaultvalue="__DisableAllEmails__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DisableAllEmails']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="EmailsToCurrentlyLoggedInUser" description="doesn't matter" defaultvalue="__EmailsToCurrentlyLoggedInUser__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EmailsToCurrentlyLoggedInUser']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="MaxDbQueries" description="doesn't matter" defaultvalue="__MaxDbQueries__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MaxDbQueries']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="IESHomeUrl" description="doesn't matter" defaultvalue="__IESHomeUrl__" tags="">
-    <parameterValidation kind="AllowEmpty" />
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESHomeUrl']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="ShowEquivalentPersonsOption" description="doesn't matter" defaultvalue="__ShowEquivalentPersonsOption__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowEquivalentPersonsOption']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="LogType" description="doesn't matter" defaultvalue="__LogType__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LogType']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="DisablePiwik" description="doesn't matter" defaultvalue="__DisablePiwik__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DisablePiwik']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="PiwikId" description="doesn't matter" defaultvalue="__PiwikId__" tags="">
-    <parameterValidation kind="AllowEmpty" />
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PiwikId']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="IsIdentitySwappingAllowed" description="doesn't matter" defaultvalue="__IsIdentitySwappingAllowed__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsIdentitySwappingAllowed']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="ShowUserName" description="doesn't matter" defaultvalue="__ShowUserName__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowUserName']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="ShowUserName" description="doesn't matter" defaultvalue="__ShowUserName__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowUserName']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="ReportServerFolderName" description="doesn't matter" defaultvalue="__ReportServerFolderName__" tags="">
-    <parameterValidation kind="AllowEmpty" />
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ReportServerFolderName']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="ReportServerLocation" description="doesn't matter" defaultvalue="__ReportServerLocation__" tags="">
-    <parameterValidation kind="AllowEmpty" />
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ReportServerLocation']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="UsersAllowedProPricerAccess" description="doesn't matter" defaultvalue="__UsersAllowedProPricerAccess__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UsersAllowedProPricerAccess']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="EnableSendToProPricerDirectly" description="doesn't matter" defaultvalue="__EnableSendToProPricerDirectly__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableSendToProPricerDirectly']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="_APPLICATION_VERSION" description="doesn't matter" defaultvalue="__APPLICATION_VERSION__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='APPLICATION_VERSION']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="MOQHelpBaseUrl" description="doesn't matter" defaultvalue="__MOQHelpBaseUrl__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MOQHelpBaseUrl']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="MoqTemplateStartDate" description="doesn't matter" defaultvalue="__MoqTemplateStartDate__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MoqTemplateStartDate']/@value">
-    </parameterentry>
-  </parameter>
-  <parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
-	<parameterValidation kind="AllowEmpty" />
-	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthDomain']/@value">
-	</parameterentry>
-  </parameter>
+	<parameter name="ProPricerApiUrl" description="doesn't matter" defaultvalue="__ProPricerApiUrl__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ProPricerApiUrl']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ServerURL" description="doesn't matter" defaultvalue="__ServerURL__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ServerURL']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="MstMetricsUrl" description="doesn't matter" defaultvalue="__MstMetricsUrl__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MstMetricsUrl']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="SubsTreatedAsLmEmployees" description="doesn't matter" defaultvalue="__SubsTreatedAsLmEmployees__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SubsTreatedAsLmEmployees']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="CompanyConfiguration" description="doesn't matter" defaultvalue="__CompanyConfiguration__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='CompanyConfiguration']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="MaxDegreeOfParallelism" description="doesn't matter" defaultvalue="__MaxDegreeOfParallelism__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MaxDegreeOfParallelism']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ADGroupsAllowedToSwapIdentity" description="doesn't matter" defaultvalue="__ADGroupsAllowedToSwapIdentity__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ADGroupsAllowedToSwapIdentity']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ProdUrlBoe" description="doesn't matter" defaultvalue="__ProdUrlBoe__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ProdUrlBoe']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IsBOEFormVisible" description="doesn't matter" defaultvalue="__IsBOEFormVisible__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsBOEFormVisible']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IsPortionMarkingEnabled" description="doesn't matter" defaultvalue="__IsPortionMarkingEnabled__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsPortionMarkingEnabled']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="DisableAllEmails" description="doesn't matter" defaultvalue="__DisableAllEmails__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DisableAllEmails']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="EmailsToCurrentlyLoggedInUser" description="doesn't matter" defaultvalue="__EmailsToCurrentlyLoggedInUser__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EmailsToCurrentlyLoggedInUser']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="MaxDbQueries" description="doesn't matter" defaultvalue="__MaxDbQueries__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MaxDbQueries']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESHomeUrl" description="doesn't matter" defaultvalue="__IESHomeUrl__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESHomeUrl']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESBannerUrl" description="doesn't matter" defaultvalue="__IESBannerUrl__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESBannerUrl']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ShowEquivalentPersonsOption" description="doesn't matter" defaultvalue="__ShowEquivalentPersonsOption__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowEquivalentPersonsOption']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="LogType" description="doesn't matter" defaultvalue="__LogType__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LogType']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="DisablePiwik" description="doesn't matter" defaultvalue="__DisablePiwik__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DisablePiwik']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="PiwikId" description="doesn't matter" defaultvalue="__PiwikId__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PiwikId']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IsIdentitySwappingAllowed" description="doesn't matter" defaultvalue="__IsIdentitySwappingAllowed__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsIdentitySwappingAllowed']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ShowUserName" description="doesn't matter" defaultvalue="__ShowUserName__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowUserName']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ShowUserName" description="doesn't matter" defaultvalue="__ShowUserName__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowUserName']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ReportServerFolderName" description="doesn't matter" defaultvalue="__ReportServerFolderName__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ReportServerFolderName']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="ReportServerLocation" description="doesn't matter" defaultvalue="__ReportServerLocation__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ReportServerLocation']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="UsersAllowedProPricerAccess" description="doesn't matter" defaultvalue="__UsersAllowedProPricerAccess__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UsersAllowedProPricerAccess']/@value">
+		</parameterentry>
+	</parameter>
+    <parameter name="SystemAdminADGroup" description="doesn't matter" defaultvalue="__SystemAdminADGroup__" tags="">
+        <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SystemAdminADGroup']/@value">
+        </parameterentry>
+    </parameter>
+    <parameter name="SubcontractAdminADGroup" description="doesn't matter" defaultvalue="__SubcontractAdminADGroup__" tags="">
+        <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SubcontractAdminADGroup']/@value">
+        </parameterentry>
+    </parameter>
+	<parameter name="EnableSendToProPricerDirectly" description="doesn't matter" defaultvalue="__EnableSendToProPricerDirectly__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableSendToProPricerDirectly']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="_APPLICATION_VERSION" description="doesn't matter" defaultvalue="__APPLICATION_VERSION__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='APPLICATION_VERSION']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="MOQHelpBaseUrl" description="doesn't matter" defaultvalue="__MOQHelpBaseUrl__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MOQHelpBaseUrl']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="MoqTemplateStartDate" description="doesn't matter" defaultvalue="__MoqTemplateStartDate__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MoqTemplateStartDate']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthDomain']/@value">
+		</parameterentry>
+	</parameter>
 	<parameter name="EnableSAP" description="doesn't matter" defaultvalue="__EnableSAP__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableSAP']/@value">
 		</parameterentry>
@@ -176,53 +197,49 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableBRC']/@value">
 		</parameterentry>
 	</parameter>
-	<parameter name="SpaceSystemsOneLMXCutOffDate" description="doesn't matter" defaultValue="__SpaceSystemsOneLMXCutOffDate" tag="">
-		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SpaceSystemsOneLMXCutOffDate']/@value">
-		</parameterentry>
-	</parameter>
-	<parameter name="RMSOneLMXCutOffDate" description="doesn't matter" defaultValue="__RMSOneLMXCutOffDate" tag="">
-		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RMSOneLMXCutOffDate']/@value">
+	<parameter name="EnableConfidenceReport" description="doesn't matter" defaultvalue="__EnableConfidenceReport__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableConfidenceReport']/@value">
 		</parameterentry>
 	</parameter>
 	<!--system.web-->
-  <parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
-    </parameterentry>
-  </parameter>
-  <parameter name="debug" description="doesn't matter" defaultvalue="__debug__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/compilation/@debug">
-    </parameterentry>
-  </parameter>
-  <parameter name="cookiesRequireSSL" description="doesn't matter" defaultvalue="__cookiesRequireSSL__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/httpCookies/@requireSSL">
-    </parameterentry>
-  </parameter>
-  
-  <!--loggingConfiguration-->
-  <parameter name="logFilePath" description="doesn't matter" defaultvalue="__logFilePath__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/loggingConfiguration/listeners/add[@name='Rolling Flat File Performance Listener']/@fileName">
-    </parameterentry>
-  </parameter>
+	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
+		</parameterentry>
+	</parameter>
+	<parameter name="debug" description="doesn't matter" defaultvalue="__debug__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/compilation/@debug">
+		</parameterentry>
+	</parameter>
+	<parameter name="cookiesRequireSSL" description="doesn't matter" defaultvalue="__cookiesRequireSSL__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/httpCookies/@requireSSL">
+		</parameterentry>
+	</parameter>
 
-  <!--elmah-->
-  <parameter name="elmahConnectionString" description="doesn't matter" defaultvalue="__elmahConnectionString__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/elmah/errorLog[@type='Elmah.SqlErrorLog, Elmah']/@connectionString">
-    </parameterentry>
-  </parameter>
-  <parameter name="elmahApplicationName" description="doesn't matter" defaultvalue="__elmahApplicationName__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/elmah/errorLog[@type='Elmah.SqlErrorLog, Elmah']/@applicationName">
-    </parameterentry>
-  </parameter>
+	<!--loggingConfiguration-->
+	<parameter name="logFilePath" description="doesn't matter" defaultvalue="__logFilePath__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/loggingConfiguration/listeners/add[@name='Rolling Flat File Performance Listener']/@fileName">
+		</parameterentry>
+	</parameter>
 
-  <!--system.webServer-->
-  <parameter name="enableSslRedirect" description="doesn't matter" defaultvalue="__enableSslRedirect__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.webServer/rewrite/rules/rule['Redirect to HTTPs']/@enabled">
-    </parameterentry>
-  </parameter>
-  
-  <!-- Glimpse -->
-  <parameter name="enableGlimpse" description="doesn't matter" defaultvalue="__enableGlimpse__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/glimpse/@defaultRuntimePolicy">
-    </parameterentry>
-  </parameter>
+	<!--elmah-->
+	<parameter name="elmahConnectionString" description="doesn't matter" defaultvalue="__elmahConnectionString__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/elmah/errorLog[@type='Elmah.SqlErrorLog, Elmah']/@connectionString">
+		</parameterentry>
+	</parameter>
+	<parameter name="elmahApplicationName" description="doesn't matter" defaultvalue="__elmahApplicationName__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/elmah/errorLog[@type='Elmah.SqlErrorLog, Elmah']/@applicationName">
+		</parameterentry>
+	</parameter>
+
+	<!--system.webServer-->
+	<parameter name="enableSslRedirect" description="doesn't matter" defaultvalue="__enableSslRedirect__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.webServer/rewrite/rules/rule['Redirect to HTTPs']/@enabled">
+		</parameterentry>
+	</parameter>
+
+	<!-- Glimpse -->
+	<parameter name="enableGlimpse" description="doesn't matter" defaultvalue="__enableGlimpse__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/glimpse/@defaultRuntimePolicy">
+		</parameterentry>
+	</parameter>
 </parameters>

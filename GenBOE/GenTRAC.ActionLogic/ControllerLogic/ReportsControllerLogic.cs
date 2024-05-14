@@ -387,7 +387,7 @@ namespace GenTRAC.ActionLogic
 
             sb.Append(string.Format("&{0}={1}", Constants.Report.EXECUTION_USER_ID, reportParameters.ExecutionUserIds));
 
-            toReturn = new Uri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Log Report", sb));
+            toReturn = SafeUriUtility.safeUri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Log Report", sb));
             return toReturn;
         }
 
@@ -664,7 +664,7 @@ namespace GenTRAC.ActionLogic
 
             sb.Append(string.Format("&{0}={1}", Constants.Report.EXECUTION_USER_ID, reportParameters.ExecutionUserIds));
 
-            toReturn = new Uri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Activity Report", sb));
+            toReturn = SafeUriUtility.safeUri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Activity Report", sb));
             return toReturn;
         }
 
@@ -844,7 +844,7 @@ namespace GenTRAC.ActionLogic
             sb.Append(string.Format("&{0}={1}", Constants.Report.EXECUTION_USER_ID, reportParameters.ExecutionUserIds));
 
             // build URI
-            toReturn = new Uri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "DFARS Non-Standard Responses", sb));
+            toReturn = SafeUriUtility.safeUri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "DFARS Non-Standard Responses", sb));
 
             return toReturn;
         }

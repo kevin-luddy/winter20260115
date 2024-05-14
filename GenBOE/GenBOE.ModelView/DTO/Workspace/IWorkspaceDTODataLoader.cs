@@ -98,10 +98,11 @@ namespace GenBOE.DataBridge.DTO
 		/// This is basically an extension method of 'GetWorkspaceDataByNtidForNlf'
 		/// </summary>
 		/// <param name="ntid">user NTID</param>
+		/// <param name="trackingNumbers">list of all tracking numbers tied to a user</param>
 		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		[DbQuery]
-		ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid);
+		ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid, ICollection<string> trackingNumbers);
 
 		/// <summary>
 		/// Get all Workspace inner data for a system admin to be used in NLF home grid
@@ -111,6 +112,14 @@ namespace GenBOE.DataBridge.DTO
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		[DbQuery]
 		ICollection<NlfWorkspaceInnerDataDTO> GetAllWorkspaceInnerDataForNlf();
+
+		/// <summary>
+		/// Get Workspace Inner Data for a System Admin
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <returns>Collection of Workspace Inner Data</returns>
+		[DbQuery]
+		ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataForNlf(string trackingNumber);
 
 		/// <summary>
 		/// Get Workspace Inner Data for a System Admin
@@ -127,6 +136,21 @@ namespace GenBOE.DataBridge.DTO
 		/// <returns>Collection of Material PBoe</returns>
 		[DbQuery]
 		ICollection<MPBoeDataDTO> GetMaterialPBoeForWorkspace(int workspaceID);
+
+		/// <summary>
+		/// Get Material PBoe Data for a given tracking number
+		/// </summary>
+		/// <param name="trackingNumber">The tracking number</param>
+		[DbQuery]
+		ICollection<MPBoeDataDTO> GetMaterialPBoeForWorkspace(string trackingNumber);
+
+		/// <summary>
+		/// Get all workspaces given a tracking number
+		/// </summary>
+		/// <param name="trackingNumber">Tracking number</param>
+		/// <returns>Collection of matching workspaces</returns>
+		[DbQuery]
+		ICollection<WorkspaceDTO> GetWorkspacesByTrackingNumber(string trackingNumber);
 
 		#endregion
 

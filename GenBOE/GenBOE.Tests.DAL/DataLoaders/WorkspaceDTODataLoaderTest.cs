@@ -990,98 +990,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 		}
 
 		/// <summary>
-		/// Test GetWorkspaceDataByNtidForNlf for a user with Workspace Admin
-		/// </summary>
-		[TestMethod]
-		public void TestGetWorkspaceInnerDataByNtidForNlf_WorkspaceAdmin()
-		{
-			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
-
-			string ntid;
-			Workspace workspace;
-
-			using (GenBoeEntities gbe = new GenBoeEntities())
-			{
-				workspace = gbe.Workspaces.Include(typeof(LineOfBusiness).Name).FirstOrDefault(x => x.WorkspaceUserRoles.Any(y => y.RoleID == (int)Role.WorkspaceAdmin) && x.IsDeleted == false);
-				WorkspaceUserRole user = gbe.WorkspaceUserRoles.FirstOrDefault(x => x.RoleID == (int)Role.WorkspaceAdmin && x.WorkspaceID == workspace.WorkspaceID);
-				ntid = user.ETIuser.NTID;
-			}
-
-			ICollection<NlfWorkspaceInnerDataDTO> result = sut.GetWorkspaceInnerDataByNtidForNlf(ntid);
-
-			Assert.IsTrue(result.Any());
-			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID
-					&& x.WorkspaceUrl == workspace.WorkspaceShortName
-					&& x.WorkspaceName == workspace.WorkspaceName
-					&& x.LineOfBusiness.LineOfBusinessID == workspace.LineOfBusiness.LineOfBusinessID
-					&& x.PTMTrackingNumber == workspace.TrackingNumber
-					&& x.WorkspaceCreationDate == workspace.WorkspaceCreationDate
-					&& x.EstimatingLead == workspace.ETIuser.DisplayName));
-		}
-
-		/// <summary>
-		/// Test GetWorkspaceInnerDataByNtidForNlf for a user with GSCO Admin
-		/// </summary>
-		[TestMethod]
-		public void TestGetWorkspaceInnerDataByNtidForNlf_GSCOAdmin()
-		{
-			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
-
-			string ntid;
-			Workspace workspace;
-
-			using (GenBoeEntities gbe = new GenBoeEntities())
-			{
-				workspace = gbe.Workspaces.Include(typeof(LineOfBusiness).Name).FirstOrDefault(x => x.WorkspaceUserRoles.Any(y => y.RoleID == (int)Role.SubcontractAdmin) && x.IsDeleted == false);
-				WorkspaceUserRole user = gbe.WorkspaceUserRoles.FirstOrDefault(x => x.RoleID == (int)Role.WorkspaceAdmin && x.WorkspaceID == workspace.WorkspaceID);
-				ntid = user.ETIuser.NTID;
-			}
-
-			ICollection<NlfWorkspaceInnerDataDTO> result = sut.GetWorkspaceInnerDataByNtidForNlf(ntid);
-
-			Assert.IsTrue(result.Any());
-			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID
-					&& x.WorkspaceUrl == workspace.WorkspaceShortName
-					&& x.WorkspaceName == workspace.WorkspaceName
-					&& x.LineOfBusiness.LineOfBusinessID == workspace.LineOfBusiness.LineOfBusinessID
-					&& x.PTMTrackingNumber == workspace.TrackingNumber
-					&& x.WorkspaceCreationDate == workspace.WorkspaceCreationDate
-					&& x.EstimatingLead == workspace.ETIuser.DisplayName));
-		}
-
-		/// <summary>
-		/// Test GetAllWorkspaceDataForNlf (for a user with System Admin)
-		/// </summary>
-		[TestMethod]
-		public void TestGetAllWorkspaceInnerDataForNlf()
-		{
-			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
-
-			string ntid;
-			Workspace workspace;
-			int workspaceCount;
-
-			using (GenBoeEntities gbe = new GenBoeEntities())
-			{
-				workspace = gbe.Workspaces.Include(typeof(LineOfBusiness).Name).Include(typeof(ETIuser).Name).FirstOrDefault(x => x.IsDeleted == false);
-				workspaceCount = gbe.Workspaces.Count(x => x.IsDeleted == false);
-			}
-
-			ICollection<NlfWorkspaceInnerDataDTO> result = sut.GetAllWorkspaceInnerDataForNlf();
-
-			NlfWorkspaceInnerDataDTO specificWorkspace = result.FirstOrDefault(r => r.WorkspaceId == workspace.WorkspaceID);
-			Assert.IsTrue(result.Any());
-			Assert.AreEqual(workspaceCount, result.Count);
-			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID
-				&& x.WorkspaceUrl == workspace.WorkspaceShortName
-				&& x.WorkspaceName == workspace.WorkspaceName
-				&& x.LineOfBusiness.LineOfBusinessID == workspace.LineOfBusiness.LineOfBusinessID
-				&& x.PTMTrackingNumber == workspace.TrackingNumber
-				&& x.WorkspaceCreationDate == workspace.WorkspaceCreationDate
-				&& x.EstimatingLead == workspace.ETIuser.DisplayName));
-		}
-
-		/// <summary>
 		/// Test GetWorkspaceInnerDataByWorkspaceIdForNlf (for a user with System Admin)
 		/// </summary>
 		[TestMethod]
@@ -1230,8 +1138,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             var odcsRestored = odcLoader.GetByBoeIds(boesRestored.Select(x => x.Id).ToList());
             OtherDirectCostDTODataLoaderTest.VerifyCollections(odcsFromDb, odcsRestored, true);
 
-            var resourcesFromDb = resourceLoder.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
-            var resourcesRestored = resourceLoder.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
+            var resourcesFromDb = resourceLoder.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID.HasValue ? (int)z.ResourceID : (int)z.BusinessResourceCodeID).Distinct().ToList());
+            var resourcesRestored = resourceLoder.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID.HasValue ? (int)z.ResourceID : (int)z.BusinessResourceCodeID).Distinct().ToList());
             ResourceDTODataLoaderTest.VerifyCollections(resourcesFromDb, resourcesRestored, true);
 
             var wsVarsFromDb = wsVarLoader.GetByWorkspaceID(wsFromDb.Id);
@@ -1242,8 +1150,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             var ppRestored = ppLoader.GetByWorkspaceId(wsRestoredFromBackupId);
             ProPricerDTODataLoaderTest.VerifyCollections(ppFromDb, ppRestored, true);
 
-            var perfOrgsFromDb = perfOrgLoader.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
-            var perfOrgsRestored = perfOrgLoader.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
+            var perfOrgsFromDb = perfOrgLoader.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID.HasValue ? (int)z.ResourceID : (int)z.BusinessResourceCodeID).Distinct().ToList());
+            var perfOrgsRestored = perfOrgLoader.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID.HasValue ? (int)z.ResourceID : (int)z.BusinessResourceCodeID).Distinct().ToList());
             Assert.AreEqual(perfOrgsFromDb.Count, perfOrgsRestored.Count);
             for (int i = 0; i < perfOrgsFromDb.Count; i++)
             {

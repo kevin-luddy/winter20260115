@@ -53,6 +53,11 @@ namespace GenBOE.Web.ModelView
         /// </summary>
         public int ResourceID { get; set; }
 
+		/// <summary>
+		/// Id of the business resource code with the labor type
+		/// </summary>
+		public int BusinessResourceCodeID { get; set; }
+
         /// <summary>
         /// Id of the clin associated with the labor type
         /// </summary>

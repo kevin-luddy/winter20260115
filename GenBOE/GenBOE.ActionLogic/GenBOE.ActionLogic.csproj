@@ -224,6 +224,7 @@
     <Compile Include="Common\Offload\OffloadLaborRatesValidationResults.cs" />
     <Compile Include="Common\Offload\OffloadLaborRatesResults.cs" />
     <Compile Include="Common\Search\PerfOrgSearch.cs" />
+    <Compile Include="Common\BRCValidationUtility.cs" />
     <Compile Include="Common\WBSOrCLINValidationAttribute.cs" />
     <Compile Include="Common\SystemSettingConstants.cs" />
     <Compile Include="Connected Services\IESSAPClient\IESSAPClient.cs" />
@@ -637,7 +638,6 @@
     <None Include="Connected Services\IESSAPClient\IESSAPClient.nswag.json" />
     <None Include="packages.config" />
     <None Include="ServiceJsonFiles\iesSAP.swagger.json" />
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="OpenAPIs\" />

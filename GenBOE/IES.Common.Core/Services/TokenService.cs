@@ -14,6 +14,7 @@ namespace IES.Common.Core.Services
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
+	using IES.Common.Core.Utilities;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 	using Newtonsoft.Json;
@@ -66,7 +67,7 @@ namespace IES.Common.Core.Services
 			string authority = configuration["Federation:Authority"];
 			clientId = configuration["Federation:ClientId"];
 			clientSecret = configuration["Federation:Secret"];
-			_client.BaseAddress = new Uri(authority);
+			_client.BaseAddress = SafeUriUtility.safeUri(authority);
 			_client.DefaultRequestHeaders.Add("cache-control", "no-cache");
 		}
 

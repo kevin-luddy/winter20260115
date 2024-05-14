@@ -405,16 +405,17 @@ namespace GenBOE.ActionLogic.DateShift
             }
         }
 
-        /// <summary>
-        /// Checks the errors.
-        /// </summary>
-        /// <param name="dateShiftable">The date shiftable.</param>
-        /// <param name="detail">The detail.</param>
-        /// <param name="parentStart">The parent start.</param>
-        /// <param name="parentEnd">The parent end.</param>
-        /// <param name="parentBoeId">The parent's BOE ID.</param>
-        /// <param name="parentLevel">The parent's Level.</param>
-        private static void CheckErrors(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel)
+		/// <summary>
+		/// Checks the errors.
+		/// </summary>
+		/// <param name="dateShiftable">The date shiftable.</param>
+		/// <param name="detail">The detail.</param>
+		/// <param name="parentStart">The parent start.</param>
+		/// <param name="parentEnd">The parent end.</param>
+		/// <param name="parentBoeId">The parent's BOE ID.</param>
+		/// <param name="parentLevel">The parent's Level.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "<Pending>")]
+		private static void CheckErrors(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel)
         {
             if (dateShiftable.StartDate.HasValue && dateShiftable.EndDate.HasValue)
             {
@@ -436,6 +437,12 @@ namespace GenBOE.ActionLogic.DateShift
                 // check to make sure range is within PoP (Period of Performance)
                 if (parentStart.HasValue && parentEnd.HasValue)
                 {
+					DateTime oneLMXStartDate = Utilities.OneLmxStartDate;
+					DateTime previousStartDate = dateShiftable.StartDate.Value;
+					DateTime previousEndDate = dateShiftable.EndDate.Value;
+					DateTime? shiftedStartDate = null;
+					DateTime? shiftedEndDate = null;
+
                     if (dateShiftable.StartDate < parentStart)
                     {
                         if (detail.Error2Handling.HasValue)
@@ -451,21 +458,28 @@ namespace GenBOE.ActionLogic.DateShift
                                         throw new NotSupportedException("This Child Modification Type is not allowed for Error Child outside the PoP of the Parent. To Start is only allowed for Error Handling when the Operation is a positive Shift.");
                                     }
                                     dateShiftable.StartDate = parentStart;
-                                    if (dateShiftable.EndDate < parentStart)
+									shiftedStartDate = parentStart.Value;
+
+									if (dateShiftable.EndDate < parentStart)
                                     {
                                         dateShiftable.EndDate = parentStart;
+										shiftedEndDate = parentStart.Value;
                                     }
                                     break;
                                 case ChildModificationType.ToEnd:
                                     dateShiftable.EndDate = parentEnd;
+									shiftedEndDate = parentEnd.Value;
                                     if (dateShiftable.StartDate > parentEnd)
                                     {
                                         dateShiftable.StartDate = parentEnd;
+										shiftedStartDate = parentEnd.Value;
                                     }
                                     break;
                                 case ChildModificationType.ToPoP:
                                     dateShiftable.StartDate = parentStart;
-                                    dateShiftable.EndDate = parentEnd;
+									dateShiftable.EndDate = parentEnd;
+									shiftedStartDate = parentStart.Value;
+									shiftedEndDate = parentEnd.Value;
                                     break;
                                 default:
                                     throw new NotSupportedException("This Child Modification Type is not allowed for Error Child outside the PoP of the Parent: " + detail.Error2Handling.Value.ToDescription());
@@ -491,16 +505,20 @@ namespace GenBOE.ActionLogic.DateShift
                                 case ChildModificationType.ToEnd:
                                     int duration = dateShiftable.StartDate.Value.MonthDifference(dateShiftable.EndDate.Value);
                                     dateShiftable.EndDate = parentEnd;
+									shiftedEndDate = parentEnd.Value;
                                     if (detail.Operation == Operation.Shift)
                                     {
                                         // only change start date if this is a shift
                                         dateShiftable.StartDate = parentEnd.Value.AddMonths(-1 * duration);
+										shiftedStartDate = parentEnd.Value.AddMonths(-1 * duration);
                                     }
                                     break;
                                 case ChildModificationType.ToPoP:
                                     dateShiftable.StartDate = parentStart;
                                     dateShiftable.EndDate = parentEnd;
-                                    break;
+									shiftedStartDate = parentStart.Value;
+									shiftedEndDate = parentEnd.Value;
+									break;
                                 default:
                                     throw new NotSupportedException("This Child Modification Type is not allowed for Error Child outside the PoP of the Parent: " + detail.Error2Handling.Value.ToDescription());
                             }
@@ -512,9 +530,60 @@ namespace GenBOE.ActionLogic.DateShift
                             detail.Errors.Messages.Add(string.Format("{0} is outside the PoP of parent {1}.", dateShiftable.DateShiftLevel.ToDescription(), parentLevel.ToDescription()));
                         }
                     }
+
+					if (Utilities.IsBRCEnabledForSystem)
+					{
+						if (previousStartDate < oneLMXStartDate)
+						{
+							if (shiftedStartDate.HasValue && shiftedStartDate.Value >= oneLMXStartDate)
+							{
+								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the right of");
+							}
+						}
+
+						if (previousEndDate < oneLMXStartDate)
+						{
+							if (shiftedEndDate.HasValue && shiftedEndDate.Value >= oneLMXStartDate)
+							{
+								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource", "End Date", "shifted to the right of");
+							}
+						}
+
+						if (previousStartDate >= oneLMXStartDate)
+						{
+							if (shiftedStartDate.HasValue && shiftedStartDate.Value < oneLMXStartDate)
+							{
+								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the left of");
+							}
+						}
+
+						if (previousEndDate >= oneLMXStartDate)
+						{
+							if (shiftedEndDate.HasValue && shiftedEndDate.Value < oneLMXStartDate)
+							{
+								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "End Date", "shifted to the left of");
+							}
+						}
+					}
                 }
             }
         }
+
+		/// <summary>
+		/// Populate Details Model with proper Error message
+		/// </summary>
+		/// <param name="dateShiftable">Shiftable Model</param>
+		/// <param name="detail">Date Shift Table Model</param>
+		/// <param name="parentBoeId">Parent BOE ID</param>
+		/// <param name="type">Type affect (Resource and/or Business Resource Code)</param>
+		/// <param name="affectedDate">Start or End Date affected</param>
+		/// <param name="shift">Shift to left or right of 1LMX Cutoff Date</param>
+		private static void AddResourceTypeError(IDateShiftable dateShiftable, DateShiftDetailModelView detail, int? parentBoeId, string type, string affectedDate, string shift)
+		{
+			detail.Errors.HasError2 = true;
+			AddErrorInfo(dateShiftable, detail, parentBoeId);
+			detail.Errors.Messages.Add($"{affectedDate} has {shift} 1LMX Start Date. {type} will be affected");
+		}
 
         /// <summary>
         /// Performs the task spreads shift.

@@ -2229,7 +2229,8 @@ namespace GenTRAC.DataBridge.DTO
 						ProposalStatus = x.ProposalStatusLU.ProposalStatus,
 						// Set date to null if CCoPD required so it will be populated in ACV
 						CostVolumeSubmittalDate = x.CCPDRequired.HasValue && x.CCPDRequired.Value ? null
-							: x.RevisedSubmittalDate.HasValue ? x.RevisedSubmittalDate : x.AnticipatedDeliveryDate
+							: x.RevisedSubmittalDate.HasValue ? x.RevisedSubmittalDate : x.AnticipatedDeliveryDate,
+						CCLogNumber = x.ProposalContractsDatas1.Any() ? x.ProposalContractsDatas1.FirstOrDefault().ContractsCorrespondLogNumber : string.Empty
 					}).FirstOrDefault();
 				}
 			}
@@ -2241,8 +2242,9 @@ namespace GenTRAC.DataBridge.DTO
 		/// Get Proposal Roles for the given user that are needed for NLF
 		/// </summary>
 		/// <param name="ntid">NTID</param>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
 		/// <returns>Collection of Proposals and Roles for the user</returns>
-		public ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid)
+		public ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid, string ptmTrackingNumber = "")
 		{
 			ICollection<ProposalRoleDto> result = new Collection<ProposalRoleDto>();
 			ntid = ntid.ToLower();
@@ -2252,7 +2254,7 @@ namespace GenTRAC.DataBridge.DTO
 				using (genTRACEntities dbModel = new genTRACEntities())
 				{
 					result = dbModel.Proposals.Where(x => x.ProposalClassLU.ProposalClass != Constants.PROPOSAL_CLASS_FORECASTED
-						&& x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid))
+						&& x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid) && (string.IsNullOrEmpty(ptmTrackingNumber) || x.ProposalTrackingID == ptmTrackingNumber))
 						.SelectMany(x => x.ProposalUserRoles).Where(role => role.genTRACUser.NTID.ToLower() == ntid
 							&& (role.RoleID == (int)PtmRole.Pricer || role.RoleID == (int)PtmRole.BackupPricer
 								|| role.RoleID == (int)PtmRole.CostVolumeLead || role.RoleID == (int)PtmRole.SupplyChainPOCMatl
@@ -2267,6 +2269,36 @@ namespace GenTRAC.DataBridge.DTO
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Get Lead Estimator and Backup Estimator names for a tracking number
+		/// </summary>
+		/// <param name="ptmTrackingNumber">PTM tracking number</param>
+		public ICollection<ProposalRoleDto> GetEstimatorNames(string ptmTrackingNumber)
+		{
+			ICollection<ProposalRoleDto> names;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (genTRACEntities gte = new genTRACEntities())
+				{
+					names = (from p in gte.Proposals
+							 join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
+							 join gtu in gte.genTRACUsers on pur.UserID equals gtu.UserID
+							 where p.ProposalTrackingID == ptmTrackingNumber
+							 && (pur.RoleID == (int)PtmRole.Pricer || pur.RoleID == (int)PtmRole.BackupPricer)
+							 select new ProposalRoleDto
+							 {
+								 TrackingNumber = p.ProposalTrackingID,
+								 Role = (PtmRole)pur.RoleID,
+								 UserName = gtu.DisplayName,
+								 NTID = gtu.NTID
+							 }).ToList();
+				}
+			}
+
+			return names;
 		}
 	}
 }

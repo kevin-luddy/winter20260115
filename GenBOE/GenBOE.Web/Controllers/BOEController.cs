@@ -23,7 +23,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.ControllerLogic;
-	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.Metrics;
@@ -325,6 +324,19 @@ namespace GenBOE.Web.Controllers
 			}
 
 			ViewData["Order_Of_TaskElements"] = orderOfTaskElements;
+
+			//if start date before and end date after, must have resource and brc, if both after, must have brc
+			//set view data for task grid to disable "add task element" and "duplicate task"
+			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			{
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspaceObject.ResourcesForWsResourceListId.ToList(), true);
+				//if no brcs in ws, display warning
+				if (resources.Count == 0)
+				{
+					ViewData["MissingBrcCodes"] = true;
+				}
+			}
+
 			sw.Stop();
 			_log.Performance("Finished BOEController.DisplayTaskElementGrid.", sw.ElapsedMilliseconds);
 
@@ -436,6 +448,18 @@ namespace GenBOE.Web.Controllers
 
 			SecurityAuthorization boeDateShiftAuthorization = CheckPermissions(SecurityPage.BoeTaskDates, ws, boeID);
 			ViewData["ALLOW_DATE_SHIFT"] = (boeDateShiftAuthorization == SecurityAuthorization.CreateReadUpdateDelete);
+
+			//if start date before and end date after, must have resource and brc, if both after, must have brc
+			//set view data for boe header to display read only warning
+			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			{
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				//if no brcs in ws, display warning
+				if (resources.Count == 0)
+				{
+					ViewData["MissingBrcCodes"] = true;
+				}
+			}
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_HEADER, _ControllerLogic.CreateBOEHeaderMV(boe, ws));
 
@@ -635,11 +659,14 @@ namespace GenBOE.Web.Controllers
 									where p.Role == Role.SubcontractorAuthor && p.ETIUserId == ws.CurrentActiveUser.UserID
 									select p).Any();
 
+			// Initiate a NON Readonly list of Resources
+			ICollection<ResourceDTO> originalResourceList = ws.ResourcesForWsResourceListId.ToList();
+			
 			// Perform Action
 			ViewData["BOEID"] = boeID;
 			ViewData["isMaterial"] = boe.isMaterial;
-			ViewData["WSRESOURCES"] = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId, false);
-			ViewData["WSBUSINESSRESOURCECODES"] = SiteMasterUtilities.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId, true);
+			ViewData["WSRESOURCES"] = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false);
+			ViewData["WSBUSINESSRESOURCECODES"] = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true);
 			ViewData["WSPERFORGS"] = _BoeLaborControllerLogic.GetPerformingOrgs(ws);
 			ViewBag.WsClins = ws.Clins.Where(x => !x.ClinNumber.Equals("MULTI")).Select(x => new { ClinId = x.Id, ClinName = x.ClinString }).ToList();
 			ViewBag.WsWbss = ws.WbsElements.Where(x => !x.WbsNumber.Equals("MULTI")).Select(x => new { WbsId = x.Id, WbsName = x.WbsString }).ToList();
@@ -762,6 +789,28 @@ namespace GenBOE.Web.Controllers
 
 			// Finalize Action
 			FinalizeAction(_log, "DisplaySubmitForApproval", sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Display the Confidence Report Button in a BOE
+		/// </summary>
+		/// <param name="workspace">Workspace Shortname</param>
+		/// <param name="boeID">BOE ID</param>
+		/// <returns>ViewResult for Confidence Report Button</returns>
+		public ViewResult DisplayConfidenceReportButton(string workspace, int boeID)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			
+			ViewData["BOEID"] = boeID;
+			ViewData["HideConfidenceReport"] = !Utilities.IsConfidenceReportEnabled;
+			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT);
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, sw);
 			return toReturn;
 		}
 

@@ -54,7 +54,7 @@ namespace GenBOE.ActionLogic.Reporting
         /// <param name="ws">WS which we'll be checking</param>
         /// <returns>Data w/ discrepancies</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "secondTask", Justification="Not used, but it's created to make sure the data matches what we are looking for")]
-        public ICollection<BoeDiscrepancyReportModelView> GetReport(FullWorkspace ws)
+        public ICollection<BoeDiscrepancyReportModelView> GetReport(FullWorkspace ws, bool processResources)
         {
             if (ws == null)
             {
@@ -66,8 +66,14 @@ namespace GenBOE.ActionLogic.Reporting
             HashSet<BoeTaskElementDTO> laborHourTaskElements = new HashSet<BoeTaskElementDTO>(this.wsRecalc.GetTaskElementsWithNonZeroDeltaLabor(ws));
             HashSet<BoeTaskElementDTO> costTaskElements = new HashSet<BoeTaskElementDTO>(this.wsRecalc.GetTaskElementsWithInconsistentCosts(ws));
             HashSet<OtherDirectCostDTO> odcTaskElements = new HashSet<OtherDirectCostDTO>(this.wsRecalc.GetElementsWithInconsistentODCs(ws));
+			HashSet<BoeTaskElementDTO> resourceTaskElements = new HashSet<BoeTaskElementDTO>();
 
-            if (laborHourTaskElements.Any() || costTaskElements.Any() || odcTaskElements.Any())
+			if (Utilities.IsBRCEnabledForSystem && processResources)
+			{
+				resourceTaskElements.AddRange(this.wsRecalc.GetTaskElementsWithMissingResource(ws));
+			}
+
+            if (laborHourTaskElements.Any() || costTaskElements.Any() || odcTaskElements.Any() || resourceTaskElements.Any())
             {
                 // preload data
                 HashSet<FullBoe> boes = new HashSet<FullBoe>(ws.Boes);
@@ -78,6 +84,10 @@ namespace GenBOE.ActionLogic.Reporting
                 ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Hours, laborHourTaskElements, ws);
                 ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Cost, costTaskElements, ws);
                 ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.ODC, odcTaskElements, ws);
+				if (Utilities.IsBRCEnabledForSystem && processResources)
+				{
+					ProcessTaskElements(allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Resource, resourceTaskElements, ws);
+				}
             }
 
             #region Grouping/Consolidating things into matching BOEs and Task Elements

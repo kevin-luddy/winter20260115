@@ -39,5 +39,10 @@ namespace GenTRAC.DataBridge.DTO
 		/// If CCoPD is false, then Revised Anticipated Delivery Date will be use if available, otherwise Anticipated Delivery Date
 		/// </summary>
 		public DateTime? CostVolumeSubmittalDate { get; set; }
+
+		/// <summary>
+		/// Contracts Correspondence Log Number 
+		/// </summary>
+		public string CCLogNumber { get; set; }
 	}
 }

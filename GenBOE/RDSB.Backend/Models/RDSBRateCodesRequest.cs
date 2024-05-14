@@ -13,14 +13,14 @@ namespace RDSB.Backend.Models
 	/// </summary>
 	public class RDSBRateCodesRequest
 	{
-        /// <summary>
-        /// Rate Codes.
-        /// </summary>
-        public ICollection<string> RateCodes { get; set; }
+		/// <summary>
+		/// Rate Codes.
+		/// </summary>
+		public ICollection<string> RateCodes { get; set; }
 
-        /// <summary>
-        /// PTM Proposal Id.
-        /// </summary>
-        public int PtmProposalId { get; set; }
-    }
+		/// <summary>
+		/// PTM Proposal Id.
+		/// </summary>
+		public int PtmProposalId { get; set; }
+	}
 }

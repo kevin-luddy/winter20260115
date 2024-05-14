@@ -19,12 +19,12 @@ namespace GenBOE.DataBridge.DTO
         /// <returns>BOE Forms used by Workspace.</returns>
         ICollection<BOEFormPBOEDTO> GetByWorkspaceId(int wsId);
 
-        /// <summary>
-        /// Returns a collection of PBOE BOE Form DTOs based on the Collection of Ids.
-        /// </summary>
-        /// <param name="workspaceId">Capture Ids.</param>
-        /// <returns>The matching DTOs.</returns>
-        ICollection<PBOEDataDTO> GetPBOEsForWorkspace(int workspaceId);
+		/// <summary>
+		/// Returns a collection of PBOEs for a given PTM tracking number
+		/// </summary>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
+		/// <returns>The matching DTOs.</returns>
+		ICollection<PBOEDataDTO> GetPBOEsForTrackingNumber(string ptmTrackingNumber);
 
 		/// <summary>
 		/// Get a single PBOE from a Workspace ID and PBOE ID.
@@ -33,6 +33,14 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="pboeId">PBOE ID</param>
 		/// <returns>Single PBOE by Workspace ID and PBOE ID</returns>
 		ICollection<PBOEDataDTO> GetPBOEByIDs(int workspaceId, int pboeId);
+
+		/// <summary>
+		/// Get a single PBOE from a Tracking Number and PBOE ID.
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <param name="pboeId">PBOE ID</param>
+		/// <returns>Single PBOE by Workspace ID and PBOE ID</returns>
+		ICollection<PBOEDataDTO> GetPBOEByIDs(string trackingNumber, int pboeId);
 
 		/// <summary>
 		/// Retrieves the latest version number of the form.

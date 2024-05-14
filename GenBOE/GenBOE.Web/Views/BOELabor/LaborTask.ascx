@@ -54,6 +54,7 @@
 	var ManageWBS_ContainsOCI = <%= Model.ContainsOci.ToString().ToLower() %>;
 	var currentWorkspace = '<%: SiteMasterUtilities.GetCurrentWorkspace() %>';
 	var boeLaborController = '<%: WebConstants.CONTROLLER_BOE_LABOR %>';
+	var isBrcEnabled = '<%= Utilities.IsBRCEnabledForSystem %>'.isTrue();
 	var completeImportUrl = CreatePostURL(currentWorkspace, boeLaborController,
                         '<%:WebConstants.ACTION_IMPORT_LABOR_TYPE_AND_SPREAD %>',
 		'boe/' + '<%= ViewData["BOEID"] %>' + '/taskelement/' + '<%: ViewData["TASKID"] %>');
@@ -78,6 +79,7 @@
 
 	ImportLaborType.UploadComplete = function () { //Function will be called when iframe is loaded
 		var uploadResponseElement = $("#ImportLaborTypeDialog-UploadTarget").contents().find("body #UploadResponse");
+
 		//hide and unload sections
 		$("#ImportLaborTypeResults div.import-result-type").addClass('display-none');
 		$('#ImportLaborTypeResults div.import-result-type ul.resultsList').empty();
@@ -115,14 +117,20 @@
 
 						for (var ltresultTypeNdx = 0; ltresultTypeNdx < ImportLaborType.ImportedData[ltresultNdx].ImportTypes.length; ltresultTypeNdx++) {
 							var ImportType = ImportLaborType.ImportedData[ltresultNdx].ImportTypes[ltresultTypeNdx].toString();
-
+							
 							switch (ImportType) {
 								case '<%: (int)LaborTypeImportResult.MissingData %>':
 								case '<%: (int)LaborTypeImportResult.ResourceMultiValuesInvalid %>':
 								case '<%: (int)LaborTypeImportResult.InvalidData %>':
 									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
-									$('#ImportLaborTypeResults #ImportResult-MissingData').removeClass('display-none');
-									$('#ImportLaborTypeResults #ImportResult-MissingData ul.resultsList').append(listItemToAppend);
+									if (!isBrcEnabled) {
+										$('#ImportLaborTypeResults #ImportResult-MissingData').removeClass('display-none');
+										$('#ImportLaborTypeResults #ImportResult-MissingData ul.resultsList').append(listItemToAppend);
+									}
+									else {
+										$('#ImportLaborTypeResults #ImportResult-MissingData-BRCEnabled').removeClass('display-none');
+										$('#ImportLaborTypeResults #ImportResult-MissingData-BRCEnabled ul.resultsList').append(listItemToAppend);
+									}
 									missingDataRows++;
 									break;
 								case '<%: (int)LaborTypeImportResult.AddLaborType%>':
@@ -167,6 +175,31 @@
 									break;
 								case '<%: (int)LaborTypeImportResult.SpreadMonthValueOutsideDateRange%>':
 									$('#ImportLaborTypeResults #ImportResult-SpreadMonthValueOutsideDateRange').removeClass('display-none');
+									break;
+								case '<%: (int)LaborTypeImportResult.RateTypesDoNotMatch%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-RateTypesDoNotMatch').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-RateTypesDoNotMatch ul.resultsList').append(listItemToAppend);
+									break;
+								case '<%: (int)LaborTypeImportResult.MissingResource%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-MissingResource').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-MissingResource ul.resultsList').append(listItemToAppend);
+									break;
+								case '<%: (int)LaborTypeImportResult.MissingBusinessResourceCode%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-MissingBusinessResourceCode').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-MissingBusinessResourceCode ul.resultsList').append(listItemToAppend);
+									break;
+								case '<%: (int)LaborTypeImportResult.MissingStartEndDate%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-MissingStartEndDate').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-MissingStartEndDate ul.resultsList').append(listItemToAppend);
+									break;
+								case '<%: (int)LaborTypeImportResult.MissingResourceOrBRC%>':
+									var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+									$('#ImportLaborTypeResults #ImportResult-MissingResourceOrBRC').removeClass('display-none');
+									$('#ImportLaborTypeResults #ImportResult-MissingResourceOrBRC ul.resultsList').append(listItemToAppend);
 									break;
 								default:
 									break;
@@ -607,7 +640,7 @@
 														<option data-ng-repeat="option in ManageTaskModel.ElementsOfCost" data-ng-value="option.ElementOfCostId">{{option.ElementOfCostName}}</option>
 													</select>
 												</td>
-												<td class="resources" data-ng-class="{inputError: isResourceValid(item.ResourceInput, ResourceModels) === false && item.NewLaborType === false }">
+												<td class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels, true) === false }">
 													<div class="resource-selection bootstrap">
 														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 1}}" data-ng-model="item.ResourceInput" data-ng-change="resourceSelected(item.ResourceInput, item)"
 															data-ng-options="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'ResourceDesc'">
@@ -615,32 +648,32 @@
 														<input data-ng-if="!showDropdowns" tabindex="{{tabindex + 1}}" type="text" data-ng-model="item.ResourceInput" placeholder="Select a resource" uib-typeahead="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="2" data-ng-change="resourceUpdated(item)" typeahead-on-select="resourceSelected($item, item)">
 													</div>
 												</td>
-												<td data-ng-show="IsBRCEnabled" class="resources" data-ng-class="{inputError: isBusinessResourceCodeValid(item.BusinessResourceCodeInput, BusinessResourceCodeModels) === false && item.NewLaborType === false }">
+												<td data-ng-show="IsBRCEnabled" class="business-resource-codes" data-ng-class="{ inputError: getAndSetIsBusinessResourceCodeValid(item, BusinessResourceCodeModels, true) === false }">
 													<div class="resource-selection bootstrap">
-														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 1}}" data-ng-model="item.BusinessResourceCodeInput" data-ng-change="businessResourceCodeSelected(item.BusinessResourceCode, item)"
+														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 2}}" data-ng-model="item.BusinessResourceCodeInput" data-ng-change="businessResourceCodeSelected(item.BusinessResourceCode, item)"
 															data-ng-options="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'BusinessResourceCodeDesc'">
 														</select>
-														<input data-ng-if="!showDropdowns" tabindex="{{tabindex + 1}}" type="text" data-ng-model="item.BusinessResourceCodeInput" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" data-ng-change="businessResourceCodeUpdated(item)" typeahead-on-select="businessResourceCodeSelected($item, item)">
+														<input data-ng-if="!showDropdowns" tabindex="{{tabindex + 2}}" type="text" data-ng-model="item.BusinessResourceCodeInput" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" data-ng-change="businessResourceCodeUpdated(item)" typeahead-on-select="businessResourceCodeSelected($item, item)">
 													</div>
 												</td>
 												<td class="performing-org" data-ng-class="{inputError: isPerfOrgValid(item.PerfOrgInput, PerfOrgModels) === false && item.NewLaborType === false }">
 													<div class="perforg-selection bootstrap">
-														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 2}}" data-ng-model="item.PerfOrgInput" data-ng-change="perfOrgSelected(item.PerfOrgInput, item)"
+														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 3}}" data-ng-model="item.PerfOrgInput" data-ng-change="perfOrgSelected(item.PerfOrgInput, item)"
 															data-ng-options="perfOrg as perfOrg.PerformingOrgName for perfOrg in PerfOrgModels | orderBy:'PerformingOrgName'">
 														</select>
-														<input data-ng-if="!showDropdowns" tabindex="{{tabindex + 2}}" type="text" data-ng-model="item.PerfOrgInput" placeholder="Add Performing Org" uib-typeahead="perfOrg as perfOrg.PerformingOrgName for perfOrg in PerfOrgModels | filter:{Label:$viewValue}" typeahead-template-url="customPerfOrgTemplate.html" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="perfOrgTypeaheadLength" data-ng-change="perfOrgUpdated(item)" typeahead-on-select="perfOrgSelected($item, item)">
+														<input data-ng-if="!showDropdowns" tabindex="{{tabindex + 3}}" type="text" data-ng-model="item.PerfOrgInput" placeholder="Add Performing Org" uib-typeahead="perfOrg as perfOrg.PerformingOrgName for perfOrg in PerfOrgModels | filter:{Label:$viewValue}" typeahead-template-url="customPerfOrgTemplate.html" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="perfOrgTypeaheadLength" data-ng-change="perfOrgUpdated(item)" typeahead-on-select="perfOrgSelected($item, item)">
 													</div>
 												</td>
 												<% if (Model.BOEIsMulti)
 													{ %>
 												<td class="resource-wbs">
-													<select tabindex="{{tabindex + 3}}" class="wbs" data-ng-model="item.WBSID" data-ng-change="setDirty()" name="WBSID">
+													<select tabindex="{{tabindex + 4}}" class="wbs" data-ng-model="item.WBSID" data-ng-change="setDirty()" name="WBSID">
 														<!-- keep option tag on one line to avoid insertion of line breaks (br) -->
 														<option data-ng-repeat="option in ManageTaskModel.WBSElements" data-ng-value="option.Value">{{option.Text}}</option>
 													</select>
 												</td>
 												<td class="resource-clin">
-													<select tabindex="{{tabindex + 4}}" class="wbs" data-ng-model="item.CLINID" data-ng-change="setDirty()" name="CLINID">
+													<select tabindex="{{tabindex + 5}}" class="wbs" data-ng-model="item.CLINID" data-ng-change="setDirty()" name="CLINID">
 														<!-- keep option tag on one line to avoid insertion of line breaks (br) -->
 														<option data-ng-repeat="option in ManageTaskModel.CLINElements" data-ng-value="option.Value">{{option.Text}}</option>
 													</select>
@@ -763,7 +796,8 @@
 		<div class="labor-spread module <% if (!Model.ContainsDiscrete)
 			{ %>collapsed<% }
 			else
-			{ %>expanded<% } %>" id="ManageLaborSpread">
+			{ %>expanded<% } %>"
+			id="ManageLaborSpread">
 			<div class="module-header-data">
 				Resource Spread
 			</div>
@@ -774,12 +808,12 @@
 						<gen-validation data-errors="laborSpreadErrors"></gen-validation>
 						<gen-validation data-classtype="'warning-'" data-errors="laborSpreadPasteErrors"></gen-validation>
 						<div id="LaborSpreadGridBlock" data-ng-cloak>
-							<div class="labor-spread-labels">
+							<div data-ng-class="{'labor-spread-labels-brc': IsBRCEnabled }" class="labor-spread-labels">
 								<table class="header-rows">
 									<thead>
 										<tr>
 											<th>Resource</th>
-											<th data-ng-show="IsBRCEnabled">Business Resource Code</th>
+											<th data-ng-if="IsBRCEnabled">Business Resource Code</th>
 											<th>Performing Org</th>
 										</tr>
 									</thead>
@@ -794,30 +828,30 @@
 										%>
 										<tr data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false } track by item.BOELaborTypeID">
 											<td title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
-											<td data-ng-show="IsBRCEnabled" class="ResourceName" title="{{item.BusinessResourceCodeName}}"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
+											<td title="{{item.BusinessResourceCodeName}}" data-ng-if="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
 											<td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
 										</tr>
 										<tr id="LaborSpreadHeaderDividerRow" class="subheader">
-											<td colspan="2" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
+											<td colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
 										</tr>
 										<tr>
-											<td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
 										</tr>
 										<tr>
-											<td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
 										</tr>
 										<tr>
-											<td class="subheader" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
 											<td class="hours-total">{{totalSpreadHours}}</td>
 										</tr>
 										<tr>
-											<td class="subheader" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
 											<td class="cost-total"><span class="labor-spread-currency">$</span>{{totalSpreadCost}}</td>
 										</tr>
 									</tbody>
 								</table>
 							</div>
-							<div data-ng-if="(tableData | filter: { Deleted: false, NewLaborType: false }).length > 0" class="labor-spread-scroll">
+							<div data-ng-if="(tableData | filter: { Deleted: false, NewLaborType: false }).length > 0" data-ng-class="{'labor-spread-scroll-brc': IsBRCEnabled}" class="labor-spread-scroll">
 								<table class="data" name="LaborSpreadData">
 									<thead>
 										<tr>
@@ -1181,6 +1215,13 @@
 				</div>
 				<ul class="resultsList"></ul>
 			</div>
+			<div class="import-result-type display-none" id="ImportResult-MissingData-BRCEnabled">
+				<div class="title">
+					<span class="resultCount"></span>
+					Resource Types will not be added/uploaded because a Resource, Business Resource Code, Performing Org, Start Date, End Date, Spread Curve, WBS/CLIN, Offload, or required Custom Field is missing or invalid:
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
 			<div class="import-result-type display-none" id="ImportResult-HoursSpreadInvalid">
 				<div class="title">
 					<span class="resultCount"></span>
@@ -1208,6 +1249,41 @@
 					Resource Types will not be added/updated because one or more spread month values are outside the spread date range.<br />
 					Please check the import file and clear any spread month values that are outside the resource spread date range.              
 				</div>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-RateTypesDoNotMatch">
+				<div class="title">
+					<span class="resultCount"></span>
+					Rate Types between Selected Resource and Business Resource Code do not match.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-ResourceMissing">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) needs to have Resource Selected because End Date is before 1LMX Cutoff Date.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-BusinessResourceCodeMissing">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) needs Business Resource Code Selected because start date is greater than or equal to 1LMX Cutoff Date.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-MissingStartEndDate">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) missing Start and/or End Date.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-MissingResourceOrBRC">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) missing Resource and/or Business Resource Code because Start Date is before 1LMX Cutoff Date and End Date is after 1LMX Cutoff Date.
+				</div>
+				<ul class="resultsList"></ul>
 			</div>
 			<div class="title import-result-type display-none" id="ImportResult-NoChanges">No Changes Detected</div>
 
@@ -1303,11 +1379,12 @@
 			<div class="form-row duplicate-task-list">
 				<table id="DuplicateLaborTypesGrid" class="sortable grid readonly" style="width: 100%;">
 					<colgroup>
+						<col width="6%" />
+						<col width="20%" />
+						<col data-ng-show="IsBRCEnabled" width="20%" />
+						<col width="14%" />
 						<col width="8%" />
-						<col width="28%" />
-						<col width="16%" />
-						<col width="12%" />
-						<col width="12%" />
+						<col width="8%" />
 						<col width="12%" />
 						<col width="12%" />
 					</colgroup>
@@ -1315,6 +1392,7 @@
 						<tr>
 							<th># Dups</th>
 							<th class="sort resource">Resource</th>
+							<th data-ng-show="IsBRCEnabled" class="sort businessResourceCode">Business Resource Code</th>
 							<th class="sort perfOrg">Performing Org</th>
 							<th class="sort startDate">Start Date</th>
 							<th class="sort endDate">End Date</th>
@@ -1329,6 +1407,9 @@
 							</td>
 							<td>
 								<span title="{{item.ResourceDescription}}">{{item.ResourceDescription}}</span>
+							</td>
+							<td data-ng-show="IsBRCEnabled">
+								<span title="{{item.BusinessResourceCodeDescription}}">{{item.BusinessResourceCodeDescription}}</span>
 							</td>
 							<td>
 								<span>{{item.PerformingOrgName}}</span>

@@ -16,12 +16,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
 	using IES.Common.Core.Enums;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Logic for the Home Controller
 	/// </summary>
 	public class HomeControllerLogic : RdmControllerLogic, IHomeControllerLogic
 	{
+		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -30,9 +36,10 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="adUtils">AD Utilities</param>
 		/// <param name="securityInfo">Security Information</param>
 		public HomeControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator,
-			IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
-			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
+			IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IConfiguration configuration)
+			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo, configuration)
 		{
+			this.configuration = configuration;
 		}
 
 		/// <summary>

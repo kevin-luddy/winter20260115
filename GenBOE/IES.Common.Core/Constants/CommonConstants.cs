@@ -575,7 +575,7 @@ namespace IES.Common.Core.Constants
 		/// <summary>
 		/// Length for MOQ Type WBS Element field for SSC (matches db length)
 		/// </summary>
-		public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 5000;
+		public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 8000;
 
 		#endregion
 
@@ -1111,5 +1111,20 @@ namespace IES.Common.Core.Constants
 		/// Name of the property that the NTID is placed into, in the Identity that comes from OAuth2
 		/// </summary>
 		public static readonly string NTID_NAME_IN_IDENTITY = "preferred_username";
+
+		/// <summary>
+		/// The IES Token Scheme name
+		/// </summary>
+		public const string IES_TOKEN_SCHEME = "IES_TOKEN";
+
+		/// <summary>
+		/// Date format in yyyy-MM-ddTHH:mm:ss, mainly used for returning a DateTime as a string with JSON for easy parsing
+		/// </summary>
+		public const string DATETIME_STRING_FORMAT = "yyyy-MM-ddTHH:mm:ss";
+
+		/// <summary>
+		/// Error message when exporting (getting JSON) rates for version
+		/// </summary>
+		public const string ERROR_GETTING_RATES_FOR_VERSION = "Error exporting rates for version";
 	}
 }

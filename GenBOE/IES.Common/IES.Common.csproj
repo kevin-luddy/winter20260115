@@ -326,6 +326,7 @@
     <Compile Include="Enums\MOQType.cs" />
     <Compile Include="Enums\RDMChangeType.cs" />
     <Compile Include="Enums\RichTextDbColumn.cs" />
+    <Compile Include="Enums\StringManipulation.cs" />
     <Compile Include="Exceptions\AuthorizationException.cs" />
     <Compile Include="Exceptions\HandleErrorAttribute.cs" />
     <Compile Include="Exceptions\ValidationMessage.cs" />
@@ -393,6 +394,7 @@
     <Compile Include="Utilities\Token\TokenService.cs" />
     <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="Utilities\WebApiConfig.cs" />
+    <Compile Include="Utilities\SafeUriUtility.cs" />
     <Compile Include="Utilities\XmlExtensions.cs" />
     <Compile Include="IESWebConstants.cs" />
     <Compile Include="ValidValuesAttribute.cs" />
@@ -402,7 +404,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

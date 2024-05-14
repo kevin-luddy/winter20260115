@@ -7,11 +7,11 @@
 namespace GenTRAC.ActionLogic.Email
 {
     using System;
-    using System.Collections.Generic;
+	using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Net.Mail;
     using System.Web.Configuration;
-    using GenTRAC.ActionLogic.ModelView.Proposals;
+	using GenTRAC.ActionLogic.ModelView.Proposals;
     using GenTRAC.DataBridge.DTO;
     using IES.Common;
 
@@ -66,12 +66,18 @@ namespace GenTRAC.ActionLogic.Email
         private delegate bool SendEmailDelegate(EmailContent inEmailTypeToSend, string inRecipient, Collection<UserDTO> inCClist,
             string[] inSubjectReplaceTokens, string[] inBodyReplaceTokens, Attachment inAttachment, UserData currentUser, string extraLoggingInfo);
 
-        /// <summary>
-        /// Constructor for dependency injection
-        /// </summary>
-        /// <param name="inSecurityInformation">Security information</param>
-        /// <param name="dataFetchingScheduler">Data fetching scheduler</param>
-        public PtmEmailer(ISecurityInformation inSecurityInformation, IDataFetchingScheduler dataFetchingScheduler)
+		/// <summary>
+		/// Delegate for sending out a PTM creation email
+		/// </summary>
+		private delegate bool SendPtmRecordCreationEmailDelegate(UserData currentUser, UserDTO contractsLead, UserDTO contractsBackup, ProposalInformationModelView proposal, bool isEeppTurnedOn, string eEppUrl, string ptmUrl,
+			string programName, string lob, string pa, string leadEstimator, string costVolumeLead, string lobEstimatingManager, string proposalManager);
+
+		/// <summary>
+		/// Constructor for dependency injection
+		/// </summary>
+		/// <param name="inSecurityInformation">Security information</param>
+		/// <param name="dataFetchingScheduler">Data fetching scheduler</param>
+		public PtmEmailer(ISecurityInformation inSecurityInformation, IDataFetchingScheduler dataFetchingScheduler)
         {
             this.SecurityInformation = inSecurityInformation;
             this.DataFetchingScheduler = dataFetchingScheduler;
@@ -210,14 +216,33 @@ namespace GenTRAC.ActionLogic.Email
             }
         }
 
-        /// <summary>
-        /// This should be a private function but due to threading emails and testing, it needs to be public.
-        /// Sends the Nonpreferred Tools email.
-        /// </summary>
-        /// <param name="currentUser">The current user</param>
-        /// <param name="lobEstMgrDel">The LOB Estimating Manager/Delegate</param>
-        /// <param name="proposal">The proposal</param>
-        public void PrivateSendNonpreferredToolsEmailDelegate(UserData currentUser, UserDTO lobEstMgrDel, ProposalInformationModelView proposal)
+		/// <summary>
+		/// Send PTM Creation email to Contracts folks
+		/// </summary>
+		public void SendPtmRecordCreationEmail(UserData currentUser, UserDTO contractsLead, UserDTO contractsBackup, ProposalInformationModelView proposal, bool isEeppTurnedOn, string eEppUrl, string ptmUrl,
+			string programName, string lob, string pa, string leadEstimator, string costVolumeLead, string lobEstimatingManager, string proposalManager)
+		{
+			if (!ConfigurationUtilities.GetAppSetting<bool>("DisableAllEmails", false))
+			{
+				SendPtmRecordCreationEmailDelegate emailDelegate = new SendPtmRecordCreationEmailDelegate(this.SendPtmRecordCreationEmailPrivate);
+				this.DataFetchingScheduler.FetchEmails(emailDelegate, new object[] { currentUser, contractsLead, contractsBackup, proposal, isEeppTurnedOn, eEppUrl, ptmUrl, programName, lob, pa, 
+																				leadEstimator, costVolumeLead, lobEstimatingManager, proposalManager });
+			}
+			else
+			{
+				// if email is disabled by configuration setting
+				this.log.Debug("Email is disabled by configuration setting in SendPtmRecordCreationEmail");
+			}
+		}
+
+		/// <summary>
+		/// This should be a private function but due to threading emails and testing, it needs to be public.
+		/// Sends the Nonpreferred Tools email.
+		/// </summary>
+		/// <param name="currentUser">The current user</param>
+		/// <param name="lobEstMgrDel">The LOB Estimating Manager/Delegate</param>
+		/// <param name="proposal">The proposal</param>
+		public void PrivateSendNonpreferredToolsEmailDelegate(UserData currentUser, UserDTO lobEstMgrDel, ProposalInformationModelView proposal)
         {
             if (currentUser == null)
             {
@@ -336,5 +361,62 @@ namespace GenTRAC.ActionLogic.Email
 
             return base.SendEmail(inEmailTypeToSend, inRecipient, userDataForCc, inSubjectReplaceTokens, inBodyReplaceTokens, inAttachment, currentUser, extraLoggingInfo);
         }
-    }
+
+		/// <summary>
+		/// Send PTM Creation email to Contracts folks
+		/// </summary>
+		private bool SendPtmRecordCreationEmailPrivate(UserData currentUser, UserDTO contractsLead, UserDTO contractsBackup, ProposalInformationModelView proposal, bool isEeppTurnedOn, string eEppUrl, string ptmUrl, 
+			string programName, string lob, string pa, string leadEstimator, string costVolumeLead, string lobEstimatingManager, string proposalManager)
+		{
+			if (currentUser == null)
+			{
+				throw new ArgumentNullException(nameof(currentUser));
+			}
+
+			if (contractsLead == null)
+			{
+				throw new ArgumentNullException(nameof(contractsLead));
+			}
+
+			if (contractsBackup == null)
+			{
+				throw new ArgumentNullException(nameof(contractsBackup));
+			}
+
+			if (proposal == null)
+			{
+				throw new ArgumentNullException(nameof(proposal));
+			}
+
+			EmailContent emailContent = new EmailContent()
+			{ 
+				Subject = "PTM Record Creation Notification – Action Required",
+				Body = $"A PTM number {proposal.ProposalTrackingNumber} has been created for the {proposal.ProposalTitle} proposal and you have been identified as the Contracts Lead or Backup Contracts Lead.<BR /><BR />"
+			};
+
+			if (isEeppTurnedOn)
+			{
+				emailContent.Body += $"Please open the <a href=\"{eEppUrl}\">Electronic Executive Planning Panel (eEPP)</a> module to initialize the eEPP record. Failure to promptly initialize the record will result in the "
+								+ "inability to properly record and document the EPP in the Corporate database. Note: Initialization requires the completion of the fields included on the \"Details\" tab. All other information "
+								+ "(tabs) may be recorded when the EPP takes place. <BR /><BR />";
+			}
+
+			emailContent.Body += $"As the proposal submittal date approaches, navigate to the <a href=\"{ptmUrl}/proposal/DisplayProposalDetails/id/{proposal.ProposalID}/#Proposal\">{proposal.ProposalTrackingNumber}</a> PTM record to complete the information in the \"Contracts\" tab. "
+								+ "The timeliness of the completion of this information will ensure that the data is available for use in the Automated Cost Volume (ACV) for Cost Volume development by the Cost Volume "
+								+ "Lead/Estimator. Failure to complete this information will result in Cost Volume development delays.<BR /><BR />"
+								+ "<b>General Information:</b><BR />"
+								+ $"Program Name: { programName}<BR />"
+								+ $"Line of Business: { lob }<BR />"
+								+ $"Program Area: { pa }<BR />"
+								+ $"Space Role: { proposal.ISGSRole }<BR />"
+								+ $"Anticipated Delivery Date: { proposal.AnticipatedDeliveryDate }<BR /><BR />"
+								+ "<b>Contacts:</b><BR />"
+								+ $"Lead Estimator: { leadEstimator}<BR />"
+								+ $"Cost Volume Lead: { costVolumeLead}<BR />"
+								+ $"LOB Estimating Manager / Delegate: { lobEstimatingManager }<BR />"
+								+ $"Proposal Manager: { proposalManager}<BR />";
+
+			return this.SendEmail(emailContent, contractsLead.EmailAddress, new List<UserData>() { new UserData() { Email = contractsBackup.EmailAddress } }, new string[] { }, new string[] { }, null, currentUser);
+		}
+	}
 }

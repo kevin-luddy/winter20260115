@@ -189,7 +189,7 @@ namespace IES.Common
             }
 
             string iesUrl = ConfigurationUtilities.GetAppSetting("IESHomeUrl");
-            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl + "Header?active=" + active;
+            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl;
         }
         
         /// <summary>
@@ -204,29 +204,22 @@ namespace IES.Common
                 throw new ArgumentNullException(nameof(active));
             }
 
-            string iesUrl = ConfigurationUtilities.GetAppSetting("IESHomeUrl");
+            string iesUrl = ConfigurationUtilities.GetAppSetting("IESBannerUrl") + active;
 
-            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl + "Banner?active=" + active;
+            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl;
         }
 
-        /// <summary>
-        /// IES App Offline Url
-        /// </summary>
-        /// <param name="app">application name</param>
-        /// <returns>url</returns>
-        [SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
-        public static string AppOfflineUrl(string app)
-        {
-            if (string.IsNullOrEmpty(app))
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
+		/// <summary>
+		/// Gets the IES Banner App name
+		/// </summary>
+		public static string IESBannerApp
+		{
+			get
+			{
+				return ConfigurationUtilities.GetAppSetting("IESBannerApp");
+			}
+		}
 
-            string iesUrl = ConfigurationUtilities.GetAppSetting("IESHomeUrl");
-
-            return string.IsNullOrEmpty(iesUrl) ? string.Empty : iesUrl + "AppOffline?app=" + app;
-        }
-
-        #endregion
-    }
+		#endregion
+	}
 }

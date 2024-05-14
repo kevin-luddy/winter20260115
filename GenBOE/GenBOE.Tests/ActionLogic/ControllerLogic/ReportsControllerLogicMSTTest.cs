@@ -153,9 +153,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Collection<Uri> urls = new Collection<Uri>()
             {
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.SUMMARY_REPORT_RMS, (int)SSRSReportType.ProjectCategoryCLINCostSummary)),
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.SUMMARY_REPORT_RMS, (int)SSRSReportType.ProjectCLINCategoryCostSummary)),
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.PROJECT_CLIN_COST_SUMMARY))
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.SUMMARY_REPORT_RMS,(int) SSRSReportType.ProjectCategoryCLINCostSummary)),
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.SUMMARY_REPORT_RMS, (int)SSRSReportType.ProjectCLINCategoryCostSummary)),
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.PROJECT_CLIN_COST_SUMMARY))
             };
 
             this._commonDataMapper.Setup(x => x.getReports()).Returns(reports);
@@ -191,9 +191,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Collection<Uri> urls = new Collection<Uri>()
             {
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.COST_ANALYSIS_REPORT_RMS, (int)SSRSReportType.CostAnalysis8Years)),
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.COST_ANALYSIS_REPORT_RMS, (int)SSRSReportType.CostAnalysis17Years)),
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.BOE_SUMMARY_REPORT))
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.COST_ANALYSIS_REPORT_RMS,(int) SSRSReportType.CostAnalysis8Years)),
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.COST_ANALYSIS_REPORT_RMS, (int)SSRSReportType.CostAnalysis17Years)),
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.BOE_SUMMARY_REPORT))
             };
 
             this._commonDataMapper.Setup(x => x.getReports()).Returns(reports);
@@ -231,11 +231,11 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Collection<Uri> urls = new Collection<Uri>()
             {
-                ////new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.BY_PRICING_CODE)),
-                ////new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.BY_CAT_PRICING_CODE)),
-                ////new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.OFFLOAD_COST_BY_YEAR)),
-                ////new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.OFFLOAD_COST_SUMMARY)),
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.STAFFING_CURVES))
+                ////SafeUriUtility.safeUri((this.getReportUrl(wsid, Constants.SSRSReportName.BY_PRICING_CODE)),
+                ////SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.BY_CAT_PRICING_CODE)),
+                ////SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.OFFLOAD_COST_BY_YEAR)),
+                ////SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.OFFLOAD_COST_SUMMARY)),
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.STAFFING_CURVES))
             };
 
             this._commonDataMapper.Setup(x => x.getReports()).Returns(reports);
@@ -272,10 +272,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Collection<Uri> urls = new Collection<Uri>()
             {
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.RPS)),
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.PRP)),
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.RAM)),
-                new Uri(this.getReportUrl(wsid, Constants.SSRSReportName.PRE_VS_POST_OFFLOAD_TOTALS))
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.RPS)),
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.PRP)),
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.RAM)),
+                SafeUriUtility.safeUri(this.getReportUrl(wsid, Constants.SSRSReportName.PRE_VS_POST_OFFLOAD_TOTALS))
             };
 
             this._commonDataMapper.Setup(x => x.getReports()).Returns(reports);

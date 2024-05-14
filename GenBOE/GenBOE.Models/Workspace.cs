@@ -91,6 +91,7 @@ namespace GenBOE.Models
         public Nullable<System.DateTime> RevisedSubmittalDate { get; set; }
         public bool TemplateBoe { get; set; }
         public bool EnableSAPConnection { get; set; }
+        public bool CurrentPTMWorkspace { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOE> BOEs { get; set; }

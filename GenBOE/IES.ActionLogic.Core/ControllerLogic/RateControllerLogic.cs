@@ -26,12 +26,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Logic for the Rate Controller.
 	/// </summary>
 	public class RateControllerLogic : RdmControllerLogic, IRateControllerLogic
 	{
+		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
 		/// <summary>
 		/// Rate Detail Loader
 		/// </summary>
@@ -82,8 +88,8 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="replicationLoader">The replication loader.</param>
 		public RateControllerLogic(IRateDetailLoader rateDetailLoader, ICommonDataMapper commonDataMapper, IHomeControllerLogic homeControllerLogic, IBurdenPoolLoader burdenPoolLoader, ISectionLoader sectionLoader,
 			IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IRateCodeReplicationLoader replicationLoader,
-			RateFormatter rateFormatter)
-			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
+			RateFormatter rateFormatter, IConfiguration configuration)
+			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo, configuration)
 
 		{
 			this.rateDetailLoader = rateDetailLoader;
@@ -93,6 +99,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			this.sectionLoader = sectionLoader;
 			this.replicationLoader = replicationLoader;
 			this.rateFormatter = rateFormatter;
+			this.configuration = configuration;
 		}
 
 		/// <summary>
@@ -221,7 +228,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="startYear">Revision Start Year</param>
 		/// <param name="endYear">Revision End Year</param>
 		/// <returns>A list of validation errors (if any).</returns>
-		public ICollection<ValidationMessage> ValidateRateDetailModelViews(Collection<RateDetailModelView> rateDetailModelViews, int startYear, int endYear)
+		public ICollection<ValidationMessage> ValidateRateDetailModelViews(ICollection<RateDetailModelView> rateDetailModelViews, int startYear, int endYear)
 		{
 			if (rateDetailModelViews == null)
 			{

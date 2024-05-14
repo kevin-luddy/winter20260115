@@ -21,7 +21,9 @@ namespace GenBOE.Dtos
             Segment = SegmentType.None;
             RateType = RateType.NotSet;
             CalculatedSegment = SegmentType.None;
-            isSystemResource = false;
+			Deleted = false;
+			ResourceListId = -1;
+			isSystemResource = false;
         }
 
         public string ResourceName { get; set; }
@@ -33,6 +35,8 @@ namespace GenBOE.Dtos
         public SegmentType Segment { get; set; }
         public RateType RateType { get; set; }
         public SegmentType CalculatedSegment { get; set; }
+		public bool Deleted { get; set; }
+		public int ResourceListId { get; set; }
 
         // used only to determine if this resource is a system or workspace resource for caching purposes
         public bool isSystemResource { get; set; }
@@ -85,5 +89,14 @@ namespace GenBOE.Dtos
                 return resourceTypeCategory;
             }
         }
-    }
+
+		/// <summary>
+		/// Propagates the new 'parent' DTO Id to all 'child' DTOs in collections.
+		/// </summary>
+		/// <param name="newParentId">new id of the parent DTO</param>
+		protected override void PropagateNewParentIdToChildDTOs(int newParentId)
+		{
+			// do nothing
+		}
+	}
 }

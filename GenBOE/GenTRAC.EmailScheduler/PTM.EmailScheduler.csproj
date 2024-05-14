@@ -26,7 +26,6 @@
     <UserName>tfsuser</UserName>
     <Password>tfspassword</Password>
     <AllowUntrustedCertificate>True</AllowUntrustedCertificate>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <SkipExtraFilesOnServer>false</SkipExtraFilesOnServer>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
@@ -235,7 +234,6 @@
     <Content Include="App.Release.config">
       <DependentUpon>App.config</DependentUpon>
     </Content>
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GenTRAC.Business\GenTRAC.Business.csproj">

@@ -435,7 +435,7 @@ namespace IES.Common
         /// <summary>
         /// Length for MOQ Type WBS Element field for SSC (matches db length)
         /// </summary>
-        public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 5000;
+        public const int MOQ_WBS_ELEMENT_FIELD_LENGTH = 8000;
 
         #endregion
 
@@ -962,5 +962,15 @@ namespace IES.Common
         /// Key value for Column Field where there is NO WBS.
         /// </summary>
         public const string COLUMN_FIELD_KEY_NO_WBS = "NO WBS";
-    }
+
+		/// <summary>
+		/// Date format in yyyy-MM-ddTHH:mm:ss, mainly used for returning a DateTime as a string with JSON for easy parsing
+		/// </summary>
+		public const string DATETIME_STRING_FORMAT = "yyyy-MM-ddTHH:mm:ss";
+
+		/// <summary>
+		/// Error message when exporting (getting JSON) rates for version
+		/// </summary>
+		public const string ERROR_GETTING_RATES_FOR_VERSION = "Error exporting rates for version";
+	}
 }

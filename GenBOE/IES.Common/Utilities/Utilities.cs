@@ -9,6 +9,7 @@ namespace IES.Common
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
 	using System.Net.Http;
@@ -17,6 +18,7 @@ namespace IES.Common
 	using System.Web.Mvc;
 	using classes;
 	using Exceptions;
+	using IES.Common.Enums;
 	using Microsoft.Net.Http.Headers;
 	using PickList;
 
@@ -40,8 +42,6 @@ namespace IES.Common
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? historicalReferenceExplanationStartDate;
-		private static DateTime? spaceSystemsOneLmxCutOffDate;
-		private static DateTime? rmsOneLmxCutOffDate;
 
 		/// <summary>
 		/// 1LMX boundary time
@@ -63,52 +63,6 @@ namespace IES.Common
 				}
 
 				return oneLmxStartDate.Value;
-			}
-		}
-
-		/// <summary>
-		/// Space Systems 1LMX Cut Off Date
-		/// </summary>
-		public static DateTime SpaceSystemsOneLmxCutOffDate
-		{
-			get
-			{
-				if (!spaceSystemsOneLmxCutOffDate.HasValue)
-				{
-					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("SpaceSystemsOneLMXCutOffDate"), out DateTime cutOffDate))
-					{
-						spaceSystemsOneLmxCutOffDate = new DateTime(2028, 01, 01);
-					}
-					else
-					{
-						spaceSystemsOneLmxCutOffDate = cutOffDate.Normalize();
-					}
-				}
-
-				return spaceSystemsOneLmxCutOffDate.Value;
-			}
-		}
-
-		/// <summary>
-		/// RMS 1LMX Cut Off Date
-		/// </summary>
-		public static DateTime RMSOneLmxCutOffDate
-		{
-			get
-			{
-				if (!rmsOneLmxCutOffDate.HasValue)
-				{
-					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("RMSOneLMXCutOffDate"), out DateTime cutOffDate))
-					{
-						rmsOneLmxCutOffDate = new DateTime(2027, 01, 01);
-					}
-					else
-					{
-						rmsOneLmxCutOffDate = cutOffDate.Normalize();
-					}
-				}
-
-				return rmsOneLmxCutOffDate.Value;
 			}
 		}
 
@@ -483,7 +437,7 @@ namespace IES.Common
 		/// <returns>PTM Url</returns>
 		public static Uri PTMUrl()
 		{
-			return new Uri(ConfigurationUtilities.GetAppSetting("PTMURL"));
+			return SafeUriUtility.safeUri(ConfigurationUtilities.GetAppSetting("PTMURL"));
 		}
 
 		/// <summary>
@@ -851,26 +805,28 @@ namespace IES.Common
 			}
 		}
 
+
 		/// <summary>
-		/// Get 1LMX Cut Off Date based on System Configuration
+		/// Private for Is Confidence Report Enabled, used to cache value
 		/// </summary>
-		/// <returns>1LMX Cut Off Date</returns>
-		public static DateTime GetOneLMXCutOffDate()
+		private static bool? isConfidenceReportEnabled;
+
+		/// <summary>
+		/// Indicates whether Confidence Report is enabled
+		/// </summary>
+		public static bool IsConfidenceReportEnabled
 		{
-			/// Set it to RMS Date as it is comes first
-			DateTime date = new DateTime(2027, 01, 01);
-
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			get
 			{
-				date = Utilities.SpaceSystemsOneLmxCutOffDate;
-			}
+				if (isConfidenceReportEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableConfidenceReport"), out bool value);
+					isConfidenceReportEnabled = value;
+				}
 
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				date = Utilities.RMSOneLmxCutOffDate;
+				return isConfidenceReportEnabled.Value;
 			}
-
-			return date;
+			internal set => isConfidenceReportEnabled = value;
 		}
 
 		/// <summary>
@@ -899,6 +855,86 @@ namespace IES.Common
 		public static bool IsHistoricalReferenceExplanationRequired(DateTime? workspaceCreationDate)
 		{
 			return workspaceCreationDate.HasValue && workspaceCreationDate.Value.Date >= HistoricalReferenceExplanationStartDate.Date;
+		}
+
+		/// <summary>
+		/// Get Property Value if it exists
+		/// </summary>
+		/// <param name="propertyCollection">Collection of Properties to traverse through</param>
+		/// <param name="propertyName">Property Value to retrieve</param>
+		/// <param name="stringManipulation">Determines how to manipulate string for return</param>
+		/// <returns>Property Value if it exists, empty string otherwise</returns>
+		public static string TryGetPropertyValue(PropertyCollection propertyCollection, string propertyName, StringManipulation stringManipulation = StringManipulation.None)
+		{
+			string toReturn = string.Empty; 
+			
+			if (propertyCollection != null)
+			{
+				toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;
+			}
+
+			switch (stringManipulation)
+			{
+				case StringManipulation.ToLower:
+					return string.IsNullOrEmpty(toReturn) ? toReturn : toReturn.ToLower();
+				case StringManipulation.ToUpper:
+					return string.IsNullOrEmpty(toReturn) ? toReturn : toReturn.ToUpper();
+				case StringManipulation.None:
+				default:
+					return toReturn;
+			}
+		}
+
+		/// <summary>
+		/// Get Property Value if it exists
+		/// </summary>
+		/// <param name="propertyCollection">Collection of Properties to traverse through</param>
+		/// <param name="propertyName">Property Value to retrieve</param>
+		/// <param name="stringManipulation">Determines how to manipulate string for return</param>
+		/// <returns>Property Value if it exists, empty string otherwise</returns>
+		public static string TryGetPropertyValue(ResultPropertyCollection propertyCollection, string propertyName, StringManipulation stringManipulation = StringManipulation.None)
+		{
+			string toReturn = string.Empty;
+
+			if (propertyCollection != null)
+			{
+				toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;
+			}
+
+			switch (stringManipulation)
+			{
+				case StringManipulation.ToLower:
+					return string.IsNullOrEmpty(toReturn) ? toReturn : toReturn.ToLower();
+				case StringManipulation.ToUpper:
+					return string.IsNullOrEmpty(toReturn) ? toReturn : toReturn.ToUpper();
+				case StringManipulation.None:
+				default:
+					return toReturn;
+			}
+		}
+
+		/// <summary>
+		/// Get User phone number
+		/// </summary>
+		/// <param name="propertyCollection">Collection of Properties to traverse through</param>
+		/// <returns>Business phone number by default but if that does not exist, then it returns mobile number</returns>
+		public static string GetUserPhoneNumber(ResultPropertyCollection propertyCollection)
+		{
+			string phone = TryGetPropertyValue(propertyCollection, "telephonenumber");
+
+			return !string.IsNullOrEmpty(phone) ? phone : TryGetPropertyValue(propertyCollection, "mobile");
+		}
+
+		/// <summary>
+		/// Get User phone number
+		/// </summary>
+		/// <param name="propertyCollection">Collection of Properties to traverse through</param>
+		/// <returns>Business phone number by default but if that does not exist, then it returns mobile number</returns>
+		public static string GetUserPhoneNumber(PropertyCollection propertyCollection)
+		{
+			string phone = TryGetPropertyValue(propertyCollection, "telephonenumber");
+
+			return !string.IsNullOrEmpty(phone) ? phone : TryGetPropertyValue(propertyCollection, "mobile");
 		}
 	}
 }

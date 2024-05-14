@@ -55,10 +55,9 @@
             }
             <img src="~/Content/images/LM-logo-White.png" alt="Lockheed Martin logo" class="lmlogo" />
         </div>
-        <iframe class="bannerframe" src="@ConfigurationUtilities.IESBannerUrl("RPM")"></iframe>
+        <iframe class="bannerframe" src="@ConfigurationUtilities.IESBannerUrl(ConfigurationUtilities.IESBannerApp)"></iframe>
         @RenderBody()
     </div>
-    <iframe class="appOfflineFrame" src="@ConfigurationUtilities.AppOfflineUrl("RPM")"></iframe>
     <div class="lmproprietary">
         Lockheed Martin Proprietary Information
         <div class="footerVersionInfo">@IES.Common.Utilities.VersionAndUpdatedDate</div>
@@ -68,7 +67,7 @@
     @if (!IES.Common.Utilities.DisablePiwik())
     {
         <!-- Piwik Statistics -->
-        <script type="text/javascript">
+<script type="text/javascript">
             window.piwikAsyncInit = function () {
                 try {
                     var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 25);                //<!-- BusApps Rollup -->
@@ -87,15 +86,14 @@
                     piwikTracker2.enableLinkTracking();
 
                     var piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", @IES.Common.Utilities.PiwikId());          //<!-- Space RPM  -->
-                    var currentUser = '@IES.Common.Utilities.CurrentUser()';
                     // Track each user's visit
-                    piwikTracker3.setCustomVariable(1, "User Account", currentUser, "visit");
+                    piwikTracker3.push(['setUserId', '@IES.Common.Utilities.CurrentUser()']);
                     piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
                     piwikTracker3.trackPageView();
                     piwikTracker3.enableLinkTracking();
                 } catch( err ) {}
             };
-        </script>
+</script>
         <noscript>
             <p><img src="https://techopstoolbox.global.lmco.com/piwik/piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
             <p><img src="https://techopstoolbox.global.lmco.com/piwik/piwik.php?idsite=91" style="border:0" alt="Piwik"></p>

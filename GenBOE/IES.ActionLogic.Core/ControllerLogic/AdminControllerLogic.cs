@@ -17,12 +17,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Constants;
 	using IES.ActionLogic.Core.Validation;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Logic for the Admin Controller.
 	/// </summary>
 	public class AdminControllerLogic : RdmControllerLogic, IAdminControllerLogic
 	{
+		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
 		/// <summary>
 		/// The rate detail loader
 		/// </summary>
@@ -42,11 +48,12 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="securityInfo">Security Information</param>
 		public AdminControllerLogic(IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator,
 			IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IRateDetailLoader rateDetailLoader,
-			IRateCodeReplicationLoader replicationLoader)
-			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
+			IRateCodeReplicationLoader replicationLoader, IConfiguration configuration)
+			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo, configuration)
 		{
 			this.rateDetailLoader = rateDetailLoader;
 			this.replicationLoader = replicationLoader;
+			this.configuration = configuration;
 		}
 
 

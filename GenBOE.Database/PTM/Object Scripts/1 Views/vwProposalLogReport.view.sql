@@ -81,7 +81,10 @@ SELECT
 	CreatedBy.NTID AS [Created By],
 	CAST (P.DateCreated AS DATE) AS [Created Date],
 	PS.ProposalStatusID AS [ProposalStatusID],
-	PS.ProposalStatus AS [Proposal Status],
+	CASE
+		WHEN PS.ProposalStatusID = 10 THEN 'Not Awarded'
+		ELSE PS.ProposalStatus
+	END AS [Proposal Status],
 	P.OTISOpportunityID AS [OTIS #],
 	CASE
 		WHEN P.PricingToolID = 3 AND P.PricingToolName IS NOT NULL THEN P.PricingToolName
@@ -184,7 +187,8 @@ SELECT
 		WHEN p.ContractActionTypeOtherText IS NULL THEN aT.ContractActionType
 		ELSE aT.ContractActionType + ': ' + p.ContractActionTypeOtherText
 	END AS ContractActionType,
-	PC.CostThroughCom
+	PC.CostThroughCom,
+	ppr.Response AS NlfResponse
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -311,4 +315,10 @@ SELECT
 	-- end of Proposal Contract Data
 
 	LEFT OUTER JOIN ContractActionTypeLU aT ON p.ContractActionType = aT.ID
+	LEFT OUTER JOIN
+			(SELECT xref.ProposalID, ppr.SortOrder, ppr.ChecklistText, r.Response
+				FROM ProposalPPRChecklistXREF xref 
+					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
+					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%NLF Forms%')) AS ppr
+			ON ppr.ProposalId = p.ProposalId 
 GO

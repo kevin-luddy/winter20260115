@@ -110,8 +110,8 @@ namespace GenBOE.ActionLogic.Common
 
 		public static readonly string SPACE_1LMX_CORE = "1LMX - Core";
 		public static readonly string SPACE_1LMX_SERVICES = "1LMX - Services";
-		public static readonly string RMX_1LMX_CORE = "LM-Core";
-		public static readonly string RMX_1LMX_SERVICES = "LM-Services";
+		public static readonly string RMS_1LMX_CORE = "LM-Core";
+		public static readonly string RMS_1LMX_SERVICES = "LM-Services";
 
 		#region TEMPLATE FILES
 
@@ -318,6 +318,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_BOE_OFFLOAD = "DisplayOffloadBOEButton";
 		public static readonly string ACTION_DISPLAY_BOE_VALIDATE_RESULTS = "DisplayBOEValidateResults";
 		public static readonly string ACTION_DISPLAY_BOE_OFFLOAD_RESULTS = "DisplayBOEOffloadResults";
+		public static readonly string ACTION_DISPLAY_BOE_CONFIDENCE_REPORT = "DisplayConfidenceReportButton";
+		public static readonly string ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS = "DisplayConfidenceReportResults";
 		public static readonly string ACTION_DISPLAY_INVALID_SUBMIT_FOR_APPROVAL = "DisplayInvalidSubmitForApproval";
 		public static readonly string ACTION_DISPLAY_LABOR_CURVES = "DisplayLaborCurves";
 		public static readonly string ACTION_DISPLAY_LABOR_RESOURCES = "DisplayResources";
@@ -641,6 +643,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_REFRESH_VARIABLE_BOE_SUM_BY_CLIN = "RefreshVariableBOESumByCLIN";
 		public static readonly string ACTION_REFRESH_VARIABLE_BOE_SUM_BY_WBS = "RefreshVariableBOESumByWBS";
 		public static readonly string ACTION_RESTORE_CUSTOM_FIELD_PERFORMING_ORGANIZATIONS = "RestoreCustomFieldPerformingOrganizations";
+		public static readonly string ACTION_RESTORE_CUSTOM_FIELD_RESOURCES = "RestoreCustomFieldResources";
 		public static readonly string ACTION_RESTORE_WORKSPACE_VERSION = "RestoreWorkspaceVersion";
 		public static readonly string ACTION_EXPORT_WORKSPACE_VERSION = "ExportWorkspaceVersion";
 		public static readonly string ACTION_SAVE_CUSTOM_FIELDS = "SaveCustomFields";
@@ -649,6 +652,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_SAVE_HIDE_GETTING_STARTED_HELP_MENU = "SaveHideGettingStartedHelpMenu";
 		public static readonly string ACTION_SAVE_WORKSPACE_ALLOW_SEARCH = "SaveWorkspaceAllowSearch";
 		public static readonly string ACTION_SAVE_WORKSPACE_IDENTIFICATION = "SaveWorkspaceIdentification";
+		public static readonly string ACTION_UPDATE_CURRENT_WORKSPACE_IDENTIFICATION = "UpdateCurrentWorkspaceIdentification";
 		public static readonly string ACTION_SAVE_WORKSPACE_OUTPUT_FORMAT = "SaveWorkspaceOutputFormat";
 		public static readonly string ACTION_SAVE_WORKSPACE_OUTPUT_FORMAT_NEW_TEMPLATE = "SaveNewOutputFormatTemplate";
 		public static readonly string ACTION_ARCHIVE_OUTPUT_FORMAT_TEMPLATE = "ArchiveOutputFormatTemplate";
@@ -807,6 +811,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_TASK_ELEMENT_GRID = "TaskElementGrid";
 		public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid";
 		public static readonly string VIEW_BOE_COPY_CONFLICTS = "BOECopyConflicts";
+		public static readonly string VIEW_BOE_CONFIDENCE_REPORT = "BOEConfidenceReport";
+		public static readonly string VIEW_BOE_CONFIDENCE_REPORT_RESULTS = "BOEConfidenceReportResults";
 
 		public static readonly string VIEW_LABOR_TASK = "LaborTask";
 		public static readonly string VIEW_LABOR_TASK_STATIC = "LaborTaskStatic";

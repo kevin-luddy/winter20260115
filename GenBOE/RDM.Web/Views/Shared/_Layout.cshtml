@@ -70,9 +70,9 @@
             {
                 @Html.Partial("MainMenu")
             }
-            @if (!string.IsNullOrEmpty(ConfigurationUtilities.IESBannerUrl("RDM")))
+            @if (!string.IsNullOrEmpty(ConfigurationUtilities.IESBannerUrl(ConfigurationUtilities.IESBannerApp)))
             {
-                <iframe class="bannerframe" src="@ConfigurationUtilities.IESBannerUrl("RDM")"></iframe>
+                <iframe class="bannerframe" src="@ConfigurationUtilities.IESBannerUrl(ConfigurationUtilities.IESBannerApp)"></iframe>
             }
             <div id="IEPerformanceBanner" class="WarningBanner display-none">If you are experiencing performance issues, please try using Chrome or Firefox.</div>
             @RenderBody()
@@ -122,7 +122,7 @@
         @if (!IES.Common.Utilities.DisablePiwik())
         {
             <!-- Piwik Statistics -->
-            <script type="text/javascript">
+    <script type="text/javascript">
                 window.piwikAsyncInit = function () {
                     try {
                         @if (IES.Common.Utilities.IsProduction())
@@ -146,15 +146,14 @@
             }
 
                         var piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", @IES.Common.Utilities.PiwikId());          //<!-- Space RDM  -->
-                        var currentUser = '@IES.Common.Utilities.CurrentUser()';
                         // Track each user's visit
-                        piwikTracker3.setCustomVariable(1, "User Account", currentUser, "visit");
+                        piwikTracker3.push(['setUserId', '@IES.Common.Utilities.CurrentUser()']);
                         piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
                         piwikTracker3.trackPageView();
                         piwikTracker3.enableLinkTracking();
                     } catch( err ) {}
                 };
-            </script>
+    </script>
             <noscript>
                 <p><img src="https://techopstoolbox.global.lmco.com/piwik/piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
                 <p><img src="https://techopstoolbox.global.lmco.com/piwik/piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
@@ -168,7 +167,6 @@
             </script>
             <!-- End Piwik Statistics Code -->
         }
-    <iframe class="appOfflineFrame" src="@ConfigurationUtilities.AppOfflineUrl("RDM")"></iframe>
     </div>
     <div class="footer">
         <div class="lmproprietary">

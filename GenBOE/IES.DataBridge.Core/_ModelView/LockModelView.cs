@@ -25,6 +25,7 @@ namespace IES.DataBridge.ModelViews
             this.IsLockAllowed = false;
             this.InUse = null;
             this.Editing = string.Empty;
+			this.Ntid = string.Empty;
         }
 
         /// <summary>
@@ -42,27 +43,36 @@ namespace IES.DataBridge.ModelViews
             this.Editing = editing;
         }
 
-        /// <summary>
-        /// Gets the number of minutes a lock may be held before displaying a timeout warning message.
-        /// </summary>
-        public int EditLockTimeoutWarningMinutes
-        {
-            get
-            {
-                return Convert.ToInt32(ConfigurationManager.AppSettings["EditLockTimeoutWarningMinutes"]);
-            }
-        }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LockModelView"/> class with edit lock timeout.
+		/// </summary>
+		/// <param name="isReadOnly">true if read-only access allowed; false if edit access allowed.</param>
+		/// <param name="isLockAllowed">Used to determine when to display the "Enable Edit" button. True if user has edit privileges and document is not locked by another user; false otherwise.</param>
+		/// <param name="inUse">DateTime stamp when user locked document for edit; null if not locked for edit.</param>
+		/// <param name="editing">Display name of the user who is currently editing the document; null if not locked for edit.</param>
+		/// <param name="ntid">Ntid of the user who is currently editing the document; null if not locked for edit.</param>
+		/// <param name="editLockTimeoutWarningMinutes">The number of minutes to show a warning that the document will be unlocked .</param>
+		/// <param name="editLockTimeoutExpirationMinutes">The number of minutes for the document to be locked</param>
+		public LockModelView(bool isReadOnly, bool isLockAllowed, DateTime? inUse, string editing, string ntid, int editLockTimeoutWarningMinutes, int editLockTimeoutExpirationMinutes)
+		{
+			this.IsReadOnly = isReadOnly;
+			this.IsLockAllowed = isLockAllowed;
+			this.InUse = inUse;
+			this.Editing = editing;
+			this.Ntid = ntid;
+			this.EditLockTimeoutExpirationMinutes = editLockTimeoutExpirationMinutes;
+			this.EditLockTimeoutWarningMinutes = editLockTimeoutWarningMinutes;
+		}
+
+		/// <summary>
+		/// Gets the number of minutes a lock may be held before displaying a timeout warning message.
+		/// </summarye
+		public int EditLockTimeoutWarningMinutes { get; set; }
 
         /// <summary>
         /// Gets the number of minutes a lock may be held before timout due to inactivity.
         /// </summary>
-        public int EditLockTimeoutExpirationMinutes
-        {
-            get
-            {
-                return Convert.ToInt32(ConfigurationManager.AppSettings["EditLockTimeoutExpirationMinutes"]);
-            }
-        }
+        public int EditLockTimeoutExpirationMinutes { get; set; }
         
         /// <summary>
         /// True if read-only access is allowed; False if edit access is allowed.
@@ -83,5 +93,10 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets the full name of the user who is currently editing the document; null if not locked for edit.
         /// </summary>
         public string Editing { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets the Ntid of the user who is currently editing the document; null if not locked for edit.
+		/// </summary>
+		public string Ntid { get; set; }
+	}
 }

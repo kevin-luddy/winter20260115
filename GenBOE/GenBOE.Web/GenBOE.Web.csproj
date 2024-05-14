@@ -623,8 +623,6 @@
     <Content Include="Resources\CreateWorkspaceStep3.html" />
     <Content Include="Resources\js\angular\manageWBSController.js" />
     <Content Include="Resources\js\DiscrepancyValidator.js" />
-    <Content Include="Resources\js\Scripts\additional-methods.js" />
-    <Content Include="Resources\js\Scripts\additional-methods.min.js" />
     <Content Include="Resources\ProjectMapLargeText.html" />
     <Content Include="Resources\ProjectMapImport.html" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -678,6 +676,8 @@
     </Content>
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\ReleaseTFS.pubxml" />
+    <Content Include="Scripts\additional-methods.js" />
+    <Content Include="Scripts\additional-methods.min.js" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-cookies.js" />
@@ -916,6 +916,7 @@
     <Content Include="Views\BOEZoneTravel\BOEZoneTravelGrid.ascx" />
     <Content Include="Views\BOEZoneTravel\ZoneTravelTrips.ascx" />
     <Content Include="Views\BOEZoneTravel\ZoneTravelTripsGrid.ascx" />
+    <Content Include="Views\BOE\BOEConfidenceReport.ascx" />
     <Content Include="Views\BOE\BOEProjectMapAdvancedSearch.ascx" />
     <Content Include="Views\BOE\BOEHeaderDescription.ascx" />
     <Content Include="Views\BOE\BOEHeaderISGSTitle.ascx" />
@@ -931,6 +932,7 @@
     <Content Include="Views\Home\GenBoeMetrics.aspx" />
     <Content Include="Views\Home\GenBOEMetricsWhosOnlineIndex.aspx" />
     <Content Include="Views\Reports\AdditionalReports.ascx" />
+    <Content Include="Views\Reports\BOEConfidenceReportResults.ascx" />
     <Content Include="Views\Reports\CustomerReports.ascx" />
     <Content Include="Views\Reports\FinanceReports.ascx" />
     <Content Include="Views\Reports\INLFormExportSelectorGrid.ascx" />
@@ -1088,7 +1090,6 @@
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.ttf" />
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
     <Content Include="Scripts\tinymce\langs\readme.md" />
-    <None Include="Settings.StyleCop" />
     <Content Include="Templates\Export\WorkspaceDataSpaceSystems.xlsx" />
     <Content Include="Templates\Export\SSC_Labor_Rates_example.xlsx" />
     <Content Include="Templates\Export\MST_Labor_Rates_example.xlsx" />
@@ -1122,6 +1123,7 @@
     <Content Include="Templates\Export\CommentsAndResponses.xlsx" />
     <Content Include="Templates\Export\Permissions.xlsx" />
     <Content Include="Templates\Export\PermissionsRMS.xlsx" />
+    <Content Include="Templates\Export\LaborTypesAndSpread_BRCEnabled.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

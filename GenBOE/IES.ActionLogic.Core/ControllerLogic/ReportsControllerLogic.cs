@@ -17,12 +17,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Interfaces;
 	using IES.ActionLogic.Core.IO.Export;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Logic for the RDM Reports Controller.
 	/// </summary>
 	public class ReportsControllerLogic : RdmControllerLogic, IReportsControllerLogic
 	{
+		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
 		/// <summary>
 		/// PPRD Exporter
 		/// </summary>
@@ -73,8 +79,8 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="adUtils">AD Utilities</param>
 		/// <param name="securityInfo">Security Information</param>
 		public ReportsControllerLogic(IPPRDExporter pprdExporter, IRdmRevisionExporter rdmRevisionExporter, IRateDetailLoader rateDetailLoader, ICobraDetailLoader cobraDetailLoader, ISectionLoader sectionLoader, IFileAttachmentLoader fileAttachmentLoader,
-			IBurdenPoolLoader burdenPoolLoader, IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo)
-			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo)
+			IBurdenPoolLoader burdenPoolLoader, IAreaLockingLoader areaLockingLoader, IRevisionMediator revisionMediator, IActiveDirectoryService adUtils, ISecurityInformation securityInfo, IConfiguration configuration)
+			: base(areaLockingLoader, revisionMediator, adUtils, securityInfo, configuration)
 		{
 			this.pprdExporter = pprdExporter;
 			this.rdmRevisionExporter = rdmRevisionExporter;
@@ -83,28 +89,24 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			this.sectionLoader = sectionLoader;
 			this.fileAttachmentLoader = fileAttachmentLoader;
 			this.burdenPoolLoader = burdenPoolLoader;
+			this.configuration = configuration;
 		}
 
 		/// <summary>
 		/// Generate a zip file containing the ProPricer direct and burden rate exports.
 		/// </summary>
 		/// <param name="zipPathFile">The server path where the zip file will be created</param>
-		/// <param name="versionNumber">PPR&amp;D version number</param>
 		/// <param name="rates">PPR&amp;D rates</param>
 		/// <param name="burdenPools">PPR&amp;D ProPricer burden pools</param>
 		/// <param name="burdenElements">PPR&amp;D ProPricer burden elements</param>
 		/// <returns>An ActionResult.</returns>
-		public string ExportProPricerData(string zipPathFile, string versionNumber,
-			ICollection<RateDetailModelView> rates, ICollection<BurdenPoolDetailModelView> burdenPools,
-			ICollection<BurdenElementModelView> burdenElements)
+		public string ExportProPricerData(string zipPathFile, ICollection<RateDetailModelView> rates, 
+			ICollection<BurdenPoolDetailModelView> burdenPools, ICollection<BurdenElementModelView> burdenElements)
 		{
 			RdmProPricerExporter rdmProPricerExporter =
 				new(rates, zipPathFile, burdenPools, burdenElements);
 
 			string exportedFileName = rdmProPricerExporter.ExportReport();
-
-			// The filename is hardcoded to make it more obvious what is being replaced by string.format().
-			// string fileDownloadName = $"ProPricer_RDM_Rev{versionNumber}_{DateTime.Today.ToString(CommonConstants.DATE_FORMATTING_YEAR_MONTH_DAY)}.zip";
 
 			return exportedFileName;
 		}
@@ -114,7 +116,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="id">Revision ID</param>
 		/// <param name="serverFileName">Server File Name</param>
-		public async Task<IActionResult> GenerateFullPPRD(string id, string serverFileName)
+		public async Task<IActionResult> GenerateFullPPRD(string id, string serverFileName, bool? portionMarkingRequired)
 		{
 			if (id == null)
 			{
@@ -152,7 +154,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			ICollection<FileAttachmentRowModelView> fileAttachments = fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
 			// TODO - RDM 1.0 - Update to allow user to select number of years
-			return await pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, refNumberPrefixLevel);
+			return await pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, refNumberPrefixLevel, portionMarkingRequired);
 		}
 
 		/// <summary>

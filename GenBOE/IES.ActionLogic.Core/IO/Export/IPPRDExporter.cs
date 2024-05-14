@@ -29,7 +29,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="response">the web response object to write the file back to for user download</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
-		Task<IActionResult> ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel, bool portionMarkingRequired = false);
+		Task<IActionResult> ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel, bool? portionMarkingRequired);
 
 		/// <summary>
 		/// Generate a Word document containing the RDD sections and rates.

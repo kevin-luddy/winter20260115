@@ -16,15 +16,18 @@ namespace IES.Common.Core
 	using Exceptions;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Logging;
 	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Authentication.Negotiate;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Mvc.Controllers;
 	using Microsoft.AspNetCore.Mvc.Filters;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 
 	[ApiController, Authorize]
+	[TypeFilter(typeof(ExceptionFilter))]
 	public abstract class IESController : ControllerBase, IActionFilter
 	{
 		/// <summary>
@@ -38,12 +41,18 @@ namespace IES.Common.Core
 		protected readonly ISecurityInformation securityInformation;
 
 		/// <summary>
+		/// Configuration for appsettings.json.
+		/// </summary>
+		private readonly IConfiguration configuration;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="IESController"/> class.
 		/// </summary>
-		protected IESController(ILogger logger, ISecurityInformation securityInformation)
+		protected IESController(ILogger logger, ISecurityInformation securityInformation, IConfiguration configuration)
 		{
 			log = logger;
 			this.securityInformation = securityInformation;
+			this.configuration = configuration;
 		}
 
 		/// <summary>
@@ -54,6 +63,27 @@ namespace IES.Common.Core
 		public string GetUserInfo()
 		{
 			return this.securityInformation.ActiveUserNTID;
+		}
+
+		/// <summary>
+		/// Gets the feature flag key-value pair from the appsettings.
+		/// </summary>
+		/// <returns>Feature flag key-value pairs.</returns>
+		[HttpGet("[action]")]
+		public Dictionary<string, string> GetAppSettingFeatures()
+		{
+			return configuration.GetSection("FeatureFlags").GetChildren()
+				  .ToDictionary(x => x.Key, x => x.Value);
+		}
+
+		/// <summary>
+		/// Get the release version.
+		/// </summary>
+		/// <returns>Release version and date.</returns>
+		[HttpGet("[action]")]
+		public string GetReleaseVersion()
+		{
+			return CommonUtilities.VersionAndUpdatedDate;
 		}
 
 		/// <summary>
@@ -203,7 +233,7 @@ namespace IES.Common.Core
 		/// </summary>
 		/// <param name="errorMessages">List of error messages</param>
 		/// <returns>Text file</returns>
-		protected IActionResult CreateTextFileWithErrorMessage(params string[] errorMessages)
+		protected async Task<IActionResult> CreateTextFileWithErrorMessage(params string[] errorMessages)
 		{
 			Response.Headers.Clear();
 			Response.ContentType = "text/plain";
@@ -216,8 +246,8 @@ namespace IES.Common.Core
 				foreach (string errorMessage in errorMessages)
 				{
 					byte[] errorContent = Encoding.ASCII.GetBytes(errorMessage);
-					Response.Body.Write(errorContent, 0, errorContent.Length);
-					Response.Body.Write(newline, 0, newline.Length);
+					await Response.Body.WriteAsync(errorContent, 0, errorContent.Length);
+					await Response.Body.WriteAsync(newline, 0, newline.Length);
 				}
 			}
 
@@ -233,7 +263,7 @@ namespace IES.Common.Core
 		/// </summary>
 		/// <param name="ex">Exception</param>
 		/// <returns>Text file</returns>
-		protected IActionResult CreateTextFileWithErrorMessage(Exception ex)
+		protected async Task<IActionResult> CreateTextFileWithErrorMessage(Exception ex)
 		{
 			if (ex == null)
 			{
@@ -241,13 +271,13 @@ namespace IES.Common.Core
 			}
 			else if (ConfigurationUtilities.GetAppSetting<bool>("LocalDebug"))
 			{
-				return CreateTextFileWithErrorMessage(ex.ToDisplayString());
+				return await CreateTextFileWithErrorMessage(ex.ToDisplayString());
 			}
 			else
 			{
 				string supportLink = CommonUtilities.ServiceCentralLink();
 
-				return CreateTextFileWithErrorMessage(
+				return await CreateTextFileWithErrorMessage(
 					$"An error has occurred.  This might be the result of invalid data.  If the data is valid, and the error persists, please create a ticket with IES Helpdesk at {supportLink}.");
 			}
 		}

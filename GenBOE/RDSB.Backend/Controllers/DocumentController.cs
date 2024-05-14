@@ -21,11 +21,12 @@ namespace RDSB.Backend.Controllers
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
-	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 	using RDSB.Backend.Common;
 
@@ -35,16 +36,16 @@ namespace RDSB.Backend.Controllers
 	[Authorize]
 	[Route("api/Document")]
 	public class DocumentController : RDSBController
-    {
-        /// <summary>
-        /// The document controller logic.
-        /// </summary>
-        private readonly IDocumentControllerLogic documentControllerLogic;
+	{
+		/// <summary>
+		/// The document controller logic.
+		/// </summary>
+		private readonly IDocumentControllerLogic documentControllerLogic;
 
-        /// <summary>
-        /// The rate detail loader
-        /// </summary>
-        private readonly IRateDetailLoader rateDetailLoader;
+		/// <summary>
+		/// The rate detail loader
+		/// </summary>
+		private readonly IRateDetailLoader rateDetailLoader;
 
 		/// <summary>
 		/// Constructor
@@ -55,15 +56,15 @@ namespace RDSB.Backend.Controllers
 		/// <param name="adUtils">Active Directory Utilities</param>
 		/// <param name="whosOnlineLoader">Who's Online Loader</param>
 		/// <param name="rateDetailLoader">Rate Loader</param>
-		public DocumentController(ISecurityInformation securityInformation, ISecurityMapper securityMapper, 
-			IDocumentControllerLogic documentControllerLogic, IActiveDirectoryService adUtils, 
-			IWhosOnlineLoader whosOnlineLoader, IRateDetailLoader rateDetailLoader, 
-			ILogger<DocumentController> logger)
-            : base(securityInformation, securityMapper, adUtils, whosOnlineLoader, logger)
-        {
-            this.documentControllerLogic = documentControllerLogic;
-            this.rateDetailLoader = rateDetailLoader;
-        }
+		public DocumentController(ISecurityInformation securityInformation, ISecurityMapper securityMapper,
+			IDocumentControllerLogic documentControllerLogic, IActiveDirectoryService adUtils,
+			IWhosOnlineLoader whosOnlineLoader, IRateDetailLoader rateDetailLoader,
+			ILogger<DocumentController> logger, IConfiguration configuration)
+			: base(securityInformation, securityMapper, adUtils, whosOnlineLoader, logger, configuration)
+		{
+			this.documentControllerLogic = documentControllerLogic;
+			this.rateDetailLoader = rateDetailLoader;
+		}
 
 		/// <summary>
 		/// Index for Document Section
@@ -71,11 +72,11 @@ namespace RDSB.Backend.Controllers
 		/// <returns>Documents for Homepage Grid</returns>
 		[HttpGet("[action]")]
 		public ICollection<DocumentGridModelView> GetDocuments()
-        {
-            ICollection<DocumentGridModelView> models = this.documentControllerLogic.RetrieveAllLinkedDocuments(this.SecurityMapper.GetRolesForLoggedInUser(), this.securityInformation.ActiveUserNTID);
+		{
+			ICollection<DocumentGridModelView> models = this.documentControllerLogic.RetrieveAllLinkedDocuments(this.SecurityMapper.GetRolesForLoggedInUser(), this.securityInformation.ActiveUserNTID);
 
-            return models;
-        }
+			return models;
+		}
 
 		/// <summary>
 		/// Get the proposals for the Add New Document dropdown 
@@ -83,18 +84,18 @@ namespace RDSB.Backend.Controllers
 		/// <returns>proposals for the Add New Document dropdown </returns>
 		[HttpGet("[action]")]
 		public ICollection<DocumentGridModelView> GetProposalsForNewDocument()
-        {
-            ICollection<ProposalDto> proposals = this.documentControllerLogic.RetrieveUnlinkedProposals(this.SecurityMapper.GetRolesForLoggedInUser(),
-                    this.securityInformation.ActiveUserNTID).OrderByDescending(p => p.TrackingNumber).ToList();
+		{
+			ICollection<ProposalDto> proposals = this.documentControllerLogic.RetrieveUnlinkedProposals(this.SecurityMapper.GetRolesForLoggedInUser(),
+					this.securityInformation.ActiveUserNTID).OrderByDescending(p => p.TrackingNumber).ToList();
 
-            ICollection<DocumentGridModelView> toReturn = new Collection<DocumentGridModelView>();
-            foreach (ProposalDto proposal in proposals)
-            {
-                toReturn.Add(new DocumentGridModelView() { ProposalId = proposal.Id, ProposalTitle = proposal.ProposalTitle, ProposalTrackingNumber = proposal.TrackingNumber});
-            }
+			ICollection<DocumentGridModelView> toReturn = new Collection<DocumentGridModelView>();
+			foreach (ProposalDto proposal in proposals)
+			{
+				toReturn.Add(new DocumentGridModelView() { ProposalId = proposal.Id, ProposalTitle = proposal.ProposalTitle, ProposalTrackingNumber = proposal.TrackingNumber });
+			}
 
-            return toReturn;
-        }
+			return toReturn;
+		}
 
 		/// <summary>
 		/// Saves new document for the selected Proposal
@@ -102,11 +103,23 @@ namespace RDSB.Backend.Controllers
 		/// <param name="id">Selected proposal ID</param>
 		/// <returns>Json</returns>
 		[HttpPost("[action]")]
-		public bool SaveNewDocument(int id)
-        {
-            this.documentControllerLogic.SaveNewDocument(id);
-            return true;
-        }
+		public IESResponse<bool> SaveNewDocument(int id)
+		{
+			IESResponse<bool> response = new();
+
+			try
+			{
+				this.documentControllerLogic.SaveNewDocument(id);
+				response.Data = true;
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			return response;
+		}
 
 		/// <summary>
 		/// Saves the specified collection.
@@ -116,39 +129,51 @@ namespace RDSB.Backend.Controllers
 		/// <param name="id">The proposal Id, needed for authorization.</param>
 		/// <returns>boolean result of the save</returns>
 		[HttpPost("[action]")]
-		public bool Save(DocumentDetailModelView document, int id)
-        {
-            if (document == null)
-            {
-                throw new GenValidationException("Document cannot be null.");
-            }
+		public IESResponse<bool> Save(DocumentDetailModelView document, int id)
+		{
+			IESResponse<bool> response = new();
 
-            if (id != document.ProposalId)
-            {
-                // id is needed as a param for authorization
-                throw new GenValidationException("The Proposal Id is invalid.");
-            }
+			try
+			{
+				if (document == null)
+				{
+					throw new GenValidationException("Document cannot be null.");
+				}
 
-            ICollection<ValidationMessage> validationErrors = this.documentControllerLogic.ValidateDocumentDetailModelView(document);
-            if (validationErrors.Any())
-            {
-                throw new GenValidationException(validationErrors);
-            }
+				if (id != document.ProposalId)
+				{
+					// id is needed as a param for authorization
+					throw new GenValidationException("The Proposal Id is invalid.");
+				}
 
-            using (TransactionScope scope = new(TransactionScopeOption.Required,
-                new TransactionOptions
-                {
-                    IsolationLevel = IsolationLevel.Snapshot,
-                    Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
-                }))
-            {
-                this.documentControllerLogic.SaveDocument(document);
-                
-                scope.Complete();
-            }
+				ICollection<ValidationMessage> validationErrors = this.documentControllerLogic.ValidateDocumentDetailModelView(document);
+				if (validationErrors.Any())
+				{
+					throw new GenValidationException(validationErrors);
+				}
 
-			return true;
-        }
+				using (TransactionScope scope = new(TransactionScopeOption.Required,
+					new TransactionOptions
+					{
+						IsolationLevel = IsolationLevel.Snapshot,
+						Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
+					}))
+				{
+					this.documentControllerLogic.SaveDocument(document);
+
+					scope.Complete();
+				}
+
+				response.Data = true;
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			return response;
+		}
 
 		/// <summary>
 		/// </summary>
@@ -156,12 +181,22 @@ namespace RDSB.Backend.Controllers
 		/// <param name="createIfNotExists">If true, create the RDSB document if it doesn't already exist. If false, only edit existing RDSB document.</param>
 		/// <returns>Detailed Model View</returns>
 		[HttpGet("[action]")]
-		public DocumentDetailModelView GetDetailModelView(int id, bool? createIfNotExists = false)
-        {
-            DocumentDetailModelView model = this.documentControllerLogic.RetrieveDocumentDetailByProposalId(id, createIfNotExists);
+		public IESResponse<DocumentDetailModelView> GetDetailModelView(int id, bool? createIfNotExists = false)
+		{
+			IESResponse<DocumentDetailModelView> response = new();
 
-            return model;
-        }
+			try
+			{
+				response.Data = this.documentControllerLogic.RetrieveDocumentDetailByProposalId(id, createIfNotExists);
+				response.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			return response;
+		}
 
 		/// <summary>
 		/// View for publishing a Document for the specified identifier.
@@ -172,21 +207,21 @@ namespace RDSB.Backend.Controllers
 		/// <returns>Export document.</returns>
 		[HttpGet("[action]")]
 		public async Task<IActionResult> Publish(int id, bool portionMarkingRequired)
-        {
+		{
 			IActionResult result;
-            try
-            {
+			try
+			{
 				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/PPRDTemplate.docx");
 				result = await this.documentControllerLogic.GenerateRDD(id, serverFileName, portionMarkingRequired);
-            }
-            catch (GeneralAppException e)
-            {
-                this.log.LogError(e, "Error publishing/generating a PPRD document");
-                result = this.CreateTextFileWithErrorMessage(e.Message);
-            }
+			}
+			catch (GeneralAppException e)
+			{
+				this.log.LogError(e, "Error publishing/generating a PPRD document");
+				result = await this.CreateTextFileWithErrorMessage(e.Message);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
 		/// <summary>
 		/// Deletes the specified Document.
@@ -196,10 +231,10 @@ namespace RDSB.Backend.Controllers
 		/// <returns>Json Result of the deletion.</returns>
 		[HttpPost("[action]")]
 		public bool Delete(int id)
-        {
-            this.documentControllerLogic.DeleteDocument(id);
-            return true;
-        }
+		{
+			this.documentControllerLogic.DeleteDocument(id);
+			return true;
+		}
 
 		/// <summary>
 		/// Gets the Rate Codes for the selected Revision for the dropdown
@@ -208,11 +243,11 @@ namespace RDSB.Backend.Controllers
 		/// <returns>Rate Codes for the selected Revision</returns>
 		[HttpGet("[action]")]
 		public ICollection<RdsbRateDetailModelView> GetRateCodesForRevision(int revisionID)
-        {
-            ICollection<RdsbRateDetailModelView> rates = this.rateDetailLoader.GetRatesForRdsbDocument(revisionID);
-            
-            return rates;
-        }
+		{
+			ICollection<RdsbRateDetailModelView> rates = this.rateDetailLoader.GetRatesForRdsbDocument(revisionID);
+
+			return rates;
+		}
 
 		/// <summary>
 		/// Gets the Sections for the selected Revision for the dropdown
@@ -221,10 +256,10 @@ namespace RDSB.Backend.Controllers
 		/// <returns>Sections for the selected Revision</returns>
 		[HttpGet("[action]")]
 		public ICollection<SectionDetailModelView> GetSectionsForRevision(int revisionID)
-        {
-            ICollection<SectionDetailModelView> sections = this.documentControllerLogic.GetSectionsForRevision(revisionID);
-            
-            return sections;
-        }
-    }
+		{
+			ICollection<SectionDetailModelView> sections = this.documentControllerLogic.GetSectionsForRevision(revisionID);
+
+			return sections;
+		}
+	}
 }

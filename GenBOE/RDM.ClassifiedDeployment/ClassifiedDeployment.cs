@@ -577,7 +577,7 @@ namespace ClassifiedDeployment
                     UseDefaultCredentials = true
                 });
 
-                client.BaseAddress = new Uri(rdmClearRevisionCacheUrl);
+				client.BaseAddress = SafeUriUtility.safeUri(rdmClearRevisionCacheUrl);
 
                 // Add an Accept header for JSON format.
                 client.DefaultRequestHeaders.Accept.Add(

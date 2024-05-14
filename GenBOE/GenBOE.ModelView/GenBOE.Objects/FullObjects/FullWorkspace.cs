@@ -616,6 +616,7 @@ namespace GenBOE.Objects
 				if (this.resourcesUsedInBoes == null)
 				{
 					ICollection<int> resourceIds = this.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
+						.Union(this.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Union(this.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
 						.Distinct().ToList();
 

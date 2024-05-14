@@ -52,7 +52,7 @@
 			RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
 			SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>',
 			PoPMonthsDivisor: '<%: Constants.POP_MONTHS_DIVISOR %>',
-			OneLMXCutOffDate: '<%: Utilities.GetOneLMXCutOffDate() %>',
+			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
 			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForSystem %>'.isTrue()
 		});
 
@@ -90,6 +90,7 @@
 		<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_OFFLOAD, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 		<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_SUBMIT_FOR_REVIEW, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 		<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_SEARCH, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
+		<% if (Utilities.IsConfidenceReportEnabled) { Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); } %>
 		<% Html.RenderAction(WebConstants.ACTION_DISPLAY_SUBMIT_FOR_APPROVAL, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 	</div>
 	<script type="text/javascript">

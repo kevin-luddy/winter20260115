@@ -98,6 +98,10 @@ namespace GenBOE.ActionLogic.Reporting
                 {
                     result = "ODC";
                 }
+				else if (this.DiscrepancyEnum == BoeInconsistencyEnum.Resource)
+				{
+					result = "One or more Labor Type missing Resource and/or Business Resource Code";
+				}
 
                 return result;
             }
@@ -115,6 +119,8 @@ namespace GenBOE.ActionLogic.Reporting
 
         HoursAndCost,
 
-        ODC
+        ODC,
+
+		Resource
     }
 }

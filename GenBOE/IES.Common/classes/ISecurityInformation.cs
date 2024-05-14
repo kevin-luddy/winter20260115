@@ -30,6 +30,7 @@ namespace IES.Common
         /// <returns>true if user is a subcontractor and not overridden</returns>
         Boolean IsSubcontractorUser(string ntid, bool? isSubcontractor);
         Boolean IsAllowedProPricerAccess(string userName);
+		Boolean IsSystemOrSubcontractAdmin(string userName);
         bool IsMemberOfADGroupInAppSettingsList(string inUserName, string inADGroupListAppSettingsKey);
     }
 }

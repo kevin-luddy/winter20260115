@@ -6503,9 +6503,17 @@ div.popup-div-button {
 }
 
 .labor-spread-labels {
-    width: 299px; 
-    display: inline-block; 
+    width: 299px;
+    display: inline-block;
     vertical-align: top;
+}
+
+.labor-spread-labels-brc {
+    width: 346px !important; 
+}
+
+.header-rows {
+    width: 100%;
 }
 
 #LaborSpreadGridBlock.ReadOnly td.ResourceName,
@@ -7154,13 +7162,17 @@ table.moduled-table {
     max-width: none;
 }
 
-.boe-details .labor-spread-scroll
-{
+.boe-details .labor-spread-scroll {
     width: 1035px;
     max-width: none;
     display: inline-block;
     vertical-align: top;
     overflow: auto;
+}
+
+.boe-details .labor-spread-scroll-brc
+{
+    width: 990px !important;
 }
 
 .task-element-grid #TaskElementGrid
@@ -7225,6 +7237,7 @@ table.moduled-table {
 }
 
 #LaborTypesFixed td.resources,
+#LaborTypesFixed td.business-resource-codes,
 #LaborTypesFixed td.performing-org {
     overflow: visible;
 }
@@ -7403,14 +7416,6 @@ table#ManageMetricsGroups div[field=GroupName] {
 .bannerContainer {
     width: 1400px;
     margin: auto;
-}
-
-.appOfflineFrame {
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 0px;
-    border: 0px;
 }
 
 #formPopulateItems input[type=button],

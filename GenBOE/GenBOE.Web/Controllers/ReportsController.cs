@@ -319,6 +319,12 @@ namespace GenBOE.Web.Controllers
                 ReportDTO validateAllReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.ValidateAllBOE).Single();
                 theModelViews.Add(new ExportsModelView(validateAllReport));
 
+				if (Utilities.IsConfidenceReportEnabled)
+				{
+					ReportDTO confidenceReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.ConfidenceReport).Single();
+					theModelViews.Add(new ExportsModelView(confidenceReport));
+				}
+
                 if (FullObjectHelper.ShowEquivalentPersonsOption && ws.IsUsingEquivalentPerson)
                 {
                     foreach (ExportsModelView model in theModelViews)
@@ -868,14 +874,35 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
+		/// <summary>
+		/// Displays the Confidence Report Results view
+		/// </summary>
+		/// <param name="workspace">Workspace Shortname</param>
+		/// <param name="id">BOE ID</param>
+		/// <returns>ViewResult for Confidence Report Results</returns>
+		public virtual ViewResult DisplayConfidenceReportResults(string workspace, int? boeID)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-        /// <summary>
-        /// Display the main ProPricer control which will render the grid and contains
-        /// controls used for adding and editing formats
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <returns></returns>
-        [ProPricerExportAccess]
+			// Initialize Action
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS, boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+
+			ViewData["BOEID"] = boeID;
+
+			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT_RESULTS);
+
+			// Finalize Action
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS, sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Display the main ProPricer control which will render the grid and contains
+		/// controls used for adding and editing formats
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <returns></returns>
+		[ProPricerExportAccess]
         public ViewResult DisplayProPricer(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1676,7 +1703,7 @@ namespace GenBOE.Web.Controllers
                         rteTemplateOverrides = boes.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList();
                     }
 
-                    BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides, ws.MoqTypeSelections.ToList());
+                    BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides, ws.MoqTypeSelections.ToList(), true);
                     // Need picklist values for contract type for Workspace Identification sheet
                     exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
 
@@ -2056,7 +2083,7 @@ namespace GenBOE.Web.Controllers
                 // Initialize Action
                 Stopwatch sw = this.InitializeAction(this.log, "ValidateBoesForDiscrepancies", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
-                theModelViews = this.reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, false);
+                theModelViews = this.reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, true, true);
 
                 // Finalize Action
                 this.FinalizeAction(this.log, "ValidateBoesForDiscrepancies", sw);

@@ -298,6 +298,7 @@ namespace GenTRAC.Web.Common
             // Update the user status for Who's Online.
             IES.Common.UserData activeUser = this.securityInformation.ActiveUserData;
             this.ViewData["UserAccountName"] = string.Format("{0} {1} ({2})", activeUser.FirstName, activeUser.LastName, activeUser.Ntid);
+
             this.GenTRACControllerLogic.UpdateUsersStatus(activeUser, proposalId);
 
             // validate model
@@ -451,12 +452,12 @@ namespace GenTRAC.Web.Common
                         new GenTRACMenuItemModelView
                         {
                             LinkText = "About PTM",
-                            LinkUrl = new Uri("http://gentracsupport.isgs.lmco.com/about/")
+                            LinkUrl = SafeUriUtility.safeUri("http://gentracsupport.isgs.lmco.com/about/")
                         },
                         new GenTRACMenuItemModelView
                         {
                             LinkText = "PTM Help",
-                            LinkUrl = new Uri("http://gentracsupport.isgs.lmco.com/help/")
+                            LinkUrl = SafeUriUtility.safeUri("http://gentracsupport.isgs.lmco.com/help/")
                         }
                     }
                 }, */

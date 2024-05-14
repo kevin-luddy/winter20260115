@@ -105,6 +105,7 @@ namespace GenBOE.ActionLogic.Common
         // Options Lists column headers
         public static readonly string MOQ_TYPE_COLUMN_HEADER = "MOQ Type";
         public static readonly string RESOURCE_COLUMN_HEADER = "Resource";
+		public static readonly string BUSINESS_RESOURCE_CODE_COLUMN_HEADER = "Business Resource Code";
         public static readonly string SUB_RESOURCE_COLUMN_HEADER = "Subcontractor Resource";
         public static readonly string PERF_ORG_COLUMN_HEADER = "Perf Org";
         public static readonly string SPREAD_CURVE_COLUMN_HEADER = "Spread Curve";
@@ -152,6 +153,7 @@ namespace GenBOE.ActionLogic.Common
         // data validation defined names
         public static readonly string MOQ_TYPES = "MOQTypes";
         public static readonly string RESOURCES = "Resources";
+		public static readonly string BUSINESS_RESOURCE_CODES = "BusinessResourceCodes";
         public static readonly string SUB_RESOURCES = "SubResources";
         public static readonly string PERFORGS = "PerfOrgs";
         public static readonly string SPREAD_CURVES = "SpreadCurves";

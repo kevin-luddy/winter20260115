@@ -12,8 +12,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.IO;
     using System.Linq;
     using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.IO;
+	using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -352,7 +354,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {
-                foreach (ResourceTypeDto laborTask in taskElement.taskElementLabors)
+                //get brc labors based on 1lmx start date
+                List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToList();
+
+                foreach (ResourceTypeDto laborTask in taskElementLabors)
                 {
                     if (laborTask.ValueSpread.HasValue && laborTask.ResourceID.HasValue && dto.ResourceIds.Contains(laborTask.ResourceID.Value))
                     {
@@ -360,7 +365,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         {
                             totalCost += laborTask.ValueSpread.Value;
                         }
-                        if (laborTask.SpreadType == SpreadType.Hours)
+                        if (workspace.IsUsingTM && laborTask.SpreadType == SpreadType.Hours)
                         {
                             ResourceDTO resource = this.resourceLoader.GetById(laborTask.ResourceID.Value);
                             if (!resourceIdsWithValidTMRates.Contains(laborTask.ResourceID.Value))
@@ -368,8 +373,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                 hasValidTMRates = false;
                             }
 
-                            if (workspace.IsUsingTM && hasValidTMRates &&
-                                (resource.ElementOfCost == ElementOfCostType.IWTA ||
+                            if (hasValidTMRates && (resource.ElementOfCost == ElementOfCostType.IWTA ||
                                  resource.ElementOfCost == ElementOfCostType.Sub) &&
                                 resource.RateType == RateType.Hours)
                             {
@@ -607,73 +611,76 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 throw new ArgumentNullException(nameof(resourceIds));
             }
 
-            // Get list of T&M resources for this workspace 
-            ICollection<TMResourceRateDTO> workspaceTMResourceRates = this.tmResourceRateLoader.GetByWorkspaceId(workspace.Id);
+			if (workspace.IsUsingTM)
+			{
+				// Get list of T&M resources for this workspace 
+				ICollection<TMResourceRateDTO> workspaceTMResourceRates = this.tmResourceRateLoader.GetByWorkspaceId(workspace.Id);
 
-            foreach (int resourceId in resourceIds)
-            {
-                int startingErrorCount = validationErrors.Count;
+				foreach (int resourceId in resourceIds)
+				{
+					int startingErrorCount = validationErrors.Count;
 
-                // Only validate Sub and IWTA resources with RateType = Hours
-                ResourceDTO resource = this.resourceLoader.GetById(resourceId);
-                if ((resource.ElementOfCost == ElementOfCostType.Sub || resource.ElementOfCost == ElementOfCostType.IWTA) && resource.RateType == RateType.Hours)
-                {
-                    // Perform the following validations:
-                    // - Make sure we have rates for selected resources   
-                    // - Make sure the rates all have start dates, end dates, and rate values        
-                    // - Make sure the rate dates cover the period when they are used (BOEJ-2862)
-                    // - Make sure the rate dates are sequential, i.e. don't overlap, or contain gaps.
-                    IList<TMResourceRateDTO> tmResourceRates = workspaceTMResourceRates.Where(x => x.ResourceID == resourceId).OrderBy(x => x.StartDate).ToList();
-                    if (!tmResourceRates.Any())
-                    {
-                        validationErrors.Add(new ValidationMessage(string.Format("There are no T&M rates for resource {0}", resource.ResourceName)));
-                    }
-                    else if (tmResourceRates.Any(x => !x.StartDate.HasValue || !x.EndDate.HasValue))
-                    {
-                        validationErrors.Add(new ValidationMessage(string.Format("One or more of the T&M rates for resource {0} are missing a start or end date.", resource.ResourceName)));
-                    }
-                    else
-                    {
-                        if (tmResourceRates.Any(x => !x.ResourceRate.HasValue))
-                        {
-                            validationErrors.Add(new ValidationMessage(string.Format("One or more of the T&M rates for resource {0} are not populated.", resource.ResourceName)));
-                        }
+					// Only validate Sub and IWTA resources with RateType = Hours
+					ResourceDTO resource = this.resourceLoader.GetById(resourceId);
+					if ((resource.ElementOfCost == ElementOfCostType.Sub || resource.ElementOfCost == ElementOfCostType.IWTA) && resource.RateType == RateType.Hours)
+					{
+						// Perform the following validations:
+						// - Make sure we have rates for selected resources   
+						// - Make sure the rates all have start dates, end dates, and rate values        
+						// - Make sure the rate dates cover the period when they are used (BOEJ-2862)
+						// - Make sure the rate dates are sequential, i.e. don't overlap, or contain gaps.
+						IList<TMResourceRateDTO> tmResourceRates = workspaceTMResourceRates.Where(x => x.ResourceID == resourceId).OrderBy(x => x.StartDate).ToList();
+						if (!tmResourceRates.Any())
+						{
+							validationErrors.Add(new ValidationMessage(string.Format("There are no T&M rates for resource {0}", resource.ResourceName)));
+						}
+						else if (tmResourceRates.Any(x => !x.StartDate.HasValue || !x.EndDate.HasValue))
+						{
+							validationErrors.Add(new ValidationMessage(string.Format("One or more of the T&M rates for resource {0} are missing a start or end date.", resource.ResourceName)));
+						}
+						else
+						{
+							if (tmResourceRates.Any(x => !x.ResourceRate.HasValue))
+							{
+								validationErrors.Add(new ValidationMessage(string.Format("One or more of the T&M rates for resource {0} are not populated.", resource.ResourceName)));
+							}
 
-                        if (this.StartAndEndDatesAreValid(workspace, tmResourceRates, resourceId))
-                        {
-                            bool isSequential = true;
-                            DateTime? previousEndDate = null;
-                            foreach (TMResourceRateDTO tmResourceRate in tmResourceRates)
-                            {
-                                if (previousEndDate.HasValue && isSequential && tmResourceRate.StartDate.HasValue)
-                                {
-                                    isSequential = this.CheckConsecutiveMonths(previousEndDate.Value, tmResourceRate.StartDate.Value);
-                                }
-                                previousEndDate = tmResourceRate.EndDate;
-                            }
+							if (this.StartAndEndDatesAreValid(workspace, tmResourceRates, resourceId))
+							{
+								bool isSequential = true;
+								DateTime? previousEndDate = null;
+								foreach (TMResourceRateDTO tmResourceRate in tmResourceRates)
+								{
+									if (previousEndDate.HasValue && isSequential && tmResourceRate.StartDate.HasValue)
+									{
+										isSequential = this.CheckConsecutiveMonths(previousEndDate.Value, tmResourceRate.StartDate.Value);
+									}
+									previousEndDate = tmResourceRate.EndDate;
+								}
 
-                            if (!isSequential)
-                            {
-                                validationErrors.Add(new ValidationMessage(string.Format("The T&M rates for resource {0} are not sequential, i.e. there are gaps or overlaps in the date ranges.", 
-                                    resource.ResourceName)));
-                            }
-                        }
-                        else
-                        {
-                            validationErrors.Add(new ValidationMessage(string.Format("The T&M rates for resource {0} do not cover the entire period of performance {1:MM/yyyy} - {2:MM/yyyy}.", 
-                                resource.ResourceName, workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => z.ResourceID == resourceId)).Min(x => x.StartDate), 
-                                workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => z.ResourceID == resourceId)).Max(x => x.EndDate))));
-                        }
-                    }
-                }
+								if (!isSequential)
+								{
+									validationErrors.Add(new ValidationMessage(string.Format("The T&M rates for resource {0} are not sequential, i.e. there are gaps or overlaps in the date ranges.",
+										resource.ResourceName)));
+								}
+							}
+							else
+							{
+								validationErrors.Add(new ValidationMessage(string.Format("The T&M rates for resource {0} do not cover the entire period of performance {1:MM/yyyy} - {2:MM/yyyy}.",
+									resource.ResourceName, workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => (z.ResourceID.HasValue && z.ResourceID == resourceId) || (z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resourceId))).Min(x => x.StartDate),
+									workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => (z.ResourceID.HasValue && z.ResourceID == resourceId) || (z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resourceId))).Max(x => x.EndDate))));
+							}
+						}
+					}
 
-                int endingErrorCount = validationErrors.Count;
-                if (startingErrorCount == endingErrorCount)
-                {
-                    // no errors logged for this resource, so add it to the validated list
-                    resourceIdsWithValidTMRates.Add(resourceId);
-                }
-            }
+					int endingErrorCount = validationErrors.Count;
+					if (startingErrorCount == endingErrorCount)
+					{
+						// no errors logged for this resource, so add it to the validated list
+						resourceIdsWithValidTMRates.Add(resourceId);
+					}
+				}
+			}
         }
 
         /// <summary>
@@ -693,7 +700,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             if (startAndEndDatesValid)
             {
                 // get start/end dates based on when the resource is actually used
-                Collection<ResourceTypeDto> resourceUsages = workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => z.ResourceID == resourceId)).ToCollection();
+                Collection<ResourceTypeDto> resourceUsages = workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => (z.ResourceID.HasValue && z.ResourceID == resourceId) || (z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resourceId))).ToCollection();
                 if (resourceUsages.Any())
                 {
                     DateTime resourceUsageStartDate = resourceUsages.Min(x => x.StartDateValue);

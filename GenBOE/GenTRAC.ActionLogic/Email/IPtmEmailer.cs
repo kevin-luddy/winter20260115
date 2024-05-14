@@ -68,5 +68,11 @@ namespace GenTRAC.ActionLogic.Email
         /// <param name="lobEstMgrDel">The LOB Estimating Manager/Delegate</param>
         /// <param name="proposal">The proposal</param>
         void SendPreferredToolsEmail(UserData currentUser, UserDTO lobEstMgrDel, ProposalInformationModelView proposal);
-    }
+
+		/// <summary>
+		/// Send PTM Creation email to Contracts folks
+		/// </summary>
+		void SendPtmRecordCreationEmail(UserData currentUser, UserDTO contractsLead, UserDTO contractsBackup, ProposalInformationModelView proposal, bool isEeppTurnedOn, string eEppUrl, string ptmUrl,
+			string programName, string lob, string pa, string leadEstimator, string costVolumeLead, string lobEstimatingManager, string proposalManager);
+	}
 }

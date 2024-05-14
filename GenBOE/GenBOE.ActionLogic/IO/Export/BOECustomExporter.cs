@@ -4649,7 +4649,13 @@ namespace GenBOE.ActionLogic.IO.Export
                         boeExportLabor.ExportFields[BOEExporterConstants.FieldName_ResourceRateType] = resource.RateType.ToString();
                     }
 
-                    if (laborType.PerformingOrgID.HasValue)
+					if (Utilities.IsBRCEnabledForSystem)
+					{
+						boeExportLabor.ExportFields[BOEExporterConstants.FieldName_BrcID] = laborType.BusinessResourceCodeID.HasValue
+							? laborType.BusinessResourceCodeID.ToString() : string.Empty;
+					}
+
+					if (laborType.PerformingOrgID.HasValue)
                     {
                         PerformingOrgDTO perfOrg = exportInputs.PerformingOrgsUsedInBoes.First(x => x.Id == laborType.PerformingOrgID.Value);
                         boeExportLabor.ExportFields[BOEExporterConstants.FieldName_PerformingOrgID] = perfOrg.Id.ToString();

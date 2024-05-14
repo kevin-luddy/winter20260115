@@ -24,6 +24,8 @@ namespace GenBOE.Dtos
 		public PBOEDataDTO()
 		{
 			this.PBoeID = -1;
+			this.WorkspaceId = -1;
+			this.WorkspaceName = null;
 			this.SupplierName = null;
 			this.VendorId = null;
 			this.SubResources = null;
@@ -59,12 +61,23 @@ namespace GenBOE.Dtos
 			this.LeadEstimatorId = 0;
 			this.LeadEstimatorDisplayName = null;
 			this.LeadEstimatorEmail = null;
+			this.TrackingNumber = null;
 		}
 
 		/// <summary>
 		/// Gets or sets the PBoe ID.
 		/// </summary>
 		public int PBoeID { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Workspace ID
+		/// </summary>
+		public int WorkspaceId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Workspace Name
+		/// </summary>
+		public string WorkspaceName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the name of the supplier.
@@ -245,5 +258,10 @@ namespace GenBOE.Dtos
 		/// Lead Estimator Email
 		/// </summary>
 		public string LeadEstimatorEmail { get; set; }
+
+		/// <summary>
+		/// Tracking Number
+		/// </summary>
+		public string TrackingNumber { get; set; }
 	}
 }

@@ -352,13 +352,11 @@
     <Content Include="Views\Admin\EditBanner.cshtml" />
     <Content Include="Views\Admin\_Layout.cshtml" />
     <Content Include="Views\Home\Banner.cshtml" />
-    <Content Include="Settings.StyleCop" />
     <Content Include="Views\Shared\SecurityError.cshtml" />
     <Content Include="Views\Admin\DisplayManagePickLists.cshtml" />
     <Content Include="Views\Admin\DisplaySelectPickListToManage.cshtml" />
     <Content Include="Views\Home\BannerInternal.cshtml" />
     <Content Include="Views\Admin\ManageOfflineApplications.cshtml" />
-    <Content Include="Views\Home\AppOffline.cshtml" />
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\angular-animate.min.js.map" />
     <Content Include="Scripts\angular-sanitize.min.js.map" />
