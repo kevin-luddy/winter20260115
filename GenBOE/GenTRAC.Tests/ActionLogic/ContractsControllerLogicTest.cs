@@ -327,7 +327,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
-            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id, It.IsAny<bool>())).Returns(new ProposalUserInformationModelView());
             this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
@@ -359,7 +359,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
-            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id, It.IsAny<bool>())).Returns(new ProposalUserInformationModelView());
             this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
@@ -391,7 +391,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
-            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id, It.IsAny<bool>())).Returns(new ProposalUserInformationModelView());
             this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
@@ -422,7 +422,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
-            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id, It.IsAny<bool>())).Returns(new ProposalUserInformationModelView());
             this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
@@ -453,7 +453,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
-            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id, It.IsAny<bool>())).Returns(new ProposalUserInformationModelView());
             this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
@@ -477,7 +477,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
-            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id, It.IsAny<bool>())).Returns(new ProposalUserInformationModelView());
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
 
@@ -500,7 +500,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
             this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
-            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id, It.IsAny<bool>())).Returns(new ProposalUserInformationModelView());
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
 
