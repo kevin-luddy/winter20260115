@@ -1874,7 +1874,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
 
             ProposalApprovalsModelView proposalApprovalsInfo = sut.GetDataForProposalApprovals(proposalId, false);
-            ProposalUserInformationModelView proposalUserInfo = sut.GetDataForProposalUserInformation(proposalId);
+            ProposalUserInformationModelView proposalUserInfo = sut.GetDataForProposalUserInformation(proposalId, false);
 
             Assert.IsTrue(proposalUserInfo.AdditionalPricingResourceTypeList.Any());
             Assert.IsTrue(proposalUserInfo.GenBoeWorkspaceCreatorList.Any());
