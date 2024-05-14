@@ -1460,7 +1460,7 @@ namespace GenTRAC.ActionLogic
 			model.BOEToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(BOETool), false, model.BOETool.ToString());
 			model.CostVolumeToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(CostVolumeTool), false, model.CostVolumeTool.ToString());
 
-			model.IsReadOnly = this.IsProposalReadOnly(proposalId, fullProposalDto);
+			model.IsReadOnly = isNewRevision ? false.ToString().ToLower() : this.IsProposalReadOnly(proposalId, fullProposalDto);
 			model.IsPTMChecklistUIEnabled = (!proposalId.HasValue || proposalId < 0 || fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
 
 			if (fullProposalDto != null)
@@ -1657,14 +1657,14 @@ namespace GenTRAC.ActionLogic
 		/// </summary>
 		/// <param name="proposalId">Proposal Id.  Can be null.</param>
 		/// <returns>Proposal User Information Model View</returns>
-		public virtual ProposalUserInformationModelView GetDataForProposalUserInformation(int? proposalId)
+		public virtual ProposalUserInformationModelView GetDataForProposalUserInformation(int? proposalId, bool isNewRevision)
 		{
 			ProposalUserInformationModelView model = new ProposalUserInformationModelView();
 
 			model.AdditionalPricingResourceTypeList = EnumUtilities.GetListItemsForEnumSorted(typeof(ResourceType), false);
 
 			FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-			model.IsReadOnly = this.IsProposalReadOnly(proposalId, fullProposalDto);
+			model.IsReadOnly = isNewRevision ? false.ToString().ToLower() : this.IsProposalReadOnly(proposalId, fullProposalDto);
 
 			if (fullProposalDto != null)
 			{
@@ -1950,7 +1950,7 @@ namespace GenTRAC.ActionLogic
 
 			// if this is a saved proposal, this will only validate the changed users, else validate all of the users
 
-			ProposalUserInformationModelView savedProposalUsers = this.GetDataForProposalUserInformation(proposalId);
+			ProposalUserInformationModelView savedProposalUsers = this.GetDataForProposalUserInformation(proposalId, false);
 
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.CaptureManagerNtid, savedProposalUsers.CaptureManagerNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.CAPTURE_MANAGER_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.CostVolumeLeadNtid, savedProposalUsers.CostVolumeLeadNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.COST_VOLUME_LEAD_INVALID_NTID, true, true) && validUnchangedUsers;

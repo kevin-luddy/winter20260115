@@ -199,6 +199,7 @@
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
+				data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalUserInfoDataPlaceholder').html(response);
 					ProposalIndexWidget.ShouldHideLoadingBox();
