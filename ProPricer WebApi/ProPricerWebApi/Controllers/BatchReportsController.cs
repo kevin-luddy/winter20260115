@@ -383,6 +383,10 @@ namespace APTSPropricerApi.Controllers
 						messages.Add("Proposal was not found or could not be opened in the workspace.");
 					}
 				}
+				catch (Exception ex)
+				{
+					Logger.LogError(ex, ex.Message);
+				}
 				finally
 				{
 					proposal?.Close();
