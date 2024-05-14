@@ -96,13 +96,9 @@ namespace UnitTestProject
 			string proposalId = "400c9fe1-de18-ed11-9f7f-64c901b7a0ad";
 
 			BatchReportsController controller = CreateSUT();
-
-			//ProPricerResponse<ICollection<BatchReportDto>> results = controller.GetReports(TestConstants.SpaceInstanceId);
 			ProPricerResponse<ICollection<BatchReportDto>> results = controller.GetBatchReports(TestConstants.SpaceInstanceId);
 
 			// pick id for Batch Report
-			//string batchId = results.Data.First(b => b.Name.Equals("DD1861 - Batch")).Id;
-			//string batchId = results.Data.First(b => b.Name.StartsWith("DD Form 1861 Excel Format")).Id;
 			string batchId = results.Data.First(b => b.Name.StartsWith("DD1861 - Batch Excel Format")).Id;
 			ProPricerResponse<byte[]> response = controller.ExportBatchReportAsPdf(TestConstants.SpaceInstanceId, new ProPricerExportContainer
 			{

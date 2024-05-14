@@ -261,7 +261,6 @@ namespace APTSPropricerApi.Controllers
 				try
 				{
 					Aspose.Cells.Workbook wb = new(tempFile);
-					RemoveEmptyRowsColumns(wb);
 					string pdfFile = tempFile + ".pdf";
 					wb.Save(pdfFile, SaveFormat.Pdf);
 					response.Data = System.IO.File.ReadAllBytes(pdfFile);
@@ -277,19 +276,6 @@ namespace APTSPropricerApi.Controllers
 				}
 			}
 			return response;
-		}
-
-		private void RemoveEmptyRowsColumns(Workbook wb)
-		{
-			Worksheet sheet = wb.Worksheets.First();
-			ColumnCollection columns = sheet.Cells.Columns;
-			//foreach (Column col in columns)
-			//{
-			//	sheet.Cells.DeleteColumn(
-			//}
-			//sheet.Cells.DeleteBlankColumns();
-			//sheet.Cells.DeleteBlankRows();
-
 		}
 
 		/// <summary>
