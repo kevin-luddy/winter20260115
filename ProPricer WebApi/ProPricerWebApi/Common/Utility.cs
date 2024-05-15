@@ -98,9 +98,8 @@ namespace APTSPropricerApi.Common
 			if (exportType == ExportType.Pdf)
 			{
 				extension = ".pdf";
-			}
-
-			if (exportType == ExportType.Word)
+			} 
+			else if (exportType == ExportType.Word)
 			{
 				extension = ".docx";
 			}
@@ -734,37 +733,6 @@ namespace APTSPropricerApi.Common
 			}
 
 			return tasks;
-		}
-	}
-
-	public class ReportExtender : IReportEx
-	{
-		private readonly Proposal proposal;
-
-		public ReportExtender(Proposal proposal)
-		{
-			this.proposal = proposal;
-		}
-
-
-		public void AskToContinue(string message)
-		{
-
-		}
-
-		public void OnCurrentTableNotUsed(string message)
-		{
-
-		}
-
-		public Project RequestCurrentProject()
-		{
-			return this.proposal.ParentProject;
-		}
-
-		public Proposal RequestCurrentProposal()
-		{
-			return this.proposal;
 		}
 	}
 }

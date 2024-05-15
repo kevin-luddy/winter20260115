@@ -21,8 +21,7 @@
 			{
 				extension = ".pdf";
 			}
-
-			if (exportType == ExportType.Word)
+			else if (exportType == ExportType.Word)
 			{
 				extension = ".docx";
 			}

@@ -133,6 +133,7 @@ namespace APTSPropricerApi.Controllers
 					catch (Exception)
 					{
 						// error deleting file, will delete during next app startup
+						Logger.LogError("Error deleting file, will delete during next app start up");
 					}
 				}
 			}
