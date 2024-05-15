@@ -2,3 +2,7 @@
 GO
 
 -- Updated vwProposalLogReport.view for "Lost" to "Not Awarded"
+UPDATE [genTrac].[dbo].[ProposalStatusLU]
+SET ProposalStatus = 'Not Awarded'
+WHERE ProposalStatusID = 10
+GO
