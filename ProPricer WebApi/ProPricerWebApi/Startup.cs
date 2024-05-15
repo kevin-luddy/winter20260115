@@ -98,6 +98,8 @@ namespace APTSPropricerApi
 				});
 
 			});
+
+			new Aspose.Cells.License().SetLicense("Aspose.Total.lic");
 		}
 
 		/// <summary>
@@ -116,7 +118,7 @@ namespace APTSPropricerApi
 			}
 
 			this.configurationService.ConfigureAppBuilder(app);
-			
+
 			ClearOutOldFiles();
 		}
 
