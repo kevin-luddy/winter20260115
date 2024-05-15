@@ -12,9 +12,9 @@ EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.9';
 GO
 
 -- Updated vwProposalLogReport.view for "Lost" to "Not Awarded"
-UPDATE [genTrac].[dbo].[ProposalStatusLU]
+UPDATE [dbo].[ProposalStatusLU]
 SET ProposalStatus = 'Not Awarded'
-WHERE ProposalStatusID = 10
+WHERE ProposalStatus = 'Lost'
 GO
 
 /*
