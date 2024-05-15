@@ -212,13 +212,14 @@ namespace GenTRAC.Web.Controllers
             return this.PartialView(WebConstants.View.PROPOSAL_APPROVALS, model);
         }
 
-        /// <summary>
-        /// Display proposal user information
-        /// </summary>
-        /// <param name="proposalId">Proposal Id</param>
-        /// <returns>proposal user information view</returns>
-        public PartialViewResult DisplayProposalUserInformation(int? proposalId)
-        {
+		/// <summary>
+		/// Display proposal user information
+		/// </summary>
+		/// <param name="proposalId">Proposal Id</param>
+		/// <param name="isNewRevision">Whether creating a new revision</param>
+		/// <returns>proposal user information view</returns>
+		public PartialViewResult DisplayProposalUserInformation(int? proposalId, bool isNewRevision = false)
+		{
             if (proposalId.HasValue)
             {
                 this.ViewBag.proposalid = proposalId.Value.ToString();
@@ -228,7 +229,7 @@ namespace GenTRAC.Web.Controllers
                 this.ViewBag.proposalid = "null";
             }
 
-            ProposalUserInformationModelView model = this.proposalLogic.GetDataForProposalUserInformation(proposalId);
+            ProposalUserInformationModelView model = this.proposalLogic.GetDataForProposalUserInformation(proposalId, isNewRevision);
             return this.PartialView(WebConstants.View.PROPOSAL_USER_INFORMATION, model);
         }
 
