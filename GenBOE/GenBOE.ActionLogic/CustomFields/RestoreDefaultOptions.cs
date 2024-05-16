@@ -219,7 +219,6 @@ namespace GenBOE.ActionLogic.CustomFields
 															  LaborType = r.LaborType,
 															  RateType = r.RateType,
 															  ElementOfCost = r.ElementofCost,
-															  Segment = r.Segment,
 															  Updateable = UpdateType.Upsert
 														  }).ToList();
 
@@ -250,7 +249,6 @@ namespace GenBOE.ActionLogic.CustomFields
 																	   LaborType = r.ChangedToLaborType,
 																	   RateType = r.ChangedToRateType,
 																	   ElementOfCost = r.ChangedToElementOfCost,
-																	   Segment = r.Segment,
 																	   UpdateDate = r.UpdateDate,
 																	   Updateable = UpdateType.Upsert
 																   }).ToList();
@@ -272,8 +270,6 @@ namespace GenBOE.ActionLogic.CustomFields
 																	   LaborType = r.LaborType,
 																	   RateType = r.RateType,
 																	   ElementOfCost = r.ElementofCost,
-																	   Segment = r.Segment,
-																	   Deleted = true,
 																	   UpdateDate = r.UpdateDate,
 																	   Updateable = UpdateType.Deleted
 																   }).ToList();
@@ -336,8 +332,7 @@ namespace GenBOE.ActionLogic.CustomFields
 						SegRegion = s.SegRegion,
 						LaborType = s.LaborType,
 						ElementofCost = s.ElementOfCost,
-						RateType = s.RateType,
-						Segment = s.Segment
+						RateType = s.RateType
 					}).ToCollection();
 		}
 
@@ -368,14 +363,12 @@ namespace GenBOE.ActionLogic.CustomFields
 						LaborType = w.LaborType,
 						ElementOfCost = w.ElementOfCost,
 						RateType = w.RateType,
-						Segment = w.Segment,
 						ChangedToName = s.ResourceName,
 						ChangedToDesc = s.ResourceDesc,
 						ChangedToSegRegion = s.SegRegion,
 						ChangedToLaborType = s.LaborType,
 						ChangedToElementOfCost = s.ElementOfCost,
 						ChangedToRateType = s.RateType,
-						ChangedToSegment = s.Segment,
 						UpdateDate = w.UpdateDate
 					}).ToCollection();
 		}
@@ -401,7 +394,6 @@ namespace GenBOE.ActionLogic.CustomFields
 						LaborType = w.LaborType,
 						ElementofCost = w.ElementOfCost,
 						RateType = w.RateType,
-						Segment = w.Segment,
 						UpdateDate = w.UpdateDate
 					}).ToCollection();
 		}

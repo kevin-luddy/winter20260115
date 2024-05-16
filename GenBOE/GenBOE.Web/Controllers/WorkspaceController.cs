@@ -4033,7 +4033,7 @@ namespace GenBOE.Web.Controllers
 			Collection<InUseResourceChangedValueContainer> inUseResourceChangedContainer = new Collection<InUseResourceChangedValueContainer>();
 
 			BOECustomFieldResourceModelView singleEditMV = null;
-			IDictionary<int, int> resourceSaveResultsDictionary = null;
+			Dictionary<int, int> resourceSaveResultsDictionary = null;
 
 			/** Valid Model Check */
 			if (ModelState.IsValid)
@@ -4180,7 +4180,7 @@ namespace GenBOE.Web.Controllers
 				// perform save
 				if (resourceDTOs.Count > 0)
 				{
-					using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+					using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 					{
 						resourceSaveResultsDictionary = _ResourceLoader.SaveWorkspaceResources(ws, resourceDTOs);
 
@@ -6273,7 +6273,7 @@ namespace GenBOE.Web.Controllers
 
 						if (toSave.Any())
 						{
-							IDictionary<int, int> resourceSaveResultsDictionary = null;
+							Dictionary<int, int> resourceSaveResultsDictionary = null;
 							using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 							{
 								// Save all three lists
@@ -7557,7 +7557,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="ws">The workspace to use when updating T&amp;M Rates.</param>
 		/// <param name="resourceSaveResultsDictionary">A dictionary keyed by old Resource Id to the new Resource Id after Resources are saved.</param>
 		/// <param name="removedIds">A list of the Resource Ids that were deleted.</param>
-		private void ProcessResourceIdUpdates(FullWorkspace ws, IDictionary<int, int> resourceSaveResultsDictionary, ICollection<int> deletedIds)
+		private void ProcessResourceIdUpdates(FullWorkspace ws, Dictionary<int, int> resourceSaveResultsDictionary, ICollection<int> deletedIds)
 		{
 			// Update T&M Rates based on changes 
 			if (ws.IsUsingTM)

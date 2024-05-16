@@ -78,11 +78,6 @@ namespace GenBOE.ActionLogic.CustomFields
 		/// Resource Rate Type
 		/// </summary>
 		public RateType RateType { get; set; }
-
-		/// <summary>
-		/// Resource Segment Type (enum)
-		/// </summary>
-		public SegmentType Segment { get; set; }
 	}
 
     public class RestoreOptionChanged : UpdateableDTO
@@ -143,11 +138,6 @@ namespace GenBOE.ActionLogic.CustomFields
 		public RateType RateType { get; set; }
 
 		/// <summary>
-		/// Resource original Segment Type (enum)
-		/// </summary>
-		public SegmentType Segment { get; set; }
-
-		/// <summary>
 		/// Perf Org/Resource changed-to name
 		/// </summary>
 		public string ChangedToName { get; set; }
@@ -181,10 +171,5 @@ namespace GenBOE.ActionLogic.CustomFields
 		/// Resource changed-to rate type
 		/// </summary>
 		public RateType ChangedToRateType { get; set; }
-
-		/// <summary>
-		/// Resource changed-to Segment Type (enum)
-		/// </summary>
-		public SegmentType ChangedToSegment { get; set; }
 	}   
 }
