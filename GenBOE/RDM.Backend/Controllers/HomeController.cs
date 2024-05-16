@@ -73,7 +73,7 @@ namespace RDM.Backend.Controllers
 		/// </summary>
 		/// <param name="id">Area to lock</param>
 		/// <returns>user's display name if revision locked; otherwise throws exceptions.</returns>
-		[HttpPost("[action]")]
+		[HttpGet("[action]")]
 		public ActionResult Lock(LockArea id)
 		{
 			IESResponse<LockModelView> response = new();
@@ -130,7 +130,7 @@ namespace RDM.Backend.Controllers
 		/// </summary>
 		/// <param name="id">Area to lock</param>
 		/// <returns>success if revision unlocked; otherwise throws exceptions.</returns>
-		[HttpPost("[action]")]
+		[HttpGet("[action]")]
 		public ActionResult Unlock(LockArea id)
 		{
 			IESResponse<LockModelView> response = new();
@@ -165,7 +165,7 @@ namespace RDM.Backend.Controllers
 		/// </summary>
 		/// <param name="id">Area to lock</param>
 		/// <returns>success if revision still locked; otherwise throws exceptions.</returns>
-		[HttpPost("[action]")]
+		[HttpGet("[action]")]
 		public ActionResult RefreshLock(LockArea id)
 		{
 			IESResponse<LockModelView> response = new();

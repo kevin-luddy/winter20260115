@@ -140,5 +140,20 @@ namespace APTSPropricerApi
 		/// The IES Token Scheme name
 		/// </summary>
 		public const string IES_TOKEN_SCHEME = "IES_TOKEN";
+
+		/// <summary>
+		/// Report Type Word
+		/// </summary>
+		public static readonly string REPORT_TYPE_WORD = "Word";
+
+		/// <summary>
+		/// Report Type Pdf
+		/// </summary>
+		public static readonly string REPORT_TYPE_PDF = "Pdf";
+
+		/// <summary>
+		/// Report Type Excel
+		/// </summary>
+		public static readonly string REPORT_TYPE_EXCEL = "Excel";
 	}
 }
