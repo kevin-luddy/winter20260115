@@ -534,7 +534,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inWorkspaceResources">workspace resources</param>
 		/// <returns></returns>
-		virtual public Dictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
+		virtual public IDictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
 		{
 
 			if (inWorkspaceResources == null)

@@ -6,96 +6,101 @@
 
 namespace GenBOE.ActionLogic.CustomFields
 {
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using IES.Common;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using IES.Common;
 
-    [ExcludeFromCodeCoverage]
-    public class RestoreOptionData
-    {
-        public RestoreOptionData()
-        {
-            this.OptionAdded = new Collection<RestoreOption>();
-            this.OptionChanged = new Collection<RestoreOptionChanged>();
-            this.OptionDeleted = new Collection<RestoreOption>();
-            this.OptionNotChanged = new Collection<RestoreOption>();
-        }
+	[ExcludeFromCodeCoverage]
+	public class RestoreOptionData
+	{
+		public RestoreOptionData()
+		{
+			this.OptionAdded = new Collection<RestoreOption>();
+			this.OptionChanged = new Collection<RestoreOptionChanged>();
+			this.OptionDeleted = new Collection<RestoreOption>();
+			this.OptionNotChanged = new Collection<RestoreOption>();
+		}
 
-        public Collection<RestoreOption> OptionAdded { get; set; }
-        public Collection<RestoreOptionChanged> OptionChanged { get; set; }
-        public Collection<RestoreOption> OptionDeleted { get; set; }
-        public Collection<RestoreOption> OptionNotChanged { get; set; }
-    }
+		public Collection<RestoreOption> OptionAdded { get; set; }
+		public Collection<RestoreOptionChanged> OptionChanged { get; set; }
+		public Collection<RestoreOption> OptionDeleted { get; set; }
+		public Collection<RestoreOption> OptionNotChanged { get; set; }
+	}
 
-    public class RestoreOption : UpdateableDTO
-    {
-        public RestoreOption()
-        {
-            this.ID = -1;
-            this.Name = string.Empty;
-            this.Desc = string.Empty;
-            this.SegRegion = string.Empty;
-            this.LaborType = string.Empty;
-            this.ElementOfCostName = string.Empty; 
-        }
+	public class RestoreOption : UpdateableDTO
+	{
+		public RestoreOption()
+		{
+			this.ID = -1;
+			this.Name = string.Empty;
+			this.Desc = string.Empty;
+			this.SegRegion = string.Empty;
+			this.LaborType = string.Empty;
+			this.ElementOfCostName = string.Empty;
+		}
 
 		/// <summary>
 		/// Perf Org/Resource ID
 		/// </summary>
-        public int ID { get; set; }
+		public int ID { get; set; }
 
 		/// <summary>
 		/// Perf Org/Resource Name
 		/// </summary>
-        public string Name { get; set; }
+		public string Name { get; set; }
 
 		/// <summary>
 		/// Perf Org/Resource Description
 		/// </summary>
-        public string Desc { get; set; }
+		public string Desc { get; set; }
 
 		/// <summary>
 		/// Resource Segment Region
 		/// </summary>
-        public string SegRegion { get; set; }
+		public string SegRegion { get; set; }
 
 		/// <summary>
 		/// Resource Labor Type
 		/// </summary>
-        public string LaborType { get; set; }
+		public string LaborType { get; set; }
 
 		/// <summary>
 		/// Resource Element of Cost Name
 		/// </summary>
-        public string ElementOfCostName { get; set; }
+		public string ElementOfCostName { get; set; }
 
 		/// <summary>
 		/// Resource Element of Cost
 		/// </summary>
-        public ElementOfCostType ElementofCost { get; set; }
+		public ElementOfCostType ElementofCost { get; set; }
 
 		/// <summary>
 		/// Resource Rate Type
 		/// </summary>
 		public RateType RateType { get; set; }
+
+		/// <summary>
+		/// Resource Segment Type (enum)
+		/// </summary>
+		public SegmentType Segment { get; set; }
 	}
 
-    public class RestoreOptionChanged : UpdateableDTO
-    {
-        public RestoreOptionChanged()
-        {
-            this.ID = -1;
-            this.Name = string.Empty;
-            this.Desc = string.Empty;
-            this.SegRegion = string.Empty;
-            this.LaborType = string.Empty;
-            this.ElementOfCostName = string.Empty;
-            this.ChangedToName = string.Empty;
-            this.ChangedToDesc = string.Empty;
-            this.ChangedToSegRegion = string.Empty;
-            this.ChangedToLaborType = string.Empty;
-            this.ChangedToElementOfCostName = string.Empty;
-        }
+	public class RestoreOptionChanged : UpdateableDTO
+	{
+		public RestoreOptionChanged()
+		{
+			this.ID = -1;
+			this.Name = string.Empty;
+			this.Desc = string.Empty;
+			this.SegRegion = string.Empty;
+			this.LaborType = string.Empty;
+			this.ElementOfCostName = string.Empty;
+			this.ChangedToName = string.Empty;
+			this.ChangedToDesc = string.Empty;
+			this.ChangedToSegRegion = string.Empty;
+			this.ChangedToLaborType = string.Empty;
+			this.ChangedToElementOfCostName = string.Empty;
+		}
 
 		/// <summary>
 		/// Perf Org/Resource ID
@@ -115,7 +120,7 @@ namespace GenBOE.ActionLogic.CustomFields
 		/// <summary>
 		/// Resource original segment region
 		/// </summary>
-        public string SegRegion { get; set; }
+		public string SegRegion { get; set; }
 
 		/// <summary>
 		/// Resource original labor type
@@ -136,6 +141,11 @@ namespace GenBOE.ActionLogic.CustomFields
 		/// Resource original rate type
 		/// </summary>
 		public RateType RateType { get; set; }
+
+		/// <summary>
+		/// Resource original Segment Type (enum)
+		/// </summary>
+		public SegmentType Segment { get; set; }
 
 		/// <summary>
 		/// Perf Org/Resource changed-to name
@@ -171,5 +181,10 @@ namespace GenBOE.ActionLogic.CustomFields
 		/// Resource changed-to rate type
 		/// </summary>
 		public RateType ChangedToRateType { get; set; }
-	}   
+
+		/// <summary>
+		/// Resource changed-to Segment Type (enum)
+		/// </summary>
+		public SegmentType ChangedToSegment { get; set; }
+	}
 }
