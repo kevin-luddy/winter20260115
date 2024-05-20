@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.9, on 5/13/2024.
+    This file was auto-generated for Release: 2024.9, on 5/15/2024.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -12,6 +12,10 @@ EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.9';
 GO
 
 -- Updated vwProposalLogReport.view for "Lost" to "Not Awarded"
+UPDATE [dbo].[ProposalStatusLU]
+SET ProposalStatus = 'Not Awarded'
+WHERE ProposalStatus = 'Lost'
+GO
 
 /*
     File: \1 Views\genTracData.view.sql
