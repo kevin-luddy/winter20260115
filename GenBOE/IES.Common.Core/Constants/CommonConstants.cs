@@ -409,6 +409,11 @@ namespace IES.Common.Core.Constants
 		public static readonly TimeSpan REGEX_TIMEOUT = new(0, 5, 0);
 
 		/// <summary>
+		/// Shorter timeout for Regex matching
+		/// </summary>
+		public static readonly TimeSpan REGEX_SHORT_TIMEOUT = new TimeSpan(0, 0, 2);
+
+		/// <summary>
 		/// Timeout for HTTP CLients
 		/// 
 		/// It is set to 20 minutes.  If calls to http APIs like SAP API take longer than 20 minutes, that is an issue in itself

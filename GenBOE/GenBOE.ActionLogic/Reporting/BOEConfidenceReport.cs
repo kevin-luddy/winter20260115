@@ -67,7 +67,7 @@ namespace GenBOE.ActionLogic.Reporting
 			{
 				// match and remove the date ranges from the strings
 				string rteFieldRemovedDates = rteField;
-				Match match = Regex.Match(rteField, dateRangeRegex, RegexOptions.IgnoreCase);
+				Match match = Regex.Match(rteField, dateRangeRegex, RegexOptions.IgnoreCase, Constants.REGEX_SHORT_TIMEOUT);
 
 				while (match.Success)
 				{
@@ -83,7 +83,7 @@ namespace GenBOE.ActionLogic.Reporting
 				}
 
 				// match and remove the individual dates from the strings
-				match = Regex.Match(rteFieldRemovedDates, singleDateRegex, RegexOptions.IgnoreCase);
+				match = Regex.Match(rteFieldRemovedDates, singleDateRegex, RegexOptions.IgnoreCase, Constants.REGEX_SHORT_TIMEOUT);
 
 				while (match.Success)
 				{

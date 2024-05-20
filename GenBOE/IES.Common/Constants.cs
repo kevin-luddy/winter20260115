@@ -268,6 +268,11 @@ namespace IES.Common
         /// </summary>
         public static readonly TimeSpan REGEX_TIMEOUT = new TimeSpan(0, 5, 0);
 
+		/// <summary>
+		/// Shorter timeout for Regex matching
+		/// </summary>
+		public static readonly TimeSpan REGEX_SHORT_TIMEOUT = new TimeSpan(0, 0, 2);
+
         /// <summary>
         /// Timeout for HTTP CLients
         /// 
