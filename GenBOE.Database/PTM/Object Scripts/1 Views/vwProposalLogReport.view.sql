@@ -81,7 +81,10 @@ SELECT
 	CreatedBy.NTID AS [Created By],
 	CAST (P.DateCreated AS DATE) AS [Created Date],
 	PS.ProposalStatusID AS [ProposalStatusID],
-	PS.ProposalStatus AS [Proposal Status],
+	CASE
+		WHEN PS.ProposalStatusID = 10 THEN 'Not Awarded'
+		ELSE PS.ProposalStatus
+	END AS [Proposal Status],
 	P.OTISOpportunityID AS [OTIS #],
 	CASE
 		WHEN P.PricingToolID = 3 AND P.PricingToolName IS NOT NULL THEN P.PricingToolName
