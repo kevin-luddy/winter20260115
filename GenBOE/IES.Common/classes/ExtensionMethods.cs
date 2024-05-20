@@ -256,6 +256,31 @@ namespace IES.Common
 			return endDate.Value.Subtract(startDate.Value).Days / Constants.POP_MONTHS_DIVISOR;
 		}
 
+		/// <summary>
+		/// TryParseExact for a string of Month and Year
+		/// </summary>
+		/// <param name="date">Date to parse</param>
+		/// <param name="parsedDate">The resulting parsed date (will be normalized to 15th)</param>
+		/// <returns>True if valid date found, otherwise false</returns>
+		public static bool TryParseMonthYear(this string date, out DateTime parsedDate)
+		{
+			string[] dateFormats = { "MMMM yyyy", "MMMM-yyyy", "MMMM/yyyy",
+									"MMM yyyy", "MMM-yyyy", "MMM/yyyy",
+									"MM yyyy", "MM-yyyy", "MM/yyyy",
+									"M yyyy", "M-yyyy", "M/yyyy",
+									"MMMM yy", "MMMM-yy", "MMMM/yy",
+									"MMM yy", "MMM-yy", "MMM/yy",
+									"MM yy", "MM-yy", "MM/yy",
+									"M yy", "M-yy", "M/yy" };
+
+			bool parseResult = DateTime.TryParseExact(date, dateFormats, System.Globalization.CultureInfo.InvariantCulture,
+				System.Globalization.DateTimeStyles.None, out parsedDate);
+
+			parsedDate = parsedDate.Normalize();
+
+			return parseResult;
+		}
+
 		#endregion Date/Time methods
 
 		public static int GetIndex(this string value, int occurence = 1)
