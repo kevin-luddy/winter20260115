@@ -98,6 +98,8 @@ namespace APTSPropricerApi
 				});
 
 			});
+
+			new Aspose.Cells.License().SetLicense("Aspose.Total.lic");
 		}
 
 		/// <summary>
@@ -117,7 +119,7 @@ namespace APTSPropricerApi
 			app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"ProPricer API v{ConfigurationServiceBase.Configuration["AppVersion"]}"));
 
 			this.configurationService.ConfigureAppBuilder(app);
-			
+
 			ClearOutOldFiles();
 		}
 

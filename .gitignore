@@ -232,3 +232,4 @@ rdsb.performance.csv
 /GenBOE/IESPortal.Web/logs/iesportal.performance.csv
 /GenBOE/RPM.Web/logs/rpm.performance.csv
 /GenBOE/RDM.Backend/appsettings.Local.json
+/GenBOE/RDSB.Backend/appsettings.Local.json
