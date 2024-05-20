@@ -81,5 +81,33 @@ namespace UnitTestProject
 
 			Assert.IsTrue(response.IsSuccessful);
 		}
+
+		/// <summary>
+		/// Tests the exporting of a batch report as PDF
+		/// </summary>
+		[TestMethod]
+		public void ExportBatchAsPdf()
+		{
+			if (!Directory.Exists(Constants.TEMP_DIRECTORY))
+			{
+				Directory.CreateDirectory(Constants.TEMP_DIRECTORY);
+			}
+
+			string proposalId = "400c9fe1-de18-ed11-9f7f-64c901b7a0ad";
+
+			BatchReportsController controller = CreateSUT();
+			ProPricerResponse<ICollection<BatchReportDto>> results = controller.GetBatchReports(TestConstants.SpaceInstanceId);
+
+			// pick id for Batch Report
+			string batchId = results.Data.First(b => b.Name.StartsWith("DD1861 - Batch Excel Format")).Id;
+			ProPricerResponse<byte[]> response = controller.ExportBatchReportAsPdf(TestConstants.SpaceInstanceId, new ProPricerExportContainer
+			{
+				batchReportId = batchId,
+				proposalId = proposalId
+			},
+			out string _);
+
+			Assert.IsTrue(response.IsSuccessful);
+		}
 	}
 }
