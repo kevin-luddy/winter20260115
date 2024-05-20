@@ -841,24 +841,24 @@ namespace IES.Common.Core.Constants
 		public const string INVALID_DAYS_TO_CERT = "\"The Date that the Certificate of CCoPD and any additional disclosures were delivered to the customer\" cannot be prior to the \"Date of Agreement on Final Price (Handshake)\"";
 
 		/// <summary>
-		/// Validation that user has sufficient permissions to set Proposal as Lost
+		/// Validation that user has sufficient permissions to set Proposal as Not Awarded
 		/// </summary>
-		public const string INSUFFICIENT_PERMISSIONS_FOR_LOST = "Insufficient permissions to set proposal as Lost.";
+		public const string INSUFFICIENT_PERMISSIONS_FOR_LOST = "Insufficient permissions to set proposal as Not Awarded.";
 
 		/// <summary>
-		/// Validation that Proposal has a valid status to be set as Lost
+		/// Validation that Proposal has a valid status to be set as Not Awarded
 		/// </summary>
-		public const string INVALID_STATUS_FOR_LOST = "The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'.";
+		public const string INVALID_STATUS_FOR_LOST = "The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Not Awarded'.";
 
 		/// <summary>
 		/// Validation that Customer Due Date is set
 		/// </summary>
-		public const string DUE_DATE_REQUIRED_FOR_LOST = "The Customer Due Date is required in order to set the proposal as Lost.";
+		public const string DUE_DATE_REQUIRED_FOR_LOST = "The Customer Due Date is required in order to set the proposal as Not Awarded.";
 
 		/// <summary>
 		/// Validation that Customer Submittal Date is set
 		/// </summary>
-		public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Lost.";
+		public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Not Awarded.";
 
 		#endregion
 
