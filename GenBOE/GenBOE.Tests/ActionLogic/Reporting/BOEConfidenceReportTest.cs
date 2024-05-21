@@ -711,7 +711,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 		/// Test that PoPMatchResult.Match is returned when two individual dates that are sequential match the PoP
 		/// </summary>
 		[TestMethod]
-		public void TestGetPoPConfidenceResults_SequentialPartial()
+		public void TestGetPoPConfidenceResults_SequentialSingleDates()
 		{
 
 			BOEConfidenceReport sut = GetSUT();
@@ -721,7 +721,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 				"December 2024 is the end date and January 2024 is the start date, so this is partial",
 				"04/24 is the start date 05/24 is in the middle and 06/2024 is the end date, so it's also partial",
 				"A start date of September 2024 in one string",
-				"And the end date of October 2024 is in another"
+				"And the end date of October 2024 is in another",
+				"Lastly a string with Feb 24 and May 24 and Mar 24 which would result in partial, but then Feb 24 again but this time followed by Mar 24 for a full match"
 			};
 
 			ICollection<DateRange> ranges = new Collection<DateRange>()
@@ -729,7 +730,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 				new DateRange(new DateTime(2024, 7, 15), new DateTime(2024, 8, 15)),
 				new DateRange(new DateTime(2024, 1, 15), new DateTime(2024, 12, 15)),
 				new DateRange(new DateTime(2024, 4, 15), new DateTime(2024, 6, 15)),
-				new DateRange(new DateTime(2024, 9, 15), new DateTime(2024, 10, 15))
+				new DateRange(new DateTime(2024, 9, 15), new DateTime(2024, 10, 15)),
+				new DateRange(new DateTime(2024, 2, 15), new DateTime(2024, 3, 15))
 			};
 
 			ConfidenceReportPoPResultDTO result = sut.GetPoPConfidenceResults(ranges, ref rteFields);
@@ -739,6 +741,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.AreEqual(PoPMatchResult.Partial, result.PoPDateResults.ElementAt(1).Value);
 			Assert.AreEqual(PoPMatchResult.Partial, result.PoPDateResults.ElementAt(2).Value);
 			Assert.AreEqual(PoPMatchResult.Partial, result.PoPDateResults.ElementAt(3).Value);
+			Assert.AreEqual(PoPMatchResult.Match, result.PoPDateResults.ElementAt(4).Value);
 		}
 
 		/// <summary>

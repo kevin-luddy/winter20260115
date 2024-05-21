@@ -149,42 +149,24 @@ namespace GenBOE.ActionLogic.Reporting
 				// check individual dates for partial matches
 				else if (foundDates.Any(x => dateRange.HasDateAsStartOrEndDate(x)))
 				{
-					// Get all dates that match the start or end date
-					ICollection<DateTime> matchingDates = foundDates.Where(x => dateRange.HasDateAsStartOrEndDate(x)).ToCollection();
+					// Get the indexes of the start and end dates
+					ICollection<int> startDateIndexes = foundDates.AllIndexesOf<DateTime>(dateRange.StartDate.Value);
+					ICollection<int> endDateIndexes = foundDates.AllIndexesOf<DateTime>(dateRange.EndDate.Value);
 
-					if (matchingDates.Count > 1)
+					// Check if any indexes of end dates are 1 after any indexes of start dates and in the same RTE
+					if (endDateIndexes.Any(x => startDateIndexes.Contains(x - 1))
+						&& rteFields.Any(x => x.ContainsMonthYearDate(dateRange.StartDate.Value) && x.ContainsMonthYearDate(dateRange.EndDate.Value)))
 					{
-						// if there is more than one match, check if any sequentially match start then end date
-						// this would match text such as "Starting from xx/yyyy until the end of xx/yyyy, the hours were..."
-						bool sequentialMatchFound = false;
-						for (int i = 0; i < matchingDates.Count - 1; i++)
-						{
-							DateTime matchDate = matchingDates.ElementAt(i);
-							DateTime nextMatchDate = matchingDates.ElementAt(i + 1);
-							DateTime nextSequentialDate = foundDates.ElementAtOrDefault(foundDates.IndexOf(matchDate) + 1);
-
-							// check that the next matching date is also the next found date sequentially  
-							// and that the current match date is the start date and the next match date is the end date
-							// and that both dates are in the same rte field
-							if (nextSequentialDate != null && nextSequentialDate == nextMatchDate
-								&& matchDate == dateRange.StartDate && nextMatchDate == dateRange.EndDate
-								&& rteFields.Any(x => x.ContainsMonthYearDate(matchDate) && x.ContainsMonthYearDate(nextMatchDate)))
-							{
-								sequentialMatchFound = true;
-								break;
-							}
-						}
-
-						// if there are any sequential matches, that's a full match, otherwise partial
-						result.PoPDateResults.Add(dateRange, sequentialMatchFound ? PoPMatchResult.Match : PoPMatchResult.Partial);
+						// If there are, it's a full match
+						result.PoPDateResults.Add(dateRange,PoPMatchResult.Match);
 					}
 					else
 					{
-						// if there's only one match, it's a partial
+						// Otherwise only partial
 						result.PoPDateResults.Add(dateRange, PoPMatchResult.Partial);
 					}
 
-					foreach (DateTime foundDate in matchingDates)
+					foreach (DateTime foundDate in foundDates.Where(x => dateRange.HasDateAsStartOrEndDate(x)))
 					{
 						noMatchDates.Remove(foundDate);
 					}

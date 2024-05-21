@@ -677,5 +677,31 @@ namespace GenBOE.Tests.Common
 			result = "Test 1/24 string".ContainsMonthYearDate(testDate);
 			Assert.IsTrue(result);
 		}
+
+		/// <summary>
+		/// Test AllIndexesOf returns all indexes of an item in a collection
+		/// </summary>
+		[TestMethod]
+		public void TestAllIndexesOf()
+		{
+			ICollection<string> testCollection = new Collection<string>()
+			{
+				"test", // 0
+				"other",
+				"test", // 2
+				"not test",
+				"also not test",
+				"test", // 5
+				"last"
+			};
+
+			ICollection<int> result = testCollection.AllIndexesOf<string>("test");
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(3, result.Count);
+			Assert.IsTrue(result.Contains(0));
+			Assert.IsTrue(result.Contains(2));
+			Assert.IsTrue(result.Contains(5));
+		}
 	}
 }

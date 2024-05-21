@@ -328,6 +328,18 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		/// Get all indexes of an object in a collection
+		/// </summary>
+		/// <typeparam name="T">The type of collection</typeparam>
+		/// <param name="collection">The collection to check</param>
+		/// <param name="item">The item to get indexes of</param>
+		/// <returns>All indexes of the item</returns>
+		public static ICollection<int> AllIndexesOf<T>(this ICollection<T> collection, T item)
+		{
+			return collection.Select((x, index) => x.Equals(item) ? index : -1).Where(x => x > -1).ToCollection();
+		}
+
+		/// <summary>
 		/// Sort a list
 		/// </summary>
 		/// <typeparam name="TSource">Type of the list being sorted</typeparam>
