@@ -443,6 +443,9 @@ namespace GenBOE.Tests.Common
             Assert.AreEqual("replace test test", result);
         }
 
+		/// <summary>
+		/// Test TryParseMonthYear for all formats
+		/// </summary>
 		[TestMethod]
 		public void TestTryParseMonthYear()
 		{
@@ -570,5 +573,109 @@ namespace GenBOE.Tests.Common
 			Assert.AreEqual(testDate, resultDate);
 		}
 
+		/// <summary>
+		/// Test ContainsMonthYearDate for all formats
+		/// </summary>
+		[TestMethod]
+		public void TestContainsMonthYearDate()
+		{
+			DateTime testDate = new DateTime(2024, 1, 1);
+
+			// MMMM yyyy
+			bool result = "Test January 2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMMM-yyyy
+			result = "Test January-2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMMM/yyyy
+			result = "Test January/2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMM yyyy
+			result = "Test Jan 2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMM-yyyy
+			result = "Test Jan-2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMM/yyyy
+			result = "Test Jan/2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MM yyyy
+			result = "Test 01 2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MM-yyyy
+			result = "Test 01-2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MM/yyyy
+			result = "Test 01/2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// M yyyy
+			result = "Test 1 2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// M-yyyy
+			result = "Test 1-2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// M/yyyy
+			result = "Test 1/2024 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMMM yy
+			result = "Test January 24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMMM-yy
+			result = "Test January-24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMMM/yy
+			result = "Test January/24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMM yy
+			result = "Test Jan 24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMM-yy
+			result = "Test Jan-24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MMM/yy
+			result = "Test Jan/24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MM yy
+			result = "Test 01 24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MM-yy
+			result = "Test 01-24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// MM/yy
+			result = "Test 01/24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// M yy
+			result = "Test 1 24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// M-yy
+			result = "Test 1-24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+
+			// M/yy
+			result = "Test 1/24 string".ContainsMonthYearDate(testDate);
+			Assert.IsTrue(result);
+		}
 	}
 }

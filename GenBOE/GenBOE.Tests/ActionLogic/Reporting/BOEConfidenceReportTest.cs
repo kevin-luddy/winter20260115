@@ -690,7 +690,6 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 				"String containing 3/2023 thru 4/2024 which only has the end date",
 				"The start date is here May 2024",
 				"But the end date is in another field June 2024",
-				"Jul 2024 is the start date and the end date is Aug 2024 but they're not written as a date range",
 				"And just a single date of 9/24"
 			};
 
@@ -699,7 +698,6 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 				new DateRange(new DateTime(2024, 1, 15), new DateTime(2024, 2, 15)),
 				new DateRange(new DateTime(2024, 3, 15), new DateTime(2024, 4, 15)),
 				new DateRange(new DateTime(2024, 5, 15), new DateTime(2024, 6, 15)),
-				new DateRange(new DateTime(2024, 7, 15), new DateTime(2024, 8, 15)),
 				new DateRange(new DateTime(2024, 9, 15), new DateTime(2024, 10, 15))
 			};
 
@@ -707,6 +705,40 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result.PoPDateResults.All(x => x.Value == PoPMatchResult.Partial));
+		}
+
+		/// <summary>
+		/// Test that PoPMatchResult.Match is returned when two individual dates that are sequential match the PoP
+		/// </summary>
+		[TestMethod]
+		public void TestGetPoPConfidenceResults_SequentialPartial()
+		{
+
+			BOEConfidenceReport sut = GetSUT();
+
+			ICollection<string> rteFields = new Collection<string>() {
+				"Jul 2024 is the start date and the end date is Aug 2024 but they're not written as a date range",
+				"December 2024 is the end date and January 2024 is the start date, so this is partial",
+				"04/24 is the start date 05/24 is in the middle and 06/2024 is the end date, so it's also partial",
+				"A start date of September 2024 in one string",
+				"And the end date of October 2024 is in another"
+			};
+
+			ICollection<DateRange> ranges = new Collection<DateRange>()
+			{
+				new DateRange(new DateTime(2024, 7, 15), new DateTime(2024, 8, 15)),
+				new DateRange(new DateTime(2024, 1, 15), new DateTime(2024, 12, 15)),
+				new DateRange(new DateTime(2024, 4, 15), new DateTime(2024, 6, 15)),
+				new DateRange(new DateTime(2024, 9, 15), new DateTime(2024, 10, 15))
+			};
+
+			ConfidenceReportPoPResultDTO result = sut.GetPoPConfidenceResults(ranges, ref rteFields);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(PoPMatchResult.Match, result.PoPDateResults.ElementAt(0).Value);
+			Assert.AreEqual(PoPMatchResult.Partial, result.PoPDateResults.ElementAt(1).Value);
+			Assert.AreEqual(PoPMatchResult.Partial, result.PoPDateResults.ElementAt(2).Value);
+			Assert.AreEqual(PoPMatchResult.Partial, result.PoPDateResults.ElementAt(3).Value);
 		}
 
 		/// <summary>
@@ -835,14 +867,13 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			BOEConfidenceReport sut = GetSUT();
 
 			ICollection<string> rteFields = new Collection<string>() {
-				"This string has 2 ranges: Jan - Feb 2024 and November to December 2024",
-				"This string has March 2024 and is followed by April 2024 but not in a range",
+				"This string has 2 ranges: Jan - Feb 2024 and November to December 2024"
 			};
 
 			ICollection<DateRange> ranges = new Collection<DateRange>()
 			{
 				new DateRange(new DateTime(2024, 1, 15), new DateTime(2024, 12, 15)),
-				new DateRange(new DateTime(2024, 3, 15), new DateTime(2024, 4, 15)),
+				new DateRange(new DateTime(2024, 2, 15), new DateTime(2024, 11, 15)),
 			};
 
 			ConfidenceReportPoPResultDTO result = sut.GetPoPConfidenceResults(ranges, ref rteFields);

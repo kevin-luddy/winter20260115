@@ -410,12 +410,25 @@ namespace IES.Common
         /// </summary>
         public const string BOE_SPACE_INTERNATIONAL_APP_NAME = "BOESSC_INTL";
 
-        #region MOQ Type Text Field Lengths
+		/// <summary>
+		/// Date formats used for Month and Year dates
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
+		public static readonly string[] MONTH_YEAR_DATE_FORMATS = { "MMMM yyyy", "MMMM-yyyy", "MMMM/yyyy",
+																	"MMM yyyy", "MMM-yyyy", "MMM/yyyy",
+																	"MM yyyy", "MM-yyyy", "MM/yyyy",
+																	"M yyyy", "M-yyyy", "M/yyyy",
+																	"MMMM yy", "MMMM-yy", "MMMM/yy",
+																	"MMM yy", "MMM-yy", "MMM/yy",
+																	"MM yy", "MM-yy", "MM/yy",
+																	"M yy", "M-yy", "M/yy" };
 
-        /// <summary>
-        /// Standard length for MOQ Type Text fields (matches db length)
-        /// </summary>
-        public const int MOQ_TYPE_TEXT_FIELD_LENGTH = 255;
+		#region MOQ Type Text Field Lengths
+
+		/// <summary>
+		/// Standard length for MOQ Type Text fields (matches db length)
+		/// </summary>
+		public const int MOQ_TYPE_TEXT_FIELD_LENGTH = 255;
 
         /// <summary>
         /// Length for MOQ Type Repository Name field (matches db length)

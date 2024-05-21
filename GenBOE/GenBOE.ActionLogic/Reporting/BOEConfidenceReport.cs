@@ -47,7 +47,7 @@ namespace GenBOE.ActionLogic.Reporting
 			}
 
 			ICollection<DateRange> foundDateRanges = new Collection<DateRange>();
-			ICollection<DateTime> foundDates = new Collection<DateTime>();
+			IList<DateTime> foundDates = new List<DateTime>();
 			ICollection<string> rteFieldsRemovedDates = new Collection<string>();
 
 			// Regex strings that will be used multiple times in the full regex strings
@@ -61,7 +61,7 @@ namespace GenBOE.ActionLogic.Reporting
 			// singleDateRegex:(?<!(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?|0?[1-9]|1[0-2])(\s|\/|-))\b(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?|0?[1-9]|1[0-2])\s?(\s|\/|-)\s?(\d{2,4}(?!(\s|\/|-)(\d{2,4})))
 			string dateRangeRegex = $@"(?<!{monthRegex}{monthYearSeparatorRegex})\b{monthRegex}\s?{monthYearSeparatorRegex}\s?({yearRegex})?\s?(-|to|through|thru)\s?{monthRegex}\s?{monthYearSeparatorRegex}\s?({yearRegex}(?!{monthYearSeparatorRegex}({yearRegex})))";
 			string singleDateRegex = $@"(?<!{monthRegex}{monthYearSeparatorRegex})\b{monthRegex}\s?{monthYearSeparatorRegex}\s?({yearRegex}(?!{monthYearSeparatorRegex}({yearRegex})))";
-			
+
 			// pull out date ranges and individual dates found in RTE fields
 			foreach (string rteField in rteFields)
 			{
@@ -149,11 +149,42 @@ namespace GenBOE.ActionLogic.Reporting
 				// check individual dates for partial matches
 				else if (foundDates.Any(x => dateRange.HasDateAsStartOrEndDate(x)))
 				{
-					result.PoPDateResults.Add(dateRange, PoPMatchResult.Partial);
+					// Get all dates that match the start or end date
+					ICollection<DateTime> matchingDates = foundDates.Where(x => dateRange.HasDateAsStartOrEndDate(x)).ToCollection();
 
-					// Different found dates could match both start and end (still a partial match in that case),
-					// so we want to ensure both are removed from No Match dates
-					foreach (DateTime foundDate in foundDates.Where(x => dateRange.HasDateAsStartOrEndDate(x)))
+					if (matchingDates.Count > 1)
+					{
+						// if there is more than one match, check if any sequentially match start then end date
+						// this would match text such as "Starting from xx/yyyy until the end of xx/yyyy, the hours were..."
+						bool sequentialMatchFound = false;
+						for (int i = 0; i < matchingDates.Count - 1; i++)
+						{
+							DateTime matchDate = matchingDates.ElementAt(i);
+							DateTime nextMatchDate = matchingDates.ElementAt(i + 1);
+							DateTime nextSequentialDate = foundDates.ElementAtOrDefault(foundDates.IndexOf(matchDate) + 1);
+
+							// check that the next matching date is also the next found date sequentially  
+							// and that the current match date is the start date and the next match date is the end date
+							// and that both dates are in the same rte field
+							if (nextSequentialDate != null && nextSequentialDate == nextMatchDate
+								&& matchDate == dateRange.StartDate && nextMatchDate == dateRange.EndDate
+								&& rteFields.Any(x => x.ContainsMonthYearDate(matchDate) && x.ContainsMonthYearDate(nextMatchDate)))
+							{
+								sequentialMatchFound = true;
+								break;
+							}
+						}
+
+						// if there are any sequential matches, that's a full match, otherwise partial
+						result.PoPDateResults.Add(dateRange, sequentialMatchFound ? PoPMatchResult.Match : PoPMatchResult.Partial);
+					}
+					else
+					{
+						// if there's only one match, it's a partial
+						result.PoPDateResults.Add(dateRange, PoPMatchResult.Partial);
+					}
+
+					foreach (DateTime foundDate in matchingDates)
 					{
 						noMatchDates.Remove(foundDate);
 					}
