@@ -49,6 +49,11 @@ namespace GenBOE.ActionLogic.Reporting
 			ICollection<DateRange> foundDateRanges = new Collection<DateRange>();
 			IList<DateTime> foundDates = new List<DateTime>();
 			ICollection<string> rteFieldsRemovedDates = new Collection<string>();
+			
+			// Track the indexes and which RTE each single date is in
+			IDictionary<int, int> dateRteIndex = new Dictionary<int, int>();
+			int rteIndex = 0;
+			int dateIndex = 0;
 
 			// Regex strings that will be used multiple times in the full regex strings
 			string monthRegex = @"(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?|0?[1-9]|1[0-2])";
@@ -92,18 +97,20 @@ namespace GenBOE.ActionLogic.Reporting
 					if (date.TryParseMonthYear(out DateTime parsedStartDate))
 					{
 						foundDates.Add(parsedStartDate);
+						dateRteIndex.Add(dateIndex++, rteIndex);
 					}
 
 					match = match.NextMatch();
 
-					int dateIndex = rteFieldRemovedDates.IndexOf(date);
-					if (dateIndex >= 0)
+					int removeDateIndex = rteFieldRemovedDates.IndexOf(date);
+					if (removeDateIndex >= 0)
 					{
-						rteFieldRemovedDates = rteFieldRemovedDates.Remove(dateIndex, date.Length);
+						rteFieldRemovedDates = rteFieldRemovedDates.Remove(removeDateIndex, date.Length);
 					}
 				}
 
 				rteFieldsRemovedDates.Add(rteFieldRemovedDates);
+				rteIndex++;
 			}
 
 			// create list of all dates for the "No Match" list to be removed from once dates are found
@@ -154,11 +161,20 @@ namespace GenBOE.ActionLogic.Reporting
 					ICollection<int> endDateIndexes = foundDates.AllIndexesOf<DateTime>(dateRange.EndDate.Value);
 
 					// Check if any indexes of end dates are 1 after any indexes of start dates and in the same RTE
-					if (endDateIndexes.Any(x => startDateIndexes.Contains(x - 1))
-						&& rteFields.Any(x => x.ContainsMonthYearDate(dateRange.StartDate.Value) && x.ContainsMonthYearDate(dateRange.EndDate.Value)))
+					if (endDateIndexes.Any(x => startDateIndexes.Contains(x - 1)))
 					{
-						// If there are, it's a full match
-						result.PoPDateResults.Add(dateRange,PoPMatchResult.Match);
+						// If in the same RTE, it's a full match, otherwise partial
+						int endDateIndex = endDateIndexes.FirstOrDefault(x => startDateIndexes.Contains(x - 1));
+
+						if (dateRteIndex.TryGetValue(endDateIndex - 1, out int startDateRteIndex) && dateRteIndex.TryGetValue(endDateIndex, out int endDateRteIndex)
+							&& startDateRteIndex == endDateRteIndex)
+						{
+							result.PoPDateResults.Add(dateRange, PoPMatchResult.Match);
+						}
+						else
+						{
+							result.PoPDateResults.Add(dateRange, PoPMatchResult.Partial);
+						}
 					}
 					else
 					{
