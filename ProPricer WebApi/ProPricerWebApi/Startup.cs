@@ -98,6 +98,8 @@ namespace APTSPropricerApi
 				});
 
 			});
+
+			new Aspose.Cells.License().SetLicense("Aspose.Total.lic");
 		}
 
 		/// <summary>
@@ -111,12 +113,13 @@ namespace APTSPropricerApi
 			if (!env.IsProduction())
 			{
 				app.UseDeveloperExceptionPage();
-				app.UseSwagger();
-				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"ProPricer API v{ConfigurationServiceBase.Configuration["AppVersion"]}"));
 			}
 
+			app.UseSwagger();
+			app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"ProPricer API v{ConfigurationServiceBase.Configuration["AppVersion"]}"));
+
 			this.configurationService.ConfigureAppBuilder(app);
-			
+
 			ClearOutOldFiles();
 		}
 

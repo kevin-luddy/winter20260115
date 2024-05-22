@@ -586,7 +586,7 @@ namespace IES.Common
         public static readonly EmailContent STATUS_LOST_SET = new EmailContent
         {
             Subject = "{0} Notification", // [PTM Entry Number]
-            Body = "{0} was lost. {1}" // [PTM Entry Number], [Link to specific PTM entry]
+            Body = "{0} was not awarded. {1}" // [PTM Entry Number], [Link to specific PTM entry]
         };
 
         /// <summary>

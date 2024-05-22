@@ -2,3 +2,7 @@
 GO
 
 -- Updated vwProposalLogReport.view for "Lost" to "Not Awarded"
+UPDATE [dbo].[ProposalStatusLU]
+SET ProposalStatus = 'Not Awarded'
+WHERE ProposalStatus = 'Lost'
+GO
