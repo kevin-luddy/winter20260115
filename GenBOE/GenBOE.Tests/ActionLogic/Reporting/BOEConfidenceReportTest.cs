@@ -1164,5 +1164,168 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 		#endregion Other PoP Tests
 
 		#endregion PoP Algorithm Tests
+
+		#region Math Algorithm Tests
+
+		/// <summary>
+		/// SomeMatchesTestForGetMathConfidenceResults
+		/// </summary>
+		[TestMethod]
+		public void SomeMatchesTestForGetMathConfidenceResults()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			ICollection<string> sampleNumbersToMatch = new Collection<string>
+			{
+				"1 + 2 + 34 - 6/5*12.0 + variableHERE - 3 work / 212314142124-313 = 414,000"
+			};
+
+			ICollection<string> sampleRteFields = new Collection<string>
+			{
+				"1 random text",
+				"34.0 hmmm + yep 12",
+				"313",
+				"25 work3",
+				" 16",
+				"idk, random string: no numbers here!!",
+				" result = 414,000 ",
+				"414000"
+			};
+
+			ICollection<decimal> expectedMatches = sut.ExtractDecimals(sampleRteFields);
+			ConfidenceReportMathResultDTO result = sut.GetMathConfidenceResults(sampleNumbersToMatch, ref sampleRteFields);
+
+			foreach (decimal value in expectedMatches)
+			{
+				if (result.Matches.ContainsKey(value))
+				{
+					Assert.IsTrue(result.Matches[value]);
+				}
+			}
+		}
+
+		/// <summary>
+		/// EmptyFirstCollectionTestForGetMathConfidenceResults
+		/// </summary>
+		[TestMethod]
+		public void EmptyFirstCollectionTestForGetMathConfidenceResults()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			ICollection<string> sampleNumbersToMatch = new Collection<string>();
+
+			ICollection<string> sampleRteFields = new Collection<string>
+			{
+				"1 random text",
+				"34 hmmm + yep 12",
+				"313",
+				"25 work3",
+				" 16",
+				"idk, random string: no numbers here!!",
+				" result = 414,000 ",
+				"414000"
+			};
+
+			ICollection<decimal> expectedMatches = sut.ExtractDecimals(sampleRteFields);
+			ConfidenceReportMathResultDTO result = sut.GetMathConfidenceResults(sampleNumbersToMatch, ref sampleRteFields);
+
+			foreach (decimal value in expectedMatches)
+			{
+				if (result.Matches.ContainsKey(value))
+				{
+					Assert.IsTrue(result.Matches[value]);
+				}
+			}
+		}
+
+		/// <summary>
+		/// EmptySecondCollectionTestForGetMathConfidenceResults
+		/// </summary>
+		[TestMethod]
+		public void EmptySecondCollectionTestForGetMathConfidenceResults()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			ICollection<string> sampleNumbersToMatch = new Collection<string>
+			{
+				"1 + 2 + 34 - 6/5*12 + variableHERE - 3 work / 212314142124-313 = 414,000"
+			};
+
+			ICollection<string> sampleRteFields = new Collection<string>();
+
+			ICollection<decimal> expectedMatches = sut.ExtractDecimals(sampleRteFields);
+			ConfidenceReportMathResultDTO result = sut.GetMathConfidenceResults(sampleNumbersToMatch, ref sampleRteFields);
+
+			foreach (decimal value in expectedMatches)
+			{
+				if (result.Matches.ContainsKey(value))
+				{
+					Assert.IsTrue(result.Matches[value]);
+				}
+			}
+		}
+
+		/// <summary>
+		/// EmptyCollectionsTestForGetMathConfidenceResults
+		/// </summary>
+		[TestMethod]
+		public void EmptyCollectionsTestForGetMathConfidenceResults()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			ICollection<string> sampleNumbersToMatch = new Collection<string>();
+
+			ICollection<string> sampleRteFields = new Collection<string>();
+
+			ICollection<decimal> expectedMatches = sut.ExtractDecimals(sampleRteFields);
+			ConfidenceReportMathResultDTO result = sut.GetMathConfidenceResults(sampleNumbersToMatch, ref sampleRteFields);
+
+			foreach (decimal value in expectedMatches)
+			{
+				if (result.Matches.ContainsKey(value))
+				{
+					Assert.IsTrue(result.Matches[value]);
+				}
+			}
+		}
+
+		/// <summary>
+		/// NoMatchesTestForGetMathConfidenceResults
+		/// </summary>
+		[TestMethod]
+		public void NoMatchesTestForGetMathConfidenceResults()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			ICollection<string> sampleNumbersToMatch = new Collection<string>
+			{
+				"1 + 2 + 34 - 6/5*12 + variableHERE - 3 work / 212314142124-313 = 414,000"
+			};
+
+			ICollection<string> sampleRteFields = new Collection<string>
+			{
+				"121 random text",
+				"345 hmmm + yep 12.1",
+				"3133",
+				"25 work31",
+				" 16",
+				"idk, random string: no numbers here!!",
+				" result = 414,000,000 ",
+				"4144000"
+			};
+
+			ICollection<decimal> expectedMatches = sut.ExtractDecimals(sampleRteFields);
+			ConfidenceReportMathResultDTO result = sut.GetMathConfidenceResults(sampleNumbersToMatch, ref sampleRteFields);
+
+			foreach (decimal value in expectedMatches)
+			{
+				if (result.Matches.ContainsKey(value))
+				{
+					Assert.IsTrue(result.Matches[value]);
+				}
+			}
+		}
+
+		#endregion Math Algorithm Tests
 	}
 }

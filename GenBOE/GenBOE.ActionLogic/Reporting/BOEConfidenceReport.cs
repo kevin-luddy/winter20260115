@@ -185,5 +185,75 @@ namespace GenBOE.ActionLogic.Reporting
 
 			return result;
 		}
+
+		/// <summary>
+		/// Helper: Replaces variables in the string with their corresponding numerical value
+		/// </summary>
+		/// <param name="input">String to modify</param>
+		/// <param name="replacements">Variables and their corresponding value</param>
+		/// <returns>The original string modified to replace variables with their corresponding numeric value</returns>
+		internal string ReplaceVariablesWithValues(string input, Dictionary<string, decimal> replacements)
+		{
+			foreach (KeyValuePair<string, decimal> item in replacements)
+			{
+				if (!input.Contains(item.Key))
+				{
+					throw new ArgumentException($"The key '{item.Key}' does not have a match in the input string.");
+				}
+				input = input.Replace(item.Key, item.Value.ToString());
+			}
+			return input;
+		}
+
+		/// <summary>
+		/// Helper: Takes a collection of arbitrary strings and outputs a collection of decimals
+		/// </summary>
+		/// <param name="stringsContainingDecimals">Strings that contain decimals</param>
+		/// <returns>A collection of decimals extracted from the string</returns>
+		internal ICollection<decimal> ExtractDecimals(IEnumerable<string> stringsContainingDecimals)
+		{
+			ICollection<decimal> result = new Collection<decimal>();
+			Regex decimalRegex = new Regex(@"\d+(\.\d+)?");
+			foreach (string str in stringsContainingDecimals)
+			{
+				MatchCollection matches = decimalRegex.Matches(str);
+				foreach (Match match in matches)
+				{
+					if (decimal.TryParse(match.Value, out decimal decimalValue))
+					{
+						result.Add(decimalValue);
+					}
+				}
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// Algorithm to parse RTE Fields for numbers to match against
+		/// </summary>
+		/// <param name="numbersToMatch">All numbers to look for matches</param>
+		/// <param name="rteFields">RTE Fields to parse</param>
+		/// <returns>Results containing match results for the input numbers and any other numbers that have no match</returns>
+		internal ConfidenceReportMathResultDTO GetMathConfidenceResults(ICollection<string> numbersToMatch, ref ICollection<string> rteFields)
+		{
+			// To Do: replace MOQ equation variables with values HERE using the following helper
+			// input = ReplaceVariablesWithValues(input, replacements);
+
+			numbersToMatch = numbersToMatch.Select(str => str.Replace(",", "")).ToList();
+			rteFields = rteFields.Select(str => str.Replace(",", "")).ToList();
+
+			ICollection<decimal> numbersToMatchDecimals = ExtractDecimals(numbersToMatch);
+			ICollection<decimal> rteFieldsDecimals = ExtractDecimals(rteFields);
+
+			ConfidenceReportMathResultDTO result = new ConfidenceReportMathResultDTO();
+			HashSet<decimal> rteFieldsDecimalsSet = new HashSet<decimal>(rteFieldsDecimals);
+
+			foreach(decimal number in numbersToMatchDecimals)
+			{
+				result.Matches[number] = rteFieldsDecimalsSet.Contains(number);
+			}
+
+			return result;
+		}
 	}
 }
