@@ -146,6 +146,8 @@
     <Compile Include="GenBOE.Dtos\DTOs\BOESearchResultDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\BoeVersionDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\ClinDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ConfidenceReportMathResultDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ConfidenceReportPoPResultDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldValueContainer.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldValueDTO.cs" />

@@ -6,6 +6,7 @@
 
 namespace IES.Common.Core.Constants
 {
+	using System.Collections.ObjectModel;
 	using IES.Common.Core.Enums;
 
 	/// <summary>
@@ -409,6 +410,11 @@ namespace IES.Common.Core.Constants
 		public static readonly TimeSpan REGEX_TIMEOUT = new(0, 5, 0);
 
 		/// <summary>
+		/// Shorter timeout for Regex matching
+		/// </summary>
+		public static readonly TimeSpan REGEX_SHORT_TIMEOUT = new TimeSpan(0, 0, 2);
+
+		/// <summary>
 		/// Timeout for HTTP CLients
 		/// 
 		/// It is set to 20 minutes.  If calls to http APIs like SAP API take longer than 20 minutes, that is an issue in itself
@@ -544,6 +550,20 @@ namespace IES.Common.Core.Constants
 		/// BOE Space International app name
 		/// </summary>
 		public const string BOE_SPACE_INTERNATIONAL_APP_NAME = "BOESSC_INTL";
+
+		/// <summary>
+		/// Date formats used for Month and Year dates
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
+		public static ReadOnlyCollection<string> MONTH_YEAR_DATE_FORMATS = new ReadOnlyCollection<string>(new List<string>
+																			{ "MMMM yyyy", "MMMM-yyyy", "MMMM/yyyy",
+																				"MMM yyyy", "MMM-yyyy", "MMM/yyyy",
+																				"MM yyyy", "MM-yyyy", "MM/yyyy",
+																				"M yyyy", "M-yyyy", "M/yyyy",
+																				"MMMM yy", "MMMM-yy", "MMMM/yy",
+																				"MMM yy", "MMM-yy", "MMM/yy",
+																				"MM yy", "MM-yy", "MM/yy",
+																				"M yy", "M-yy", "M/yy" });
 
 		#region MOQ Type Text Field Lengths
 

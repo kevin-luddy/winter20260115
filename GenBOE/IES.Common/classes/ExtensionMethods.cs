@@ -17,6 +17,7 @@ namespace IES.Common
 	using System.ComponentModel;
 	using System.Text.RegularExpressions;
 	using System.Web.Mvc;
+	using IES.Common.classes;
 
 	public static class ExtensionMethods
 	{
@@ -256,6 +257,49 @@ namespace IES.Common
 			return endDate.Value.Subtract(startDate.Value).Days / Constants.POP_MONTHS_DIVISOR;
 		}
 
+		/// <summary>
+		/// TryParseExact for a string of Month and Year
+		/// </summary>
+		/// <param name="date">Date to parse</param>
+		/// <param name="parsedDate">The resulting parsed date (will be normalized to 15th)</param>
+		/// <returns>True if valid date found, otherwise false</returns>
+		public static bool TryParseMonthYear(this string date, out DateTime parsedDate)
+		{
+			bool parseResult = DateTime.TryParseExact(date, Constants.MONTH_YEAR_DATE_FORMATS, System.Globalization.CultureInfo.InvariantCulture,
+				System.Globalization.DateTimeStyles.None, out parsedDate);
+
+			parsedDate = parsedDate.Normalize();
+
+			return parseResult;
+		}
+
+		/// <summary>
+		/// Check if the text contains the given date in a month and year format
+		/// </summary>
+		/// <param name="text">Text to check for the date</param>
+		/// <param name="date">The date to check for</param>
+		/// <returns>True if date found in an accepted format, otherwise false</returns>
+		public static bool ContainsMonthYearDate(this string text, DateTime date)
+		{
+			if (string.IsNullOrEmpty(text))
+			{
+				throw new ArgumentException(text, nameof(text));
+			}
+
+			bool containsDate = false;
+
+			foreach(string format in Constants.MONTH_YEAR_DATE_FORMATS)
+			{
+				if (text.Contains(date.ToString(format)))
+				{
+					containsDate = true; 
+					break;
+				}
+			}
+
+			return containsDate;
+		}
+
 		#endregion Date/Time methods
 
 		public static int GetIndex(this string value, int occurence = 1)
@@ -281,6 +325,18 @@ namespace IES.Common
 				results.Add(int.Parse(indexString));
 			}
 			return results;
+		}
+
+		/// <summary>
+		/// Get all indexes of an object in a collection
+		/// </summary>
+		/// <typeparam name="T">The type of collection</typeparam>
+		/// <param name="collection">The collection to check</param>
+		/// <param name="item">The item to get indexes of</param>
+		/// <returns>All indexes of the item</returns>
+		public static ICollection<int> AllIndexesOf<T>(this ICollection<T> collection, T item)
+		{
+			return collection.Select((x, index) => x.Equals(item) ? index : -1).Where(x => x > -1).ToCollection();
 		}
 
 		/// <summary>

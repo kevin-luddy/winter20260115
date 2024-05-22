@@ -170,6 +170,7 @@
     <Compile Include="ActionLogic\IO\ProjectMapImportExportTest.cs" />
     <Compile Include="ActionLogic\IO\RTEUtilitiesTest.cs" />
     <Compile Include="ActionLogic\IO\TrainingImporterTests.cs" />
+    <Compile Include="ActionLogic\Reporting\BOEConfidenceReportTest.cs" />
     <Compile Include="AssertHelpers.cs" />
     <Compile Include="ActionLogic\BOESummaryTest.cs" />
     <Compile Include="ActionLogic\BoeTaskElementRecalculationTest.cs" />

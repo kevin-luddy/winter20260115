@@ -255,6 +255,7 @@
     <Compile Include="IO\Import\TMResourceRatesImporter.cs" />
     <Compile Include="IO\Import\TrainingImporter.cs" />
     <Compile Include="IO\PermissionsImporter.cs" />
+    <Compile Include="Reporting\BOEConfidenceReport.cs" />
     <Compile Include="_ModelView\Task\ImportMoqTableResultDataModelView.cs" />
     <Compile Include="_ModelView\Task\MoqTableDataModelView.cs" />
     <Compile Include="Validation\SystemExportToProPricerFormatValidator.cs" />
