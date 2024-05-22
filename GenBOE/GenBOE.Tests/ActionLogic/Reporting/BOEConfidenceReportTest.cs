@@ -682,7 +682,6 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 		[TestMethod]
 		public void TestGetPoPConfidenceResults_Partial()
 		{
-
 			BOEConfidenceReport sut = GetSUT();
 
 			ICollection<string> rteFields = new Collection<string>() {
@@ -742,6 +741,31 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.AreEqual(PoPMatchResult.Partial, result.PoPDateResults.ElementAt(2).Value);
 			Assert.AreEqual(PoPMatchResult.Partial, result.PoPDateResults.ElementAt(3).Value);
 			Assert.AreEqual(PoPMatchResult.Match, result.PoPDateResults.ElementAt(4).Value);
+		}
+
+		/// <summary>
+		/// Test that PoPMatchResult.Partial is returned when two individual dates that are sequential match the PoP but are in different RTEs even if there's other matching dates in the RTE
+		/// </summary>
+		[TestMethod]
+		public void TestGetPoPConfidenceResults_SequentialSingleDatesDifferentRTE()
+		{
+
+			BOEConfidenceReport sut = GetSUT();
+
+			ICollection<string> rteFields = new Collection<string>() {
+				"This string has December 2024 as well as January 2024 in it so both start and end dates are in the same RTE but not sequential",
+				"And this string contains December 2024 sequentially after the start date, but is a different RTE"
+			};
+
+			ICollection<DateRange> ranges = new Collection<DateRange>()
+			{
+				new DateRange(new DateTime(2024, 1, 15), new DateTime(2024, 12, 15))
+			};
+
+			ConfidenceReportPoPResultDTO result = sut.GetPoPConfidenceResults(ranges, ref rteFields);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(PoPMatchResult.Partial, result.PoPDateResults.ElementAt(0).Value);
 		}
 
 		/// <summary>
