@@ -211,6 +211,14 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableConfidenceReport']/@value">
 		</parameterentry>
 	</parameter>
+	<parameter name="EnableSkillMix" description="doesn't matter" defaultvalue="__EnableSkillMix__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableSkillMix']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="SkillMixStartDate" description="doesn't matter" defaultvalue="__SkillMixStartDate__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SkillMixStartDate']/@value">
+		</parameterentry>
+	</parameter>
 	<!--system.web-->
 	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
