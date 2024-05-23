@@ -25,17 +25,22 @@ namespace IES.Common
 		/// <summary>
 		/// Auth Domain
 		/// </summary>
-		private static string AuthDomain = ConfigurationManager.AppSettings["oAuthDomain"];
+		private static readonly string AuthDomain = ConfigurationManager.AppSettings["oAuthDomain"];
+
+		/// <summary>
+		/// Auth Audience
+		/// </summary>
+		private static readonly string[] AuthValidAudiences = ConfigurationManager.AppSettings["oAuthValidAudiences"].Split(new char [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
 		/// <summary>
 		/// This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
 		/// </summary>
-		private string metadataAddressForAuthDomain = AuthDomain + ".well-known/openid-configuration";
+		private readonly string metadataAddressForAuthDomain = AuthDomain + ".well-known/openid-configuration";
 
 		/// <summary>
 		/// Logger
 		/// </summary>
-		Logger logger = new Logger("GetNtidIfTokenIsValid");
+		private readonly Logger logger = new Logger("GetNtidIfTokenIsValid");
 
 		/// <summary>
 		/// Validate a Token, retrieve NTID from it
@@ -61,9 +66,10 @@ namespace IES.Common
 				TokenValidationParameters validationParameters = new TokenValidationParameters()
 				{
 					ValidateLifetime = true,
-					ValidateAudience = false,
+					ValidateAudience = true,
 					ValidateIssuer = false,
-					IssuerSigningKeys = openIdConfig.SigningKeys
+					IssuerSigningKeys = openIdConfig.SigningKeys,
+					ValidAudiences = AuthValidAudiences
 				};
 
 				// Validates the token first (throws if invalid). If valid, it searches all claims for the right one. Finally, the string is in the format of ntid@domain, so we strip out what we don't need.
