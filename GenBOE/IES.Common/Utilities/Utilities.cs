@@ -40,6 +40,7 @@ namespace IES.Common
 		private static string versionAndUpdatedDate = null;
 		private static object lockObject = new object();
 		private static DateTime? sapSpaceStartDate;
+		private static DateTime? skillMixStartDate;
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? historicalReferenceExplanationStartDate;
 
@@ -86,6 +87,29 @@ namespace IES.Common
 				}
 
 				return sapSpaceStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Cutoff time for workspaces for skill mix
+		/// </summary>
+		public static DateTime SkillMixStartDate
+		{
+			get
+			{
+				if (!skillMixStartDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("SkillMixStartDate"), out DateTime skillMixTime))
+					{
+						skillMixStartDate = DateTime.MaxValue;
+					}
+					else
+					{
+						skillMixStartDate = skillMixTime;
+					}
+				}
+
+				return skillMixStartDate.Value;
 			}
 		}
 
@@ -827,6 +851,42 @@ namespace IES.Common
 				return isConfidenceReportEnabled.Value;
 			}
 			internal set => isConfidenceReportEnabled = value;
+		}
+
+		/// <summary>
+		/// Private for Is Skill Mix Enabled, used for unit testing.. I know this is horrid design :(
+		/// </summary>
+		private static bool? isSkillMixEnabled;
+
+		/// <summary>
+		/// Indicates whether Skill Mix features are enabled
+		/// </summary>
+		public static bool IsSkillMixEnabledForSystem
+		{
+			get
+			{
+				if (isSkillMixEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableSkillMix"), out bool value);
+					isSkillMixEnabled = value;
+				}
+
+				return isSkillMixEnabled.Value;
+			}
+			internal set // be able to override for unit test purposes
+			{
+				isSkillMixEnabled = value;
+			}
+		}
+
+		/// <summary>
+		/// Is Skill Mix connection shown to the user for this workspace
+		/// </summary>
+		/// <param name="workspaceCreationDate"></param>
+		/// <returns></returns>
+		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate)
+		{
+			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
 		}
 
 		/// <summary>
