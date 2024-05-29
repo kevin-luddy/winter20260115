@@ -275,8 +275,6 @@
     <Compile Include="Controllers\RTETemplatesController.cs" />
     <Compile Include="Controllers\DateShiftController.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
-    <Compile Include="ModelView\ConfidenceReportItem.cs" />
-    <Compile Include="ModelView\ConfidenceReportModelView.cs" />
     <Compile Include="ModelView\CustomFieldImportModelView.cs" />
     <Compile Include="ModelView\DateShiftIndexModelView.cs" />
     <Compile Include="ModelView\BOEBulkSubmitModelView.cs" />

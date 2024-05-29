@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.Web.ModelView
+namespace GenBOE.ActionLogic.ModelView
 {
 	using GenBOE.Dtos;
 
