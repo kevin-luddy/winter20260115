@@ -61,6 +61,7 @@ namespace GenBOE.Web.Controllers
         private ISSRSControllerLogic ssrsControllerLogic;
         private IUserDTODataLoader userLoader;
         private ContractTypeLoader contractTypeLoader;
+		private IBOEConfidenceReport boeConfidenceReport;
 
         /// <summary>
         /// Business logic for the reports controller
@@ -93,7 +94,8 @@ namespace GenBOE.Web.Controllers
             IBOEFormControllerLogic inBOEFormControllerLogic,
             ISSRSControllerLogic ssrsControllerLogic,
             IUserDTODataLoader userLoader,
-            ContractTypeLoader contractTypeLoader)
+            ContractTypeLoader contractTypeLoader,
+			IBOEConfidenceReport boeConfidenceReport)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsLoader, inControllerLogic)
         {
             this._WorkspaceActivityReport = inWorkspaceActivityReport;
@@ -112,6 +114,7 @@ namespace GenBOE.Web.Controllers
             this.ssrsControllerLogic = ssrsControllerLogic;
             this.userLoader = userLoader;
             this.contractTypeLoader = contractTypeLoader;
+			this.boeConfidenceReport = boeConfidenceReport;
         }
 
         /// <summary>
@@ -888,8 +891,9 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS, boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["BOEID"] = boeID;
+			ConfidenceReportModelView reportViewModel = boeConfidenceReport.GenerateConfidenceReport(ws, boeID);
 
-			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT_RESULTS);
+			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT_RESULTS, reportViewModel);
 
 			// Finalize Action
 			FinalizeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS, sw);

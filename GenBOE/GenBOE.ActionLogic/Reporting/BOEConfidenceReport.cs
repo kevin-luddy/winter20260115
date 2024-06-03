@@ -11,7 +11,10 @@ namespace GenBOE.ActionLogic.Reporting
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using System.Text.RegularExpressions;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
+	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Enums;
@@ -19,15 +22,179 @@ namespace GenBOE.ActionLogic.Reporting
 	/// <summary>
 	/// class containing logic for the BOE Confidence Report
 	/// </summary>
-	public class BOEConfidenceReport
+	public class BOEConfidenceReport : IBOEConfidenceReport
 	{
+		/// <summary>
+		/// BOE Loader
+		/// </summary>
+		private IBoeDTODataLoader boeLoader;
+
+		/// <summary>
+		/// MOQ Type Loader
+		/// </summary>
+		private IMoqTypeDataLoader moqTypeLoader;
+
 		/// <summary>
 		/// ctor
 		/// </summary>
-		public BOEConfidenceReport()
+		public BOEConfidenceReport(IBoeDTODataLoader boeLoader, IMoqTypeDataLoader moqTypeLoader)
 		{
-
+			this.boeLoader = boeLoader;
+			this.moqTypeLoader = moqTypeLoader;
 		}
+
+		/// <summary>
+		/// Generate the Confidence Report
+		/// </summary>
+		/// <param name="workspace">Workspace</param>
+		/// <param name="boeId">BOE ID if running for a specific BOE, null if running for all BOEs</param>
+		/// <returns>Confidence Report View Model</returns>
+		public ConfidenceReportModelView GenerateConfidenceReport(FullWorkspace workspace, int? boeId = null)
+		{
+			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
+
+			ConfidenceReportModelView confidencereportModelView = new ConfidenceReportModelView();
+
+			// Get BOE if ID provided, otherwise all BOEs in the Workspace
+			ICollection<FullBoe> boes = new Collection<FullBoe>();
+
+			if (boeId != null)
+			{
+				BoeDTO boe = boeLoader.GetById(boeId.Value);
+				boes.Add(new FullBoe(boe));
+			}
+			else
+			{
+				boes = workspace.Boes.ToCollection();
+			}
+
+			// Get the workspace variables so we don't need to repeat for every task
+			Dictionary<string, decimal> wsVariableReplacements = new Dictionary<string, decimal>();
+			foreach (WorkspaceVariableDTO wsVariable in workspace.WorkspaceVariables)
+			{
+				wsVariableReplacements.Add(wsVariable.WorkspaceVariableName, wsVariable.WorkspaceVariableValue);
+			}
+
+			// Loop though each task in each boe to generate the report
+			foreach (FullBoe boe in boes)
+			{
+				ICollection<MoqTypeSelection> moqTypes = workspace.UsingTemplateBOE ? moqTypeLoader.GetByBoeId(boe.Id) : null;
+				boe.LoadTaskElementRTEData();
+
+				foreach (BoeTaskElementDTO task in boe.TaskElements)
+				{
+					confidencereportModelView.TotalTaskCount++;
+
+					ConfidenceReportItem reportItem = new ConfidenceReportItem()
+					{
+						BoeId = boe.Id,
+						BoeTitle = boe.Title,
+						TaskId = task.Id,
+						TaskTitle = task.TaskTitle
+					};
+
+					// get rte fields and the PoPs and Numbers to check them for
+					ICollection<string> rteFields = new Collection<string>
+					{
+						task.Description
+					};
+
+					ICollection<DateRange> popDates = new Collection<DateRange>()
+					{
+						new DateRange(task.StartDate, task.EndDate)
+					};
+
+					// replace variables in the MOQ Equation
+					Dictionary<string, decimal> variableReplacements = new Dictionary<string, decimal>();
+					variableReplacements.AddRange(wsVariableReplacements);
+					foreach (OrdinaryVariableDto taskVariable in task.OrdinaryVariables)
+					{
+						variableReplacements.Add(taskVariable.OrdinaryVariableName, taskVariable.OrdinaryVariableValue ?? 0);
+					}
+
+					string moqEquation = ReplaceVariablesWithValues(task, wsVariableReplacements);
+
+					// Get the MOQ numeric values - the equation and the result
+					ICollection<string> moqNumericValues = new Collection<string>()
+					{
+						moqEquation,
+						task.TotalHours.ToString()
+					};
+
+					ICollection<string> historicalRefNumericValues = new Collection<string>();
+
+					if (workspace.UsingTemplateBOE)
+					{
+						// Get RTE fields and Historical Reference numeric values from MOQ Types
+						foreach (MoqTypeSelection moqType in moqTypes.Where(x => x.TaskId == task.Id))
+						{
+							switch (moqType.SelectedMOQType)
+							{
+								case MOQType.Historical:
+								case MOQType.Comparative:
+									rteFields.Add(moqType.Rationale);
+									rteFields.Add(moqType.SkillMixRationale);
+									foreach (MoqTableData table in moqType.TableData)
+									{
+										if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+										{
+											historicalRefNumericValues.Add(table.TotalWbsHours.ToString());
+										}
+
+										historicalRefNumericValues.Add(table.TotalRelevantHours.ToString());
+									}
+
+									break;
+								case MOQType.CostEstimatingRelationships:
+								case MOQType.ParametricEstimates:
+								case MOQType.AnalogousRelationships:
+									rteFields.Add(moqType.Rationale);
+									rteFields.Add(moqType.SkillMixRationale);
+									break;
+								case MOQType.SOW:
+								case MOQType.LevelOfEffort:
+									rteFields.Add(moqType.DescriptionHoursRequired);
+									rteFields.Add(moqType.Rationale);
+									rteFields.Add(moqType.SkillMixRationale);
+									break;
+								case MOQType.SME:
+									rteFields.Add(moqType.SmeReason);
+									rteFields.Add(moqType.SmeHoursLogic);
+									rteFields.Add(moqType.SmeDurationLogic);
+									rteFields.Add(moqType.SmeTaskEstimates);
+									rteFields.Add(moqType.SkillMixRationale);
+									break;
+								case MOQType.NonLabor:
+									rteFields.Add(moqType.Rationale);
+									break;
+								default:
+									break;
+							}
+						}
+					}
+					else
+					{
+						// if not using Template BOE, just add MOQText to the RTE fields
+						rteFields.Add(task.MOQText);
+					}
+
+					// process and populate data
+					reportItem.rteFields = rteFields.Count;
+					reportItem.PoPResults = GetPoPConfidenceResults(popDates, ref rteFields);
+					reportItem.MoqResults = GetMathConfidenceResults(moqNumericValues, ref rteFields);
+					reportItem.HistoricalRefResults = GetMathConfidenceResults(historicalRefNumericValues, ref rteFields);
+
+					PopulateErrorText(reportItem, confidencereportModelView);
+
+					// Add the data to the report
+					confidencereportModelView.ConfidenceReportData.Add(reportItem);
+				}
+			}
+
+			return confidencereportModelView;
+		}
+
+		#region PoP methods
 
 		/// <summary>
 		/// Algorithm to parse RTE Fields for PoP date ranges
@@ -49,7 +216,7 @@ namespace GenBOE.ActionLogic.Reporting
 			ICollection<DateRange> foundDateRanges = new Collection<DateRange>();
 			IList<DateTime> foundDates = new List<DateTime>();
 			ICollection<string> rteFieldsRemovedDates = new Collection<string>();
-			
+
 			// Track the indexes and which RTE each single date is in
 			IDictionary<int, int> dateRteIndex = new Dictionary<int, int>();
 			int rteIndex = 0;
@@ -202,23 +369,59 @@ namespace GenBOE.ActionLogic.Reporting
 			return result;
 		}
 
+		#endregion PoP methods
+
+		#region Math methods
+
 		/// <summary>
-		/// Helper: Replaces variables in the string with their corresponding numerical value
+		/// Algorithm to parse RTE Fields for numbers to match against
 		/// </summary>
-		/// <param name="input">String to modify</param>
-		/// <param name="replacements">Variables and their corresponding value</param>
-		/// <returns>The original string modified to replace variables with their corresponding numeric value</returns>
-		internal string ReplaceVariablesWithValues(string input, Dictionary<string, decimal> replacements)
+		/// <param name="numbersToMatch">All numbers to look for matches</param>
+		/// <param name="rteFields">RTE Fields to parse</param>
+		/// <returns>Results containing match results for the input numbers and any other numbers that have no match</returns>
+		internal ConfidenceReportMathResultDTO GetMathConfidenceResults(ICollection<string> numbersToMatch, ref ICollection<string> rteFields)
 		{
+			numbersToMatch = numbersToMatch.Select(str => str.Replace(",", "")).ToList();
+			rteFields = rteFields.Select(str => str.Replace(",", "")).ToList();
+
+			ICollection<decimal> numbersToMatchDecimals = ExtractDecimals(numbersToMatch);
+			ICollection<decimal> rteFieldsDecimals = ExtractDecimals(rteFields);
+
+			ConfidenceReportMathResultDTO result = new ConfidenceReportMathResultDTO();
+			HashSet<decimal> rteFieldsDecimalsSet = new HashSet<decimal>(rteFieldsDecimals);
+
+			foreach (decimal number in numbersToMatchDecimals)
+			{
+				result.Matches[number] = rteFieldsDecimalsSet.Contains(number);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Helper: Replaces variables in the MOQ Equation with their corresponding numerical value
+		/// </summary>
+		/// <param name="task">Task containing MOQ Equation and ordinary variables</param>
+		/// <param name="wsReplacements">Workspace Variables and their corresponding value</param>
+		/// <returns>MOQ Equation modified to replace variables with their corresponding numeric value</returns>
+		internal string ReplaceVariablesWithValues(BoeTaskElementDTO task, Dictionary<string, decimal> wsReplacements)
+		{
+			string toReturn = task.MOQHoursEquation;
+
+			// combine WS variable replacements with ordinary (task-level) variable replacements
+			Dictionary<string, decimal> replacements = wsReplacements;
+			foreach (OrdinaryVariableDto taskVariable in task.OrdinaryVariables)
+			{
+				replacements.Add(taskVariable.OrdinaryVariableName, taskVariable.OrdinaryVariableValue ?? 0);
+			}
+
+			// replace the variables with their value
 			foreach (KeyValuePair<string, decimal> item in replacements)
 			{
-				if (!input.Contains(item.Key))
-				{
-					throw new ArgumentException($"The key '{item.Key}' does not have a match in the input string.");
-				}
-				input = input.Replace(item.Key, item.Value.ToString());
+				toReturn = toReturn.Replace(item.Key, item.Value.ToString());
 			}
-			return input;
+
+			return toReturn;
 		}
 
 		/// <summary>
@@ -244,32 +447,44 @@ namespace GenBOE.ActionLogic.Reporting
 			return result;
 		}
 
+		#endregion Math methods
+
 		/// <summary>
-		/// Algorithm to parse RTE Fields for numbers to match against
+		/// Populate the error text for the report item. If there are no errors, also increment the tasks without errors for the full report
 		/// </summary>
-		/// <param name="numbersToMatch">All numbers to look for matches</param>
-		/// <param name="rteFields">RTE Fields to parse</param>
-		/// <returns>Results containing match results for the input numbers and any other numbers that have no match</returns>
-		internal ConfidenceReportMathResultDTO GetMathConfidenceResults(ICollection<string> numbersToMatch, ref ICollection<string> rteFields)
+		/// <param name="reportItem">Report item</param>
+		/// <param name="confidencereportModelView">full report view model</param>
+		private void PopulateErrorText(ConfidenceReportItem reportItem, ConfidenceReportModelView confidencereportModelView)
 		{
-			// To Do: replace MOQ equation variables with values HERE using the following helper
-			// input = ReplaceVariablesWithValues(input, replacements);
+			ICollection<string> errorMessages = new Collection<string>();
 
-			numbersToMatch = numbersToMatch.Select(str => str.Replace(",", "")).ToList();
-			rteFields = rteFields.Select(str => str.Replace(",", "")).ToList();
-
-			ICollection<decimal> numbersToMatchDecimals = ExtractDecimals(numbersToMatch);
-			ICollection<decimal> rteFieldsDecimals = ExtractDecimals(rteFields);
-
-			ConfidenceReportMathResultDTO result = new ConfidenceReportMathResultDTO();
-			HashSet<decimal> rteFieldsDecimalsSet = new HashSet<decimal>(rteFieldsDecimals);
-
-			foreach(decimal number in numbersToMatchDecimals)
+			if (reportItem.PoPResults.PoPDateResults.Any(x => x.Value == PoPMatchResult.Missing || x.Value == PoPMatchResult.Partial))
 			{
-				result.Matches[number] = rteFieldsDecimalsSet.Contains(number);
+				reportItem.HasPoPError = true;
+				errorMessages.Add(ConfidenceReportConstants.POP_ERROR);
 			}
 
-			return result;
+			if (reportItem.MoqResults.Matches.Any(x => !x.Value))
+			{
+				reportItem.HasMoqError = true;
+				errorMessages.Add(ConfidenceReportConstants.MOQ_ERROR);
+			}
+
+			if (reportItem.HistoricalRefResults.Matches.Any(x => !x.Value))
+			{
+				reportItem.HasHistoricalRefError = true;
+				errorMessages.Add(ConfidenceReportConstants.HISTORICAL_REF_ERROR);
+			}
+
+			if (errorMessages.Any())
+			{
+				reportItem.ErrorText = string.Join(", ", errorMessages);
+			}
+			else
+			{
+				reportItem.ErrorText = ConfidenceReportConstants.NO_ERRORS;
+				confidencereportModelView.TasksWithoutErrors++;
+			}
 		}
 	}
 }
