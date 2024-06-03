@@ -133,7 +133,7 @@
                 });
                 modalWindow.dialog('close');
                 $('#confirm-modal-input').val('');
-                $('#confirm-modal-submit').text('Set Contract Lost');
+                $('#confirm-modal-submit').text('Set Contract Not Awarded');
                 $('#confirm-modal-input').trigger('keyup');
                 $('#contractsInfoForm .validation-box').show();
             }
@@ -209,7 +209,7 @@
         });
 
         $('#confirm-modal-input').keyup(function () {
-            if ($('#confirm-modal-input').val().trim() === 'LOST') {
+			if ($('#confirm-modal-input').val().trim() === 'NOT AWARDED') {
                 $('#confirm-modal-submit').prop('disabled', false);
             } else {
                 $('#confirm-modal-submit').prop('disabled', true);
@@ -373,11 +373,11 @@
         }
     </div>
     <div id="confirm-loss-modal" title="Please Confirm" style="display: none;">
-        <p><strong>Are you sure the proposal is actually lost? This action cannot be undone.</strong></p>
+        <p><strong>Are you sure the proposal is actually not awarded? This action cannot be undone.</strong></p>
         <br />
-        <input type="text" id="confirm-modal-input" name="confirm-modal-input" placeholder="Type LOST to Continue" />
+        <input type="text" id="confirm-modal-input" name="confirm-modal-input" placeholder="Type NOT AWARDED to Continue" />
         <div class="confirm-modal-button-container">
-            <button type="button" id="confirm-modal-submit" class="ies" disabled>Set Contract Lost</button>
+            <button type="button" id="confirm-modal-submit" class="ies" disabled>Set Contract Not Awarded</button>
         </div>
     </div>
 </div>

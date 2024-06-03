@@ -11,6 +11,7 @@ namespace GenBOE
     using System.IO.IsolatedStorage;
     using System.Linq;
 	using System.Net.Http;
+	using System.Text.RegularExpressions;
 	using System.Web.Http;
     using System.Web.Mvc;
     using System.Web.Optimization;
@@ -300,6 +301,16 @@ namespace GenBOE
                 //ModelBinders.Binders.DefaultBinder = new DebugModelBinder();
             }
             catch (Exception ex) { _log.Error(ex, "FATAL - ModelBinders setup failed."); throw; }
+
+			try
+			{
+				// Increase the size of the Regex cache due to the size of the application and number of regular expressions
+				Regex.CacheSize = 50;
+			}
+			catch (Exception ex)
+			{
+				_log.Error(ex, "Error setting Regex cache size.");
+			}
         }
 
         /// <summary>

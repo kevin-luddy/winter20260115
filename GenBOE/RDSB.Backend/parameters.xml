@@ -29,6 +29,16 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_AUTHORITY_">
 		</parameterentry>
 	</parameter>
+	<parameter name="oAuthValidAudiences" description="doesn't matter" defaultvalue="__oAuthValidAudiences__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_AUDIENCES_">
+		</parameterentry>
+	</parameter>
+	<parameter name="oAuthIESClientId" description="doesn't matter" defaultvalue="__oAuthIESClientId__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_CLIENT_ID_">
+		</parameterentry>
+	</parameter>
 	<parameter name="oAuthSecret" description="doesn't matter" defaultvalue="__oAuthSecret__" tags="">
 		<parameterValidation kind="AllowEmpty" />
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_FEDERATION_SECRET_">
