@@ -8762,13 +8762,10 @@ span.blue-link a{
 
 .skillMixTable .grid {
     display: inline-table;
-    width: calc(100% - 275px) !important;
+    width: calc(100% - 75px) !important;
 }
 
 .skillMixTable #updateSkillMix {
     margin-right: 70px;
     float: right;
-}
-.skillMixTable button {
-    width: 175px;
 }

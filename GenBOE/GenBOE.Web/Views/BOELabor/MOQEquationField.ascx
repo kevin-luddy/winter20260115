@@ -474,9 +474,6 @@
                             </tr>
                         </tbody>
                     </table>
-                    <div id="updateSkillMix" class="tableDataButtons">
-                        <button data-ng-if="!ActualReadOnly() && $index == 0" type="button" class="ies-action moqTypesButton">Update Skill Mix Table</button>
-                    </div>
                 </div>
             </div>
         </div>

@@ -609,11 +609,14 @@ namespace GenBOE.Web.Controllers
 				enableSkillMix = true;
 			}
 			ViewData["EnableSkillMix"] = enableSkillMix;
-
+			ViewData["EnableCommonDisclosure"] = false;
 			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
 				//enable the common disclosure table
-				ViewData["EnableCommonDisclosure"] = true;
+				if (enableSkillMix)
+				{
+					ViewData["EnableCommonDisclosure"] = true;
+				}
 				//check if ws contains BRCs, if not, mark moq equation as read only
 				ICollection <ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
 				if (resources.Count == 0)
