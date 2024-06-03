@@ -8742,3 +8742,33 @@ span.blue-link a{
 #ImportExportPermissionsDialog {
     display: block;
 }
+
+.moqRteFieldContainer .skillMixTable {
+    margin-bottom: 10px;
+    display: table;
+    float: left;
+    clear: both;
+    max-width: none;
+}
+
+.skillMixTable td {
+    border: 1px solid #b2b2b2;
+}
+
+.skillMixTable th {
+    border: 1px solid #b2b2b2;
+    padding: 5px;
+}
+
+.skillMixTable .grid {
+    display: inline-table;
+    width: calc(100% - 275px) !important;
+}
+
+.skillMixTable #updateSkillMix {
+    margin-right: 70px;
+    float: right;
+}
+.skillMixTable button {
+    width: 175px;
+}

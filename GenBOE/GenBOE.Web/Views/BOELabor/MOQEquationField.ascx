@@ -46,7 +46,9 @@
 		RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
         RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
 		ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
-		HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue()
+		HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
+        SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
+        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue() 
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -73,6 +75,7 @@
                         '<%:WebConstants.CONTROLLER_BOE_LABOR %>',
                         '<%:WebConstants.ACTION_DISPLAY_VARIABLE_BOE_SUM_BY_CLIN %>',
                         'boe/<%: (int)ViewData["BOEID"] %>');
+
 
     // Initializes the widget. Has to be called after Angular is done initializing / binding, instead of on page load. This is necessary here due to the DOM complexity
     initializeWidget = function () {
@@ -397,6 +400,159 @@
             <div class="form-element">
                 <textarea data-ng-if="!ActualReadOnly()" cols="20" name="Rationale_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.Rationale"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.Rationale"></span>
+            </div>
+        </div>
+        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.SkillMixEnabled && model.SAPEnabled && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)">
+            <div class="form-label">
+                <span>Current Skill Mix Table: *</span>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalSkillMixSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeSkillMixSuffix);"></div>
+            </div>
+            <div class="form-element">
+                <div class="skillMixTableData skillMixTable">
+                    <table name="cuurentSkillMix"  class="grid editable">
+                        <thead>
+                            <tr>
+                                <th data-ng-show="model.IsRMS" class="resource">Resource ID</th>
+                                <th class="current-resource-id">Current Resource ID</th>
+                                <th class="historical-hours">Historical Hours</th>
+                                <th class="labor-skill-mix">Labor Skill Mix</th>
+                                <th class="included">Included *</th>
+                                <th class="boe-skill-mix">BOE Skill Mix</th>
+                                <th class="proposed-hours">Proposed Hours</th>
+                                <th class="rationale">Rationale *</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-repeat="item in skillMixTableData | filter: { Deleted: false }" data-ng-hide="item.Deleted">
+                                <td data-ng-show="model.IsRMS">
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option></option>
+                                        <option value="">Yes</option>
+                                        <option value="">No</option>
+                                    </select>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>									
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div title="Total">Total</div>
+                                </td>
+                                <td data-ng-show="model.IsRMS">
+                                </td>	
+                                <td>
+                                    <div id="historical-hours-total"></div>
+                                </td>
+                                <td>
+                                    <div id="labor-skill-mix-total"></div>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <div id="boe-skill-mix-total"></div>
+                                </td>
+                                <td>
+                                    <div id="proposed-hours-total"></div>
+                                </td>
+                                <td>
+                                </td>									
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="updateSkillMix" class="tableDataButtons">
+                        <button data-ng-if="!ActualReadOnly() && $index == 0" type="button" class="ies-action moqTypesButton">Update Skill Mix Table</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.CommonDisclosureEnabled && model.SkillMixEnabled && model.SAPEnabled && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)">
+            <div class="form-label">
+                <span>Common Disclosure Skill Mix Table: *</span>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalSkillMixSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeSkillMixSuffix);"></div>
+            </div>
+            <div class="form-element">
+                <div class="commonDisclosureTableData skillMixTable">
+                    <table name="commonDisclosureSkillMix"  class="grid editable">
+                        <thead>
+                            <tr>
+                                <th class="current-resource-id">Current Resource ID</th>
+                                <th class="brc-id">Business Resource ID</th>
+                                <th class="historical-hours">Historical Hours</th>
+                                <th class="labor-skill-mix">Labor Skill Mix</th>
+                                <th class="included">Included *</th>
+                                <th class="boe-skill-mix">BOE Skill Mix</th>
+                                <th class="proposed-hours">Proposed Hours</th>
+                                <th class="rationale">Rationale *</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-repeat="item in commonDisclosureTableData | filter: { Deleted: false }" data-ng-hide="item.Deleted">
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option></option>
+                                        <option value="">Yes</option>
+                                        <option value="">No</option>
+                                    </select>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>									
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td>
+                                <div title="Total">Total</div>
+                                </td>
+                                <td>
+                                </td>	
+                                <td>
+                                    <div id="cd-historical-hours-total"></div>
+                                </td>
+                                <td>
+                                    <div id="cd-labor-skill-mix-total"></div>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <div id="cd-boe-skill-mix-total"></div>
+                                </td>
+                                <td>
+                                    <div id="cd-proposed-hours-total"></div>
+                                </td>
+                                <td>
+                                </td>									
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 		<div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
