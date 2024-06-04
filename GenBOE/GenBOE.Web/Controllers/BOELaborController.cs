@@ -602,10 +602,23 @@ namespace GenBOE.Web.Controllers
 			ViewData["SAPWorkspaceBeforeCutoff"] = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
 			ViewData["HistoricalReferenceExplanationIsRequired"] = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
 
+			//check if skill mix is enabled and workspace starts after skill mix date 
+			bool enableSkillMix = false;
+			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			{
+				enableSkillMix = true;
+			}
+			ViewData["EnableSkillMix"] = enableSkillMix;
+			ViewData["EnableCommonDisclosure"] = false;
 			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
+				//enable the common disclosure table
+				if (enableSkillMix)
+				{
+					ViewData["EnableCommonDisclosure"] = true;
+				}
 				//check if ws contains BRCs, if not, mark moq equation as read only
-				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				ICollection <ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
 				if (resources.Count == 0)
 				{
 					ViewData["READONLY"] = true;

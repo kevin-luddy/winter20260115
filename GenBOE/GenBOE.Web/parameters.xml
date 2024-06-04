@@ -49,8 +49,7 @@
 		</parameterentry>
 	</parameter>
 	<parameter name="oAuthValidAudiences" description="doesn't matter" defaultvalue="__oAuthValidAudiences__" tags="">
-		<parameterValidation kind="AllowEmpty" />
-		<parameterentry kind="TextFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthValidAudiences']/@value">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthValidAudiences']/@value">
 		</parameterentry>
 	</parameter>
 	<parameter name="oAuthIESClientId" description="doesn't matter" defaultvalue="__oAuthIESClientId__" tags="">
@@ -170,14 +169,14 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UsersAllowedProPricerAccess']/@value">
 		</parameterentry>
 	</parameter>
-    <parameter name="SystemAdminADGroup" description="doesn't matter" defaultvalue="__SystemAdminADGroup__" tags="">
-        <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SystemAdminADGroup']/@value">
-        </parameterentry>
-    </parameter>
-    <parameter name="SubcontractAdminADGroup" description="doesn't matter" defaultvalue="__SubcontractAdminADGroup__" tags="">
-        <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SubcontractAdminADGroup']/@value">
-        </parameterentry>
-    </parameter>
+	<parameter name="SystemAdminADGroup" description="doesn't matter" defaultvalue="__SystemAdminADGroup__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SystemAdminADGroup']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="SubcontractAdminADGroup" description="doesn't matter" defaultvalue="__SubcontractAdminADGroup__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SubcontractAdminADGroup']/@value">
+		</parameterentry>
+	</parameter>
 	<parameter name="EnableSendToProPricerDirectly" description="doesn't matter" defaultvalue="__EnableSendToProPricerDirectly__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableSendToProPricerDirectly']/@value">
 		</parameterentry>

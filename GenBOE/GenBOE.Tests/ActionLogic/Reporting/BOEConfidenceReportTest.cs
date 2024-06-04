@@ -10,24 +10,1175 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.Reporting;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
+	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Enums;
+	using Microsoft.Practices.Unity;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Moq;
 
+	/// <summary>
+	/// Unit Tests for BOEConfidenceReport
+	/// </summary>
 	[TestClass]
 	public class BOEConfidenceReportTest
 	{
+		/// <summary>
+		/// BOE Loader
+		/// </summary>
+		private Mock<IBoeDTODataLoader> boeLoader;
+
+		/// <summary>
+		/// MOQ Type Loader
+		/// </summary>
+		private Mock<IMoqTypeDataLoader> moqTypeLoader;
+
+		/// <summary>
+		/// Retriever used by FullWorkspace/FullBOE
+		/// </summary>
+		private Mock<IRetriever> retriever;
+
+		/// <summary>
+		/// Full Object Factory for creating FullWorkspace/FullBOE
+		/// </summary>
+		private Mock<IFullObjectFactory> factory;
+
 		/// <summary>
 		/// Get the System Under Test
 		/// </summary>
 		/// <returns>an instance of BOEConfidenceReports</returns>
 		public BOEConfidenceReport GetSUT()
 		{
-			return new BOEConfidenceReport();
+			boeLoader = new Mock<IBoeDTODataLoader>();
+			moqTypeLoader = new Mock<IMoqTypeDataLoader>();
+			retriever = new Mock<IRetriever>();
+			factory = new Mock<IFullObjectFactory>();
+			Mock<IPermissionsDTODataLoader> permissionsLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsLoader.Object);
+
+			return new BOEConfidenceReport(boeLoader.Object, moqTypeLoader.Object);
 		}
+
+		#region Confidence Report Tests
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when run for All BOEs (no boe id) and there are no errors
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportAllBoesNoErrors()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe1 = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			BoeDTO boe2 = new BoeDTO()
+			{
+				Id = 2,
+				Title = "BOE 2",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is for January 2024 thru December 2024 and has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			BoeTaskElementDTO task2 = new BoeTaskElementDTO()
+			{
+				Id = 2,
+				TaskTitle = "Task 2",
+				Description = "5/24-6/24 and 100",
+				StartDate = new DateTime(2024, 5, 15),
+				EndDate = new DateTime(2024, 6, 15),
+				MOQHoursEquation = "100",
+				TotalHours = 100
+			};
+
+			BoeTaskElementDTO task3 = new BoeTaskElementDTO()
+			{
+				Id = 3,
+				TaskTitle = "Task 3",
+				Description = "Aug 24 to Nov 24 and 1000",
+				StartDate = new DateTime(2024, 8, 15),
+				EndDate = new DateTime(2024, 11, 15),
+				MOQHoursEquation = "1000",
+				TotalHours = 1000
+			};
+
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TaskId = task1.Id,
+				Rationale = "This is the rational containing total relevant hours of 50",
+				SkillMixRationale = "This is the Skill Mix Rationale containing 55 for the second table",
+				TableData = new Collection<MoqTableData>()
+				{
+					new MoqTableData()
+					{
+						TotalRelevantHours = 50
+					},
+					new MoqTableData()
+					{
+						TotalRelevantHours = 55
+					}
+				}
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe1.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1, task2 });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe2.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task3 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe1), new FullBoe(boe2) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe1.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe2.Id)).Returns(new Collection<MoqTypeSelection>());
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(3, result.TotalTaskCount);
+			Assert.AreEqual(3, result.TasksWithoutErrors);
+			Assert.AreEqual("3/3", result.ConfidenceScore);
+			Assert.AreEqual(3, result.ConfidenceReportData.Count);
+
+			// Assert no errors
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasPoPError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasMoqError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasHistoricalRefError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.ErrorText == ConfidenceReportConstants.NO_ERRORS));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.PoPResults.PoPDateResults.All(y => y.Value == PoPMatchResult.Match)));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.PoPResults.NoMatchDates.Any()));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.MoqResults.Matches.All(y => y.Value)));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.HistoricalRefResults.Matches.All(y => y.Value)));
+
+			// Assert remaining Task 1 details
+			Assert.AreEqual(boe1.Title, result.ConfidenceReportData.ElementAt(0).BoeTitle);
+			Assert.AreEqual(boe1.Id, result.ConfidenceReportData.ElementAt(0).BoeId);
+			Assert.AreEqual(task1.Id, result.ConfidenceReportData.ElementAt(0).TaskId);
+			Assert.AreEqual(task1.TaskTitle, result.ConfidenceReportData.ElementAt(0).TaskTitle);
+			Assert.AreEqual(3, result.ConfidenceReportData.ElementAt(0).rteFields);
+
+			// Assert remaining Task 2 details
+			Assert.AreEqual(boe1.Title, result.ConfidenceReportData.ElementAt(1).BoeTitle);
+			Assert.AreEqual(boe1.Id, result.ConfidenceReportData.ElementAt(1).BoeId);
+			Assert.AreEqual(task2.Id, result.ConfidenceReportData.ElementAt(1).TaskId);
+			Assert.AreEqual(task2.TaskTitle, result.ConfidenceReportData.ElementAt(1).TaskTitle);
+			Assert.AreEqual(1, result.ConfidenceReportData.ElementAt(1).rteFields);
+
+			// Assert remaining Task 3 details
+			Assert.AreEqual(boe2.Title, result.ConfidenceReportData.ElementAt(2).BoeTitle);
+			Assert.AreEqual(boe2.Id, result.ConfidenceReportData.ElementAt(2).BoeId);
+			Assert.AreEqual(task3.Id, result.ConfidenceReportData.ElementAt(2).TaskId);
+			Assert.AreEqual(task3.TaskTitle, result.ConfidenceReportData.ElementAt(2).TaskTitle);
+			Assert.AreEqual(1, result.ConfidenceReportData.ElementAt(2).rteFields);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when run for a single BOE and there are no errors
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportSingleBoeNoErrors()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is for January 2024 thru December 2024 and has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			BoeTaskElementDTO task2 = new BoeTaskElementDTO()
+			{
+				Id = 2,
+				TaskTitle = "Task 2",
+				Description = "5/24-6/24 and 100",
+				StartDate = new DateTime(2024, 5, 15),
+				EndDate = new DateTime(2024, 6, 15),
+				MOQHoursEquation = "100",
+				TotalHours = 100
+			};
+
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TaskId = task1.Id,
+				Rationale = "This is the rational containing total relevant hours of 50",
+				SkillMixRationale = "This is the Skill Mix Rationale containing 55 for the second table",
+				TableData = new Collection<MoqTableData>()
+				{
+					new MoqTableData()
+					{
+						TotalRelevantHours = 50
+					},
+					new MoqTableData()
+					{
+						TotalRelevantHours = 55
+					}
+				}
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1, task2 });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			boeLoader.Setup(x => x.GetById(boe.Id)).Returns(boe);
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace, boe.Id);
+
+			// Assert Score
+			Assert.AreEqual(2, result.TotalTaskCount);
+			Assert.AreEqual(2, result.TasksWithoutErrors);
+			Assert.AreEqual("2/2", result.ConfidenceScore);
+			Assert.AreEqual(2, result.ConfidenceReportData.Count);
+
+			// Assert no errors
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasPoPError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasMoqError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasHistoricalRefError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.ErrorText == ConfidenceReportConstants.NO_ERRORS));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.PoPResults.PoPDateResults.All(y => y.Value == PoPMatchResult.Match)));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.PoPResults.NoMatchDates.Any()));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.MoqResults.Matches.All(y => y.Value)));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.HistoricalRefResults.Matches.All(y => y.Value)));
+
+			// Assert remaining Task 1 details
+			Assert.AreEqual(boe.Title, result.ConfidenceReportData.ElementAt(0).BoeTitle);
+			Assert.AreEqual(boe.Id, result.ConfidenceReportData.ElementAt(0).BoeId);
+			Assert.AreEqual(task1.Id, result.ConfidenceReportData.ElementAt(0).TaskId);
+			Assert.AreEqual(task1.TaskTitle, result.ConfidenceReportData.ElementAt(0).TaskTitle);
+			Assert.AreEqual(3, result.ConfidenceReportData.ElementAt(0).rteFields);
+
+			// Assert remaining Task 2 details
+			Assert.AreEqual(boe.Title, result.ConfidenceReportData.ElementAt(1).BoeTitle);
+			Assert.AreEqual(boe.Id, result.ConfidenceReportData.ElementAt(1).BoeId);
+			Assert.AreEqual(task2.Id, result.ConfidenceReportData.ElementAt(1).TaskId);
+			Assert.AreEqual(task2.TaskTitle, result.ConfidenceReportData.ElementAt(1).TaskTitle);
+			Assert.AreEqual(1, result.ConfidenceReportData.ElementAt(1).rteFields);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when there is a missing PoP results in a PoP error
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportPoPMissingError()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is missing its PoP and has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>());
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(0, result.TasksWithoutErrors);
+			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert PoP error captured
+			Assert.IsTrue(result.ConfidenceReportData.First().HasPoPError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasHistoricalRefError);
+			Assert.AreEqual(ConfidenceReportConstants.POP_ERROR, result.ConfidenceReportData.First().ErrorText);
+			Assert.AreEqual(PoPMatchResult.Missing, result.ConfidenceReportData.First().PoPResults.PoPDateResults.First().Value);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when there is a partial match PoP results in a PoP error
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportPoPPartialError()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task only contains the start date of January 2024 and has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>());
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(0, result.TasksWithoutErrors);
+			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert PoP error captured
+			Assert.IsTrue(result.ConfidenceReportData.First().HasPoPError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasHistoricalRefError);
+			Assert.AreEqual(ConfidenceReportConstants.POP_ERROR, result.ConfidenceReportData.First().ErrorText);
+			Assert.AreEqual(PoPMatchResult.Partial, result.ConfidenceReportData.First().PoPResults.PoPDateResults.First().Value);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when there is an MOQ error
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportMoqError()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is for January 2024 thru December 2024 and has 1.1 hour per 10 from the Task Var plus 100 from the WS Var but the total is missing",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1.1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>());
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(0, result.TasksWithoutErrors);
+			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert MOQ error captured
+			Assert.IsFalse(result.ConfidenceReportData.First().HasPoPError);
+			Assert.IsTrue(result.ConfidenceReportData.First().HasMoqError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasHistoricalRefError);
+			Assert.AreEqual(ConfidenceReportConstants.MOQ_ERROR, result.ConfidenceReportData.First().ErrorText);
+			Assert.IsFalse(result.ConfidenceReportData.First().MoqResults.Matches[task1.TotalHours.Value]);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when there is a Historical Reference Error
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportHistoricalRefError()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is for January 2024 thru December 2024 and has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TaskId = task1.Id,
+				Rationale = "This is the rational missing the total relevant hours",
+				SkillMixRationale = "This is the Skill Mix Rationale containing 55 for the second table",
+				TableData = new Collection<MoqTableData>()
+				{
+					new MoqTableData()
+					{
+						TotalRelevantHours = 50
+					},
+					new MoqTableData()
+					{
+						TotalRelevantHours = 55
+					}
+				}
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(0, result.TasksWithoutErrors);
+			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert Historical Ref error captured
+			Assert.IsFalse(result.ConfidenceReportData.First().HasPoPError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
+			Assert.IsTrue(result.ConfidenceReportData.First().HasHistoricalRefError);
+			Assert.AreEqual(ConfidenceReportConstants.HISTORICAL_REF_ERROR, result.ConfidenceReportData.First().ErrorText);
+			Assert.IsFalse(result.ConfidenceReportData.First().HistoricalRefResults.Matches[moqType.TableData.First().TotalRelevantHours]);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport for Total WBS Hours for RMS
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportTotalWbsHours()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is for January 2024 thru December 2024 and has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TaskId = task1.Id,
+				Rationale = "This is the rational has the total relevant hours of 50, but missing the total wbs hours",
+				SkillMixRationale = "This is the Skill Mix Rationale containing 55 and 65 for the second table",
+				TableData = new Collection<MoqTableData>()
+				{
+					new MoqTableData()
+					{
+						TotalRelevantHours = 50,
+						TotalWbsHours = 60
+					},
+					new MoqTableData()
+					{
+						TotalRelevantHours = 55,
+						TotalWbsHours = 65
+					}
+				}
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(0, result.TasksWithoutErrors);
+			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert Historical Ref error and WBS data results captured
+			Assert.IsFalse(result.ConfidenceReportData.First().HasPoPError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
+			Assert.IsTrue(result.ConfidenceReportData.First().HasHistoricalRefError);
+			Assert.AreEqual(ConfidenceReportConstants.HISTORICAL_REF_ERROR, result.ConfidenceReportData.First().ErrorText);
+			Assert.IsFalse(result.ConfidenceReportData.First().HistoricalRefResults.Matches[moqType.TableData.First().TotalWbsHours]);
+			Assert.IsTrue(result.ConfidenceReportData.First().HistoricalRefResults.Matches[moqType.TableData.Last().TotalWbsHours]);
+
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when there is are multiple errors in the same task, namely testing report text generation
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportMultipleErrors()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is missing the PoP and has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TaskId = task1.Id,
+				Rationale = "This is the rational missing the total relevant hours",
+				SkillMixRationale = "This is the Skill Mix Rationale containing 55 for the second table",
+				TableData = new Collection<MoqTableData>()
+				{
+					new MoqTableData()
+					{
+						TotalRelevantHours = 50
+					},
+					new MoqTableData()
+					{
+						TotalRelevantHours = 55
+					}
+				}
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(0, result.TasksWithoutErrors);
+			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert both errors captured and error text contains both
+			Assert.IsTrue(result.ConfidenceReportData.First().HasPoPError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
+			Assert.IsTrue(result.ConfidenceReportData.First().HasHistoricalRefError);
+			Assert.AreEqual($"{ConfidenceReportConstants.POP_ERROR}, {ConfidenceReportConstants.HISTORICAL_REF_ERROR}", result.ConfidenceReportData.First().ErrorText);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport for values found in the RTEs of all other MOQ Types (Historical/Comparative tested in other tests)
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportAllMoqTypes()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe1 = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is for January 2024 thru December 2024",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16 + 17",
+				TotalHours = 153,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>()
+			};
+
+			MoqTypeSelection cer = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.CostEstimatingRelationships,
+				TaskId = task1.Id,
+				Rationale = "Rationale 1",
+				SkillMixRationale = "Skill Mix 2"
+			};
+
+			MoqTypeSelection pe = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.ParametricEstimates,
+				TaskId = task1.Id,
+				Rationale = "Rationale 3",
+				SkillMixRationale = "Skill Mix 4"
+			};
+
+			MoqTypeSelection ar = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.AnalogousRelationships,
+				TaskId = task1.Id,
+				Rationale = "Rationale 5",
+				SkillMixRationale = "Skill Mix 6"
+			};
+
+			MoqTypeSelection sow = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.SOW,
+				TaskId = task1.Id,
+				Rationale = "Rationale 7",
+				SkillMixRationale = "Skill Mix 8",
+				DescriptionHoursRequired = "Description 9"
+			};
+
+			MoqTypeSelection loe = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.LevelOfEffort,
+				TaskId = task1.Id,
+				Rationale = "Rationale 10",
+				SkillMixRationale = "Skill Mix 11",
+				DescriptionHoursRequired = "Description 12"
+			};
+
+			MoqTypeSelection sme = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.SME,
+				TaskId = task1.Id,
+				SkillMixRationale = "Skill Mix 13",
+				SmeReason = "Reason 14",
+				SmeHoursLogic = "Hours Logic 15",
+				SmeDurationLogic = "Duration Logic 16",
+				SmeTaskEstimates = "Estimates 17"
+			};
+
+			MoqTypeSelection nonlabor = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.NonLabor,
+				TaskId = task1.Id,
+				Rationale = "Skill Mix 153"
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe1.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe1) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>());
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe1.Id)).Returns(new Collection<MoqTypeSelection>() { cer, pe, ar, sow, loe, sme, nonlabor });
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(1, result.TasksWithoutErrors);
+			Assert.AreEqual("1/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert no errors
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasPoPError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasMoqError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasHistoricalRefError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.ErrorText == ConfidenceReportConstants.NO_ERRORS));
+
+			// Assert all RTEs found
+			Assert.AreEqual(19, result.ConfidenceReportData.ElementAt(0).rteFields);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when run for a Workspace not using template BOE
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportNoTemplateBoe()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = false
+			};
+
+			BoeDTO boe1 = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "All the details are in the MOQ Text",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable },
+				MOQText = "This task is for January 2024 thru December 2024 and has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110"
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe1.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe1) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(1, result.TasksWithoutErrors);
+			Assert.AreEqual("1/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert no errors
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasPoPError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasMoqError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasHistoricalRefError));
+			Assert.IsTrue(result.ConfidenceReportData.All(x => x.ErrorText == ConfidenceReportConstants.NO_ERRORS));
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport to make sure a simple MOQ such as "100 = 100" with the value only once in the RTEs is a success. 
+		/// Basically testing if a value is in a MOQ multiple times it only needs to show once in the RTEs to succeed.
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportSimpleMoq()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is for January 2024 thru December 2024 and will take 100 hours",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = "100",
+				TotalHours = 100,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>());
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(1, result.TasksWithoutErrors);
+			Assert.AreEqual("1/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert no errors
+			Assert.IsFalse(result.ConfidenceReportData.First().HasPoPError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasHistoricalRefError);
+			Assert.AreEqual(ConfidenceReportConstants.NO_ERRORS, result.ConfidenceReportData.First().ErrorText);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport to make sure a MOQ value in a date isn't caught
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportMoqValueInDates()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is for January 2024 thru December 2024 and the values in the MOQ are equal to the year but nowhere else",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"2024",
+				TotalHours = 2024,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1 });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe) });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>());
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
+
+			// Assert Score
+			Assert.AreEqual(1, result.TotalTaskCount);
+			Assert.AreEqual(0, result.TasksWithoutErrors);
+			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(1, result.ConfidenceReportData.Count);
+
+			// Assert MOQ error captured
+			Assert.IsFalse(result.ConfidenceReportData.First().HasPoPError);
+			Assert.IsTrue(result.ConfidenceReportData.First().HasMoqError);
+			Assert.IsFalse(result.ConfidenceReportData.First().HasHistoricalRefError);
+			Assert.AreEqual(ConfidenceReportConstants.MOQ_ERROR, result.ConfidenceReportData.First().ErrorText);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when the workspace param is null
+		/// </summary>
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void TestGenerateConfidenceReportArgumentNullException()
+		{
+			BOEConfidenceReport sut = GetSUT();
+			sut.GenerateConfidenceReport(null);
+		}
+
+		#endregion Confidence Report Tests
 
 		#region PoP Algorithm Tests
 
@@ -41,7 +1192,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 		{
 			BOEConfidenceReport sut = GetSUT();
 
-			ICollection<string> rteFields = GetTestStringsForFormat("MMMM yyyy"); 
+			ICollection<string> rteFields = GetTestStringsForFormat("MMMM yyyy");
 			ICollection<DateRange> dateRanges = GetTestDatesForTestingFormats();
 
 			ConfidenceReportPoPResultDTO result = sut.GetPoPConfidenceResults(dateRanges, ref rteFields);
@@ -661,7 +1812,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 		{
 			BOEConfidenceReport sut = GetSUT();
 
-			ICollection<string> rteFields = new Collection<string>() { 
+			ICollection<string> rteFields = new Collection<string>() {
 				"String containing an exact match for 1/2024 to 12/2024"
 			};
 
@@ -1348,6 +2499,68 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 					Assert.IsTrue(result.Matches[value]);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Test that GetMathConfidenceResults does not match substrings of numbers
+		/// </summary>
+		[TestMethod]
+		public void TestGetMathConfidenceResultsNoSubstring()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			ICollection<string> sampleNumbersToMatch = new Collection<string>
+			{
+				"1 + 5.5"
+			};
+
+			ICollection<string> sampleRteFields = new Collection<string>
+			{
+				"Contains 10 and 55.55 which have substrings of the values in the numbers to match, but we don't want those to count"
+			};
+
+			ConfidenceReportMathResultDTO result = sut.GetMathConfidenceResults(sampleNumbersToMatch, ref sampleRteFields);
+
+			// Assert no matches
+			Assert.IsTrue(result.Matches.All(x => !x.Value));
+		}
+
+		/// <summary>
+		/// Test the ReplaceVariablesWithValues method
+		/// </summary>
+		[TestMethod]
+		public void TestReplaceVariablesWithValues()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			OrdinaryVariableDto ordVar1 = new OrdinaryVariableDto()
+			{
+				OrdinaryVariableName = "ordVar1",
+				OrdinaryVariableValue = 2.5m
+			};
+
+			OrdinaryVariableDto ordVar2 = new OrdinaryVariableDto()
+			{
+				OrdinaryVariableName = "ordVar2",
+				OrdinaryVariableValue = 200
+			};
+
+			Dictionary<string, decimal> wsVars = new Dictionary<string, decimal>()
+			{
+				{ "wsVar1", 2.2m },
+				{ "wsVar2", 100 },
+				{ "wsVar3", 50 }
+			};
+
+			BoeTaskElementDTO task = new BoeTaskElementDTO()
+			{
+				MOQHoursEquation = "100 + ordVar1 + (ordVar2*wsVar1) + wsVar2",
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { ordVar1, ordVar2 }
+			};
+
+			string result = sut.ReplaceVariablesWithValues(task, wsVars);
+
+			Assert.AreEqual("100 + 2.5 + (200*2.2) + 100", result);
 		}
 
 		#endregion Math Algorithm Tests
