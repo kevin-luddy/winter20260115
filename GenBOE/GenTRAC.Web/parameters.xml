@@ -129,7 +129,7 @@
   </parameter>
   <parameter name="oAuthValidAudiences" description="doesn't matter" defaultvalue="__oAuthValidAudiences__" tags="">
 	<parameterValidation kind="AllowEmpty" />
-	<parameterentry kind="TextFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthValidAudiences']/@value">
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthValidAudiences']/@value">
 	</parameterentry>
   </parameter>
   
