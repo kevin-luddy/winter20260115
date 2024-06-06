@@ -577,6 +577,46 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		}
 
 		/// <summary>
+		/// Gets the Section selections when the Revisions is changed via the dropdown
+		/// </summary>
+		/// <param name="fromRevisionID">the Revision ID being changed from</param>
+		/// <param name="toRevisionID">the Revision ID being changed to</param>
+		/// <param name="selectedSectionIds">Currently selected Section IDs</param>
+		/// <returns>IDs of Sections to be selected for the revision changed to and names of Sections unable to be mapped</returns>
+		public SectionSelectionModelView GetSectionSelectionForRevisionChange(int fromRevisionID, int toRevisionID, ICollection<int> selectedSectionIds)
+		{
+			SectionSelectionModelView result = new SectionSelectionModelView();
+
+			// Get the "from" sections
+			Dictionary<int, string> fromSections = sectionLoader.GetFlatSectionIdsAndNamesByRevisionId(fromRevisionID);
+
+			// Get the "to" sections
+			Dictionary<int, string> toSections = sectionLoader.GetFlatSectionIdsAndNamesByRevisionId(toRevisionID);
+
+			foreach (KeyValuePair<int, string> fromSection in fromSections.Where(x => selectedSectionIds.Contains(x.Key)))
+			{
+				if (toSections.ContainsValue(fromSection.Value))
+				{
+					if (toSections.Where(x => x.Value == fromSection.Value).Count() > 1)
+					{
+						result.UnmappedSections.Add(fromSection.Value);
+					}
+					else
+					{
+						KeyValuePair<int, string> match = toSections.First(x => x.Value == fromSection.Value);
+						result.SelectedSections.Add(match.Key);
+					}
+				}
+				else
+				{
+					result.UnmappedSections.Add(fromSection.Value);
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Generates the RDD document for the Proposal Id passed in.
 		/// </summary>
 		/// <param name="proposalId">Proposal ID</param>

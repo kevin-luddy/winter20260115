@@ -86,6 +86,15 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		ICollection<SectionDetailModelView> GetSectionsForRevision(int revisionId);
 
 		/// <summary>
+		/// Gets the Section selections when the Revisions is changed via the dropdown
+		/// </summary>
+		/// <param name="fromRevisionID">the Revision ID being changed from</param>
+		/// <param name="toRevisionID">the Revision ID being changed to</param>
+		/// <param name="selectedSectionIds">Currently selected Section IDs</param>
+		/// <returns>IDs of Sections to be selected for the revision changed to and names of Sections unable to be mapped</returns>
+		SectionSelectionModelView GetSectionSelectionForRevisionChange(int fromRevisionID, int toRevisionID, ICollection<int> selectedSectionIds);
+
+		/// <summary>
 		/// Generates the RDD document for the Proposal Id passed in.
 		/// </summary>
 		/// <param name="proposalId">Proposal ID</param>
