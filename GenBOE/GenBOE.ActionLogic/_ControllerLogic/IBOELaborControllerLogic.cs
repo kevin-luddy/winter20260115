@@ -357,5 +357,13 @@ namespace GenBOE.ActionLogic
         /// <returns>Validation Response</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         Task<ICollection<IESResponse<CalculateActualsViewModel>>> CalculateAllActualsSap(ICollection<MoqTableDataModelView> tableData);
+
+		/// <summary>
+		/// Gets Skill Mix Table results for SAP
+		/// </summary>
+		/// <param name="query">The query</param>
+		/// <returns>Validation Response</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		Task<ICollection<IESResponse<SkillMixTableViewModel>>> GetSkillMixTableSap(ICollection<SkillMixTableQueryModelView> query);
     }
 }

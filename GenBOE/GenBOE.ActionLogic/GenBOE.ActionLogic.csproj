@@ -261,6 +261,7 @@
     <Compile Include="_ModelView\ConfidenceReportItem.cs" />
     <Compile Include="_ModelView\ConfidenceReportModelView.cs" />
     <Compile Include="_ModelView\Task\ImportMoqTableResultDataModelView.cs" />
+    <Compile Include="_ModelView\Task\SkillMixTableQueryModelView.cs" />
     <Compile Include="_ModelView\Task\MoqTableDataModelView.cs" />
     <Compile Include="Validation\SystemExportToProPricerFormatValidator.cs" />
     <Compile Include="Workspace\ProjectMapSorter.cs" />
