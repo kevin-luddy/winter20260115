@@ -7,8 +7,10 @@
 namespace IES.DataBridge.Loaders
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
+	using DocumentFormat.OpenXml.InkML;
 	using DocumentFormat.OpenXml.Spreadsheet;
 	using IES.Common.Core;
 	using IES.Common.Core.Constants;
@@ -54,67 +56,95 @@ namespace IES.DataBridge.Loaders
 		/// </summary>
 		/// <param name="revision">Revision to retrieve the sections for.</param>
 		/// <param name="sectionsOnly">bool noting if only Sections with Content Types of Section should be returned</param>
+		/// <param name="includeTextContent">bool noting if Text Content should be included. Always excluded if sectionsOnly is true</param>
 		/// <param name="sectionIds">A list of section ids to only return if set.</param>
 		/// <param name="refNumberPrefix">A prefix for the Ref Numbers.</param>
 		/// <returns>Return the specified top level sections for this revision including all child nodes.</returns>
-		public ICollection<SectionModelView> GetAll(RevisionModelView revision, bool sectionsOnly = false, ICollection<int> sectionIds = null, string refNumberPrefix = "")
+		public ICollection<SectionModelView> GetAll(RevisionModelView revision, bool sectionsOnly = false, bool includeTextContent = true, ICollection<int> sectionIds = null, string refNumberPrefix = "")
 		{
 			ICollection<SectionModelView> sectionDetailsByRevision = null;
 			ICollection<SectionModelView> sectionsToReturn = new List<SectionModelView>();
 
-			using (IESEntities context = new())
+			using (new StopwatchTimer(this.Log))
 			{
-				ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
-				if (sectionsOnly)
+				using (IESEntities context = new())
 				{
-					// Filter out Sections that don't have a Content Type of Section
-					sectionsForRevision = sectionsForRevision
-						.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section).ToCollection();
-				}
+					context.Database.CommandTimeout = 180; // give query enough time to execute
+					IQueryable<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id));
+					if (sectionsOnly)
+					{
+						// Filter out Sections that don't have a Content Type of Section
+						sectionsForRevision = sectionsForRevision
+							.Where(x => x.SectionContentTypeID == (int)SectionContentType.Section);
+					}
 
-				if (sectionIds != null)
-				{
-					int sectionType = (int)SectionContentType.Section;
-					sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID)).ToCollection();
-				}
+					if (sectionIds != null)
+					{
+						int sectionType = (int)SectionContentType.Section;
+						sectionsForRevision = sectionsForRevision.Where(x => x.SectionContentTypeID != sectionType || sectionIds.Contains(x.ID));
+					}
 
-				sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
-				{
-					Id = r.ID,
-					UpdateDate = r.UpdateDate,
-					RevisionId = r.RevisionID,
-					ParentId = r.ParentID,
-					DisplayOrder = r.DisplayOrder,
-					Title = r.Title,
-					TextContent = r.TextContent,
-					ContentType = (SectionContentType)r.SectionContentTypeID,
-					IsInternalSection = r.IsInternalSection,
-					DisplayRateCode = r.DisplayRateCode,
-					RevisionUniqueSectionId = r.RevisionUniqueSectionId,
-					IsRdsbRequired = r.IsRdsbRequired,
-					SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
-					IsDisclosureStatementAdequate = r.IsDisclosureStatementAdequate is null ? false : r.IsDisclosureStatementAdequate.Value,
-					SectionContainsNonCompliance = r.SectionContainsNonCompliance,
-					NonComplianceNotification = r.NonComplianceNotification is null ? false : r.NonComplianceNotification.Value,
-					Office = r.Office,
-					Agency = r.Agency,
-					LMBA = r.LMBA,
-					Name = r.Name,
-					Street = r.Street,
-					CityST = r.CityST,
-					Phone = r.Phone,
-					Email = r.Email,
-					Other = r.Other,
-					IncludeInCoversheet = r.IncludeInCoversheet,
-				}).ToList();
+					sectionDetailsByRevision = sectionsForRevision.Select(r => new SectionModelView()
+					{
+						Id = r.ID,
+						UpdateDate = r.UpdateDate,
+						RevisionId = r.RevisionID,
+						ParentId = r.ParentID,
+						DisplayOrder = r.DisplayOrder,
+						Title = r.Title,
+						TextContent = string.Empty,
+						//TextContent = r.TextContent,
+						ContentType = (SectionContentType)r.SectionContentTypeID,
+						IsInternalSection = r.IsInternalSection,
+						DisplayRateCode = r.DisplayRateCode,
+						RevisionUniqueSectionId = r.RevisionUniqueSectionId,
+						IsRdsbRequired = r.IsRdsbRequired,
+						SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
+						IsDisclosureStatementAdequate = !r.IsDisclosureStatementAdequate.HasValue ? false : r.IsDisclosureStatementAdequate.Value,
+						SectionContainsNonCompliance = r.SectionContainsNonCompliance,
+						NonComplianceNotification = !r.NonComplianceNotification.HasValue ? false : r.NonComplianceNotification.Value,
+						Office = r.Office,
+						Agency = r.Agency,
+						LMBA = r.LMBA,
+						Name = r.Name,
+						Street = r.Street,
+						CityST = r.CityST,
+						Phone = r.Phone,
+						Email = r.Email,
+						Other = r.Other,
+						IncludeInCoversheet = r.IncludeInCoversheet,
+					}).ToList();
+
+					if (!sectionsOnly && includeTextContent)
+					{
+						using (new StopwatchTimer(this.Log, "SectionLoader.GetAll TextContent"))
+						{
+							List<int> ids = sectionDetailsByRevision.Where(s => s.ContentType == SectionContentType.Text).Select(r => r.Id).ToList();
+
+							ICollection<SectionModelView> textGroups = context.Sections.Where(x => ids.Contains(x.ID)).Select(s => new SectionModelView()
+							{
+								Id = s.ID,
+								TextContent = s.TextContent
+							}).ToList();
+
+							foreach (SectionModelView textGroup in textGroups)
+							{
+								sectionDetailsByRevision.First(s => s.Id == textGroup.Id).TextContent = textGroup.TextContent;
+							}
+						}
+					}
+				}
 			}
 
-			foreach (SectionModelView topLevelSection in sectionDetailsByRevision.Where(x => (x.ParentId == null)))
+			using (new StopwatchTimer(this.Log, "SectionLoader.GetAll Metadata"))
 			{
-				sectionsToReturn.Add(this.GetBySectionId(topLevelSection.Id, sectionDetailsByRevision));
-			}
+				foreach (SectionModelView topLevelSection in sectionDetailsByRevision.Where(x => (x.ParentId == null)))
+				{
+					sectionsToReturn.Add(this.GetBySectionId(topLevelSection.Id, sectionDetailsByRevision));
+				}
 
-			sectionsToReturn = this.SetReferenceNumbers(sectionsToReturn, null, refNumberPrefix);
+				sectionsToReturn = this.SetReferenceNumbers(sectionsToReturn, null, refNumberPrefix);
+			}
 
 			return sectionsToReturn;
 		}
@@ -170,10 +200,11 @@ namespace IES.DataBridge.Loaders
 		/// </summary>
 		/// <param name="revision">WIP Revision</param>
 		/// <param name="sectionsOnly">bool noting if only Sections with Content Types of Section should be returned</param>
+		/// <param name="includeTextContent">bool noting if Text Content should be included. Always excluded if sectionsOnly is true</param>
 		/// <returns>Returns all sections for the revision</returns>
-		public ICollection<SectionModelView> RetrieveAllSections(RevisionModelView revision, bool sectionsOnly = false)
+		public ICollection<SectionModelView> RetrieveAllSections(RevisionModelView revision, bool sectionsOnly = false, bool includeTextContent = true)
 		{
-			ICollection<SectionModelView> allSections = this.GetAll(revision, sectionsOnly);
+			ICollection<SectionModelView> allSections = this.GetAll(revision, sectionsOnly, includeTextContent);
 			allSections = this.SetReferenceNumbers(allSections, null);
 			return allSections;
 		}
@@ -185,7 +216,7 @@ namespace IES.DataBridge.Loaders
 		/// <returns>All of the sections.</returns>
 		public ICollection<OptionModelView> RetrieveSectionsAsOptions(RevisionModelView revision)
 		{
-			ICollection<SectionModelView> allSections = this.RetrieveAllSections(revision);
+			ICollection<SectionModelView> allSections = this.RetrieveAllSections(revision, true, false);
 			ICollection<OptionModelView> sections = new List<OptionModelView>();
 			sections.Add(new OptionModelView { Id = 0, Label = string.Empty });
 			this.RetrieveAllChildSections(allSections, sections);
@@ -629,7 +660,7 @@ namespace IES.DataBridge.Loaders
 
 				if (rdmRevision.HasValue)
 				{
-					ICollection<SectionModelView> flatSections = FlattenSections(RetrieveAllSections(new RevisionModelView() { Id = rdmRevision.Value }, true));
+					ICollection<SectionModelView> flatSections = FlattenSections(RetrieveAllSections(new RevisionModelView() { Id = rdmRevision.Value }, true, false));
 
 					result.CasbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
 					result.NonComplianceSection = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;

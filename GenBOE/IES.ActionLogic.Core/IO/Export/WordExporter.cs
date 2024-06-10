@@ -130,6 +130,11 @@ namespace IES.ActionLogic.Core.IO.Export
 						syncAPICall.Wait();
 						HttpResponseMessage response = syncAPICall.Result;
 
+						if (!response.IsSuccessStatusCode)
+						{
+							throw new Exception("Error calling Portion Marking with status Code: " + response.StatusCode.ToString());
+						}
+
 						// Deserialize the entire response because we're getting more than just the byte[] back
 						string allBytes = await response.Content.ReadAsStringAsync();
 						Result<byte[]> deserializedResult = JsonConvert.DeserializeObject<Result<byte[]>>(allBytes);
