@@ -22,3 +22,24 @@ BEGIN
 	)
 END
 GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[SkillMix]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [version].[SkillMix]
+	(
+		[SkillMixID] int NULL
+		,[Rationale] varchar(255) NULL
+		,[Included] bit DEFAULT 0
+		,[ProposedHours] decimal(11, 2) NULL
+		,[HistoricalHours] decimal(11, 2) NULL
+		,[BOESkillMix] decimal(5, 2) NULL
+		,[LaborSkillMix] decimal(5, 2) NULL
+		,[ResourceOld] [varchar](max) NULL
+		,[ResourceNew] [varchar](max) NULL
+		,[BOEID] int NULL
+		,[BOETaskElementID] int NULL
+		,[MOQTypeSelectionID] int NULL
+		,[VersionID] int NOT NULL
+	);
+END
+GO
