@@ -530,7 +530,7 @@
         }
       }
     },
-    "/api/QueryParser/GetSkillMixTable": {
+    "/api/QueryParser/CalculateActualsWithSkillMix": {
       "post": {
         "tags": [
           "QueryParser"
@@ -550,7 +550,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/SkillMixTableQueryViewModel"
+                  "$ref": "#/components/schemas/DataTableViewModel"
                 }
               }
             },
@@ -558,7 +558,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/SkillMixTableQueryViewModel"
+                  "$ref": "#/components/schemas/DataTableViewModel"
                 }
               }
             },
@@ -566,7 +566,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/SkillMixTableQueryViewModel"
+                  "$ref": "#/components/schemas/DataTableViewModel"
                 }
               }
             },
@@ -574,7 +574,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/SkillMixTableQueryViewModel"
+                  "$ref": "#/components/schemas/DataTableViewModel"
                 }
               }
             }
@@ -588,7 +588,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/SkillMixTableViewModelResult"
+                    "$ref": "#/components/schemas/CalculateActualsWithSkillMixViewModelResult"
                   }
                 }
               },
@@ -596,7 +596,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/SkillMixTableViewModelResult"
+                    "$ref": "#/components/schemas/CalculateActualsWithSkillMixViewModelResult"
                   }
                 }
               },
@@ -604,7 +604,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/SkillMixTableViewModelResult"
+                    "$ref": "#/components/schemas/CalculateActualsWithSkillMixViewModelResult"
                   }
                 }
               }
@@ -678,6 +678,61 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/CalculateActualsViewModel"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "isSuccessful": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResultStatus"
+          },
+          "correlationId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CalculateActualsWithSkillMixViewModel": {
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "skillMixDataTable": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillMixResourceViewModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CalculateActualsWithSkillMixViewModelResult": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CalculateActualsWithSkillMixViewModel"
           },
           "messages": {
             "type": "array",
@@ -932,64 +987,21 @@
         ],
         "type": "string"
       },
-      "SkillMixTableQueryViewModel": {
+      "SkillMixResourceViewModel": {
         "type": "object",
         "properties": {
-          "resourceId": {
+          "resourceID": {
             "type": "string",
             "nullable": true
           },
-          "filters": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "SkillMixTableViewModel": {
-        "type": "object",
-        "properties": {
-          "resourceId": {
-            "type": "string",
+          "wbsHours": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
           "totalHours": {
             "type": "number",
             "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
-      "SkillMixTableViewModelResult": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/SkillMixTableViewModel"
-          },
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "warnings": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "isSuccessful": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/ResultStatus"
-          },
-          "correlationId": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false

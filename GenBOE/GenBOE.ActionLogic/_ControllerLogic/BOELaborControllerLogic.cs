@@ -3936,54 +3936,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			return response;
 		}
 
-		/// <summary>
-		/// Gets Skill Mix Table results for SAP
-		/// </summary>
-		/// <param name="query">The query</param>
-		/// <returns>Validation Response</returns>
-		public async Task<ICollection<IESResponse<SkillMixTableViewModel>>> GetSkillMixTableSap(ICollection<SkillMixTableQueryModelView> query)
-		{
-			ICollection<IESResponse<SkillMixTableViewModel>> response = new List<IESResponse<SkillMixTableViewModel>>();
-
-			try
-			{
-				// Get Token
-				Token token = await this.tokenservice.GetToken();
-				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
-
-				// Convert company configuration
-				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
-
-				// Convert table data
-				ICollection<SkillMixTableQueryViewModel> querys = query.Select(t =>
-				new SkillMixTableQueryViewModel()
-				{
-					Filters = t.Filters,
-					ResourceId = t.ResourceId
-				}).ToList();
-
-				// Call Swagger Client
-				ICollection<SkillMixTableViewModelResult> result = await iesSapClient.ApiQueryParserGetSkillMixTableAsync(companyConfiguration, querys);
-
-				response = result.Select(r =>
-				new IESResponse<SkillMixTableViewModel>
-				{
-					Messages = r.Messages,
-					IsSuccessful = r.IsSuccessful,
-					Data = new List<SkillMixTableViewModel> { r.Data }
-				}).ToList();
-
-			}
-			catch (Exception ex)
-			{
-				// throw error and let UI handle it
-				logger.Error(ex, "Error calling SAP API to Get Skill Mix Table");
-				throw new GeneralAppException("Error calling SAP API to Get Skill Mix Table");
-			}
-
-			return response;
-		}
-
 		private ActionLogic.IESSAPClient.CompanyConfiguration GetCompanyConfigurationForSAP()
 		{
 			return (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
