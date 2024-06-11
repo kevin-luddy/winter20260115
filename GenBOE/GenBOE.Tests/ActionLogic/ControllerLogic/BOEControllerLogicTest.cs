@@ -13,6 +13,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 	using System.Net.Http;
 	using System.Threading.Tasks;
 	using System.Web.Configuration;
+	using System.Web.Helpers;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
