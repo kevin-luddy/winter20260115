@@ -58,6 +58,7 @@ namespace IES.DataBridge.Loaders
 
 			using (IESEntities context = new IESEntities())
 			{
+				context.Database.CommandTimeout = 180; // give query enough time to execute
 				ICollection<Section> sectionsForRevision = context.Sections.Where(x => (x.RevisionID == revision.Id)).ToList();
 				if (sectionsOnly)
 				{

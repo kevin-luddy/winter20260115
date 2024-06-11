@@ -543,7 +543,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			}
 			else if (revision != null)
 			{
-				ICollection<SectionModelView> sections = sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = document.SelectedRevisionId.Value }, true);
+				ICollection<SectionModelView> sections = sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = document.SelectedRevisionId.Value }, true, false);
 				ICollection<int> allSectionIds = GetSectionIds(sections, false);
 				if (document.SelectedSectionIds.Any(s => !allSectionIds.Contains(s)))
 				{
@@ -568,7 +568,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		public ICollection<SectionDetailModelView> GetSectionsForRevision(int revisionId)
 		{
 			ICollection<SectionModelView> sections =
-				sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revisionId });
+				sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revisionId }, true, false);
 
 			// convert into section detail model view stripping out internal sections and non-section content
 			ICollection<SectionDetailModelView> details = ConvertSections(sections);
@@ -645,7 +645,8 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			}
 
 			// Get Revision MV
-			RevisionModelView revisionMV = revisionLoader.GetAll().FirstOrDefault(r => r.Id == modelView.SelectedRevisionId.Value);
+			RevisionModelView revisionMV = modelView.AvailableRevisions?.FirstOrDefault(r => r.Id == modelView.SelectedRevisionId.Value);
+			revisionMV = revisionMV ?? revisionLoader.GetAll().FirstOrDefault(r => r.Id == modelView.SelectedRevisionId.Value);
 
 			if (revisionMV == null)
 			{
@@ -656,7 +657,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			string refNumberPrefix = string.IsNullOrWhiteSpace(modelView.ParentSection) ? string.Empty : modelView.ParentSection + ".";
 			int refNumberPrefixLevel = string.IsNullOrWhiteSpace(modelView.ParentSection) ? 0 : Regex.Matches(modelView.ParentSection, ".").Count;
 
-			ICollection<SectionModelView> sections = sectionLoader.GetAll(revisionMV, false, modelView.SelectedSectionIds, refNumberPrefix);
+			ICollection<SectionModelView> sections = sectionLoader.GetAll(revisionMV, false, true, modelView.SelectedSectionIds, refNumberPrefix);
 
 			// Get Rates
 			ICollection<RateDetailModelView> rates = rateDetailLoader.GetRatesByRevision(revisionMV);
@@ -785,7 +786,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString(), nameof(proposalId));
 			}
 
-			ICollection<SectionModelView> sections = sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
+			ICollection<SectionModelView> sections = sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true, false);
 			Dictionary<int, string> sectionIdToParentSection = new();
 
 			// set all reference numbers to top parent
@@ -853,7 +854,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString(), nameof(proposalId));
 			}
 
-			ICollection<SectionModelView> sections = sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true);
+			ICollection<SectionModelView> sections = sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = modelView.SelectedRevisionId.Value }, true, false);
 			Dictionary<int, string> sectionIdToParentSection = new();
 
 			// set all reference numbers to top parent
