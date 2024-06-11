@@ -126,8 +126,9 @@ namespace GenBOE.ActionLogic.Reporting
 					if (workspace.UsingTemplateBOE)
 					{
 						// Get RTE fields and Historical Reference numeric values from MOQ Types
-						foreach (MoqTypeSelection moqType in moqTypes.Where(x => x.TaskId == task.Id))
+						foreach (MoqTypeSelection moqType in moqTypes.Where(x => x.TaskId == task.Id).OrderBy(x => x.SelectedMOQType))
 						{
+							reportItem.MoqTypes.Add(moqType.SelectedMOQType);
 							switch (moqType.SelectedMOQType)
 							{
 								case MOQType.Historical:
@@ -176,18 +177,22 @@ namespace GenBOE.ActionLogic.Reporting
 					{
 						// if not using Template BOE, just add MOQText to the RTE fields
 						rteFields.Add(task.MOQText);
+						reportItem.MoqTypes.Add(task.MOQType);
 					}
 
 					// process and populate data
-					reportItem.rteFields = rteFields.Count;
+					reportItem.RteFields = rteFields.Count;
 					reportItem.PoPResults = GetPoPConfidenceResults(popDates, ref rteFields);
 					reportItem.MoqResults = GetMathConfidenceResults(moqNumericValues, ref rteFields);
 					reportItem.HistoricalRefResults = GetMathConfidenceResults(historicalRefNumericValues, ref rteFields);
 
 					PopulateErrorText(reportItem, confidencereportModelView);
 
-					// Add the data to the report
-					confidencereportModelView.ConfidenceReportData.Add(reportItem);
+					// Add the data to the report if there are errors
+					if (reportItem.HasPoPError || reportItem.HasMoqError || reportItem.HasHistoricalRefError)
+					{
+						confidencereportModelView.ConfidenceReportData.Add(reportItem);
+					}
 				}
 			}
 
@@ -225,7 +230,7 @@ namespace GenBOE.ActionLogic.Reporting
 			// Regex strings that will be used multiple times in the full regex strings
 			string monthRegex = @"(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?|0?[1-9]|1[0-2])";
 			string monthYearSeparatorRegex = @"(\s|\/|-)";
-			string yearRegex = @"\d{2,4}";
+			string yearRegex = @"(\d{4}|\d{2})";
 
 			// Regex strings to match date ranges and individual dates
 			// For reference, the full regexes should look like the following:
