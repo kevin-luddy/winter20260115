@@ -62,6 +62,7 @@ namespace GenBOE.Web.Controllers
         private IUserDTODataLoader userLoader;
         private ContractTypeLoader contractTypeLoader;
 		private IBOEConfidenceReport boeConfidenceReport;
+		private IBOEConfidenceReportExporter boeConfidenceReportExporter;
 
         /// <summary>
         /// Business logic for the reports controller
@@ -95,7 +96,8 @@ namespace GenBOE.Web.Controllers
             ISSRSControllerLogic ssrsControllerLogic,
             IUserDTODataLoader userLoader,
             ContractTypeLoader contractTypeLoader,
-			IBOEConfidenceReport boeConfidenceReport)
+			IBOEConfidenceReport boeConfidenceReport,
+			IBOEConfidenceReportExporter boeConfidenceReportExporter)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsLoader, inControllerLogic)
         {
             this._WorkspaceActivityReport = inWorkspaceActivityReport;
@@ -115,6 +117,7 @@ namespace GenBOE.Web.Controllers
             this.userLoader = userLoader;
             this.contractTypeLoader = contractTypeLoader;
 			this.boeConfidenceReport = boeConfidenceReport;
+			this.boeConfidenceReportExporter = boeConfidenceReportExporter;
         }
 
         /// <summary>
@@ -897,6 +900,55 @@ namespace GenBOE.Web.Controllers
 
 			// Finalize Action
 			FinalizeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS, sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Export the Confidence Report Results into an Excel file
+		/// </summary>
+		/// <param name="workspace">Workspace Shortname</param>
+		/// <param name="id">BOE ID</param>
+		/// <returns>Excel file of the Confidence Report Results</returns>
+		public ActionResult ExportConfidenceReportResults(string workspace, int? boeID)
+		{
+			// Look at this as an example
+			// public ActionResult Export(string workspace, int reportID, string summarizeByCustomField)
+			ActionResult toReturn = null;
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			try
+			{
+				// Initialize Action
+				Stopwatch sw = this.InitializeAction(this.log, "ExportConfidenceReportResults", boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+				this.log.Performance("Exporting Confidence Report Results - ReportsController - Begin", 0);
+
+
+
+
+
+				// Generate an export file from the data
+				string exportedFileName = this._BOEStatusReport.SendBOEStatusReportToFile(templateFileName, theModelViews, reportID, exportInputs);
+
+				// Pass the file to the user
+				string fileName = string.Format("ConfidenceReport_{0}.xlsx", ws.WorkspaceName);
+				// Generate a custom ActionResult to cause a file download to the client
+				FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+				toReturn = File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.GetContentType(fileName),
+					fileDownloadName: fileName);
+			}
+			catch (GenValidationException ex)
+			{
+				toReturn = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception ex)  // The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.
+			{
+				this.log.Error(ex);
+				toReturn = this.CreateTextFileWithErrorMessage(ex);
+			}
+
 			return toReturn;
 		}
 
