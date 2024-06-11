@@ -6,7 +6,10 @@
 
 namespace GenBOE.ActionLogic.ModelView
 {
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using GenBOE.Dtos;
+	using IES.Common;
 
 	/// <summary>
 	/// Class containing data for a row in the Confidence Report
@@ -18,6 +21,7 @@ namespace GenBOE.ActionLogic.ModelView
 		/// </summary>
 		public ConfidenceReportItem()
 		{
+			MoqTypes = new Collection<MOQType>();
 		}
 
 		/// <summary>
@@ -41,9 +45,19 @@ namespace GenBOE.ActionLogic.ModelView
 		public string TaskTitle { get; set; }
 
 		/// <summary>
+		/// MOQ Types used in the Task
+		/// </summary>
+		public ICollection<MOQType> MoqTypes { get; set; }
+
+		/// <summary>
+		/// MOQ Types as a comma separated list for display in the report
+		/// </summary>
+		public string MoqTypesString => string.Join(", ", MoqTypes);
+
+		/// <summary>
 		/// Count of RTE fields in the task
 		/// </summary>
-		public int rteFields { get; set; }
+		public int RteFields { get; set; }
 
 		/// <summary>
 		/// Does this Task have at least 1 PoP Error?
