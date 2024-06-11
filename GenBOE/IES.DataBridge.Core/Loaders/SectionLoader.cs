@@ -93,7 +93,6 @@ namespace IES.DataBridge.Loaders
 						DisplayOrder = r.DisplayOrder,
 						Title = r.Title,
 						TextContent = string.Empty,
-						//TextContent = r.TextContent,
 						ContentType = (SectionContentType)r.SectionContentTypeID,
 						IsInternalSection = r.IsInternalSection,
 						DisplayRateCode = r.DisplayRateCode,
