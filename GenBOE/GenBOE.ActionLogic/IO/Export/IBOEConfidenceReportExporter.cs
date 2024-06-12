@@ -6,6 +6,7 @@
 
 namespace GenBOE.ActionLogic.IO.Export
 {
+	using GenBOE.ActionLogic.ModelView;
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -20,8 +21,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <summary>
 		/// Exports all data to the Excel file
 		/// </summary>
-		/// <param name="templateFileLocation"></param>
+		/// <param name="templateFileLocation">File location of the Excel template</param>
+		/// <param name="confidenceReport">View model of confidence report</param>
 		/// <returns></returns>
-		string ExportToExcelFile(string templateFileLocation);
+		string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport);
 	}
 }

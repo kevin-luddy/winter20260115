@@ -909,6 +909,8 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Shortname</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns>Excel file of the Confidence Report Results</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Inline use, expecting for garbage collection to take care of things.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
 		public ActionResult ExportConfidenceReportResults(string workspace, int? boeID)
 		{
 			// Look at this as an example
@@ -922,12 +924,12 @@ namespace GenBOE.Web.Controllers
 				Stopwatch sw = this.InitializeAction(this.log, "ExportConfidenceReportResults", boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 				this.log.Performance("Exporting Confidence Report Results - ReportsController - Begin", 0);
 
+				ConfidenceReportModelView confidenceReport = boeConfidenceReport.GenerateConfidenceReport(ws, boeID);
 
-
-
+				string templateFileName = Server.MapPath("~/Templates/Export/ConfidenceReport.xlsx");
 
 				// Generate an export file from the data
-				string exportedFileName = this._BOEStatusReport.SendBOEStatusReportToFile(templateFileName, theModelViews, reportID, exportInputs);
+				string exportedFileName = this.boeConfidenceReportExporter.ExportToExcelFile(templateFileName, confidenceReport);
 
 				// Pass the file to the user
 				string fileName = string.Format("ConfidenceReport_{0}.xlsx", ws.WorkspaceName);
@@ -938,6 +940,8 @@ namespace GenBOE.Web.Controllers
 					fileStream: fs,
 					contentType: ExportFileDownloadBase.GetContentType(fileName),
 					fileDownloadName: fileName);
+
+				this.FinalizeAction(this.log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, sw);
 			}
 			catch (GenValidationException ex)
 			{
