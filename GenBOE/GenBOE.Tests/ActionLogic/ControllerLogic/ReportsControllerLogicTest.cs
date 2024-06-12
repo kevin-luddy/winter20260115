@@ -27,7 +27,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using GenTRAC.DataBridge.DTO;
-    using IES.Common;
+	using IES.Common;
     using IES.Common.classes;
     using IES.Common.OfficeUtilities;
     using Microsoft.Practices.Unity;
@@ -54,14 +54,17 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<IWorkspaceControllerLogic> workspaceControllerLogic = new Mock<IWorkspaceControllerLogic>();
         Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
         Mock<TravelTripCostCalculation> travelTripCostCalculation = new Mock<TravelTripCostCalculation>();
-        
-        [TestInitialize]
+		//Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
+		//Mock<BOEConfidenceReport> boeConfidenceReport = new Mock<BOEConfidenceReport>();
+
+		[TestInitialize]
         public void Init()
         {
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), Factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _perissionsDtoDataLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
+			//GenBOEUnityContainer.Container.RegisterInstance(typeof(BOEConfidenceReport), boeConfidenceReport);
 
             _TravelTripCostCalculator = new Mock<TravelTripCostCalculation>();
             _RMSZoneTravelRatesFeesDataLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
@@ -75,12 +78,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// <returns>sut</returns>
         private ReportsControllerLogic CreateSut()
         {
-            return new ReportsControllerLogic(this.boeExporter.Object, this.boeSummary.Object,
+			return new ReportsControllerLogic(this.boeExporter.Object, this.boeSummary.Object,
                 this.boeCustomExporter.Object,
                 this.workspaceExportFormatDTOLoader.Object, this.boeDiscrepancyReport.Object,
                 this.proposalLoader.Object,
-                this.workspaceControllerLogic.Object, this.travelTripCostCalculation.Object);
-        }
+                this.workspaceControllerLogic.Object, this.travelTripCostCalculation.Object);			
+		}
 
         #region ExportAllBOEsReport
         /// <summary>
@@ -894,6 +897,164 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 File.Delete(result);
             }
         }
+
+		/// <summary>
+		/// Test for exporting the confidence report
+		/// </summary>
+		//[Ignore]
+		[TestMethod]
+		public void TestConfidenceReportExport()
+		{
+			ReportsControllerLogic sut = CreateSut();
+
+			// Setup 
+			/*WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe1 = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			BoeDTO boe2 = new BoeDTO()
+			{
+				Id = 2,
+				Title = "BOE 2",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "This task is for January 2024 thru December 2024 and has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			BoeTaskElementDTO task2 = new BoeTaskElementDTO()
+			{
+				Id = 2,
+				TaskTitle = "Task 2",
+				Description = "5/24-6/24 and 100",
+				StartDate = new DateTime(2024, 5, 15),
+				EndDate = new DateTime(2024, 6, 15),
+				MOQHoursEquation = "100",
+				TotalHours = 100
+			};
+
+			BoeTaskElementDTO task3 = new BoeTaskElementDTO()
+			{
+				Id = 3,
+				TaskTitle = "Task 3",
+				Description = "Aug 24 to Nov 24 and 1000",
+				StartDate = new DateTime(2024, 8, 15),
+				EndDate = new DateTime(2024, 11, 15),
+				MOQHoursEquation = "1000",
+				TotalHours = 1000
+			};
+
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TaskId = task1.Id,
+				Rationale = "This is the rational containing total relevant hours of 50",
+				SkillMixRationale = "This is the Skill Mix Rationale containing 55 for the second table",
+				TableData = new Collection<MoqTableData>()
+				{
+					new MoqTableData()
+					{
+						TotalRelevantHours = 50
+					},
+					new MoqTableData()
+					{
+						TotalRelevantHours = 55
+					}
+				}
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			_retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			_retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe1.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task1, task2 });
+			_retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe2.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task3 });
+			_retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), null)).Returns(new Collection<FullBoe>() { new FullBoe(boe1), new FullBoe(boe2) });
+			_retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe1.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe2.Id)).Returns(new Collection<MoqTypeSelection>());*/
+
+			ConfidenceReportModelView confidenceReportVM = new ConfidenceReportModelView();
+			confidenceReportVM.TotalTaskCount = 10;
+			confidenceReportVM.TasksWithoutErrors = 8;
+
+			ConfidenceReportItem confidenceReportItem1 = new ConfidenceReportItem()
+			{
+				BoeId = 1,
+				BoeTitle = "test title",
+				TaskId = 1,
+				TaskTitle = "test task",
+				//MoqTypes = ___
+				RteFields = 3,
+				HasPoPError = false,
+				HasMoqError = false,
+				HasHistoricalRefError = true,
+				ErrorText = "this is an error"
+			};
+
+			ConfidenceReportItem confidenceReportItem2 = new ConfidenceReportItem()
+			{
+				BoeId = 2,
+				BoeTitle = "test title 2",
+				TaskId = 2,
+				TaskTitle = "test task 2",
+				//MoqTypes = ___
+				RteFields = 1,
+				HasPoPError = false,
+				HasMoqError = false,
+				HasHistoricalRefError = true,
+				ErrorText = "this is another error"
+			};
+
+			confidenceReportVM.ConfidenceReportData.Add(confidenceReportItem1);
+			confidenceReportVM.ConfidenceReportData.Add(confidenceReportItem2);
+
+			string fileLocation = Path.Combine(System.Environment.CurrentDirectory, Path.GetRandomFileName() + ".xlsx");
+			File.WriteAllBytes(fileLocation, Properties.Resources);
+
+			try
+			{
+
+			}
+			finally
+			{
+				// Uncomment out the line below when testing this method is done
+				File.Delete(result);
+			}
+		}
 
         #endregion
 

@@ -30,27 +30,50 @@ namespace GenBOE.ActionLogic.IO.Export
 	/// <summary>
 	/// Used for exporting a Confidence Report for a BOE
 	/// </summary>
-	public class BOEConfidenceReportExporter
+	public class BOEConfidenceReportExporter : IBOEConfidenceReportExporter
 	{
 		/// <summary>
 		/// Exports all data to the Excel file
 		/// </summary>
 		/// <param name="templateFileLocation">File location of the Excel template</param>
+		/// <param name="confidenceReport">View model of confidence report</param>
 		/// <returns></returns>
-		public string ExportToExcelFile(string templateFileLocation, )
+		public string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport)
 		{
+			// Check inputs
+			if (templateFileLocation == null)
+			{
+				throw new ArgumentNullException(nameof(templateFileLocation));
+			}
+			if (confidenceReport == null)
+			{
+				throw new ArgumentNullException(nameof(confidenceReport));
+			}
+
+			string toReturn = ExcelUtilities.CopyExcelTemplateFile(templateFileLocation);
+
 			// Create a new worksheet to work off of
 			ExcelExportWorksheet worksheet = new ExcelExportWorksheet
 			{
-				"Confidence Score: ",
-				{ "BOE", "Task", "MOQ Types", "RTE Fields", "Confidence Error Messages" }
+				"Confidence Score: " + confidenceReport.ConfidenceScore
 			};
 
+			// Create the document object in memory
+			using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(toReturn, true))
+			{
+				// Get the specified worksheet part
+				WorksheetPart worksheetPart = ExcelUtilities.GetSpecifiedWorksheetPart(spreadsheet, worksheet.WorksheetName);
+				ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, worksheet, 2);
+			}
+
 			// Is there a way to make the columns filterable code-wise?
-			// Confidence score is total # of tasks without errors divided by total number of tasks
+			/*foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
+			{
+				worksheet.Add(item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
+			}*/
 
 			// Pass the rows to the generic Excel exporter           
-			string toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);
+			toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);
 
 			return toReturn;
 		}
