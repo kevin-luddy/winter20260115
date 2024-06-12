@@ -63,7 +63,7 @@ GO
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[MOQTypeSelectionTableDataResourceHours]') AND type in (N'U'))
 BEGIN
-	CREATE TABLE [version].[MOQ_Resource_Hours]
+	CREATE TABLE [version].[MOQTypeSelectionTableDataResourceHours]
 	(
 		[MOQTypeSelectionTableDataResourceHoursId] int NOT NULL,
 		[ResourceName] varchar(20) NULL,
