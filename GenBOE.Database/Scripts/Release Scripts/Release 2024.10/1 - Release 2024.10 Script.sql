@@ -69,8 +69,8 @@ BEGIN
 		[ResourceName] varchar(20) NULL,
 		[WbsHours] decimal(11,2) NOT NULL,
 		[TotalHours] decimal(11,2) NOT NULL,
-		[MOQTableId] int NOT NULL,
-		[TaskId] int NOT NULL,
+		[MOQTypeSelectionTableDataId] int NOT NULL,
+		[BOETaskElementID] int NOT NULL,
 		[BOEID] int NOT NULL,
 		[VersionID] int NOT NULL,
 	);
