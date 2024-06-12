@@ -71,6 +71,7 @@
     <Content Include="Object Scripts\Stored Procedures\deleteBOECustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOEFormIBOE.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOEFormPBOE.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSkillMix.sql" />
     <Content Include="Object Scripts\Stored Procedures\GetPboeIboeFormDataForReport.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOELaborSpreadByBOELaborTypeID.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOELaborType.sql" />
