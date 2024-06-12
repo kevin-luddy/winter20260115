@@ -18,7 +18,7 @@ namespace IES.Common.Core.Utilities
 
 		public static void Initialize(ILogger logger)
 		{
-			logger = logger;
+			SafeUriUtility.logger = logger;
 		}
 
         /// <summary>
