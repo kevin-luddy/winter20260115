@@ -43,3 +43,36 @@ BEGIN
 	);
 END
 GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MOQTypeSelectionTableDataResourceHours]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [dbo].[MOQTypeSelectionTableDataResourceHours] (
+		[MOQTypeSelectionTableDataResourceHoursId] int IDENTITY(1,1) PRIMARY KEY CLUSTERED,
+		[ResourceName] varchar(20) NULL,
+		[WbsHours] decimal(11,2) NOT NULL,
+		[TotalHours] decimal(11,2) NOT NULL,
+		[MOQTableId] int NOT NULL,
+		[TaskId] int NOT NULL,
+		[BOEId] int NOT NULL,
+		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId FOREIGN KEY(MOQTypeSelectionTableDataId) REFERENCES [dbo].[MOQTypeSelectionTableData] ([MOQTypeSelectionTableDataId]),
+		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID]),
+		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_BOE FOREIGN KEY (BOE_Id) REFERENCES [dbo].[BOE] (BOE_ID)
+	);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[MOQTypeSelectionTableDataResourceHours]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [version].[MOQ_Resource_Hours]
+	(
+		[MOQTypeSelectionTableDataResourceHoursId] int NOT NULL,
+		[ResourceName] varchar(20) NULL,
+		[WbsHours] decimal(11,2) NOT NULL,
+		[TotalHours] decimal(11,2) NOT NULL,
+		[MOQTableId] int NOT NULL,
+		[TaskId] int NOT NULL,
+		[BOEId] int NOT NULL,
+		[VersionID] int NOT NULL,
+	);
+END
+GO
