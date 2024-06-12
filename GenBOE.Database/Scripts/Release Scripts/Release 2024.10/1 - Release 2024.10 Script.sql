@@ -53,7 +53,7 @@ BEGIN
 		[TotalHours] decimal(11,2) NOT NULL,
 		[MOQTableId] int NOT NULL,
 		[TaskId] int NOT NULL,
-		[BOEId] int NOT NULL,
+		[BOEID] int NOT NULL,
 		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId FOREIGN KEY(MOQTypeSelectionTableDataId) REFERENCES [dbo].[MOQTypeSelectionTableData] ([MOQTypeSelectionTableDataId]),
 		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID]),
 		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] (BOEID)
@@ -71,7 +71,7 @@ BEGIN
 		[TotalHours] decimal(11,2) NOT NULL,
 		[MOQTableId] int NOT NULL,
 		[TaskId] int NOT NULL,
-		[BOEId] int NOT NULL,
+		[BOEID] int NOT NULL,
 		[VersionID] int NOT NULL,
 	);
 END
