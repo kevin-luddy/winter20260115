@@ -53,7 +53,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			string toReturn = ExcelUtilities.CopyExcelTemplateFile(templateFileLocation);
 
 			// Create a new worksheet to work off of
-			ExcelExportWorksheet worksheet = new ExcelExportWorksheet
+			/*ExcelExportWorksheet worksheet = new ExcelExportWorksheet
 			{
 				"Confidence Score: " + confidenceReport.ConfidenceScore
 			};
@@ -64,7 +64,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				// Get the specified worksheet part
 				WorksheetPart worksheetPart = ExcelUtilities.GetSpecifiedWorksheetPart(spreadsheet, worksheet.WorksheetName);
 				ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, worksheet, 2);
-			}
+			}*/
 
 			// Is there a way to make the columns filterable code-wise?
 			/*foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
@@ -72,8 +72,21 @@ namespace GenBOE.ActionLogic.IO.Export
 				worksheet.Add(item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
 			}*/
 
+			// Below works, but overrides the header row
+			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
+			string confidenceScore = "Confidence Score: " + confidenceReport.ConfidenceScore;
+			worksheet.Add(new string[] { confidenceScore.ToString() });
+
+			foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
+			{
+				worksheet.Add(item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
+			}
+
 			// Pass the rows to the generic Excel exporter           
-			toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);
+			//toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);
+			//toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, true, new List<ExcelExportWorksheet> { worksheet }, 2);
+			// TO-DO: Tried this with 2, still overwrites row #2. maybe change to 1 and then do an add of empty cells?
+			toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, true, new List<ExcelExportWorksheet>() { worksheet }, new int?[] { 2 });
 
 			return toReturn;
 		}
