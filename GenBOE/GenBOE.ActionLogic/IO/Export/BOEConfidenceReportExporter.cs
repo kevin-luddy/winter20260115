@@ -76,6 +76,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
 			string confidenceScore = "Confidence Score: " + confidenceReport.ConfidenceScore;
 			worksheet.Add(new string[] { confidenceScore.ToString() });
+			worksheet.Add(new string[] { });
 
 			foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
 			{
@@ -86,7 +87,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			//toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);
 			//toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, true, new List<ExcelExportWorksheet> { worksheet }, 2);
 			// TO-DO: Tried this with 2, still overwrites row #2. maybe change to 1 and then do an add of empty cells?
-			toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, true, new List<ExcelExportWorksheet>() { worksheet }, new int?[] { 2 });
+			toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, true, new List<ExcelExportWorksheet>() { worksheet }, new int?[] { 1 });
 
 			return toReturn;
 		}
