@@ -376,7 +376,7 @@ namespace IES.Common.Core.Security
 		/// <returns>true if user is a member of one of the IES Portal Admin groups; false otherwise</returns>
 		virtual public bool IsIESPortalAdminUser(string inUserName)
 		{
-			if (inUserName == null)
+			if (string.IsNullOrEmpty(inUserName))
 			{
 				throw new ArgumentNullException(nameof(inUserName));
 			}

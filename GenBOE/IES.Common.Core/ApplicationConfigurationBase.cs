@@ -21,6 +21,7 @@
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.DependencyModel;
 	using Microsoft.Extensions.Hosting;
+	using Microsoft.Extensions.Logging;
 	using Microsoft.OpenApi.Models;
 	using Newtonsoft.Json.Serialization;
 	using Serilog;
@@ -300,7 +301,7 @@
 		/// Configures the App Builder
 		/// </summary>
 		/// <param name="builder">Web app builder</param>
-		public WebApplication ConfigureAppBuilder(WebApplicationBuilder builder)
+		public WebApplication ConfigureAppBuilder(WebApplicationBuilder builder, bool isIesPortal = false)
 		{
 			WebApplication app = builder.Build();
 			Configuration = app.Configuration;
@@ -326,21 +327,26 @@
 			app.UseMiddleware<UserLoggingMiddleware>();
 			app.UseMiddleware<CorrelationMiddleware>();
 
-			Microsoft.Extensions.Logging.ILogger logger = app.Services.GetService<Microsoft.Extensions.Logging.ILogger>(); 
+			Microsoft.Extensions.Logging.ILogger logger = app.Services.GetService<ILogger<ApplicationConfigurationBase>>(); 
 			SafeUriUtility.Initialize(logger);
 
-			if (app.Environment.IsDevelopment())
+			if (isIesPortal)
 			{
 				app.UseSerilogUi(options =>
 				{
-					options.Authorization.AuthenticationType = AuthenticationType.Windows;
+					options.Authorization = new Serilog.Ui.Web.AuthorizationOptions
+					{
+						AuthenticationType = AuthenticationType.Jwt,
+						Filters = new[] { new CustomAuthorizeFilter(logger) },
+						RunAuthorizationFilterOnAppRoutes = false
+					};
 				});
 			}
 
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
-				endpoints.MapHealthChecks("/Health", new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
+				endpoints.MapHealthChecks("/Health", new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse }); 
 			});
 
 			app.Use(async (context, next) =>
