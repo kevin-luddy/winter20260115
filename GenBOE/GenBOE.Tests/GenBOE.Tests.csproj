@@ -162,6 +162,7 @@
     <Compile Include="ActionLogic\ControllerLogic\SSRSControllerLogicTest.cs" />
     <Compile Include="ActionLogic\CopyBOE\BOECopierTests.cs" />
     <Compile Include="ActionLogic\DateShift\DateShiftTest.cs" />
+    <Compile Include="ActionLogic\Export\BOEConfidenceReportExporterTest.cs" />
     <Compile Include="ActionLogic\Export\MoqTableExporterTest.cs" />
     <Compile Include="ActionLogic\Export\TraceTableExporterTest.cs" />
     <Compile Include="ActionLogic\Import\MOQ Table\MoqTableImporterTest.cs" />
