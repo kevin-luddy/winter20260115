@@ -1,5 +1,5 @@
-﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[upsertSkillMixviaTableParameter]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[upsertSkillMixviaTableParameter];
+﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[insertSkillMixviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[insertSkillMixviaTableParameter];
 GO
 
 CREATE TYPE [dbo].[TT_SkillMix] AS TABLE(
@@ -22,14 +22,14 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE PROCEDURE [dbo].[upsertSkillMixviaTableParameter]
+CREATE PROCEDURE [dbo].[insertSkillMixviaTableParameter]
 (
 	@SkillMixTableParameter [dbo].[TT_SkillMix] READONLY
 )
 AS
 /******************************************************************************
 **		 
-**		Name: [upsertSkillMixviaTableParameter]
+**		Name: [insertSkillMixviaTableParameter]
 **		Desc: Insert/Update data into SkillMix Table
 **			
 **		
@@ -41,7 +41,7 @@ AS
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
-**      06/12/24	e374897				PROPH-2047 Initial upsert logic
+**      06/12/24	e374897				PROPH-2047 Initial insert logic
 *******************************************************************************/
 BEGIN
 	DECLARE @DistinctMOQTypeSelectionID int
