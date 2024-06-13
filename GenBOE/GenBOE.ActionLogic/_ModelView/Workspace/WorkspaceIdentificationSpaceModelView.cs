@@ -141,11 +141,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		public string RevisedSubmittalDate { get; set; }
 
 		/// <summary>
-		/// Get/Set whether Workspace is the current for the PTM Tracking Number
-		/// </summary>
-		public bool CurrentPTMWorkspace { get; set; }
-
-		/// <summary>
 		/// Check whether or not this Tracking Number has multiple workspaces
 		/// </summary>
 		public bool IsMultipleWorkspaces { get; set; }

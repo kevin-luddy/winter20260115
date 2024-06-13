@@ -39,5 +39,5 @@ builder.Services.AddTransient<ProposalClassLoader>();
 builder.Services.AddTransient<ContractTypeLoader>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-WebApplication app = config.ConfigureAppBuilder(builder);
+WebApplication app = config.ConfigureAppBuilder(builder, true);
 app.Run();

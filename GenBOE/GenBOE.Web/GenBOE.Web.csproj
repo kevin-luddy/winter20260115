@@ -674,7 +674,7 @@
     <Content Include="..\.editorconfig">
       <Link>.editorconfig</Link>
     </Content>
-    <None Include="packages.config" />
+    <Content Include="packages.config" />
     <None Include="Properties\PublishProfiles\ReleaseTFS.pubxml" />
     <Content Include="Scripts\additional-methods.js" />
     <Content Include="Scripts\additional-methods.min.js" />
