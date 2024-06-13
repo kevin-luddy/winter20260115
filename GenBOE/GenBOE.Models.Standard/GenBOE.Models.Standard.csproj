@@ -127,6 +127,8 @@
     <Compile Include="..\GenBOE.Models\SearchCategoryLU.cs" Link="SearchCategoryLU.cs" />
     <Compile Include="..\GenBOE.Models\SegmentLU.cs" Link="SegmentLU.cs" />
     <Compile Include="..\GenBOE.Models\SikorskyLegacyResource.cs" Link="SikorskyLegacyResource.cs" />
+	<Compile Include="..\GenBOE.Models\SkillMix.cs" Link="SkillMix.cs" />
+	<Compile Include="..\GenBOE.Models\SkillMix1.cs" Link="SkillMix1.cs" />
     <Compile Include="..\GenBOE.Models\SortByLU.cs" Link="SortByLU.cs" />
     <Compile Include="..\GenBOE.Models\SplitString_Result.cs" Link="SplitString_Result.cs" />
     <Compile Include="..\GenBOE.Models\SpreadCurveLU.cs" Link="SpreadCurveLU.cs" />
