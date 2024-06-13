@@ -11,8 +11,8 @@ BEGIN
 		,[HistoricalHours] decimal(11, 2) NULL
 		,[BOESkillMix] decimal(5, 2) NULL
 		,[LaborSkillMix] decimal(5, 2) NULL
-		,[ResourceOld] [varchar](max) NULL
-		,[ResourceNew] [varchar](max) NULL
+		,[ResourceOld] [varchar](20) NULL
+		,[ResourceNew] [varchar](20) NULL
 		,[BOEID] int NULL
 		,[BOETaskElementID] int NULL
 		,[MOQTypeSelectionID] int NULL
@@ -34,8 +34,8 @@ BEGIN
 		,[HistoricalHours] decimal(11, 2) NULL
 		,[BOESkillMix] decimal(5, 2) NULL
 		,[LaborSkillMix] decimal(5, 2) NULL
-		,[ResourceOld] [varchar](max) NULL
-		,[ResourceNew] [varchar](max) NULL
+		,[ResourceOld] [varchar](20) NULL
+		,[ResourceNew] [varchar](20) NULL
 		,[BOEID] int NULL
 		,[BOETaskElementID] int NULL
 		,[MOQTypeSelectionID] int NULL
