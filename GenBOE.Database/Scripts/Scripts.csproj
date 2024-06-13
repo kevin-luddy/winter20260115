@@ -283,6 +283,7 @@
     <Content Include="Object Scripts\Table Based Processing\ProjectMapSpreadViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\ProjectMapViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\ResourceInUseFlagByResourceListIDViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\SkillMixViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\SumOfBoe_OrdinaryVarViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\SumOfBoe_WorkspaceVarViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementCustomFieldViaTable.sql" />
