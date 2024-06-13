@@ -44,7 +44,7 @@ namespace IES.Common.Core.Security
 		/// <summary>
 		/// This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
 		/// </summary>
-		private readonly string metadataAddressForAuthDomain = AuthDomain + ".well-known/openid-configuration";
+		private static readonly string metadataAddressForAuthDomain = AuthDomain + ".well-known/openid-configuration";
 
 		/// <summary>
 		/// static #ctor
@@ -66,8 +66,8 @@ namespace IES.Common.Core.Security
 			IOptionsMonitor<TokenAuthenticationOptions> options,
 			ILoggerFactory logger,
 			UrlEncoder encoder,
-			ISystemClock clock) : base(options, logger, encoder, clock)
-		{			
+			ISystemClock clock) : base(options, logger, encoder, clock) 
+		{
 		}
 
 		/// <summary>
@@ -99,7 +99,7 @@ namespace IES.Common.Core.Security
 			}
 
 			// Authenticate the call, and pull out the user's ntid.
-			string ntid = await GetNtidIfTokenIsValid(token);
+			string ntid = await GetNtidIfTokenIsValid(token, this.Logger);
 
 			if (!string.IsNullOrWhiteSpace(ntid))
 			{
@@ -121,9 +121,8 @@ namespace IES.Common.Core.Security
 		/// Validate a Token, retrieve NTID from it
 		/// </summary>
 		/// <param name="token">Token to validate</param>
-		/// <exception cref="UnauthorizedAccessException">If there are any issues parsing the token, we will throw an unauthorized exception</exception>
 		/// <returns>If the token is valid, this method returns user's NTID. </returns>
-		public async Task<string> GetNtidIfTokenIsValid(string token)
+		public static async Task<string> GetNtidIfTokenIsValid(string token, ILogger logger)
 		{
 			_ = token ?? throw new ArgumentNullException(nameof(token));
 
@@ -150,7 +149,8 @@ namespace IES.Common.Core.Security
 
 				// Validates the token first (throws if invalid). If valid, it searches all claims for the right one. Finally, the string is in the format of ntid@fully.qualitified.domain, so we strip out what we don't need.
 				// ProPricer needs the id in the form of DOMAIN\ntid
-				string upn = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _).Claims.FirstOrDefault(x => x.Type == "lmco_upn")?.Value;
+				ClaimsPrincipal claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _);
+				string upn = claimsPrincipal.Claims.FirstOrDefault(x => x.Type == "lmco_upn")?.Value;
 				if (!string.IsNullOrEmpty(upn))
 				{
 					string[] parts = upn.Split('@');
@@ -162,8 +162,8 @@ namespace IES.Common.Core.Security
 			}
 			catch (Exception ex)
 			{
-				this.Logger.LogError(ex, "Error validating IES Token");
-				throw new UnauthorizedAccessException();
+				logger.LogError(ex, "Error validating IES Token");
+				userNtid = null;
 			}
 
 			return userNtid;

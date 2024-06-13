@@ -1,0 +1,78 @@
+﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.09';
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SkillMix]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [dbo].[SkillMix] (
+		[SkillMixID] int IDENTITY(1,1) PRIMARY KEY CLUSTERED
+		,[Rationale] varchar(255) NULL
+		,[Included] bit DEFAULT 0
+		,[ProposedHours] decimal(11, 2) NULL
+		,[HistoricalHours] decimal(11, 2) NULL
+		,[BOESkillMix] decimal(5, 2) NULL
+		,[LaborSkillMix] decimal(5, 2) NULL
+		,[ResourceOld] [varchar](20) NULL
+		,[ResourceNew] [varchar](20) NULL
+		,[BOEID] int NULL
+		,[BOETaskElementID] int NULL
+		,[MOQTypeSelectionID] int NULL
+		,CONSTRAINT FK_SkillMix_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] ([BOEID])
+		,CONSTRAINT FK_SkillMix_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID])
+		,CONSTRAINT FK_SkillMix_MOQTypeSelection FOREIGN KEY(MOQTypeSelectionID) REFERENCES [dbo].[MOQTypeSelection] ([MOQTypeSelectionId])
+	)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[SkillMix]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [version].[SkillMix]
+	(
+		[SkillMixID] int NULL
+		,[Rationale] varchar(255) NULL
+		,[Included] bit DEFAULT 0
+		,[ProposedHours] decimal(11, 2) NULL
+		,[HistoricalHours] decimal(11, 2) NULL
+		,[BOESkillMix] decimal(5, 2) NULL
+		,[LaborSkillMix] decimal(5, 2) NULL
+		,[ResourceOld] [varchar](20) NULL
+		,[ResourceNew] [varchar](20) NULL
+		,[BOEID] int NULL
+		,[BOETaskElementID] int NULL
+		,[MOQTypeSelectionID] int NULL
+		,[VersionID] int NOT NULL
+	);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MOQTypeSelectionTableDataResourceHours]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [dbo].[MOQTypeSelectionTableDataResourceHours] (
+		[MOQTypeSelectionTableDataResourceHoursId] int IDENTITY(1,1) PRIMARY KEY CLUSTERED,
+		[ResourceName] varchar(20) NULL,
+		[WbsHours] decimal(11,2) NOT NULL,
+		[TotalHours] decimal(11,2) NOT NULL,
+		[MOQTypeSelectionTableDataId] int NOT NULL,
+		[BOETaskElementID] int NOT NULL,
+		[BOEID] int NOT NULL,
+		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId FOREIGN KEY(MOQTypeSelectionTableDataId) REFERENCES [dbo].[MOQTypeSelectionTableData] ([MOQTypeSelectionTableDataId]),
+		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID]),
+		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] (BOEID)
+	);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[MOQTypeSelectionTableDataResourceHours]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [version].[MOQTypeSelectionTableDataResourceHours]
+	(
+		[MOQTypeSelectionTableDataResourceHoursId] int NOT NULL,
+		[ResourceName] varchar(20) NULL,
+		[WbsHours] decimal(11,2) NOT NULL,
+		[TotalHours] decimal(11,2) NOT NULL,
+		[MOQTypeSelectionTableDataId] int NOT NULL,
+		[BOETaskElementID] int NOT NULL,
+		[BOEID] int NOT NULL,
+		[VersionID] int NOT NULL,
+	);
+END
+GO

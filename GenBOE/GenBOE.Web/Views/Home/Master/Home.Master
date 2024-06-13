@@ -38,8 +38,8 @@
     <% if(!Utilities.DisablePiwik()) { %>
     <!-- Piwik Statistics -->
     <script type="text/javascript">
-        var piwikTracker3;
-    window.piwikAsyncInit = function () {
+            var piwikTracker3;
+        window.piwikAsyncInit = function () {
 	    try {
             var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 25);                       //<!-- BusApps Rollup -->
 		    piwikTracker.setDocumentTitle(document.domain + "/" + document.title);
@@ -50,21 +50,21 @@
 		    piwikTracker1.setDocumentTitle(document.domain + "/" + document.title);
 		    piwikTracker1.trackPageView();
 		    piwikTracker1.enableLinkTracking();
-
+            
 		    var piwikTracker2 = Piwik.getTracker(pkBaseURL + "piwik.php", 94);           //<!-- Space Business Systems -->
 		    piwikTracker2.setDocumentTitle(document.domain + "/" + document.title);
 		    piwikTracker2.trackPageView();
 		    piwikTracker2.enableLinkTracking();
 
-		    piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", <%:Utilities.PiwikId()%>);          //<!-- BOE  -->
+            piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", <%:Utilities.PiwikId()%>);          //<!-- BOE  -->
             // Track each user's visit
-			piwikTracker3.push(['setUserId', '<%:IES.Common.Utilities.CurrentUser()%>']);
+            piwikTracker3.setUserId('<%:IES.Common.Utilities.CurrentUser()%>');
             piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
 		    piwikTracker3.trackPageView();
 		    piwikTracker3.enableLinkTracking();
-	    } catch( err ) {}
+            } catch( err ) {}   
     };
-	</script>
+    </script>
     <noscript>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
