@@ -898,67 +898,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             }
         }
 
-		/// <summary>
-		/// Test for exporting the confidence report
-		/// </summary>
-		//[Ignore]
-		/*[TestMethod]
-		public void TestConfidenceReportExport()
-		{
-			ReportsControllerLogic sut = CreateSut();
-
-			// Setup 
-			ConfidenceReportModelView confidenceReportVM = new ConfidenceReportModelView();
-			confidenceReportVM.TotalTaskCount = 10;
-			confidenceReportVM.TasksWithoutErrors = 8;
-
-			ConfidenceReportItem confidenceReportItem1 = new ConfidenceReportItem()
-			{
-				BoeId = 1,
-				BoeTitle = "test title",
-				TaskId = 1,
-				TaskTitle = "test task",
-				//MoqTypes = ___
-				RteFields = 3,
-				HasPoPError = false,
-				HasMoqError = false,
-				HasHistoricalRefError = true,
-				ErrorText = "this is an error"
-			};
-
-			ConfidenceReportItem confidenceReportItem2 = new ConfidenceReportItem()
-			{
-				BoeId = 2,
-				BoeTitle = "test title 2",
-				TaskId = 2,
-				TaskTitle = "test task 2",
-				//MoqTypes = ___
-				RteFields = 1,
-				HasPoPError = false,
-				HasMoqError = false,
-				HasHistoricalRefError = true,
-				ErrorText = "this is another error"
-			};
-
-			confidenceReportVM.ConfidenceReportData.Add(confidenceReportItem1);
-			confidenceReportVM.ConfidenceReportData.Add(confidenceReportItem2);
-
-			string fileLocation = Path.Combine(System.Environment.CurrentDirectory, Path.GetRandomFileName() + ".xlsx");
-			File.WriteAllBytes(fileLocation, Properties.Resources.ConfidenceReport);
-
-			string result = sut.ExportAllBOEsReport(workspace, fileLocation, reportModelView, inputs);
-
-			try
-			{
-
-			}
-			finally
-			{
-				// Uncomment out the line below when testing this method is done
-				File.Delete(result);
-			}
-		}*/
-
         #endregion
 
         //Global local Value Declarations 
