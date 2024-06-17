@@ -76,3 +76,12 @@ BEGIN
 	);
 END
 GO
+
+-- 06/17/2024 - twilson3 - PROPH-2065 Missing Index causing Snapshot Transaction to Fail
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[BOELaborType]') AND name = N'IX_BOELaborType__BRCResourceID') 
+	CREATE NONCLUSTERED INDEX [IX_BOELaborType__BRCResourceID] ON [dbo].[BOELaborType]
+	(
+		[BRCResourceID] ASC
+	)
+	INCLUDE([BOETaskElementID]) WITH (PAD_INDEX = ON, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
