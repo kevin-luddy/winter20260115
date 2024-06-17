@@ -181,6 +181,7 @@ namespace GenBOE.ActionLogic.Reporting
 					}
 
 					// process and populate data
+					rteFields = rteFields.Where(x => x != null).ToCollection();
 					reportItem.RteFields = rteFields.Count;
 					reportItem.PoPResults = GetPoPConfidenceResults(popDates, ref rteFields);
 					reportItem.MoqResults = GetMathConfidenceResults(moqNumericValues, ref rteFields);

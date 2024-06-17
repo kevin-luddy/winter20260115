@@ -6,43 +6,41 @@
 
 namespace GenBOE.Web.Controllers
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Transactions;
-    using System.Web.Mvc;
-    using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.IO.Export.BOE;
-    using GenBOE.ActionLogic.Metrics;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.ModelView.BOE;
-    using GenBOE.ActionLogic.Reporting;
-    using GenBOE.ActionLogic.Validation;
-    using GenBOE.ActionLogic.WBS.BOE;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.Common.Interfaces;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Models;
-    using GenBOE.Objects;
-    using GenBOE.Web.Common;
-    using GenBOE.Web.ModelView;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.Exceptions;
-    using IES.Common.OfficeUtilities;
-    using IES.Common.PickList;
-    using Microsoft.VisualBasic.FileIO;
-    using Microsoft.VisualBasic.Logging;
+	using System;
+	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Transactions;
+	using System.Web.Mvc;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.Metrics;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.BOE;
+	using GenBOE.ActionLogic.Reporting;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.WBS.BOE;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using GenBOE.Web.Common;
+	using GenBOE.Web.ModelView;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
+	using IES.Common.PickList;
+	using Microsoft.VisualBasic.FileIO;
 
-    public class ReportsController : GenBOEController
+	public class ReportsController : GenBOEController
     {
         private Logger log = new Logger(typeof(ReportsController));
 
@@ -883,20 +881,24 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Shortname</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns>ViewResult for Confidence Report Results</returns>
-		public virtual ViewResult DisplayConfidenceReportResults(string workspace, int? boeID)
+		public virtual ViewResult ConfidenceReport(string workspace, int? boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS, boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["BOEID"] = boeID;
-			ConfidenceReportModelView reportViewModel = boeConfidenceReport.GenerateConfidenceReport(ws, boeID);
+			ModelView.ConfidenceReportModelView reportViewModel = new ModelView.ConfidenceReportModelView(
+				boeConfidenceReport.GenerateConfidenceReport(ws, boeID),
+				ws.WorkspaceName, 
+				ws.WorkspaceStateName,
+				ws.ContainsOCI);
 
-			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT_RESULTS, reportViewModel);
+			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT, reportViewModel);
 
 			// Finalize Action
-			FinalizeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS, sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, sw);
 			return toReturn;
 		}
 

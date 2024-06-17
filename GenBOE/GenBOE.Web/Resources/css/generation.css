@@ -1246,6 +1246,10 @@ input.customField
     padding: 5px;
 }
 
+.search-box input[type="search"] {
+	box-sizing: unset;
+}
+
 .manage-trips-for-travel
 {
     width: 1150px;
@@ -4326,10 +4330,35 @@ table.manage-historical-metrics-grid
     white-space: normal;
 }
 
-.workspace-activityreport-metric
-{
-    text-align: left;
-    width: 80%;
+.confidence-score h2 {
+	display: inline-block;
+}
+
+.confidence-report-table {
+	width: 100%
+}
+
+.confidence-report-table th .bold {
+	font-weight: bold;
+}
+
+.confidence-report-table th,
+.confidence-report-table td {
+	white-space: normal;
+}
+
+.confidence-report-moqtypes,
+.confidence-report-errors {
+	width: 25%;
+}
+
+.confidence-report-rtefields {
+	width: 10%;
+}
+
+.workspace-activityreport-metric {
+	text-align: left;
+	width: 80%;
 }
 
 .workspace-activityreport-value

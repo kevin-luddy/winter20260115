@@ -185,17 +185,10 @@
 
 				reportUrl = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
 					'<%: WebConstants.CONTROLLER_REPORTS %>',
-					'<%: WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS %>',
+					'<%: WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT %>',
 					'');
 
-				$.ajax({
-					type: "POST",
-					url: reportUrl,
-					dataType: 'html',
-					success: function (response) {
-						$('#report').html(response);
-					}
-				});
+				window.open(reportUrl, "_self");
 			}
             else { // SSRS reports
                 // first get the Nonce from the backend

@@ -318,8 +318,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_BOE_OFFLOAD = "DisplayOffloadBOEButton";
 		public static readonly string ACTION_DISPLAY_BOE_VALIDATE_RESULTS = "DisplayBOEValidateResults";
 		public static readonly string ACTION_DISPLAY_BOE_OFFLOAD_RESULTS = "DisplayBOEOffloadResults";
-		public static readonly string ACTION_DISPLAY_BOE_CONFIDENCE_REPORT = "DisplayConfidenceReportButton";
-		public static readonly string ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS = "DisplayConfidenceReportResults";
+		public static readonly string ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_BUTTON = "DisplayConfidenceReportButton";
+		public static readonly string ACTION_DISPLAY_BOE_CONFIDENCE_REPORT = "ConfidenceReport";
 		public static readonly string ACTION_DISPLAY_INVALID_SUBMIT_FOR_APPROVAL = "DisplayInvalidSubmitForApproval";
 		public static readonly string ACTION_DISPLAY_LABOR_CURVES = "DisplayLaborCurves";
 		public static readonly string ACTION_DISPLAY_LABOR_RESOURCES = "DisplayResources";
@@ -811,8 +811,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_TASK_ELEMENT_GRID = "TaskElementGrid";
 		public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid";
 		public static readonly string VIEW_BOE_COPY_CONFLICTS = "BOECopyConflicts";
+		public static readonly string VIEW_BOE_CONFIDENCE_REPORT_BUTTON = "BOEConfidenceReportButton";
 		public static readonly string VIEW_BOE_CONFIDENCE_REPORT = "BOEConfidenceReport";
-		public static readonly string VIEW_BOE_CONFIDENCE_REPORT_RESULTS = "BOEConfidenceReportResults";
 
 		public static readonly string VIEW_LABOR_TASK = "LaborTask";
 		public static readonly string VIEW_LABOR_TASK_STATIC = "LaborTaskStatic";
@@ -1014,6 +1014,13 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string WORKSPACE_RESOURCE_RATE_TM_SPACE_CONTROL_DESCRIPTION_TEXT = "Manage the rates assigned to T&M Subcontractor and IWTA resources.";
 
 		#endregion Messages
+
+		#region LMPI Labels
+
+		public static readonly string LMPI_OCI_LABEL_TEXT = "Organizational Conflict of Interest - Lockheed Martin Proprietary Information";
+		public static readonly string LMPI_LABEL_TEXT = "Lockheed Martin Proprietary Information";
+
+		#endregion LMPI Labels
 	}
 }
 

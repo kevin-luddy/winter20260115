@@ -118,7 +118,7 @@
     <div class="page">
         <div class="header">
             <div class="lmproprietary">
-                            <% if (Model != null && Model.GetType() == typeof(GenBOEMasterModelView))
+                            <% if (Model != null && Model is GenBOEMasterModelView)
                                { %>
                                 <%: ((GenBOEMasterModelView)Model).HeaderFooter%>
                             <% }
@@ -148,7 +148,7 @@
                         <% } %>
                     </a>
                     
-                    <% if (Model != null && (Model is GenBOEMasterModelView || Model is DateShiftIndexModelView))
+                    <% if (Model != null && Model is GenBOEMasterModelView)
                         { %>
                     <div><%: ((GenBOEMasterModelView)Model).ProposalName %>
                             <div id="StatusDisplay" class="workspace-status">Status: <%: ((GenBOEMasterModelView)Model).WorkspaceState %></div>
@@ -185,7 +185,7 @@
     </div>
     <div class="footer">
         <div class="lmproprietary">
-            <% if (Model != null && Model.GetType() == typeof(GenBOEMasterModelView))
+            <% if (Model != null && Model is GenBOEMasterModelView)
                 { %>
                 <%: ((GenBOEMasterModelView)Model).HeaderFooter%>
             <% }
