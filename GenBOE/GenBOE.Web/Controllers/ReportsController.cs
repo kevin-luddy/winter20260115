@@ -1008,6 +1008,59 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Export the Confidence Report into an Excel file
+		/// </summary>
+		/// <param name="workspace">Workspace Shortname</param>
+		/// <param name="id">BOE ID</param>
+		/// <returns>Excel file of the Confidence Report</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Inline use, expecting for garbage collection to take care of things.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+		public ActionResult ExportConfidenceReport(string workspace, int? boeID)
+		{
+			// Look at this as an example
+			// public ActionResult Export(string workspace, int reportID, string summarizeByCustomField)
+			ActionResult toReturn = null;
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			try
+			{
+				// Initialize Action
+				Stopwatch sw = this.InitializeAction(this.log, "ExportConfidenceReport", boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+				this.log.Performance("Exporting Confidence Report - ReportsController - Begin", 0);
+
+				ConfidenceReportModelView confidenceReport = boeConfidenceReport.GenerateConfidenceReport(ws, boeID);
+
+				string templateFileName = Server.MapPath("~/Templates/Export/ConfidenceReport.xlsx");
+
+				// Generate an export file from the data
+				string exportedFileName = this.boeConfidenceReportExporter.ExportToExcelFile(templateFileName, confidenceReport);
+
+				// Pass the file to the user
+				string fileName = string.Format("ConfidenceReport_{0}.xlsx", ws.WorkspaceName);
+				// Generate a custom ActionResult to cause a file download to the client
+				FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+				toReturn = File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.GetContentType(fileName),
+					fileDownloadName: fileName);
+
+				this.FinalizeAction(this.log, WebConstants.ACTION_EXPORT_CONFIDENCE_REPORT, sw);
+			}
+			catch (GenValidationException ex)
+			{
+				toReturn = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception ex)  // The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.
+			{
+				this.log.Error(ex);
+				toReturn = this.CreateTextFileWithErrorMessage(ex);
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
 		/// Display the main ProPricer control which will render the grid and contains
 		/// controls used for adding and editing formats
 		/// </summary>
