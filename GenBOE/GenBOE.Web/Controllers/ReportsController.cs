@@ -906,7 +906,7 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Export the Confidence Report into an Excel file
+		/// Export the Confidence Report into an Excel file for the specified BOE
 		/// </summary>
 		/// <param name="workspace">Workspace Shortname</param>
 		/// <param name="id">BOE ID</param>
@@ -931,7 +931,7 @@ namespace GenBOE.Web.Controllers
 				string templateFileName = Server.MapPath("~/Templates/Export/ConfidenceReport.xlsx");
 
 				// Generate an export file from the data
-				string exportedFileName = this.boeConfidenceReportExporter.ExportToExcelFile(templateFileName, confidenceReport);
+				string exportedFileName = this.boeConfidenceReportExporter.ExportToExcelFile(templateFileName, confidenceReport, boeID);
 
 				// Pass the file to the user
 				string fileName = string.Format("ConfidenceReport_{0}.xlsx", ws.WorkspaceName);

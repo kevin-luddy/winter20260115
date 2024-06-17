@@ -1,4 +1,4 @@
-angular.module('genboe').controller('BOEConfidenceReportController', ['$scope', '$window', 'ConfidenceReportModel', function ($scope, $window, ConfidenceReportModel) {
+angular.module('genboe').controller('BOEConfidenceReportController', ['$scope', '$window', '$timeout', 'ConfidenceReportModel', function ($scope, $window, $timeout, ConfidenceReportModel) {
 	$scope.confidenceScore = ConfidenceReportModel.model.ConfidenceScore;
 	$scope.data = ConfidenceReportModel.model.ConfidenceReportData;
 	$scope.displayErrors = $scope.data.length > 0;
@@ -58,7 +58,9 @@ angular.module('genboe').controller('BOEConfidenceReportController', ['$scope', 
 		var timeoutTime = 2000;
 		$scope.isExporting = true;
 
-		var exportUrl = CreatePostURL(ConfidenceReportModel.workspace, ConfidenceReportModel.reportsController, ConfidenceReportModel.exportConfidenceReportAction, '');
+		var boeIdForExport = ConfidenceReportModel.model.ConfidenceReportData.find(crd => crd.BoeId).BoeId;
+
+		var exportUrl = CreatePostURL(ConfidenceReportModel.workspace, ConfidenceReportModel.reportsController, ConfidenceReportModel.exportConfidenceReportAction, 'boe/' + boeIdForExport);
 		GenWidget.prototype.performExport(exportUrl);
 
 		// export is done via attaching an iframe, wait an arbitrary # of seconds (2-3) until showing the export button again to stop double-click
