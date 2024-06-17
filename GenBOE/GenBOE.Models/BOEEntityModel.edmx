@@ -1775,26 +1775,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.CLIN' does not have a prim
           <Property Name="ContractTypeID" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOESpace_UAT.version.SkillMix' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="SkillMix1">
-          <Key>
-            <PropertyRef Name="VersionID" />
-          </Key>
-          <Property Name="SkillMixID" Type="int" />
-          <Property Name="Rationale" Type="varchar" MaxLength="255" />
-          <Property Name="Included" Type="bit" />
-          <Property Name="ProposedHours" Type="decimal" Precision="11" Scale="2" />
-          <Property Name="HistoricalHours" Type="decimal" Precision="11" Scale="2" />
-          <Property Name="BOESkillMix" Type="decimal" Precision="5" Scale="2" />
-          <Property Name="LaborSkillMix" Type="decimal" Precision="5" Scale="2" />
-          <Property Name="ResourceOld" Type="varchar" MaxLength="20" />
-          <Property Name="ResourceNew" Type="varchar" MaxLength="20" />
-          <Property Name="BOEID" Type="int" />
-          <Property Name="BOETaskElementID" Type="int" />
-          <Property Name="MOQTypeSelectionID" Type="int" />
-          <Property Name="VersionID" Type="int" Nullable="false" />
-        </EntityType>
-        <!--Errors Found During Generation:
 warning 6002: The table/view 'genBOESpace_UAT.version.WBS_CLIN_BOE_XREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="WBS_CLIN_BOE_XREF1">
           <Key>
@@ -6045,23 +6025,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
     [CLIN1].[DisplayedCLINNumber] AS [DisplayedCLINNumber], 
     [CLIN1].[ContractTypeID] AS [ContractTypeID]
     FROM [version].[CLIN] AS [CLIN1]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="SkillMix1" EntityType="Self.SkillMix1" store:Type="Tables" store:Schema="version" store:Name="SkillMix">
-            <DefiningQuery>SELECT 
-    [SkillMix1].[SkillMixID] AS [SkillMixID], 
-    [SkillMix1].[Rationale] AS [Rationale], 
-    [SkillMix1].[Included] AS [Included], 
-    [SkillMix1].[ProposedHours] AS [ProposedHours], 
-    [SkillMix1].[HistoricalHours] AS [HistoricalHours], 
-    [SkillMix1].[BOESkillMix] AS [BOESkillMix], 
-    [SkillMix1].[LaborSkillMix] AS [LaborSkillMix], 
-    [SkillMix1].[ResourceOld] AS [ResourceOld], 
-    [SkillMix1].[ResourceNew] AS [ResourceNew], 
-    [SkillMix1].[BOEID] AS [BOEID], 
-    [SkillMix1].[BOETaskElementID] AS [BOETaskElementID], 
-    [SkillMix1].[MOQTypeSelectionID] AS [MOQTypeSelectionID], 
-    [SkillMix1].[VersionID] AS [VersionID]
-    FROM [version].[SkillMix] AS [SkillMix1]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="WBS_CLIN_BOE_XREF1" EntityType="Self.WBS_CLIN_BOE_XREF1" store:Type="Tables" store:Schema="version" store:Name="WBS_CLIN_BOE_XREF">
             <DefiningQuery>SELECT 
@@ -12546,7 +12509,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <FunctionImport Name="insertWorkspaceResourceviaTableParameter" />
           <FunctionImport Name="updateWorkspaceResourceviaTableParameter" />
           <EntitySet Name="SkillMixes" EntityType="GenBOE.Models.SkillMix" />
-          <EntitySet Name="SkillMix1" EntityType="GenBOE.Models.SkillMix1" />
           <AssociationSet Name="FK_SkillMix_BOE" Association="GenBOE.Models.FK_SkillMix_BOE">
             <End Role="BOE" EntitySet="BOEs" />
             <End Role="SkillMix" EntitySet="SkillMixes" />
@@ -14187,24 +14149,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_SkillMix_BOE" FromRole="SkillMix" ToRole="BOE" />
           <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_SkillMix_BOETaskElement" FromRole="SkillMix" ToRole="BOETaskElement" />
           <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK_SkillMix_MOQTypeSelection" FromRole="SkillMix" ToRole="MOQTypeSelection" />
-        </EntityType>
-        <EntityType Name="SkillMix1">
-          <Key>
-            <PropertyRef Name="VersionID" />
-          </Key>
-          <Property Name="SkillMixID" Type="Int32" />
-          <Property Name="Rationale" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Included" Type="Boolean" />
-          <Property Name="ProposedHours" Type="Decimal" Precision="11" Scale="2" />
-          <Property Name="HistoricalHours" Type="Decimal" Precision="11" Scale="2" />
-          <Property Name="BOESkillMix" Type="Decimal" Precision="5" Scale="2" />
-          <Property Name="LaborSkillMix" Type="Decimal" Precision="5" Scale="2" />
-          <Property Name="ResourceOld" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="ResourceNew" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="BOEID" Type="Int32" />
-          <Property Name="BOETaskElementID" Type="Int32" />
-          <Property Name="MOQTypeSelectionID" Type="Int32" />
-          <Property Name="VersionID" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_SkillMix_BOE">
           <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="0..1" />
@@ -16472,25 +16416,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="SkillMixes">
             <EntityTypeMapping TypeName="GenBOE.Models.SkillMix">
               <MappingFragment StoreEntitySet="SkillMix">
-                <ScalarProperty Name="MOQTypeSelectionID" ColumnName="MOQTypeSelectionID" />
-                <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
-                <ScalarProperty Name="BOEID" ColumnName="BOEID" />
-                <ScalarProperty Name="ResourceNew" ColumnName="ResourceNew" />
-                <ScalarProperty Name="ResourceOld" ColumnName="ResourceOld" />
-                <ScalarProperty Name="LaborSkillMix" ColumnName="LaborSkillMix" />
-                <ScalarProperty Name="BOESkillMix" ColumnName="BOESkillMix" />
-                <ScalarProperty Name="HistoricalHours" ColumnName="HistoricalHours" />
-                <ScalarProperty Name="ProposedHours" ColumnName="ProposedHours" />
-                <ScalarProperty Name="Included" ColumnName="Included" />
-                <ScalarProperty Name="Rationale" ColumnName="Rationale" />
-                <ScalarProperty Name="SkillMixID" ColumnName="SkillMixID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SkillMix1">
-            <EntityTypeMapping TypeName="GenBOE.Models.SkillMix1">
-              <MappingFragment StoreEntitySet="SkillMix1">
-                <ScalarProperty Name="VersionID" ColumnName="VersionID" />
                 <ScalarProperty Name="MOQTypeSelectionID" ColumnName="MOQTypeSelectionID" />
                 <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
                 <ScalarProperty Name="BOEID" ColumnName="BOEID" />

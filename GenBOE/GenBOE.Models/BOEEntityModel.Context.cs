@@ -176,7 +176,6 @@ namespace GenBOE.Models
         public virtual DbSet<BOEFormPBOE> BOEFormPBOEs { get; set; }
         public virtual DbSet<MessageConfirmation> MessageConfirmations { get; set; }
         public virtual DbSet<SkillMix> SkillMixes { get; set; }
-        public virtual DbSet<SkillMix1> SkillMix1 { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)

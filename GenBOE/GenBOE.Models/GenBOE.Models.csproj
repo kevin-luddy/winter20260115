@@ -428,9 +428,6 @@
     <Compile Include="SkillMix.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="SkillMix1.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="SortByLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
