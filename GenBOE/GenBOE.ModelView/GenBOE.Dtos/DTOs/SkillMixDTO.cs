@@ -1,15 +1,9 @@
 ﻿namespace GenBOE.Dtos
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-
 	/// <summary>
 	/// DTO for SkillMix table data
 	/// </summary>
-	internal class SkillMixDTO
+	public class SkillMixDTO
 	{
 		/// <summary>
 		/// Default constructor
