@@ -9,7 +9,7 @@ GO
 
 CREATE PROCEDURE [dbo].[deleteCommonDisclosureSkillMix]
 (
-	@SkillMixID int
+	@MOQTypeSelectionID int
 )
 AS
 	/******************************************************************************
@@ -33,7 +33,7 @@ AS
 
 	BEGIN
 		DELETE FROM dbo.[CommonDisclosureSkillMix]
-		WHERE [SkillMixID] = @SkillMixID
+		WHERE [MOQTypeSelectionID] = @MOQTypeSelectionID
 
 		SELECT @@ROWCOUNT AS RowsAffected;
 	END

@@ -9,15 +9,16 @@ GO
 
 
 CREATE TYPE [dbo].[TT_CommonDisclosureSkillMix] AS TABLE(
-		[Rationale] varchar(255) NULL
-		,[Included] bit DEFAULT 0
-		,[ProposedHours] decimal(11, 2) NULL
-		,[HistoricalHours] decimal(11, 2) NULL
-		,[BOESkillMix] decimal(5, 2) NULL
-		,[LaborSkillMix] decimal(5, 2) NULL
-		,[ResourceID] [varchar](max) NULL
-		,[BusinessResourceID] [varchar](max) NULL
-		,[SkillMixID] int NULL
+		[Rationale] varchar(255) NOT NULL
+		,[Included] bit DEFAULT 0 NOT NULL
+		,[ProposedHours] decimal(11, 2) NOT NULL
+		,[HistoricalHours] decimal(11, 2) NOT NULL
+		,[BOESkillMix] decimal(5, 2) NOT NULL
+		,[LaborSkillMix] decimal(5, 2) NOT NULL
+		,[ResourceID] [varchar](max) NOT NULL
+		,[BusinessResourceID] [varchar](max) NOT NULL
+		,[SkillMixID] int NOT NULL
+		,[MOQTypeSelectionID] int NULL
 );
 GO
 
@@ -48,15 +49,15 @@ AS
 **      06/16/24	e302876				PROPH-2018 Common Disclosure Skill Mix DB Table
 *******************************************************************************/
 BEGIN
-	DECLARE @DistinctSkillMixID int
-	SELECT @DistinctSkillMixID = SkillMixID
+	DECLARE @DistinctMOQTypeSelectionID int
+	SELECT @DistinctMOQTypeSelectionID = MOQTypeSelectionID
 	FROM (
-		SELECT DISTINCT SkillMixID
+		SELECT DISTINCT MOQTypeSelectionID
 		FROM @CommonDisclosureSkillMixTableParameter
 	) AS temp_CommonDisclosureSkillMix
 
-	DELETE FROM [dbo].[CommonDisclosureSkillMix]
-	WHERE [SkillMixID] = @DistinctSkillMixID
+	DELETE FROM [dbo].[SkillMix]
+	WHERE [MOQTypeSelectionID] = @DistinctMOQTypeSelectionID
 
 	INSERT INTO [dbo].[CommonDisclosureSkillMix]
 		([Rationale]
@@ -68,6 +69,7 @@ BEGIN
 		 ,[ResourceID]
 		 ,[BusinessResourceID]
 		 ,[SkillMixID]
+		 ,[MOQTypeSelectionID]
 		 )
 	SELECT Rationale
 		,Included
@@ -78,6 +80,7 @@ BEGIN
 		,ResourceID
 		,BusinessResourceID
 		,SkillMixID
+		,MOQTypeSelectionID
 	FROM @CommonDisclosureSkillMixTableParameter
 END
 
