@@ -54,8 +54,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<IWorkspaceControllerLogic> workspaceControllerLogic = new Mock<IWorkspaceControllerLogic>();
         Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
         Mock<TravelTripCostCalculation> travelTripCostCalculation = new Mock<TravelTripCostCalculation>();
-		//Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
-		//Mock<BOEConfidenceReport> boeConfidenceReport = new Mock<BOEConfidenceReport>();
 
 		[TestInitialize]
         public void Init()
@@ -64,7 +62,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _perissionsDtoDataLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
-			//GenBOEUnityContainer.Container.RegisterInstance(typeof(BOEConfidenceReport), boeConfidenceReport);
 
             _TravelTripCostCalculator = new Mock<TravelTripCostCalculation>();
             _RMSZoneTravelRatesFeesDataLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();

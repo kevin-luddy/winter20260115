@@ -25,21 +25,17 @@ namespace GenBOE.Tests.ActionLogic.Export
 	public class BOEConfidenceReportExporterTest
 	{
 		/// <summary>
-		/// MOQ Type Loader
-		/// </summary>
-		private Mock<IMoqTypeDataLoader> moqTypeLoader;
-
-		/// <summary>
 		/// Create the System Under Test
 		/// </summary>
 		/// <returns>an instance of BOEConfidenceReports</returns>
 		public BOEConfidenceReportExporter CreateSUT()
 		{
-			moqTypeLoader = new Mock<IMoqTypeDataLoader>();
-
 			return new BOEConfidenceReportExporter();
 		}
 
+		/// <summary>
+		/// Test method for Confidence Report Export
+		/// </summary>
 		[TestMethod]
 		public void TestConfidenceReportExport()
 		{
@@ -79,11 +75,10 @@ namespace GenBOE.Tests.ActionLogic.Export
 			confidenceReportVM.ConfidenceReportData.Add(confidenceReportItem1);
 			confidenceReportVM.ConfidenceReportData.Add(confidenceReportItem2);
 
-			//string fileLocation = Path.Combine(System.Environment.CurrentDirectory, Path.GetRandomFileName() + ".xlsx");
 			string fileLocation = Path.Combine(System.Environment.CurrentDirectory, "test" + ".xlsx");
 			File.WriteAllBytes(fileLocation, Properties.Resources.ConfidenceReport);
 
-			string result = sut.ExportToExcelFile(fileLocation, confidenceReportVM);
+			string result = sut.ExportToExcelFile(fileLocation, confidenceReportVM, null);
 
 			try
 			{
@@ -94,7 +89,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			finally
 			{
 				// Uncomment out the line below when testing this method is done
-				//File.Delete(result);
+				File.Delete(result);
 			}
 		}
 	}
