@@ -283,7 +283,9 @@ namespace IES.DataBridge.Loaders
 
 			using (IESEntities context = new())
 			{
-				foreach (Section section in context.Sections.Where(x => x.RevisionID == revisionId && x.SectionContentTypeID == (int)SectionContentType.Section))
+				foreach (var section in context.Sections
+					.Where(x => x.RevisionID == revisionId && x.SectionContentTypeID == (int)SectionContentType.Section)
+					.Select(x => new { ID = x.ID, Title = x.Title} ))
 				{
 					sections.Add(section.ID, section.Title);
 				}
