@@ -1,4 +1,4 @@
-﻿namespace GenBOE.DataBridge.DTO.SkillMix
+﻿namespace GenBOE.Dtos
 {
 	using System;
 	using System.Collections.Generic;
@@ -6,7 +6,7 @@
 	using System.Text;
 	using System.Threading.Tasks;
 
-	internal class ISkillMixLoader
+	internal class SkillMixDTO
 	{
 	}
 }
