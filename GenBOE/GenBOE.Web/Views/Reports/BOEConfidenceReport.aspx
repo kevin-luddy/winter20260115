@@ -13,7 +13,9 @@
 			workspace: '<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
 			model: <%=serializer.Serialize(Model)%>,
 			boeController: '<%: WebConstants.CONTROLLER_BOE %>',
-			editBoeAction: '<%: WebConstants.ACTION_EDIT_BOE_INDEX %>'
+			editBoeAction: '<%: WebConstants.ACTION_EDIT_BOE_INDEX %>',
+			reportsController: '<%: WebConstants.CONTROLLER_REPORTS %>',
+			exportConfidenceReportAction: '<%: WebConstants.ACTION_EXPORT_CONFIDENCE_REPORT %>'
 		});
 
 		var ConfidenceReport;
@@ -31,6 +33,9 @@
 					<h2>
 						Confidence Score: {{confidenceScore}}
 					</h2>
+					<div>
+						<button class="ies-action" id="Export-ManageBOE" data-ng-disabled="isExporting" data-ng-click="exportConfidenceReport()" type="button">Excel Export</button>
+					</div>
 					<div class="search-box float-right" data-ng-if="displayErrors">
 						<input type="search" class="filter" data-ng-model="search.text" data-ng-model-options="{ debounce: 200 }" placeholder="Search..." />
 					</div>
