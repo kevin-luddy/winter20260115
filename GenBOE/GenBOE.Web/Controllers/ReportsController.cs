@@ -906,59 +906,6 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Export the Confidence Report into an Excel file for the specified BOE
-		/// </summary>
-		/// <param name="workspace">Workspace Shortname</param>
-		/// <param name="id">BOE ID</param>
-		/// <returns>Excel file of the Confidence Report</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Inline use, expecting for garbage collection to take care of things.")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
-		public ActionResult ExportConfidenceReport(string workspace, int? boeID)
-		{
-			// Look at this as an example
-			// public ActionResult Export(string workspace, int reportID, string summarizeByCustomField)
-			ActionResult toReturn = null;
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-			try
-			{
-				// Initialize Action
-				Stopwatch sw = this.InitializeAction(this.log, "ExportConfidenceReport", boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
-				this.log.Performance("Exporting Confidence Report - ReportsController - Begin", 0);
-
-				ActionLogic.ModelView.ConfidenceReportModelView confidenceReport = boeConfidenceReport.GenerateConfidenceReport(ws, boeID);
-
-				string templateFileName = Server.MapPath("~/Templates/Export/ConfidenceReport.xlsx");
-
-				// Generate an export file from the data
-				string exportedFileName = this.boeConfidenceReportExporter.ExportToExcelFile(templateFileName, confidenceReport, boeID);
-
-				// Pass the file to the user
-				string fileName = string.Format("ConfidenceReport_{0}.xlsx", ws.WorkspaceName);
-				// Generate a custom ActionResult to cause a file download to the client
-				FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-				toReturn = File(
-					fileStream: fs,
-					contentType: ExportFileDownloadBase.GetContentType(fileName),
-					fileDownloadName: fileName);
-
-				this.FinalizeAction(this.log, WebConstants.ACTION_EXPORT_CONFIDENCE_REPORT, sw);
-			}
-			catch (GenValidationException ex)
-			{
-				toReturn = this.CreateTextFileWithErrorMessage(ex.Message);
-			}
-			catch (Exception ex)  // The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.
-			{
-				this.log.Error(ex);
-				toReturn = this.CreateTextFileWithErrorMessage(ex);
-			}
-
-			return toReturn;
-		}
-
-		/// <summary>
 		/// Display the main ProPricer control which will render the grid and contains
 		/// controls used for adding and editing formats
 		/// </summary>
@@ -1438,21 +1385,6 @@ namespace GenBOE.Web.Controllers
             return Json(new { Nonce = nonce });
         }
 
-        /// <summary>
-        /// Generate BOE custom export
-        /// </summary>
-        /// <param name="workspace">Workspace name</param>
-        /// <param name="BoesSelected">Selected list of BOEs</param>
-        /// <param name="ComponentsSelected">Selected report components</param>
-        /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template; null otherwise.</param>
-        /// <returns>Report</returns>
-        public ActionResult ExportCustomReport(string workspace, ICollection<int> BoesSelected, ICollection<BoeCustomReportComponent> ComponentsSelected, string summarizeByCustomField)
-        {
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            return this.ExportAllBOEsReport(ws, summarizeByCustomField, BoesSelected, ComponentsSelected, custom: true);
-        }
-
         private ICollection<BoeCustomReportBoeData> GetBoeDataForWorkspace(FullWorkspace workspaceObject, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy)
         {
             // Thread-safe container for the Boe Data of the current Workspace
@@ -1580,283 +1512,17 @@ namespace GenBOE.Web.Controllers
 
         #region AJAX calls
 
-        /// <summary>
-        /// Reusable logic for exporting the "All BOEs" report
-        /// </summary>
-        /// <param name="workspace">The current workspace name</param>
-        /// <param name="workspaceID">The corresponding workspace ID</param>
-        /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
-        /// <param name="selectedBOEs">List of BOEs to be included in the report; if null, then include ALL</param>
-        /// <param name="selectedComponents">List of resources to be included in the report; if null, then include ALL</param>
-        /// <param name="segmented">Whether the output should be broken into segments and zipped</param>
-        /// <returns>Contents of the ALL BOEs report</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
-        private ActionResult ExportAllBOEsReport(FullWorkspace workspace, string summarizeByCustomField, ICollection<int> selectedBOEs, ICollection<BoeCustomReportComponent> selectedComponents, bool custom, bool segmented = false)
-        {
-            ActionResult result = new EmptyResult();
-
-            try
-            {
-                bool isCustomExport;
-                WorkspaceExportFormatDTO wsExportFormatDTO;
-                BOEExportInputs exportInputs;
-                ICollection<BOEExportModelView> boeExportModelViews;
-                List<BOESummaryGridModelView> boeSummaryGridModelViews;
-
-                this.reportsControllerLogic.PrepareAllBOEsReport(workspace, IsSubcontractorUser(workspace), summarizeByCustomField, selectedBOEs, ViewData, out isCustomExport, 
-                    out wsExportFormatDTO, out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, custom);
-                this.reportsControllerLogic.ExportAllBOEsReport(workspace, selectedComponents, Response, isCustomExport, wsExportFormatDTO, exportInputs, 
-                    boeExportModelViews, boeSummaryGridModelViews, segmented);
-            }
-            catch (GenValidationException ex)
-            {
-                result = this.CreateTextFileWithErrorMessage(ex.Message);
-            }
-            catch (Exception e)
-            {
-                log.Error(e);
-
-                result = this.CreateTextFileWithErrorMessage(e);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Determines whether current user has a subcontractor role in the current workspace
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <returns>True if user has a subcontractor role in the current workspace</returns>
-        private bool IsSubcontractorUser(FullWorkspace workspace)
+		/// <summary>
+		/// Determines whether current user has a subcontractor role in the current workspace
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <returns>True if user has a subcontractor role in the current workspace</returns>
+		private bool IsSubcontractorUser(FullWorkspace workspace)
         {
             Collection<PermissionsDTO> potentialPermissions = this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id);
             UserDTO currentUser = workspace.CurrentActiveUser;
             bool isSubcontractorUser = potentialPermissions.Any(p => p.Role == Role.SubcontractorAuthor && p.ETIUserId == currentUser.UserID);
             return isSubcontractorUser;
-        }
-
-        /// <summary>
-        /// Exports a report
-        /// </summary>
-        /// <param name="workspace">The current workspace name</param>
-        /// <param name="reportID">The report ID</param>
-        /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
-        /// <returns>Report</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "reportModelView")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
-        public ActionResult Export(string workspace, int reportID, string summarizeByCustomField)
-        {
-            ActionResult toReturn = null;
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-                
-            try
-            {
-                
-                // Initialize Action
-                Stopwatch sw = this.InitializeAction(this.log, "Export", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
-                this.log.Performance("Exporting - ReportsController - Begin", 0);
-
-                if (reportID == (int)Reports.BOEStatus ||
-                    reportID == (int)Reports.BOEStatusByBOE ||
-                    reportID == (int)Reports.BOEStatusByWBS ||
-                    reportID == (int)Reports.BOEStatusByCLIN)
-                {
-                    // Call the BL to generate the status report
-                    BOEExportInputs exportInputs = this.reportsControllerLogic.GetExportInputsForStatusAndWbsReports(ws);
-                    Collection<BOEStatusReportModelView> theModelViews = this._BOEStatusReport.GenerateBOEStatusReport(exportInputs);
-
-                    if (theModelViews.Count > 0)
-                    {
-                        string templateFileName;
-
-                        switch (reportID)
-                        {
-                            case (int)Reports.BOEStatusByWBS:
-                                // Get BOE Status Report template file name
-                                templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByWBS.xlsx");
-                                break;
-
-                            case (int)Reports.BOEStatusByCLIN:
-                                // Get BOE Status Report template file name
-                                templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByCLIN.xlsx");
-                                break;
-
-                            default:
-                                // Get BOE Status Report template file name
-                                templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByBOE.xlsx");
-                                break;
-                        }
-
-                        // Generate an export file from the data
-                        string exportedFileName = this._BOEStatusReport.SendBOEStatusReportToFile(templateFileName, theModelViews, reportID, exportInputs);
-
-                        // Pass the file to the user
-                        string fileName = string.Format("BOEStatusExport_{0}.xlsx", ws.WorkspaceName);
-                        // Generate a custom ActionResult to cause a file download to the client
-                        FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-                        toReturn = File(
-                            fileStream: fs,
-                            contentType: ExportFileDownloadBase.GetContentType(fileName),
-                            fileDownloadName: fileName);
-                    }
-                }
-                else if (reportID == (int)Reports.BOEActivity)
-                {
-                    // Call the BL to generate the status report
-                    BOEActivityReportModelView theModelView = this._BOEActivityReport.GenerateReport(ws);
-
-                    // Get BOE Status Report template file name
-                    string templateFileName = Server.MapPath("~/Templates/Export/BOEActivityReport.xlsx");
-
-                    // Generate an export file from the data
-                    string exportedFileName = this._BOEActivityReport.SendBOEActivityReportToFile(templateFileName, theModelView);
-
-                    // Pass the file to the user
-                    string fileName = string.Format("BOEActivityReport_{0}.xlsx", ws.WorkspaceName);
-                    // Generate a custom ActionResult to cause a file download to the client
-                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-                    toReturn = File(
-                        fileStream: fs,
-                        contentType: ExportFileDownloadBase.GetContentType(fileName),
-                        fileDownloadName: fileName);
-                }
-                //add 
-                //
-                else if (reportID == (int)Reports.AllBOEs || reportID == (int)Reports.StandardReports)
-                {
-                    toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false);
-                }
-                else if (reportID == (int)Reports.AllBOEsSegmented)
-                {
-                    toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false, true);
-                }
-                else if (reportID == (int)Reports.WorkspaceData)
-                {
-					bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
-                    List<FullBoe> boes;
-                    List<BoeTaskElementDTO> tasks;
-					// Get RTE overrides
-					ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = ws.TemplateQuestionsAndAnswers.ToList();
-
-                    ws.LoadODCsRTEData();
-					ws.LoadMaterialsRTEData();
-
-					if (!isOffloading)
-                    {
-                        // offloading will create a copy of workspace so no need to retrieve data twice
-                        ws.LoadBoesAndTaskElementsRTEData();
-                        ws.LoadTravelRTEData();
-                        
-                        // All BOEs for the workspace as a default
-                        boes = ws.Boes.ToList();
-                        tasks = ws.TaskElements.OrderBy(t => t.BOETaskElementOrder).ToList();
-                    }
-                    else
-                    {
-						boes = ws.Boes.ToList();
-						OffloadLaborRates offloader = new OffloadLaborRates();
-                        OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes, ws);
-
-                        boes = results.Boes.ToList();
-                        tasks = boes.SelectMany(b => b.TaskElements).OrderBy(t => t.BOETaskElementOrder).ToList();
-                        rteTemplateOverrides = boes.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList();
-                    }
-
-                    BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides, ws.MoqTypeSelections.ToList(), true);
-                    // Need picklist values for contract type for Workspace Identification sheet
-                    exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
-
-                    MetricNameTaskElementMappingDTO metricTaskElementMappings = this.reportsControllerLogic.GetMetricNameTaskElementMappingDTO(ws);
-                    ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
-                    string exportedFileName = this.workspaceExporter.ExportToExcelFile(Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH), exportInputs, metricTaskElementMappings, contractTypes);
-
-                    // Generate a custom ActionResult to cause a file download to the client
-                    string fileName = string.Format("{0}_WorkspaceData.xlsx", ws.WorkspaceName);
-                    // Generate a custom ActionResult to cause a file download to the client
-                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-                    toReturn = File(
-                        fileStream: fs,
-                        contentType: ExportFileDownloadBase.GetContentType(fileName),
-                        fileDownloadName: fileName);
-                }
-                else if (reportID == (int)Reports.TravelUnitCost)
-                {
-                    string fileName = (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) ? "~/Templates/Export/TravelUnitCostRMS.xlsx" : "~/Templates/Export/TravelUnitCost.xlsx";
-                    string exportedFileName = this.travelUnitCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
-
-                    // Generate a custom ActionResult to cause a file download to the client
-                    fileName = string.Format("{0}_TravelUnitCost.xlsx", ws.WorkspaceName);
-                    // Generate a custom ActionResult to cause a file download to the client
-                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-                    toReturn = File(
-                        fileStream: fs,
-                        contentType: ExportFileDownloadBase.GetContentType(fileName),
-                        fileDownloadName: fileName);
-                }
-                else if (reportID == (int)Reports.TravelExtendedCost)
-                {
-                    string fileName = (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) ? "~/Templates/Export/TravelExtendedCostRMS.xlsx" : "~/Templates/Export/TravelExtendedCost.xlsx";
-                    string exportedFileName = this.travelExtendedCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
-
-                    // Generate a custom ActionResult to cause a file download to the client
-                    fileName = string.Format("{0}_TravelExtendedCost.xlsx", ws.WorkspaceName);
-                    // Generate a custom ActionResult to cause a file download to the client
-                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-                    toReturn = File(
-                        fileStream: fs,
-                        contentType: ExportFileDownloadBase.GetContentType(fileName),
-                        fileDownloadName: fileName);
-                }
-                else if (reportID == (int)Reports.WbsBoeReport)
-                {
-                    BOEExportInputs exportInputs = this.reportsControllerLogic.GetExportInputsForStatusAndWbsReports(ws);
-                    ICollection<BoeWbsReportModelView> reportModelView = this.reportsControllerLogic.GenerateWbsBoeReport(exportInputs);
-
-                    string exportedFileName = this.reportsControllerLogic.ExportWbsBoeReport(ws, Server.MapPath("~/Templates/Export/WbsBoeReport.xlsx"), reportModelView, exportInputs);
-
-                    string fileName = string.Format("{0}_WbsSummaryReport.xlsx", ws.WorkspaceName);
-                    // Generate a custom ActionResult to cause a file download to the client
-                    FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-                    toReturn = File(
-                        fileStream: fs,
-                        contentType: ExportFileDownloadBase.GetContentType(fileName),
-                        fileDownloadName: fileName);
-                }
-                else
-                {
-                    toReturn = new EmptyResult();
-                }
-
-                // Finalize Action
-                this.FinalizeAction(this.log, "Exporting - ReportsController - End", sw);
-            }
-            catch (GenValidationException ex)
-            {
-                toReturn = this.CreateTextFileWithErrorMessage(ex.Message);
-            }
-            catch (Exception e)  // The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.
-            {
-                this.log.Error(e);
-                if (ws.IsProjectMapWorkspace)
-                {
-					string supportLink = Utilities.ServiceCentralLink();
-
-					toReturn = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", supportLink));
-                }
-                else
-                {
-                    toReturn = this.CreateTextFileWithErrorMessage(e);
-                }
-            }
-
-            return toReturn;
         }
 
         /// <summary>
@@ -1948,187 +1614,7 @@ namespace GenBOE.Web.Controllers
             FinalizeAction(log, "DeleteProPricerExportFormats", sw);
             return Json(true);
         }
-
-        /// <summary>
-        /// Export a ProPricer Report
-        /// </summary>
-        /// <param name="inFormatID">The ID of the format to Export</param>
-        /// <param name="workspace">The workspace</param>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2002:DoNotLockOnObjectsWithWeakIdentity")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [ProPricerExportAccess]
-        public ActionResult ExportProPricerExportFormat(string workspace, int reportID, ProPricerScope scope)
-        {
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            // Initialize Action
-            Stopwatch sw = InitializeAction(log, "ExportProPricerExportFormat", SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
-
-            ActionResult toReturn = null;
-
-            try
-            {
-                if (reportID > 0)
-                {
-                    string lockKey = string.Intern("Export_ProPricer_" + workspace);
-                    lock(lockKey)
-                    {
-                        // Get the workspace again in case the user clicked twice
-                        ws = this.Factory.CreateFullWorkspace(workspace);
-
-                        // once the export is complete, increment the total of exports for this workspace for reporting tracking purposes
-                        ws.NumberOfTimesExportedToProPricer = ++ws.NumberOfTimesExportedToProPricer;
-
-                        // Get the user who is saving the BOE(s)
-                        int currentUserID = ws.CurrentActiveUser.UserID;
-
-                        using (TransactionScope transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-                        {
-                            this.workspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
-                            transactionScope.Complete();
-                        }
-
-                        // Clear the cache after since LastUpdateTime was changed
-                        this.Factory.ClearWorkspaceCache(ws.Shortname);
-
-                        // Get the format
-                        ProPricerDTO format = proPricerLoader.GetById(reportID, scope);
-
-                        if (format != null)
-                        {
-                            // Check that format is part of this workspace
-                            if (format.Scope != ProPricerScope.System && format.WorkspaceID != ws.Id)
-                            {
-                                throw new GenValidationException("The format selected for export is not part of the current workspace.");
-                            }
-
-                            if (format.Scope == ProPricerScope.System)
-                            {
-                                // If the template is scoped at the system level, run it thru the model view. The reason for this is; if 
-                                // there are custom fields in the system level template, their Ids are incorrect for the current workspace.
-                                // Running thru the model view will re-map the custom field Ids to those of the current workspace.
-                                ExportToProPricerModelView modelView = new ExportToProPricerModelView(format, this.Factory, ws.CustomFields);
-                                format = modelView.GetAssociatedDTO();
-                            }
-
-                            // Export the format to file
-                            string filePath = proPricerExporter.ExportReport(format, Server.MapPath("~/Templates/Export"), ws);
-
-                            if (filePath.Length > 0)
-                            {
-                                // Return the file to the user
-                                string fileName = "ProPricerExport_" + ws.WorkspaceName + ".zip";
-                                // Generate a custom ActionResult to cause a file download to the client
-                                FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-                                toReturn = File(
-                                    fileStream: fs,
-                                    contentType: ExportFileDownloadBase.GetContentType(fileName),
-                                    fileDownloadName: fileName);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (GenValidationException ex)
-            {
-                // clear the workspace in case the user clicked export twice (so subsequent retrievals of workspace gets latest update time from DB)
-                this.Factory.ClearWorkspaceCache(workspace);
-                toReturn = this.CreateTextFileWithErrorMessage(ex.Message);
-            }
-            catch (Exception e)
-            {
-                // clear the workspace in case the user clicked export twice (so subsequent retrievals of workspace gets latest update time from DB)
-                this.Factory.ClearWorkspaceCache(workspace);
-                log.Error(e);
-
-                toReturn = this.CreateTextFileWithErrorMessage(e);
-            }
-
-            // Finalize Action
-            FinalizeAction(log, "ExportProPricerExportFormat", sw);
-            return toReturn;
-        }
         
-        /// <summary>
-        /// Sends the view HTML as an Excel document
-        /// </summary>
-        /// <param name="workspace">workspace</param>
-        /// <returns>Excel document for export</returns>
-        public ActionResult ExportBoeDiscrepancyReport(string workspace)
-        {
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            // Initialize Action
-            Stopwatch sw = InitializeAction(log, "ExportBoeDiscrepancyReport", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
-
-            ViewData["ExportBoeDiscrepancyReport"] = true;
-            Response.AddHeader("Content-Type", "application/vnd.ms-excel");
-            Response.AppendHeader("Content-Disposition", "attachment;filename=BoeDiscrepancyReport-" + ws.WorkspaceName + ".xls");
-
-            ICollection<BoeDiscrepancyReportModelView> theModelViews = this.reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, false);
-            ViewResult toReturn = View(WebConstants.VIEW_BOE_DISCREPANCY_REPORT, theModelViews);
-
-            // Finalize Action
-            FinalizeAction(log, "ExportBoeDiscrepancyReport", sw);
-            return toReturn;
-        }
-
-        /// <summary>
-        /// Bulk downloads the reports.
-        /// </summary>
-        /// <param name="workspace">The workspace.</param>
-        /// <param name="downloadReports">The download reports.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">downloadReports</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ActionResult BulkDownloadReports(string workspace, ICollection<DownloadReportModelView> downloadReports)
-        {
-            if (downloadReports == null || downloadReports.None())
-            {
-                throw new ArgumentNullException(nameof(downloadReports));
-            }
-
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            // Initialize Action
-            Stopwatch sw = InitializeAction(log, "BulkDownloadReports", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
-
-            ActionResult toReturn = null;
-
-            try
-            {
-                // Export the format to file
-                string filePath = this.ssrsControllerLogic.BulkDownloadReport(ws, downloadReports, Server.MapPath("~/Templates/Export"));
-
-                if (filePath.Length > 0)
-                {
-                    // Return the file to the user
-                    string fileName = "BulkReportExport_" + ws.WorkspaceName + ".zip";
-                    // Generate a custom ActionResult to cause a file download to the client
-                    FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-                    toReturn = File(
-                        fileStream: fs,
-                        contentType: ExportFileDownloadBase.GetContentType(fileName),
-                        fileDownloadName: fileName);
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e);
-                throw;
-            }
-
-            // Finalize Action
-            FinalizeAction(log, "BulkDownloadReports", sw);
-            return toReturn;
-
-        }
-
         /// <summary>
         /// Gets the resulting validation data for the BOE Discrepancy Report as a JSON object.
         /// </summary>
@@ -2230,6 +1716,522 @@ namespace GenBOE.Web.Controllers
             return this.Json(new { Status = true });
         }
 
-        #endregion
-    }
+		#endregion
+
+		#region Exports
+
+		/// <summary>
+		/// Generate BOE custom export
+		/// </summary>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="BoesSelected">Selected list of BOEs</param>
+		/// <param name="ComponentsSelected">Selected report components</param>
+		/// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template; null otherwise.</param>
+		/// <returns>Report</returns>
+		public ActionResult ExportCustomReport(string workspace, ICollection<int> BoesSelected, ICollection<BoeCustomReportComponent> ComponentsSelected, string summarizeByCustomField)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			return this.ExportAllBOEsReport(ws, summarizeByCustomField, BoesSelected, ComponentsSelected, custom: true);
+		}
+
+		/// <summary>
+		/// Reusable logic for exporting the "All BOEs" report
+		/// </summary>
+		/// <param name="workspace">The current workspace name</param>
+		/// <param name="workspaceID">The corresponding workspace ID</param>
+		/// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
+		/// <param name="selectedBOEs">List of BOEs to be included in the report; if null, then include ALL</param>
+		/// <param name="selectedComponents">List of resources to be included in the report; if null, then include ALL</param>
+		/// <param name="segmented">Whether the output should be broken into segments and zipped</param>
+		/// <returns>Contents of the ALL BOEs report</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+		private ActionResult ExportAllBOEsReport(FullWorkspace workspace, string summarizeByCustomField, ICollection<int> selectedBOEs, ICollection<BoeCustomReportComponent> selectedComponents, bool custom, bool segmented = false)
+		{
+			ActionResult result = new EmptyResult();
+
+			try
+			{
+				bool isCustomExport;
+				WorkspaceExportFormatDTO wsExportFormatDTO;
+				BOEExportInputs exportInputs;
+				ICollection<BOEExportModelView> boeExportModelViews;
+				List<BOESummaryGridModelView> boeSummaryGridModelViews;
+
+				this.reportsControllerLogic.PrepareAllBOEsReport(workspace, IsSubcontractorUser(workspace), summarizeByCustomField, selectedBOEs, ViewData, out isCustomExport,
+					out wsExportFormatDTO, out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, custom);
+				this.reportsControllerLogic.ExportAllBOEsReport(workspace, selectedComponents, Response, isCustomExport, wsExportFormatDTO, exportInputs,
+					boeExportModelViews, boeSummaryGridModelViews, segmented);
+			}
+			catch (GenValidationException ex)
+			{
+				result = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception e)
+			{
+				log.Error(e);
+
+				result = this.CreateTextFileWithErrorMessage(e);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Export the Confidence Report into an Excel file for the specified BOE
+		/// </summary>
+		/// <param name="workspace">Workspace Shortname</param>
+		/// <param name="id">BOE ID</param>
+		/// <returns>Excel file of the Confidence Report</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Inline use, expecting for garbage collection to take care of things.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+		public ActionResult ExportConfidenceReport(string workspace, int boeID)
+		{
+			ActionResult toReturn = null;
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			try
+			{
+				// Initialize Action
+				Stopwatch sw = this.InitializeAction(this.log, "ExportConfidenceReport", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+				this.log.Performance("Exporting Confidence Report - ReportsController - Begin", 0);
+
+				ActionLogic.ModelView.ConfidenceReportModelView confidenceReport = boeConfidenceReport.GenerateConfidenceReport(ws, boeID);
+
+				string templateFileName = Server.MapPath("~/Templates/Export/ConfidenceReport.xlsx");
+
+				// Generate an export file from the data
+				string exportedFileName = this.boeConfidenceReportExporter.ExportToExcelFile(templateFileName, confidenceReport, boeID);
+
+				// Pass the file to the user
+				string fileName = string.Format("ConfidenceReport_{0}.xlsx", ws.WorkspaceName);
+				// Generate a custom ActionResult to cause a file download to the client
+				FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+				toReturn = File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.GetContentType(fileName),
+					fileDownloadName: fileName);
+
+				this.FinalizeAction(this.log, WebConstants.ACTION_EXPORT_CONFIDENCE_REPORT, sw);
+			}
+			catch (GenValidationException ex)
+			{
+				toReturn = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception ex)  // The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.
+			{
+				this.log.Error(ex);
+				toReturn = this.CreateTextFileWithErrorMessage(ex);
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Export a ProPricer Report
+		/// </summary>
+		/// <param name="inFormatID">The ID of the format to Export</param>
+		/// <param name="workspace">The workspace</param>
+		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2002:DoNotLockOnObjectsWithWeakIdentity")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[ProPricerExportAccess]
+		public ActionResult ExportProPricerExportFormat(string workspace, int reportID, ProPricerScope scope)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(log, "ExportProPricerExportFormat", SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
+
+			ActionResult toReturn = null;
+
+			try
+			{
+				if (reportID > 0)
+				{
+					string lockKey = string.Intern("Export_ProPricer_" + workspace);
+					lock (lockKey)
+					{
+						// Get the workspace again in case the user clicked twice
+						ws = this.Factory.CreateFullWorkspace(workspace);
+
+						// once the export is complete, increment the total of exports for this workspace for reporting tracking purposes
+						ws.NumberOfTimesExportedToProPricer = ++ws.NumberOfTimesExportedToProPricer;
+
+						// Get the user who is saving the BOE(s)
+						int currentUserID = ws.CurrentActiveUser.UserID;
+
+						using (TransactionScope transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+						{
+							this.workspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
+							transactionScope.Complete();
+						}
+
+						// Clear the cache after since LastUpdateTime was changed
+						this.Factory.ClearWorkspaceCache(ws.Shortname);
+
+						// Get the format
+						ProPricerDTO format = proPricerLoader.GetById(reportID, scope);
+
+						if (format != null)
+						{
+							// Check that format is part of this workspace
+							if (format.Scope != ProPricerScope.System && format.WorkspaceID != ws.Id)
+							{
+								throw new GenValidationException("The format selected for export is not part of the current workspace.");
+							}
+
+							if (format.Scope == ProPricerScope.System)
+							{
+								// If the template is scoped at the system level, run it thru the model view. The reason for this is; if 
+								// there are custom fields in the system level template, their Ids are incorrect for the current workspace.
+								// Running thru the model view will re-map the custom field Ids to those of the current workspace.
+								ExportToProPricerModelView modelView = new ExportToProPricerModelView(format, this.Factory, ws.CustomFields);
+								format = modelView.GetAssociatedDTO();
+							}
+
+							// Export the format to file
+							string filePath = proPricerExporter.ExportReport(format, Server.MapPath("~/Templates/Export"), ws);
+
+							if (filePath.Length > 0)
+							{
+								// Return the file to the user
+								string fileName = "ProPricerExport_" + ws.WorkspaceName + ".zip";
+								// Generate a custom ActionResult to cause a file download to the client
+								FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+								toReturn = File(
+									fileStream: fs,
+									contentType: ExportFileDownloadBase.GetContentType(fileName),
+									fileDownloadName: fileName);
+							}
+						}
+					}
+				}
+			}
+			catch (GenValidationException ex)
+			{
+				// clear the workspace in case the user clicked export twice (so subsequent retrievals of workspace gets latest update time from DB)
+				this.Factory.ClearWorkspaceCache(workspace);
+				toReturn = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception e)
+			{
+				// clear the workspace in case the user clicked export twice (so subsequent retrievals of workspace gets latest update time from DB)
+				this.Factory.ClearWorkspaceCache(workspace);
+				log.Error(e);
+
+				toReturn = this.CreateTextFileWithErrorMessage(e);
+			}
+
+			// Finalize Action
+			FinalizeAction(log, "ExportProPricerExportFormat", sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Exports a report
+		/// </summary>
+		/// <param name="workspace">The current workspace name</param>
+		/// <param name="reportID">The report ID</param>
+		/// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
+		/// <returns>Report</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "reportModelView")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+		public ActionResult Export(string workspace, int reportID, string summarizeByCustomField)
+		{
+			ActionResult toReturn = null;
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			try
+			{
+
+				// Initialize Action
+				Stopwatch sw = this.InitializeAction(this.log, "Export", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+				this.log.Performance("Exporting - ReportsController - Begin", 0);
+
+				if (reportID == (int)Reports.BOEStatus ||
+					reportID == (int)Reports.BOEStatusByBOE ||
+					reportID == (int)Reports.BOEStatusByWBS ||
+					reportID == (int)Reports.BOEStatusByCLIN)
+				{
+					// Call the BL to generate the status report
+					BOEExportInputs exportInputs = this.reportsControllerLogic.GetExportInputsForStatusAndWbsReports(ws);
+					Collection<BOEStatusReportModelView> theModelViews = this._BOEStatusReport.GenerateBOEStatusReport(exportInputs);
+
+					if (theModelViews.Count > 0)
+					{
+						string templateFileName;
+
+						switch (reportID)
+						{
+							case (int)Reports.BOEStatusByWBS:
+								// Get BOE Status Report template file name
+								templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByWBS.xlsx");
+								break;
+
+							case (int)Reports.BOEStatusByCLIN:
+								// Get BOE Status Report template file name
+								templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByCLIN.xlsx");
+								break;
+
+							default:
+								// Get BOE Status Report template file name
+								templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByBOE.xlsx");
+								break;
+						}
+
+						// Generate an export file from the data
+						string exportedFileName = this._BOEStatusReport.SendBOEStatusReportToFile(templateFileName, theModelViews, reportID, exportInputs);
+
+						// Pass the file to the user
+						string fileName = string.Format("BOEStatusExport_{0}.xlsx", ws.WorkspaceName);
+						// Generate a custom ActionResult to cause a file download to the client
+						FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+						toReturn = File(
+							fileStream: fs,
+							contentType: ExportFileDownloadBase.GetContentType(fileName),
+							fileDownloadName: fileName);
+					}
+				}
+				else if (reportID == (int)Reports.BOEActivity)
+				{
+					// Call the BL to generate the status report
+					BOEActivityReportModelView theModelView = this._BOEActivityReport.GenerateReport(ws);
+
+					// Get BOE Status Report template file name
+					string templateFileName = Server.MapPath("~/Templates/Export/BOEActivityReport.xlsx");
+
+					// Generate an export file from the data
+					string exportedFileName = this._BOEActivityReport.SendBOEActivityReportToFile(templateFileName, theModelView);
+
+					// Pass the file to the user
+					string fileName = string.Format("BOEActivityReport_{0}.xlsx", ws.WorkspaceName);
+					// Generate a custom ActionResult to cause a file download to the client
+					FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+					toReturn = File(
+						fileStream: fs,
+						contentType: ExportFileDownloadBase.GetContentType(fileName),
+						fileDownloadName: fileName);
+				}
+				//add 
+				//
+				else if (reportID == (int)Reports.AllBOEs || reportID == (int)Reports.StandardReports)
+				{
+					toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false);
+				}
+				else if (reportID == (int)Reports.AllBOEsSegmented)
+				{
+					toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false, true);
+				}
+				else if (reportID == (int)Reports.WorkspaceData)
+				{
+					bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
+					List<FullBoe> boes;
+					List<BoeTaskElementDTO> tasks;
+					// Get RTE overrides
+					ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = ws.TemplateQuestionsAndAnswers.ToList();
+
+					ws.LoadODCsRTEData();
+					ws.LoadMaterialsRTEData();
+
+					if (!isOffloading)
+					{
+						// offloading will create a copy of workspace so no need to retrieve data twice
+						ws.LoadBoesAndTaskElementsRTEData();
+						ws.LoadTravelRTEData();
+
+						// All BOEs for the workspace as a default
+						boes = ws.Boes.ToList();
+						tasks = ws.TaskElements.OrderBy(t => t.BOETaskElementOrder).ToList();
+					}
+					else
+					{
+						boes = ws.Boes.ToList();
+						OffloadLaborRates offloader = new OffloadLaborRates();
+						OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes, ws);
+
+						boes = results.Boes.ToList();
+						tasks = boes.SelectMany(b => b.TaskElements).OrderBy(t => t.BOETaskElementOrder).ToList();
+						rteTemplateOverrides = boes.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList();
+					}
+
+					BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides, ws.MoqTypeSelections.ToList(), true);
+					// Need picklist values for contract type for Workspace Identification sheet
+					exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
+
+					MetricNameTaskElementMappingDTO metricTaskElementMappings = this.reportsControllerLogic.GetMetricNameTaskElementMappingDTO(ws);
+					ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
+					string exportedFileName = this.workspaceExporter.ExportToExcelFile(Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH), exportInputs, metricTaskElementMappings, contractTypes);
+
+					// Generate a custom ActionResult to cause a file download to the client
+					string fileName = string.Format("{0}_WorkspaceData.xlsx", ws.WorkspaceName);
+					// Generate a custom ActionResult to cause a file download to the client
+					FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+					toReturn = File(
+						fileStream: fs,
+						contentType: ExportFileDownloadBase.GetContentType(fileName),
+						fileDownloadName: fileName);
+				}
+				else if (reportID == (int)Reports.TravelUnitCost)
+				{
+					string fileName = (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) ? "~/Templates/Export/TravelUnitCostRMS.xlsx" : "~/Templates/Export/TravelUnitCost.xlsx";
+					string exportedFileName = this.travelUnitCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
+
+					// Generate a custom ActionResult to cause a file download to the client
+					fileName = string.Format("{0}_TravelUnitCost.xlsx", ws.WorkspaceName);
+					// Generate a custom ActionResult to cause a file download to the client
+					FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+					toReturn = File(
+						fileStream: fs,
+						contentType: ExportFileDownloadBase.GetContentType(fileName),
+						fileDownloadName: fileName);
+				}
+				else if (reportID == (int)Reports.TravelExtendedCost)
+				{
+					string fileName = (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) ? "~/Templates/Export/TravelExtendedCostRMS.xlsx" : "~/Templates/Export/TravelExtendedCost.xlsx";
+					string exportedFileName = this.travelExtendedCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
+
+					// Generate a custom ActionResult to cause a file download to the client
+					fileName = string.Format("{0}_TravelExtendedCost.xlsx", ws.WorkspaceName);
+					// Generate a custom ActionResult to cause a file download to the client
+					FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+					toReturn = File(
+						fileStream: fs,
+						contentType: ExportFileDownloadBase.GetContentType(fileName),
+						fileDownloadName: fileName);
+				}
+				else if (reportID == (int)Reports.WbsBoeReport)
+				{
+					BOEExportInputs exportInputs = this.reportsControllerLogic.GetExportInputsForStatusAndWbsReports(ws);
+					ICollection<BoeWbsReportModelView> reportModelView = this.reportsControllerLogic.GenerateWbsBoeReport(exportInputs);
+
+					string exportedFileName = this.reportsControllerLogic.ExportWbsBoeReport(ws, Server.MapPath("~/Templates/Export/WbsBoeReport.xlsx"), reportModelView, exportInputs);
+
+					string fileName = string.Format("{0}_WbsSummaryReport.xlsx", ws.WorkspaceName);
+					// Generate a custom ActionResult to cause a file download to the client
+					FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+					toReturn = File(
+						fileStream: fs,
+						contentType: ExportFileDownloadBase.GetContentType(fileName),
+						fileDownloadName: fileName);
+				}
+				else
+				{
+					toReturn = new EmptyResult();
+				}
+
+				// Finalize Action
+				this.FinalizeAction(this.log, "Exporting - ReportsController - End", sw);
+			}
+			catch (GenValidationException ex)
+			{
+				toReturn = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception e)  // The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.
+			{
+				this.log.Error(e);
+				if (ws.IsProjectMapWorkspace)
+				{
+					string supportLink = Utilities.ServiceCentralLink();
+
+					toReturn = this.CreateTextFileWithErrorMessage(string.Format("An error has occurred. This might be the result of invalid data such as missing Offload Rates. If the data is valid, and the error persists, please contact the GenBOE Helpdesk at {0}.", supportLink));
+				}
+				else
+				{
+					toReturn = this.CreateTextFileWithErrorMessage(e);
+				}
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Sends the view HTML as an Excel document
+		/// </summary>
+		/// <param name="workspace">workspace</param>
+		/// <returns>Excel document for export</returns>
+		public ActionResult ExportBoeDiscrepancyReport(string workspace)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(log, "ExportBoeDiscrepancyReport", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+
+			ViewData["ExportBoeDiscrepancyReport"] = true;
+			Response.AddHeader("Content-Type", "application/vnd.ms-excel");
+			Response.AppendHeader("Content-Disposition", "attachment;filename=BoeDiscrepancyReport-" + ws.WorkspaceName + ".xls");
+
+			ICollection<BoeDiscrepancyReportModelView> theModelViews = this.reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, false);
+			ViewResult toReturn = View(WebConstants.VIEW_BOE_DISCREPANCY_REPORT, theModelViews);
+
+			// Finalize Action
+			FinalizeAction(log, "ExportBoeDiscrepancyReport", sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Bulk downloads the reports.
+		/// </summary>
+		/// <param name="workspace">The workspace.</param>
+		/// <param name="downloadReports">The download reports.</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException">downloadReports</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public ActionResult BulkDownloadReports(string workspace, ICollection<DownloadReportModelView> downloadReports)
+		{
+			if (downloadReports == null || downloadReports.None())
+			{
+				throw new ArgumentNullException(nameof(downloadReports));
+			}
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(log, "BulkDownloadReports", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+
+			ActionResult toReturn = null;
+
+			try
+			{
+				// Export the format to file
+				string filePath = this.ssrsControllerLogic.BulkDownloadReport(ws, downloadReports, Server.MapPath("~/Templates/Export"));
+
+				if (filePath.Length > 0)
+				{
+					// Return the file to the user
+					string fileName = "BulkReportExport_" + ws.WorkspaceName + ".zip";
+					// Generate a custom ActionResult to cause a file download to the client
+					FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+					toReturn = File(
+						fileStream: fs,
+						contentType: ExportFileDownloadBase.GetContentType(fileName),
+						fileDownloadName: fileName);
+				}
+			}
+			catch (Exception e)
+			{
+				log.Error(e);
+				throw;
+			}
+
+			// Finalize Action
+			FinalizeAction(log, "BulkDownloadReports", sw);
+			return toReturn;
+
+		}
+
+		#endregion
+	}
 }

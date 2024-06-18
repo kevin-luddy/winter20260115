@@ -39,7 +39,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="confidenceReport">View model of confidence report</param>
 		/// <param name="boeID">The BOE ID</param>
 		/// <returns>The file location of the exported Excel file</returns>
-		public string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport, int? boeID)
+		public string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport, int boeID)
 		{
 			// Check inputs
 			if (templateFileLocation == null)
@@ -59,19 +59,9 @@ namespace GenBOE.ActionLogic.IO.Export
 			worksheet.Add(new string[] { confidenceScore.ToString() });
 			worksheet.Add(new string[] { "BOE", "Task", "MOQ Types", "RTE Fields", "Confidence Error Messages" });
 
-			if (boeID.HasValue)
+			foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
 			{
-				foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData.Where(x => x.BoeId == boeID.Value))
-				{
-					worksheet.Add(item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
-				}
-			}
-			else
-			{
-				foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
-				{
-					worksheet.Add(item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
-				}
+				worksheet.Add(item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
 			}
 
 			// Pass the rows to the generic Excel exporter           

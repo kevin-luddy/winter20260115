@@ -307,6 +307,8 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\ConfidenceReport.xlsx" />
+    <None Include="Resources\ConfidenceReport_WIP.txt" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
@@ -376,7 +378,6 @@
     <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportEPs.xlsx" />
     <None Include="CodeCloneIgnoreSettings.codeclonesettings" />
     <None Include="packages.config" />
-    <None Include="Resources\ConfidenceReport.xlsx" />
     <None Include="Resources\LaborImportHoursCustomFields.xlsx" />
     <None Include="Resources\LaborImportHoursCustomFieldsNoChange.xlsx" />
     <None Include="Resources\LaborImportHoursCustomFieldsNoSelection.xlsx" />
