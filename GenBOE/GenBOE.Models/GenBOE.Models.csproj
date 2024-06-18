@@ -195,6 +195,9 @@
     <Compile Include="CLIN1.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CommonDisclosureSkillMix.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ContractTypeLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
