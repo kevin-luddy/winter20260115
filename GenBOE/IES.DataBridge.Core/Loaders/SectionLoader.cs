@@ -271,6 +271,29 @@ namespace IES.DataBridge.Loaders
 
 			return sections;
 		}
+
+		/// <summary>
+		/// Get a flat dictionary of Section IDs and Names for the given Revision ID
+		/// </summary>
+		/// <param name="revisionId">Revision ID</param>
+		/// <returns>flat dictionary of Section IDs and Names</returns>
+		public Dictionary<int, string> GetFlatSectionIdsAndNamesByRevisionId(int revisionId)
+		{
+			Dictionary<int, string> sections = new Dictionary<int, string>();
+
+			using (IESEntities context = new())
+			{
+				foreach (var section in context.Sections
+					.Where(x => x.RevisionID == revisionId && x.SectionContentTypeID == (int)SectionContentType.Section)
+					.Select(x => new { ID = x.ID, Title = x.Title} ))
+				{
+					sections.Add(section.ID, section.Title);
+				}
+			}
+
+			return sections;
+		}
+
 		#endregion
 
 		#region Commits

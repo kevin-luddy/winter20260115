@@ -189,6 +189,11 @@ namespace IES.Common.Core.Constants
 		public readonly static string ACTION_GET_SECTIONS_FOR_REVISION = "GetSectionsForRevision";
 
 		/// <summary>
+		/// The action name for getting section selections after a revision change
+		/// </summary>
+		public readonly static string ACTION_GET_SECTION_SELECTION_FOR_REVISION_CHANGE = "GetSectionSelectionForRevisionChange";
+
+		/// <summary>
 		/// The action name for getting the User Info
 		/// </summary>
 		public readonly static string ACTION_GET_INFO = "GetUserInfo";
