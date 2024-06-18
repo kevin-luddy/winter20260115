@@ -12,6 +12,7 @@ namespace GenBOE.DataBridge.DTO
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using GenBOE.Models;
+	using System.Data;
 
 	public class SkillMixDTOLoader : ISkillMixDTOLoader
 	{
@@ -35,18 +36,27 @@ namespace GenBOE.DataBridge.DTO
 							  where sm.MOQTypeSelectionID == moqTypeSelectionID
 							  select new SkillMixDTO
 							  {
-
+								  SkillMixID = sm.SkillMixID,
+								  Rationale = sm.Rationale,
+								  ProposedHours = sm.ProposedHours ?? 0,
+								  HistoricalHours = sm.HistoricalHours ?? 0,
+								  BOESkillMix = sm.BOESkillMix ?? 0,
+								  LaborSkillMix = sm.LaborSkillMix ?? 0,
+								  ResourceOld = sm.ResourceOld,
+								  ResourceNew = sm.ResourceNew,
+								  BOEID = sm.BOEID ?? -1,
+								  BOETaskElementID = sm.BOETaskElementID ?? -1,
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID ?? -1
 							  }).ToList();
 				}
+				return result;
 			}
-
-			return result;
 		}
 
 		/// <summary>
 		/// Get all SkillMix values by BOE FK ID
 		/// </summary>
-		/// <param name="boeID"></param>
+		/// <param name="boeID">int</param>
 		/// <returns>List of SkillMix</returns>
 		[DbQuery]
 		virtual public ICollection<SkillMixDTO> GetByBOEID(int boeEID) 
@@ -61,18 +71,27 @@ namespace GenBOE.DataBridge.DTO
 							  where sm.BOEID == boeEID
 							  select new SkillMixDTO
 							  {
-
+								  SkillMixID = sm.SkillMixID,
+								  Rationale = sm.Rationale,
+								  ProposedHours = sm.ProposedHours ?? 0,
+								  HistoricalHours = sm.HistoricalHours ?? 0,
+								  BOESkillMix = sm.BOESkillMix ?? 0,
+								  LaborSkillMix = sm.LaborSkillMix ?? 0,
+								  ResourceOld = sm.ResourceOld,
+								  ResourceNew = sm.ResourceNew,
+								  BOEID = sm.BOEID ?? -1,
+								  BOETaskElementID = sm.BOETaskElementID ?? -1,
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID ?? -1
 							  }).ToList();
 				}
+				return result;
 			}
-
-			return result;
 		}
 
 		/// <summary>
 		/// Get all SkillMix values by BOETaskElement FK ID
 		/// </summary>
-		/// <param name="boeTaskElementID"></param>
+		/// <param name="boeTaskElementID">int</param>
 		/// <returns>List of SkillMix</returns>
 		[DbQuery]
 		virtual public ICollection<SkillMixDTO> GetByBOETaskElementID(int boeTaskElementID)
@@ -87,18 +106,27 @@ namespace GenBOE.DataBridge.DTO
 							  where sm.BOETaskElementID == boeTaskElementID
 							  select new SkillMixDTO
 							  {
-
+								  SkillMixID = sm.SkillMixID,
+								  Rationale = sm.Rationale,
+								  ProposedHours = sm.ProposedHours ?? 0,
+								  HistoricalHours = sm.HistoricalHours ?? 0,
+								  BOESkillMix = sm.BOESkillMix ?? 0,
+								  LaborSkillMix = sm.LaborSkillMix ?? 0,
+								  ResourceOld = sm.ResourceOld,
+								  ResourceNew = sm.ResourceNew,
+								  BOEID = sm.BOEID ?? -1,
+								  BOETaskElementID = sm.BOETaskElementID ?? -1,
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID ?? -1
 							  }).ToList();
 				}
+				return result;
 			}
-
-			return result;
 		}
 
 		/// <summary>
 		/// Get SkillMix by certain values
 		/// </summary>
-		/// <param name="skillMixIDs"></param>
+		/// <param name="skillMixIDs">ICollection<int></param>
 		/// <returns>List of SkillMix</returns>
 		[DbQuery]
 		virtual public ICollection<SkillMixDTO> GetByIds(ICollection<int> skillMixIDs)
@@ -113,12 +141,21 @@ namespace GenBOE.DataBridge.DTO
 							  where skillMixIDs.Contains(sm.SkillMixID)
 							  select new SkillMixDTO
 							  {
-
+								  SkillMixID = sm.SkillMixID,
+								  Rationale = sm.Rationale,
+								  ProposedHours = sm.ProposedHours ?? 0,
+								  HistoricalHours = sm.HistoricalHours ?? 0,
+								  BOESkillMix = sm.BOESkillMix ?? 0,
+								  LaborSkillMix = sm.LaborSkillMix ?? 0,
+								  ResourceOld = sm.ResourceOld,
+								  ResourceNew = sm.ResourceNew,
+								  BOEID = sm.BOEID ?? -1,
+								  BOETaskElementID = sm.BOETaskElementID ?? -1,
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID ?? -1
 							  }).ToList();
 				}
+				return result;
 			}
-
-			return result;
 		}
 
 		/// <summary>
@@ -129,6 +166,63 @@ namespace GenBOE.DataBridge.DTO
 		virtual public SkillMixDTO GetById(int skillMixID)
 		{
 			return this.GetByIds(new Collection<int>() { skillMixID }).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Delete Skill Mix by MOQ Type Selection ID
+		/// </summary>
+		/// <param name="moqTypeSelectionID">int</param>
+		/// <returns>Number of SkillMixes deleted</returns>
+		virtual public int? DeleteSkillMixByMoqTypeSelection(int moqTypeSelectionID)
+		{
+			int? toReturn = null;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				if (moqTypeSelectionID > 0)
+				{
+					using (GenBoeEntities gbe = new GenBoeEntities())
+					{
+						toReturn = gbe.deleteSkillMix(moqTypeSelectionID).FirstOrDefault();
+					}
+				}
+				return toReturn;
+			}
+		}
+
+		/// <summary>
+		/// Insert Skill Mix with Kill/Fill procedure
+		/// </summary>
+		/// <param name="skillMixes">SkillMixDTO</param>
+		/// <returns>Num rows that were inserted</returns>
+		virtual public int? InsertSkillMix(ICollection<SkillMixDTO> skillMixes)
+		{
+			int? toReturn = null;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				if (skillMixes != null || skillMixes.Count > 0)
+				{
+					Collection<string> skillMixVariablesPropertiesToIncludeInTable = new Collection<string>()
+					{
+						"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "MOQTypeSelectionID"
+					};
+					using (GenBoeEntities gbe = new GenBoeEntities())
+					{
+						DataTable skillMixVariablesDataTable = StoredProcedureHelper.ToDataTable<SkillMixDTO>(skillMixes, skillMixVariablesPropertiesToIncludeInTable);
+
+						toReturn = StoredProcedureHelper.ExecuteTableValueProcedure(
+							gbe,
+							skillMixVariablesDataTable,
+							"insertSkillMixviaTableParameter",
+							"@SkillMixTableParameter",
+							"TT_SkillMix",
+							false
+							).FirstOrDefault().Key;
+					}
+				}
+				return toReturn;
+			}
 		}
 	}
 }

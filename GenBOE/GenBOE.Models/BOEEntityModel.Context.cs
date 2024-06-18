@@ -5547,26 +5547,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceResourceInUseFlagByResourceID1", resourceIDParameter, resourceListIDParameter);
         }
     
-        public virtual int deleteWorkspaceResourceviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteWorkspaceResourceviaTableParameter");
-        }
-    
-        public virtual int getResourceInUseFlagByResourceListIDviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("getResourceInUseFlagByResourceListIDviaTableParameter");
-        }
-    
-        public virtual int insertWorkspaceResourceviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertWorkspaceResourceviaTableParameter");
-        }
-    
-        public virtual int updateWorkspaceResourceviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateWorkspaceResourceviaTableParameter");
-        }
-    
         public virtual ObjectResult<Nullable<int>> deleteSkillMix(Nullable<int> mOQTypeSelectionID)
         {
             var mOQTypeSelectionIDParameter = mOQTypeSelectionID.HasValue ?
