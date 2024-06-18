@@ -43,13 +43,13 @@ BEGIN
 	SELECT @DistinctMOQTypeSelectionID = MOQTypeSelectionID
 	FROM (
 		SELECT DISTINCT MOQTypeSelectionID
-		FROM @SkillMixTableParameter
-	) AS temp_SkillMix
+		FROM @MOQTypeSelectionTableDataResourceHoursTableParameter
+	) AS temp_MOQTypeSelectionTableDataResourceHours
 
-	DELETE FROM [dbo].[SkillMix]
+	DELETE FROM [dbo].[MOQTypeSelectionTableDataResourceHours]
 	WHERE [MOQTypeSelectionID] = @DistinctMOQTypeSelectionID
 
-	INSERT INTO [dbo].[SkillMix]
+	INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
 		([ResourceName]
 		 ,[WbsHours]
 		 ,[TotalHours]
