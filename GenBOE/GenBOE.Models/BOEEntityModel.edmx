@@ -469,6 +469,22 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="DisplayedCLINNumber" Type="varchar" MaxLength="50" />
           <Property Name="ContractTypeID" Type="int" />
         </EntityType>
+        <EntityType Name="CommonDisclosureSkillMix">
+          <Key>
+            <PropertyRef Name="CommonDisclosureSkillMixID" />
+          </Key>
+          <Property Name="CommonDisclosureSkillMixID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Rationale" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Included" Type="bit" Nullable="false" />
+          <Property Name="ProposedHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="HistoricalHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="BOESkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="LaborSkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="ResourceID" Type="int" Nullable="false" />
+          <Property Name="BusinessResourceID" Type="int" Nullable="false" />
+          <Property Name="SkillMixID" Type="int" Nullable="false" />
+          <Property Name="MOQTypeSelectionID" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="ContractTypeLU">
           <Key>
             <PropertyRef Name="ContractTypeID" />
@@ -2680,6 +2696,30 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CommonDisclosureSkillMix_MOQTypeSelection">
+          <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="1" />
+          <End Role="CommonDisclosureSkillMix" Type="Self.CommonDisclosureSkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOQTypeSelection">
+              <PropertyRef Name="MOQTypeSelectionId" />
+            </Principal>
+            <Dependent Role="CommonDisclosureSkillMix">
+              <PropertyRef Name="MOQTypeSelectionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommonDisclosureSkillMix_SkillMixID">
+          <End Role="SkillMix" Type="Self.SkillMix" Multiplicity="1" />
+          <End Role="CommonDisclosureSkillMix" Type="Self.CommonDisclosureSkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SkillMix">
+              <PropertyRef Name="SkillMixID" />
+            </Principal>
+            <Dependent Role="CommonDisclosureSkillMix">
+              <PropertyRef Name="SkillMixID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CustomField_CustomFieldDisplayLU">
           <End Role="CustomFieldDisplayLU" Type="Self.CustomFieldDisplayLU" Multiplicity="0..1" />
           <End Role="CustomField" Type="Self.CustomField" Multiplicity="*" />
@@ -4417,6 +4457,9 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="CLINID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
+        <Function Name="deleteCommonDisclosureSkillMix" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MOQTypeSelectionID" Type="int" Mode="In" />
+        </Function>
         <Function Name="deleteContractType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
         </Function>
@@ -4815,6 +4858,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="WorkspaceVariableID" Type="varchar" Mode="In" />
         </Function>
         <Function Name="insertBOETaskElementWorkspaceVariableviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="insertCommonDisclosureSkillMixviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertDefaultMultiClinWBS" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
         </Function>
@@ -5797,6 +5841,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySet Name="BOEUserRole" EntityType="Self.BOEUserRole" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BOEUserRoleHistory" EntityType="Self.BOEUserRoleHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CLIN" EntityType="Self.CLIN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CommonDisclosureSkillMix" EntityType="Self.CommonDisclosureSkillMix" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ContractTypeLU" EntityType="Self.ContractTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CostElementLU" EntityType="Self.CostElementLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomField" EntityType="Self.CustomField" Schema="dbo" store:Type="Tables" />
@@ -6338,6 +6383,14 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <AssociationSet Name="FK_CLIN_Workspace" Association="Self.FK_CLIN_Workspace">
             <End Role="Workspace" EntitySet="Workspace" />
             <End Role="CLIN" EntitySet="CLIN" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommonDisclosureSkillMix_MOQTypeSelection" Association="Self.FK_CommonDisclosureSkillMix_MOQTypeSelection">
+            <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
+            <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMix" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommonDisclosureSkillMix_SkillMixID" Association="Self.FK_CommonDisclosureSkillMix_SkillMixID">
+            <End Role="SkillMix" EntitySet="SkillMix" />
+            <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMix" />
           </AssociationSet>
           <AssociationSet Name="FK_CustomField_CustomFieldDisplayLU" Association="Self.FK_CustomField_CustomFieldDisplayLU">
             <End Role="CustomFieldDisplayLU" EntitySet="CustomFieldDisplayLU" />
@@ -12522,9 +12575,22 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <End Role="SkillMix" EntitySet="SkillMixes" />
           </AssociationSet>
           <FunctionImport Name="deleteSkillMix" ReturnType="Collection(Int32)">
-            <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
+          <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="insertSkillMixviaTableParameter" />
+          <EntitySet Name="CommonDisclosureSkillMixes" EntityType="GenBOE.Models.CommonDisclosureSkillMix" />
+          <AssociationSet Name="FK_CommonDisclosureSkillMix_MOQTypeSelection" Association="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection">
+            <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
+            <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMixes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommonDisclosureSkillMix_SkillMixID" Association="GenBOE.Models.FK_CommonDisclosureSkillMix_SkillMixID">
+            <End Role="SkillMix" EntitySet="SkillMixes" />
+            <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMixes" />
+          </AssociationSet>
+          <FunctionImport Name="deleteCommonDisclosureSkillMix" ReturnType="Collection(Int32)">
+            <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="insertCommonDisclosureSkillMixviaTableParameter" />
 		</EntityContainer>
 		<ComplexType Name="getBOEForFindReplace_Result">
 		  <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -13932,6 +13998,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <NavigationProperty Name="MOQTypeSelectionTableDatas" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelection" ToRole="MOQTypeSelectionTableData" />
 		  <Property Name="HistoricalReferenceExplanation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="SkillMixes" Relationship="GenBOE.Models.FK_SkillMix_MOQTypeSelection" FromRole="MOQTypeSelection" ToRole="SkillMix" />
+          <NavigationProperty Name="CommonDisclosureSkillMixes" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection" FromRole="MOQTypeSelection" ToRole="CommonDisclosureSkillMix" />
 		</EntityType>
 		<Association Name="FK__MOQTypeSe__TaskI__31D2648A">
 		  <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
@@ -14149,6 +14216,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_SkillMix_BOE" FromRole="SkillMix" ToRole="BOE" />
           <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_SkillMix_BOETaskElement" FromRole="SkillMix" ToRole="BOETaskElement" />
           <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK_SkillMix_MOQTypeSelection" FromRole="SkillMix" ToRole="MOQTypeSelection" />
+          <NavigationProperty Name="CommonDisclosureSkillMixes" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_SkillMixID" FromRole="SkillMix" ToRole="CommonDisclosureSkillMix" />
         </EntityType>
         <Association Name="FK_SkillMix_BOE">
           <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="0..1" />
@@ -14183,6 +14251,48 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </Principal>
             <Dependent Role="SkillMix">
               <PropertyRef Name="MOQTypeSelectionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CommonDisclosureSkillMix">
+          <Key>
+            <PropertyRef Name="CommonDisclosureSkillMixID" />
+          </Key>
+          <Property Name="CommonDisclosureSkillMixID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Rationale" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Included" Type="Boolean" Nullable="false" />
+          <Property Name="ProposedHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
+          <Property Name="HistoricalHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
+          <Property Name="BOESkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
+          <Property Name="LaborSkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
+          <Property Name="ResourceID" Type="Int32" Nullable="false" />
+          <Property Name="BusinessResourceID" Type="Int32" Nullable="false" />
+          <Property Name="SkillMixID" Type="Int32" Nullable="false" />
+          <Property Name="MOQTypeSelectionID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection" FromRole="CommonDisclosureSkillMix" ToRole="MOQTypeSelection" />
+          <NavigationProperty Name="SkillMix" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_SkillMixID" FromRole="CommonDisclosureSkillMix" ToRole="SkillMix" />
+        </EntityType>
+        <Association Name="FK_CommonDisclosureSkillMix_MOQTypeSelection">
+          <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="1" />
+          <End Type="GenBOE.Models.CommonDisclosureSkillMix" Role="CommonDisclosureSkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOQTypeSelection">
+              <PropertyRef Name="MOQTypeSelectionId" />
+            </Principal>
+            <Dependent Role="CommonDisclosureSkillMix">
+              <PropertyRef Name="MOQTypeSelectionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommonDisclosureSkillMix_SkillMixID">
+          <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="1" />
+          <End Type="GenBOE.Models.CommonDisclosureSkillMix" Role="CommonDisclosureSkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SkillMix">
+              <PropertyRef Name="SkillMixID" />
+            </Principal>
+            <Dependent Role="CommonDisclosureSkillMix">
+              <PropertyRef Name="SkillMixID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -16433,6 +16543,25 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="deleteSkillMix" FunctionName="GenBOE.Models.Store.deleteSkillMix" />
           <FunctionImportMapping FunctionImportName="insertSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertSkillMixviaTableParameter" />
+          <EntitySetMapping Name="CommonDisclosureSkillMixes">
+            <EntityTypeMapping TypeName="GenBOE.Models.CommonDisclosureSkillMix">
+              <MappingFragment StoreEntitySet="CommonDisclosureSkillMix">
+                <ScalarProperty Name="MOQTypeSelectionID" ColumnName="MOQTypeSelectionID" />
+                <ScalarProperty Name="SkillMixID" ColumnName="SkillMixID" />
+                <ScalarProperty Name="BusinessResourceID" ColumnName="BusinessResourceID" />
+                <ScalarProperty Name="ResourceID" ColumnName="ResourceID" />
+                <ScalarProperty Name="LaborSkillMix" ColumnName="LaborSkillMix" />
+                <ScalarProperty Name="BOESkillMix" ColumnName="BOESkillMix" />
+                <ScalarProperty Name="HistoricalHours" ColumnName="HistoricalHours" />
+                <ScalarProperty Name="ProposedHours" ColumnName="ProposedHours" />
+                <ScalarProperty Name="Included" ColumnName="Included" />
+                <ScalarProperty Name="Rationale" ColumnName="Rationale" />
+                <ScalarProperty Name="CommonDisclosureSkillMixID" ColumnName="CommonDisclosureSkillMixID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteCommonDisclosureSkillMix" FunctionName="GenBOE.Models.Store.deleteCommonDisclosureSkillMix" />
+          <FunctionImportMapping FunctionImportName="insertCommonDisclosureSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertCommonDisclosureSkillMixviaTableParameter" />
 		</EntityContainerMapping>
 	  </Mapping>
 	</edmx:Mappings>

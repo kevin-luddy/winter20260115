@@ -176,6 +176,7 @@ namespace GenBOE.Models
         public virtual DbSet<BOEFormPBOE> BOEFormPBOEs { get; set; }
         public virtual DbSet<MessageConfirmation> MessageConfirmations { get; set; }
         public virtual DbSet<SkillMix> SkillMixes { get; set; }
+        public virtual DbSet<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -5579,6 +5580,20 @@ namespace GenBOE.Models
         public virtual int insertSkillMixviaTableParameter()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertSkillMixviaTableParameter");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> deleteCommonDisclosureSkillMix(Nullable<int> mOQTypeSelectionID)
+        {
+            var mOQTypeSelectionIDParameter = mOQTypeSelectionID.HasValue ?
+                new ObjectParameter("MOQTypeSelectionID", mOQTypeSelectionID) :
+                new ObjectParameter("MOQTypeSelectionID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteCommonDisclosureSkillMix", mOQTypeSelectionIDParameter);
+        }
+    
+        public virtual int insertCommonDisclosureSkillMixviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertCommonDisclosureSkillMixviaTableParameter");
         }
     }
 }
