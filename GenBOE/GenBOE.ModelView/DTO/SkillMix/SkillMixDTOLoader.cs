@@ -203,25 +203,22 @@ namespace GenBOE.DataBridge.DTO
 
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
 			{
-				if (skillMixes != null || skillMixes.Count > 0)
+				Collection<string> skillMixVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					Collection<string> skillMixVariablesPropertiesToIncludeInTable = new Collection<string>()
-					{
-						"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "MOQTypeSelectionID"
-					};
-					using (GenBoeEntities gbe = new GenBoeEntities())
-					{
-						DataTable skillMixVariablesDataTable = StoredProcedureHelper.ToDataTable<SkillMixDTO>(skillMixes, skillMixVariablesPropertiesToIncludeInTable);
+					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "MOQTypeSelectionID"
+				};
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					DataTable skillMixVariablesDataTable = StoredProcedureHelper.ToDataTable<SkillMixDTO>(skillMixes, skillMixVariablesPropertiesToIncludeInTable);
 
-						toReturn = StoredProcedureHelper.ExecuteTableValueProcedure(
-							gbe,
-							skillMixVariablesDataTable,
-							"insertSkillMixviaTableParameter",
-							"@SkillMixTableParameter",
-							"TT_SkillMix",
-							false
-							).FirstOrDefault().Key;
-					}
+					toReturn = StoredProcedureHelper.ExecuteTableValueProcedure(
+						gbe,
+						skillMixVariablesDataTable,
+						"insertSkillMixviaTableParameter",
+						"@SkillMixTableParameter",
+						"TT_SkillMix",
+						false
+						).FirstOrDefault().Key;
 				}
 				return toReturn;
 			}
