@@ -8,14 +8,10 @@ namespace GenBOE.DataBridge.DTO
 {
 	using IES.Common;
 	using GenBOE.Dtos;
-	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
-	using IES.Common;
-	using GenBOE.Dtos;
 	using GenBOE.Models;
-	using GenBOE.ActionLogic.ModelView;
 
 	public class SkillMixDTOLoader : ISkillMixDTOLoader
 	{
