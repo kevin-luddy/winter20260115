@@ -15,8 +15,8 @@ CREATE TYPE [dbo].[TT_CommonDisclosureSkillMix] AS TABLE(
 		,[HistoricalHours] decimal(11, 2) NOT NULL
 		,[BOESkillMix] decimal(5, 2) NOT NULL
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
-		,[ResourceID] [varchar](max) NOT NULL
-		,[BusinessResourceID] [varchar](max) NOT NULL
+		,[ResourceID] int NOT NULL
+		,[BusinessResourceID] int NOT NULL
 		,[SkillMixID] int NOT NULL
 		,[MOQTypeSelectionID] int NULL
 );

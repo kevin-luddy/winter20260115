@@ -12,8 +12,8 @@ BEGIN
 		,[HistoricalHours] decimal(11, 2) NOT NULL
 		,[BOESkillMix] decimal(5, 2) NOT NULL
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
-		,[ResourceID] [varchar](20) NOT NULL
-		,[BusinessResourceID] [varchar](20) NOT NULL
+		,[ResourceID] int NOT NULL
+		,[BusinessResourceID] int NOT NULL
 		,[SkillMixID] int NOT NULL
 		,[MOQTypeSelectionID] int NULL
 		,CONSTRAINT FK_CommonDisclosureSkillMix_SkillMixID FOREIGN KEY (SkillMixID) REFERENCES [dbo].[SkillMix] ([SkillMixID])
@@ -35,8 +35,8 @@ BEGIN
 		,[HistoricalHours] decimal(11, 2) NOT NULL
 		,[BOESkillMix] decimal(5, 2) NOT NULL
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
-		,[ResourceID] [varchar](20) NOT NULL
-		,[BusinessResourceID] [varchar](20) NOT NULL
+		,[ResourceID] int NOT NULL
+		,[BusinessResourceID] int NOT NULL
 		,[SkillMixID] int NOT NULL
 		,[MOQTypeSelectionID] int NULL
 		,[VersionID] int NOT NULL
