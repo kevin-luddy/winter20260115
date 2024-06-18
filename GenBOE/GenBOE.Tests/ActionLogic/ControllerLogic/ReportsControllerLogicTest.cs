@@ -27,7 +27,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using GenTRAC.DataBridge.DTO;
-    using IES.Common;
+	using IES.Common;
     using IES.Common.classes;
     using IES.Common.OfficeUtilities;
     using Microsoft.Practices.Unity;
@@ -54,8 +54,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<IWorkspaceControllerLogic> workspaceControllerLogic = new Mock<IWorkspaceControllerLogic>();
         Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
         Mock<TravelTripCostCalculation> travelTripCostCalculation = new Mock<TravelTripCostCalculation>();
-        
-        [TestInitialize]
+
+		[TestInitialize]
         public void Init()
         {
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), Factory.Object);
@@ -75,12 +75,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// <returns>sut</returns>
         private ReportsControllerLogic CreateSut()
         {
-            return new ReportsControllerLogic(this.boeExporter.Object, this.boeSummary.Object,
+			return new ReportsControllerLogic(this.boeExporter.Object, this.boeSummary.Object,
                 this.boeCustomExporter.Object,
                 this.workspaceExportFormatDTOLoader.Object, this.boeDiscrepancyReport.Object,
                 this.proposalLoader.Object,
-                this.workspaceControllerLogic.Object, this.travelTripCostCalculation.Object);
-        }
+                this.workspaceControllerLogic.Object, this.travelTripCostCalculation.Object);			
+		}
 
         #region ExportAllBOEsReport
         /// <summary>

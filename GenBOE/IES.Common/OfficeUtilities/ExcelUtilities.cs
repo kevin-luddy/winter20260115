@@ -706,10 +706,25 @@ namespace IES.Common.OfficeUtilities
             {
                 return ParseColumnName(headerCell.CellReference);
             }
+			else
+			{
+				// Try parsing the second row
+				// The Confidence Report export may be the only edge case (currently) as the headers are on the second row, not the first (which has the score)
+				Row nextRow = worksheetPart.Worksheet.Descendants<Row>().Skip(1).First();
 
-            // If the specified header was not found in columns A-Z, pass up an exception to indicate
-            throw new ColumnMissingException(headerString);
-        }
+				Cell nextHeaderCell = (from c in nextRow.Descendants<Cell>()
+								   where GetCellValue(c, document.WorkbookPart).Equals(headerString, StringComparison.CurrentCultureIgnoreCase)
+								   select c).FirstOrDefault();
+
+				if (nextHeaderCell != null)
+				{
+					return ParseColumnName(nextHeaderCell.CellReference);
+				}
+			}
+
+			// If the specified header was not found in columns A-Z, pass up an exception to indicate
+			throw new ColumnMissingException(headerString);
+		}
 
         /// <summary>
         /// Given a cell name, parse the specified cell to get the column name.

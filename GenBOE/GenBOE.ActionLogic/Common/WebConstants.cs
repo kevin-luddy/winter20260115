@@ -340,6 +340,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DATA_BOE = "LoadBOEDATA";
 		public static readonly string ACTION_DELETE_TASK_ELEMENTS = "DeleteTaskElements";
 		public static readonly string ACTION_EXPORT_BOE = "ExportBOEToWordFile";
+		public static readonly string ACTION_EXPORT_CONFIDENCE_REPORT = "ExportConfidenceReport";
 		public static readonly string ACTION_BOE_SEARCH_PREVIEW = "BOESearchPreview";
 		public static readonly string ACTION_PROJECTMAP_SEARCH_PREVIEW = "ProjectMapSearchPreview";
 		public static readonly string ACTION_EXPORT_MANAGE_BOE = "ExportManageBOE";
