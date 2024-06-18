@@ -39,15 +39,15 @@ namespace GenBOE.DataBridge.DTO
 							  {
 								  SkillMixID = sm.SkillMixID,
 								  Rationale = sm.Rationale,
-								  ProposedHours = sm.ProposedHours ?? 0,
-								  HistoricalHours = sm.HistoricalHours ?? 0,
-								  BOESkillMix = sm.BOESkillMix ?? 0,
-								  LaborSkillMix = sm.LaborSkillMix ?? 0,
+								  ProposedHours = sm.ProposedHours,
+								  HistoricalHours = sm.HistoricalHours,
+								  BOESkillMix = sm.BOESkillMix,
+								  LaborSkillMix = sm.LaborSkillMix,
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
-								  BOEID = sm.BOEID ?? -1,
-								  BOETaskElementID = sm.BOETaskElementID ?? -1,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID ?? -1
+								  BOEID = sm.BOEID,
+								  BOETaskElementID = sm.BOETaskElementID,
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID
 							  }).ToList();
 				}
 				return result;

@@ -23,15 +23,15 @@ namespace GenBOE.Models
         public int SkillMixID { get; set; }
         public string Rationale { get; set; }
         public Nullable<bool> Included { get; set; }
-        public Nullable<decimal> ProposedHours { get; set; }
-        public Nullable<decimal> HistoricalHours { get; set; }
-        public Nullable<decimal> BOESkillMix { get; set; }
-        public Nullable<decimal> LaborSkillMix { get; set; }
+        public decimal ProposedHours { get; set; }
+        public decimal HistoricalHours { get; set; }
+        public decimal BOESkillMix { get; set; }
+        public decimal LaborSkillMix { get; set; }
         public string ResourceOld { get; set; }
         public string ResourceNew { get; set; }
-        public Nullable<int> BOEID { get; set; }
-        public Nullable<int> BOETaskElementID { get; set; }
-        public Nullable<int> MOQTypeSelectionID { get; set; }
+        public int BOEID { get; set; }
+        public int BOETaskElementID { get; set; }
+        public int MOQTypeSelectionID { get; set; }
     
         public virtual BOE BOE { get; set; }
         public virtual BOETaskElement BOETaskElement { get; set; }
