@@ -13,6 +13,7 @@ namespace GenBOE.DataBridge.DTO
 	using System.Linq;
 	using GenBOE.Models;
 	using System.Data;
+	using System;
 
 	public class SkillMixDTOLoader : ISkillMixDTOLoader
 	{
@@ -198,6 +199,7 @@ namespace GenBOE.DataBridge.DTO
 		virtual public int? InsertSkillMix(ICollection<SkillMixDTO> skillMixes)
 		{
 			int? toReturn = null;
+			if (skillMixes == null || skillMixes.Count == 0) { throw new ArgumentNullException(nameof(skillMixes)); }
 
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
 			{
