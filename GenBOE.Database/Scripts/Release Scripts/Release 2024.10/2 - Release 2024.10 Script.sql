@@ -15,7 +15,7 @@ BEGIN
 		,[ResourceID] int NOT NULL
 		,[BusinessResourceID] int NOT NULL
 		,[SkillMixID] int NOT NULL
-		,[MOQTypeSelectionID] int NULL
+		,[MOQTypeSelectionID] int NOT NULL
 		,CONSTRAINT FK_CommonDisclosureSkillMix_SkillMixID FOREIGN KEY (SkillMixID) REFERENCES [dbo].[SkillMix] ([SkillMixID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_MOQTypeSelection FOREIGN KEY(MOQTypeSelectionID) REFERENCES [dbo].[MOQTypeSelection] ([MOQTypeSelectionId])
 	)
@@ -38,7 +38,7 @@ BEGIN
 		,[ResourceID] int NOT NULL
 		,[BusinessResourceID] int NOT NULL
 		,[SkillMixID] int NOT NULL
-		,[MOQTypeSelectionID] int NULL
+		,[MOQTypeSelectionID] int NOT NULL
 		,[VersionID] int NOT NULL
 	);
 END
