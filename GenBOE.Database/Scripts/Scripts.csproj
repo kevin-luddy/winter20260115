@@ -278,6 +278,7 @@
     <Content Include="Object Scripts\Table Based Processing\LaborSpreadViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\LaborTypeCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\LaborTypeViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\MOQTypeSelectionTableDataResourceHoursViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\MoqTypeTableCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\OrdinaryVariableViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\OrdinaryVarSumVarViaTable.sql" />
