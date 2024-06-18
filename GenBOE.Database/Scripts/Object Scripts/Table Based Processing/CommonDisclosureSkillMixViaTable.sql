@@ -56,7 +56,7 @@ BEGIN
 		FROM @CommonDisclosureSkillMixTableParameter
 	) AS temp_CommonDisclosureSkillMix
 
-	DELETE FROM [dbo].[SkillMix]
+	DELETE FROM [dbo].[CommonDisclosureSkillMix]
 	WHERE [MOQTypeSelectionID] = @DistinctMOQTypeSelectionID
 
 	INSERT INTO [dbo].[CommonDisclosureSkillMix]
