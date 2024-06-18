@@ -19,6 +19,7 @@ namespace GenBOE.Models
         {
             this.MOQTypeSelectionTableDatas = new HashSet<MOQTypeSelectionTableData>();
             this.SkillMixes = new HashSet<SkillMix>();
+            this.CommonDisclosureSkillMixes = new HashSet<CommonDisclosureSkillMix>();
         }
     
         public int MOQTypeSelectionId { get; set; }
@@ -42,5 +43,7 @@ namespace GenBOE.Models
         public virtual ICollection<MOQTypeSelectionTableData> MOQTypeSelectionTableDatas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SkillMix> SkillMixes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
     }
 }
