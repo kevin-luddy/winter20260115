@@ -14202,24 +14202,24 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <PropertyRef Name="SkillMixID" />
           </Key>
           <Property Name="SkillMixID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Rationale" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Rationale" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Included" Type="Boolean" />
-          <Property Name="ProposedHours" Type="Decimal" Precision="11" Scale="2" />
-          <Property Name="HistoricalHours" Type="Decimal" Precision="11" Scale="2" />
-          <Property Name="BOESkillMix" Type="Decimal" Precision="5" Scale="2" />
-          <Property Name="LaborSkillMix" Type="Decimal" Precision="5" Scale="2" />
-          <Property Name="ResourceOld" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="ResourceNew" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="BOEID" Type="Int32" />
-          <Property Name="BOETaskElementID" Type="Int32" />
-          <Property Name="MOQTypeSelectionID" Type="Int32" />
+          <Property Name="ProposedHours" Type="Decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="HistoricalHours" Type="Decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="BOESkillMix" Type="Decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="LaborSkillMix" Type="Decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="ResourceOld" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ResourceNew" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="BOEID" Type="Int32" Nullable="false" />
+          <Property Name="BOETaskElementID" Type="Int32" Nullable="false" />
+          <Property Name="MOQTypeSelectionID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_SkillMix_BOE" FromRole="SkillMix" ToRole="BOE" />
           <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_SkillMix_BOETaskElement" FromRole="SkillMix" ToRole="BOETaskElement" />
           <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK_SkillMix_MOQTypeSelection" FromRole="SkillMix" ToRole="MOQTypeSelection" />
           <NavigationProperty Name="CommonDisclosureSkillMixes" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_SkillMixID" FromRole="SkillMix" ToRole="CommonDisclosureSkillMix" />
         </EntityType>
         <Association Name="FK_SkillMix_BOE">
-          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
           <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BOE">
@@ -14231,7 +14231,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SkillMix_BOETaskElement">
-          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
           <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BOETaskElement">
@@ -14243,7 +14243,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SkillMix_MOQTypeSelection">
-          <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="1" />
           <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="MOQTypeSelection">
