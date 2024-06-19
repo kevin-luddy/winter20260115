@@ -5,17 +5,17 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Sk
 BEGIN
 	CREATE TABLE [dbo].[SkillMix] (
 		[SkillMixID] int IDENTITY(1,1) PRIMARY KEY CLUSTERED
-		,[Rationale] varchar(255) NULL
+		,[Rationale] varchar(255) NOT NULL
 		,[Included] bit DEFAULT 0
-		,[ProposedHours] decimal(11, 2) NULL
-		,[HistoricalHours] decimal(11, 2) NULL
-		,[BOESkillMix] decimal(5, 2) NULL
-		,[LaborSkillMix] decimal(5, 2) NULL
-		,[ResourceOld] [varchar](20) NULL
-		,[ResourceNew] [varchar](20) NULL
-		,[BOEID] int NULL
-		,[BOETaskElementID] int NULL
-		,[MOQTypeSelectionID] int NULL
+		,[ProposedHours] decimal(11, 2) NOT NULL
+		,[HistoricalHours] decimal(11, 2) NOT NULL
+		,[BOESkillMix] decimal(5, 2) NOT NULL
+		,[LaborSkillMix] decimal(5, 2) NOT NULL
+		,[ResourceOld] [varchar](20) NOT NULL
+		,[ResourceNew] [varchar](20) NOT NULL
+		,[BOEID] int NOT NULL
+		,[BOETaskElementID] int NOT NULL
+		,[MOQTypeSelectionID] int NOT NULL
 		,CONSTRAINT FK_SkillMix_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] ([BOEID])
 		,CONSTRAINT FK_SkillMix_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID])
 		,CONSTRAINT FK_SkillMix_MOQTypeSelection FOREIGN KEY(MOQTypeSelectionID) REFERENCES [dbo].[MOQTypeSelection] ([MOQTypeSelectionId])
@@ -27,18 +27,18 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version]
 BEGIN
 	CREATE TABLE [version].[SkillMix]
 	(
-		[SkillMixID] int NULL
-		,[Rationale] varchar(255) NULL
+		[SkillMixID] int NOT NULL
+		,[Rationale] varchar(255) NOT NULL
 		,[Included] bit DEFAULT 0
-		,[ProposedHours] decimal(11, 2) NULL
-		,[HistoricalHours] decimal(11, 2) NULL
-		,[BOESkillMix] decimal(5, 2) NULL
-		,[LaborSkillMix] decimal(5, 2) NULL
-		,[ResourceOld] [varchar](20) NULL
-		,[ResourceNew] [varchar](20) NULL
-		,[BOEID] int NULL
-		,[BOETaskElementID] int NULL
-		,[MOQTypeSelectionID] int NULL
+		,[ProposedHours] decimal(11, 2) NOT NULL
+		,[HistoricalHours] decimal(11, 2) NOT NULL
+		,[BOESkillMix] decimal(5, 2) NOT NULL
+		,[LaborSkillMix] decimal(5, 2) NOT NULL
+		,[ResourceOld] [varchar](20) NOT NULL
+		,[ResourceNew] [varchar](20) NOT NULL
+		,[BOEID] int NOT NULL
+		,[BOETaskElementID] int NOT NULL
+		,[MOQTypeSelectionID] int NOT NULL
 		,[VersionID] int NOT NULL
 	);
 END
@@ -75,4 +75,13 @@ BEGIN
 		[VersionID] int NOT NULL,
 	);
 END
+GO
+
+-- 06/17/2024 - twilson3 - PROPH-2065 Missing Index causing Snapshot Transaction to Fail
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[BOELaborType]') AND name = N'IX_BOELaborType__BRCResourceID') 
+	CREATE NONCLUSTERED INDEX [IX_BOELaborType__BRCResourceID] ON [dbo].[BOELaborType]
+	(
+		[BRCResourceID] ASC
+	)
+	INCLUDE([BOETaskElementID]) WITH (PAD_INDEX = ON, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
 GO

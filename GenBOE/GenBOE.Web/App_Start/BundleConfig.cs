@@ -210,6 +210,10 @@ namespace GenBOE.Web
                 "~/Resources/js/angular/ProPricerController.js"
                 ));
 
+			bundles.Add(new ScriptBundle("~/bundles/confidenceReport").Include(
+				"~/Resources/js/angular/boeConfidenceReportController.js"
+				));
+
             bundles.Add(new ScriptBundle("~/bundles/initialization").Include(
                 "~/Resources/js/Initialization.js"
                 ));

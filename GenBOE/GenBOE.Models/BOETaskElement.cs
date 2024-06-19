@@ -24,6 +24,7 @@ namespace GenBOE.Models
             this.RteTemplateAnswers = new HashSet<RteTemplateAnswer>();
             this.BOELaborTypes = new HashSet<BOELaborType>();
             this.MOQTypeSelections = new HashSet<MOQTypeSelection>();
+            this.SkillMixes = new HashSet<SkillMix>();
         }
     
         public int BOETaskElementID { get; set; }
@@ -60,5 +61,7 @@ namespace GenBOE.Models
         public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MOQTypeSelection> MOQTypeSelections { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SkillMix> SkillMixes { get; set; }
     }
 }

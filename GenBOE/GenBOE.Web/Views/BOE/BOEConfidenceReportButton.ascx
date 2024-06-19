@@ -14,7 +14,7 @@
 	ConfidenceReport.OpenReport = function () {
 		var url = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
 			'<%: WebConstants.CONTROLLER_REPORTS %>',
-			'<%: WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_RESULTS %>',
+			'<%: WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT %>',
 			'boe/<%: ViewData["BOEID"] %>');
 
 		window.open(url);

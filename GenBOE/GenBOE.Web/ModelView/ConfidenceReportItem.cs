@@ -4,13 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.ActionLogic.ModelView
+namespace GenBOE.Web.ModelView
 {
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Linq;
-	using GenBOE.Dtos;
-	using IES.Common;
+	using System;
 
 	/// <summary>
 	/// Class containing data for a row in the Confidence Report
@@ -21,8 +17,27 @@ namespace GenBOE.ActionLogic.ModelView
 		/// ctor
 		/// </summary>
 		public ConfidenceReportItem()
+		{			
+		}
+
+		/// <summary>
+		/// ctor using ActionLogic model view
+		/// </summary>
+		/// <param name="item"></param>
+		public ConfidenceReportItem(GenBOE.ActionLogic.ModelView.ConfidenceReportItem item)
 		{
-			MoqTypes = new Collection<MOQType>();
+			_ = item ?? throw new ArgumentNullException(nameof(item));
+
+			BoeId = item.BoeId;
+			BoeTitle = item.BoeTitle;
+			TaskId = item.TaskId;
+			TaskTitle = item.TaskTitle;
+			MoqTypes = item.MoqTypesString;
+			RteFields = item.RteFields;
+			HasPoPError = item.HasPoPError;
+			HasMoqError = item.HasMoqError;
+			HasHistoricalRefError = item.HasHistoricalRefError;
+			ErrorText = item.ErrorText;
 		}
 
 		/// <summary>
@@ -46,14 +61,9 @@ namespace GenBOE.ActionLogic.ModelView
 		public string TaskTitle { get; set; }
 
 		/// <summary>
-		/// MOQ Types used in the Task
+		/// MOQ Types
 		/// </summary>
-		public ICollection<MOQType> MoqTypes { get; set; }
-
-		/// <summary>
-		/// MOQ Types as a comma separated list for display in the report
-		/// </summary>
-		public string MoqTypesString => string.Join(", ", MoqTypes.Select(x => x.GetDescription()));
+		public string MoqTypes { get; set; }
 
 		/// <summary>
 		/// Count of RTE fields in the task
@@ -79,20 +89,5 @@ namespace GenBOE.ActionLogic.ModelView
 		/// Error type text to display
 		/// </summary>
 		public string ErrorText { get; set; }
-
-		/// <summary>
-		/// POP Algorithm Result DTO for PoPs
-		/// </summary>
-		public ConfidenceReportPoPResultDTO PoPResults { get; set; }
-
-		/// <summary>
-		/// Math Algorithm Result DTO for MOQ Equation
-		/// </summary>
-		public ConfidenceReportMathResultDTO MoqResults { get; set; }
-
-		/// <summary>
-		/// Math Algorithm Result DTO for Historical References
-		/// </summary>
-		public ConfidenceReportMathResultDTO HistoricalRefResults { get; set; }
 	}
 }

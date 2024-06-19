@@ -803,14 +803,14 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_BUTTON, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 			
 			ViewData["BOEID"] = boeID;
 			ViewData["HideConfidenceReport"] = !Utilities.IsConfidenceReportEnabled;
-			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT);
+			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT_BUTTON);
 
 			// Finalize Action
-			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT, sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_BUTTON, sw);
 			return toReturn;
 		}
 
