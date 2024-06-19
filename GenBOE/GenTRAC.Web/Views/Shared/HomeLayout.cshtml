@@ -35,11 +35,11 @@
 
 		        var piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", @SiteMasterUtilities.PiwikId());          //<!-- Space PTM  -->
 	            // Track each user's visit
-			    piwikTracker3.push(['setUserId', '@IES.Common.Utilities.CurrentUser()']);
+                piwikTracker3.setUserId('@IES.Common.Utilities.CurrentUser()');
 	            piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
 		        piwikTracker3.trackPageView();
 		        piwikTracker3.enableLinkTracking();
-	        } catch( err ) {}
+            } catch( err ) {}
         };
 </script>
     <noscript>

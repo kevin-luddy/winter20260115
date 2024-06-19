@@ -60,13 +60,13 @@
 
 		    piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", <%:Utilities.PiwikId()%>);          //<!-- BOE  -->
             // Track each user's visit
-			piwikTracker3.push(['setUserId', '<%:IES.Common.Utilities.CurrentUser()%>']);
+            piwikTracker3.setUserId('<%:IES.Common.Utilities.CurrentUser()%>');
             piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
 		    piwikTracker3.trackPageView();
 		    piwikTracker3.enableLinkTracking();
 	    } catch( err ) {}
     };
-	</script>
+    </script>
     <noscript>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
@@ -118,7 +118,7 @@
     <div class="page">
         <div class="header">
             <div class="lmproprietary">
-                            <% if (Model != null && Model.GetType() == typeof(GenBOEMasterModelView))
+                            <% if (Model != null && Model is GenBOEMasterModelView)
                                { %>
                                 <%: ((GenBOEMasterModelView)Model).HeaderFooter%>
                             <% }
@@ -148,7 +148,7 @@
                         <% } %>
                     </a>
                     
-                    <% if (Model != null && (Model is GenBOEMasterModelView || Model is DateShiftIndexModelView))
+                    <% if (Model != null && Model is GenBOEMasterModelView)
                         { %>
                     <div><%: ((GenBOEMasterModelView)Model).ProposalName %>
                             <div id="StatusDisplay" class="workspace-status">Status: <%: ((GenBOEMasterModelView)Model).WorkspaceState %></div>
@@ -185,7 +185,7 @@
     </div>
     <div class="footer">
         <div class="lmproprietary">
-            <% if (Model != null && Model.GetType() == typeof(GenBOEMasterModelView))
+            <% if (Model != null && Model is GenBOEMasterModelView)
                 { %>
                 <%: ((GenBOEMasterModelView)Model).HeaderFooter%>
             <% }

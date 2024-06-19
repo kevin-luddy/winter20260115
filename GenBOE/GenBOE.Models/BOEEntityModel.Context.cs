@@ -175,6 +175,8 @@ namespace GenBOE.Models
         public virtual DbSet<MoqTypeTableCustomFieldValueXREF> MoqTypeTableCustomFieldValueXREFs { get; set; }
         public virtual DbSet<BOEFormPBOE> BOEFormPBOEs { get; set; }
         public virtual DbSet<MessageConfirmation> MessageConfirmations { get; set; }
+        public virtual DbSet<SkillMix> SkillMixes { get; set; }
+        public virtual DbSet<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -5545,25 +5547,53 @@ namespace GenBOE.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceResourceInUseFlagByResourceID1", resourceIDParameter, resourceListIDParameter);
         }
-
-		public virtual int deleteWorkspaceResourceviaTableParameter()
-		{
-			return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteWorkspaceResourceviaTableParameter");
-		}
-
-		public virtual int getResourceInUseFlagByResourceListIDviaTableParameter()
-		{
-			return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("getResourceInUseFlagByResourceListIDviaTableParameter");
-		}
-
-		public virtual int insertWorkspaceResourceviaTableParameter()
-		{
-			return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertWorkspaceResourceviaTableParameter");
-		}
-
-		public virtual int updateWorkspaceResourceviaTableParameter()
-		{
-			return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateWorkspaceResourceviaTableParameter");
-		}
-	}
+    
+        public virtual int deleteWorkspaceResourceviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteWorkspaceResourceviaTableParameter");
+        }
+    
+        public virtual int getResourceInUseFlagByResourceListIDviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("getResourceInUseFlagByResourceListIDviaTableParameter");
+        }
+    
+        public virtual int insertWorkspaceResourceviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertWorkspaceResourceviaTableParameter");
+        }
+    
+        public virtual int updateWorkspaceResourceviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateWorkspaceResourceviaTableParameter");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> deleteSkillMix(Nullable<int> mOQTypeSelectionID)
+        {
+            var mOQTypeSelectionIDParameter = mOQTypeSelectionID.HasValue ?
+                new ObjectParameter("MOQTypeSelectionID", mOQTypeSelectionID) :
+                new ObjectParameter("MOQTypeSelectionID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteSkillMix", mOQTypeSelectionIDParameter);
+        }
+    
+        public virtual int insertSkillMixviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertSkillMixviaTableParameter");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> deleteCommonDisclosureSkillMix(Nullable<int> mOQTypeSelectionID)
+        {
+            var mOQTypeSelectionIDParameter = mOQTypeSelectionID.HasValue ?
+                new ObjectParameter("MOQTypeSelectionID", mOQTypeSelectionID) :
+                new ObjectParameter("MOQTypeSelectionID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteCommonDisclosureSkillMix", mOQTypeSelectionIDParameter);
+        }
+    
+        public virtual int insertCommonDisclosureSkillMixviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertCommonDisclosureSkillMixviaTableParameter");
+        }
+    }
 }

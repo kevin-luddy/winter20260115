@@ -185,7 +185,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.AreEqual(3, result.TotalTaskCount);
 			Assert.AreEqual(3, result.TasksWithoutErrors);
 			Assert.AreEqual("3/3", result.ConfidenceScore);
-			Assert.AreEqual(3, result.ConfidenceReportData.Count);
+			Assert.IsFalse(result.ConfidenceReportData.Any());
 
 			// Assert no errors
 			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasPoPError));
@@ -196,27 +196,6 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.PoPResults.NoMatchDates.Any()));
 			Assert.IsTrue(result.ConfidenceReportData.All(x => x.MoqResults.Matches.All(y => y.Value)));
 			Assert.IsTrue(result.ConfidenceReportData.All(x => x.HistoricalRefResults.Matches.All(y => y.Value)));
-
-			// Assert remaining Task 1 details
-			Assert.AreEqual(boe1.Title, result.ConfidenceReportData.ElementAt(0).BoeTitle);
-			Assert.AreEqual(boe1.Id, result.ConfidenceReportData.ElementAt(0).BoeId);
-			Assert.AreEqual(task1.Id, result.ConfidenceReportData.ElementAt(0).TaskId);
-			Assert.AreEqual(task1.TaskTitle, result.ConfidenceReportData.ElementAt(0).TaskTitle);
-			Assert.AreEqual(3, result.ConfidenceReportData.ElementAt(0).rteFields);
-
-			// Assert remaining Task 2 details
-			Assert.AreEqual(boe1.Title, result.ConfidenceReportData.ElementAt(1).BoeTitle);
-			Assert.AreEqual(boe1.Id, result.ConfidenceReportData.ElementAt(1).BoeId);
-			Assert.AreEqual(task2.Id, result.ConfidenceReportData.ElementAt(1).TaskId);
-			Assert.AreEqual(task2.TaskTitle, result.ConfidenceReportData.ElementAt(1).TaskTitle);
-			Assert.AreEqual(1, result.ConfidenceReportData.ElementAt(1).rteFields);
-
-			// Assert remaining Task 3 details
-			Assert.AreEqual(boe2.Title, result.ConfidenceReportData.ElementAt(2).BoeTitle);
-			Assert.AreEqual(boe2.Id, result.ConfidenceReportData.ElementAt(2).BoeId);
-			Assert.AreEqual(task3.Id, result.ConfidenceReportData.ElementAt(2).TaskId);
-			Assert.AreEqual(task3.TaskTitle, result.ConfidenceReportData.ElementAt(2).TaskTitle);
-			Assert.AreEqual(1, result.ConfidenceReportData.ElementAt(2).rteFields);
 		}
 
 		/// <summary>
@@ -311,31 +290,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.AreEqual(2, result.TotalTaskCount);
 			Assert.AreEqual(2, result.TasksWithoutErrors);
 			Assert.AreEqual("2/2", result.ConfidenceScore);
-			Assert.AreEqual(2, result.ConfidenceReportData.Count);
-
-			// Assert no errors
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasPoPError));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasMoqError));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasHistoricalRefError));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => x.ErrorText == ConfidenceReportConstants.NO_ERRORS));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => x.PoPResults.PoPDateResults.All(y => y.Value == PoPMatchResult.Match)));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.PoPResults.NoMatchDates.Any()));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => x.MoqResults.Matches.All(y => y.Value)));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => x.HistoricalRefResults.Matches.All(y => y.Value)));
-
-			// Assert remaining Task 1 details
-			Assert.AreEqual(boe.Title, result.ConfidenceReportData.ElementAt(0).BoeTitle);
-			Assert.AreEqual(boe.Id, result.ConfidenceReportData.ElementAt(0).BoeId);
-			Assert.AreEqual(task1.Id, result.ConfidenceReportData.ElementAt(0).TaskId);
-			Assert.AreEqual(task1.TaskTitle, result.ConfidenceReportData.ElementAt(0).TaskTitle);
-			Assert.AreEqual(3, result.ConfidenceReportData.ElementAt(0).rteFields);
-
-			// Assert remaining Task 2 details
-			Assert.AreEqual(boe.Title, result.ConfidenceReportData.ElementAt(1).BoeTitle);
-			Assert.AreEqual(boe.Id, result.ConfidenceReportData.ElementAt(1).BoeId);
-			Assert.AreEqual(task2.Id, result.ConfidenceReportData.ElementAt(1).TaskId);
-			Assert.AreEqual(task2.TaskTitle, result.ConfidenceReportData.ElementAt(1).TaskTitle);
-			Assert.AreEqual(1, result.ConfidenceReportData.ElementAt(1).rteFields);
+			Assert.IsFalse(result.ConfidenceReportData.Any());
 		}
 
 		/// <summary>
@@ -858,7 +813,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				TaskTitle = "Task 1",
-				Description = "This task is for January 2024 thru December 2024",
+				Description = "The PoP is being left out so that there is an error so the RTEs can be counted",
 				StartDate = new DateTime(2024, 1, 15),
 				EndDate = new DateTime(2024, 12, 15),
 				MOQHoursEquation = $"1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16 + 17",
@@ -939,18 +894,12 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 
 			// Assert Score
 			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(1, result.TasksWithoutErrors);
-			Assert.AreEqual("1/1", result.ConfidenceScore);
+			Assert.AreEqual(0, result.TasksWithoutErrors);
+			Assert.AreEqual("0/1", result.ConfidenceScore);
 			Assert.AreEqual(1, result.ConfidenceReportData.Count);
 
-			// Assert no errors
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasPoPError));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasMoqError));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasHistoricalRefError));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => x.ErrorText == ConfidenceReportConstants.NO_ERRORS));
-
 			// Assert all RTEs found
-			Assert.AreEqual(19, result.ConfidenceReportData.ElementAt(0).rteFields);
+			Assert.AreEqual(19, result.ConfidenceReportData.ElementAt(0).RteFields);
 		}
 
 		/// <summary>
@@ -1015,13 +964,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.AreEqual(1, result.TotalTaskCount);
 			Assert.AreEqual(1, result.TasksWithoutErrors);
 			Assert.AreEqual("1/1", result.ConfidenceScore);
-			Assert.AreEqual(1, result.ConfidenceReportData.Count);
-
-			// Assert no errors
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasPoPError));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasMoqError));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => !x.HasHistoricalRefError));
-			Assert.IsTrue(result.ConfidenceReportData.All(x => x.ErrorText == ConfidenceReportConstants.NO_ERRORS));
+			Assert.IsFalse(result.ConfidenceReportData.Any());
 		}
 
 		/// <summary>
@@ -1087,13 +1030,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.AreEqual(1, result.TotalTaskCount);
 			Assert.AreEqual(1, result.TasksWithoutErrors);
 			Assert.AreEqual("1/1", result.ConfidenceScore);
-			Assert.AreEqual(1, result.ConfidenceReportData.Count);
-
-			// Assert no errors
-			Assert.IsFalse(result.ConfidenceReportData.First().HasPoPError);
-			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
-			Assert.IsFalse(result.ConfidenceReportData.First().HasHistoricalRefError);
-			Assert.AreEqual(ConfidenceReportConstants.NO_ERRORS, result.ConfidenceReportData.First().ErrorText);
+			Assert.IsFalse(result.ConfidenceReportData.Any());
 		}
 
 		/// <summary>

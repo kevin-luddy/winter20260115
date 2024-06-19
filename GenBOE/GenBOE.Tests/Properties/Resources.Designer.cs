@@ -73,6 +73,16 @@ namespace GenBOE.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] ConfidenceReport {
+            get {
+                object obj = ResourceManager.GetObject("ConfidenceReport", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] LaborImportCost {
             get {
                 object obj = ResourceManager.GetObject("LaborImportCost", resourceCulture);
