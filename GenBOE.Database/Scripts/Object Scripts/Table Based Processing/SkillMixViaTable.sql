@@ -19,6 +19,8 @@ CREATE TYPE [dbo].[TT_SkillMix] AS TABLE(
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
+		/* OrderID is automatically added in the code, so it HAS to be last */
+		,[OrderID] [int] NOT NULL
 );
 GO
 
