@@ -19,8 +19,8 @@ namespace GenBOE.Models
         public Nullable<int> CLINID { get; set; }
         public Nullable<int> BOEID { get; set; }
     
-        public virtual BOE BOE { get; set; }
         public virtual CLIN CLIN { get; set; }
         public virtual WorkBreakdownStructure WorkBreakdownStructure { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace GenBOE.Models
         public int BOETaskElementID { get; set; }
         public int WorkspaceVariableID { get; set; }
     
-        public virtual BOETaskElement BOETaskElement { get; set; }
         public virtual WorkspaceVariable WorkspaceVariable { get; set; }
+        public virtual BOETaskElement BOETaskElement { get; set; }
     }
 }

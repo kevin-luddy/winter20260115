@@ -20,7 +20,7 @@ namespace GenBOE.Models
         public int ApprovalETIUserID { get; set; }
         public Nullable<bool> ApprovedFlag { get; set; }
     
-        public virtual BOE BOE { get; set; }
         public virtual ETIuser ETIuser { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

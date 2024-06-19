@@ -31,8 +31,8 @@ namespace GenBOE.Models
         public Nullable<System.DateTime> TaskEndDate { get; set; }
         public int SortOrderID { get; set; }
     
-        public virtual BOE BOE { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ODCType> ODCTypes { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

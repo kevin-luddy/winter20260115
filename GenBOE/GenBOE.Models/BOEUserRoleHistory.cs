@@ -23,11 +23,11 @@ namespace GenBOE.Models
         public Nullable<int> FieldID { get; set; }
         public int ChangedByETIUserID { get; set; }
     
-        public virtual BOE BOE { get; set; }
         public virtual ETIuser ETIuser { get; set; }
         public virtual ETIuser ETIuser1 { get; set; }
         public virtual ETIuser ETIuser2 { get; set; }
         public virtual FieldLU FieldLU { get; set; }
         public virtual RoleLU RoleLU { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

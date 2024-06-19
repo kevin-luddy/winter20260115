@@ -17,7 +17,6 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Workspace()
         {
-            this.BOEs = new HashSet<BOE>();
             this.BOEPotentialRoles = new HashSet<BOEPotentialRole>();
             this.CLINs = new HashSet<CLIN>();
             this.CustomFields = new HashSet<CustomField>();
@@ -42,6 +41,7 @@ namespace GenBOE.Models
             this.WorkspaceVariables = new HashSet<WorkspaceVariable>();
             this.WorkspaceVersions = new HashSet<WorkspaceVersion>();
             this.RteTemplates = new HashSet<RteTemplate>();
+            this.BOEs = new HashSet<BOE>();
         }
     
         public int WorkspaceID { get; set; }
@@ -93,8 +93,6 @@ namespace GenBOE.Models
         public bool EnableSAPConnection { get; set; }
         public bool CurrentPTMWorkspace { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOE> BOEs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOEPotentialRole> BOEPotentialRoles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -155,5 +153,7 @@ namespace GenBOE.Models
         public virtual ICollection<WorkspaceVersion> WorkspaceVersions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RteTemplate> RteTemplates { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOE> BOEs { get; set; }
     }
 }

@@ -31,12 +31,12 @@ namespace GenBOE.Models
         public Nullable<bool> IsPercentage { get; set; }
         public string DefaultSize { get; set; }
     
-        public virtual BOETaskElement BOETaskElement { get; set; }
         public virtual SortByLU SortByLU { get; set; }
         public virtual ValueTypeLU ValueTypeLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrdinaryVariableSumVariableResourceTypeXREF> OrdinaryVariableSumVariableResourceTypeXREFs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SumOfBOE_OrdinaryVariableXREF> SumOfBOE_OrdinaryVariableXREF { get; set; }
+        public virtual BOETaskElement BOETaskElement { get; set; }
     }
 }

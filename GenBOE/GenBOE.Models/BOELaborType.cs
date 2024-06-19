@@ -42,7 +42,6 @@ namespace GenBOE.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOELaborSpread> BOELaborSpreads { get; set; }
-        public virtual BOETaskElement BOETaskElement { get; set; }
         public virtual CLIN CLIN { get; set; }
         public virtual PerformingOrganization PerformingOrganization { get; set; }
         public virtual Resource Resource { get; set; }
@@ -52,5 +51,6 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOELaborTypeCustomFieldValueXREF> BOELaborTypeCustomFieldValueXREFs { get; set; }
         public virtual Resource Resource1 { get; set; }
+        public virtual BOETaskElement BOETaskElement { get; set; }
     }
 }
