@@ -623,6 +623,45 @@
           }
         }
       }
+    },
+    "/api/QueryParser/GetSkillMixConvertedResources": {
+      "post": {
+        "tags": [
+          "QueryParser"
+        ],
+        "operationId": "GetSkillMixConvertedResources",
+        "parameters": [
+          {
+            "name": "companyConfiguration",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyConfiguration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillMixConvertedResourceViewModelICollectionResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillMixConvertedResourceViewModelICollectionResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillMixConvertedResourceViewModelICollectionResult"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -997,6 +1036,72 @@
           "HttpFailure",
           "Warnings"
         ]
+      },
+      "SkillMixConvertedResourceViewModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resourceID": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessResourceCodeID": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalHours": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "brcHours": {
+            "type": "number",
+            "format": "double"
+          },
+          "percentHours": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "SkillMixConvertedResourceViewModelICollectionResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/SkillMixConvertedResourceViewModel"
+            }
+          },
+          "messages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "isSuccessful": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResultStatus"
+          },
+          "correlationId": {
+            "type": "string",
+            "nullable": true
+          }
+        }
       },
       "SkillMixResourceViewModel": {
         "type": "object",
