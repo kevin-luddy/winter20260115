@@ -588,28 +588,39 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			SectionSelectionModelView result = new SectionSelectionModelView();
 
 			// Get the "from" sections
-			Dictionary<int, string> fromSections = sectionLoader.GetFlatSectionIdsAndNamesByRevisionId(fromRevisionID);
+			ICollection<SectionModelView> fromSections = sectionLoader.GetFlatSectionIdsTitlesAndRefNumbersByRevisionId(fromRevisionID);
 
 			// Get the "to" sections
-			Dictionary<int, string> toSections = sectionLoader.GetFlatSectionIdsAndNamesByRevisionId(toRevisionID);
+			ICollection<SectionModelView> toSections = sectionLoader.GetFlatSectionIdsTitlesAndRefNumbersByRevisionId(toRevisionID);
 
-			foreach (KeyValuePair<int, string> fromSection in fromSections.Where(x => selectedSectionIds.Contains(x.Key)))
+			foreach (SectionModelView fromSection in fromSections.Where(x => selectedSectionIds.Contains(x.Id)))
 			{
-				if (toSections.ContainsValue(fromSection.Value))
+				// Find sections with matching Titles
+				ICollection<SectionModelView> matchingSections = toSections.Where(x => x.Title == fromSection.Title).ToCollection();
+				if (matchingSections.Any())
 				{
-					if (toSections.Where(x => x.Value == fromSection.Value).Count() > 1)
+					if (matchingSections.Count() > 1)
 					{
-						result.UnmappedSections.Add(fromSection.Value);
+						// If there are multiple matches by Title, attempt to match by Reference Number
+						SectionModelView match = matchingSections.FirstOrDefault(x => x.ReferenceNumber == fromSection.ReferenceNumber);
+						if (match != null)
+						{
+							result.SelectedSections.Add(match.Id);
+						}
+						else
+						{
+							result.UnmappedSections.Add(fromSection.Title);
+						}
 					}
 					else
 					{
-						KeyValuePair<int, string> match = toSections.First(x => x.Value == fromSection.Value);
-						result.SelectedSections.Add(match.Key);
+						SectionModelView match = matchingSections.First();
+						result.SelectedSections.Add(match.Id);
 					}
 				}
 				else
 				{
-					result.UnmappedSections.Add(fromSection.Value);
+					result.UnmappedSections.Add(fromSection.Title);
 				}
 			}
 
