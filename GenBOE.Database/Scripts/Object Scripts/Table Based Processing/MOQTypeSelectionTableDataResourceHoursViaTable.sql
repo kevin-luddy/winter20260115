@@ -2,6 +2,11 @@ IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[inser
 	DROP PROCEDURE [dbo].[insertMOQTypeSelectionTableDataResourceHoursParameter];
 GO
 
+-- Drop types 2nd
+IF  EXISTS (SELECT 1 FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'TT_MOQTypeSelectionTableDataResourceHours' AND ss.name = N'dbo')
+	DROP TYPE [dbo].[TT_MOQTypeSelectionTableDataResourceHours];
+GO
+
 CREATE TYPE [dbo].[TT_MOQTypeSelectionTableDataResourceHours] AS TABLE(
 		[ResourceName] varchar(20) NULL,
 		[WbsHours] decimal(11,2) NOT NULL,
