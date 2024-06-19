@@ -12,11 +12,15 @@ BEGIN
 		,[HistoricalHours] decimal(11, 2) NOT NULL
 		,[BOESkillMix] decimal(5, 2) NOT NULL
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
-		,[ResourceID] int NOT NULL
-		,[BusinessResourceID] int NOT NULL
+		,[ResourceID] [varchar](20) NOT NULL
+		,[BusinessResourceID] [varchar](20) NOT NULL
 		,[SkillMixID] int NOT NULL
+		,[BOEID] int NOT NULL
+		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
 		,CONSTRAINT FK_CommonDisclosureSkillMix_SkillMixID FOREIGN KEY (SkillMixID) REFERENCES [dbo].[SkillMix] ([SkillMixID])
+		,CONSTRAINT FK_CommonDisclosureSkillMix_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] ([BOEID])
+		,CONSTRAINT FK_CommonDisclosureSkillMix_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_MOQTypeSelection FOREIGN KEY(MOQTypeSelectionID) REFERENCES [dbo].[MOQTypeSelection] ([MOQTypeSelectionId])
 	)
 END
@@ -35,9 +39,11 @@ BEGIN
 		,[HistoricalHours] decimal(11, 2) NOT NULL
 		,[BOESkillMix] decimal(5, 2) NOT NULL
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
-		,[ResourceID] int NOT NULL
-		,[BusinessResourceID] int NOT NULL
+		,[ResourceID] [varchar](20) NOT NULL
+		,[BusinessResourceID] [varchar](20) NOT NULL
 		,[SkillMixID] int NOT NULL
+		,[BOEID] int NOT NULL
+		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
 		,[VersionID] int NOT NULL
 	);

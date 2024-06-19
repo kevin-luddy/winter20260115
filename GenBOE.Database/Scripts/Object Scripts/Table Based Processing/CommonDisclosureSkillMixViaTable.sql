@@ -15,9 +15,11 @@ CREATE TYPE [dbo].[TT_CommonDisclosureSkillMix] AS TABLE(
 		,[HistoricalHours] decimal(11, 2) NOT NULL
 		,[BOESkillMix] decimal(5, 2) NOT NULL
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
-		,[ResourceID] int NOT NULL
-		,[BusinessResourceID] int NOT NULL
+		,[ResourceID] [varchar](20) NOT NULL
+		,[BusinessResourceID] [varchar](20) NOT NULL
 		,[SkillMixID] int NOT NULL
+		,[BOEID] int NOT NULL
+		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
 );
 GO
@@ -69,6 +71,8 @@ BEGIN
 		 ,[ResourceID]
 		 ,[BusinessResourceID]
 		 ,[SkillMixID]
+		 ,[BOEID]
+		 ,[BOETaskElementID]
 		 ,[MOQTypeSelectionID]
 		 )
 	SELECT Rationale
@@ -80,6 +84,8 @@ BEGIN
 		,ResourceID
 		,BusinessResourceID
 		,SkillMixID
+		,BOEID
+		,BOETaskElementID
 		,MOQTypeSelectionID
 	FROM @CommonDisclosureSkillMixTableParameter
 END
