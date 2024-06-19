@@ -23,9 +23,9 @@ namespace GenBOE.Models
         public string UpdatedComment { get; set; }
         public int ChangedByETIUserID { get; set; }
     
-        public virtual BOE BOE { get; set; }
         public virtual BOEComment BOEComment { get; set; }
         public virtual ETIuser ETIuser { get; set; }
         public virtual FieldLU FieldLU { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

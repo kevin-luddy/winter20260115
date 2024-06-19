@@ -9,7 +9,7 @@ GO
 
 CREATE PROCEDURE [dbo].[deleteMOQTypeSelectionTableDataResourceHours]
 (
-	@MOQTypeSelectionID int
+	@MOQTypeSelectionTableDataId int
 )
 AS
 	/******************************************************************************
@@ -30,7 +30,7 @@ AS
 	*****************************************************************************/
 	BEGIN
 		DELETE FROM dbo.[MOQTypeSelectionTableDataResourceHours]
-		WHERE [MOQTypeSelectionID] = @MOQTypeSelectionID
+		WHERE [MOQTypeSelectionTableDataId] = @MOQTypeSelectionTableDataId
 
 		SELECT @@ROWCOUNT AS RowsAffected;
 	END

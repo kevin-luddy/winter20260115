@@ -45,14 +45,14 @@ AS
 *******************************************************************************/
 BEGIN
 	DECLARE @DistinctMOQTypeSelectionID int
-	SELECT @DistinctMOQTypeSelectionID = MOQTypeSelectionID
+	SELECT @DistinctMOQTypeSelectionID = MOQTypeSelectionTableDataId
 	FROM (
-		SELECT DISTINCT MOQTypeSelectionID
+		SELECT DISTINCT MOQTypeSelectionTableDataId
 		FROM @MOQTypeSelectionTableDataResourceHoursTableParameter
 	) AS temp_MOQTypeSelectionTableDataResourceHours
 
 	DELETE FROM [dbo].[MOQTypeSelectionTableDataResourceHours]
-	WHERE [MOQTypeSelectionID] = @DistinctMOQTypeSelectionID
+	WHERE [MOQTypeSelectionTableDataId] = @DistinctMOQTypeSelectionID
 
 	INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
 		([ResourceName]
@@ -72,5 +72,5 @@ BEGIN
 END
 
 IF @@ERROR = 0
-	SELECT COUNT(*) FROM @MOQTypeSelectionTableDataResourceHoursParameter
+	SELECT COUNT(*) FROM @MOQTypeSelectionTableDataResourceHoursTableParameter
 GO

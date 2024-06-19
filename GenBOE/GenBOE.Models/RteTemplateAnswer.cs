@@ -22,8 +22,8 @@ namespace GenBOE.Models
         public string Text { get; set; }
         public int RteTemplateSourceId { get; set; }
     
+        public virtual RteTemplateQuestion RteTemplateQuestion { get; set; }
         public virtual BOE BOE { get; set; }
         public virtual BOETaskElement BOETaskElement { get; set; }
-        public virtual RteTemplateQuestion RteTemplateQuestion { get; set; }
     }
 }
