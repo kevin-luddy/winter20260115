@@ -28,7 +28,7 @@ namespace GenBOE.ActionLogic.ModelView
 		public int MaximumConfidenceValue { get; set; }
 
 		/// <summary>
-		/// Total number Successful Confidence checks in the report
+		/// Total number successful Confidence Error checks in the report
 		/// </summary>
 		public int ConfidenceValue { get; set; }
 
