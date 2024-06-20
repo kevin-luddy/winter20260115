@@ -45,8 +45,8 @@ namespace GenBOE.Tests.ActionLogic.Export
 
 			// Setup 
 			ConfidenceReportModelView confidenceReportVM = new ConfidenceReportModelView();
-			confidenceReportVM.TotalTaskCount = 10;
-			confidenceReportVM.TasksWithoutErrors = 8;
+			confidenceReportVM.MaximumConfidenceValue = 10;
+			confidenceReportVM.ConfidenceValue = 8;
 
 			ConfidenceReportItem confidenceReportItem1 = new ConfidenceReportItem()
 			{
