@@ -35,8 +35,8 @@ namespace GenBOE.Models
     
         public virtual BOE BOE { get; set; }
         public virtual BOETaskElement BOETaskElement { get; set; }
-        public virtual MOQTypeSelection MOQTypeSelection { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
+        public virtual MOQTypeSelection MOQTypeSelection { get; set; }
     }
 }

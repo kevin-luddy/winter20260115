@@ -20,8 +20,8 @@ namespace GenBOE.Models
         public int RoleID { get; set; }
         public int BOEID { get; set; }
     
-        public virtual BOE BOE { get; set; }
         public virtual ETIuser ETIuser { get; set; }
         public virtual RoleLU RoleLU { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

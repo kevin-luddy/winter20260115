@@ -11,7 +11,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using System.Collections.ObjectModel;
     using System.Data.SqlClient;
     using System.Linq;
-    using System.Transactions;
+	using System.Net.NetworkInformation;
+	using System.Transactions;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -116,6 +117,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
         private static int _GlobalMoqTypeSelectionId = 0;
         private static int _GlobalMoqTypeTableId = 0;
+
+		// Global Skill Mix ID
+		private static int _GlobalSkillMixId = 0;
 
         #region Get Global IDs
 
@@ -690,6 +694,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 _GlobalDestLocationID = _CreateLocation();
             }
         }
+
+		public static void CreateSkillMix()
+		{
+			if (_GlobalSkillMixId == 0)
+			{
+				_GlobalSkillMixId = _CreateSkillMix();
+			}
+		}
         #endregion Public Creation Methods
 
         #region Global Reset Methods
@@ -1986,6 +1998,43 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             return locationID;
         }
+
+		/// <summary>
+		/// Mock Create Skill Mix
+		/// </summary>
+		/// <returns></returns>
+		private static int _CreateSkillMix()
+		{
+			int skillMixId = 0;
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				string rat = "Mock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string oldr = "OldMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string newr = "NewMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				Models.SkillMix sm = new SkillMix();
+				sm.SkillMixID = -1;
+				sm.Included = true;
+				sm.Rationale = rat;
+				sm.ProposedHours = 100;
+				sm.HistoricalHours = 100;
+				sm.BOESkillMix = 100;
+				sm.LaborSkillMix = 100;
+				sm.ResourceOld = oldr;
+				sm.ResourceNew = newr;
+				sm.BOEID = GlobalBOEID;
+				sm.BOETaskElementID = GlobalTaskElementID;
+				sm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
+				gbe.SkillMixes.Add(sm);
+				gbe.SaveChanges();
+
+				skillMixId = (from s in gbe.SkillMixes
+							  where s.Rationale == rat
+							  select s.SkillMixID).FirstOrDefault();
+			}
+
+			return skillMixId;
+		}
+
         #endregion Private Create Global IDs
 
         public static string CreateRandomWord(int size)

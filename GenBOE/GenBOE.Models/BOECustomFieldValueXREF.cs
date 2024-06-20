@@ -19,7 +19,7 @@ namespace GenBOE.Models
         public int BOEID { get; set; }
         public int CustomFieldValueID { get; set; }
     
-        public virtual BOE BOE { get; set; }
         public virtual CustomFieldValue CustomFieldValue { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

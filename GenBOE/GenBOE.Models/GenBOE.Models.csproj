@@ -198,6 +198,9 @@
     <Compile Include="CommonDisclosureSkillMix.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="MOQTypeSelectionTableDataResourceHour.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ContractTypeLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
@@ -299,6 +302,9 @@
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="MOQTypeSelectionTableData.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MOQTypeSelectionTableDataResourceHour.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="MoqTypeTableCustomFieldValueXREF.cs">
