@@ -221,7 +221,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
 		virtual public ICollection<CommonDisclosureSkillMixDTO> GetBySkillMixId(int skillMixID)
 		{
-			return this.GetByIds(new Collection<int>() { skillMixID }).FirstOrDefault();
+			return this.GetBySkillMixIds(new Collection<int>() { skillMixID });
 		}
 
 		/// <summary>
