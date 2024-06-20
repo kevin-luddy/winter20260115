@@ -10,7 +10,8 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using GenBOE.ActionLogic.BLL;
+	using System.Web.Caching;
+	using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.IO.Export;
@@ -45,6 +46,7 @@ namespace GenBOE.ActionLogic
         /// <param name="inTaskVariableLoader"></param>
         /// <param name="iesSapClient">IES SAP Client</param>
         /// <param name="tokenservice">Token Service</param>
+		/// <param name="cache">Cache</param>
         public BOELaborControllerLogicSpace(
             Common.Calculations.BoeTaskElementRecalculation inBoeTaskElementRecalc, 
             IBOEStateMachine inBoeStateMachine, 
@@ -69,7 +71,8 @@ namespace GenBOE.ActionLogic
             IMoqTableExporter moqTableExporter,
             IMoqTableImporter moqTableImporter,
             GenBOE.ActionLogic.IESSAPClient.IESSAPClient iesSapClient,
-            ITokenService tokenservice) : base(inBoeTaskElementRecalc, 
+            ITokenService tokenservice,
+			ICache cache) : base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
                 inBoeTaskElementMediator, 
@@ -92,7 +95,8 @@ namespace GenBOE.ActionLogic
                 moqTableExporter,
                 moqTableImporter,
                 iesSapClient,
-                tokenservice)
+                tokenservice,
+				cache)
         {
         }
 
