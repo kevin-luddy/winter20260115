@@ -1414,12 +1414,6 @@ namespace GenBOE.ActionLogic.IESSAPClient
         [Newtonsoft.Json.JsonProperty("businessResourceCodeID", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string BusinessResourceCodeID { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("totalHours", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? TotalHours { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("brcHours", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double BrcHours { get; set; }
-
         [Newtonsoft.Json.JsonProperty("percentHours", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? PercentHours { get; set; }
 

@@ -1049,15 +1049,6 @@
             "type": "string",
             "nullable": true
           },
-          "totalHours": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "brcHours": {
-            "type": "number",
-            "format": "double"
-          },
           "percentHours": {
             "type": "number",
             "format": "double",
