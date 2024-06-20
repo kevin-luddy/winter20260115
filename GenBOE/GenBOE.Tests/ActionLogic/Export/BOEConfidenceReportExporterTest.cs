@@ -80,7 +80,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			string fileLocation = Path.Combine(System.Environment.CurrentDirectory, "test" + ".xlsx");
 			File.WriteAllBytes(fileLocation, Properties.Resources.ConfidenceReport);
 
-			string result = sut.ExportToExcelFile(fileLocation, confidenceReportVM, 1);
+			string result = sut.ExportToExcelFile(fileLocation, confidenceReportVM);
 
 			List<string> requiredColumns = new List<string>() { "BOE", "Task", "MOQ Types", "RTE Fields", "Confidence Error Messages" };
 
