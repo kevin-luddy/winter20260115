@@ -2013,6 +2013,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				string newr = "NewMock" + Guid.NewGuid().ToString().Substring(0, 5);
 				Models.SkillMix sm = new SkillMix();
 				sm.SkillMixID = -1;
+				sm.Included = true;
 				sm.Rationale = rat;
 				sm.ProposedHours = 100;
 				sm.HistoricalHours = 100;

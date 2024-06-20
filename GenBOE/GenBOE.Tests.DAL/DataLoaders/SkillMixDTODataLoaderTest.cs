@@ -41,6 +41,7 @@
 
 			SkillMixDTO updateSkillMix = new SkillMixDTO();
 			updateSkillMix.Rationale = "Updated Rationale";
+			updateSkillMix.Included = false;
 			updateSkillMix.ProposedHours = 100;
 			updateSkillMix.HistoricalHours = 100;
 			updateSkillMix.BOESkillMix = 100;
