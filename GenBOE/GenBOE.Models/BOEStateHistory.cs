@@ -22,10 +22,10 @@ namespace GenBOE.Models
         public int UpdatedBOEStateID { get; set; }
         public int ChangedByETIUserID { get; set; }
     
-        public virtual BOE BOE { get; set; }
         public virtual BOEStateLU BOEStateLU { get; set; }
         public virtual BOEStateLU BOEStateLU1 { get; set; }
         public virtual ETIuser ETIuser { get; set; }
         public virtual FieldLU FieldLU { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

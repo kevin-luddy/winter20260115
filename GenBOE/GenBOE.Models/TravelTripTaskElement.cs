@@ -32,12 +32,12 @@ namespace GenBOE.Models
         public Nullable<System.DateTime> TaskEndDate { get; set; }
         public int SortOrderID { get; set; }
     
-        public virtual BOE BOE { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MSTTravelTrip> MSTTravelTrips { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TravelTrip> TravelTrips { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TravelTripTaskElementCustomFieldValueXREF> TravelTripTaskElementCustomFieldValueXREFs { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

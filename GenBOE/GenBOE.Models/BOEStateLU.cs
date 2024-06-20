@@ -17,19 +17,19 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BOEStateLU()
         {
-            this.BOEs = new HashSet<BOE>();
             this.BOEStateHistories = new HashSet<BOEStateHistory>();
             this.BOEStateHistories1 = new HashSet<BOEStateHistory>();
+            this.BOEs = new HashSet<BOE>();
         }
     
         public int BOEStateID { get; set; }
         public string BOEState { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOE> BOEs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOEStateHistory> BOEStateHistories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOEStateHistory> BOEStateHistories1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOE> BOEs { get; set; }
     }
 }

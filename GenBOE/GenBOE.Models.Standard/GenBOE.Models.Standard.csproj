@@ -128,6 +128,7 @@
     <Compile Include="..\GenBOE.Models\SegmentLU.cs" Link="SegmentLU.cs" />
     <Compile Include="..\GenBOE.Models\SikorskyLegacyResource.cs" Link="SikorskyLegacyResource.cs" />
     <Compile Include="..\GenBOE.Models\CommonDisclosureSkillMix.cs" Link="CommonDisclosureSkillMix.cs" />
+    <Compile Include="..\GenBOE.Models\MOQTypeSelectionTableDataResourceHour.cs" Link="MOQTypeSelectionTableDataResourceHour.cs" />
 	<Compile Include="..\GenBOE.Models\SkillMix.cs" Link="SkillMix.cs" />
     <Compile Include="..\GenBOE.Models\SortByLU.cs" Link="SortByLU.cs" />
     <Compile Include="..\GenBOE.Models\SplitString_Result.cs" Link="SplitString_Result.cs" />

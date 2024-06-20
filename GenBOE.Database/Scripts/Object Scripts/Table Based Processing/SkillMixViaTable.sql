@@ -2,18 +2,23 @@
 	DROP PROCEDURE [dbo].[insertSkillMixviaTableParameter];
 GO
 
+-- Drop types 2nd
+IF  EXISTS (SELECT 1 FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'TT_SkillMix' AND ss.name = N'dbo')
+	DROP TYPE [dbo].[TT_SkillMix];
+GO
+
 CREATE TYPE [dbo].[TT_SkillMix] AS TABLE(
-		[Rationale] varchar(255) NULL
+		[Rationale] varchar(255) NOT NULL
 		,[Included] bit DEFAULT 0
-		,[ProposedHours] decimal(11, 2) NULL
-		,[HistoricalHours] decimal(11, 2) NULL
-		,[BOESkillMix] decimal(5, 2) NULL
-		,[LaborSkillMix] decimal(5, 2) NULL
-		,[ResourceOld] [varchar](max) NULL
-		,[ResourceNew] [varchar](max) NULL
-		,[BOEID] int NULL
-		,[BOETaskElementID] int NULL
-		,[MOQTypeSelectionID] int NULL
+		,[ProposedHours] decimal(11, 2) NOT NULL
+		,[HistoricalHours] decimal(11, 2) NOT NULL
+		,[BOESkillMix] decimal(5, 2) NOT NULL
+		,[LaborSkillMix] decimal(5, 2) NOT NULL
+		,[ResourceOld] [varchar](20) NOT NULL
+		,[ResourceNew] [varchar](20) NOT NULL
+		,[BOEID] int NOT NULL
+		,[BOETaskElementID] int NOT NULL
+		,[MOQTypeSelectionID] int NOT NULL
 );
 GO
 
