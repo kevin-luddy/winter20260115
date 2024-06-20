@@ -37,6 +37,7 @@
 			CommonDisclosureSMDTODataLoader sut = new CommonDisclosureSMDTODataLoader();
 			CommonDisclosureSkillMixDTO updateCommonDisclosureSkillMix = new CommonDisclosureSkillMixDTO();
 			updateCommonDisclosureSkillMix.Rationale = "Updated Rationale";
+			updateCommonDisclosureSkillMix.Included = false
 			updateCommonDisclosureSkillMix.ProposedHours = 100;
 			updateCommonDisclosureSkillMix.HistoricalHours = 100;
 			updateCommonDisclosureSkillMix.BOESkillMix = 100;

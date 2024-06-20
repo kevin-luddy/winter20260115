@@ -2026,6 +2026,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				string businessResource = "businessResourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
 				Models.CommonDisclosureSkillMix cdsm = new CommonDisclosureSkillMix();
 				cdsm.CommonDisclosureSkillMixID = -1;
+				cdsm.Included = false;
 				cdsm.Rationale = rat;
 				cdsm.ProposedHours = 100;
 				cdsm.HistoricalHours = 100;
