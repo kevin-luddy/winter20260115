@@ -1155,6 +1155,8 @@ namespace GenBOE
 
             GenBOEUnityContainer.Container.RegisterType(typeof(WbsExporter), typeof(WbsExporter), GetLifetimeManager(), new InjectionConstructor());
 
+			GenBOEUnityContainer.Container.RegisterType(typeof(IBOEConfidenceReportExporter), typeof(BOEConfidenceReportExporter), GetLifetimeManager(), new InjectionConstructor());
+
             //Import/merge classes
             GenBOEUnityContainer.Container.RegisterType(typeof(BOEImportMerge), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IBoeDTODataLoader)), new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader))));
             GenBOEUnityContainer.Container.RegisterType(typeof(BoeTaskElementImportMerge), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IFullObjectFactory)), new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader))));

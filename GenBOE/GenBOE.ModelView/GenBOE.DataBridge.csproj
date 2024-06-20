@@ -131,6 +131,8 @@
     <Compile Include="DTO\MOQTypes\MoqTypeTableDataLabels.cs" />
     <Compile Include="DTO\RteTemplate\IRteTemplateDataLoader.cs" />
     <Compile Include="DTO\RteTemplate\RteTemplateDataLoader.cs" />
+    <Compile Include="DTO\SkillMix\ISkillMixDTOLoader.cs" />
+    <Compile Include="DTO\SkillMix\SkillMixDTOLoader.cs" />
     <Compile Include="GenBOE.Dtos\Common\IBOEMembership.cs" />
     <Compile Include="GenBOE.Dtos\Common\IVariableDTO.cs" />
     <Compile Include="GenBOE.Dtos\Common\IWorkspaceMembership.cs" />
@@ -190,6 +192,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\ResourceTypeDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\SelectBOEsToSum.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\SikorskyLegacyResourceDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\SkillMixDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\SubResourceTypeDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\SystemSettingDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\TaskElement\LaborSpreadRequest.cs" />

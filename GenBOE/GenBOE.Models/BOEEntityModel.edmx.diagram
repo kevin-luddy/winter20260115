@@ -353,6 +353,13 @@
         <EntityTypeShape EntityType="GenBOE.Models.MessageConfirmation" Width="1.5" PointX="3" PointY="115.75" />
         <AssociationConnector Association="GenBOE.Models.FK_MessageConfirmation_UserId" />
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_BRCResource" />
+        <EntityTypeShape EntityType="GenBOE.Models.SkillMix" Width="1.5" PointX="39" PointY="112" />
+        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_BOETaskElement" />
+        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_MOQTypeSelection" />
+        <EntityTypeShape EntityType="GenBOE.Models.CommonDisclosureSkillMix" Width="1.5" PointX="41.25" PointY="115.5" />
+        <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection" />
+        <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_SkillMixID" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
