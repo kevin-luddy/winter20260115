@@ -12,6 +12,7 @@
 		{
 			this.SkillMixID = -1;
 			this.Rationale = string.Empty;
+			this.Included = false;
 			this.ProposedHours = 0;
 			this.HistoricalHours = 0;
 			this.BOESkillMix = 0;
