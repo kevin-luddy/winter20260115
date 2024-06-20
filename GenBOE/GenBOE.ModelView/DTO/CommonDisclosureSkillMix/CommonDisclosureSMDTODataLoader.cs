@@ -229,7 +229,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="moqTypeSelectionID">int</param>
 		/// <returns>Number of Common Disclosure Skill Mixes deleted</returns>
-		virtual public int? DeleteSkillMixByMoqTypeSelection(int moqTypeSelectionID)
+		virtual public int? DeleteCommonDisclosureSMByMoqTypeSelection(int moqTypeSelectionID)
 		{
 			int? toReturn = null;
 
