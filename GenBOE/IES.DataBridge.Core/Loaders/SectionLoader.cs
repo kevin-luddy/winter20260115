@@ -9,6 +9,7 @@ namespace IES.DataBridge.Loaders
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Linq;
 	using DocumentFormat.OpenXml.InkML;
 	using DocumentFormat.OpenXml.Spreadsheet;
@@ -273,25 +274,45 @@ namespace IES.DataBridge.Loaders
 		}
 
 		/// <summary>
-		/// Get a flat dictionary of Section IDs and Names for the given Revision ID
+		/// Get a flat collection of SectionModelViews with only Section IDs, Titles, and Reference Numbers for the given Revision ID
 		/// </summary>
 		/// <param name="revisionId">Revision ID</param>
-		/// <returns>flat dictionary of Section IDs and Names</returns>
-		public Dictionary<int, string> GetFlatSectionIdsAndNamesByRevisionId(int revisionId)
+		/// <returns>flat collection of SectionModelViews with only Section IDs, Titles, and Reference Numbers</returns>
+		public ICollection<SectionModelView> GetFlatSectionIdsTitlesAndRefNumbersByRevisionId(int revisionId)
 		{
-			Dictionary<int, string> sections = new Dictionary<int, string>();
+			ICollection<SectionModelView> sectionsToReturn = new Collection<SectionModelView>();
+			ICollection<SectionModelView> flatSections = new Collection<SectionModelView>();
 
+			// Get flat list of sections matching revision ID, only retrieving properties that are needed
 			using (IESEntities context = new())
 			{
 				foreach (var section in context.Sections
 					.Where(x => x.RevisionID == revisionId && x.SectionContentTypeID == (int)SectionContentType.Section)
-					.Select(x => new { ID = x.ID, Title = x.Title} ))
+					.Select(x => new { ID = x.ID, Title = x.Title, Order = x.DisplayOrder, ParentId = x.ParentID } ))
 				{
-					sections.Add(section.ID, section.Title);
+					flatSections.Add(new SectionModelView() { 
+						Id = section.ID, 
+						Title = section.Title, 
+						DisplayOrder = section.Order,
+						ParentId = section.ParentId,
+						ContentType = SectionContentType.Section 
+					});
 				}
 			}
 
-			return sections;
+			// Nest sections so Reference Numbers can be set
+			foreach (SectionModelView section in flatSections.Where(x => x.ParentId == null))
+			{
+				sectionsToReturn.Add(GetBySectionId(section.Id, flatSections));
+			}
+
+			// Set Reference Numbers
+			sectionsToReturn = SetReferenceNumbers(sectionsToReturn, null);
+
+			// Flatten Sections again
+			sectionsToReturn = FlattenSections(sectionsToReturn);
+
+			return sectionsToReturn;
 		}
 
 		#endregion

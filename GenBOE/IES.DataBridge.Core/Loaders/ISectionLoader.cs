@@ -65,10 +65,10 @@ namespace IES.DataBridge.Loaders
 		ICollection<SectionAddressModelView> GetAddresses(int ptmTrackingId);
 
 		/// <summary>
-		/// Get a flat dictionary of Section IDs and Names for the given Revision ID
+		/// Get a flat collection of SectionModelViews with only Section IDs, Names, and Reference Numbers for the given Revision ID
 		/// </summary>
 		/// <param name="revisionId">Revision ID</param>
-		/// <returns>flat dictionary of Section IDs and Names</returns>
-		Dictionary<int, string> GetFlatSectionIdsAndNamesByRevisionId(int revisionId);
+		/// <returns>flat collection of SectionModelViews with only Section IDs, Names, and Reference Numbers</returns>
+		ICollection<SectionModelView> GetFlatSectionIdsTitlesAndRefNumbersByRevisionId(int revisionId);
 	}
 }
