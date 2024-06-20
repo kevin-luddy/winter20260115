@@ -121,6 +121,8 @@
     <Compile Include="Common\Delegates.cs" />
     <Compile Include="Common\Interfaces\ISecurityUserAuthorizationsDataLoader.cs" />
     <Compile Include="Common\security\SecurityAccessSpaceSystems.cs" />
+    <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\IMOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
+    <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\MOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
     <Compile Include="DTO\MOQTypes\IMoqTypeDataLoader.cs" />
     <Compile Include="DTO\MOQTypes\IMoqTypeTableCustomFieldValueXREFLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTableData.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\MetricNameTaskElementMappingDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MileReimbursementRateDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MiscTravelRateDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MOQTypeSelectionTableDataResourceHoursDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MPBoeDataDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricDetailsDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchCriteriaDTO.cs" />
