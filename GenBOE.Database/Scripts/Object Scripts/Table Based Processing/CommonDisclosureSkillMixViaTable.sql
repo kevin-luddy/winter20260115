@@ -75,20 +75,23 @@ BEGIN
 		 ,[BOEID]
 		 ,[BOETaskElementID]
 		 ,[MOQTypeSelectionID]
+		 ,[OrderID]
 		 )
-	SELECT Rationale
-		,Included
-		,ProposedHours
-		,HistoricalHours
-		,BOESkillMix
-		,LaborSkillMix
-		,ResourceID
-		,BusinessResourceID
-		,SkillMixID
-		,BOEID
-		,BOETaskElementID
-		,MOQTypeSelectionID
-	FROM @CommonDisclosureSkillMixTableParameter
+	SELECT T.[Rationale]
+		 ,T.[Included]
+		 ,T.[ProposedHours]
+		 ,T.[HistoricalHours]
+		 ,T.[BOESkillMix]
+		 ,T.[LaborSkillMix]
+		 ,T.[ResourceID]
+		 ,T.[BusinessResourceID]
+		 ,T.[SkillMixID]
+		 ,T.[BOEID]
+		 ,T.[BOETaskElementID]
+		 ,T.[MOQTypeSelectionID]
+		 ,T.[OrderID]
+	FROM @CommonDisclosureSkillMixTableParameter T
+	ORDER BY T.OrderID
 END
 
 IF @@ERROR = 0

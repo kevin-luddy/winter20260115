@@ -14,6 +14,7 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Models;
 	using System.Data;
 	using System;
+	using GenBOE.ActionLogic.ModelView;
 
 	public class CommonDisclosureSMDTODataLoader : ICommonDisclosureSMDTODataLoader
 	{
@@ -249,7 +250,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Insert Common Disclosure Skill Mixes with Kill/Fill procedure
 		/// </summary>
-		/// <param name="skillMixes">SkillMixDTO</param>
+		/// <param name="commonDisclosureSkillMixes">SkillMixDTO</param>
 		/// <returns>Num rows that were inserted</returns>
 		virtual public int? InsertCommonDisclosureSM(ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixes)
 		{
