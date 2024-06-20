@@ -62,7 +62,7 @@ angular.module('genboe').controller('BOEConfidenceReportController', ['$scope', 
 		if (ConfidenceReportModel.boeId) {
 			exportUrl = CreatePostURL(ConfidenceReportModel.workspace, ConfidenceReportModel.reportsController, ConfidenceReportModel.exportConfidenceReportAction, 'boe/' + ConfidenceReportModel.boeId);
 		} else {
-			exportUrl = CreatePostURL(ConfidenceReportModel.workspace, ConfidenceReportModel.reportsController, ConfidenceReportModel.exportConfidenceReportAction, 'boe/');
+			exportUrl = CreatePostURL(ConfidenceReportModel.workspace, ConfidenceReportModel.reportsController, ConfidenceReportModel.exportConfidenceReportAction, '');
 		}
 		GenWidget.prototype.performExport(exportUrl);
 
