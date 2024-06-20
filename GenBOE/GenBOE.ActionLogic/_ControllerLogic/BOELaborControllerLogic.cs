@@ -3967,6 +3967,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 					if (result.IsSuccessful)
 					{
+						// The time being set in seconds represents 1 day that the data will be cached in the system
 						this.cache.Add(WebConstants.SKILLMIX_RESOURCE_CACHE_KEY, result.Data, WebConstants.SECONDS_TO_CACHE_SKILLMIX_RESOURCES);
 					}
 				}
