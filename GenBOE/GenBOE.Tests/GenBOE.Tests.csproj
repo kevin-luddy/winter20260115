@@ -308,7 +308,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ConfidenceReport.xlsx" />
-    <None Include="Resources\ConfidenceReport_WIP.txt" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
