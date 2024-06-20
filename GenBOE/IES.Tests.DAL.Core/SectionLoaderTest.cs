@@ -528,5 +528,30 @@ namespace IES.Tests.Core
             Assert.AreEqual(true, result.AdequateDisclosure);
             Assert.AreEqual(true, result.NoncomplianceNotification);
         }
-    }
+
+		/// <summary>
+		/// Test GetFlatSectionIdsTitlesAndRefNumbersByRevisionId for success
+		/// </summary>
+		[TestMethod]
+		[Ignore("Ignore until Bulk Insert of Rate Codes is fixed")]
+		public void TestGetFlatSectionIdsTitlesAndRefNumbersByRevisionId()
+		{
+			SectionLoader sut = testData.SectionLoader;
+			RevisionModelView revision = testData.GetRevision(true);
+			testData.AddBaselineSectionsAndRatesData(revision);
+
+			ICollection<SectionModelView> result = sut.GetFlatSectionIdsTitlesAndRefNumbersByRevisionId(revision.Id);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(9, result.Count); // 9 Sections created in testData
+			foreach (SectionModelView r in result)
+			{
+				Assert.IsTrue(r.Id > 0);
+				Assert.IsFalse(string.IsNullOrEmpty(r.Title));
+				Assert.IsFalse(string.IsNullOrEmpty(r.ReferenceNumber));
+				Assert.AreEqual(SectionContentType.Section, r.ContentType);
+			}
+		}
+
+	}
 }

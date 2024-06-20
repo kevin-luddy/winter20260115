@@ -10,6 +10,7 @@ namespace IES.Tests.Core
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using System.Security.Principal;
 	using System.Threading;
 	using System.Transactions;
 	using ActionLogic.Core.Mediator;
@@ -1689,7 +1690,9 @@ namespace IES.Tests.Core
                 throw new ArgumentNullException(nameof(revision));
             }
 
-            ICollection<SectionModelView> expected = new List<SectionModelView>();
+			Thread.CurrentPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+
+			ICollection<SectionModelView> expected = new List<SectionModelView>();
             SectionModelView section1 = new()
             {
                 Id = -1,
@@ -1809,7 +1812,6 @@ namespace IES.Tests.Core
                 RevisionId = revision.Id,
                 IsInternalSection = false,
                 Title = "Table1",
-                TextContent = "Test table1.",
                 DisplayRateCode = false,
                 ContentType = SectionContentType.RateTable
             });

@@ -71,13 +71,7 @@ namespace IES.Tests.Core
 			services.AddDistributedMemoryCache();
 
 			// Simple configuration object injection (no IOptions<T>)
-			services.AddSingleton(configuration);
-			services.AddSingleton<IMemoryCache, MemoryCache>();
-			services.AddSingleton<ISectionLoader, SectionLoader>();
-			services.AddSingleton<IRevisionMediator, RevisionMediator>();
-			services.AddSingleton<IRevisionLoader, RevisionLoader>();
-			services.AddSingleton<ICacheDataLoader, CacheDataLoader>();
-			services.AddSingleton<ICacheService, CacheService>();			
+			services.AddSingleton(configuration);		
 
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

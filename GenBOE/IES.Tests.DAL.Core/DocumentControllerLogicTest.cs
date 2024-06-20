@@ -41,12 +41,12 @@ namespace IES.Tests.Core
 	/// Test Class for Document Controller Logic and Document Loader.
 	/// </summary>
 	[TestClass]
-	[Ignore("Ignoring until HttpContextAccessor and ProposalPermissionLoader can be properly mocked, possibly more")]
+	[Ignore("Ignoring until loaders are properly mocked as this is a logic test")]
     public class DocumentControllerLogicTest
     {
         private SecurityMapper securityMapper;
         private RevisionLoader revisionLoader;
-        private SectionLoader sectionLoader;
+        private Mock<ISectionLoader> sectionLoader;
         private RateDetailLoader rateDetailLoader;
         private IDocumentDetailLoader documentDetailLoader;
         private IRdsbRateCodeXrefLoader rdsbRateCodeXrefLoader;
@@ -73,7 +73,7 @@ namespace IES.Tests.Core
             UserMapper um = new(new UserLoader(AD, Mock.Of<ILogger<UserLoader>>()), cache, this.securityInformation, AD, c, Mock.Of<ILogger<UserMapper>>());
             this.securityMapper = new SecurityMapper(new SecurityUserAuthorizationsDataLoader(AD, Mock.Of<ILogger<SecurityUserAuthorizationsDataLoader>>()), this.securityInformation, um, c, Mock.Of<ILogger<SecurityMapper>>());
             this.revisionLoader = new RevisionLoader(Mock.Of<ILogger<RevisionLoader>>());
-            this.sectionLoader = new SectionLoader(Mock.Of<ILogger<SectionLoader>>());
+			this.sectionLoader = new Mock<ISectionLoader>();
             this.rateDetailLoader = new RateDetailLoader(Mock.Of<ILogger<RateDetailLoader>>(), new RateCodeYearLoader(Mock.Of<ILogger<RateCodeYearLoader>>()), new ProPricerRateCodeXrefLoader(Mock.Of<ILogger<ProPricerRateCodeXrefLoader>>()));
             this.rdsbRateCodeXrefLoader = new RdsbRateCodeXrefLoader(Mock.Of<ILogger<RdsbRateCodeXrefLoader>>());
             this.rdsbSectionXrefLoader = new RdsbSectionXrefLoader(Mock.Of<ILogger<RdsbSectionXrefLoader>>());
@@ -112,30 +112,29 @@ namespace IES.Tests.Core
             }
             else
             {
-                this.testProposalId = nonAdminProposals.First().Id;
-                
+                this.testProposalId = nonAdminProposals.First().Id;                
             }
 
-            DocumentDetailModelView docDetails = sut.RetrieveDocumentDetailByProposalId(this.testProposalId, true); // create RDSB document if it doesn't already exist
-            docDetails.SelectedRateCodeIds = new Collection<int>() { 1, 2, 3 };
-            docDetails.SelectedSectionIds = new Collection<int>() { 4, 5, 6 };
-            docDetails.StartYear = 2016;
-            docDetails.EndYear = 2020;
-            docDetails.ParentSection = "5";
+			DocumentDetailModelView docDetails = sut.RetrieveDocumentDetailByProposalId(this.testProposalId, true); // create RDSB document if it doesn't already exist
+			docDetails.SelectedRateCodeIds = new Collection<int>() { 1, 2, 3 };
+			docDetails.SelectedSectionIds = new Collection<int>() { 4, 5, 6 };
+			docDetails.StartYear = 2016;
+			docDetails.EndYear = 2020;
+			docDetails.ParentSection = "5";
 
-            //try
-            //{
-            //    using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
-            //    {
-            //        sut.SaveDocument(docDetails);
-            //        scope.Complete();
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    Assert.Fail("Document save failed: " + e.Message);
-            //}
-        }
+			//try
+			//{
+			//    using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+			//    {
+			//        sut.SaveDocument(docDetails);
+			//        scope.Complete();
+			//    }
+			//}
+			//catch (Exception e)
+			//{
+			//    Assert.Fail("Document save failed: " + e.Message);
+			//}
+		}
 
         /// <summary>
         /// Creates a new proposal for the specified user using the first LOB found.
@@ -224,7 +223,7 @@ namespace IES.Tests.Core
 				this.AD, 
 				this.securityInformation, 
 				this.revisionLoader, 
-				this.sectionLoader, 
+				this.sectionLoader.Object, 
 				this.rateDetailLoader, 
 				Mock.Of<IFileAttachmentLoader>(),
 				Mock.Of<IPPRDExporter>());
@@ -295,7 +294,7 @@ namespace IES.Tests.Core
             IList<RevisionModelView> revisions = this.revisionLoader.GetAll().Where(r => r.DatePublished.HasValue).OrderByDescending(r => r.DatePublished).ToList();
 
             RevisionModelView revision = revisions.First();
-            ICollection<SectionModelView> sections = this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revision.Id }, true);
+			ICollection<SectionModelView> sections = new Collection<SectionModelView>(); // TODO Mock this out - originally called this.sectionLoader.RetrieveAllSections(new RevisionModelView() { Id = revision.Id }, true);
             ICollection<int> requiredSectionIds = this.GetRequiredSectionIds(sections);
             ICollection<RdsbRateDetailModelView> rates = this.rateDetailLoader.GetRatesForRdsbDocument(revision.Id);
 
@@ -874,5 +873,124 @@ namespace IES.Tests.Core
                 Assert.IsTrue(oneAddress.Id != 0);
             }
         }
-    }
+
+		/// <summary>
+		/// Tests GetSectionSelectionForRevisionChange
+		/// </summary>
+		[TestMethod]
+		public void TestGetSectionSelectionForRevisionChange()
+		{
+			IDocumentControllerLogic sut = CreateSut();
+
+			ICollection<SectionModelView> fromSections = new Collection<SectionModelView>()
+			{
+				new()
+				{
+					Id = 1,
+					Title = "Test 1",
+					ReferenceNumber = "1"
+				},
+				new()
+				{
+					Id = 2,
+					Title = "Test 2",
+					ReferenceNumber = "1.1"
+				},
+				new()
+				{
+					Id = 3,
+					Title = "Test 3",
+					ReferenceNumber = "1.1.1"
+				},
+				new()
+				{
+					Id = 4,
+					Title = "Test 4",
+					ReferenceNumber = "1.2"
+				},
+				new()
+				{
+					Id = 5,
+					Title = "Test 5",
+					ReferenceNumber = "2"
+				},
+				new()
+				{
+					Id = 6,
+					Title = "Test 5",
+					ReferenceNumber = "2.1"
+				},
+				new()
+				{
+					Id = 7,
+					Title = "Test 5",
+					ReferenceNumber = "3"
+				}
+			};
+
+			ICollection<SectionModelView> toSections = new Collection<SectionModelView>()
+			{
+				new()
+				{
+					Id = 101,
+					Title = "Test 1",
+					ReferenceNumber = "1"
+				},
+				new()
+				{
+					Id = 102,
+					Title = "Test 2.0",
+					ReferenceNumber = "1.1"
+				},
+				new()
+				{
+					Id = 103,
+					Title = "Test 3",
+					ReferenceNumber = "1.2.1"
+				},
+				new()
+				{
+					Id = 104,
+					Title = "Test 4",
+					ReferenceNumber = "1.2"
+				},
+				new()
+				{
+					Id = 105,
+					Title = "Test 5",
+					ReferenceNumber = "2"
+				},
+				new()
+				{
+					Id = 106,
+					Title = "Test 5",
+					ReferenceNumber = "2.1"
+				},
+				new()
+				{
+					Id = 107,
+					Title = "Test 5",
+					ReferenceNumber = "3.1"
+				}
+			};
+
+			int fromRevisionId = 1;
+			int toRevisionId = 2;
+			ICollection<int> selectedIds = new Collection<int> { 1, 2, 3, 5, 7 };
+
+			sectionLoader.Setup(x => x.GetFlatSectionIdsTitlesAndRefNumbersByRevisionId(fromRevisionId)).Returns(fromSections);
+			sectionLoader.Setup(x => x.GetFlatSectionIdsTitlesAndRefNumbersByRevisionId(toRevisionId)).Returns(toSections);
+
+			SectionSelectionModelView result = sut.GetSectionSelectionForRevisionChange(fromRevisionId, toRevisionId, selectedIds);
+
+			Assert.AreEqual(3, result.SelectedSections.Count);
+			Assert.AreEqual(2, result.UnmappedSections.Count);
+			Assert.IsTrue(result.SelectedSections.Contains(101)); // Simple Title map, same Ref Number
+			Assert.IsTrue(result.SelectedSections.Contains(103)); // Simple Title map, different Ref Number
+			Assert.IsTrue(result.SelectedSections.Contains(105)); // Duplicate Title but matching Ref Number
+			Assert.IsTrue(result.UnmappedSections.Contains("Test 2")); // Title no longer there
+			Assert.IsTrue(result.UnmappedSections.Contains("Test 5")); // Duplicate Title but no matching Ref Number
+		}
+
+	}
 }
