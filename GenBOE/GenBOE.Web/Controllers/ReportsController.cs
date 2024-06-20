@@ -1785,7 +1785,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Excel file of the Confidence Report</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Inline use, expecting for garbage collection to take care of things.")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
-		public ActionResult ExportConfidenceReport(string workspace, int boeID)
+		public ActionResult ExportConfidenceReport(string workspace, int? boeID)
 		{
 			ActionResult toReturn = null;
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1793,7 +1793,7 @@ namespace GenBOE.Web.Controllers
 			try
 			{
 				// Initialize Action
-				Stopwatch sw = this.InitializeAction(this.log, "ExportConfidenceReport", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+				Stopwatch sw = this.InitializeAction(this.log, "ExportConfidenceReport", boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 				this.log.Performance("Exporting Confidence Report - ReportsController - Begin", 0);
 
 				ActionLogic.ModelView.ConfidenceReportModelView confidenceReport = boeConfidenceReport.GenerateConfidenceReport(ws, boeID);
@@ -1801,7 +1801,7 @@ namespace GenBOE.Web.Controllers
 				string templateFileName = Server.MapPath("~/Templates/Export/ConfidenceReport.xlsx");
 
 				// Generate an export file from the data
-				string exportedFileName = this.boeConfidenceReportExporter.ExportToExcelFile(templateFileName, confidenceReport, boeID);
+				string exportedFileName = this.boeConfidenceReportExporter.ExportToExcelFile(templateFileName, confidenceReport);
 
 				// Pass the file to the user
 				string fileName = string.Format("ConfidenceReport_{0}.xlsx", ws.WorkspaceName);
