@@ -118,15 +118,19 @@ namespace GenBOE.Tests.DAL.DataLoaders
         private static int _GlobalMoqTypeSelectionId = 0;
         private static int _GlobalMoqTypeTableId = 0;
 
+		// Global Common Disclosure Skill Mix ID
+		private static int _GlobalCommonDisclosureSkillMixId = 0;
 		// Global Skill Mix ID
 		private static int _GlobalSkillMixId = 0;
 
         #region Get Global IDs
 
-        /// <summary>
-        /// This function will get the currentworkspace that a class can use
-        /// </summary>
-        public static int GlobalWorkspaceID
+		#region Get Global IDs
+
+		/// <summary>
+		/// This function will get the currentworkspace that a class can use
+		/// </summary>
+		public static int GlobalWorkspaceID
         {
             get
             {
@@ -434,14 +438,27 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 return _GlobalDepartureLocationID;
             }
         }
-        #endregion Get Global IDs
+		public static int GlobalCommonDisclosureSkillMix
+		{
+			get
+			{
+				if (_GlobalCommonDisclosureSkillMixId == 0)
+				{
+					_GlobalCommonDisclosureSkillMixId = _CreateCommonDisclosureSkillMix();
+				}
 
-        #region Public Creation Methods
+				return _GlobalCommonDisclosureSkillMixId;
+			}
+		}
 
-        /// <summary>
-        /// Check to see if ID is zero, create otherwise
-        /// </summary>
-        public static int CreateWorkspace()
+		#endregion Get Global IDs
+
+		#region Public Creation Methods
+
+		/// <summary>
+		/// Check to see if ID is zero, create otherwise
+		/// </summary>
+		public static int CreateWorkspace()
         {
             return (_CreateWorkspace(false));
         }
@@ -689,9 +706,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
         }
         public static void CreateDepartureLocation()
         {
-            if (_GlobalDestLocationID == 0)
+            if (_GlobalDepartureLocationID == 0)
             {
-                _GlobalDestLocationID = _CreateLocation();
+				_GlobalDepartureLocationID = _CreateLocation();
             }
         }
 
@@ -702,14 +719,23 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				_GlobalSkillMixId = _CreateSkillMix();
 			}
 		}
-        #endregion Public Creation Methods
 
-        #region Global Reset Methods
+		public static void CreateCommonDisclosureSkillMix()
+		{
+			if (_GlobalCommonDisclosureSkillMixId == 0)
+			{
+				_GlobalCommonDisclosureSkillMixId = _CreateCommonDisclosureSkillMix();
+			}
+		}
 
-        /// <summary>
-        /// Reset the ID so any calls to Create will create new records
-        /// </summary>
-        public static void ResetGlobalWorkspaceID()
+		#endregion Public Creation Methods
+
+		#region Global Reset Methods
+
+		/// <summary>
+		/// Reset the ID so any calls to Create will create new records
+		/// </summary>
+		public static void ResetGlobalWorkspaceID()
         {
             _GlobalWorkspaceID = 0;
             _GlobalWBSID = 0;
@@ -2037,7 +2063,45 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
         #endregion Private Create Global IDs
 
-        public static string CreateRandomWord(int size)
+		/// <summary>
+		/// Mock Create Skill Mix
+		/// </summary>
+		/// <returns></returns>
+		private static int _CreateCommonDisclosureSkillMix()
+		{
+			int commonDisclosureSkillMixId = 0;
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				string rat = "Mock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string resource = "resourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string businessResource = "businessResourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				Models.CommonDisclosureSkillMix cdsm = new CommonDisclosureSkillMix();
+				cdsm.CommonDisclosureSkillMixID = -1;
+				cdsm.Included = false;
+				cdsm.Rationale = rat;
+				cdsm.ProposedHours = 100;
+				cdsm.HistoricalHours = 100;
+				cdsm.BOESkillMix = 100;
+				cdsm.LaborSkillMix = 100;
+				cdsm.ResourceID = resource;
+				cdsm.BusinessResourceID = businessResource;
+				cdsm.SkillMixID = -1;
+				cdsm.BOEID = GlobalBOEID;
+				cdsm.BOETaskElementID = GlobalTaskElementID;
+				cdsm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
+				gbe.CommonDisclosureSkillMixes.Add(cdsm);
+				gbe.SaveChanges();
+				commonDisclosureSkillMixId = (from s in gbe.CommonDisclosureSkillMixes
+							  where s.Rationale == rat
+							  select s.SkillMixID).FirstOrDefault();
+			}
+			return commonDisclosureSkillMixId;
+		}
+
+
+		#endregion Private Create Global IDs
+
+		public static string CreateRandomWord(int size)
         {
             return CreateRandomWord(size, false, string.Empty);
         }
