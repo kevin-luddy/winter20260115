@@ -118,6 +118,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
         private static int _GlobalMoqTypeSelectionId = 0;
         private static int _GlobalMoqTypeTableId = 0;
 
+		// Global MOQ Type Selection Table Data Resource Hours
+		private static int _GlobalMOQTypeSelectionTableDataResourceHours = 0;
 		// Global Common Disclosure Skill Mix ID
 		private static int _GlobalCommonDisclosureSkillMixId = 0;
 		// Global Skill Mix ID
@@ -725,6 +727,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			if (_GlobalCommonDisclosureSkillMixId == 0)
 			{
 				_GlobalCommonDisclosureSkillMixId = _CreateCommonDisclosureSkillMix();
+			}
+		}
+
+		public static void CreateMOQTypeSelectionTableDataResourceHours()
+		{
+			if (_GlobalMOQTypeSelectionTableDataResourceHours == 0)
+			{
+				_GlobalMOQTypeSelectionTableDataResourceHours = _CreateCommonDisclosureSkillMix();
 			}
 		}
 
@@ -2098,6 +2108,33 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			return commonDisclosureSkillMixId;
 		}
 
+		/// <summary>
+		/// Mock Create MOQ Type Selection Table Data Resource Hours.
+		/// </summary>
+		/// <returns></returns>
+		private static int _CreateMOQTypeSelectionTableDataResourceHours()
+		{
+			int moqTypeSelectionTableDataResourceId = 0;
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				int MOQTypeSelectionTableDataId = MOQObject.randomNumberGenerator.Next(99999);
+				string resource = "resourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				Models.MOQTypeSelectionTableDataResourceHour moq = new MOQTypeSelectionTableDataResourceHour();
+				moq.MOQTypeSelectionTableDataResourceHoursId = -1;
+				moq.ResourceName = resource;
+				moq.WbsHours = 100;
+				moq.TotalHours = 100;
+				moq.MOQTypeSelectionTableDataId = MOQTypeSelectionTableDataId;
+				moq.BOEID = GlobalBOEID;
+				moq.BOETaskElementID = GlobalTaskElementID;
+				gbe.MOQTypeSelectionTableDataResourceHours.Add(moq);
+				gbe.SaveChanges();
+				moqTypeSelectionTableDataResourceId = (from s in gbe.MOQTypeSelectionTableDataResourceHours
+											  where s.MOQTypeSelectionTableDataId == MOQTypeSelectionTableDataId
+													   select s.MOQTypeSelectionTableDataResourceHoursId).FirstOrDefault();
+			}
+			return moqTypeSelectionTableDataResourceId;
+		}
 
 		#endregion Private Create Global IDs
 
