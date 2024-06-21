@@ -26,6 +26,7 @@
         MoqEquationLabel: '<%=Model.MOQEquationLabel%>',
         MoqEquationType: '<%=Model.TypeOfMoqEquation%>',
         MOQType: '<%=Model.MOQType%>',
+        SkillMixTable: '<%=serializer.Serialize(Model.SkillMixTable)%>',
         TaskElementId: <%=Model.TaskElementId > 0 ? Model.TaskElementId : -1%>,
         RteFieldSize: rteFieldSize,
         ShowSearchMetricsLink: '<%=Model.ShowSearchMetricsLink%>'.isTrue(),
@@ -409,7 +410,7 @@
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeSkillMixSuffix);"></div>
             </div>
             <div class="form-element">
-                <div class="skillMixTableData skillMixTable">
+                <div class="SkillMixTable skillMixTable">
                     <table name="currentSkillMix"  class="grid editable">
                         <thead>
                             <tr>
@@ -424,12 +425,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-ng-repeat="item in model.SkillMixTable">
+                            <tr data-ng-repeat="item in SkillMixTable">
                                 <td data-ng-show="model.IsRMS">
-                                    <div class="text"> {{ item.ResourceOld }} </div>
+                                    <div class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.ResourceOld }} </div>
                                 </td>
-                                <td class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels, true) === false }">
-                                    <div class="resource-selection bootstrap">
+                                <td class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels) === false }">
+                                    <div class="resource-selection" ng-style="{ padding: '2px 5px' }">
                                         <input
                                             tabindex="{{tabindex + 1}}" 
                                             type="text" 
@@ -440,28 +441,27 @@
                                             typeahead-select-on-exact="true" 
                                             typeahead-show-hint="false" 
                                             typeahead-min-length="2" 
-                                            data-ng-change="resourceUpdated(item)" 
                                             typeahead-on-select="resourceSelected($item, item)">
                                     </div>
                                 </td>
                                 <td>
-                                    <div id="historical-hours-total" class="text"> {{ item.HistoricalHours }} </div>
+                                    <div id="historical-hours-total" class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
-                                    <div id="labor-skill-mix-total"></div>
+                                    <div id="labor-skill-mix-total" data-ng-style="{ padding: '2px 5px' }"></div>
                                 </td>
                                 <td>
-                                    <select>
+                                    <select data-ng-style="{ padding: '2px 5px' }">
                                         <option></option>
                                         <option value="">Yes</option>
                                         <option value="">No</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <div id="boe-skill-mix-total"></div>
+                                    <div id="boe-skill-mix-total" data-ng-style="{ padding: '2px 5px' }"></div>
                                 </td>
                                 <td>
-                                    <div id="proposed-hours-total"></div>
+                                    <div id="proposed-hours-total" data-ng-style="{ padding: '2px 5px' }"></div>
                                 </td>
                                 <td>
                                 </td>

@@ -366,5 +366,13 @@ namespace GenBOE.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData);
 
+		/// <summary>
+        /// Get Skill Mix table
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+		/// <param name="taskElementID">Task element ID</param>
+        /// <returns>Validation Response</returns>
+		List<SkillMixModelView> GetSkillMixTable(FullWorkspace ws, int taskElementID);
+
     }
 }

@@ -42,7 +42,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.MOQTextLabel = String.Empty;
             this.HelpText = String.Empty;
             this.MoqTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
-			this.SkillMixTable = new List<SkillMixDTO>();
+			this.SkillMixTable = new List<SkillMixModelView>();
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// <summary>
         /// Skill Mix table
         /// </summary>
-        public ICollection<SkillMixDTO> SkillMixTable { get; set; }
+        public ICollection<SkillMixModelView> SkillMixTable { get; set; }
     }
 
     public enum MOQEquationType

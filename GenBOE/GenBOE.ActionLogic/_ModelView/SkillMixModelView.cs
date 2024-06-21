@@ -10,27 +10,31 @@ namespace GenBOE.ActionLogic.ModelView
 
     public class SkillMixModelView : SkillMixDTO
     {
-
-		public ResourceModelView resourceModel { get; set; }
+		public string ResourceInput { get; set; }
 
 		public SkillMixModelView()
 		{
-			this.resourceModel = new ResourceModelView();
+			this.ResourceInput = string.Empty;
 		}
 
         public SkillMixModelView(SkillMixDTO skillMixDTO)
         {
-            this.SkillMixID = skillMixDTO.SkillMixID;
-			this.Rationale = skillMixDTO.Rationale;
-			this.ProposedHours = skillMixDTO.ProposedHours;
-			this.HistoricalHours = skillMixDTO.HistoricalHours;
-			this.BOESkillMix = skillMixDTO.BOESkillMix;
-			this.LaborSkillMix = skillMixDTO.LaborSkillMix;
-			this.ResourceOld = skillMixDTO.ResourceOld;
-			this.ResourceNew = skillMixDTO.ResourceNew;
-			this.BOEID = skillMixDTO.BOEID;
-			this.BOETaskElementID = skillMixDTO.BOETaskElementID;
-			this.MOQTypeSelectionID = skillMixDTO.MOQTypeSelectionID;
+			if (skillMixDTO != null)
+			{
+				this.ResourceInput = skillMixDTO.ResourceNew;
+				
+				this.SkillMixID = skillMixDTO.SkillMixID;
+				this.Rationale = skillMixDTO.Rationale;
+				this.ProposedHours = skillMixDTO.ProposedHours;
+				this.HistoricalHours = skillMixDTO.HistoricalHours;
+				this.BOESkillMix = skillMixDTO.BOESkillMix;
+				this.LaborSkillMix = skillMixDTO.LaborSkillMix;
+				this.ResourceOld = skillMixDTO.ResourceOld;
+				this.ResourceNew = skillMixDTO.ResourceNew;
+				this.BOEID = skillMixDTO.BOEID;
+				this.BOETaskElementID = skillMixDTO.BOETaskElementID;
+				this.MOQTypeSelectionID = skillMixDTO.MOQTypeSelectionID;
+			}
         }
     }
 }

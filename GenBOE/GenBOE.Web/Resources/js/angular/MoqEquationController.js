@@ -11,6 +11,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
         $scope.newTableId = -1;
         $scope.ResourceModels = BOEDetails.WSResources;
+        $scope.SkillMixTable = Array.from(JSON.parse($scope.model.SkillMixTable));
 
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
@@ -1563,86 +1564,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.refreshDisableSave();
     }
 
-    $scope.getAndSetIsResourceValid = function (item, models, callBusinessResourceCode) {
+    $scope.getAndSetIsResourceValid = function (item, models) {
         item.IsResourceValid = true;
-
-        var input = item.ResourceInput;
-
-        if (!$scope.IsBRCEnabled) {
-            if (!item.NewLaborType) {
-                if (input === undefined || (typeof input === 'string' && (input.length === 0
-                    || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-                    item.IsResourceValid = false;
-                }
-            }
+        const input = item.ResourceInput;
+        if (input === undefined || (typeof input === 'string' && (input.length === 0
+            || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+            item.IsResourceValid = false;
         }
-        else {
-            if (!item.NewLaborType) {
-                if (endDate < oneLmxCutOff) {
-                    if (input === undefined || (typeof input === 'string' && (input.length === 0
-                        || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-                        item.IsResourceValid = false;
-                    }
-                }
-
-                if (startDate < oneLmxCutOff && endDate >= oneLmxCutOff) {
-                    if (input === undefined || (typeof input === 'string' && (input.length === 0
-                        || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-                        item.IsResourceValid = false;
-                    }
-
-                    if (callBusinessResourceCode) {
-                        item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
-                    }
-                }
-            }
-        }
-
         return item.IsResourceValid;
     }
-
-    $scope.getAndSetIsBusinessResourceCodeValid = function (item, models, callResource) {
-        item.IsBusinessResourceCodeValid = true;
-
-        // The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
-        // that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
-        var startDate = item.StartDate.toDate();
-        var endDate = item.EndDate.toDate();
-        var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.split(' ')[0].toDate();
-        var input = item.BusinessResourceCodeInput;
-
-        if (!item.NewLaborType) {
-            if (startDate >= oneLmxCutOff) {
-                if (input === undefined || (typeof input === 'string' && (input.length === 0
-                    || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-                    item.IsBusinessResourceCodeValid = false;
-                }
-            }
-
-            if (startDate < oneLmxCutOff && endDate >= oneLmxCutOff) {
-                if (input === undefined || (typeof input === 'string' && (input.length === 0
-                    || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-                    item.IsBusinessResourceCodeValid = false;
-                }
-
-                if (callResource) {
-                    item.IsResourceValid = $scope.getAndSetIsResourceValid(item, $scope.ResourceModels, false);
-                }
-            }
-        }
-
-        return item.IsBusinessResourceCodeValid;
-    }
-
-    $scope.resourceUpdated = function (item) {
-        // this takes care of deselections
-        if ((item.ResourceInput === undefined || item.ResourceInput === '') && item.ResourceDescription !== undefined) {
-            $scope.setDirty();
-            item.ResourceDescription = undefined;
-            item.ResourceName = undefined;
-            item.ResourceID = undefined;
-        }
-    };
 
     $scope.resourceSelected = function (item, model) {
         $scope.setDirty();

@@ -61,7 +61,6 @@ namespace GenBOE.Web.Controllers
 		private readonly IOffloadRatesDTOLoader offloadRatesLoader;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 		private readonly IMoqTableExporter moqTableExporter;
-		private readonly ISkillMixDTOLoader skillMixDTOLoader;
 
 		/// <summary>
 		/// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
@@ -98,8 +97,7 @@ namespace GenBOE.Web.Controllers
 			IMSTMetricLoader inMSTMetricsLoader,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRteTemplateDataLoader rteTemplateDataLoader,
-			IMoqTableExporter moqTableExporter,
-			ISkillMixDTOLoader skillMixDTOLoader)
+			IMoqTableExporter moqTableExporter)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserLoader, inPermissionsLoader, inControllerLogic)
 		{
 			this._CommonDataMapper = inCommonDataMapper;
@@ -118,7 +116,6 @@ namespace GenBOE.Web.Controllers
 			this.offloadRatesLoader = offloadRatesDTOLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTableExporter = moqTableExporter;
-			this.skillMixDTOLoader = skillMixDTOLoader;
 		}
 
 		#region Display
@@ -2443,19 +2440,7 @@ namespace GenBOE.Web.Controllers
 				theModelView.MoqTypeHelpUrls = this._BoeLaborControllerLogic.GetMoqTypeHelpUrls();
 			}
 
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
-			{
-				SkillMixDTO mockData = new SkillMixDTO();
-				mockData.HistoricalHours = 15;
-				mockData.ResourceOld = "old_id_here";
-				mockData.ResourceNew = "new_id_here";
-				SkillMixDTO mockData2 = new SkillMixDTO();
-				mockData2.HistoricalHours = 200;
-				mockData2.ResourceOld = "old_id_here";
-				mockData2.ResourceNew = "new_id_here";
-				theModelView.SkillMixTable = new List<SkillMixDTO>(this.skillMixDTOLoader.GetByBOEID(boe.Id));
-				theModelView.SkillMixTable = new List<SkillMixDTO>() { mockData, mockData2 };
-			}
+			theModelView.SkillMixTable = this._BoeLaborControllerLogic.GetSkillMixTable(ws, taskElementID);
 
 			return theModelView;
 		}

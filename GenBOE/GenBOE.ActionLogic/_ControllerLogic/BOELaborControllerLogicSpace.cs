@@ -45,6 +45,7 @@ namespace GenBOE.ActionLogic
         /// <param name="inTaskVariableLoader"></param>
         /// <param name="iesSapClient">IES SAP Client</param>
         /// <param name="tokenservice">Token Service</param>
+		/// <param name="skillMixDTOLoader"></param>
         public BOELaborControllerLogicSpace(
             Common.Calculations.BoeTaskElementRecalculation inBoeTaskElementRecalc, 
             IBOEStateMachine inBoeStateMachine, 
@@ -69,7 +70,8 @@ namespace GenBOE.ActionLogic
             IMoqTableExporter moqTableExporter,
             IMoqTableImporter moqTableImporter,
             GenBOE.ActionLogic.IESSAPClient.IESSAPClient iesSapClient,
-            ITokenService tokenservice) : base(inBoeTaskElementRecalc, 
+            ITokenService tokenservice,
+			ISkillMixDTOLoader skillMixDTOLoader) : base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
                 inBoeTaskElementMediator, 
@@ -92,7 +94,8 @@ namespace GenBOE.ActionLogic
                 moqTableExporter,
                 moqTableImporter,
                 iesSapClient,
-                tokenservice)
+                tokenservice,
+				skillMixDTOLoader)
         {
         }
 
