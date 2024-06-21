@@ -37,9 +37,8 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="templateFileLocation">File location of the Excel template</param>
 		/// <param name="confidenceReport">View model of confidence report</param>
-		/// <param name="boeID">The BOE ID</param>
 		/// <returns>The file location of the exported Excel file</returns>
-		public string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport, int boeID)
+		public string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport)
 		{
 			// Check inputs
 			if (templateFileLocation == null)
@@ -59,9 +58,17 @@ namespace GenBOE.ActionLogic.IO.Export
 			worksheet.Add(new string[] { confidenceScore.ToString() });
 			worksheet.Add(new string[] { "BOE", "Task", "MOQ Types", "RTE Fields", "Confidence Error Messages" });
 
-			foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
+			if (confidenceReport.ConfidenceReportData.Count > 0)
 			{
-				worksheet.Add(item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
+				foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
+				{
+					worksheet.Add(item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
+				}
+			}
+			else
+			{
+				// Not adding this blank row to the worksheet will cause the Excel file to be corrupted when trying to open it
+				worksheet.Add();
 			}
 
 			// Pass the rows to the generic Excel exporter           

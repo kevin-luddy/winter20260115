@@ -32,8 +32,8 @@ namespace GenBOE.Web.ModelView
 		{
 			_ = mv ?? throw new ArgumentNullException(nameof(mv));
 
-			TotalTaskCount = mv.TotalTaskCount;
-			TasksWithoutErrors = mv.TasksWithoutErrors;
+			MaximumConfidenceValue = mv.MaximumConfidenceValue;
+			ConfidenceValue = mv.ConfidenceValue;
 			ConfidenceReportData = new Collection<ConfidenceReportItem>();
 
 			foreach (ActionLogic.ModelView.ConfidenceReportItem item in mv.ConfidenceReportData)
@@ -49,17 +49,17 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// Total number of tasks in the report
 		/// </summary>
-		public int TotalTaskCount { get; set; }
+		public int MaximumConfidenceValue { get; set; }
 
 		/// <summary>
 		/// Total number of tasks with no errors in the report
 		/// </summary>
-		public int TasksWithoutErrors { get; set; }
+		public int ConfidenceValue { get; set; }
 
 		/// <summary>
 		/// Confidence Score for the report
 		/// </summary>
-		public string ConfidenceScore => $"{TasksWithoutErrors}/{TotalTaskCount}";
+		public string ConfidenceScore => $"{ConfidenceValue}/{MaximumConfidenceValue}";
 
 		/// <summary>
 		/// Collection of data for the report

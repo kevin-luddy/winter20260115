@@ -182,9 +182,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(3, result.TotalTaskCount);
-			Assert.AreEqual(3, result.TasksWithoutErrors);
-			Assert.AreEqual("3/3", result.ConfidenceScore);
+			Assert.AreEqual(7, result.MaximumConfidenceValue);
+			Assert.AreEqual(7, result.ConfidenceValue);
+			Assert.AreEqual("7/7", result.ConfidenceScore);
 			Assert.IsFalse(result.ConfidenceReportData.Any());
 
 			// Assert no errors
@@ -287,9 +287,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace, boe.Id);
 
 			// Assert Score
-			Assert.AreEqual(2, result.TotalTaskCount);
-			Assert.AreEqual(2, result.TasksWithoutErrors);
-			Assert.AreEqual("2/2", result.ConfidenceScore);
+			Assert.AreEqual(5, result.MaximumConfidenceValue);
+			Assert.AreEqual(5, result.ConfidenceValue);
+			Assert.AreEqual("5/5", result.ConfidenceScore);
 			Assert.IsFalse(result.ConfidenceReportData.Any());
 		}
 
@@ -352,9 +352,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(0, result.TasksWithoutErrors);
-			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(2, result.MaximumConfidenceValue);
+			Assert.AreEqual(1, result.ConfidenceValue);
+			Assert.AreEqual("1/2", result.ConfidenceScore);
 			Assert.AreEqual(1, result.ConfidenceReportData.Count);
 
 			// Assert PoP error captured
@@ -424,9 +424,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(0, result.TasksWithoutErrors);
-			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(2, result.MaximumConfidenceValue);
+			Assert.AreEqual(1, result.ConfidenceValue);
+			Assert.AreEqual("1/2", result.ConfidenceScore);
 			Assert.AreEqual(1, result.ConfidenceReportData.Count);
 
 			// Assert PoP error captured
@@ -496,9 +496,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(0, result.TasksWithoutErrors);
-			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(2, result.MaximumConfidenceValue);
+			Assert.AreEqual(1, result.ConfidenceValue);
+			Assert.AreEqual("1/2", result.ConfidenceScore);
 			Assert.AreEqual(1, result.ConfidenceReportData.Count);
 
 			// Assert MOQ error captured
@@ -587,9 +587,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(0, result.TasksWithoutErrors);
-			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(3, result.MaximumConfidenceValue);
+			Assert.AreEqual(2, result.ConfidenceValue);
+			Assert.AreEqual("2/3", result.ConfidenceScore);
 			Assert.AreEqual(1, result.ConfidenceReportData.Count);
 
 			// Assert Historical Ref error captured
@@ -682,9 +682,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(0, result.TasksWithoutErrors);
-			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(3, result.MaximumConfidenceValue);
+			Assert.AreEqual(2, result.ConfidenceValue);
+			Assert.AreEqual("2/3", result.ConfidenceScore);
 			Assert.AreEqual(1, result.ConfidenceReportData.Count);
 
 			// Assert Historical Ref error and WBS data results captured
@@ -776,9 +776,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(0, result.TasksWithoutErrors);
-			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(3, result.MaximumConfidenceValue);
+			Assert.AreEqual(1, result.ConfidenceValue);
+			Assert.AreEqual("1/3", result.ConfidenceScore);
 			Assert.AreEqual(1, result.ConfidenceReportData.Count);
 
 			// Assert both errors captured and error text contains both
@@ -893,9 +893,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(0, result.TasksWithoutErrors);
-			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(2, result.MaximumConfidenceValue);
+			Assert.AreEqual(1, result.ConfidenceValue);
+			Assert.AreEqual("1/2", result.ConfidenceScore);
 			Assert.AreEqual(1, result.ConfidenceReportData.Count);
 
 			// Assert all RTEs found
@@ -961,9 +961,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(1, result.TasksWithoutErrors);
-			Assert.AreEqual("1/1", result.ConfidenceScore);
+			Assert.AreEqual(2, result.MaximumConfidenceValue);
+			Assert.AreEqual(2, result.ConfidenceValue);
+			Assert.AreEqual("2/2", result.ConfidenceScore);
 			Assert.IsFalse(result.ConfidenceReportData.Any());
 		}
 
@@ -1027,9 +1027,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(1, result.TasksWithoutErrors);
-			Assert.AreEqual("1/1", result.ConfidenceScore);
+			Assert.AreEqual(2, result.MaximumConfidenceValue);
+			Assert.AreEqual(2, result.ConfidenceValue);
+			Assert.AreEqual("2/2", result.ConfidenceScore);
 			Assert.IsFalse(result.ConfidenceReportData.Any());
 		}
 
@@ -1092,9 +1092,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace);
 
 			// Assert Score
-			Assert.AreEqual(1, result.TotalTaskCount);
-			Assert.AreEqual(0, result.TasksWithoutErrors);
-			Assert.AreEqual("0/1", result.ConfidenceScore);
+			Assert.AreEqual(2, result.MaximumConfidenceValue);
+			Assert.AreEqual(1, result.ConfidenceValue);
+			Assert.AreEqual("1/2", result.ConfidenceScore);
 			Assert.AreEqual(1, result.ConfidenceReportData.Count);
 
 			// Assert MOQ error captured
