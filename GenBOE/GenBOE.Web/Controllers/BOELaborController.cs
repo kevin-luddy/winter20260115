@@ -61,6 +61,7 @@ namespace GenBOE.Web.Controllers
 		private readonly IOffloadRatesDTOLoader offloadRatesLoader;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 		private readonly IMoqTableExporter moqTableExporter;
+		private readonly ISkillMixDTOLoader skillMixDTOLoader;
 
 		/// <summary>
 		/// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
@@ -97,7 +98,8 @@ namespace GenBOE.Web.Controllers
 			IMSTMetricLoader inMSTMetricsLoader,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRteTemplateDataLoader rteTemplateDataLoader,
-			IMoqTableExporter moqTableExporter)
+			IMoqTableExporter moqTableExporter,
+			ISkillMixDTOLoader skillMixDTOLoader)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserLoader, inPermissionsLoader, inControllerLogic)
 		{
 			this._CommonDataMapper = inCommonDataMapper;
@@ -116,6 +118,7 @@ namespace GenBOE.Web.Controllers
 			this.offloadRatesLoader = offloadRatesDTOLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTableExporter = moqTableExporter;
+			this.skillMixDTOLoader = skillMixDTOLoader;
 		}
 
 		#region Display
@@ -132,6 +135,14 @@ namespace GenBOE.Web.Controllers
 			ViewData["BOEID"] = boeID;
 			bool containsDiscrete = false;
 			bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
+
+			//check if skill mix is enabled and workspace starts after skill mix date 
+			bool enableSkillMix = false;
+			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			{
+				enableSkillMix = true;
+			}
+			ViewData["EnableSkillMix"] = enableSkillMix;
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
 			string taskDescription = string.Empty;
@@ -1633,6 +1644,35 @@ namespace GenBOE.Web.Controllers
 			FinalizeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP, sw);
 			return toReturn;
 		}
+
+		/// <summary>
+		/// Calculates all Actuals for MOQ Data Tables from SAP
+		/// </summary>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
+		/// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+		public async Task<ActionResult> CalculateAllActualsSapWithSkillMix(string workspace, int boeId, ICollection<MoqTableDataModelView> tableData)
+		{
+			if (tableData == null || !tableData.Any())
+			{
+				throw new ArgumentNullException(nameof(tableData));
+			}
+
+			// Initialize Action
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+
+			// Call to Controller Logic
+			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = await this._BoeLaborControllerLogic.CalculateAllActualsSapWithSkillMix(tableData);
+
+			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX, sw);
+			return toReturn;
+		}
 		#endregion
 
 		#region Private Methods
@@ -2401,6 +2441,20 @@ namespace GenBOE.Web.Controllers
 				theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
 				theModelView.SelectedMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == taskElementID).ToList();
 				theModelView.MoqTypeHelpUrls = this._BoeLaborControllerLogic.GetMoqTypeHelpUrls();
+			}
+
+			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			{
+				SkillMixDTO mockData = new SkillMixDTO();
+				mockData.HistoricalHours = 15;
+				mockData.ResourceOld = "old_id_here";
+				mockData.ResourceNew = "new_id_here";
+				SkillMixDTO mockData2 = new SkillMixDTO();
+				mockData2.HistoricalHours = 200;
+				mockData2.ResourceOld = "old_id_here";
+				mockData2.ResourceNew = "new_id_here";
+				theModelView.SkillMixTable = new List<SkillMixDTO>(this.skillMixDTOLoader.GetByBOEID(boe.Id));
+				theModelView.SkillMixTable = new List<SkillMixDTO>() { mockData, mockData2 };
 			}
 
 			return theModelView;

@@ -407,6 +407,7 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(RMSZoneTravelRatesFeesDataLoader), typeof(RMSZoneTravelRatesFeesDataLoader), GetLifetimeManager(), new InjectionConstructor(
                     new ResolvedParameter(typeof(IEscalationRatesDTOLoader)),
                     new ResolvedParameter(typeof(IMSTTravelNonzoneFeesAndCostsDTODataLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
+			GenBOEUnityContainer.Container.RegisterType(typeof(ISkillMixDTOLoader), typeof(SkillMixDTOLoader), GetLifetimeManager(), new InjectionMember[] { });
 
             switch (SysConfig.CompanyMode)
             {

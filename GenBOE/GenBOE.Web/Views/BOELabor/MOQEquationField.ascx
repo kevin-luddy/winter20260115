@@ -43,12 +43,12 @@
         SAPEnabled: '<%:(bool)ViewData["EnableSAP"]%>'.isTrue(),
         SAPWorkspaceBeforeCutoff: '<%:(bool)ViewData["SAPWorkspaceBeforeCutoff"]%>'.isTrue(),
         SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
-		RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
+        RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
         RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
-		ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
-		HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
+        ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
+        HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
-        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue() 
+        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -305,7 +305,7 @@
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
                     <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="exportActuals(tableData)">Export Actuals</button>
-                    <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="calculateActuals(tableData)">Calculate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="model.SkillMixEnabled ? calculateActualsWithSkillMix(tableData) : calculateActuals(tableData)">Calculate Actuals</button>
                 </div>
                 <hr />
             </div>
@@ -410,7 +410,7 @@
             </div>
             <div class="form-element">
                 <div class="skillMixTableData skillMixTable">
-                    <table name="cuurentSkillMix"  class="grid editable">
+                    <table name="currentSkillMix"  class="grid editable">
                         <thead>
                             <tr>
                                 <th data-ng-show="model.IsRMS" class="resource">Resource ID</th>
@@ -424,14 +424,31 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-ng-repeat="item in skillMixTableData | filter: { Deleted: false }" data-ng-hide="item.Deleted">
+                            <tr data-ng-repeat="item in model.SkillMixTable">
                                 <td data-ng-show="model.IsRMS">
+                                    <div class="text"> {{ item.ResourceOld }} </div>
+                                </td>
+                                <td class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels, true) === false }">
+                                    <div class="resource-selection bootstrap">
+                                        <input
+                                            tabindex="{{tabindex + 1}}" 
+                                            type="text" 
+                                            data-ng-model="item.ResourceInput" 
+                                            placeholder="Select a resource" 
+                                            uib-typeahead="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" 
+                                            class="form-control resize" 
+                                            typeahead-select-on-exact="true" 
+                                            typeahead-show-hint="false" 
+                                            typeahead-min-length="2" 
+                                            data-ng-change="resourceUpdated(item)" 
+                                            typeahead-on-select="resourceSelected($item, item)">
+                                    </div>
                                 </td>
                                 <td>
+                                    <div id="historical-hours-total" class="text"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
-                                </td>
-                                <td>
+                                    <div id="labor-skill-mix-total"></div>
                                 </td>
                                 <td>
                                     <select>
@@ -441,36 +458,13 @@
                                     </select>
                                 </td>
                                 <td>
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                </td>									
-                            </tr>
-                        </tbody>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div title="Total">Total</div>
-                                </td>
-                                <td data-ng-show="model.IsRMS">
-                                </td>	
-                                <td>
-                                    <div id="historical-hours-total"></div>
-                                </td>
-                                <td>
-                                    <div id="labor-skill-mix-total"></div>
-                                </td>
-                                <td>
-                                </td>
-                                <td>
                                     <div id="boe-skill-mix-total"></div>
                                 </td>
                                 <td>
                                     <div id="proposed-hours-total"></div>
                                 </td>
                                 <td>
-                                </td>									
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -579,7 +573,7 @@
             <select data-ng-model="model.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes"></select>
             <button data-ng-if="!ActualReadOnly()" data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType" class="moqTypesButton ies-action" type="button">Add MOQ Type</button>
             <button data-ng-if="!ActualReadOnly()" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="displayReOrderMoqTypesDialog()" class="moqTypesButton ies-blue" type="button">Sort MOQ Types</button>
-			<button data-ng-if="!ActualReadOnly() && model.SAPEnabled" ng-disabled="calculateAllDisabled" data-ng-click="calculateAllMoqActuals()" class="moqTypesButton ies-action" type="button">Calculate All Actuals</button>
+            <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" ng-disabled="calculateAllDisabled" data-ng-click="model.SkillMixEnabled ? calculateAllMoqActualsWithSkillMix() : calculateAllMoqActuals()" class="moqTypesButton ies-action" type="button">Calculate All Actuals</button>
         </div>
     </div>
 

@@ -3936,6 +3936,58 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			return response;
 		}
 
+		/// <summary>
+		/// Validates Actuals data for SAP
+		/// </summary>
+		/// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+		public async Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData)
+		{
+			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = new List<IESResponse<CalculateActualsWithSkillMixViewModel>>();
+
+			try
+			{
+				// Get Token
+				Token token = await this.tokenservice.GetToken();
+				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+				// Convert company configuration
+				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
+
+				// Convert table data
+				ICollection<DataTableViewModel> dataTables = tableData.Select(t =>
+				new DataTableViewModel()
+				{
+					Filters = t.Filters,
+					PoPEnd = t.PoPEnd,
+					PoPStart = t.PoPStart,
+					IsWeekly = t.QueryType == MoqTableData.WEEKLY_DATETIME,
+					WbsElement = t.WbsElement,
+					TableId = t.TableId
+				}).ToList();
+
+				// Call Swagger Client
+				ICollection<CalculateActualsWithSkillMixViewModelResult> result = await iesSapClient.ApiQueryParserCalculateActualsWithSkillMixAsync(companyConfiguration, dataTables);
+
+				response = result.Select(r =>
+				new IESResponse<CalculateActualsWithSkillMixViewModel>
+				{
+					Messages = r.Messages,
+					IsSuccessful = r.IsSuccessful,
+					Data = new List<CalculateActualsWithSkillMixViewModel> { r.Data }
+				}).ToList();
+
+			}
+			catch (Exception ex)
+			{
+				// throw error and let UI handle it
+				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
+				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+			}
+
+			return response;
+		}
+
 		private ActionLogic.IESSAPClient.CompanyConfiguration GetCompanyConfigurationForSAP()
 		{
 			return (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);

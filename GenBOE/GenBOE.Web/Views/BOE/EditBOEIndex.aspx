@@ -44,6 +44,7 @@
 			ParseSapFilterAction: '<%: WebConstants.ACTION_PARSE_SAP_FILTER %>',
 			ConvertSapFilterAction: '<%: WebConstants.ACTION_CONVERT_SAP_FILTER %>',
 			CalculateAllActualsSapAction: '<%: WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP %>',
+			CalculateAllActualsSapWithSkillMixAction: '<%: WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX %>',
 			ExportActualsSapAction: '<%: WebConstants.ACTION_EXPORT_ACTUALS_SAP %>',
 			DisableSave: false,
 			DisableSaveText: '',
@@ -53,7 +54,8 @@
 			SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>',
 			PoPMonthsDivisor: '<%: Constants.POP_MONTHS_DIVISOR %>',
 			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
-			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForSystem %>'.isTrue()
+			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForSystem %>'.isTrue(),
+			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue()
 		});
 
 		$(function () {
@@ -70,7 +72,7 @@
 				$("#SubmitForApproval").hide();
 			}
 		});
-	</script>
+    </script>
 
 	<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_HEADER, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 
