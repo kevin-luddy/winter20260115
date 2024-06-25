@@ -24,11 +24,14 @@
 		}
 
 		[TestMethod]
-		public void GetSkillMixDTOByMoqTypeSelection()
+		public void GetDeleteSkillMixDTOByMoqTypeSelection()
 		{
 			SkillMixDTOLoader sut = new SkillMixDTOLoader();
 			ICollection<SkillMixDTO> skillMixDTOData = sut.GetByMOQTypeSelectionID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 			Assert.AreEqual(1, skillMixDTOData.Count);
+
+			int? numRowsDeleted = sut.DeleteSkillMixByMoqTypeSelection(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			Assert.AreEqual(1, numRowsDeleted);
 		}
 
 		/// <summary>
@@ -55,17 +58,6 @@
 			ICollection<SkillMixDTO> skillMixes = new List<SkillMixDTO>() { updateSkillMix };
 			int? numRowsInserted = sut.InsertSkillMix(skillMixes);
 			Assert.AreEqual(1, numRowsInserted);
-		}
-
-		/// <summary>
-		/// Remember: SkillMix is deleted via MOQTypeSelectionID
-		/// </summary>
-		[TestMethod]
-		public void DeleteSkillMix()
-		{
-			SkillMixDTOLoader sut = new SkillMixDTOLoader();
-			int? numRowsDeleted = sut.DeleteSkillMixByMoqTypeSelection(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
-			Assert.AreEqual(1, numRowsDeleted);
 		}
 	}
 }
