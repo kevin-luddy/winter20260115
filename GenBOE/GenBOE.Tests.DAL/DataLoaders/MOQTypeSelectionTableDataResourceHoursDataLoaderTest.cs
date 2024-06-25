@@ -20,6 +20,7 @@
 			GlobalTestCaseSetup.CreateBOE(GlobalTestCaseSetup.GlobalWorkspaceID);
 			GlobalTestCaseSetup.CreateGlobalTaskElementID();
 			GlobalTestCaseSetup.CreateGlobalMoqTypeSelectionId();
+			GlobalTestCaseSetup.CreateGlobalMoqTypeSelectionTableDataId();
 			GlobalTestCaseSetup.CreateMOQTypeSelectionTableDataResourceHours();
 		}
 
@@ -53,7 +54,7 @@
 		}
 
 		/// <summary>
-		/// Remember: SkillMix is deleted via MOQTypeSelectionID
+		/// Remember: MOQTypeSelectionTableDataResourceHours is deleted via MOQTypeSelectionTableDataId
 		/// </summary>
 		[TestMethod]
 		public void DeleteMOQTypeSelectionTableDataResourceHours()
