@@ -116,7 +116,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
         private static int _GlobalDepartureLocationID = 0;
 
         private static int _GlobalMoqTypeSelectionId = 0;
-        private static int _GlobalMoqTypeTableId = 0;
+		private static int _GlobalMOQTypeSelectionTableDataId = 0;
+
+		private static int _GlobalMoqTypeTableId = 0;
 
 		// Global MOQ Type Selection Table Data Resource Hours
 		private static int _GlobalMOQTypeSelectionTableDataResourceHours = 0;
@@ -367,7 +369,17 @@ namespace GenBOE.Tests.DAL.DataLoaders
             }
         }
 
-        public static int GlobalMoqTypeTableId
+		public static int GlobalMoqTypeSelectionTableDataId
+		{
+			get
+			{
+				CreateGlobalMoqTypeSelectionTableDataId();
+
+				return _GlobalMOQTypeSelectionTableDataId;
+			}
+		}
+
+		public static int GlobalMoqTypeTableId
         {
             get
             {
@@ -683,7 +695,15 @@ namespace GenBOE.Tests.DAL.DataLoaders
             }
         }
 
-        public static void CreateGlobalMoqTypeTableId()
+		public static void CreateGlobalMoqTypeSelectionTableDataId()
+		{
+			if (_GlobalMOQTypeSelectionTableDataId == 0)
+			{
+				_GlobalMOQTypeSelectionTableDataId = _CreateMOQTypeSelectionTableDataResourceHours();
+			}
+		}
+
+		public static void CreateGlobalMoqTypeTableId()
         {
             if (_GlobalMoqTypeTableId == 0)
             {
@@ -734,7 +754,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 		{
 			if (_GlobalMOQTypeSelectionTableDataResourceHours == 0)
 			{
-				_GlobalMOQTypeSelectionTableDataResourceHours = _CreateCommonDisclosureSkillMix();
+				_GlobalMOQTypeSelectionTableDataResourceHours = _CreateMOQTypeSelectionTableDataResourceHours();
 			}
 		}
 
@@ -1603,7 +1623,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             return moqTypeSelectionId ?? 0;
         }
 
-        private static int _CreateMoqTypeTable()
+		private static int _CreateMoqTypeTable()
         {
             // table created with MOQ Type Selection, so make sure one is made
             CreateGlobalMoqTypeSelectionId();
@@ -2120,7 +2140,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				int MOQTypeSelectionTableDataId = MOQObject.randomNumberGenerator.Next(99999);
 				string resource = "resourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
 				Models.MOQTypeSelectionTableDataResourceHour moq = new MOQTypeSelectionTableDataResourceHour();
-				moq.MOQTypeSelectionTableDataResourceHoursId = -1;
 				moq.ResourceName = resource;
 				moq.WbsHours = 100;
 				moq.TotalHours = 100;

@@ -26,34 +26,29 @@
 		[TestMethod]
 		public void GetMOQTypeSelectionTableDataResourceHoursDTOByMoqTypeSelection()
 		{
-			SkillMixDTOLoader sut = new SkillMixDTOLoader();
-			ICollection<SkillMixDTO> skillMixDTOData = sut.GetByMOQTypeSelectionID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
-			Assert.AreEqual(1, skillMixDTOData.Count);
+			MOQTypeSelectionTableDataResourceHoursDTOLoader sut = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
+			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> moqTypSelectionTableResourceHours = sut.GetByMOQTypeSelectionTableDataId(GlobalTestCaseSetup.GlobalMoqTypeSelectionTableDataId);
+			Assert.AreEqual(1, moqTypSelectionTableResourceHours.Count);
 		}
 
 		/// <summary>
-		/// Remember: SkillMix is a Fill/Kill method and looks for MOQTypeSelectionID
+		/// Remember: MOQTypeSelectionTableDataResourceHours is a Fill/Kill method and looks for MOQTypeSelectionID
 		/// </summary>
 		[TestMethod]
-		public void UpdateSkillMix()
+		public void UpdateMOQTypeSelectionTableDataResourceHoursDTOByMoqTypeSelectionByTableDataId()
 		{
-			SkillMixDTOLoader sut = new SkillMixDTOLoader();
+			MOQTypeSelectionTableDataResourceHoursDTOLoader sut = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
 
-			SkillMixDTO updateSkillMix = new SkillMixDTO();
-			updateSkillMix.Rationale = "Updated Rationale";
-			updateSkillMix.Included = false;
-			updateSkillMix.ProposedHours = 100;
-			updateSkillMix.HistoricalHours = 100;
-			updateSkillMix.BOESkillMix = 100;
-			updateSkillMix.LaborSkillMix = 100;
-			updateSkillMix.ResourceOld = "Old Resource";
-			updateSkillMix.ResourceNew = "New Resource";
-			updateSkillMix.BOEID = GlobalTestCaseSetup.GlobalBOEID;
-			updateSkillMix.BOETaskElementID = GlobalTestCaseSetup.GlobalTaskElementID;
-			updateSkillMix.MOQTypeSelectionID = GlobalTestCaseSetup.GlobalMoqTypeSelectionId;
+			MOQTypeSelectionTableDataResourceHoursDTO updateMOQTypeSelectionTableDataResourceHours = new MOQTypeSelectionTableDataResourceHoursDTO();
+			updateMOQTypeSelectionTableDataResourceHours.ResourceName = "Updated Rationale";
+			updateMOQTypeSelectionTableDataResourceHours.WbsHours = 100;
+			updateMOQTypeSelectionTableDataResourceHours.TotalHours = 100;
+			updateMOQTypeSelectionTableDataResourceHours.MOQTypeSelectionTableDataId = 100;
+			updateMOQTypeSelectionTableDataResourceHours.BOETaskElementID = 100;
+			updateMOQTypeSelectionTableDataResourceHours.BOEID = 100;
 
-			ICollection<SkillMixDTO> skillMixes = new List<SkillMixDTO>() { updateSkillMix };
-			int? numRowsInserted = sut.InsertSkillMix(skillMixes);
+			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> moqTypeSelectionTableDataResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>() { updateMOQTypeSelectionTableDataResourceHours };
+			int? numRowsInserted = sut.InsertMOQTypeSelectionTableDataResourceHours(moqTypeSelectionTableDataResourceHours);
 			Assert.AreEqual(1, numRowsInserted);
 		}
 
@@ -61,7 +56,7 @@
 		/// Remember: SkillMix is deleted via MOQTypeSelectionID
 		/// </summary>
 		[TestMethod]
-		public void DeleteSkillMix()
+		public void DeleteMOQTypeSelectionTableDataResourceHours()
 		{
 			SkillMixDTOLoader sut = new SkillMixDTOLoader();
 			int? numRowsDeleted = sut.DeleteSkillMixByMoqTypeSelection(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
