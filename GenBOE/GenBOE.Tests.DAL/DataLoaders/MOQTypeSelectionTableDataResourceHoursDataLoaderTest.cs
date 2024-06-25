@@ -20,7 +20,7 @@
 			GlobalTestCaseSetup.CreateBOE(GlobalTestCaseSetup.GlobalWorkspaceID);
 			GlobalTestCaseSetup.CreateGlobalTaskElementID();
 			GlobalTestCaseSetup.CreateGlobalMoqTypeSelectionId();
-			GlobalTestCaseSetup.CreateSkillMix();
+			GlobalTestCaseSetup.CreateMOQTypeSelectionTableDataResourceHours();
 		}
 
 		[TestMethod]
@@ -58,8 +58,8 @@
 		[TestMethod]
 		public void DeleteMOQTypeSelectionTableDataResourceHours()
 		{
-			SkillMixDTOLoader sut = new SkillMixDTOLoader();
-			int? numRowsDeleted = sut.DeleteSkillMixByMoqTypeSelection(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			MOQTypeSelectionTableDataResourceHoursDTOLoader sut = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
+			int? numRowsDeleted = sut.DeleteByMoqTypeSelectionTableDataId(GlobalTestCaseSetup.GlobalMoqTypeSelectionTableDataId);
 			Assert.AreEqual(1, numRowsDeleted);
 		}
 	}

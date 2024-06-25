@@ -2146,7 +2146,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				moq.MOQTypeSelectionTableDataId = MOQTypeSelectionTableDataId;
 				moq.BOEID = GlobalBOEID;
 				moq.BOETaskElementID = GlobalTaskElementID;
-				gbe.MOQTypeSelectionTableDataResourceHours.Add(moq);
 				gbe.SaveChanges();
 				moqTypeSelectionTableDataResourceId = (from s in gbe.MOQTypeSelectionTableDataResourceHours
 											  where s.MOQTypeSelectionTableDataId == MOQTypeSelectionTableDataId
