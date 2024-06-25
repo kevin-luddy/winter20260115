@@ -609,7 +609,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 						}
 						else
 						{
-							result.UnmappedSections.Add(fromSection.Title);
+							result.UnmappedSections.Add($"{fromSection.ReferenceNumber} {fromSection.Title}");
 						}
 					}
 					else
@@ -620,7 +620,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				}
 				else
 				{
-					result.UnmappedSections.Add(fromSection.Title);
+					result.UnmappedSections.Add($"{fromSection.ReferenceNumber} {fromSection.Title}");
 				}
 			}
 
