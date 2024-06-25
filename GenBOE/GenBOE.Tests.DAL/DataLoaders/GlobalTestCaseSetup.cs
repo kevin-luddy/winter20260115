@@ -2140,12 +2140,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				int MOQTypeSelectionTableDataId = MOQObject.randomNumberGenerator.Next(99999);
 				string resource = "resourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
 				Models.MOQTypeSelectionTableDataResourceHour moq = new MOQTypeSelectionTableDataResourceHour();
+				moq.MOQTypeSelectionTableDataResourceHoursId = -1;
 				moq.ResourceName = resource;
 				moq.WbsHours = 100;
 				moq.TotalHours = 100;
 				moq.MOQTypeSelectionTableDataId = MOQTypeSelectionTableDataId;
 				moq.BOEID = GlobalBOEID;
 				moq.BOETaskElementID = GlobalTaskElementID;
+				gbe.MOQTypeSelectionTableDataResourceHours.Add(moq);
 				gbe.SaveChanges();
 				moqTypeSelectionTableDataResourceId = (from s in gbe.MOQTypeSelectionTableDataResourceHours
 											  where s.MOQTypeSelectionTableDataId == MOQTypeSelectionTableDataId
