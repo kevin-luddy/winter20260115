@@ -358,5 +358,13 @@ namespace GenBOE.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         Task<ICollection<IESResponse<CalculateActualsViewModel>>> CalculateAllActualsSap(ICollection<MoqTableDataModelView> tableData);
 
-    }
+
+		/// <summary>
+		/// Get Resources converted to Business Resource Code List
+		/// </summary>
+		/// <returns>List of Resources and their respective Business Resource Codes</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		Task<IESResponse<SkillMixConvertedResourceViewModel>> GetSkillMixConvertedResources();
+
+	}
 }
