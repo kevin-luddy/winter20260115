@@ -83,8 +83,6 @@ namespace GenBOE.ActionLogic.Reporting
 
 				foreach (BoeTaskElementDTO task in boe.TaskElements)
 				{
-					confidencereportModelView.TotalTaskCount++;
-
 					ConfidenceReportItem reportItem = new ConfidenceReportItem()
 					{
 						BoeId = boe.Id,
@@ -187,7 +185,8 @@ namespace GenBOE.ActionLogic.Reporting
 					reportItem.MoqResults = GetMathConfidenceResults(moqNumericValues, ref rteFields);
 					reportItem.HistoricalRefResults = GetMathConfidenceResults(historicalRefNumericValues, ref rteFields);
 
-					PopulateErrorText(reportItem, confidencereportModelView);
+					PopulateErrorText(reportItem);
+					UpdateConfidenceValuesForTask(reportItem, historicalRefNumericValues.Any(), confidencereportModelView);
 
 					// Add the data to the report if there are errors
 					if (reportItem.HasPoPError || reportItem.HasMoqError || reportItem.HasHistoricalRefError)
@@ -459,8 +458,7 @@ namespace GenBOE.ActionLogic.Reporting
 		/// Populate the error text for the report item. If there are no errors, also increment the tasks without errors for the full report
 		/// </summary>
 		/// <param name="reportItem">Report item</param>
-		/// <param name="confidencereportModelView">full report view model</param>
-		private void PopulateErrorText(ConfidenceReportItem reportItem, ConfidenceReportModelView confidencereportModelView)
+		private void PopulateErrorText(ConfidenceReportItem reportItem)
 		{
 			ICollection<string> errorMessages = new Collection<string>();
 
@@ -489,7 +487,40 @@ namespace GenBOE.ActionLogic.Reporting
 			else
 			{
 				reportItem.ErrorText = ConfidenceReportConstants.NO_ERRORS;
-				confidencereportModelView.TasksWithoutErrors++;
+			}
+		}
+
+		/// <summary>
+		/// Update the ConfidenceValue and MaximumConfidenceValue for the results of a given task report item
+		/// </summary>
+		/// <param name="reportItem">ConfidenceReportItem for the Task</param>
+		/// <param name="hasHistoricalRef">If the Task has any Historical Reference Values to check</param>
+		/// <param name="confidencereportModelView">ModelView for the Confidence Report containing the Confidence Values</param>
+		private void UpdateConfidenceValuesForTask(ConfidenceReportItem reportItem, bool hasHistoricalRef, ConfidenceReportModelView confidencereportModelView)
+		{
+			// Increment Maximum Confidence Value by 2 since all Tasks will have a PoP and MOQ to check
+			confidencereportModelView.MaximumConfidenceValue += 2;
+
+			// Only increment the maximum value for Historical Reference values if they are being checked
+			if (hasHistoricalRef)
+			{
+				confidencereportModelView.MaximumConfidenceValue++;
+			}
+
+			// Increment ConfidenceValue when there's not an error of each type
+			if (!reportItem.HasPoPError)
+			{
+				confidencereportModelView.ConfidenceValue++;
+			}
+
+			if (!reportItem.HasMoqError)
+			{
+				confidencereportModelView.ConfidenceValue++;
+			}
+
+			if (hasHistoricalRef && !reportItem.HasHistoricalRefError)
+			{
+				confidencereportModelView.ConfidenceValue++;
 			}
 		}
 	}

@@ -10,7 +10,8 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using GenBOE.ActionLogic.BLL;
+	using System.Web.Caching;
+	using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.IO.Export;
@@ -45,6 +46,7 @@ namespace GenBOE.ActionLogic
         /// <param name="inTaskVariableLoader"></param>
         /// <param name="iesSapClient">IES SAP Client</param>
         /// <param name="tokenservice">Token Service</param>
+		/// <param name="cache">Cache</param>
 		/// <param name="skillMixDTOLoader"></param>
         public BOELaborControllerLogicSpace(
             Common.Calculations.BoeTaskElementRecalculation inBoeTaskElementRecalc, 
@@ -66,11 +68,12 @@ namespace GenBOE.ActionLogic
             ICommonDataMapper commonDataMapper,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
-            IValidateBOE validateBOE,
-            IMoqTableExporter moqTableExporter,
+			IValidateBOE validateBOE,
+			IMoqTableExporter moqTableExporter,
             IMoqTableImporter moqTableImporter,
             GenBOE.ActionLogic.IESSAPClient.IESSAPClient iesSapClient,
             ITokenService tokenservice,
+			ICache cache,
 			ISkillMixDTOLoader skillMixDTOLoader) : base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
@@ -95,6 +98,7 @@ namespace GenBOE.ActionLogic
                 moqTableImporter,
                 iesSapClient,
                 tokenservice,
+				cache,
 				skillMixDTOLoader)
         {
         }

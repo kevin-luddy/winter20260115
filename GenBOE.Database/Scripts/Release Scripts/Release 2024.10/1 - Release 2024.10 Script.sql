@@ -1,6 +1,8 @@
 ﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.09';
 GO
 
+/*  twilson proph-2079 Updates to RateCode Bulk Table stored procedures  */
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SkillMix]') AND type in (N'U'))
 BEGIN
 	CREATE TABLE [dbo].[SkillMix] (

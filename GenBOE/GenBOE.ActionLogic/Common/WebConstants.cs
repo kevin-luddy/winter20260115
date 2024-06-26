@@ -113,6 +113,9 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string RMS_1LMX_CORE = "LM-Core";
 		public static readonly string RMS_1LMX_SERVICES = "LM-Services";
 
+		public static readonly string SKILLMIX_RESOURCE_CACHE_KEY = "SkillMix_Resources";
+		public static readonly int SECONDS_TO_CACHE_SKILLMIX_RESOURCES = 86400;
+
 		#region TEMPLATE FILES
 
 		public static readonly string ISGS_LABOR_RATES_EXAMPLE_LOCATION = "~/Templates/Export/ISGS_Labor_Rates_example.xlsx";
@@ -412,6 +415,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP = "CalculateAllActualsSap";
 		public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX = "CalculateAllActualsSapWithSkillMix";
 		public static readonly string ACTION_EXPORT_ACTUALS_SAP = "ExportActualsSap";
+		public static readonly string ACTION_GET_SKILLMIX_CONVERTED_RESOURCES = "GetSkillMixConvertedResources";
 
 		//BOE ODC Controller
 		public static readonly string ACTION_DISPLAY_BOE_OTHER_DIRECT_COST_GRID = "DisplayBOEOtherDirectCostGrid";

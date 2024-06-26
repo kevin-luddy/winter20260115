@@ -60,6 +60,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IMoqTableImporter moqTableImporter;
 		private readonly IESSAPClient iesSapClient;
 		private readonly ITokenService tokenservice;
+		private readonly ICache cache;
 		private readonly ISkillMixDTOLoader skillMixDTOLoader;
 
 		/// <summary>
@@ -95,6 +96,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IMoqTableImporter moqTableImporter,
 			IESSAPClient iesSapClient,
 			ITokenService tokenservice,
+			ICache cache,
 			ISkillMixDTOLoader skillMixDTOLoader)
 		{
 			this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
@@ -121,6 +123,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.moqTableImporter = moqTableImporter;
 			this.tokenservice = tokenservice;
 			this.iesSapClient = iesSapClient;
+			this.cache = cache;
 			this.skillMixDTOLoader = skillMixDTOLoader;
 		}
 
@@ -3934,6 +3937,68 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				// throw error and let UI handle it
 				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
 				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+			}
+
+			return response;
+		}
+
+		/// <summary>
+		/// Get Resources converted to Business Resource Code List
+		/// </summary>
+		/// <returns>List of Resources and their respective Business Resource Codes</returns>
+		public async Task<IESResponse<SkillMixConvertedResourceViewModel>> GetSkillMixConvertedResources()
+		{
+			IESResponse<SkillMixConvertedResourceViewModel> response = new IESResponse<SkillMixConvertedResourceViewModel>();
+
+			try
+			{
+				if (!this.cache.Contains(WebConstants.SKILLMIX_RESOURCE_CACHE_KEY))
+				{
+					// Get Token
+					Token token = await this.tokenservice.GetToken();
+					Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+					// Convert company configuration
+					ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
+
+					// Call Swagger Client
+					SkillMixConvertedResourceViewModelICollectionResult result = await iesSapClient.ApiQueryParserGetSkillMixConvertedResourcesAsync(companyConfiguration);
+
+					response.Messages = result.Messages;
+					response.IsSuccessful = result.IsSuccessful;
+					response.Data = result.Data;
+
+					if (result.IsSuccessful)
+					{
+						// The time being set in seconds represents 1 day that the data will be cached in the system
+						this.cache.Add(WebConstants.SKILLMIX_RESOURCE_CACHE_KEY, result.Data, WebConstants.SECONDS_TO_CACHE_SKILLMIX_RESOURCES);
+					}
+				}
+				else
+				{
+					ICollection<SkillMixConvertedResourceViewModel> resources = new List<SkillMixConvertedResourceViewModel>();
+
+					resources = (ICollection<SkillMixConvertedResourceViewModel>)this.cache.GetData(WebConstants.SKILLMIX_RESOURCE_CACHE_KEY);
+
+					if (resources.Count > 0)
+					{
+						response.Messages.Add("Retrieved Resources from Cache");
+						response.IsSuccessful = true;
+						response.Data = resources;
+					}
+					else
+					{
+						response.Messages.Add("Failed to get Resources from Cache");
+						response.IsSuccessful = false;
+						response.Data = new List<SkillMixConvertedResourceViewModel>();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				// throw error and let UI handle it
+				logger.Error(ex, "Error calling SAP API to get SkillMix Converted Resources");
+				throw new GeneralAppException("Error calling SAP API to get SkillMix Converted Resources");
 			}
 
 			return response;

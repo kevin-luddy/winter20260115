@@ -374,5 +374,11 @@ namespace GenBOE.ActionLogic
         /// <returns>Validation Response</returns>
 		List<SkillMixModelView> GetSkillMixTable(FullWorkspace ws, int taskElementID);
 
+        /// <summary>
+		/// Get Resources converted to Business Resource Code List
+		/// </summary>
+		/// <returns>List of Resources and their respective Business Resource Codes</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        Task<IESResponse<SkillMixConvertedResourceViewModel>> GetSkillMixConvertedResources();
     }
 }

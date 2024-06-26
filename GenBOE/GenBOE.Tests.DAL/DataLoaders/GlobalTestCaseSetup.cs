@@ -11,7 +11,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using System.Collections.ObjectModel;
     using System.Data.SqlClient;
     using System.Linq;
-    using System.Transactions;
+	using System.Net.NetworkInformation;
+	using System.Transactions;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -115,14 +116,25 @@ namespace GenBOE.Tests.DAL.DataLoaders
         private static int _GlobalDepartureLocationID = 0;
 
         private static int _GlobalMoqTypeSelectionId = 0;
-        private static int _GlobalMoqTypeTableId = 0;
+		private static int _GlobalMOQTypeSelectionTableDataId = 0;
+
+		private static int _GlobalMoqTypeTableId = 0;
+
+		// Global MOQ Type Selection Table Data Resource Hours
+		private static int _GlobalMOQTypeSelectionTableDataResourceHours = 0;
+		// Global Common Disclosure Skill Mix ID
+		private static int _GlobalCommonDisclosureSkillMixId = 0;
+		// Global Skill Mix ID
+		private static int _GlobalSkillMixId = 0;
 
         #region Get Global IDs
 
-        /// <summary>
-        /// This function will get the currentworkspace that a class can use
-        /// </summary>
-        public static int GlobalWorkspaceID
+		#region Get Global IDs
+
+		/// <summary>
+		/// This function will get the currentworkspace that a class can use
+		/// </summary>
+		public static int GlobalWorkspaceID
         {
             get
             {
@@ -357,7 +369,17 @@ namespace GenBOE.Tests.DAL.DataLoaders
             }
         }
 
-        public static int GlobalMoqTypeTableId
+		public static int GlobalMoqTypeSelectionTableDataId
+		{
+			get
+			{
+				CreateGlobalMoqTypeSelectionTableDataId();
+
+				return _GlobalMOQTypeSelectionTableDataId;
+			}
+		}
+
+		public static int GlobalMoqTypeTableId
         {
             get
             {
@@ -430,14 +452,27 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 return _GlobalDepartureLocationID;
             }
         }
-        #endregion Get Global IDs
+		public static int GlobalCommonDisclosureSkillMix
+		{
+			get
+			{
+				if (_GlobalCommonDisclosureSkillMixId == 0)
+				{
+					_GlobalCommonDisclosureSkillMixId = _CreateCommonDisclosureSkillMix();
+				}
 
-        #region Public Creation Methods
+				return _GlobalCommonDisclosureSkillMixId;
+			}
+		}
 
-        /// <summary>
-        /// Check to see if ID is zero, create otherwise
-        /// </summary>
-        public static int CreateWorkspace()
+		#endregion Get Global IDs
+
+		#region Public Creation Methods
+
+		/// <summary>
+		/// Check to see if ID is zero, create otherwise
+		/// </summary>
+		public static int CreateWorkspace()
         {
             return (_CreateWorkspace(false));
         }
@@ -660,7 +695,15 @@ namespace GenBOE.Tests.DAL.DataLoaders
             }
         }
 
-        public static void CreateGlobalMoqTypeTableId()
+		public static void CreateGlobalMoqTypeSelectionTableDataId()
+		{
+			if (_GlobalMOQTypeSelectionTableDataId == 0)
+			{
+				_GlobalMOQTypeSelectionTableDataId = _CreateMOQTypeSelectionTableDataResourceHours();
+			}
+		}
+
+		public static void CreateGlobalMoqTypeTableId()
         {
             if (_GlobalMoqTypeTableId == 0)
             {
@@ -685,19 +728,44 @@ namespace GenBOE.Tests.DAL.DataLoaders
         }
         public static void CreateDepartureLocation()
         {
-            if (_GlobalDestLocationID == 0)
+            if (_GlobalDepartureLocationID == 0)
             {
-                _GlobalDestLocationID = _CreateLocation();
+				_GlobalDepartureLocationID = _CreateLocation();
             }
         }
-        #endregion Public Creation Methods
 
-        #region Global Reset Methods
+		public static void CreateSkillMix()
+		{
+			if (_GlobalSkillMixId == 0)
+			{
+				_GlobalSkillMixId = _CreateSkillMix();
+			}
+		}
 
-        /// <summary>
-        /// Reset the ID so any calls to Create will create new records
-        /// </summary>
-        public static void ResetGlobalWorkspaceID()
+		public static void CreateCommonDisclosureSkillMix()
+		{
+			if (_GlobalCommonDisclosureSkillMixId == 0)
+			{
+				_GlobalCommonDisclosureSkillMixId = _CreateCommonDisclosureSkillMix();
+			}
+		}
+
+		public static void CreateMOQTypeSelectionTableDataResourceHours()
+		{
+			if (_GlobalMOQTypeSelectionTableDataResourceHours == 0)
+			{
+				_GlobalMOQTypeSelectionTableDataResourceHours = _CreateMOQTypeSelectionTableDataResourceHours();
+			}
+		}
+
+		#endregion Public Creation Methods
+
+		#region Global Reset Methods
+
+		/// <summary>
+		/// Reset the ID so any calls to Create will create new records
+		/// </summary>
+		public static void ResetGlobalWorkspaceID()
         {
             _GlobalWorkspaceID = 0;
             _GlobalWBSID = 0;
@@ -1555,7 +1623,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             return moqTypeSelectionId ?? 0;
         }
 
-        private static int _CreateMoqTypeTable()
+		private static int _CreateMoqTypeTable()
         {
             // table created with MOQ Type Selection, so make sure one is made
             CreateGlobalMoqTypeSelectionId();
@@ -1986,9 +2054,111 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             return locationID;
         }
+
+		/// <summary>
+		/// Mock Create Skill Mix
+		/// </summary>
+		/// <returns></returns>
+		private static int _CreateSkillMix()
+		{
+			int skillMixId = 0;
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				string rat = "Mock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string oldr = "OldMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string newr = "NewMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				Models.SkillMix sm = new SkillMix();
+				sm.SkillMixID = -1;
+				sm.Included = true;
+				sm.Rationale = rat;
+				sm.ProposedHours = 100;
+				sm.HistoricalHours = 100;
+				sm.BOESkillMix = 100;
+				sm.LaborSkillMix = 100;
+				sm.ResourceOld = oldr;
+				sm.ResourceNew = newr;
+				sm.BOEID = GlobalBOEID;
+				sm.BOETaskElementID = GlobalTaskElementID;
+				sm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
+				gbe.SkillMixes.Add(sm);
+				gbe.SaveChanges();
+
+				skillMixId = (from s in gbe.SkillMixes
+							  where s.Rationale == rat
+							  select s.SkillMixID).FirstOrDefault();
+			}
+
+			return skillMixId;
+		}
+
         #endregion Private Create Global IDs
 
-        public static string CreateRandomWord(int size)
+		/// <summary>
+		/// Mock Create Skill Mix
+		/// </summary>
+		/// <returns></returns>
+		private static int _CreateCommonDisclosureSkillMix()
+		{
+			int commonDisclosureSkillMixId = 0;
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				string rat = "Mock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string resource = "resourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string businessResource = "businessResourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				Models.CommonDisclosureSkillMix cdsm = new CommonDisclosureSkillMix();
+				cdsm.CommonDisclosureSkillMixID = -1;
+				cdsm.Included = false;
+				cdsm.Rationale = rat;
+				cdsm.ProposedHours = 100;
+				cdsm.HistoricalHours = 100;
+				cdsm.BOESkillMix = 100;
+				cdsm.LaborSkillMix = 100;
+				cdsm.ResourceID = resource;
+				cdsm.BusinessResourceID = businessResource;
+				cdsm.SkillMixID = -1;
+				cdsm.BOEID = GlobalBOEID;
+				cdsm.BOETaskElementID = GlobalTaskElementID;
+				cdsm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
+				gbe.CommonDisclosureSkillMixes.Add(cdsm);
+				gbe.SaveChanges();
+				commonDisclosureSkillMixId = (from s in gbe.CommonDisclosureSkillMixes
+							  where s.Rationale == rat
+							  select s.SkillMixID).FirstOrDefault();
+			}
+			return commonDisclosureSkillMixId;
+		}
+
+		/// <summary>
+		/// Mock Create MOQ Type Selection Table Data Resource Hours.
+		/// </summary>
+		/// <returns></returns>
+		private static int _CreateMOQTypeSelectionTableDataResourceHours()
+		{
+			int moqTypeSelectionTableDataResourceId = 0;
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				int MOQTypeSelectionTableDataId = MOQObject.randomNumberGenerator.Next(99999);
+				string resource = "resourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				Models.MOQTypeSelectionTableDataResourceHour moq = new MOQTypeSelectionTableDataResourceHour();
+				moq.MOQTypeSelectionTableDataResourceHoursId = -1;
+				moq.ResourceName = resource;
+				moq.WbsHours = 100;
+				moq.TotalHours = 100;
+				moq.MOQTypeSelectionTableDataId = MOQTypeSelectionTableDataId;
+				moq.BOEID = GlobalBOEID;
+				moq.BOETaskElementID = GlobalTaskElementID;
+				gbe.MOQTypeSelectionTableDataResourceHours.Add(moq);
+				gbe.SaveChanges();
+				moqTypeSelectionTableDataResourceId = (from s in gbe.MOQTypeSelectionTableDataResourceHours
+											  where s.MOQTypeSelectionTableDataId == MOQTypeSelectionTableDataId
+													   select s.MOQTypeSelectionTableDataResourceHoursId).FirstOrDefault();
+			}
+			return moqTypeSelectionTableDataResourceId;
+		}
+
+		#endregion Private Create Global IDs
+
+		public static string CreateRandomWord(int size)
         {
             return CreateRandomWord(size, false, string.Empty);
         }

@@ -66,6 +66,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		private Mock<IMoqTableExporter> moqTableExporter = null;
 		private Mock<IMoqTableImporter> moqTableImporter = null;
 		private Mock<ITokenService> tokenservice = new Mock<ITokenService>();
+		private Mock<ICache> cache = new Mock<ICache>();
 		private Mock<ISkillMixDTOLoader> skillMixDTOLoader = new Mock<ISkillMixDTOLoader>();
 		private Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient> iesSapClient = new Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient>();
 
@@ -99,6 +100,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   this.moqTableImporter.Object,
 				   iesSapClient.Object,
 				   tokenservice.Object,
+				   cache.Object,
 				   skillMixDTOLoader.Object
 			);
 		}
@@ -132,6 +134,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   this.moqTableImporter.Object,
 				   iesSapClient.Object,
 				   tokenservice.Object,
+				   cache.Object,
 				   skillMixDTOLoader.Object
 			);
 		}
@@ -166,6 +169,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   this.moqTableImporter.Object,
 				   iesSapClient.Object,
 				   tokenservice.Object,
+				   cache.Object,
 				   skillMixDTOLoader.Object
 			);
 		}

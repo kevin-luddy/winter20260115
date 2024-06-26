@@ -58,6 +58,7 @@ namespace GenBOE.ActionLogic
         /// <param name="inMSTMetricLoader"></param>
         /// <param name="iesSapClient">IES SAP Client</param>
         /// <param name="tokenservice">Token Service</param>
+		/// <param name="cache">Cache</param>
 		/// <param name="skillMixDTOLoader"></param>
         public BOELaborControllerLogicMST(
             BoeTaskElementRecalculation inBoeTaskElementRecalc,
@@ -85,6 +86,7 @@ namespace GenBOE.ActionLogic
             IMoqTableImporter moqTableImporter,
             GenBOE.ActionLogic.IESSAPClient.IESSAPClient iesSapClient,
             ITokenService tokenservice,
+			ICache cache,
 			ISkillMixDTOLoader skillMixDTOLoader)
             : base(inBoeTaskElementRecalc,
                 inBoeStateMachine,
@@ -110,6 +112,7 @@ namespace GenBOE.ActionLogic
                 moqTableImporter,
                 iesSapClient,
                 tokenservice,
+				cache,
 				skillMixDTOLoader)
         {
             this._mstMetricsLoader = inMSTMetricLoader;

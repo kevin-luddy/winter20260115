@@ -22,7 +22,7 @@ CREATE TYPE [dbo].[TT_RateCode] AS TABLE(
 	[CategoryID] [int] NOT NULL,
 	[Description] [varchar](4000) NOT NULL,
 	[SectionID] [int] NULL,
-	[RateCode] [varchar](50) NOT NULL,
+	[RateCode1] [varchar](50) NOT NULL,
 	[ResourceTypeID] [int] NULL,
 	[GovernmentBurdenPoolID] [int] NULL,
 	[CommercialBurdenPoolID] [int] NULL,
@@ -59,6 +59,7 @@ AS
 **		8/10/2017	dray				Created.
 **		2/21/2018	brunworg			Removed CobraRateSet and CobraCode1ID.
 **		9/05/2023	hrafiqzadah			Added DisclosureTypeId
+**      6/20/2024	twilson3			proph-2079 Fixed RateCode property to match incoming RateCode1
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -74,7 +75,7 @@ UPDATE [dbo].[RateCode]
 		[CategoryID] = TT.[CategoryID],
 		[Description] = TT.[Description],
 		[SectionID] = TT.[SectionID],
-		[RateCode] = TT.[RateCode],
+		[RateCode] = TT.[RateCode1],
 		[ResourceTypeID] = TT.[ResourceTypeID],
 		[GovernmentBurdenPoolID] = TT.[GovernmentBurdenPoolID],
 		[CommercialBurdenPoolID] = TT.[CommercialBurdenPoolID],
@@ -172,6 +173,7 @@ AS
 **		--------	--------			-------------------------------------------
 **		8/10/2017	dray				Created.
 **	    9/05/2023	hrafiqzadah			Updated table to include DisclosureType
+**      6/20/2024	twilson3			proph-2079 Fixed RateCode property to match incoming RateCode1
 *******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @UpdateDate datetime2 = GETDATE()
@@ -186,7 +188,7 @@ DECLARE @TT_RateCode TABLE
 	[CategoryID] [int] NOT NULL,
 	[Description] [varchar](4000) NOT NULL,
 	[SectionID] [int] NULL,
-	[RateCode] [varchar](50) NOT NULL,
+	[RateCode1] [varchar](50) NOT NULL,
 	[ResourceTypeID] [int] NULL,
 	[GovernmentBurdenPoolID] [int] NULL,
 	[CommercialBurdenPoolID] [int] NULL,
@@ -222,7 +224,7 @@ BEGIN
 		@CategoryID = CategoryID,
 		@Description = Description,
 		@SectionID = SectionID,
-		@RateCode = RateCode,
+		@RateCode = RateCode1,
 		@ResourceTypeID = ResourceTypeID,
 		@GovernmentBurdenPoolID = GovernmentBurdenPoolID,
 		@CommercialBurdenPoolID = CommercialBurdenPoolID,

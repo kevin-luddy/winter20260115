@@ -45,8 +45,8 @@ namespace GenBOE.Tests.ActionLogic.Export
 
 			// Setup 
 			ConfidenceReportModelView confidenceReportVM = new ConfidenceReportModelView();
-			confidenceReportVM.TotalTaskCount = 10;
-			confidenceReportVM.TasksWithoutErrors = 8;
+			confidenceReportVM.MaximumConfidenceValue = 10;
+			confidenceReportVM.ConfidenceValue = 8;
 
 			ConfidenceReportItem confidenceReportItem1 = new ConfidenceReportItem()
 			{
@@ -80,7 +80,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			string fileLocation = Path.Combine(System.Environment.CurrentDirectory, "test" + ".xlsx");
 			File.WriteAllBytes(fileLocation, Properties.Resources.ConfidenceReport);
 
-			string result = sut.ExportToExcelFile(fileLocation, confidenceReportVM, 1);
+			string result = sut.ExportToExcelFile(fileLocation, confidenceReportVM);
 
 			List<string> requiredColumns = new List<string>() { "BOE", "Task", "MOQ Types", "RTE Fields", "Confidence Error Messages" };
 
