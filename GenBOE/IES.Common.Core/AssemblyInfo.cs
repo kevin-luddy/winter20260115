@@ -2,5 +2,5 @@
 
 // To allow us to test internal methods..
 [assembly: InternalsVisibleTo("GenBOE.Tests.Core", AllInternalsVisible = true)]
-[assembly: InternalsVisibleTo("IES.Tests.Core", AllInternalsVisible = true)]
+[assembly: InternalsVisibleTo("IES.Tests.DAL.Core", AllInternalsVisible = true)]
 [assembly: InternalsVisibleTo("GenTRAC.DataBridge.Core", AllInternalsVisible = true)]
