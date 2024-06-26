@@ -61,6 +61,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IESSAPClient iesSapClient;
 		private readonly ITokenService tokenservice;
 		private readonly ICache cache;
+		private readonly ISkillMixDTOLoader skillMixDTOLoader;
 
 		/// <summary>
 		/// Task Element Validation Class
@@ -95,7 +96,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IMoqTableImporter moqTableImporter,
 			IESSAPClient iesSapClient,
 			ITokenService tokenservice,
-			ICache cache)
+			ICache cache,
+			ISkillMixDTOLoader skillMixDTOLoader)
 		{
 			this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
 			this._boeStateMachine = inBoeStateMachine;
@@ -122,6 +124,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.tokenservice = tokenservice;
 			this.iesSapClient = iesSapClient;
 			this.cache = cache;
+			this.skillMixDTOLoader = skillMixDTOLoader;
 		}
 
 		#region Public Members
@@ -4001,9 +4004,141 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			return response;
 		}
 
+		/// <summary>
+		/// Validates Actuals data for SAP
+		/// </summary>
+		/// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+		public async Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData)
+		{
+			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = new List<IESResponse<CalculateActualsWithSkillMixViewModel>>();
+
+			try
+			{
+				// Get Token
+				Token token = await this.tokenservice.GetToken();
+				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+				// Convert company configuration
+				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
+
+				// Convert table data
+				ICollection<DataTableViewModel> dataTables = tableData.Select(t =>
+				new DataTableViewModel()
+				{
+					Filters = t.Filters,
+					PoPEnd = t.PoPEnd,
+					PoPStart = t.PoPStart,
+					IsWeekly = t.QueryType == MoqTableData.WEEKLY_DATETIME,
+					WbsElement = t.WbsElement,
+					TableId = t.TableId
+				}).ToList();
+
+				// Call Swagger Client
+				ICollection<CalculateActualsWithSkillMixViewModelResult> result = await iesSapClient.ApiQueryParserCalculateActualsWithSkillMixAsync(companyConfiguration, dataTables);
+
+				response = result.Select(r =>
+				new IESResponse<CalculateActualsWithSkillMixViewModel>
+				{
+					Messages = r.Messages,
+					IsSuccessful = r.IsSuccessful,
+					Data = new List<CalculateActualsWithSkillMixViewModel> { r.Data }
+				}).ToList();
+
+			}
+			catch (Exception ex)
+			{
+				// throw error and let UI handle it
+				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
+				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+			}
+
+			return response;
+		}
+
 		private ActionLogic.IESSAPClient.CompanyConfiguration GetCompanyConfigurationForSAP()
 		{
 			return (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+		}
+
+		/// <summary>
+        /// Get Skill Mix table
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+		/// <param name="taskElementID">Task element ID</param>
+        /// <returns>Validation Response</returns>
+		public List<SkillMixModelView> GetSkillMixTable(FullWorkspace ws, int taskElementID)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+			
+			List<SkillMixModelView> result = new List<SkillMixModelView>();
+			
+			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			{
+				SkillMixDTO skillMixDTO = new SkillMixDTO();
+				SkillMixDTO skillMixDTO2 = new SkillMixDTO();
+
+				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+				{
+					skillMixDTO.SkillMixID = -1;
+					skillMixDTO.Rationale = string.Empty;
+					skillMixDTO.ProposedHours = 0;
+					skillMixDTO.HistoricalHours = 205;
+					skillMixDTO.BOESkillMix = 0;
+					skillMixDTO.LaborSkillMix = 0;
+					skillMixDTO.ResourceOld = "old_id_here";
+					skillMixDTO.ResourceNew = "70530-02H : Stratford Mfg BKS Labor Hours- w/ Pkg";
+					skillMixDTO.BOEID = -1;
+					skillMixDTO.BOETaskElementID = -1;
+					skillMixDTO.MOQTypeSelectionID = -1;
+
+					skillMixDTO2.SkillMixID = -1;
+					skillMixDTO2.Rationale = string.Empty;
+					skillMixDTO2.ProposedHours = 0;
+					skillMixDTO2.HistoricalHours = 42;
+					skillMixDTO2.BOESkillMix = 0;
+					skillMixDTO2.LaborSkillMix = 0;
+					skillMixDTO2.ResourceOld = "old_id_here";
+					skillMixDTO2.ResourceNew = "rms_bad_id";
+					skillMixDTO2.BOEID = -1;
+					skillMixDTO2.BOETaskElementID = -1;
+					skillMixDTO2.MOQTypeSelectionID = -1;
+				}
+				else if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+				{
+					skillMixDTO.SkillMixID = -1;
+					skillMixDTO.Rationale = string.Empty;
+					skillMixDTO.ProposedHours = 0;
+					skillMixDTO.HistoricalHours = 200;
+					skillMixDTO.BOESkillMix = 0;
+					skillMixDTO.LaborSkillMix = 0;
+					skillMixDTO.ResourceOld = "";
+					skillMixDTO.ResourceNew = "C1MDAC8 Ignite Core MTN_South Dev Lvl 3&4";
+					skillMixDTO.BOEID = -1;
+					skillMixDTO.BOETaskElementID = -1;
+					skillMixDTO.MOQTypeSelectionID = -1;
+
+					skillMixDTO2.SkillMixID = -1;
+					skillMixDTO2.Rationale = string.Empty;
+					skillMixDTO2.ProposedHours = 0;
+					skillMixDTO2.HistoricalHours = 15;
+					skillMixDTO2.BOESkillMix = 0;
+					skillMixDTO2.LaborSkillMix = 0;
+					skillMixDTO2.ResourceOld = "";
+					skillMixDTO2.ResourceNew = "space_bad_id";
+					skillMixDTO2.BOEID = -1;
+					skillMixDTO2.BOETaskElementID = -1;
+					skillMixDTO2.MOQTypeSelectionID = -1;
+				}
+
+				result = this.skillMixDTOLoader.GetByBOETaskElementID(taskElementID).Select(skillMixDto => new SkillMixModelView(skillMixDto)).ToList();
+				result = new List<SkillMixDTO> { skillMixDTO, skillMixDTO2 }.Select(skillMixDto => new SkillMixModelView(skillMixDto)).ToList();
+			}
+
+			return result;
 		}
 	}
 
