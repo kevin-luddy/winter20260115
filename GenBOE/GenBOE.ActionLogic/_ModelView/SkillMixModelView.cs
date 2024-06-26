@@ -22,7 +22,7 @@ namespace GenBOE.ActionLogic.ModelView
 			if (skillMixDTO != null)
 			{
 				this.ResourceInput = skillMixDTO.ResourceNew;
-				
+				this.Included = skillMixDTO.Included;
 				this.SkillMixID = skillMixDTO.SkillMixID;
 				this.Rationale = skillMixDTO.Rationale;
 				this.ProposedHours = skillMixDTO.ProposedHours;
