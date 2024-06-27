@@ -133,6 +133,12 @@ namespace GenBOE.ActionLogic.Reporting
 								case MOQType.Comparative:
 									rteFields.Add(moqType.Rationale);
 									rteFields.Add(moqType.SkillMixRationale);
+
+									if (Utilities.IsHistoricalReferenceExplanationRequired(workspace.CreationDate))
+									{
+										rteFields.Add(moqType.HistoricalReferenceExplanation);
+									}
+
 									foreach (MoqTableData table in moqType.TableData)
 									{
 										if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
@@ -151,7 +157,7 @@ namespace GenBOE.ActionLogic.Reporting
 									rteFields.Add(moqType.SkillMixRationale);
 									break;
 								case MOQType.SOW:
-								case MOQType.LevelOfEffort:
+								case MOQType.LOE:
 									rteFields.Add(moqType.DescriptionHoursRequired);
 									rteFields.Add(moqType.Rationale);
 									rteFields.Add(moqType.SkillMixRationale);

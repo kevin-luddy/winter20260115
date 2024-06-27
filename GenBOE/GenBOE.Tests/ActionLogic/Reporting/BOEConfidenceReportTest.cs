@@ -83,7 +83,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			WorkspaceDTO workspace = new WorkspaceDTO()
 			{
 				Id = 1,
-				UsingTemplateBOE = true
+				UsingTemplateBOE = true,
+				CreationDate = DateTime.Now
 			};
 
 			BoeDTO boe1 = new BoeDTO()
@@ -154,6 +155,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 				TaskId = task1.Id,
 				Rationale = "This is the rational containing total relevant hours of 50",
 				SkillMixRationale = "This is the Skill Mix Rationale containing 55 for the second table",
+				HistoricalReferenceExplanation = "This is the Historical Ref Explanation with 60 for the third table",
 				TableData = new Collection<MoqTableData>()
 				{
 					new MoqTableData()
@@ -163,6 +165,10 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 					new MoqTableData()
 					{
 						TotalRelevantHours = 55
+					},
+					new MoqTableData()
+					{
+						TotalRelevantHours = 60
 					}
 				}
 			};
@@ -856,7 +862,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 
 			MoqTypeSelection loe = new MoqTypeSelection()
 			{
-				SelectedMOQType = MOQType.LevelOfEffort,
+				SelectedMOQType = MOQType.LOE,
 				TaskId = task1.Id,
 				Rationale = "Rationale 10",
 				SkillMixRationale = "Skill Mix 11",
