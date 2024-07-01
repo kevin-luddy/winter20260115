@@ -61,10 +61,10 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         public string OtherContractActionType { get; set; }
 
-        /// <summary>
-        /// Contract Type Group / Contract Type
-        /// </summary>
-        public int ContractTypeGroup { get; set; }
+		/// <summary>
+		/// Contract Type Group / Contract Type
+		/// </summary>
+		public ICollection<string> ContractType { get; set; }
 
         /// <summary>
         /// Gets or sets CoverSheetApprover
