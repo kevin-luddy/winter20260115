@@ -49,7 +49,8 @@
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
-        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
+        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue(),
+		TotalCurrentSkillMixHistoricalHours: <%=Model.TotalCurrentSkillMixHistoricalHours%>
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -448,7 +449,7 @@
                                     <div id="historical-hours-total" class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
-                                    <div id="labor-skill-mix-total" data-ng-style="{ padding: '2px 5px' }"></div>
+                                    <div id="labor-skill-mix-total" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix }}</div>
                                 </td>
                                 <td>
                                     <select data-ng-style="{ padding: '2px 5px' }">
@@ -465,6 +466,26 @@
                                 </td>
                                 <td>
                                 </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div title="Total">Total</div>
+                                </td>
+                                <td></td>	<!-- Current Resource ID in total row will be empty -->
+                                <td>
+                                    <div id="cms-historical-hours-total">{{ model.TotalCurrentSkillMixHistoricalHours }}</div>
+                                </td>
+                                <td>
+                                    <div id="cms-labor-skill-mix-total"></div>
+                                </td>
+                                <td></td> <!-- Included in total row will be empty -->
+                                <td>
+                                    <div id="cms-boe-skill-mix-total"></div>
+                                </td>
+                                <td>
+                                    <div id="cms-proposed-hours-total"></div>
+                                </td>
+                                <td></td>	<!-- Rationale in total row will be empty -->								
                             </tr>
                         </tbody>
                     </table>
