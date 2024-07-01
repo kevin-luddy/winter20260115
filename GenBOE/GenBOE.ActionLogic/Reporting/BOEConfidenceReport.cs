@@ -35,12 +35,18 @@ namespace GenBOE.ActionLogic.Reporting
 		private IMoqTypeDataLoader moqTypeLoader;
 
 		/// <summary>
+		/// RTE Template Loader
+		/// </summary>
+		private IRteTemplateDataLoader rteTemplateLoader;
+
+		/// <summary>
 		/// ctor
 		/// </summary>
-		public BOEConfidenceReport(IBoeDTODataLoader boeLoader, IMoqTypeDataLoader moqTypeLoader)
+		public BOEConfidenceReport(IBoeDTODataLoader boeLoader, IMoqTypeDataLoader moqTypeLoader, IRteTemplateDataLoader rteTemplateLoader)
 		{
 			this.boeLoader = boeLoader;
 			this.moqTypeLoader = moqTypeLoader;
+			this.rteTemplateLoader = rteTemplateLoader;
 		}
 
 		/// <summary>
@@ -75,6 +81,13 @@ namespace GenBOE.ActionLogic.Reporting
 				wsVariableReplacements.Add(wsVariable.WorkspaceVariableName, wsVariable.WorkspaceVariableValue);
 			}
 
+			// Get the RTE Template values for the Workspace if the workspace is using them
+			ICollection<RTECustomTemplateAnswerModelView> rteTemplateValues = new Collection<RTECustomTemplateAnswerModelView>();
+			if (workspace.RteOverrides.Any())
+			{
+				rteTemplateValues = rteTemplateLoader.GetAnswersByWorkspaceId(workspace.Id);
+			}
+
 			// Loop though each task in each boe to generate the report
 			foreach (FullBoe boe in boes)
 			{
@@ -96,6 +109,14 @@ namespace GenBOE.ActionLogic.Reporting
 					{
 						task.Description
 					};
+
+					// Get the Task Description RTE Template answers if they're being used
+					if (workspace.RteOverrides.Any(x => x == RteTemplateSource.TaskDescription || x == RteTemplateSource.TaskMOQ))
+					{
+						rteFields.AddRange(rteTemplateValues.Where(x => x.BoeId == boe.Id && x.TaskId == task.Id 
+								&& (x.Source == RteTemplateSource.TaskDescription || x.Source == RteTemplateSource.TaskMOQ))
+							.Select(x => x.AnswerText));
+					}
 
 					ICollection<DateRange> popDates = new Collection<DateRange>()
 					{

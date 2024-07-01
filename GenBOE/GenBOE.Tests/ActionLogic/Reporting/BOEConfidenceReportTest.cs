@@ -40,6 +40,11 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 		private Mock<IMoqTypeDataLoader> moqTypeLoader;
 
 		/// <summary>
+		/// RTE Template Loader
+		/// </summary>
+		private Mock<IRteTemplateDataLoader> rteTemplateLoader;
+
+		/// <summary>
 		/// Retriever used by FullWorkspace/FullBOE
 		/// </summary>
 		private Mock<IRetriever> retriever;
@@ -57,6 +62,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 		{
 			boeLoader = new Mock<IBoeDTODataLoader>();
 			moqTypeLoader = new Mock<IMoqTypeDataLoader>();
+			rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
 			retriever = new Mock<IRetriever>();
 			factory = new Mock<IFullObjectFactory>();
 			Mock<IPermissionsDTODataLoader> permissionsLoader = new Mock<IPermissionsDTODataLoader>();
@@ -67,7 +73,9 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsLoader.Object);
 
-			return new BOEConfidenceReport(boeLoader.Object, moqTypeLoader.Object);
+			retriever.Setup(x => x.GetWsRteOverrides(It.IsAny<int>())).Returns(new Collection<RteTemplateSource>());
+
+			return new BOEConfidenceReport(boeLoader.Object, moqTypeLoader.Object, rteTemplateLoader.Object);
 		}
 
 		#region Confidence Report Tests
@@ -1108,6 +1116,109 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.IsTrue(result.ConfidenceReportData.First().HasMoqError);
 			Assert.IsFalse(result.ConfidenceReportData.First().HasHistoricalRefError);
 			Assert.AreEqual(ConfidenceReportConstants.MOQ_ERROR, result.ConfidenceReportData.First().ErrorText);
+		}
+
+		/// <summary>
+		/// Test GenerateConfidenceReport when Workspace uses RTE Templates for Task Description and MOQ Rationale
+		/// </summary>
+		[TestMethod]
+		public void TestGenerateConfidenceReportRteTemplates()
+		{
+			BOEConfidenceReport sut = GetSUT();
+
+			WorkspaceDTO workspace = new WorkspaceDTO()
+			{
+				Id = 1,
+				UsingTemplateBOE = true
+			};
+
+			BoeDTO boe = new BoeDTO()
+			{
+				Id = 1,
+				Title = "BOE 1",
+				WorkspaceID = workspace.Id
+			};
+
+			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
+			{
+				Id = 1,
+				OrdinaryVariableName = "OrdVar",
+				OrdinaryVariableValue = 10
+			};
+
+			WorkspaceVariableDTO wsVariable = new WorkspaceVariableDTO()
+			{
+				Id = 1,
+				WorkspaceVariableName = "WsVar",
+				WorkspaceVariableValue = 100
+			};
+
+			BoeTaskElementDTO task = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				TaskTitle = "Task 1",
+				Description = "Description",
+				StartDate = new DateTime(2024, 1, 15),
+				EndDate = new DateTime(2024, 12, 15),
+				MOQHoursEquation = $"1 hour * {task1Variable.OrdinaryVariableName} + {wsVariable.WorkspaceVariableName}",
+				TotalHours = 110,
+				OrdinaryVariables = new Collection<OrdinaryVariableDto>() { task1Variable }
+			};
+
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TaskId = task.Id,
+				Rationale = "This is the rational containing total relevant hours of 50",
+				SkillMixRationale = "This is the Skill Mix Rationale containing 55 for the second table",
+				TableData = new Collection<MoqTableData>()
+				{
+					new MoqTableData()
+					{
+						TotalRelevantHours = 50
+					},
+					new MoqTableData()
+					{
+						TotalRelevantHours = 55
+					}
+				}
+			};
+
+			// PoP and MOQ values are in the RTE Template Answers for Task Description and MOQ Template
+			RTECustomTemplateAnswerModelView descriptionTemplate = new RTECustomTemplateAnswerModelView()
+			{
+				BoeId = boe.Id,
+				TaskId = task.Id,
+				Source = RteTemplateSource.TaskDescription,
+				AnswerText = "This task is for January 2024 thru December 2024"
+			};
+
+			RTECustomTemplateAnswerModelView moqTemplate = new RTECustomTemplateAnswerModelView()
+			{
+				BoeId = boe.Id,
+				TaskId = task.Id,
+				Source = RteTemplateSource.TaskDescription,
+				AnswerText = "This task has 1 hour per 10 from the Task Var plus 100 from the WS Var which totals 110"
+			};
+
+			FullWorkspace fullWorkspace = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(fullWorkspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), workspace.DecimalPrecision, workspace.CostDecimalPrecision))
+				.Returns(new Collection<BoeTaskElementDTO>() { task });
+			retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(workspace.Id)).Returns(new Collection<WorkspaceVariableDTO>() { wsVariable });
+			retriever.Setup(x => x.GetWsRteOverrides(It.IsAny<int>())).Returns(new Collection<RteTemplateSource>() { RteTemplateSource.TaskDescription, RteTemplateSource.TaskMOQ });
+			boeLoader.Setup(x => x.GetById(boe.Id)).Returns(boe);
+			moqTypeLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			rteTemplateLoader.Setup(x => x.GetAnswersByWorkspaceId(workspace.Id)).Returns(new Collection<RTECustomTemplateAnswerModelView>() { descriptionTemplate, moqTemplate });
+
+			ConfidenceReportModelView result = sut.GenerateConfidenceReport(fullWorkspace, boe.Id);
+
+			// Assert Score
+			Assert.AreEqual(3, result.MaximumConfidenceValue);
+			Assert.AreEqual(3, result.ConfidenceValue);
+			Assert.AreEqual("3/3", result.ConfidenceScore);
+			Assert.IsFalse(result.ConfidenceReportData.Any());
 		}
 
 		/// <summary>

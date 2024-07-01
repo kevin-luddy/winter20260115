@@ -1210,7 +1210,8 @@ namespace GenBOE
 
 			GenBOEUnityContainer.Container.RegisterType(typeof(IBOEConfidenceReport), typeof(BOEConfidenceReport), GetLifetimeManager(), new InjectionConstructor(
 																																		new ResolvedParameter(typeof(IBoeDTODataLoader)),
-																																		new ResolvedParameter(typeof(IMoqTypeDataLoader))));
+																																		new ResolvedParameter(typeof(IMoqTypeDataLoader)),
+																																		new ResolvedParameter(typeof(IRteTemplateDataLoader))));
 
 			GenBOEUnityContainer.Container.RegisterType(typeof(InitializationToWorkingTransition), typeof(InitializationToWorkingTransition), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(BoeEmailer)), new ResolvedParameter(typeof(IWorkspaceDTODataLoader))));
 
