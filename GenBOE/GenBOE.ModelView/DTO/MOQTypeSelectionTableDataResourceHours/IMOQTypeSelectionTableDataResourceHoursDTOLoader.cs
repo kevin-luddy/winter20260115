@@ -33,6 +33,13 @@ namespace GenBOE.DataBridge.DTO
 		ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByBOETaskElementID(int boeTaskElementID);
 
 		/// <summary>
+		/// Get all MOQ Type Selection Table Data Resource Hours values by Workspace Id
+		/// </summary>
+		/// <param name="workspaceId">Workspace Id</param>
+		/// <returns>List of MOQ Type Selection Table Data Resource Hours</returns>
+		ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByWorkspaceId(int workspaceId);
+
+		/// <summary>
 		/// Get MOQ Type Selection Table Data Resource Hours by Ids.
 		/// </summary>
 		/// <param name="moqTypeSelectionTableDataResourceHoursIds"></param>

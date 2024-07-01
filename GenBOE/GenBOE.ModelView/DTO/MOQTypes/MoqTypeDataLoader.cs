@@ -25,15 +25,23 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         private IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader;
 
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="moqTypeTableCustomFieldValueXREFLoader">MOQ Type Table Custom Field Value XREF Loader</param>
-        public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader)
+		/// <summary>
+		/// MOQ Type resource hours loader
+		/// </summary>
+		private IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader;
+
+		/// <summary>
+		/// constructor
+		/// </summary>
+		/// <param name="moqTypeTableCustomFieldValueXREFLoader">MOQ Type Table Custom Field Value XREF Loader</param>
+		/// <param name="moqTypeSelectionTableDataResourceHoursDTOLoader">MOQ Type Resource Hours Loader</param>
+		public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader, IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader)
         {
             this.Log = new Logger(typeof(MoqTypeDataLoader));
             this.moqTypeTableCustomFieldValueXREFLoader = moqTypeTableCustomFieldValueXREFLoader;
-        }
+			this.moqTypeSelectionTableDataResourceHoursDTOLoader = moqTypeSelectionTableDataResourceHoursDTOLoader;
+
+		}
 
         /// <summary>
         /// Get MOQ Type Selections by MOQ Type Selection IDs
@@ -44,7 +52,7 @@ namespace GenBOE.DataBridge.DTO
         public override ICollection<MoqTypeSelection> GetByIds(ICollection<int> ids)
         {
             ICollection<MoqTypeSelection> toReturn = new Collection<MoqTypeSelection>();
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
@@ -70,9 +78,9 @@ namespace GenBOE.DataBridge.DTO
                                 }).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
-                }
+				}
 
-                this.DoPostProcessing(toReturn);
+				this.DoPostProcessing(toReturn, null);
             }
 
             return toReturn;
@@ -87,7 +95,9 @@ namespace GenBOE.DataBridge.DTO
         public ICollection<MoqTypeSelection> GetByWorkspaceId(int workspaceId)
         {
             ICollection<MoqTypeSelection> toReturn = new Collection<MoqTypeSelection>();
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
@@ -117,7 +127,9 @@ namespace GenBOE.DataBridge.DTO
                     this.GetTableDataForMoqTypes(toReturn, gbe);
                 }
 
-                this.DoPostProcessing(toReturn);
+				resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByWorkspaceId(workspaceId);
+
+				this.DoPostProcessing(toReturn, resourceHours);
             }
 
             return toReturn;
@@ -132,6 +144,7 @@ namespace GenBOE.DataBridge.DTO
         public ICollection<MoqTypeSelection> GetByBoeId(int boeId)
         {
             ICollection<MoqTypeSelection> toReturn = new Collection<MoqTypeSelection>();
+			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = new Collection<MOQTypeSelectionTableDataResourceHoursDTO>();
             using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
@@ -159,9 +172,11 @@ namespace GenBOE.DataBridge.DTO
                                 }).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
-                }
+					resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByBOEID(boeId);
 
-                this.DoPostProcessing(toReturn);
+				}
+
+                this.DoPostProcessing(toReturn, resourceHours);
             }
 
             return toReturn;
@@ -187,6 +202,7 @@ namespace GenBOE.DataBridge.DTO
                 {
                     foreach(MoqTableData table in dtoToDelete.TableData.Where(x => x.Id > 0))
                     {
+						gbe.deleteMOQTypeSelectionTableDataResourceHours(table.Id);
                         gbe.deleteMOQTypeSelectionTableData(table.Id, table.UpdateDate);
                     }
 
@@ -230,7 +246,20 @@ namespace GenBOE.DataBridge.DTO
                         if (tableId.HasValue)
                         {
                             this.moqTypeTableCustomFieldValueXREFLoader.SaveMoqTypeTableCustomFieldValueContainers(table.CustomFieldValueContainers, tableId.Value);
-                        }
+
+							if (table.ResourceHours != null && table.ResourceHours.Count > 0)
+							{
+								// Set the ID for the new MOQ Table
+								foreach (MOQTypeSelectionTableDataResourceHoursDTO resourceHours in table.ResourceHours)
+								{
+									resourceHours.MOQTypeSelectionTableDataId = tableId.Value;
+									resourceHours.BOEID = dtoToUpsert.BoeId;
+									resourceHours.BOETaskElementID = dtoToUpsert.TaskId;
+								}
+
+								this.moqTypeSelectionTableDataResourceHoursDTOLoader.InsertMOQTypeSelectionTableDataResourceHours(table.ResourceHours);
+							}
+						}
                     }
                 }
             }
@@ -253,6 +282,7 @@ namespace GenBOE.DataBridge.DTO
                     // Delete original tables
                     foreach(MoqTableData table in moqType.TableData.Where(x => x.Updateable == UpdateType.Deleted))
                     {
+						gbe.deleteMOQTypeSelectionTableDataResourceHours(table.Id);
                         gbe.deleteMOQTypeSelectionTableData(table.Id, table.UpdateDate);
                     }
 
@@ -267,7 +297,19 @@ namespace GenBOE.DataBridge.DTO
                         if (tableId.HasValue)
                         {
                             this.moqTypeTableCustomFieldValueXREFLoader.SaveMoqTypeTableCustomFieldValueContainers(table.CustomFieldValueContainers, tableId.Value);
-                        }
+							if (table.ResourceHours != null && table.ResourceHours.Count > 0)
+							{
+								// Set the ID for the new MOQ Table
+								foreach (MOQTypeSelectionTableDataResourceHoursDTO resourceHours in table.ResourceHours)
+								{
+									resourceHours.MOQTypeSelectionTableDataId = tableId.Value;
+									resourceHours.BOEID = moqType.BoeId;
+									resourceHours.BOETaskElementID = moqType.TaskId;
+								}
+
+								this.moqTypeSelectionTableDataResourceHoursDTOLoader.InsertMOQTypeSelectionTableDataResourceHours(table.ResourceHours);
+							}
+						}
                     }
                 }
             }
@@ -329,15 +371,24 @@ namespace GenBOE.DataBridge.DTO
         /// Do post processing after saving MOQ Type Selections
         /// </summary>
         /// <param name="moqTypeSelections"></param>
-        private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections)
+        private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours)
         {
-            // Handle custom field enums
+            // Handle custom field enums and resource Hours
             foreach (MoqTypeSelection selection in moqTypeSelections.Where(x => x.TableData.Any()))
             {
                 foreach (MoqTableData table in selection.TableData)
                 {
                     table.CustomFieldValueContainers = (table.CustomFieldValueContainersIEnum ?? new List<CustomFieldValueContainer>()).ToCollection();
                     table.CustomFieldValueContainersIEnum = null;
+
+					if (resourceHours == null)
+					{
+						resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByMOQTypeSelectionTableDataId(table.Id);
+					}
+					else
+					{
+						table.ResourceHours = resourceHours.Where(r => r.MOQTypeSelectionTableDataId == table.Id).ToCollection();
+					}
                 }
             }
         }

@@ -1476,7 +1476,8 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IUserMapper), typeof(GenTRAC.DataBridge.DTO.UserMapper), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(GenTRAC.DataBridge.DTO.IUserLoader)), new ResolvedParameter(typeof(CacheDataLoader)), new ResolvedParameter(typeof(ISecurityInformation)), new ResolvedParameter(typeof(IActiveDirectoryUtilities)), new ResolvedParameter(typeof(ICache))));
             GenBOEUnityContainer.Container.RegisterType(typeof(ISystemSettingDTODataLoader), typeof(SystemSettingDTODataLoader), GetLifetimeManager());
             GenBOEUnityContainer.Container.RegisterType(typeof(IRteTemplateDataLoader), typeof(RteTemplateDataLoader), GetLifetimeManager());
-            GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
+			GenBOEUnityContainer.Container.RegisterType(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader), typeof(MOQTypeSelectionTableDataResourceHoursDTOLoader), GetLifetimeManager());
+			GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)), new ResolvedParameter(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 
         }
 

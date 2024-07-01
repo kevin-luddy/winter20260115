@@ -1572,7 +1572,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
         private static int _CreateMoqTypeSelection()
         {
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
-            MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader);
+			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
+            MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader);
 
             MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
             {
@@ -1629,10 +1630,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
             CreateGlobalMoqTypeSelectionId();
             
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
-            MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader);
+			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
+			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader);
 
-            // Get MOQ Type Selection and get ID from there
-            MoqTypeSelection moqTypeSelection = moqTypeDataLoader.GetById(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+
+			// Get MOQ Type Selection and get ID from there
+			MoqTypeSelection moqTypeSelection = moqTypeDataLoader.GetById(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 
             int tableId = moqTypeSelection.TableData.First().Id;
 

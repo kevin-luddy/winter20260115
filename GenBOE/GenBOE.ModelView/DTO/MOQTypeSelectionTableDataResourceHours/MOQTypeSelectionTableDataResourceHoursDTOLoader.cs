@@ -33,7 +33,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					result = (from moq in gbe.MOQTypeSelectionTableDataResourceHours?.ToList()
+					result = (from moq in gbe.MOQTypeSelectionTableDataResourceHours
 							  where moq.MOQTypeSelectionTableDataId == moqTypeSelectionTableDataId
 							  select new MOQTypeSelectionTableDataResourceHoursDTO
 							  {
@@ -44,9 +44,41 @@ namespace GenBOE.DataBridge.DTO
 								  MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
 								  BOETaskElementID = moq.BOETaskElementID,
 								  BOEID = moq.BOEID
-							  })?.ToList();
+							  }).ToList();
 				}
 
+				return result;
+			}
+		}
+
+		/// <summary>
+		/// Get all MOQ Type Selection Table Data Resource Hours values by BOETaskElement FK ID.
+		/// </summary>
+		/// <param name="boeTaskElementID"></param>
+		/// <returns>List of MOQ Type Selection Table Data Resource Hours</returns>
+		[DbQuery]
+		public virtual ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByWorkspaceId(int workspaceId)
+		{
+			List<MOQTypeSelectionTableDataResourceHoursDTO> result = new List<MOQTypeSelectionTableDataResourceHoursDTO>();
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from moq in gbe.MOQTypeSelectionTableDataResourceHours
+								join b in gbe.BOEs on moq.BOEID equals b.BOEID
+								where b.WorkspaceID == workspaceId
+								select new MOQTypeSelectionTableDataResourceHoursDTO
+								{
+									MOQTypeSelectionTableDataResourceHoursId = moq.MOQTypeSelectionTableDataResourceHoursId,
+									ResourceName = moq.ResourceName,
+									WbsHours = moq.WbsHours,
+									TotalHours = moq.TotalHours,
+									MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
+									BOETaskElementID = moq.BOETaskElementID,
+									BOEID = moq.BOEID
+								}).ToList();
+				}
 				return result;
 			}
 		}
@@ -65,7 +97,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					result = (from moq in gbe.MOQTypeSelectionTableDataResourceHours?.ToList()
+					result = (from moq in gbe.MOQTypeSelectionTableDataResourceHours
 							  where moq.BOEID == boeID
 							  select new MOQTypeSelectionTableDataResourceHoursDTO
 							  {
@@ -76,7 +108,7 @@ namespace GenBOE.DataBridge.DTO
 								  MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
 								  BOETaskElementID = moq.BOETaskElementID,
 								  BOEID = moq.BOEID
-							  })?.ToList();
+							  }).ToList();
 				}
 				return result;
 			}
@@ -107,7 +139,7 @@ namespace GenBOE.DataBridge.DTO
 								  MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
 								  BOETaskElementID = moq.BOETaskElementID,
 								  BOEID = moq.BOEID
-							  })?.ToList();
+							  }).ToList();
 				}
 				return result;
 			}
@@ -138,7 +170,7 @@ namespace GenBOE.DataBridge.DTO
 								  MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
 								  BOETaskElementID = moq.BOETaskElementID,
 								  BOEID = moq.BOEID
-							  })?.ToList();
+							  }).ToList();
 				}
 				return result;
 			}
