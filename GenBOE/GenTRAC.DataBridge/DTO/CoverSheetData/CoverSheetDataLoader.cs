@@ -47,7 +47,7 @@ namespace GenTRAC.DataBridge.DTO
                         IsCCPDRequired = prop.CCPDRequired,
                         ContractActionType = (ContractActionType?)prop.ContractActionType,
                         OtherContractActionType = prop.ContractActionTypeOtherText,
-                        ContractTypeGroup = prop.ContractTypeGroupID ?? 0,
+                        ContractType = prop.ContractTypeLUs.Select(x => x.ContractType).ToList(),
                         CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDT,
                         CostThroughCom = prop.ProposalChecklists.FirstOrDefault().CostThroughCom,
                         ProfitFee = prop.ProposalChecklists.FirstOrDefault().Profit,
