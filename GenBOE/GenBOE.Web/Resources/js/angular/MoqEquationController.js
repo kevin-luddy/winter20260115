@@ -1383,7 +1383,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				if (response.data.IsSuccessful === true) {
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
-
 						$scope.SkillMixTable = response.data.data;
 					}
 				} else {

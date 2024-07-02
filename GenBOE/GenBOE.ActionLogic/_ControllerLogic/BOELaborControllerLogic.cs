@@ -4057,7 +4057,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							// If there is a match, then copy over the other row information
 							newData.Included = currentData.Included;
 							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
-							newData.ProposedHours = currentData.ProposedHours;
 							
 							if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
 							{
@@ -4083,12 +4082,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			return newTable;
 		}
 
-	/// <summary>
-	/// Validates Actuals data for SAP
-	/// </summary>
-	/// <param name="tableData">The MOQ Table Data</param>
-	/// <returns>Validation Response</returns>
-	public async Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData)
+		/// <summary>
+		/// Validates Actuals data for SAP
+		/// </summary>
+		/// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+		public async Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData)
 		{
 			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = new List<IESResponse<CalculateActualsWithSkillMixViewModel>>();
 
