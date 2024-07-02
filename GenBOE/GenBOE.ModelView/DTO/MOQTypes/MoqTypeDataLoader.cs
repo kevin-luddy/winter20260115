@@ -247,7 +247,7 @@ namespace GenBOE.DataBridge.DTO
                         {
                             this.moqTypeTableCustomFieldValueXREFLoader.SaveMoqTypeTableCustomFieldValueContainers(table.CustomFieldValueContainers, tableId.Value);
 
-							if (table.ResourceHours != null && table.ResourceHours.Count > 0)
+							if (table.ResourceHours != null && table.ResourceHours.Any())
 							{
 								// Set the ID for the new MOQ Table
 								foreach (MOQTypeSelectionTableDataResourceHoursDTO resourceHours in table.ResourceHours)
@@ -297,7 +297,7 @@ namespace GenBOE.DataBridge.DTO
                         if (tableId.HasValue)
                         {
                             this.moqTypeTableCustomFieldValueXREFLoader.SaveMoqTypeTableCustomFieldValueContainers(table.CustomFieldValueContainers, tableId.Value);
-							if (table.ResourceHours != null && table.ResourceHours.Count > 0)
+							if (table.ResourceHours != null && table.ResourceHours.Any())
 							{
 								// Set the ID for the new MOQ Table
 								foreach (MOQTypeSelectionTableDataResourceHoursDTO resourceHours in table.ResourceHours)
@@ -370,7 +370,8 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Do post processing after saving MOQ Type Selections
         /// </summary>
-        /// <param name="moqTypeSelections"></param>
+        /// <param name="moqTypeSelections">The MOQ Type selections to process</param>
+		/// <param name="resourceHours">The Resource Hours to attach to this MOQ Type (if loaded already)</param>
         private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours)
         {
             // Handle custom field enums and resource Hours
@@ -383,7 +384,7 @@ namespace GenBOE.DataBridge.DTO
 
 					if (resourceHours == null)
 					{
-						resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByMOQTypeSelectionTableDataId(table.Id);
+						table.ResourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByMOQTypeSelectionTableDataId(table.Id);
 					}
 					else
 					{
