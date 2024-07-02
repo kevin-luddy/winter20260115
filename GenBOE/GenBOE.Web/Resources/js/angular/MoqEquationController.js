@@ -1344,7 +1344,57 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.refreshSkillMixTable = function () {
+		// Get all the data tables
+		const data = {
+			resourceHours: [],
+			currentSkillMixData: []
+		};
 
+		const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+		if (moqTypes) {
+			moqTypes.forEach(moq => {
+				if (moq.TableData) {
+					moq.TableData.forEach(tableData => {
+						if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+
+							tableData.ResourceHours.forEach(hours => {
+								data.resourceHours.push(hours);
+							});
+						}
+					});
+				}
+			});
+		}
+
+		data.boeId = ManageTaskModel.boeId;
+		data.currentSkillMixData = $scope.SkillMixTable;
+
+		if (data.resourceHours.length > 0) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data) {
+						$scope.SkillMixTable = response.data.data;
+					}
+				} else {
+					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
 	};
 
 	$scope.setActualsErrors = function (id, errors) {

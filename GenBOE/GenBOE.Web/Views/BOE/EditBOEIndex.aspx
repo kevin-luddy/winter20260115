@@ -46,6 +46,7 @@
 			CalculateAllActualsSapAction: '<%: WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP %>',
 			CalculateAllActualsSapWithSkillMixAction: '<%: WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX %>',
 			ExportActualsSapAction: '<%: WebConstants.ACTION_EXPORT_ACTUALS_SAP %>',
+			RefreshSkillMixTableAction: '<%: WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE %>',
 			DisableSave: false,
 			DisableSaveText: '',
 			SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
@@ -72,7 +73,7 @@
 				$("#SubmitForApproval").hide();
 			}
 		});
-    </script>
+	</script>
 
 	<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_HEADER, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 

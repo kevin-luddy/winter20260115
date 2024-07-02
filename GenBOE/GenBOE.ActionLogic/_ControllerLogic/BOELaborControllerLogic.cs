@@ -15,6 +15,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web;
 	using System.Web.Configuration;
 	using System.Web.Mvc;
+	using System.Windows.Input;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -4002,6 +4003,83 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return response;
+		}
+
+		/// <summary>
+		/// Refreshes the Skill Mix Table with updated resource hours
+		/// </summary>
+		/// <param name="resourceHours">MOQ Table Resource Hours</param>
+		/// <param name="currentSkillMixData">The current skill mix data</param>
+		public ICollection<SkillMixModelView> RefreshSkillMixTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData)
+		{
+			ICollection<SkillMixModelView> newTable = new List<SkillMixModelView>();
+
+			if (resourceHours != null && resourceHours.Any())
+			{
+				decimal totalHours = resourceHours.Sum(n => n.TotalHours);
+				IEnumerable<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key);
+				foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
+				{
+					decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
+					string resourceOld = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ? string.Empty : grouping.Key;
+					string resourceNew = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ? grouping.Key : string.Empty;
+
+					newTable.Add(
+						new SkillMixModelView
+						{
+							HistoricalHours = totalGroupHours,
+							ResourceOld = resourceOld,
+							ResourceNew = resourceNew,
+							LaborSkillMix = totalGroupHours / totalHours
+						}
+					); ;
+				}
+
+				// reconcile the other values in the rows (if any)
+				if (currentSkillMixData != null && currentSkillMixData.Any())
+				{
+					foreach (SkillMixModelView currentData in currentSkillMixData)
+					{
+						SkillMixModelView newData;
+						if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+						{
+							// Space will match on ResourceNew (they do not use previous resource)
+							newData = newTable.FirstOrDefault(s => s.ResourceNew == currentData.ResourceNew);
+						}
+						else
+						{
+							// RMS will match on ResourceOld
+							newData = newTable.FirstOrDefault(s => s.ResourceOld == currentData.ResourceOld);
+						}
+
+						if (newData != null)
+						{
+							// If there is a match, then copy over the other row information
+							newData.Included = currentData.Included;
+							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
+							
+							if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+							{
+								newData.ResourceNew = currentData.ResourceNew;
+							}
+
+							newData.Rationale = currentData.Rationale;
+
+							if (newData.Included)
+							{
+								newData.BOESkillMix = currentData.BOESkillMix;
+								newData.ProposedHours = currentData.ProposedHours;
+							}
+							else
+							{
+								newData.BOESkillMix = 0m;
+								newData.ProposedHours = 0m;
+							}
+						}
+					}
+				}
+			}
+			return newTable;
 		}
 
 		/// <summary>

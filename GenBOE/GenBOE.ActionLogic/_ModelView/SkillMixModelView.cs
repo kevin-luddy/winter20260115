@@ -10,18 +10,14 @@ namespace GenBOE.ActionLogic.ModelView
 
     public class SkillMixModelView : SkillMixDTO
     {
-		public string ResourceInput { get; set; }
-
 		public SkillMixModelView()
 		{
-			this.ResourceInput = string.Empty;
 		}
 
         public SkillMixModelView(SkillMixDTO skillMixDTO)
         {
 			if (skillMixDTO != null)
 			{
-				this.ResourceInput = skillMixDTO.ResourceNew;
 				this.Included = skillMixDTO.Included;
 				this.SkillMixID = skillMixDTO.SkillMixID;
 				this.Rationale = skillMixDTO.Rationale;

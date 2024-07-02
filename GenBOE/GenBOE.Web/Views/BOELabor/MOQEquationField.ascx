@@ -426,15 +426,15 @@
                         </thead>
                         <tbody>
                             <tr data-ng-repeat="item in SkillMixTable">
-                                <td data-ng-show="model.IsRMS">
+                                <td data-ng-if="model.IsRMS">
                                     <div class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.ResourceOld }} </div>
                                 </td>
-                                <td class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels) === false }">
+                                <td data-ng-if="model.IsRMS" class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels) === false }">
                                     <div class="resource-selection" ng-style="{ padding: '2px 5px' }">
                                         <input
                                             tabindex="{{tabindex + 1}}" 
                                             type="text" 
-                                            data-ng-model="item.ResourceInput" 
+                                            data-ng-model="item.ResourceNew" 
                                             placeholder="Select a resource" 
                                             uib-typeahead="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" 
                                             class="form-control resize" 
@@ -443,6 +443,9 @@
                                             typeahead-min-length="2" 
                                             typeahead-on-select="resourceSelected($item, item)">
                                     </div>
+                                </td>
+                                <td data-ng-if="!model.IsRMS">
+                                    <div class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.ResourceNew }} </div>
                                 </td>
                                 <td>
                                     <div id="historical-hours-total" class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.HistoricalHours }} </div>
