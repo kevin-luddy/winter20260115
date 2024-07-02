@@ -380,5 +380,12 @@ namespace GenBOE.ActionLogic
 		/// <returns>List of Resources and their respective Business Resource Codes</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         Task<IESResponse<SkillMixConvertedResourceViewModel>> GetSkillMixConvertedResources();
-    }
+
+		/// <summary>
+		/// Refreshes the Skill Mix Table with updated resource hours
+		/// </summary>
+		/// <param name="resourceHours">MOQ Table Resource Hours</param>
+		/// <param name="currentSkillMixData">The current skill mix data</param>
+		ICollection<SkillMixModelView> RefreshSkillMixTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData);
+	}
 }

@@ -1670,6 +1670,31 @@ namespace GenBOE.Web.Controllers
 			FinalizeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX, sw);
 			return toReturn;
 		}
+
+		/// <summary>
+		/// Refreshes the Skill Mix Table with updated resource hours
+		/// </summary>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
+		/// <param name="resourceHours">MOQ Table Resource Hours</param>
+		/// <param name="currentSkillMixData">The current skill mix data</param>
+		/// <returns></returns>
+		public ActionResult RefreshSkillMixTable(string workspace, int boeId, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData)
+		{
+			// Initialize Action
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+
+			// Call to Controller Logic
+			ICollection<SkillMixModelView> response = this._BoeLaborControllerLogic.RefreshSkillMixTable(resourceHours, currentSkillMixData);
+
+			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE, sw);
+			return toReturn;
+		}
 		#endregion
 
 		#region Private Methods
