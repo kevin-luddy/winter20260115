@@ -19,10 +19,10 @@ namespace GenBOE.ActionLogic.ModelView.BOE
     using IES.Common;
     using IES.Common.classes;
 
-    /// <summary>
-    /// Model view for the MOQEquationField partial view.  It contains the MOQ equation and its variables.
-    /// </summary>
-    public class MOQEquationModelView
+	/// <summary>
+	/// Model view for the MOQEquationField partial view.  It contains the MOQ equation and its variables.
+	/// </summary>
+	public class MOQEquationModelView
     {
         /// <summary>
         /// Default constructor.
@@ -43,7 +43,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.HelpText = String.Empty;
             this.MoqTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
 			this.SkillMixTable = new List<SkillMixModelView>();
-        }
+		}
 
         /// <summary>
         /// Alternate constructor.
@@ -206,7 +206,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Skill Mix table
         /// </summary>
         public ICollection<SkillMixModelView> SkillMixTable { get; set; }
-    }
+	}
 
     public enum MOQEquationType
     {
