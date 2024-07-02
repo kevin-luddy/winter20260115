@@ -4078,7 +4078,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			
 			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
 			{
-				
 				result = this.skillMixDTOLoader.GetByBOETaskElementID(taskElementID).Select(skillMixDto => new SkillMixModelView(skillMixDto)).ToList();
 			}
 
