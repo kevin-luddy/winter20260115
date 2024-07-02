@@ -233,13 +233,13 @@ namespace IES.Tests.Core
             BurdenPoolLoader burdenPoolLoader = this.testData.BurdenPoolLoader;
             ICollection<OptionModelView> resourceClassOptions = sut.GetResourceClassOptions(revision.Id);
             OptionModelView resourceClassOption0 = resourceClassOptions.First(x => x.Id == 0);            // get "Not Selected" resource class option
-			OptionModelView resourceClassOption1 = resourceClassOptions.FirstOrDefault(x => x.Id > 0);    // get first valid resource class option
+			OptionModelView resourceClassOption1 = resourceClassOptions.First(x => x.Id > 0);    // get first valid resource class option
 			burdenPoolLoader.GetBurdenPoolOptions(revision.Id, out ICollection<OptionModelView> commercialBurdenPoolOptions, out ICollection<OptionModelView> governmentBurdenPoolOptions);
 			OptionModelView commrcialBurdenPoolOption0 = commercialBurdenPoolOptions.First(x => x.Id == 0);            // get "Not Selected" burden pool option
-            OptionModelView commrcialBurdenPoolOption1 = commercialBurdenPoolOptions.FirstOrDefault(x => x.Id > 0);    // get first valid burden pool option
+            OptionModelView commrcialBurdenPoolOption1 = commercialBurdenPoolOptions.First(x => x.Id > 0);    // get first valid burden pool option
             Assert.IsTrue(commrcialBurdenPoolOption1 != null && commrcialBurdenPoolOption1.Id > 0, "This test assumes at least one valid Commercial Burden Pool is available.");
             OptionModelView governmentBurdenPoolOption0 = governmentBurdenPoolOptions.First(x => x.Id == 0);            // get "Not Selected" burden pool option
-            OptionModelView governmentBurdenPoolOption1 = governmentBurdenPoolOptions.FirstOrDefault(x => x.Id > 0);    // get first valid burden pool option
+            OptionModelView governmentBurdenPoolOption1 = governmentBurdenPoolOptions.First(x => x.Id > 0);    // get first valid burden pool option
             Assert.IsTrue(governmentBurdenPoolOption1 != null && governmentBurdenPoolOption1.Id > 0, "This test assumes at least one valid Government Burden Pool is available.");
 
             decimal rate = 0;

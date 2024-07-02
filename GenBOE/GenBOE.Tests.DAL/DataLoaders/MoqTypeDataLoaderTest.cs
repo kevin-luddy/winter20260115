@@ -48,13 +48,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
         private IMoqTypeDataLoader CreateSut()
         {
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
-            return new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader);
-        }
-                
-        /// <summary>
-        /// This method tests the GetByIds method as well as Upsert and Delete
-        /// </summary>
-        [TestMethod]
+			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
+			return new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader);
+		}
+
+		/// <summary>
+		/// This method tests the GetByIds method as well as Upsert and Delete
+		/// </summary>
+		[TestMethod]
         public void GetByIdsTest()
         {
             IMoqTypeDataLoader sut = this.CreateSut();

@@ -42,6 +42,7 @@ namespace GenBOE.ActionLogic.ModelView
 			Id = -1;
 			Order = 2000;
 			CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
+			ResourceHours = new Collection<MOQTypeSelectionTableDataResourceHoursDTO>();
 		}
 
 		/// <summary>
@@ -215,32 +216,32 @@ namespace GenBOE.ActionLogic.ModelView
 		/// </summary>
 		public decimal PoPMonths { get { return this.PoPStart.MonthDifferenceDecimal(this.PoPEnd); } }
 
-        /// <summary>
-        /// PoP Months as string with 2 decimal places
-        /// </summary>
-        public string PoPMonthsString { get { return this.PoPMonths.ToString("0.##"); } }
+		/// <summary>
+		/// PoP Months as string with 2 decimal places
+		/// </summary>
+		public string PoPMonthsString { get { return this.PoPMonths.ToString("0.##"); } }
 
-        /// <summary>
-        /// Formats the PoP Date for printing purposes, based on the Company and Query Type
-        /// 
-        /// RMS -> just print the date
-        /// 
-        /// Space -> the date is formatted based on the query Type (Weekly / Monthly)
-        ///         month -> MM/YYYY
-        ///         weeks -> FW ww/YYYY, where ww is the week value of 1-53
-        /// </summary>
-        /// <param name="date"></param>
-        /// <param name="queryType"></param>
-        /// <returns></returns>
-        public static string FormatMoqTablePoPDate(DateTime? date, int? week, int? year, string queryType)
-        {
+		/// <summary>
+		/// Formats the PoP Date for printing purposes, based on the Company and Query Type
+		/// 
+		/// RMS -> just print the date
+		/// 
+		/// Space -> the date is formatted based on the query Type (Weekly / Monthly)
+		///         month -> MM/YYYY
+		///         weeks -> FW ww/YYYY, where ww is the week value of 1-53
+		/// </summary>
+		/// <param name="date"></param>
+		/// <param name="queryType"></param>
+		/// <returns></returns>
+		public static string FormatMoqTablePoPDate(DateTime? date, int? week, int? year, string queryType)
+		{
 			return date.HasValue ?
 				SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || queryType == MoqTableData.WEEKLY_DATETIME
 					? date.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) :
 					queryType == MoqTableData.MONTHLY ? $"{date.Value.Month.ToString("00")}/{date.Value.Year}" : $"FW {week ?? 0:00}/{year}"
 					: string.Empty;
 
-        }
+		}
 
 		/// <summary>
 		/// Creates a date out of week / year. The way we split weeks is week 1-30 will fall into January 1-30. Weeks 31-53 will fall into February.
@@ -294,6 +295,11 @@ namespace GenBOE.ActionLogic.ModelView
 		/// ID of the MOQ Type Selection this table data belongs to
 		/// </summary>
 		public int MOQTypeSelectionId { get; set; }
+
+		/// <summary>
+		/// Resource Hours collection for this MOQ Type Table Data
+		/// </summary>
+		public ICollection<MOQTypeSelectionTableDataResourceHoursDTO> ResourceHours { get; set; }
 
 		/// <summary>
 		/// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
