@@ -95,8 +95,9 @@ namespace GenTRAC.Tests.DAL.Loader
                 ContractsLead = "paliderd",
                 CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
                 OtherContractActionType = prop.ContractActionTypeOtherText,
-                ContractTypeGroup = prop.ContractTypeGroup,
-                CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
+				// Proposal DTO doesn't have a Contract Type
+				ContractType = new List<String>() { "CPAF" },
+				CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
                 IsCCPDRequired = prop.IsCCPDRequired,
 
 				// missing checklist data..
@@ -153,7 +154,8 @@ namespace GenTRAC.Tests.DAL.Loader
 				ContractActionType = prop.ContractActionType,
 				CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
 				OtherContractActionType = prop.ContractActionTypeOtherText,
-				ContractTypeGroup = prop.ContractTypeGroup,
+				// Proposal DTO doesn't have a Contract Type
+				ContractType = new List<String>() { "CPAF" },
 				CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
 				IsCCPDRequired = prop.IsCCPDRequired,
 
@@ -236,7 +238,8 @@ namespace GenTRAC.Tests.DAL.Loader
 				ContractsLead = "paliderd",
 				CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
 				OtherContractActionType = prop.ContractActionTypeOtherText,
-				ContractTypeGroup = prop.ContractTypeGroup,
+				// Proposal DTO doesn't have a Contract Type
+				ContractType = new List<String>() { "CPAF" },
 				CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
 				IsCCPDRequired = prop.IsCCPDRequired,
 
@@ -307,7 +310,8 @@ namespace GenTRAC.Tests.DAL.Loader
 				ContractsLead = "paliderd",
 				CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
 				OtherContractActionType = prop.ContractActionTypeOtherText,
-				ContractTypeGroup = prop.ContractTypeGroup,
+				// Proposal DTO doesn't have a Contract Type
+				ContractType = new List<String>() { "CPAF" },
 				IsCCPDRequired = prop.IsCCPDRequired,
 
 				// missing checklist data..
