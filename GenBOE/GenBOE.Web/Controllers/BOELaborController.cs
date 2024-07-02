@@ -2441,7 +2441,6 @@ namespace GenBOE.Web.Controllers
 			}
 
 			theModelView.SkillMixTable = this._BoeLaborControllerLogic.GetSkillMixTable(ws, taskElementID);
-			theModelView.TotalCurrentSkillMixHistoricalHours = theModelView.SkillMixTable.Select(x => x.HistoricalHours).Sum(x => x);
 
 			return theModelView;
 		}

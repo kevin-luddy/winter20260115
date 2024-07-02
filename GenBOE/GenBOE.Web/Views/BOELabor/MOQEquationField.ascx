@@ -49,8 +49,7 @@
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
-        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue(),
-		TotalCurrentSkillMixHistoricalHours: <%=Model.TotalCurrentSkillMixHistoricalHours%>
+        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -446,10 +445,10 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div id="historical-hours-total" class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.HistoricalHours }} </div>
+                                    <div id="historical-hours" class="text skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
-                                    <div id="labor-skill-mix-total" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix }}</div>
+                                    <div id="labor-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix }}%</div>
                                 </td>
                                 <td>
                                     <select data-ng-style="{ padding: '2px 5px' }">
@@ -459,33 +458,14 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <div id="boe-skill-mix-total" data-ng-style="{ padding: '2px 5px' }"></div>
+                                    <div id="boe-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"></div>
                                 </td>
                                 <td>
-                                    <div id="proposed-hours-total" data-ng-style="{ padding: '2px 5px' }"></div>
+                                    <div id="proposed-hours" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"></div>
                                 </td>
                                 <td>
+                                    <div id="skill-mix-table-rationale"></div> <!-- TO-DO for PROPH-1982 -->
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div title="Total">Total</div>
-                                </td>
-                                <td></td>	<!-- Current Resource ID in total row will be empty -->
-                                <td>
-                                    <div id="cms-historical-hours-total">{{ model.TotalCurrentSkillMixHistoricalHours }}</div>
-                                </td>
-                                <td>
-                                    <div id="cms-labor-skill-mix-total"></div>
-                                </td>
-                                <td></td> <!-- Included in total row will be empty -->
-                                <td>
-                                    <div id="cms-boe-skill-mix-total"></div>
-                                </td>
-                                <td>
-                                    <div id="cms-proposed-hours-total"></div>
-                                </td>
-                                <td></td>	<!-- Rationale in total row will be empty -->								
                             </tr>
                         </tbody>
                     </table>

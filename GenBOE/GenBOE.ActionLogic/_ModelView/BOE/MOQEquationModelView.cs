@@ -18,7 +18,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
-	using System.Linq;
 
 	/// <summary>
 	/// Model view for the MOQEquationField partial view.  It contains the MOQ equation and its variables.
@@ -44,7 +43,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.HelpText = String.Empty;
             this.MoqTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
 			this.SkillMixTable = new List<SkillMixModelView>();
-			this.TotalCurrentSkillMixHistoricalHours = 0;
 		}
 
         /// <summary>
@@ -208,11 +206,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Skill Mix table
         /// </summary>
         public ICollection<SkillMixModelView> SkillMixTable { get; set; }
-
-		/// <summary>
-		/// The summation of the Current Skill Mix Historical Hours
-		/// </summary>
-		public decimal TotalCurrentSkillMixHistoricalHours { get; set; }
 	}
 
     public enum MOQEquationType
