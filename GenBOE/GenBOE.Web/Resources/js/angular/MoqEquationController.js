@@ -11,7 +11,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
         $scope.newTableId = -1;
         $scope.ResourceModels = BOEDetails.WSResources;
-        $scope.SkillMixTable = Array.from(JSON.parse($scope.model.SkillMixTable));
 
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
@@ -1055,7 +1054,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
-	$scope.calculateActualsWithSkillMix = function (tableData) {
+	$scope.calculateActualsWithSkillMix = function (tableData, moqType) {
 		$scope.actualsValidation.errors = new Map();
 
 		const data = {
@@ -1122,7 +1121,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								MOQEquationFieldWidget.setDirty();
 								$scope.actualsValidation.isDirty.delete(res.TableId);
 								$scope.refreshDisableSave();
-								$scope.refreshSkillMixTable();
+								$scope.refreshSkillMixTable(moqType);
 							}
 						});
 					}
@@ -1323,7 +1322,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 									}
 								});
 
-								$scope.refreshSkillMixTable();
+								const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+								if (moqTypes) {
+									moqTypes.forEach(moq => {
+										$scope.refreshSkillMixTable(moq);
+									});
+								}
 							}
 						});
 					}
@@ -1343,31 +1347,27 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.refreshDisableSave();
 	};
 
-	$scope.refreshSkillMixTable = function () {
+	$scope.refreshSkillMixTable = function (moqType) {
 		// Get all the data tables
 		const data = {
 			resourceHours: [],
 			currentSkillMixData: []
 		};
 
-		const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
-		if (moqTypes) {
-			moqTypes.forEach(moq => {
-				if (moq.TableData) {
-					moq.TableData.forEach(tableData => {
-						if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+		
+		if (moqType.TableData) {
+			moqType.TableData.forEach(tableData => {
+				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
 
-							tableData.ResourceHours.forEach(hours => {
-								data.resourceHours.push(hours);
-							});
-						}
+					tableData.ResourceHours.forEach(hours => {
+						data.resourceHours.push(hours);
 					});
 				}
 			});
 		}
 
 		data.boeId = ManageTaskModel.boeId;
-		data.currentSkillMixData = $scope.SkillMixTable;
+		data.currentSkillMixData = moqType.SkillMixTable;
 
 		if (data.resourceHours.length > 0) {
 			// send to backend
@@ -1384,7 +1384,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
 
-						$scope.SkillMixTable = response.data.data;
+						moqType.SkillMixTable = response.data.data;
 					}
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');

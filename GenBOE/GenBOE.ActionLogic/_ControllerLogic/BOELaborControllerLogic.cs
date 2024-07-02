@@ -62,7 +62,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IESSAPClient iesSapClient;
 		private readonly ITokenService tokenservice;
 		private readonly ICache cache;
-		private readonly ISkillMixDTOLoader skillMixDTOLoader;
 
 		/// <summary>
 		/// Task Element Validation Class
@@ -97,8 +96,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IMoqTableImporter moqTableImporter,
 			IESSAPClient iesSapClient,
 			ITokenService tokenservice,
-			ICache cache,
-			ISkillMixDTOLoader skillMixDTOLoader)
+			ICache cache)
 		{
 			this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
 			this._boeStateMachine = inBoeStateMachine;
@@ -125,7 +123,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.tokenservice = tokenservice;
 			this.iesSapClient = iesSapClient;
 			this.cache = cache;
-			this.skillMixDTOLoader = skillMixDTOLoader;
 		}
 
 		#region Public Members
@@ -4032,7 +4029,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							ResourceNew = resourceNew,
 							LaborSkillMix = totalGroupHours / totalHours
 						}
-					); ;
+					);
 				}
 
 				// reconcile the other values in the rows (if any)
@@ -4138,29 +4135,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private ActionLogic.IESSAPClient.CompanyConfiguration GetCompanyConfigurationForSAP()
 		{
 			return (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
-		}
-
-		/// <summary>
-        /// Get Skill Mix table
-        /// </summary>
-        /// <param name="ws">Workspace</param>
-		/// <param name="taskElementID">Task element ID</param>
-        /// <returns>Validation Response</returns>
-		public List<SkillMixModelView> GetSkillMixTable(FullWorkspace ws, int taskElementID)
-		{
-			if (ws == null)
-			{
-				throw new ArgumentNullException(nameof(ws));
-			}
-			
-			List<SkillMixModelView> result = new List<SkillMixModelView>();
-			
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
-			{
-				result = this.skillMixDTOLoader.GetByBOETaskElementID(taskElementID).Select(skillMixDto => new SkillMixModelView(skillMixDto)).ToList();
-			}
-
-			return result;
 		}
 	}
 

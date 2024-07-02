@@ -42,7 +42,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.MOQTextLabel = String.Empty;
             this.HelpText = String.Empty;
             this.MoqTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
-			this.SkillMixTable = new List<SkillMixModelView>();
         }
 
         /// <summary>
@@ -201,11 +200,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Help URLs for MOQ Type fields
         /// </summary>
         public MoqTypeHelpUrls MoqTypeHelpUrls { get; set; }
-
-        /// <summary>
-        /// Skill Mix table
-        /// </summary>
-        public ICollection<SkillMixModelView> SkillMixTable { get; set; }
     }
 
     public enum MOQEquationType

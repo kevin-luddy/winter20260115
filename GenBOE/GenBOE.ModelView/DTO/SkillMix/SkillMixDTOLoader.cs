@@ -14,6 +14,7 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Models;
 	using System.Data;
 	using System;
+	using IES.Common.classes;
 
 	public class SkillMixDTOLoader : ISkillMixDTOLoader
 	{
@@ -46,10 +47,13 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  MOQTypeSelectionID = sm.MOQTypeSelectionID
 							  }).ToList();
 				}
+				DoPostProcessiong(result);
+
 				return result;
 			}
 		}
@@ -81,10 +85,13 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  MOQTypeSelectionID = sm.MOQTypeSelectionID
 							  }).ToList();
 				}
+				DoPostProcessiong(result);
+
 				return result;
 			}
 		}
@@ -116,10 +123,13 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  MOQTypeSelectionID = sm.MOQTypeSelectionID
 							  }).ToList();
 				}
+				DoPostProcessiong(result);
+
 				return result;
 			}
 		}
@@ -151,10 +161,13 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  MOQTypeSelectionID = sm.MOQTypeSelectionID
 							  }).ToList();
 				}
+				DoPostProcessiong(result);
+
 				return result;
 			}
 		}
@@ -192,6 +205,44 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
+		/// Get all Skill Mix values by Workspace Id
+		/// </summary>
+		/// <param name="workspaceId">Workspace Id</param>
+		/// <returns>List of Skill Mix rows</returns>
+		public ICollection<SkillMixDTO> GetByWorkspaceId(int workspaceId)
+		{
+			List<SkillMixDTO> result = new List<SkillMixDTO>();
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from sm in gbe.SkillMixes
+							  join b in gbe.BOEs on sm.BOEID equals b.BOEID
+							  where b.WorkspaceID == workspaceId
+							  select new SkillMixDTO
+							  {
+								  SkillMixID = sm.SkillMixID,
+								  Rationale = sm.Rationale,
+								  ProposedHours = sm.ProposedHours,
+								  HistoricalHours = sm.HistoricalHours,
+								  BOESkillMix = sm.BOESkillMix,
+								  LaborSkillMix = sm.LaborSkillMix,
+								  ResourceOld = sm.ResourceOld,
+								  ResourceNew = sm.ResourceNew,
+								  BOEID = sm.BOEID,
+								  Included = sm.Included ?? false,
+								  BOETaskElementID = sm.BOETaskElementID,
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+							  }).ToList();
+				}
+				DoPostProcessiong(result);
+
+				return result;
+			}
+		}
+
+		/// <summary>
 		/// Insert Skill Mix with Kill/Fill procedure
 		/// </summary>
 		/// <param name="skillMixes">SkillMixDTO</param>
@@ -221,6 +272,36 @@ namespace GenBOE.DataBridge.DTO
 						).FirstOrDefault().Key;
 				}
 				return toReturn;
+			}
+		}
+
+		/// <summary>
+		/// Do post processing on the skill mix dtos
+		/// </summary>
+		/// <param name="skillMixes"></param>
+		private void DoPostProcessiong(ICollection<SkillMixDTO> skillMixes)
+		{
+			decimal totalHours = skillMixes.Sum(n => n.HistoricalHours);
+			IEnumerable<IGrouping<string, SkillMixDTO>> groupedResourceHours;
+
+			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+			{
+				// Space does not use ResourceOld, only ResourceNew
+				groupedResourceHours = skillMixes.GroupBy(r => r.ResourceNew).OrderBy(t => t.Key);
+			}
+			else
+			{
+				// RMS uses ResourceOld (legacy) as the grouping
+				groupedResourceHours = skillMixes.GroupBy(r => r.ResourceOld).OrderBy(t => t.Key);
+			}
+
+			foreach (IGrouping<string, SkillMixDTO> grouping in groupedResourceHours)
+			{
+				decimal totalGroupHours = grouping.Sum(g => g.HistoricalHours);
+				foreach (SkillMixDTO dto in grouping)
+				{
+					dto.LaborSkillMix = totalGroupHours / totalHours;
+				}
 			}
 		}
 	}

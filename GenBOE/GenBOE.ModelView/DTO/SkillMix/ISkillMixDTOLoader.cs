@@ -59,5 +59,12 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="skillMixes">SkillMixDTO</param>
 		/// <returns>Num rows that were inserted</returns>
 		int? InsertSkillMix(ICollection<SkillMixDTO> skillMixes);
+
+		/// <summary>
+		/// Get all Skill Mix values by Workspace Id
+		/// </summary>
+		/// <param name="workspaceId">Workspace Id</param>
+		/// <returns>List of Skill Mix rows</returns>
+		ICollection<SkillMixDTO> GetByWorkspaceId(int workspaceId);
 	}
 }
