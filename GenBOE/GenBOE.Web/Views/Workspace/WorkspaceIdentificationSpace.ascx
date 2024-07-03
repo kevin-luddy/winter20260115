@@ -230,7 +230,7 @@
 		var selectedTrackingNumber = selectedVal.split(' - ')[0].trim();
 
 		// Only continue if new value is selected
-		if (originalTrackingNumber === '' || selectedTrackingNumber != originalTrackingNumber) {
+		if (originalTrackingNumber === '' || selectedTrackingNumber !== originalTrackingNumber) {
 			$('#TrackingNumber').val(''); //clear previous value
 			previousTrackingNumberSelection = selectedVal;
 			previousTrackingNumber = selectedTrackingNumber;
@@ -265,7 +265,7 @@
 					break;
 				}
 			}
-		} else if (previousTrackingNumber != "" && originalTrackingNumber != previousTrackingNumber) {
+		} else if (previousTrackingNumber !== '' && originalTrackingNumber !== previousTrackingNumber) {
 			GenSession.confirmDialog("PTM Tracking Number Change",
 				"Changing the PTM Tracking Number back to its current value will refresh the page.  Are you sure?  No will cancel this selection.",
 				function () {
