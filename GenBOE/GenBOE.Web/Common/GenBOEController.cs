@@ -927,6 +927,14 @@ namespace GenBOE.Web.Common
             return this._ControllerLogic.ValidateRteAnswers(answers, sources, rteSizeLimit);
         }
 
+		/// <summary>
+		/// Validate if all of the Rationale fields for the Skill Mix Table are filled out
+		/// </summary>
+		protected ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixTable)
+		{
+			return this._ControllerLogic
+		}
+
         /// <summary>
         /// Assemble a JSON response containing a list of validation errors
         /// </summary>

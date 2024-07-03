@@ -14,7 +14,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Net;
     using System.Reflection;
     using System.Text;
-    using GenBOE.Dtos;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.Dtos;
     using IES.Common;
     using IES.Common.Exceptions;
 
@@ -61,6 +62,29 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             return allValidationMessages;
         }
+
+		public ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixTable)
+		{
+			List<ValidationMessage> validationMessages = new List<ValidationMessage>();
+
+			if (skillMixTable != null && skillMixTable.Any())
+			{
+				foreach (SkillMixModelView skillMixRow in skillMixTable)
+				{
+					if (string.IsNullOrEmpty(skillMixRow.Rationale))
+					{
+						validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("Rationale is missing for {0}.", skillMixRow.ResourceNew)));
+					}
+					else
+					{
+						if (skillMixRow.Rationale.Length > 255)
+						{
+							validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("The maximum length of the Rationale field for {0} is {1} characters.", skillMixRow.ResourceNew, 255)));
+						}
+					}
+				}
+			}
+		}
 
         /// <summary>
         /// For any properties marked as rich-text, remove styling and/or markup that are known to cause problems
