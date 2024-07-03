@@ -49,7 +49,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
 			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
-			return new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader);
+			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
+			
+			return new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader);
 		}
 
 		/// <summary>
