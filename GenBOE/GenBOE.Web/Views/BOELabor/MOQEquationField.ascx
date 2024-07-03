@@ -414,7 +414,7 @@
                         <thead>
                             <tr>
                                 <th data-ng-show="model.IsRMS" class="resource">Resource ID</th>
-                                <th class="current-resource-id">Current Resource ID</th>
+                                <th class="current-resource-id">Current Resource</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
                                 <th class="included">Included *</th>
@@ -450,7 +450,7 @@
                                     <div id="historical-hours" class="text skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
-                                    <div id="labor-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix }}%</div>
+                                    <div id="labor-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
                                 <td>
                                     <select data-ng-style="{ padding: '2px 5px' }">
@@ -485,7 +485,7 @@
                     <table name="commonDisclosureSkillMix"  class="grid editable">
                         <thead>
                             <tr>
-                                <th class="current-resource-id">Current Resource ID</th>
+                                <th class="current-resource-id">Current Resource</th>
                                 <th class="brc-id">Business Resource ID</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
