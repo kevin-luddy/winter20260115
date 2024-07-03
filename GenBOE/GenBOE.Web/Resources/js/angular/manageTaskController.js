@@ -1108,6 +1108,7 @@
 	};
 
 	$scope.refresh = function () {
+		console.log('in refresh');
 		var data = {};
 		data.taskElementID = $scope.taskElementId;
 		$(document).trigger('DISPLAY_TASK_ELEMENT_DETAILS', data);  // this will destroy the angular scope and refresh task composites
