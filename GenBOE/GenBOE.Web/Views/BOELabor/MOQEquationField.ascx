@@ -26,7 +26,6 @@
         MoqEquationLabel: '<%=Model.MOQEquationLabel%>',
         MoqEquationType: '<%=Model.TypeOfMoqEquation%>',
         MOQType: '<%=Model.MOQType%>',
-        SkillMixTable: '<%=serializer.Serialize(Model.SkillMixTable)%>',
         TaskElementId: <%=Model.TaskElementId > 0 ? Model.TaskElementId : -1%>,
         RteFieldSize: rteFieldSize,
         ShowSearchMetricsLink: '<%=Model.ShowSearchMetricsLink%>'.isTrue(),
@@ -306,7 +305,7 @@
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
                     <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="exportActuals(tableData)">Export Actuals</button>
-                    <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="model.SkillMixEnabled ? calculateActualsWithSkillMix(tableData) : calculateActuals(tableData)">Calculate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="model.SkillMixEnabled ? calculateActualsWithSkillMix(tableData, moqType) : calculateActuals(tableData)">Calculate Actuals</button>
                 </div>
                 <hr />
             </div>
@@ -425,7 +424,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-ng-repeat="item in SkillMixTable">
+                            <tr data-ng-repeat="item in moqType.SkillMixTable">
                                 <td data-ng-if="model.IsRMS">
                                     <div class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.ResourceOld }} </div>
                                 </td>

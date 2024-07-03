@@ -1573,7 +1573,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
         {
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
 			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
-            MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader);
+			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
+            MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader);
 
             MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
             {
@@ -1631,7 +1632,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
 			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
-			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader);
+			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
+			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader);
 
 
 			// Get MOQ Type Selection and get ID from there

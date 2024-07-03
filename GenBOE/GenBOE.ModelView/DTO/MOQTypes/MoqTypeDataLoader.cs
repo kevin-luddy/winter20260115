@@ -23,24 +23,31 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// MOQ Type Table Custom Field Value XREF Loader
         /// </summary>
-        private IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader;
+        private readonly IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader;
 
 		/// <summary>
 		/// MOQ Type resource hours loader
 		/// </summary>
-		private IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader;
+		private readonly IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader;
+
+		/// <summary>
+		/// Skill Mix DTO Loader
+		/// </summary>
+		private readonly ISkillMixDTOLoader skillMixDTOLoader;
 
 		/// <summary>
 		/// constructor
 		/// </summary>
 		/// <param name="moqTypeTableCustomFieldValueXREFLoader">MOQ Type Table Custom Field Value XREF Loader</param>
 		/// <param name="moqTypeSelectionTableDataResourceHoursDTOLoader">MOQ Type Resource Hours Loader</param>
-		public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader, IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader)
+		/// <param name="skillMixDTOLoader">Skill Mix Loader</param>
+		public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader, IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader,
+			ISkillMixDTOLoader skillMixDTOLoader)
         {
             this.Log = new Logger(typeof(MoqTypeDataLoader));
             this.moqTypeTableCustomFieldValueXREFLoader = moqTypeTableCustomFieldValueXREFLoader;
 			this.moqTypeSelectionTableDataResourceHoursDTOLoader = moqTypeSelectionTableDataResourceHoursDTOLoader;
-
+			this.skillMixDTOLoader = skillMixDTOLoader;
 		}
 
         /// <summary>
@@ -80,7 +87,7 @@ namespace GenBOE.DataBridge.DTO
                     this.GetTableDataForMoqTypes(toReturn, gbe);
 				}
 
-				this.DoPostProcessing(toReturn, null);
+				this.DoPostProcessing(toReturn, null, null);
             }
 
             return toReturn;
@@ -96,6 +103,7 @@ namespace GenBOE.DataBridge.DTO
         {
             ICollection<MoqTypeSelection> toReturn = new Collection<MoqTypeSelection>();
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours;
+			ICollection<SkillMixDTO> skillMix = new Collection<SkillMixDTO>();
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
@@ -128,8 +136,9 @@ namespace GenBOE.DataBridge.DTO
                 }
 
 				resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByWorkspaceId(workspaceId);
+				skillMix = this.skillMixDTOLoader.GetByWorkspaceId(workspaceId);
 
-				this.DoPostProcessing(toReturn, resourceHours);
+				this.DoPostProcessing(toReturn, resourceHours, skillMix);
             }
 
             return toReturn;
@@ -145,6 +154,7 @@ namespace GenBOE.DataBridge.DTO
         {
             ICollection<MoqTypeSelection> toReturn = new Collection<MoqTypeSelection>();
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = new Collection<MOQTypeSelectionTableDataResourceHoursDTO>();
+			ICollection<SkillMixDTO> skillMix = new Collection<SkillMixDTO>();
             using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
@@ -173,10 +183,10 @@ namespace GenBOE.DataBridge.DTO
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
 					resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByBOEID(boeId);
-
+					skillMix = this.skillMixDTOLoader.GetByBOEID(boeId);
 				}
 
-                this.DoPostProcessing(toReturn, resourceHours);
+                this.DoPostProcessing(toReturn, resourceHours, skillMix);
             }
 
             return toReturn;
@@ -204,6 +214,10 @@ namespace GenBOE.DataBridge.DTO
                     {
 						gbe.deleteMOQTypeSelectionTableDataResourceHours(table.Id);
                         gbe.deleteMOQTypeSelectionTableData(table.Id, table.UpdateDate);
+						if (Utilities.IsSkillMixEnabledForSystem)
+						{
+							gbe.deleteSkillMix(table.Id);
+						}
                     }
 
                     toReturn = gbe.deleteMOQTypeSelection(dtoToDelete.Id, dtoToDelete.UpdateDate);
@@ -262,7 +276,26 @@ namespace GenBOE.DataBridge.DTO
 						}
                     }
                 }
-            }
+
+				if (Utilities.IsSkillMixEnabledForSystem)
+				{
+					// Save the Skill Mix tables
+					if (dtoToUpsert.SkillMixTable != null && dtoToUpsert.SkillMixTable.Any())
+					{
+						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+						foreach (SkillMixModelView skillMixModelView in dtoToUpsert.SkillMixTable)
+						{
+							SkillMixDTO dto = skillMixModelView.ToDto();
+							dto.BOEID = dtoToUpsert.BoeId;
+							dto.MOQTypeSelectionID = toReturn.Value;
+							dto.BOETaskElementID = dtoToUpsert.TaskId;
+							dtos.Add(dto);
+						}
+
+						this.skillMixDTOLoader.InsertSkillMix(dtos);
+					}
+				}
+			}
 
             return toReturn;
         }
@@ -372,7 +405,8 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="moqTypeSelections">The MOQ Type selections to process</param>
 		/// <param name="resourceHours">The Resource Hours to attach to this MOQ Type (if loaded already)</param>
-        private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours)
+        private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+			ICollection<SkillMixDTO> skillMix)
         {
             // Handle custom field enums and resource Hours
             foreach (MoqTypeSelection selection in moqTypeSelections.Where(x => x.TableData.Any()))
@@ -391,6 +425,16 @@ namespace GenBOE.DataBridge.DTO
 						table.ResourceHours = resourceHours.Where(r => r.MOQTypeSelectionTableDataId == table.Id).ToCollection();
 					}
                 }
+
+				if (skillMix == null)
+				{
+					selection.SkillMixTable = this.skillMixDTOLoader.GetByMOQTypeSelectionID(selection.Id).Select(x => new SkillMixModelView(x)).ToCollection();
+				}
+				else
+				{
+					selection.SkillMixTable = skillMix.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new SkillMixModelView(x)).ToCollection();
+				}
+
             }
         }
     }

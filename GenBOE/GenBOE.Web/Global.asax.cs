@@ -482,8 +482,7 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IMoqTableImporter)),
                         new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
                         new ResolvedParameter(typeof(ITokenService)),
-						new ResolvedParameter(typeof(ICache)),
-						new ResolvedParameter(typeof(ISkillMixDTOLoader))));
+						new ResolvedParameter(typeof(ICache))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEControllerLogic), typeof(BOEControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
                         new ResolvedParameter(typeof(IMSTMetricLoader)),
                         new ResolvedParameter(typeof(IBOESummary)),
@@ -554,8 +553,7 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IMoqTableImporter)),
                         new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
                         new ResolvedParameter(typeof(ITokenService)),
-						new ResolvedParameter(typeof(ICache)),
-						new ResolvedParameter(typeof(ISkillMixDTOLoader))));
+						new ResolvedParameter(typeof(ICache))));
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEControllerLogic), typeof(BOEControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
 						new ResolvedParameter(typeof(IBOESummary)),
 						new ResolvedParameter(typeof(IUserDTODataLoader)),
@@ -626,8 +624,7 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IMoqTableImporter)),
                         new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
                         new ResolvedParameter(typeof(ITokenService)),
-						new ResolvedParameter(typeof(ICache)),
-						new ResolvedParameter(typeof(ISkillMixDTOLoader))));
+						new ResolvedParameter(typeof(ICache))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEControllerLogic), typeof(BOEControllerLogic), GetLifetimeManager(), new InjectionConstructor(
                         new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader)),
                         new ResolvedParameter(typeof(IBOESummary)),
@@ -1478,7 +1475,7 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(ISystemSettingDTODataLoader), typeof(SystemSettingDTODataLoader), GetLifetimeManager());
             GenBOEUnityContainer.Container.RegisterType(typeof(IRteTemplateDataLoader), typeof(RteTemplateDataLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader), typeof(MOQTypeSelectionTableDataResourceHoursDTOLoader), GetLifetimeManager());
-			GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)), new ResolvedParameter(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
+			GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)), new ResolvedParameter(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader)), new ResolvedParameter(typeof(ISkillMixDTOLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 
         }
 

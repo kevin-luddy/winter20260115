@@ -73,8 +73,7 @@ namespace GenBOE.ActionLogic
             IMoqTableImporter moqTableImporter,
             GenBOE.ActionLogic.IESSAPClient.IESSAPClient iesSapClient,
             ITokenService tokenservice,
-			ICache cache,
-			ISkillMixDTOLoader skillMixDTOLoader) : base(inBoeTaskElementRecalc, 
+			ICache cache) : base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
                 inBoeTaskElementMediator, 
@@ -98,8 +97,7 @@ namespace GenBOE.ActionLogic
                 moqTableImporter,
                 iesSapClient,
                 tokenservice,
-				cache,
-				skillMixDTOLoader)
+				cache)
         {
         }
 

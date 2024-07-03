@@ -100,8 +100,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   this.moqTableImporter.Object,
 				   iesSapClient.Object,
 				   tokenservice.Object,
-				   cache.Object,
-				   skillMixDTOLoader.Object
+				   cache.Object
 			);
 		}
 
@@ -134,8 +133,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   this.moqTableImporter.Object,
 				   iesSapClient.Object,
 				   tokenservice.Object,
-				   cache.Object,
-				   skillMixDTOLoader.Object
+				   cache.Object
 			);
 		}
 
@@ -169,8 +167,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   this.moqTableImporter.Object,
 				   iesSapClient.Object,
 				   tokenservice.Object,
-				   cache.Object,
-				   skillMixDTOLoader.Object
+				   cache.Object
 			);
 		}
 

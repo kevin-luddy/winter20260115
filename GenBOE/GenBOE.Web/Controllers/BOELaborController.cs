@@ -2465,8 +2465,6 @@ namespace GenBOE.Web.Controllers
 				theModelView.MoqTypeHelpUrls = this._BoeLaborControllerLogic.GetMoqTypeHelpUrls();
 			}
 
-			theModelView.SkillMixTable = this._BoeLaborControllerLogic.GetSkillMixTable(ws, taskElementID);
-
 			return theModelView;
 		}
 

@@ -32,5 +32,28 @@ namespace GenBOE.ActionLogic.ModelView
 				this.MOQTypeSelectionID = skillMixDTO.MOQTypeSelectionID;
 			}
         }
+
+		/// <summary>
+		/// Converts the modelview into a DTO
+		/// </summary>
+		/// <returns>DTO version of this modelview</returns>
+		public SkillMixDTO ToDto()
+		{
+			return new SkillMixDTO
+			{
+				Included = this.Included,
+				SkillMixID = this.SkillMixID,
+				Rationale = this.Rationale ?? string.Empty, 
+				ProposedHours = this.ProposedHours,
+				HistoricalHours = this.HistoricalHours,
+				BOESkillMix = this.BOESkillMix,
+				LaborSkillMix = this.LaborSkillMix,
+				ResourceNew = this.ResourceNew ?? string.Empty,
+				ResourceOld = this.ResourceOld ?? string.Empty,
+				BOEID = this.BOEID,
+				BOETaskElementID = this.BOETaskElementID,
+				MOQTypeSelectionID = this.MOQTypeSelectionID,
+			};
+		}
     }
 }
