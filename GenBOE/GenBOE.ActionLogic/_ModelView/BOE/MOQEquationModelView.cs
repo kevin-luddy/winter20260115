@@ -19,10 +19,10 @@ namespace GenBOE.ActionLogic.ModelView.BOE
     using IES.Common;
     using IES.Common.classes;
 
-    /// <summary>
-    /// Model view for the MOQEquationField partial view.  It contains the MOQ equation and its variables.
-    /// </summary>
-    public class MOQEquationModelView
+	/// <summary>
+	/// Model view for the MOQEquationField partial view.  It contains the MOQ equation and its variables.
+	/// </summary>
+	public class MOQEquationModelView
     {
         /// <summary>
         /// Default constructor.

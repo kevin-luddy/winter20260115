@@ -15,10 +15,13 @@ CREATE TYPE [dbo].[TT_CommonDisclosureSkillMix] AS TABLE(
 		,[HistoricalHours] decimal(11, 2) NOT NULL
 		,[BOESkillMix] decimal(5, 2) NOT NULL
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
-		,[ResourceID] int NOT NULL
-		,[BusinessResourceID] int NOT NULL
+		,[ResourceID] [varchar](20) NOT NULL
+		,[BusinessResourceID] [varchar](20) NOT NULL
 		,[SkillMixID] int NOT NULL
+		,[BOEID] int NOT NULL
+		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
+		,[OrderID] int NOT NULL
 );
 GO
 
@@ -69,19 +72,26 @@ BEGIN
 		 ,[ResourceID]
 		 ,[BusinessResourceID]
 		 ,[SkillMixID]
+		 ,[BOEID]
+		 ,[BOETaskElementID]
 		 ,[MOQTypeSelectionID]
+		 ,[OrderID]
 		 )
-	SELECT Rationale
-		,Included
-		,ProposedHours
-		,HistoricalHours
-		,BOESkillMix
-		,LaborSkillMix
-		,ResourceID
-		,BusinessResourceID
-		,SkillMixID
-		,MOQTypeSelectionID
-	FROM @CommonDisclosureSkillMixTableParameter
+	SELECT T.[Rationale]
+		 ,T.[Included]
+		 ,T.[ProposedHours]
+		 ,T.[HistoricalHours]
+		 ,T.[BOESkillMix]
+		 ,T.[LaborSkillMix]
+		 ,T.[ResourceID]
+		 ,T.[BusinessResourceID]
+		 ,T.[SkillMixID]
+		 ,T.[BOEID]
+		 ,T.[BOETaskElementID]
+		 ,T.[MOQTypeSelectionID]
+		 ,T.[OrderID]
+	FROM @CommonDisclosureSkillMixTableParameter T
+	ORDER BY T.OrderID
 END
 
 IF @@ERROR = 0

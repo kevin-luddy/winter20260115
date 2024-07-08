@@ -9,7 +9,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
 		$scope.model.insertWorkspaceModalOpen = false;
 
-		$scope.newTableId = -1;
+        $scope.newTableId = -1;
+        $scope.ResourceModels = BOEDetails.WSResources;
 
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
@@ -1053,6 +1054,89 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
+	$scope.calculateActualsWithSkillMix = function (tableData, moqType) {
+		$scope.actualsValidation.errors = new Map();
+
+		const data = {
+			tableData: [],
+			boeId: ManageTaskModel.boeId
+		};
+
+		const table = {
+			WbsElement: tableData.WbsElement,
+			PoPStart: tableData.PoPStart,
+			PoPEnd: tableData.PoPEnd,
+			QueryType: tableData.QueryType,
+			Filters: tableData.AdditionalQueryFilters,
+			TableId: tableData.Id
+		};
+
+		$scope.setPoP(table, tableData);
+
+		if (Array.isArray(tableData.AdditionalQueryFilters)) {
+			table.Filters = tableData.AdditionalQueryFilters.join("\n");
+		}
+
+		data.tableData.push(table);
+
+		if (data.tableData.length > 0) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CalculateAllActualsSapWithSkillMixAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data && Array.isArray(response.data.data)) {
+
+						// update the moq data table with calcualted values
+						response.data.data.forEach(result => {
+							const res = result.Data[0];
+							if (result.Messages && result.Messages.length > 0) {
+								$scope.setActualsErrors(res.TableId, result.Messages);
+							} else {
+								tableData.DateOfReport = new Date();
+								tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
+								tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
+								tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours }));
+								
+								// this is RMS only
+								if (!ManageTaskModel.IsSpace) {
+									if (!tableData.ContractNumber && res.ContractNumber) {
+										// only set if currently unset and response is set
+										tableData.ContractNumber = res.ContractNumber;
+									}
+
+									// Set Source to SAP if SAP connection is enabled
+									if ($scope.IsSapEnabledAndSetAsRepository()) {
+										tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
+									}
+								}
+
+								MOQEquationFieldWidget.setDirty();
+								$scope.actualsValidation.isDirty.delete(res.TableId);
+								$scope.refreshDisableSave();
+								$scope.refreshSkillMixTable(moqType);
+							}
+						});
+					}
+				} else {
+					RaiseNotification('Error talking to backend to Calculate Actuals');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Calculate Actuals');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+	};
+
 	$scope.calculateAllMoqActuals = function () {
 		$scope.actualsValidation.errors = new Map();
 		$scope.actualsValidation.isDirty = new Map();
@@ -1154,6 +1238,163 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 
 		$scope.refreshDisableSave();
+	};
+
+	$scope.calculateAllMoqActualsWithSkillMix = function () {
+		$scope.actualsValidation.errors = new Map();
+		$scope.actualsValidation.isDirty = new Map();
+		// Get all the data tables
+		const data = {
+			tableData: []
+		};
+
+		const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+		if (moqTypes) {
+			moqTypes.forEach(moq => {
+				if (moq.TableData) {
+					moq.TableData.forEach(tableData => {
+						if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+							const table = {
+								WbsElement: tableData.WbsElement,
+								PoPStart: tableData.PoPStart,
+								PoPEnd: tableData.PoPEnd,
+								QueryType: tableData.QueryType,
+								Filters: tableData.AdditionalQueryFilters,
+								TableId: tableData.Id
+							};
+							
+							if ($scope.model.IsRMS) {
+								// Set the repo name to the source once we've checked that it is an SAP Enabled Source
+								tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
+							}
+
+							$scope.setPoP(table, tableData);
+
+							if (Array.isArray(tableData.AdditionalQueryFilters)) {
+								table.Filters = tableData.AdditionalQueryFilters.join("\n");
+							}
+
+							data.tableData.push(table);
+						}
+					});
+				}
+			});
+		}
+
+		data.boeId = ManageTaskModel.boeId;
+
+		if (data.tableData.length > 0) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CalculateAllActualsSapWithSkillMixAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data && Array.isArray(response.data.data)) {
+
+						// find the moq table data and update the data with calcualted values
+						response.data.data.forEach(result => {
+							var res = result.Data[0];
+							if (result.Messages && result.Messages.length > 0) {
+								$scope.setActualsErrors(res.TableId, result.Messages);
+							} else {
+								moqTypes.forEach(moq => {
+									var tableData = moq.TableData.find(t => t.Id == res.TableId);
+									if (tableData) {
+										tableData.DateOfReport = new Date();
+										tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
+										tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
+										tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours }));
+
+										// this is RMS only
+										if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
+											// only set if currently unset and response is set
+											tableData.ContractNumber = res.ContractNumber;
+										}
+
+										MOQEquationFieldWidget.setDirty();
+									}
+								});
+
+								const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+								if (moqTypes) {
+									moqTypes.forEach(moq => {
+										$scope.refreshSkillMixTable(moq);
+									});
+								}
+							}
+						});
+					}
+
+					$scope.refreshDisableSave();
+				} else {
+					RaiseNotification('Error talking to backend to Calculate All Actuals');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Calculate All Actuals');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+
+		$scope.refreshDisableSave();
+	};
+
+	$scope.refreshSkillMixTable = function (moqType) {
+		// Get all the data tables
+		const data = {
+			resourceHours: [],
+			currentSkillMixData: []
+		};
+
+		
+		if (moqType.TableData) {
+			moqType.TableData.forEach(tableData => {
+				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+
+					tableData.ResourceHours.forEach(hours => {
+						data.resourceHours.push(hours);
+					});
+				}
+			});
+		}
+
+		data.boeId = ManageTaskModel.boeId;
+		data.currentSkillMixData = moqType.SkillMixTable;
+
+		if (data.resourceHours.length > 0) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data) {
+						moqType.SkillMixTable = response.data.data;
+					}
+				} else {
+					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
 	};
 
 	$scope.setActualsErrors = function (id, errors) {
@@ -1381,7 +1622,27 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 		$scope.IsSapSetAndAnyTableSapRepository();
 		$scope.refreshDisableSave();
-	}
+    }
+
+    $scope.getAndSetIsResourceValid = function (item, models) {
+        item.IsResourceValid = true;
+        const input = item.ResourceInput;
+        if (input === undefined || (typeof input === 'string' && (input.length === 0
+            || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+            item.IsResourceValid = false;
+        }
+        return item.IsResourceValid;
+    }
+
+    $scope.resourceSelected = function (item, model) {
+        $scope.setDirty();
+
+        if (item && item.ResourceDesc && item.ResourceDesc !== '') {
+            // resource was selected
+            model.ResourceNew = item.ResourceDesc;
+        }
+    };
+
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page

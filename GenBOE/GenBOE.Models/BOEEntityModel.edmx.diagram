@@ -4,8 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="b62a7d0e97b84f2c9bdaa615885f7390" Name="Diagram1" ZoomLevel="99">
-        <EntityTypeShape EntityType="GenBOE.Models.BOE" Width="1.5" PointX="14.25" PointY="105.5" IsExpanded="true" />
+      <Diagram DiagramId="b62a7d0e97b84f2c9bdaa615885f7390" Name="Diagram1" ZoomLevel="106">
         <EntityTypeShape EntityType="GenBOE.Models.BOEApproval" Width="1.5" PointX="3" PointY="107.875" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOEApprovalHistory" Width="1.5" PointX="6" PointY="107.875" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOEComment" Width="1.5" PointX="3" PointY="103.25" IsExpanded="true" />
@@ -18,7 +17,6 @@
         <EntityTypeShape EntityType="GenBOE.Models.BOEPotentialRole" Width="1.5" PointX="3" PointY="111.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOEStateHistory" Width="1.5" PointX="6" PointY="103.375" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOEStateLU" Width="1.5" PointX="12" PointY="93.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="GenBOE.Models.BOETaskElement" Width="1.5" PointX="25.5" PointY="109" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOETaskElementCustomFieldValueXREF" Width="1.5" PointX="27.75" PointY="101.5" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOETaskElementMetricDetailXREF" Width="1.5" PointX="30.75" PointY="108" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOETaskElementWorkspaceVariableXREF" Width="1.5" PointX="30.75" PointY="104.75" IsExpanded="true" />
@@ -117,22 +115,6 @@
         <EntityTypeShape EntityType="GenBOE.Models.UserAccessReport" Width="1.5" PointX="14.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.UserLog" Width="1.5" PointX="14.75" PointY="11.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.WorkspaceCopyMetric" Width="1.5" PointX="12.75" PointY="14.75" IsExpanded="true" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOE_BOEStateLU" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOEApproval_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOEApprovalHistory_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOEComment_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOECommentHistory_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOECustomFieldValueXREF_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOEStateHistory_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElement_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOEUserRole_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOEUserRoleHistory_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_MaterialTaskElement_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_ODCTaskElement_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_SumOfBOE_OrdinaryVariableXREF_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_SumOfBOE_WorkspaceVariableXREF_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_TravelTripTaskElement_BOE" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_WBS_CLIN_BOE_XREF_BOE" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEApproval_ETIuser" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEApprovalHistory_ETIuser" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEComment_BOEComment" ManuallyRouted="false" />
@@ -149,12 +131,6 @@
         <AssociationConnector Association="GenBOE.Models.FK_BOEStateHistory_BOEStateLU_Updated" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEStateHistory_ETIuser" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEStateHistory_FieldLU" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElement_MOQTypeLU" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElement_TaskElementTypeLU" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementMetricDetailXREF_BOETaskElement" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_OrdinaryVariable_BOETaskElement" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementCustomFieldValueXREF_CustomFieldValue" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementMetricDetailXREF_Metric" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementWorkspaceVariableXREF_WorkspaceVariable" ManuallyRouted="false" />
@@ -277,7 +253,6 @@
         <AssociationConnector Association="GenBOE.Models.FK_SystemProPricerCustomFieldXREF_SystemProPricerExport" />
         <AssociationConnector Association="GenBOE.Models.FK_SystemProPricerFieldXREF_SystemProPricerExport" />
         <EntityTypeShape EntityType="GenBOE.Models.Workspace" Width="1.5" PointX="12" PointY="66.625" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOE_Workspace" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEPotentialRole_Workspace" />
         <AssociationConnector Association="GenBOE.Models.FK_CLIN_Workspace" />
         <AssociationConnector Association="GenBOE.Models.FK_CustomField_Workspace" />
@@ -323,8 +298,6 @@
         <AssociationConnector Association="GenBOE.Models.FK_RteTemplate_Workspace" />
         <AssociationConnector Association="GenBOE.Models.FK_RteTemplateQuestion_TemplateID" />
         <EntityTypeShape EntityType="GenBOE.Models.RteTemplateAnswer" Width="1.5" PointX="27.75" PointY="105.125" />
-        <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_BoeID" />
-        <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_TaskID" />
         <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_QuestionID" />
         <EntityTypeShape EntityType="GenBOE.Models.RteTemplateSource" Width="1.5" PointX="6.75" PointY="17.75" />
         <AssociationConnector Association="GenBOE.Models.RteTemplateAssigned" />
@@ -334,7 +307,6 @@
         <EntityTypeShape EntityType="GenBOE.Models.MOQTypeSelectionTableData" Width="1.5" PointX="33" PointY="117.75" />
         <EntityTypeShape EntityType="GenBOE.Models.BOELaborType" Width="1.5" PointX="30.75" PointY="97.125" />
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborSpread_BOELaborType" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_CLIN" />
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_PerformingOrganization" />
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_Resource" />
@@ -342,10 +314,6 @@
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_SpreadTypeLU" />
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_WorkBreakdownStructure" />
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborTypeCustomFieldValueXREF_BOELaborType" />
-        <EntityTypeShape EntityType="GenBOE.Models.MOQTypeSelection" Width="1.5" PointX="30.75" PointY="117.875" />
-        <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A" />
-        <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__32C688C3" />
-        <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" />
         <EntityTypeShape EntityType="GenBOE.Models.MoqTypeTableCustomFieldValueXREF" Width="1.5" PointX="36.25" PointY="107" />
         <AssociationConnector Association="GenBOE.Models.FK__MoqTypeTa__Custo__503886C7" />
         <AssociationConnector Association="GenBOE.Models.FK__MoqTypeTa__MoqTy__4F44628E" />
@@ -353,13 +321,51 @@
         <EntityTypeShape EntityType="GenBOE.Models.MessageConfirmation" Width="1.5" PointX="3" PointY="115.75" />
         <AssociationConnector Association="GenBOE.Models.FK_MessageConfirmation_UserId" />
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_BRCResource" />
-        <EntityTypeShape EntityType="GenBOE.Models.SkillMix" Width="1.5" PointX="39" PointY="112" />
+        <EntityTypeShape EntityType="GenBOE.Models.MOQTypeSelectionTableDataResourceHour" Width="1.5" PointX="38.25" PointY="117.5" />
+        <AssociationConnector Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId" />
+        <EntityTypeShape EntityType="GenBOE.Models.BOE" Width="1.5" PointX="14.25" PointY="75.5" />
+        <EntityTypeShape EntityType="GenBOE.Models.BOETaskElement" Width="1.5" PointX="25.5" PointY="109" />
+        <EntityTypeShape EntityType="GenBOE.Models.CommonDisclosureSkillMix" Width="1.5" PointX="33" PointY="97.25" />
+        <EntityTypeShape EntityType="GenBOE.Models.MOQTypeSelection" Width="1.5" PointX="30.75" PointY="118.5" />
+        <EntityTypeShape EntityType="GenBOE.Models.SkillMix" Width="1.5" PointX="36" PointY="100.25" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOE_BOEStateLU" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOE_Workspace" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOEApproval_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOEApprovalHistory_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOEComment_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOECommentHistory_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOECustomFieldValueXREF_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOEStateHistory_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElement_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOEUserRole_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOEUserRoleHistory_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_MaterialTaskElement_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_ODCTaskElement_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_BoeID" />
         <AssociationConnector Association="GenBOE.Models.FK_SkillMix_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_SumOfBOE_OrdinaryVariableXREF_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_SumOfBOE_WorkspaceVariableXREF_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_TravelTripTaskElement_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_WBS_CLIN_BOE_XREF_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOELaborType_BOETaskElement" />
+        <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__TaskI__2A121288" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElement_MOQTypeLU" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElement_TaskElementTypeLU" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementMetricDetailXREF_BOETaskElement" />
+        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" />
+        <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_BOETaskElement" />
+        <AssociationConnector Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement" />
+        <AssociationConnector Association="GenBOE.Models.FK_OrdinaryVariable_BOETaskElement" />
+        <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_TaskID" />
         <AssociationConnector Association="GenBOE.Models.FK_SkillMix_BOETaskElement" />
-        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_MOQTypeSelection" />
-        <EntityTypeShape EntityType="GenBOE.Models.CommonDisclosureSkillMix" Width="1.5" PointX="41.25" PointY="115.5" />
         <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection" />
         <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_SkillMixID" />
+        <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2B0636C1" />
+        <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2FCAEBDE" />
+        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_MOQTypeSelection" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

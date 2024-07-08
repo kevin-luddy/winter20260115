@@ -132,6 +132,14 @@ namespace GenBOE.Web.Controllers
 			ViewData["BOEID"] = boeID;
 			bool containsDiscrete = false;
 			bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
+
+			//check if skill mix is enabled and workspace starts after skill mix date 
+			bool enableSkillMix = false;
+			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			{
+				enableSkillMix = true;
+			}
+			ViewData["EnableSkillMix"] = enableSkillMix;
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
 			string taskDescription = string.Empty;
@@ -1631,6 +1639,60 @@ namespace GenBOE.Web.Controllers
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP, sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Calculates all Actuals for MOQ Data Tables from SAP
+		/// </summary>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
+		/// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+		public async Task<ActionResult> CalculateAllActualsSapWithSkillMix(string workspace, int boeId, ICollection<MoqTableDataModelView> tableData)
+		{
+			if (tableData == null || !tableData.Any())
+			{
+				throw new ArgumentNullException(nameof(tableData));
+			}
+
+			// Initialize Action
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+
+			// Call to Controller Logic
+			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = await this._BoeLaborControllerLogic.CalculateAllActualsSapWithSkillMix(tableData);
+
+			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX, sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Refreshes the Skill Mix Table with updated resource hours
+		/// </summary>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
+		/// <param name="resourceHours">MOQ Table Resource Hours</param>
+		/// <param name="currentSkillMixData">The current skill mix data</param>
+		/// <returns></returns>
+		public ActionResult RefreshSkillMixTable(string workspace, int boeId, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData)
+		{
+			// Initialize Action
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+
+			// Call to Controller Logic
+			ICollection<SkillMixModelView> response = this._BoeLaborControllerLogic.RefreshSkillMixTable(resourceHours, currentSkillMixData);
+
+			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE, sw);
 			return toReturn;
 		}
 		#endregion

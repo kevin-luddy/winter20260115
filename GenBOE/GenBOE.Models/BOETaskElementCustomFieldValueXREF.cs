@@ -19,7 +19,7 @@ namespace GenBOE.Models
         public int BOETaskElementID { get; set; }
         public int CustomFieldValueID { get; set; }
     
-        public virtual BOETaskElement BOETaskElement { get; set; }
         public virtual CustomFieldValue CustomFieldValue { get; set; }
+        public virtual BOETaskElement BOETaskElement { get; set; }
     }
 }

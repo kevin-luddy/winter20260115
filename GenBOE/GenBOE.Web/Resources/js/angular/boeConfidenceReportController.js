@@ -58,9 +58,12 @@ angular.module('genboe').controller('BOEConfidenceReportController', ['$scope', 
 		var timeoutTime = 2000;
 		$scope.isExporting = true;
 
-		var boeIdForExport = ConfidenceReportModel.model.ConfidenceReportData.find(crd => crd.BoeId).BoeId;
-
-		var exportUrl = CreatePostURL(ConfidenceReportModel.workspace, ConfidenceReportModel.reportsController, ConfidenceReportModel.exportConfidenceReportAction, 'boe/' + boeIdForExport);
+		var exportUrl = '';
+		if (ConfidenceReportModel.boeId) {
+			exportUrl = CreatePostURL(ConfidenceReportModel.workspace, ConfidenceReportModel.reportsController, ConfidenceReportModel.exportConfidenceReportAction, 'boe/' + ConfidenceReportModel.boeId);
+		} else {
+			exportUrl = CreatePostURL(ConfidenceReportModel.workspace, ConfidenceReportModel.reportsController, ConfidenceReportModel.exportConfidenceReportAction, '');
+		}
 		GenWidget.prototype.performExport(exportUrl);
 
 		// export is done via attaching an iframe, wait an arbitrary # of seconds (2-3) until showing the export button again to stop double-click

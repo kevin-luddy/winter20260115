@@ -19,7 +19,7 @@ namespace GenBOE.Models
         public int BOETaskElementID { get; set; }
         public int MetricDetailID { get; set; }
     
-        public virtual BOETaskElement BOETaskElement { get; set; }
         public virtual MetricDetail MetricDetail { get; set; }
+        public virtual BOETaskElement BOETaskElement { get; set; }
     }
 }

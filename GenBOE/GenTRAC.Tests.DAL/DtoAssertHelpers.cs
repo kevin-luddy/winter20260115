@@ -524,7 +524,10 @@ namespace GenTRAC.Tests.DAL
             Assert.AreEqual(expectedResult.IsCCPDRequired, actualResult.IsCCPDRequired);
             Assert.AreEqual(expectedResult.ContractActionType, actualResult.ContractActionType);
             Assert.AreEqual(expectedResult.ContractsLead, actualResult.ContractsLead);
-            Assert.AreEqual(expectedResult.ContractTypeGroup, actualResult.ContractTypeGroup);
+			foreach(string contractType in expectedResult.ContractType)
+			{
+				Assert.IsTrue(actualResult.ContractType.ToList().Contains(contractType));
+			}
             Assert.AreEqual(expectedResult.CostThroughCom, actualResult.CostThroughCom);
             Assert.AreEqual(expectedResult.CoverSheetApproverNtid, actualResult.CoverSheetApproverNtid);
             Assert.AreEqual(expectedResult.CoverSheetApproverSignedDate, actualResult.CoverSheetApproverSignedDate);

@@ -34,7 +34,6 @@ namespace GenBOE.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<BOE> BOEs { get; set; }
         public virtual DbSet<BOEApproval> BOEApprovals { get; set; }
         public virtual DbSet<BOEApprovalHistory> BOEApprovalHistories { get; set; }
         public virtual DbSet<BOEComment> BOEComments { get; set; }
@@ -47,7 +46,6 @@ namespace GenBOE.Models
         public virtual DbSet<BOEPotentialRole> BOEPotentialRoles { get; set; }
         public virtual DbSet<BOEStateHistory> BOEStateHistories { get; set; }
         public virtual DbSet<BOEStateLU> BOEStateLUs { get; set; }
-        public virtual DbSet<BOETaskElement> BOETaskElements { get; set; }
         public virtual DbSet<BOETaskElementCustomFieldValueXREF> BOETaskElementCustomFieldValueXREFs { get; set; }
         public virtual DbSet<BOETaskElementMetricDetailXREF> BOETaskElementMetricDetailXREFs { get; set; }
         public virtual DbSet<BOETaskElementWorkspaceVariableXREF> BOETaskElementWorkspaceVariableXREFs { get; set; }
@@ -171,12 +169,15 @@ namespace GenBOE.Models
         public virtual DbSet<ProjectMap> ProjectMaps { get; set; }
         public virtual DbSet<MOQTypeSelectionTableData> MOQTypeSelectionTableDatas { get; set; }
         public virtual DbSet<BOELaborType> BOELaborTypes { get; set; }
-        public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
         public virtual DbSet<MoqTypeTableCustomFieldValueXREF> MoqTypeTableCustomFieldValueXREFs { get; set; }
         public virtual DbSet<BOEFormPBOE> BOEFormPBOEs { get; set; }
         public virtual DbSet<MessageConfirmation> MessageConfirmations { get; set; }
-        public virtual DbSet<SkillMix> SkillMixes { get; set; }
+        public virtual DbSet<MOQTypeSelectionTableDataResourceHour> MOQTypeSelectionTableDataResourceHours { get; set; }
+        public virtual DbSet<BOE> BOEs { get; set; }
+        public virtual DbSet<BOETaskElement> BOETaskElements { get; set; }
         public virtual DbSet<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
+        public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
+        public virtual DbSet<SkillMix> SkillMixes { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -5594,6 +5595,20 @@ namespace GenBOE.Models
         public virtual int insertCommonDisclosureSkillMixviaTableParameter()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertCommonDisclosureSkillMixviaTableParameter");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> deleteMOQTypeSelectionTableDataResourceHours(Nullable<int> mOQTypeSelectionTableDataId)
+        {
+            var mOQTypeSelectionTableDataIdParameter = mOQTypeSelectionTableDataId.HasValue ?
+                new ObjectParameter("MOQTypeSelectionTableDataId", mOQTypeSelectionTableDataId) :
+                new ObjectParameter("MOQTypeSelectionTableDataId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteMOQTypeSelectionTableDataResourceHours", mOQTypeSelectionTableDataIdParameter);
+        }
+    
+        public virtual int insertMOQTypeSelectionTableDataResourceHoursviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertMOQTypeSelectionTableDataResourceHoursviaTableParameter");
         }
     }
 }

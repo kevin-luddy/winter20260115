@@ -480,9 +480,11 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="HistoricalHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
           <Property Name="BOESkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
           <Property Name="LaborSkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
-          <Property Name="ResourceID" Type="int" Nullable="false" />
-          <Property Name="BusinessResourceID" Type="int" Nullable="false" />
+          <Property Name="ResourceID" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="BusinessResourceID" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="SkillMixID" Type="int" Nullable="false" />
+          <Property Name="BOEID" Type="int" Nullable="false" />
+          <Property Name="BOETaskElementID" Type="int" Nullable="false" />
           <Property Name="MOQTypeSelectionID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="ContractTypeLU">
@@ -724,6 +726,18 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="TotalWbsHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
           <Property Name="AdditionalQueryFilters" Type="varchar" MaxLength="2500" />
           <Property Name="TotalRelevantHoursAfterQueryFilters" Type="decimal" Precision="11" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MOQTypeSelectionTableDataResourceHours">
+          <Key>
+            <PropertyRef Name="MOQTypeSelectionTableDataResourceHoursId" />
+          </Key>
+          <Property Name="MOQTypeSelectionTableDataResourceHoursId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ResourceName" Type="varchar" MaxLength="20" />
+          <Property Name="WbsHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="TotalHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="MOQTypeSelectionTableDataId" Type="int" Nullable="false" />
+          <Property Name="BOETaskElementID" Type="int" Nullable="false" />
+          <Property Name="BOEID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="MoqTypeTableCustomFieldValueXREF">
           <Key>
@@ -1178,17 +1192,17 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
             <PropertyRef Name="SkillMixID" />
           </Key>
           <Property Name="SkillMixID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Rationale" Type="varchar" MaxLength="255" />
+          <Property Name="Rationale" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Included" Type="bit" />
-          <Property Name="ProposedHours" Type="decimal" Precision="11" Scale="2" />
-          <Property Name="HistoricalHours" Type="decimal" Precision="11" Scale="2" />
-          <Property Name="BOESkillMix" Type="decimal" Precision="5" Scale="2" />
-          <Property Name="LaborSkillMix" Type="decimal" Precision="5" Scale="2" />
-          <Property Name="ResourceOld" Type="varchar" MaxLength="20" />
-          <Property Name="ResourceNew" Type="varchar" MaxLength="20" />
-          <Property Name="BOEID" Type="int" />
-          <Property Name="BOETaskElementID" Type="int" />
-          <Property Name="MOQTypeSelectionID" Type="int" />
+          <Property Name="ProposedHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="HistoricalHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="BOESkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="LaborSkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="ResourceOld" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="ResourceNew" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="BOEID" Type="int" Nullable="false" />
+          <Property Name="BOETaskElementID" Type="int" Nullable="false" />
+          <Property Name="MOQTypeSelectionID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="SortByLU">
           <Key>
@@ -2696,6 +2710,30 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CommonDisclosureSkillMix_BOE">
+          <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
+          <End Role="CommonDisclosureSkillMix" Type="Self.CommonDisclosureSkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="CommonDisclosureSkillMix">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommonDisclosureSkillMix_BOETaskElement">
+          <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="1" />
+          <End Role="CommonDisclosureSkillMix" Type="Self.CommonDisclosureSkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="CommonDisclosureSkillMix">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CommonDisclosureSkillMix_MOQTypeSelection">
           <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="1" />
           <End Role="CommonDisclosureSkillMix" Type="Self.CommonDisclosureSkillMix" Multiplicity="*" />
@@ -2789,6 +2827,42 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </Principal>
             <Dependent Role="MessageConfirmation">
               <PropertyRef Name="ETIUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MOQTypeSelectionTableDataResourceHours_BOE">
+          <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
+          <End Role="MOQTypeSelectionTableDataResourceHours" Type="Self.MOQTypeSelectionTableDataResourceHours" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="MOQTypeSelectionTableDataResourceHours">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement">
+          <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="1" />
+          <End Role="MOQTypeSelectionTableDataResourceHours" Type="Self.MOQTypeSelectionTableDataResourceHours" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="MOQTypeSelectionTableDataResourceHours">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId">
+          <End Role="MOQTypeSelectionTableData" Type="Self.MOQTypeSelectionTableData" Multiplicity="1" />
+          <End Role="MOQTypeSelectionTableDataResourceHours" Type="Self.MOQTypeSelectionTableDataResourceHours" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOQTypeSelectionTableData">
+              <PropertyRef Name="MOQTypeSelectionTableDataId" />
+            </Principal>
+            <Dependent Role="MOQTypeSelectionTableDataResourceHours">
+              <PropertyRef Name="MOQTypeSelectionTableDataId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3381,7 +3455,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SkillMix_BOE">
-          <End Role="BOE" Type="Self.BOE" Multiplicity="0..1" />
+          <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
           <End Role="SkillMix" Type="Self.SkillMix" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BOE">
@@ -3393,7 +3467,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SkillMix_BOETaskElement">
-          <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="0..1" />
+          <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="1" />
           <End Role="SkillMix" Type="Self.SkillMix" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BOETaskElement">
@@ -3405,7 +3479,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SkillMix_MOQTypeSelection">
-          <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="0..1" />
+          <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="1" />
           <End Role="SkillMix" Type="Self.SkillMix" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="MOQTypeSelection">
@@ -4493,6 +4567,9 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="MOQTypeSelectionTableDataId" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
+        <Function Name="deleteMOQTypeSelectionTableDataResourceHours" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MOQTypeSelectionTableDataId" Type="int" Mode="In" />
+        </Function>
         <Function Name="deleteMoqTypeTableCustomFieldValue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
           <Parameter Name="MoqTypeTableDataId" Type="int" Mode="In" />
@@ -4919,6 +4996,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="MeasureValidatedBy" Type="varchar" Mode="In" />
           <Parameter Name="ProgramDescription" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="insertMOQTypeSelectionTableDataResourceHoursviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertMoqTypeTableCustomFieldValueviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertOrdinaryVariableResourceType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="OrdinaryVariableID" Type="int" Mode="In" />
@@ -5861,6 +5939,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySet Name="MOQTypeLU" EntityType="Self.MOQTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MOQTypeSelection" EntityType="Self.MOQTypeSelection" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MOQTypeSelectionTableData" EntityType="Self.MOQTypeSelectionTableData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MOQTypeSelectionTableDataResourceHours" EntityType="Self.MOQTypeSelectionTableDataResourceHours" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MoqTypeTableCustomFieldValueXREF" EntityType="Self.MoqTypeTableCustomFieldValueXREF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MSTTravelModeLU" EntityType="Self.MSTTravelModeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MSTTravelNonzoneFeesAndCosts" EntityType="Self.MSTTravelNonzoneFeesAndCosts" Schema="dbo" store:Type="Tables" />
@@ -6384,6 +6463,14 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <End Role="Workspace" EntitySet="Workspace" />
             <End Role="CLIN" EntitySet="CLIN" />
           </AssociationSet>
+          <AssociationSet Name="FK_CommonDisclosureSkillMix_BOE" Association="Self.FK_CommonDisclosureSkillMix_BOE">
+            <End Role="BOE" EntitySet="BOE" />
+            <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMix" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommonDisclosureSkillMix_BOETaskElement" Association="Self.FK_CommonDisclosureSkillMix_BOETaskElement">
+            <End Role="BOETaskElement" EntitySet="BOETaskElement" />
+            <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMix" />
+          </AssociationSet>
           <AssociationSet Name="FK_CommonDisclosureSkillMix_MOQTypeSelection" Association="Self.FK_CommonDisclosureSkillMix_MOQTypeSelection">
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
             <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMix" />
@@ -6415,6 +6502,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <AssociationSet Name="FK_MessageConfirmation_UserId" Association="Self.FK_MessageConfirmation_UserId">
             <End Role="ETIuser" EntitySet="ETIuser" />
             <End Role="MessageConfirmation" EntitySet="MessageConfirmation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MOQTypeSelectionTableDataResourceHours_BOE" Association="Self.FK_MOQTypeSelectionTableDataResourceHours_BOE">
+            <End Role="BOE" EntitySet="BOE" />
+            <End Role="MOQTypeSelectionTableDataResourceHours" EntitySet="MOQTypeSelectionTableDataResourceHours" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement" Association="Self.FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement">
+            <End Role="BOETaskElement" EntitySet="BOETaskElement" />
+            <End Role="MOQTypeSelectionTableDataResourceHours" EntitySet="MOQTypeSelectionTableDataResourceHours" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId" Association="Self.FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId">
+            <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableData" />
+            <End Role="MOQTypeSelectionTableDataResourceHours" EntitySet="MOQTypeSelectionTableDataResourceHours" />
           </AssociationSet>
           <AssociationSet Name="FK_MSTTravelTrip_Clins" Association="Self.FK_MSTTravelTrip_Clins">
             <End Role="CLIN" EntitySet="CLIN" />
@@ -6941,43 +7040,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="ItemId" Type="Int32" Nullable="false" />
 		  <Property Name="Item" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
 		</ComplexType>
-		<EntityType Name="BOE">
-		  <Key>
-			<PropertyRef Name="BOEID" />
-		  </Key>
-		  <Property Name="BOEID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-		  <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
-		  <Property Name="BOEStateID" Type="Int32" Nullable="false" />
-		  <Property Name="BOEStartDate" Type="DateTime" Nullable="false" Precision="0" />
-		  <Property Name="BOEEndDate" Type="DateTime" Nullable="false" Precision="0" />
-		  <Property Name="BOEDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="DataSource" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="WorkspaceID" Type="Int32" Nullable="false" />
-		  <Property Name="MetricDisclosureAcknowledge" Type="Boolean" Nullable="false" />
-		  <Property Name="NumAuthorReassigned" Type="Int32" Nullable="false" />
-		  <Property Name="IsMaterial" Type="Boolean" Nullable="false" />
-		  <Property Name="BOETitle" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-		  <Property Name="IsMultiClinWbs" Type="Boolean" Nullable="false" />
-		  <NavigationProperty Name="BOEStateLU" Relationship="Self.FK_BOE_BOEStateLU" FromRole="BOE" ToRole="BOEStateLU" />
-		  <NavigationProperty Name="BOEApprovals" Relationship="Self.FK_BOEApproval_BOE" FromRole="BOE" ToRole="BOEApproval" />
-		  <NavigationProperty Name="BOEApprovalHistories" Relationship="Self.FK_BOEApprovalHistory_BOE" FromRole="BOE" ToRole="BOEApprovalHistory" />
-		  <NavigationProperty Name="BOEComments" Relationship="Self.FK_BOEComment_BOE" FromRole="BOE" ToRole="BOEComment" />
-		  <NavigationProperty Name="BOECommentHistories" Relationship="Self.FK_BOECommentHistory_BOE" FromRole="BOE" ToRole="BOECommentHistory" />
-		  <NavigationProperty Name="BOECustomFieldValueXREFs" Relationship="Self.FK_BOECustomFieldValueXREF_BOE" FromRole="BOE" ToRole="BOECustomFieldValueXREF" />
-		  <NavigationProperty Name="BOEStateHistories" Relationship="Self.FK_BOEStateHistory_BOE" FromRole="BOE" ToRole="BOEStateHistory" />
-		  <NavigationProperty Name="BOETaskElements" Relationship="Self.FK_BOETaskElement_BOE" FromRole="BOE" ToRole="BOETaskElement" />
-		  <NavigationProperty Name="BOEUserRoles" Relationship="Self.FK_BOEUserRole_BOE" FromRole="BOE" ToRole="BOEUserRole" />
-		  <NavigationProperty Name="BOEUserRoleHistories" Relationship="Self.FK_BOEUserRoleHistory_BOE" FromRole="BOE" ToRole="BOEUserRoleHistory" />
-		  <NavigationProperty Name="MaterialTaskElements" Relationship="Self.FK_MaterialTaskElement_BOE" FromRole="BOE" ToRole="MaterialTaskElement" />
-		  <NavigationProperty Name="ODCTaskElements" Relationship="Self.FK_ODCTaskElement_BOE" FromRole="BOE" ToRole="ODCTaskElement" />
-		  <NavigationProperty Name="SumOfBOE_OrdinaryVariableXREF" Relationship="Self.FK_SumOfBOE_OrdinaryVariableXREF_BOE" FromRole="BOE" ToRole="SumOfBOE_OrdinaryVariableXREF" />
-		  <NavigationProperty Name="SumOfBOE_WorkspaceVariableXREF" Relationship="Self.FK_SumOfBOE_WorkspaceVariableXREF_BOE" FromRole="BOE" ToRole="SumOfBOE_WorkspaceVariableXREF" />
-		  <NavigationProperty Name="TravelTripTaskElements" Relationship="Self.FK_TravelTripTaskElement_BOE" FromRole="BOE" ToRole="TravelTripTaskElement" />
-		  <NavigationProperty Name="WBS_CLIN_BOE_XREF" Relationship="Self.FK_WBS_CLIN_BOE_XREF_BOE" FromRole="BOE" ToRole="WBS_CLIN_BOE_XREF" />
-		  <NavigationProperty Name="Workspace" Relationship="GenBOE.Models.FK_BOE_Workspace" FromRole="BOE" ToRole="Workspace" />
-		  <NavigationProperty Name="RteTemplateAnswers" Relationship="GenBOE.Models.FK_RteTemplateAnswer_BoeID" FromRole="BOE" ToRole="RteTemplateAnswer" />
-          <NavigationProperty Name="SkillMixes" Relationship="GenBOE.Models.FK_SkillMix_BOE" FromRole="BOE" ToRole="SkillMix" />
-		</EntityType>
 		<EntityType Name="BOEApproval">
 		  <Key>
 			<PropertyRef Name="BOEApprovalID" />
@@ -6987,8 +7049,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="BOEID" Type="Int32" Nullable="false" />
 		  <Property Name="ApprovalETIUserID" Type="Int32" Nullable="false" />
 		  <Property Name="ApprovedFlag" Type="Boolean" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_BOEApproval_BOE" FromRole="BOEApproval" ToRole="BOE" />
 		  <NavigationProperty Name="ETIuser" Relationship="Self.FK_BOEApproval_ETIuser" FromRole="BOEApproval" ToRole="ETIuser" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_BOEApproval_BOE" FromRole="BOEApproval" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="BOEApprovalHistory">
 		  <Key>
@@ -6999,8 +7061,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="BOEID" Type="Int32" Nullable="false" />
 		  <Property Name="Approval" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
 		  <Property Name="ApprovalETIUserID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_BOEApprovalHistory_BOE" FromRole="BOEApprovalHistory" ToRole="BOE" />
 		  <NavigationProperty Name="ETIuser" Relationship="Self.FK_BOEApprovalHistory_ETIuser" FromRole="BOEApprovalHistory" ToRole="ETIuser" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_BOEApprovalHistory_BOE" FromRole="BOEApprovalHistory" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="BOEComment">
 		  <Key>
@@ -7013,12 +7075,12 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="BOECommentETIUserID" Type="Int32" Nullable="false" />
 		  <Property Name="BOEResponseToCommentID" Type="Int32" />
 		  <Property Name="BOEID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_BOEComment_BOE" FromRole="BOEComment" ToRole="BOE" />
 		  <NavigationProperty Name="BOEComment1" Relationship="Self.FK_BOEComment_BOEComment" FromRole="BOEComment" ToRole="BOEComment1" />
 		  <NavigationProperty Name="BOEComment2" Relationship="Self.FK_BOEComment_BOEComment" FromRole="BOEComment1" ToRole="BOEComment" />
 		  <NavigationProperty Name="ETIuser" Relationship="Self.FK_BOEComment_ETIuser" FromRole="BOEComment" ToRole="ETIuser" />
 		  <NavigationProperty Name="FieldLU" Relationship="Self.FK_BOEComment_FieldLU" FromRole="BOEComment" ToRole="FieldLU" />
 		  <NavigationProperty Name="BOECommentHistories" Relationship="Self.FK_BOECommentHistory_BOEComment" FromRole="BOEComment" ToRole="BOECommentHistory" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_BOEComment_BOE" FromRole="BOEComment" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="BOECommentHistory">
 		  <Key>
@@ -7032,10 +7094,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="CurrentComment" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
 		  <Property Name="UpdatedComment" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
 		  <Property Name="ChangedByETIUserID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_BOECommentHistory_BOE" FromRole="BOECommentHistory" ToRole="BOE" />
 		  <NavigationProperty Name="BOEComment" Relationship="Self.FK_BOECommentHistory_BOEComment" FromRole="BOECommentHistory" ToRole="BOEComment" />
 		  <NavigationProperty Name="ETIuser" Relationship="Self.FK_BOECommentHistory_ETIuser" FromRole="BOECommentHistory" ToRole="ETIuser" />
 		  <NavigationProperty Name="FieldLU" Relationship="Self.FK_BOECommentHistory_FieldLU" FromRole="BOECommentHistory" ToRole="FieldLU" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_BOECommentHistory_BOE" FromRole="BOECommentHistory" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="BOECustomFieldValueXREF">
 		  <Key>
@@ -7045,8 +7107,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
 		  <Property Name="BOEID" Type="Int32" Nullable="false" />
 		  <Property Name="CustomFieldValueID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_BOECustomFieldValueXREF_BOE" FromRole="BOECustomFieldValueXREF" ToRole="BOE" />
 		  <NavigationProperty Name="CustomFieldValue" Relationship="Self.FK_BOECustomFieldValueXREF_CustomFieldValue" FromRole="BOECustomFieldValueXREF" ToRole="CustomFieldValue" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_BOECustomFieldValueXREF_BOE" FromRole="BOECustomFieldValueXREF" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="BoeDatabaseVersion">
 		  <Key>
@@ -7123,11 +7185,11 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="CurrentBOEStateID" Type="Int32" Nullable="false" />
 		  <Property Name="UpdatedBOEStateID" Type="Int32" Nullable="false" />
 		  <Property Name="ChangedByETIUserID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_BOEStateHistory_BOE" FromRole="BOEStateHistory" ToRole="BOE" />
 		  <NavigationProperty Name="BOEStateLU" Relationship="Self.FK_BOEStateHistory_BOEStateLU_Current" FromRole="BOEStateHistory" ToRole="BOEStateLU" />
 		  <NavigationProperty Name="BOEStateLU1" Relationship="Self.FK_BOEStateHistory_BOEStateLU_Updated" FromRole="BOEStateHistory" ToRole="BOEStateLU" />
 		  <NavigationProperty Name="ETIuser" Relationship="Self.FK_BOEStateHistory_ETIuser" FromRole="BOEStateHistory" ToRole="ETIuser" />
 		  <NavigationProperty Name="FieldLU" Relationship="Self.FK_BOEStateHistory_FieldLU" FromRole="BOEStateHistory" ToRole="FieldLU" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_BOEStateHistory_BOE" FromRole="BOEStateHistory" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="BOEStateLU">
 		  <Key>
@@ -7135,41 +7197,9 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  </Key>
 		  <Property Name="BOEStateID" Type="Int32" Nullable="false" />
 		  <Property Name="BOEState" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-		  <NavigationProperty Name="BOEs" Relationship="Self.FK_BOE_BOEStateLU" FromRole="BOEStateLU" ToRole="BOE" />
 		  <NavigationProperty Name="BOEStateHistories" Relationship="Self.FK_BOEStateHistory_BOEStateLU_Current" FromRole="BOEStateLU" ToRole="BOEStateHistory" />
 		  <NavigationProperty Name="BOEStateHistories1" Relationship="Self.FK_BOEStateHistory_BOEStateLU_Updated" FromRole="BOEStateLU" ToRole="BOEStateHistory" />
-		</EntityType>
-		<EntityType Name="BOETaskElement">
-		  <Key>
-			<PropertyRef Name="BOETaskElementID" />
-		  </Key>
-		  <Property Name="BOETaskElementID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-		  <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
-		  <Property Name="TaskID" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
-		  <Property Name="TaskTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-		  <Property Name="TaskDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="TaskStartDate" Type="DateTime" Precision="0" />
-		  <Property Name="TaskEndDate" Type="DateTime" Precision="0" />
-		  <Property Name="MOQHoursEquation" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-		  <Property Name="MOQCostEquation" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-		  <Property Name="MOQText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="MOQTypeID" Type="Int32" />
-		  <Property Name="BOEID" Type="Int32" Nullable="false" />
-		  <Property Name="LaborTypeWarningFlag" Type="Boolean" Nullable="false" />
-		  <Property Name="IMS_ID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-		  <Property Name="TaskElementTypeID" Type="Int32" Nullable="false" />
-		  <Property Name="SortOrderID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_BOETaskElement_BOE" FromRole="BOETaskElement" ToRole="BOE" />
-		  <NavigationProperty Name="MOQTypeLU" Relationship="Self.FK_BOETaskElement_MOQTypeLU" FromRole="BOETaskElement" ToRole="MOQTypeLU" />
-		  <NavigationProperty Name="TaskElementTypeLU" Relationship="Self.FK_BOETaskElement_TaskElementTypeLU" FromRole="BOETaskElement" ToRole="TaskElementTypeLU" />
-		  <NavigationProperty Name="BOETaskElementCustomFieldValueXREFs" Relationship="Self.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" FromRole="BOETaskElement" ToRole="BOETaskElementCustomFieldValueXREF" />
-		  <NavigationProperty Name="BOETaskElementMetricDetailXREFs" Relationship="Self.FK_BOETaskElementMetricDetailXREF_BOETaskElement" FromRole="BOETaskElement" ToRole="BOETaskElementMetricDetailXREF" />
-		  <NavigationProperty Name="BOETaskElementWorkspaceVariableXREFs" Relationship="Self.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" FromRole="BOETaskElement" ToRole="BOETaskElementWorkspaceVariableXREF" />
-		  <NavigationProperty Name="OrdinaryVariables" Relationship="Self.FK_OrdinaryVariable_BOETaskElement" FromRole="BOETaskElement" ToRole="OrdinaryVariable" />
-		  <NavigationProperty Name="RteTemplateAnswers" Relationship="GenBOE.Models.FK_RteTemplateAnswer_TaskID" FromRole="BOETaskElement" ToRole="RteTemplateAnswer" />
-		  <NavigationProperty Name="BOELaborTypes" Relationship="GenBOE.Models.FK_BOELaborType_BOETaskElement" FromRole="BOETaskElement" ToRole="BOELaborType" />
-		  <NavigationProperty Name="MOQTypeSelections" Relationship="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A" FromRole="BOETaskElement" ToRole="MOQTypeSelection" />
-          <NavigationProperty Name="SkillMixes" Relationship="GenBOE.Models.FK_SkillMix_BOETaskElement" FromRole="BOETaskElement" ToRole="SkillMix" />
+          <NavigationProperty Name="BOEs" Relationship="GenBOE.Models.FK_BOE_BOEStateLU" FromRole="BOEStateLU" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="BOETaskElementCustomFieldValueXREF">
 		  <Key>
@@ -7179,8 +7209,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
 		  <Property Name="BOETaskElementID" Type="Int32" Nullable="false" />
 		  <Property Name="CustomFieldValueID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOETaskElement" Relationship="Self.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" FromRole="BOETaskElementCustomFieldValueXREF" ToRole="BOETaskElement" />
 		  <NavigationProperty Name="CustomFieldValue" Relationship="Self.FK_BOETaskElementCustomFieldValueXREF_CustomFieldValue" FromRole="BOETaskElementCustomFieldValueXREF" ToRole="CustomFieldValue" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" FromRole="BOETaskElementCustomFieldValueXREF" ToRole="BOETaskElement" />
 		</EntityType>
 		<EntityType Name="BOETaskElementMetricDetailXREF">
 		  <Key>
@@ -7190,8 +7220,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
 		  <Property Name="BOETaskElementID" Type="Int32" Nullable="false" />
 		  <Property Name="MetricDetailID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOETaskElement" Relationship="Self.FK_BOETaskElementMetricDetailXREF_BOETaskElement" FromRole="BOETaskElementMetricDetailXREF" ToRole="BOETaskElement" />
 		  <NavigationProperty Name="MetricDetail" Relationship="Self.FK_BOETaskElementMetricDetailXREF_Metric" FromRole="BOETaskElementMetricDetailXREF" ToRole="MetricDetail" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_BOETaskElementMetricDetailXREF_BOETaskElement" FromRole="BOETaskElementMetricDetailXREF" ToRole="BOETaskElement" />
 		</EntityType>
 		<EntityType Name="BOETaskElementWorkspaceVariableXREF">
 		  <Key>
@@ -7200,8 +7230,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="BOETaskWSVarID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
 		  <Property Name="BOETaskElementID" Type="Int32" Nullable="false" />
 		  <Property Name="WorkspaceVariableID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOETaskElement" Relationship="Self.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" FromRole="BOETaskElementWorkspaceVariableXREF" ToRole="BOETaskElement" />
 		  <NavigationProperty Name="WorkspaceVariable" Relationship="Self.FK_BOETaskElementWorkspaceVariableXREF_WorkspaceVariable" FromRole="BOETaskElementWorkspaceVariableXREF" ToRole="WorkspaceVariable" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" FromRole="BOETaskElementWorkspaceVariableXREF" ToRole="BOETaskElement" />
 		</EntityType>
 		<EntityType Name="BOEUserRole">
 		  <Key>
@@ -7212,9 +7242,9 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="ETIUserID" Type="Int32" Nullable="false" />
 		  <Property Name="RoleID" Type="Int32" Nullable="false" />
 		  <Property Name="BOEID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_BOEUserRole_BOE" FromRole="BOEUserRole" ToRole="BOE" />
 		  <NavigationProperty Name="ETIuser" Relationship="Self.FK_BOEUserRole_ETIuser" FromRole="BOEUserRole" ToRole="ETIuser" />
 		  <NavigationProperty Name="RoleLU" Relationship="Self.FK_BOEUserRole_RoleLU" FromRole="BOEUserRole" ToRole="RoleLU" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_BOEUserRole_BOE" FromRole="BOEUserRole" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="BOEUserRoleHistory">
 		  <Key>
@@ -7228,12 +7258,12 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="BOEID" Type="Int32" Nullable="false" />
 		  <Property Name="FieldID" Type="Int32" />
 		  <Property Name="ChangedByETIUserID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_BOEUserRoleHistory_BOE" FromRole="BOEUserRoleHistory" ToRole="BOE" />
 		  <NavigationProperty Name="ETIuser" Relationship="Self.FK_BOEUserRoleHistory_ETIuser" FromRole="BOEUserRoleHistory" ToRole="ETIuser" />
 		  <NavigationProperty Name="ETIuser1" Relationship="Self.FK_BOEUserRoleHistory_ETIuser_ChangedBy" FromRole="BOEUserRoleHistory" ToRole="ETIuser" />
 		  <NavigationProperty Name="ETIuser2" Relationship="Self.FK_BOEUserRoleHistory_ETIuser_Updated" FromRole="BOEUserRoleHistory" ToRole="ETIuser" />
 		  <NavigationProperty Name="FieldLU" Relationship="Self.FK_BOEUserRoleHistory_FieldLU" FromRole="BOEUserRoleHistory" ToRole="FieldLU" />
 		  <NavigationProperty Name="RoleLU" Relationship="Self.FK_BOEUserRoleHistory_RoleLU" FromRole="BOEUserRoleHistory" ToRole="RoleLU" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_BOEUserRoleHistory_BOE" FromRole="BOEUserRoleHistory" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="CLIN">
 		  <Key>
@@ -7436,7 +7466,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="MaterialTaskDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
 		  <Property Name="MaterialMOQText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
 		  <Property Name="BOEID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_MaterialTaskElement_BOE" FromRole="MaterialTaskElement" ToRole="BOE" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_MaterialTaskElement_BOE" FromRole="MaterialTaskElement" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="MetricDetail">
 		  <Key>
@@ -7496,8 +7526,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  </Key>
 		  <Property Name="MOQTypeID" Type="Int32" Nullable="false" />
 		  <Property Name="MOQType" Type="String" MaxLength="75" FixedLength="false" Unicode="false" Nullable="false" />
-		  <NavigationProperty Name="BOETaskElements" Relationship="Self.FK_BOETaskElement_MOQTypeLU" FromRole="MOQTypeLU" ToRole="BOETaskElement" />
-		  <NavigationProperty Name="MOQTypeSelections" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__32C688C3" FromRole="MOQTypeLU" ToRole="MOQTypeSelection" />
+          <NavigationProperty Name="BOETaskElements" Relationship="GenBOE.Models.FK_BOETaskElement_MOQTypeLU" FromRole="MOQTypeLU" ToRole="BOETaskElement" />
+          <NavigationProperty Name="MOQTypeSelections" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__2B0636C1" FromRole="MOQTypeLU" ToRole="MOQTypeSelection" />
 		</EntityType>
 		<EntityType Name="MSTTravelModeLU">
 		  <Key>
@@ -7630,8 +7660,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="TaskStartDate" Type="DateTime" Precision="0" />
 		  <Property Name="TaskEndDate" Type="DateTime" Precision="0" />
 		  <Property Name="SortOrderID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_ODCTaskElement_BOE" FromRole="ODCTaskElement" ToRole="BOE" />
 		  <NavigationProperty Name="ODCTypes" Relationship="Self.FK_ODCType_ODCTaskElement" FromRole="ODCTaskElement" ToRole="ODCType" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_ODCTaskElement_BOE" FromRole="ODCTaskElement" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="ODCType">
 		  <Key>
@@ -7665,11 +7695,11 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="ValueTypeID" Type="Int32" Nullable="false" />
 		  <Property Name="IsPercentage" Type="Boolean" />
 		  <Property Name="DefaultSize" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-		  <NavigationProperty Name="BOETaskElement" Relationship="Self.FK_OrdinaryVariable_BOETaskElement" FromRole="OrdinaryVariable" ToRole="BOETaskElement" />
 		  <NavigationProperty Name="SortByLU" Relationship="Self.FK_OrdinaryVariable_SortByLU" FromRole="OrdinaryVariable" ToRole="SortByLU" />
 		  <NavigationProperty Name="ValueTypeLU" Relationship="Self.FK_OrdinaryVariable_ValueTypeLU" FromRole="OrdinaryVariable" ToRole="ValueTypeLU" />
 		  <NavigationProperty Name="OrdinaryVariableSumVariableResourceTypeXREFs" Relationship="Self.FK_OrdinaryVariableSumVariableResourceTypeXREF_OrdinaryVariable" FromRole="OrdinaryVariable" ToRole="OrdinaryVariableSumVariableResourceTypeXREF" />
 		  <NavigationProperty Name="SumOfBOE_OrdinaryVariableXREF" Relationship="Self.FK_SumOfBOE_OrdinaryVariableXREF_OrdinaryVariable" FromRole="OrdinaryVariable" ToRole="SumOfBOE_OrdinaryVariableXREF" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_OrdinaryVariable_BOETaskElement" FromRole="OrdinaryVariable" ToRole="BOETaskElement" />
 		</EntityType>
 		<EntityType Name="OrdinaryVariableSumVariableResourceTypeXREF">
 		  <Key>
@@ -7964,10 +7994,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="CLINID" Type="Int32" />
 		  <Property Name="WBSID" Type="Int32" />
 		  <Property Name="BOEID" Type="Int32" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_SumOfBOE_OrdinaryVariableXREF_BOE" FromRole="SumOfBOE_OrdinaryVariableXREF" ToRole="BOE" />
 		  <NavigationProperty Name="CLIN" Relationship="Self.FK_SumOfBOE_OrdinaryVariableXREF_CLIN" FromRole="SumOfBOE_OrdinaryVariableXREF" ToRole="CLIN" />
 		  <NavigationProperty Name="OrdinaryVariable" Relationship="Self.FK_SumOfBOE_OrdinaryVariableXREF_OrdinaryVariable" FromRole="SumOfBOE_OrdinaryVariableXREF" ToRole="OrdinaryVariable" />
 		  <NavigationProperty Name="WorkBreakdownStructure" Relationship="Self.FK_SumOfBOE_OrdinaryVariableXREF_WorkBreakdownStructure" FromRole="SumOfBOE_OrdinaryVariableXREF" ToRole="WorkBreakdownStructure" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_SumOfBOE_OrdinaryVariableXREF_BOE" FromRole="SumOfBOE_OrdinaryVariableXREF" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="SumOfBOE_WorkspaceVariableXREF">
 		  <Key>
@@ -7978,10 +8008,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="CLINID" Type="Int32" />
 		  <Property Name="WBSID" Type="Int32" />
 		  <Property Name="BOEID" Type="Int32" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_SumOfBOE_WorkspaceVariableXREF_BOE" FromRole="SumOfBOE_WorkspaceVariableXREF" ToRole="BOE" />
 		  <NavigationProperty Name="CLIN" Relationship="Self.FK_SumOfBOE_WorkspaceVariableXREF_CLIN" FromRole="SumOfBOE_WorkspaceVariableXREF" ToRole="CLIN" />
 		  <NavigationProperty Name="WorkBreakdownStructure" Relationship="Self.FK_SumOfBOE_WorkspaceVariableXREF_WorkBreakdownStructure" FromRole="SumOfBOE_WorkspaceVariableXREF" ToRole="WorkBreakdownStructure" />
 		  <NavigationProperty Name="WorkspaceVariable" Relationship="Self.FK_SumOfBOE_WorkspaceVariableXREF_WorkspaceVariable" FromRole="SumOfBOE_WorkspaceVariableXREF" ToRole="WorkspaceVariable" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_SumOfBOE_WorkspaceVariableXREF_BOE" FromRole="SumOfBOE_WorkspaceVariableXREF" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="SumVariableResourceTypeLU">
 		  <Key>
@@ -8009,7 +8039,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  </Key>
 		  <Property Name="TaskElementTypeID" Type="Int32" Nullable="false" />
 		  <Property Name="TaskElementType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-		  <NavigationProperty Name="BOETaskElements" Relationship="Self.FK_BOETaskElement_TaskElementTypeLU" FromRole="TaskElementTypeLU" ToRole="BOETaskElement" />
+          <NavigationProperty Name="BOETaskElements" Relationship="GenBOE.Models.FK_BOETaskElement_TaskElementTypeLU" FromRole="TaskElementTypeLU" ToRole="BOETaskElement" />
 		</EntityType>
 		<EntityType Name="TravelEscalationRate">
 		  <Key>
@@ -8081,10 +8111,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="TaskStartDate" Type="DateTime" Precision="0" />
 		  <Property Name="TaskEndDate" Type="DateTime" Precision="0" />
 		  <Property Name="SortOrderID" Type="Int32" Nullable="false" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_TravelTripTaskElement_BOE" FromRole="TravelTripTaskElement" ToRole="BOE" />
 		  <NavigationProperty Name="MSTTravelTrips" Relationship="Self.FK_MSTTravelTrip_TravelTripTaskElement" FromRole="TravelTripTaskElement" ToRole="MSTTravelTrip" />
 		  <NavigationProperty Name="TravelTrips" Relationship="Self.FK_TravelTrip_TravelTripTaskElement" FromRole="TravelTripTaskElement" ToRole="TravelTrip" />
 		  <NavigationProperty Name="TravelTripTaskElementCustomFieldValueXREFs" Relationship="Self.FK_TravelTripTaskElementCustomFieldValueXREF_TravelTripTaskElement" FromRole="TravelTripTaskElement" ToRole="TravelTripTaskElementCustomFieldValueXREF" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_TravelTripTaskElement_BOE" FromRole="TravelTripTaskElement" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="TravelTripTaskElementCustomFieldValueXREF">
 		  <Key>
@@ -8140,9 +8170,9 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="WBSID" Type="Int32" />
 		  <Property Name="CLINID" Type="Int32" />
 		  <Property Name="BOEID" Type="Int32" />
-		  <NavigationProperty Name="BOE" Relationship="Self.FK_WBS_CLIN_BOE_XREF_BOE" FromRole="WBS_CLIN_BOE_XREF" ToRole="BOE" />
 		  <NavigationProperty Name="CLIN" Relationship="Self.FK_WBS_CLIN_BOE_XREF_CLIN" FromRole="WBS_CLIN_BOE_XREF" ToRole="CLIN" />
 		  <NavigationProperty Name="WorkBreakdownStructure" Relationship="Self.FK_WBS_CLIN_BOE_XREF_WorkBreakdownStructure" FromRole="WBS_CLIN_BOE_XREF" ToRole="WorkBreakdownStructure" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_WBS_CLIN_BOE_XREF_BOE" FromRole="WBS_CLIN_BOE_XREF" ToRole="BOE" />
 		</EntityType>
 		<EntityType Name="WorkBreakdownStructure">
 		  <Key>
@@ -8515,198 +8545,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="TargetWorkspaceID" Type="Int32" />
 		  <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
 		</EntityType>
-		<Association Name="FK_BOE_BOEStateLU">
-		  <End Role="BOEStateLU" Type="Self.BOEStateLU" Multiplicity="1" />
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOEStateLU">
-			  <PropertyRef Name="BOEStateID" />
-			</Principal>
-			<Dependent Role="BOE">
-			  <PropertyRef Name="BOEStateID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOEApproval_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="BOEApproval" Type="Self.BOEApproval" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="BOEApproval">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOEApprovalHistory_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="BOEApprovalHistory" Type="Self.BOEApprovalHistory" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="BOEApprovalHistory">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOEComment_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="BOEComment" Type="Self.BOEComment" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="BOEComment">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOECommentHistory_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="BOECommentHistory" Type="Self.BOECommentHistory" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="BOECommentHistory">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOECustomFieldValueXREF_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="BOECustomFieldValueXREF" Type="Self.BOECustomFieldValueXREF" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="BOECustomFieldValueXREF">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOEStateHistory_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="BOEStateHistory" Type="Self.BOEStateHistory" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="BOEStateHistory">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOETaskElement_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="BOETaskElement">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOEUserRole_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="BOEUserRole" Type="Self.BOEUserRole" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="BOEUserRole">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOEUserRoleHistory_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="BOEUserRoleHistory" Type="Self.BOEUserRoleHistory" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="BOEUserRoleHistory">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_MaterialTaskElement_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="MaterialTaskElement" Type="Self.MaterialTaskElement" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="MaterialTaskElement">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_ODCTaskElement_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="ODCTaskElement" Type="Self.ODCTaskElement" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="ODCTaskElement">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_SumOfBOE_OrdinaryVariableXREF_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="0..1" />
-		  <End Role="SumOfBOE_OrdinaryVariableXREF" Type="Self.SumOfBOE_OrdinaryVariableXREF" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="SumOfBOE_OrdinaryVariableXREF">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_SumOfBOE_WorkspaceVariableXREF_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="0..1" />
-		  <End Role="SumOfBOE_WorkspaceVariableXREF" Type="Self.SumOfBOE_WorkspaceVariableXREF" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="SumOfBOE_WorkspaceVariableXREF">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_TravelTripTaskElement_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
-		  <End Role="TravelTripTaskElement" Type="Self.TravelTripTaskElement" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="TravelTripTaskElement">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_WBS_CLIN_BOE_XREF_BOE">
-		  <End Role="BOE" Type="Self.BOE" Multiplicity="0..1" />
-		  <End Role="WBS_CLIN_BOE_XREF" Type="Self.WBS_CLIN_BOE_XREF" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="WBS_CLIN_BOE_XREF">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
 		<Association Name="FK_BOEApproval_ETIuser">
 		  <End Role="ETIuser" Type="Self.ETIuser" Multiplicity="1" />
 		  <End Role="BOEApproval" Type="Self.BOEApproval" Multiplicity="*" />
@@ -8896,78 +8734,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</Principal>
 			<Dependent Role="BOEStateHistory">
 			  <PropertyRef Name="FieldID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOETaskElement_MOQTypeLU">
-		  <End Role="MOQTypeLU" Type="Self.MOQTypeLU" Multiplicity="0..1" />
-		  <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="MOQTypeLU">
-			  <PropertyRef Name="MOQTypeID" />
-			</Principal>
-			<Dependent Role="BOETaskElement">
-			  <PropertyRef Name="MOQTypeID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOETaskElement_TaskElementTypeLU">
-		  <End Role="TaskElementTypeLU" Type="Self.TaskElementTypeLU" Multiplicity="1" />
-		  <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="TaskElementTypeLU">
-			  <PropertyRef Name="TaskElementTypeID" />
-			</Principal>
-			<Dependent Role="BOETaskElement">
-			  <PropertyRef Name="TaskElementTypeID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOETaskElementCustomFieldValueXREF_BOETaskElement">
-		  <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="1" />
-		  <End Role="BOETaskElementCustomFieldValueXREF" Type="Self.BOETaskElementCustomFieldValueXREF" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOETaskElement">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Principal>
-			<Dependent Role="BOETaskElementCustomFieldValueXREF">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOETaskElementMetricDetailXREF_BOETaskElement">
-		  <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="1" />
-		  <End Role="BOETaskElementMetricDetailXREF" Type="Self.BOETaskElementMetricDetailXREF" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOETaskElement">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Principal>
-			<Dependent Role="BOETaskElementMetricDetailXREF">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement">
-		  <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="1" />
-		  <End Role="BOETaskElementWorkspaceVariableXREF" Type="Self.BOETaskElementWorkspaceVariableXREF" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOETaskElement">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Principal>
-			<Dependent Role="BOETaskElementWorkspaceVariableXREF">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_OrdinaryVariable_BOETaskElement">
-		  <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="1" />
-		  <End Role="OrdinaryVariable" Type="Self.OrdinaryVariable" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOETaskElement">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Principal>
-			<Dependent Role="OrdinaryVariable">
-			  <PropertyRef Name="BOETaskElementID" />
 			</Dependent>
 		  </ReferentialConstraint>
 		</Association>
@@ -10088,7 +9854,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  </ReferentialConstraint>
 		</Association>
 		<EntityContainer Name="GenBoeEntities" annotation:LazyLoadingEnabled="true">
-		  <EntitySet Name="BOEs" EntityType="Self.BOE" />
 		  <EntitySet Name="BOEApprovals" EntityType="Self.BOEApproval" />
 		  <EntitySet Name="BOEApprovalHistories" EntityType="Self.BOEApprovalHistory" />
 		  <EntitySet Name="BOEComments" EntityType="Self.BOEComment" />
@@ -10101,7 +9866,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <EntitySet Name="BOEPotentialRoles" EntityType="Self.BOEPotentialRole" />
 		  <EntitySet Name="BOEStateHistories" EntityType="Self.BOEStateHistory" />
 		  <EntitySet Name="BOEStateLUs" EntityType="Self.BOEStateLU" />
-		  <EntitySet Name="BOETaskElements" EntityType="Self.BOETaskElement" />
 		  <EntitySet Name="BOETaskElementCustomFieldValueXREFs" EntityType="Self.BOETaskElementCustomFieldValueXREF" />
 		  <EntitySet Name="BOETaskElementMetricDetailXREFs" EntityType="Self.BOETaskElementMetricDetailXREF" />
 		  <EntitySet Name="BOETaskElementWorkspaceVariableXREFs" EntityType="Self.BOETaskElementWorkspaceVariableXREF" />
@@ -10200,70 +9964,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <EntitySet Name="UserAccessReports" EntityType="Self.UserAccessReport" />
 		  <EntitySet Name="UserLogs" EntityType="Self.UserLog" />
 		  <EntitySet Name="WorkspaceCopyMetrics" EntityType="Self.WorkspaceCopyMetric" />
-		  <AssociationSet Name="FK_BOE_BOEStateLU" Association="Self.FK_BOE_BOEStateLU">
-			<End Role="BOEStateLU" EntitySet="BOEStateLUs" />
-			<End Role="BOE" EntitySet="BOEs" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOEApproval_BOE" Association="Self.FK_BOEApproval_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="BOEApproval" EntitySet="BOEApprovals" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOEApprovalHistory_BOE" Association="Self.FK_BOEApprovalHistory_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="BOEApprovalHistory" EntitySet="BOEApprovalHistories" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOEComment_BOE" Association="Self.FK_BOEComment_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="BOEComment" EntitySet="BOEComments" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOECommentHistory_BOE" Association="Self.FK_BOECommentHistory_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="BOECommentHistory" EntitySet="BOECommentHistories" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOECustomFieldValueXREF_BOE" Association="Self.FK_BOECustomFieldValueXREF_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="BOECustomFieldValueXREF" EntitySet="BOECustomFieldValueXREFs" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOEStateHistory_BOE" Association="Self.FK_BOEStateHistory_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="BOEStateHistory" EntitySet="BOEStateHistories" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOETaskElement_BOE" Association="Self.FK_BOETaskElement_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOEUserRole_BOE" Association="Self.FK_BOEUserRole_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="BOEUserRole" EntitySet="BOEUserRoles" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOEUserRoleHistory_BOE" Association="Self.FK_BOEUserRoleHistory_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="BOEUserRoleHistory" EntitySet="BOEUserRoleHistories" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_MaterialTaskElement_BOE" Association="Self.FK_MaterialTaskElement_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="MaterialTaskElement" EntitySet="MaterialTaskElements" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_ODCTaskElement_BOE" Association="Self.FK_ODCTaskElement_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="ODCTaskElement" EntitySet="ODCTaskElements" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_SumOfBOE_OrdinaryVariableXREF_BOE" Association="Self.FK_SumOfBOE_OrdinaryVariableXREF_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="SumOfBOE_OrdinaryVariableXREF" EntitySet="SumOfBOE_OrdinaryVariableXREF" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_SumOfBOE_WorkspaceVariableXREF_BOE" Association="Self.FK_SumOfBOE_WorkspaceVariableXREF_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="SumOfBOE_WorkspaceVariableXREF" EntitySet="SumOfBOE_WorkspaceVariableXREF" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_TravelTripTaskElement_BOE" Association="Self.FK_TravelTripTaskElement_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="TravelTripTaskElement" EntitySet="TravelTripTaskElements" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_WBS_CLIN_BOE_XREF_BOE" Association="Self.FK_WBS_CLIN_BOE_XREF_BOE">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="WBS_CLIN_BOE_XREF" EntitySet="WBS_CLIN_BOE_XREF" />
-		  </AssociationSet>
 		  <AssociationSet Name="FK_BOEApproval_ETIuser" Association="Self.FK_BOEApproval_ETIuser">
 			<End Role="ETIuser" EntitySet="ETIusers" />
 			<End Role="BOEApproval" EntitySet="BOEApprovals" />
@@ -10327,30 +10027,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <AssociationSet Name="FK_BOEStateHistory_FieldLU" Association="Self.FK_BOEStateHistory_FieldLU">
 			<End Role="FieldLU" EntitySet="FieldLUs" />
 			<End Role="BOEStateHistory" EntitySet="BOEStateHistories" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOETaskElement_MOQTypeLU" Association="Self.FK_BOETaskElement_MOQTypeLU">
-			<End Role="MOQTypeLU" EntitySet="MOQTypeLUs" />
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOETaskElement_TaskElementTypeLU" Association="Self.FK_BOETaskElement_TaskElementTypeLU">
-			<End Role="TaskElementTypeLU" EntitySet="TaskElementTypeLUs" />
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" Association="Self.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement">
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-			<End Role="BOETaskElementCustomFieldValueXREF" EntitySet="BOETaskElementCustomFieldValueXREFs" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOETaskElementMetricDetailXREF_BOETaskElement" Association="Self.FK_BOETaskElementMetricDetailXREF_BOETaskElement">
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-			<End Role="BOETaskElementMetricDetailXREF" EntitySet="BOETaskElementMetricDetailXREFs" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" Association="Self.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement">
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-			<End Role="BOETaskElementWorkspaceVariableXREF" EntitySet="BOETaskElementWorkspaceVariableXREFs" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_OrdinaryVariable_BOETaskElement" Association="Self.FK_OrdinaryVariable_BOETaskElement">
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-			<End Role="OrdinaryVariable" EntitySet="OrdinaryVariables" />
 		  </AssociationSet>
 		  <AssociationSet Name="FK_BOETaskElementCustomFieldValueXREF_CustomFieldValue" Association="Self.FK_BOETaskElementCustomFieldValueXREF_CustomFieldValue">
 			<End Role="CustomFieldValue" EntitySet="CustomFieldValues" />
@@ -12179,10 +11855,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
 		  <EntitySet Name="Workspaces" EntityType="GenBOE.Models.Workspace" />
-		  <AssociationSet Name="FK_BOE_Workspace" Association="GenBOE.Models.FK_BOE_Workspace">
-			<End Role="Workspace" EntitySet="Workspaces" />
-			<End Role="BOE" EntitySet="BOEs" />
-		  </AssociationSet>
 		  <AssociationSet Name="FK_BOEPotentialRole_Workspace" Association="GenBOE.Models.FK_BOEPotentialRole_Workspace">
 			<End Role="Workspace" EntitySet="Workspaces" />
 			<End Role="BOEPotentialRole" EntitySet="BOEPotentialRoles" />
@@ -12364,14 +12036,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="Required" Mode="In" Type="Boolean" />
           </FunctionImport>
 		  <EntitySet Name="RteTemplateAnswers" EntityType="GenBOE.Models.RteTemplateAnswer" />
-		  <AssociationSet Name="FK_RteTemplateAnswer_BoeID" Association="GenBOE.Models.FK_RteTemplateAnswer_BoeID">
-			<End Role="BOE" EntitySet="BOEs" />
-			<End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswers" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK_RteTemplateAnswer_TaskID" Association="GenBOE.Models.FK_RteTemplateAnswer_TaskID">
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-			<End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswers" />
-		  </AssociationSet>
 		  <AssociationSet Name="FK_RteTemplateAnswer_QuestionID" Association="GenBOE.Models.FK_RteTemplateAnswer_QuestionID">
 			<End Role="RteTemplateQuestion" EntitySet="RteTemplateQuestions" />
 			<End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswers" />
@@ -12454,10 +12118,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			<End Role="BOELaborType" EntitySet="BOELaborTypes" />
 			<End Role="BOELaborSpread" EntitySet="BOELaborSpreads" />
 		  </AssociationSet>
-		  <AssociationSet Name="FK_BOELaborType_BOETaskElement" Association="GenBOE.Models.FK_BOELaborType_BOETaskElement">
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-			<End Role="BOELaborType" EntitySet="BOELaborTypes" />
-		  </AssociationSet>
 		  <AssociationSet Name="FK_BOELaborType_CLIN" Association="GenBOE.Models.FK_BOELaborType_CLIN">
 			<End Role="CLIN" EntitySet="CLINs" />
 			<End Role="BOELaborType" EntitySet="BOELaborTypes" />
@@ -12485,19 +12145,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <AssociationSet Name="FK_BOELaborTypeCustomFieldValueXREF_BOELaborType" Association="GenBOE.Models.FK_BOELaborTypeCustomFieldValueXREF_BOELaborType">
 			<End Role="BOELaborType" EntitySet="BOELaborTypes" />
 			<End Role="BOELaborTypeCustomFieldValueXREF" EntitySet="BOELaborTypeCustomFieldValueXREFs" />
-		  </AssociationSet>
-		  <EntitySet Name="MOQTypeSelections" EntityType="GenBOE.Models.MOQTypeSelection" />
-		  <AssociationSet Name="FK__MOQTypeSe__TaskI__31D2648A" Association="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A">
-			<End Role="BOETaskElement" EntitySet="BOETaskElements" />
-			<End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK__MOQTypeSe__MOQTy__32C688C3" Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__32C688C3">
-			<End Role="MOQTypeLU" EntitySet="MOQTypeLUs" />
-			<End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
-		  </AssociationSet>
-		  <AssociationSet Name="FK__MOQTypeSe__MOQTy__378B3DE0" Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0">
-			<End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
-			<End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableDatas" />
 		  </AssociationSet>
 		  <FunctionImport Name="copyWorkspace" ReturnType="Collection(Int32)">
             <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
@@ -12561,24 +12208,160 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <FunctionImport Name="getResourceInUseFlagByResourceListIDviaTableParameter" />
           <FunctionImport Name="insertWorkspaceResourceviaTableParameter" />
           <FunctionImport Name="updateWorkspaceResourceviaTableParameter" />
+          <FunctionImport Name="deleteSkillMix" ReturnType="Collection(Int32)">
+          <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="insertSkillMixviaTableParameter" />
+          <FunctionImport Name="deleteCommonDisclosureSkillMix" ReturnType="Collection(Int32)">
+          <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="insertCommonDisclosureSkillMixviaTableParameter" />
+          <EntitySet Name="MOQTypeSelectionTableDataResourceHours" EntityType="GenBOE.Models.MOQTypeSelectionTableDataResourceHour" />
+          <AssociationSet Name="FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId" Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId">
+            <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableDatas" />
+            <End Role="MOQTypeSelectionTableDataResourceHour" EntitySet="MOQTypeSelectionTableDataResourceHours" />
+          </AssociationSet>
+          <FunctionImport Name="deleteMOQTypeSelectionTableDataResourceHours" ReturnType="Collection(Int32)">
+          <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="insertMOQTypeSelectionTableDataResourceHoursviaTableParameter" />
+          <EntitySet Name="BOEs" EntityType="GenBOE.Models.BOE" />
+          <EntitySet Name="BOETaskElements" EntityType="GenBOE.Models.BOETaskElement" />
+          <EntitySet Name="CommonDisclosureSkillMixes" EntityType="GenBOE.Models.CommonDisclosureSkillMix" />
+          <EntitySet Name="MOQTypeSelections" EntityType="GenBOE.Models.MOQTypeSelection" />
           <EntitySet Name="SkillMixes" EntityType="GenBOE.Models.SkillMix" />
+          <AssociationSet Name="FK_BOE_BOEStateLU" Association="GenBOE.Models.FK_BOE_BOEStateLU">
+            <End Role="BOEStateLU" EntitySet="BOEStateLUs" />
+            <End Role="BOE" EntitySet="BOEs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOE_Workspace" Association="GenBOE.Models.FK_BOE_Workspace">
+            <End Role="Workspace" EntitySet="Workspaces" />
+            <End Role="BOE" EntitySet="BOEs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOEApproval_BOE" Association="GenBOE.Models.FK_BOEApproval_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="BOEApproval" EntitySet="BOEApprovals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOEApprovalHistory_BOE" Association="GenBOE.Models.FK_BOEApprovalHistory_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="BOEApprovalHistory" EntitySet="BOEApprovalHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOEComment_BOE" Association="GenBOE.Models.FK_BOEComment_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="BOEComment" EntitySet="BOEComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOECommentHistory_BOE" Association="GenBOE.Models.FK_BOECommentHistory_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="BOECommentHistory" EntitySet="BOECommentHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOECustomFieldValueXREF_BOE" Association="GenBOE.Models.FK_BOECustomFieldValueXREF_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="BOECustomFieldValueXREF" EntitySet="BOECustomFieldValueXREFs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOEStateHistory_BOE" Association="GenBOE.Models.FK_BOEStateHistory_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="BOEStateHistory" EntitySet="BOEStateHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOETaskElement_BOE" Association="GenBOE.Models.FK_BOETaskElement_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOEUserRole_BOE" Association="GenBOE.Models.FK_BOEUserRole_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="BOEUserRole" EntitySet="BOEUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOEUserRoleHistory_BOE" Association="GenBOE.Models.FK_BOEUserRoleHistory_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="BOEUserRoleHistory" EntitySet="BOEUserRoleHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommonDisclosureSkillMix_BOE" Association="GenBOE.Models.FK_CommonDisclosureSkillMix_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMixes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MaterialTaskElement_BOE" Association="GenBOE.Models.FK_MaterialTaskElement_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="MaterialTaskElement" EntitySet="MaterialTaskElements" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MOQTypeSelectionTableDataResourceHours_BOE" Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="MOQTypeSelectionTableDataResourceHour" EntitySet="MOQTypeSelectionTableDataResourceHours" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ODCTaskElement_BOE" Association="GenBOE.Models.FK_ODCTaskElement_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="ODCTaskElement" EntitySet="ODCTaskElements" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateAnswer_BoeID" Association="GenBOE.Models.FK_RteTemplateAnswer_BoeID">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswers" />
+          </AssociationSet>
           <AssociationSet Name="FK_SkillMix_BOE" Association="GenBOE.Models.FK_SkillMix_BOE">
             <End Role="BOE" EntitySet="BOEs" />
             <End Role="SkillMix" EntitySet="SkillMixes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SumOfBOE_OrdinaryVariableXREF_BOE" Association="GenBOE.Models.FK_SumOfBOE_OrdinaryVariableXREF_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="SumOfBOE_OrdinaryVariableXREF" EntitySet="SumOfBOE_OrdinaryVariableXREF" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SumOfBOE_WorkspaceVariableXREF_BOE" Association="GenBOE.Models.FK_SumOfBOE_WorkspaceVariableXREF_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="SumOfBOE_WorkspaceVariableXREF" EntitySet="SumOfBOE_WorkspaceVariableXREF" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TravelTripTaskElement_BOE" Association="GenBOE.Models.FK_TravelTripTaskElement_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="TravelTripTaskElement" EntitySet="TravelTripTaskElements" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WBS_CLIN_BOE_XREF_BOE" Association="GenBOE.Models.FK_WBS_CLIN_BOE_XREF_BOE">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="WBS_CLIN_BOE_XREF" EntitySet="WBS_CLIN_BOE_XREF" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOELaborType_BOETaskElement" Association="GenBOE.Models.FK_BOELaborType_BOETaskElement">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="BOELaborType" EntitySet="BOELaborTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MOQTypeSe__TaskI__2A121288" Association="GenBOE.Models.FK__MOQTypeSe__TaskI__2A121288">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOETaskElement_MOQTypeLU" Association="GenBOE.Models.FK_BOETaskElement_MOQTypeLU">
+            <End Role="MOQTypeLU" EntitySet="MOQTypeLUs" />
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOETaskElement_TaskElementTypeLU" Association="GenBOE.Models.FK_BOETaskElement_TaskElementTypeLU">
+            <End Role="TaskElementTypeLU" EntitySet="TaskElementTypeLUs" />
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" Association="GenBOE.Models.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="BOETaskElementCustomFieldValueXREF" EntitySet="BOETaskElementCustomFieldValueXREFs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOETaskElementMetricDetailXREF_BOETaskElement" Association="GenBOE.Models.FK_BOETaskElementMetricDetailXREF_BOETaskElement">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="BOETaskElementMetricDetailXREF" EntitySet="BOETaskElementMetricDetailXREFs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" Association="GenBOE.Models.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="BOETaskElementWorkspaceVariableXREF" EntitySet="BOETaskElementWorkspaceVariableXREFs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommonDisclosureSkillMix_BOETaskElement" Association="GenBOE.Models.FK_CommonDisclosureSkillMix_BOETaskElement">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMixes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement" Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="MOQTypeSelectionTableDataResourceHour" EntitySet="MOQTypeSelectionTableDataResourceHours" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrdinaryVariable_BOETaskElement" Association="GenBOE.Models.FK_OrdinaryVariable_BOETaskElement">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="OrdinaryVariable" EntitySet="OrdinaryVariables" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateAnswer_TaskID" Association="GenBOE.Models.FK_RteTemplateAnswer_TaskID">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswers" />
           </AssociationSet>
           <AssociationSet Name="FK_SkillMix_BOETaskElement" Association="GenBOE.Models.FK_SkillMix_BOETaskElement">
             <End Role="BOETaskElement" EntitySet="BOETaskElements" />
             <End Role="SkillMix" EntitySet="SkillMixes" />
           </AssociationSet>
-          <AssociationSet Name="FK_SkillMix_MOQTypeSelection" Association="GenBOE.Models.FK_SkillMix_MOQTypeSelection">
-            <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
-            <End Role="SkillMix" EntitySet="SkillMixes" />
-          </AssociationSet>
-          <FunctionImport Name="deleteSkillMix" ReturnType="Collection(Int32)">
-          <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="insertSkillMixviaTableParameter" />
-          <EntitySet Name="CommonDisclosureSkillMixes" EntityType="GenBOE.Models.CommonDisclosureSkillMix" />
           <AssociationSet Name="FK_CommonDisclosureSkillMix_MOQTypeSelection" Association="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection">
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
             <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMixes" />
@@ -12587,10 +12370,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <End Role="SkillMix" EntitySet="SkillMixes" />
             <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMixes" />
           </AssociationSet>
-          <FunctionImport Name="deleteCommonDisclosureSkillMix" ReturnType="Collection(Int32)">
-            <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="insertCommonDisclosureSkillMixviaTableParameter" />
+          <AssociationSet Name="FK__MOQTypeSe__MOQTy__2B0636C1" Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2B0636C1">
+            <End Role="MOQTypeLU" EntitySet="MOQTypeLUs" />
+            <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MOQTypeSe__MOQTy__2FCAEBDE" Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2FCAEBDE">
+            <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
+            <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableDatas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SkillMix_MOQTypeSelection" Association="GenBOE.Models.FK_SkillMix_MOQTypeSelection">
+            <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
+            <End Role="SkillMix" EntitySet="SkillMixes" />
+          </AssociationSet>
 		</EntityContainer>
 		<ComplexType Name="getBOEForFindReplace_Result">
 		  <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -13082,7 +12873,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="RteSizeLimit" Type="Int32" />
 		  <Property Name="WorkspaceCreationDate" Type="DateTime" Precision="7" />
 		  <Property Name="RevisedSubmittalDate" Type="DateTime" Precision="7" />
-		  <NavigationProperty Name="BOEs" Relationship="GenBOE.Models.FK_BOE_Workspace" FromRole="Workspace" ToRole="BOE" />
 		  <NavigationProperty Name="BOEPotentialRoles" Relationship="GenBOE.Models.FK_BOEPotentialRole_Workspace" FromRole="Workspace" ToRole="BOEPotentialRole" />
 		  <NavigationProperty Name="CLINs" Relationship="GenBOE.Models.FK_CLIN_Workspace" FromRole="Workspace" ToRole="CLIN" />
 		  <NavigationProperty Name="CustomFields" Relationship="GenBOE.Models.FK_CustomField_Workspace" FromRole="Workspace" ToRole="CustomField" />
@@ -13122,19 +12912,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="TemplateBoe" Type="Boolean" Nullable="false" />
 		  <Property Name="EnableSAPConnection" Type="Boolean" Nullable="false" />
 		  <Property Name="CurrentPTMWorkspace" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="BOEs" Relationship="GenBOE.Models.FK_BOE_Workspace" FromRole="Workspace" ToRole="BOE" />
 		</EntityType>
-		<Association Name="FK_BOE_Workspace">
-		  <End Type="GenBOE.Models.Workspace" Role="Workspace" Multiplicity="1" />
-		  <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="Workspace">
-			  <PropertyRef Name="WorkspaceID" />
-			</Principal>
-			<Dependent Role="BOE">
-			  <PropertyRef Name="WorkspaceID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
 		<Association Name="FK_BOEPotentialRole_Workspace">
 		  <End Type="GenBOE.Models.Workspace" Role="Workspace" Multiplicity="1" />
 		  <End Type="GenBOE.Models.BOEPotentialRole" Role="BOEPotentialRole" Multiplicity="*" />
@@ -13702,35 +13481,11 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="BOEID" Type="Int32" Nullable="false" />
 		  <Property Name="TaskID" Type="Int32" />
 		  <Property Name="Text" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_RteTemplateAnswer_BoeID" FromRole="RteTemplateAnswer" ToRole="BOE" />
-		  <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_RteTemplateAnswer_TaskID" FromRole="RteTemplateAnswer" ToRole="BOETaskElement" />
 		  <NavigationProperty Name="RteTemplateQuestion" Relationship="GenBOE.Models.FK_RteTemplateAnswer_QuestionID" FromRole="RteTemplateAnswer" ToRole="RteTemplateQuestion" />
 		  <Property Name="RteTemplateSourceId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_RteTemplateAnswer_BoeID" FromRole="RteTemplateAnswer" ToRole="BOE" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_RteTemplateAnswer_TaskID" FromRole="RteTemplateAnswer" ToRole="BOETaskElement" />
 		</EntityType>
-		<Association Name="FK_RteTemplateAnswer_BoeID">
-		  <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
-		  <End Type="GenBOE.Models.RteTemplateAnswer" Role="RteTemplateAnswer" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOE">
-			  <PropertyRef Name="BOEID" />
-			</Principal>
-			<Dependent Role="RteTemplateAnswer">
-			  <PropertyRef Name="BOEID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_RteTemplateAnswer_TaskID">
-		  <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="0..1" />
-		  <End Type="GenBOE.Models.RteTemplateAnswer" Role="RteTemplateAnswer" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOETaskElement">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Principal>
-			<Dependent Role="RteTemplateAnswer">
-			  <PropertyRef Name="TaskID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
 		<Association Name="FK_RteTemplateAnswer_QuestionID">
 		  <End Type="GenBOE.Models.RteTemplateQuestion" Role="RteTemplateQuestion" Multiplicity="1" />
 		  <End Type="GenBOE.Models.RteTemplateAnswer" Role="RteTemplateAnswer" Multiplicity="*" />
@@ -13832,8 +13587,9 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="TotalWbsHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
 		  <Property Name="AdditionalQueryFilters" Type="String" MaxLength="2500" FixedLength="false" Unicode="false" />
 		  <Property Name="TotalRelevantHoursAfterQueryFilters" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
-		  <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelectionTableData" ToRole="MOQTypeSelection" />
 		  <NavigationProperty Name="MoqTypeTableCustomFieldValueXREFs" Relationship="GenBOE.Models.FK__MoqTypeTa__MoqTy__4F44628E" FromRole="MOQTypeSelectionTableData" ToRole="MoqTypeTableCustomFieldValueXREF" />
+          <NavigationProperty Name="MOQTypeSelectionTableDataResourceHours" Relationship="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId" FromRole="MOQTypeSelectionTableData" ToRole="MOQTypeSelectionTableDataResourceHour" />
+          <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__2FCAEBDE" FromRole="MOQTypeSelectionTableData" ToRole="MOQTypeSelection" />
 		</EntityType>
 		<EntityType Name="BOELaborType">
 		  <Key>
@@ -13857,7 +13613,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Name="CanOffload" Type="Boolean" />
 		  <Property Name="LaborSortId" Type="Int32" Nullable="false" />
 		  <NavigationProperty Name="BOELaborSpreads" Relationship="GenBOE.Models.FK_BOELaborSpread_BOELaborType" FromRole="BOELaborType" ToRole="BOELaborSpread" />
-		  <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_BOELaborType_BOETaskElement" FromRole="BOELaborType" ToRole="BOETaskElement" />
 		  <NavigationProperty Name="CLIN" Relationship="GenBOE.Models.FK_BOELaborType_CLIN" FromRole="BOELaborType" ToRole="CLIN" />
 		  <NavigationProperty Name="PerformingOrganization" Relationship="GenBOE.Models.FK_BOELaborType_PerformingOrganization" FromRole="BOELaborType" ToRole="PerformingOrganization" />
 		  <NavigationProperty Name="Resource" Relationship="GenBOE.Models.FK_BOELaborType_Resource" FromRole="BOELaborType" ToRole="Resource" />
@@ -13867,6 +13622,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <NavigationProperty Name="BOELaborTypeCustomFieldValueXREFs" Relationship="GenBOE.Models.FK_BOELaborTypeCustomFieldValueXREF_BOELaborType" FromRole="BOELaborType" ToRole="BOELaborTypeCustomFieldValueXREF" />
 		  <Property Name="BRCResourceID" Type="Int32" />
 		  <NavigationProperty Name="Resource1" Relationship="GenBOE.Models.FK_BOELaborType_BRCResource" FromRole="BOELaborType" ToRole="Resource" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_BOELaborType_BOETaskElement" FromRole="BOELaborType" ToRole="BOETaskElement" />
 		</EntityType>
 		<Association Name="FK_BOELaborSpread_BOELaborType">
 		  <End Type="GenBOE.Models.BOELaborType" Role="BOELaborType" Multiplicity="1" />
@@ -13877,18 +13633,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</Principal>
 			<Dependent Role="BOELaborSpread">
 			  <PropertyRef Name="BOELaborTypeID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK_BOELaborType_BOETaskElement">
-		  <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
-		  <End Type="GenBOE.Models.BOELaborType" Role="BOELaborType" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOETaskElement">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Principal>
-			<Dependent Role="BOELaborType">
-			  <PropertyRef Name="BOETaskElementID" />
 			</Dependent>
 		  </ReferentialConstraint>
 		</Association>
@@ -13973,66 +13717,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</Principal>
 			<Dependent Role="BOELaborTypeCustomFieldValueXREF">
 			  <PropertyRef Name="BOELaborTypeID" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<EntityType Name="MOQTypeSelection">
-		  <Key>
-			<PropertyRef Name="MOQTypeSelectionId" />
-		  </Key>
-		  <Property Name="MOQTypeSelectionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-		  <Property Name="TaskId" Type="Int32" Nullable="false" />
-		  <Property Name="MOQTypeSelection1" Type="Int32" Nullable="false" />
-		  <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
-		  <Property Name="Order" Type="Int32" Nullable="false" />
-		  <Property Name="HoursDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="SubjectMatterExpert" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="HoursLogicAndAssumptions" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="DurationLogicAndAssumptions" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="EstimateTasks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="Rationale" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="SkillMix" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-		  <Property Name="CERName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-		  <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A" FromRole="MOQTypeSelection" ToRole="BOETaskElement" />
-		  <NavigationProperty Name="MOQTypeLU" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__32C688C3" FromRole="MOQTypeSelection" ToRole="MOQTypeLU" />
-		  <NavigationProperty Name="MOQTypeSelectionTableDatas" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelection" ToRole="MOQTypeSelectionTableData" />
-		  <Property Name="HistoricalReferenceExplanation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="SkillMixes" Relationship="GenBOE.Models.FK_SkillMix_MOQTypeSelection" FromRole="MOQTypeSelection" ToRole="SkillMix" />
-          <NavigationProperty Name="CommonDisclosureSkillMixes" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection" FromRole="MOQTypeSelection" ToRole="CommonDisclosureSkillMix" />
-		</EntityType>
-		<Association Name="FK__MOQTypeSe__TaskI__31D2648A">
-		  <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
-		  <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="BOETaskElement">
-			  <PropertyRef Name="BOETaskElementID" />
-			</Principal>
-			<Dependent Role="MOQTypeSelection">
-			  <PropertyRef Name="TaskId" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK__MOQTypeSe__MOQTy__32C688C3">
-		  <End Type="GenBOE.Models.MOQTypeLU" Role="MOQTypeLU" Multiplicity="1" />
-		  <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="MOQTypeLU">
-			  <PropertyRef Name="MOQTypeID" />
-			</Principal>
-			<Dependent Role="MOQTypeSelection">
-			  <PropertyRef Name="MOQTypeSelection1" />
-			</Dependent>
-		  </ReferentialConstraint>
-		</Association>
-		<Association Name="FK__MOQTypeSe__MOQTy__378B3DE0">
-		  <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="1" />
-		  <End Type="GenBOE.Models.MOQTypeSelectionTableData" Role="MOQTypeSelectionTableData" Multiplicity="*" />
-		  <ReferentialConstraint>
-			<Principal Role="MOQTypeSelection">
-			  <PropertyRef Name="MOQTypeSelectionId" />
-			</Principal>
-			<Dependent Role="MOQTypeSelectionTableData">
-			  <PropertyRef Name="MOQTypeSelectionId" />
 			</Dependent>
 		  </ReferentialConstraint>
 		</Association>
@@ -14197,63 +13881,106 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</Dependent>
 		  </ReferentialConstraint>
 		</Association>
-        <EntityType Name="SkillMix">
+        <EntityType Name="MOQTypeSelectionTableDataResourceHour">
           <Key>
-            <PropertyRef Name="SkillMixID" />
+            <PropertyRef Name="MOQTypeSelectionTableDataResourceHoursId" />
           </Key>
-          <Property Name="SkillMixID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Rationale" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Included" Type="Boolean" />
-          <Property Name="ProposedHours" Type="Decimal" Precision="11" Scale="2" />
-          <Property Name="HistoricalHours" Type="Decimal" Precision="11" Scale="2" />
-          <Property Name="BOESkillMix" Type="Decimal" Precision="5" Scale="2" />
-          <Property Name="LaborSkillMix" Type="Decimal" Precision="5" Scale="2" />
-          <Property Name="ResourceOld" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="ResourceNew" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="BOEID" Type="Int32" />
-          <Property Name="BOETaskElementID" Type="Int32" />
-          <Property Name="MOQTypeSelectionID" Type="Int32" />
-          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_SkillMix_BOE" FromRole="SkillMix" ToRole="BOE" />
-          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_SkillMix_BOETaskElement" FromRole="SkillMix" ToRole="BOETaskElement" />
-          <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK_SkillMix_MOQTypeSelection" FromRole="SkillMix" ToRole="MOQTypeSelection" />
-          <NavigationProperty Name="CommonDisclosureSkillMixes" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_SkillMixID" FromRole="SkillMix" ToRole="CommonDisclosureSkillMix" />
+          <Property Name="MOQTypeSelectionTableDataResourceHoursId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ResourceName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="WbsHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
+          <Property Name="TotalHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
+          <Property Name="MOQTypeSelectionTableDataId" Type="Int32" Nullable="false" />
+          <Property Name="BOETaskElementID" Type="Int32" Nullable="false" />
+          <Property Name="BOEID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="MOQTypeSelectionTableData" Relationship="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId" FromRole="MOQTypeSelectionTableDataResourceHour" ToRole="MOQTypeSelectionTableData" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOE" FromRole="MOQTypeSelectionTableDataResourceHour" ToRole="BOE" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement" FromRole="MOQTypeSelectionTableDataResourceHour" ToRole="BOETaskElement" />
         </EntityType>
-        <Association Name="FK_SkillMix_BOE">
-          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="0..1" />
-          <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="*" />
+        <Association Name="FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId">
+          <End Type="GenBOE.Models.MOQTypeSelectionTableData" Role="MOQTypeSelectionTableData" Multiplicity="1" />
+          <End Type="GenBOE.Models.MOQTypeSelectionTableDataResourceHour" Role="MOQTypeSelectionTableDataResourceHour" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="BOE">
-              <PropertyRef Name="BOEID" />
+            <Principal Role="MOQTypeSelectionTableData">
+              <PropertyRef Name="MOQTypeSelectionTableDataId" />
             </Principal>
-            <Dependent Role="SkillMix">
-              <PropertyRef Name="BOEID" />
+            <Dependent Role="MOQTypeSelectionTableDataResourceHour">
+              <PropertyRef Name="MOQTypeSelectionTableDataId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_SkillMix_BOETaskElement">
-          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="0..1" />
-          <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="BOETaskElement">
-              <PropertyRef Name="BOETaskElementID" />
-            </Principal>
-            <Dependent Role="SkillMix">
-              <PropertyRef Name="BOETaskElementID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SkillMix_MOQTypeSelection">
-          <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="0..1" />
-          <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MOQTypeSelection">
-              <PropertyRef Name="MOQTypeSelectionId" />
-            </Principal>
-            <Dependent Role="SkillMix">
-              <PropertyRef Name="MOQTypeSelectionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
+        <EntityType Name="BOE">
+          <Key>
+            <PropertyRef Name="BOEID" />
+          </Key>
+          <Property Name="BOEID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="BOEStateID" Type="Int32" Nullable="false" />
+          <Property Name="BOEStartDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="BOEEndDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="BOEDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DataSource" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="WorkspaceID" Type="Int32" Nullable="false" />
+          <Property Name="MetricDisclosureAcknowledge" Type="Boolean" Nullable="false" />
+          <Property Name="NumAuthorReassigned" Type="Int32" Nullable="false" />
+          <Property Name="IsMaterial" Type="Boolean" Nullable="false" />
+          <Property Name="BOETitle" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IsMultiClinWbs" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="BOEStateLU" Relationship="GenBOE.Models.FK_BOE_BOEStateLU" FromRole="BOE" ToRole="BOEStateLU" />
+          <NavigationProperty Name="Workspace" Relationship="GenBOE.Models.FK_BOE_Workspace" FromRole="BOE" ToRole="Workspace" />
+          <NavigationProperty Name="BOEApprovals" Relationship="GenBOE.Models.FK_BOEApproval_BOE" FromRole="BOE" ToRole="BOEApproval" />
+          <NavigationProperty Name="BOEApprovalHistories" Relationship="GenBOE.Models.FK_BOEApprovalHistory_BOE" FromRole="BOE" ToRole="BOEApprovalHistory" />
+          <NavigationProperty Name="BOEComments" Relationship="GenBOE.Models.FK_BOEComment_BOE" FromRole="BOE" ToRole="BOEComment" />
+          <NavigationProperty Name="BOECommentHistories" Relationship="GenBOE.Models.FK_BOECommentHistory_BOE" FromRole="BOE" ToRole="BOECommentHistory" />
+          <NavigationProperty Name="BOECustomFieldValueXREFs" Relationship="GenBOE.Models.FK_BOECustomFieldValueXREF_BOE" FromRole="BOE" ToRole="BOECustomFieldValueXREF" />
+          <NavigationProperty Name="BOEStateHistories" Relationship="GenBOE.Models.FK_BOEStateHistory_BOE" FromRole="BOE" ToRole="BOEStateHistory" />
+          <NavigationProperty Name="BOETaskElements" Relationship="GenBOE.Models.FK_BOETaskElement_BOE" FromRole="BOE" ToRole="BOETaskElement" />
+          <NavigationProperty Name="BOEUserRoles" Relationship="GenBOE.Models.FK_BOEUserRole_BOE" FromRole="BOE" ToRole="BOEUserRole" />
+          <NavigationProperty Name="BOEUserRoleHistories" Relationship="GenBOE.Models.FK_BOEUserRoleHistory_BOE" FromRole="BOE" ToRole="BOEUserRoleHistory" />
+          <NavigationProperty Name="CommonDisclosureSkillMixes" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_BOE" FromRole="BOE" ToRole="CommonDisclosureSkillMix" />
+          <NavigationProperty Name="MaterialTaskElements" Relationship="GenBOE.Models.FK_MaterialTaskElement_BOE" FromRole="BOE" ToRole="MaterialTaskElement" />
+          <NavigationProperty Name="MOQTypeSelectionTableDataResourceHours" Relationship="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOE" FromRole="BOE" ToRole="MOQTypeSelectionTableDataResourceHour" />
+          <NavigationProperty Name="ODCTaskElements" Relationship="GenBOE.Models.FK_ODCTaskElement_BOE" FromRole="BOE" ToRole="ODCTaskElement" />
+          <NavigationProperty Name="RteTemplateAnswers" Relationship="GenBOE.Models.FK_RteTemplateAnswer_BoeID" FromRole="BOE" ToRole="RteTemplateAnswer" />
+          <NavigationProperty Name="SkillMixes" Relationship="GenBOE.Models.FK_SkillMix_BOE" FromRole="BOE" ToRole="SkillMix" />
+          <NavigationProperty Name="SumOfBOE_OrdinaryVariableXREF" Relationship="GenBOE.Models.FK_SumOfBOE_OrdinaryVariableXREF_BOE" FromRole="BOE" ToRole="SumOfBOE_OrdinaryVariableXREF" />
+          <NavigationProperty Name="SumOfBOE_WorkspaceVariableXREF" Relationship="GenBOE.Models.FK_SumOfBOE_WorkspaceVariableXREF_BOE" FromRole="BOE" ToRole="SumOfBOE_WorkspaceVariableXREF" />
+          <NavigationProperty Name="TravelTripTaskElements" Relationship="GenBOE.Models.FK_TravelTripTaskElement_BOE" FromRole="BOE" ToRole="TravelTripTaskElement" />
+          <NavigationProperty Name="WBS_CLIN_BOE_XREF" Relationship="GenBOE.Models.FK_WBS_CLIN_BOE_XREF_BOE" FromRole="BOE" ToRole="WBS_CLIN_BOE_XREF" />
+        </EntityType>
+        <EntityType Name="BOETaskElement">
+          <Key>
+            <PropertyRef Name="BOETaskElementID" />
+          </Key>
+          <Property Name="BOETaskElementID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="TaskID" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Name="TaskTitle" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TaskDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="TaskStartDate" Type="DateTime" Precision="0" />
+          <Property Name="TaskEndDate" Type="DateTime" Precision="0" />
+          <Property Name="MOQHoursEquation" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="MOQCostEquation" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MOQText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="MOQTypeID" Type="Int32" />
+          <Property Name="BOEID" Type="Int32" Nullable="false" />
+          <Property Name="LaborTypeWarningFlag" Type="Boolean" Nullable="false" />
+          <Property Name="IMS_ID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="TaskElementTypeID" Type="Int32" Nullable="false" />
+          <Property Name="SortOrderID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_BOETaskElement_BOE" FromRole="BOETaskElement" ToRole="BOE" />
+          <NavigationProperty Name="BOELaborTypes" Relationship="GenBOE.Models.FK_BOELaborType_BOETaskElement" FromRole="BOETaskElement" ToRole="BOELaborType" />
+          <NavigationProperty Name="MOQTypeSelections" Relationship="GenBOE.Models.FK__MOQTypeSe__TaskI__2A121288" FromRole="BOETaskElement" ToRole="MOQTypeSelection" />
+          <NavigationProperty Name="MOQTypeLU" Relationship="GenBOE.Models.FK_BOETaskElement_MOQTypeLU" FromRole="BOETaskElement" ToRole="MOQTypeLU" />
+          <NavigationProperty Name="TaskElementTypeLU" Relationship="GenBOE.Models.FK_BOETaskElement_TaskElementTypeLU" FromRole="BOETaskElement" ToRole="TaskElementTypeLU" />
+          <NavigationProperty Name="BOETaskElementCustomFieldValueXREFs" Relationship="GenBOE.Models.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" FromRole="BOETaskElement" ToRole="BOETaskElementCustomFieldValueXREF" />
+          <NavigationProperty Name="BOETaskElementMetricDetailXREFs" Relationship="GenBOE.Models.FK_BOETaskElementMetricDetailXREF_BOETaskElement" FromRole="BOETaskElement" ToRole="BOETaskElementMetricDetailXREF" />
+          <NavigationProperty Name="BOETaskElementWorkspaceVariableXREFs" Relationship="GenBOE.Models.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" FromRole="BOETaskElement" ToRole="BOETaskElementWorkspaceVariableXREF" />
+          <NavigationProperty Name="CommonDisclosureSkillMixes" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_BOETaskElement" FromRole="BOETaskElement" ToRole="CommonDisclosureSkillMix" />
+          <NavigationProperty Name="MOQTypeSelectionTableDataResourceHours" Relationship="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement" FromRole="BOETaskElement" ToRole="MOQTypeSelectionTableDataResourceHour" />
+          <NavigationProperty Name="OrdinaryVariables" Relationship="GenBOE.Models.FK_OrdinaryVariable_BOETaskElement" FromRole="BOETaskElement" ToRole="OrdinaryVariable" />
+          <NavigationProperty Name="RteTemplateAnswers" Relationship="GenBOE.Models.FK_RteTemplateAnswer_TaskID" FromRole="BOETaskElement" ToRole="RteTemplateAnswer" />
+          <NavigationProperty Name="SkillMixes" Relationship="GenBOE.Models.FK_SkillMix_BOETaskElement" FromRole="BOETaskElement" ToRole="SkillMix" />
+        </EntityType>
         <EntityType Name="CommonDisclosureSkillMix">
           <Key>
             <PropertyRef Name="CommonDisclosureSkillMixID" />
@@ -14265,13 +13992,458 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="HistoricalHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
           <Property Name="BOESkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
           <Property Name="LaborSkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
-          <Property Name="ResourceID" Type="Int32" Nullable="false" />
-          <Property Name="BusinessResourceID" Type="Int32" Nullable="false" />
+          <Property Name="ResourceID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="BusinessResourceID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="SkillMixID" Type="Int32" Nullable="false" />
+          <Property Name="BOEID" Type="Int32" Nullable="false" />
+          <Property Name="BOETaskElementID" Type="Int32" Nullable="false" />
           <Property Name="MOQTypeSelectionID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_BOE" FromRole="CommonDisclosureSkillMix" ToRole="BOE" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_BOETaskElement" FromRole="CommonDisclosureSkillMix" ToRole="BOETaskElement" />
           <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection" FromRole="CommonDisclosureSkillMix" ToRole="MOQTypeSelection" />
           <NavigationProperty Name="SkillMix" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_SkillMixID" FromRole="CommonDisclosureSkillMix" ToRole="SkillMix" />
         </EntityType>
+        <EntityType Name="MOQTypeSelection">
+          <Key>
+            <PropertyRef Name="MOQTypeSelectionId" />
+          </Key>
+          <Property Name="MOQTypeSelectionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TaskId" Type="Int32" Nullable="false" />
+          <Property Name="MOQTypeSelection1" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Order" Type="Int32" Nullable="false" />
+          <Property Name="CERName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="HoursDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="SubjectMatterExpert" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="HoursLogicAndAssumptions" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DurationLogicAndAssumptions" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="EstimateTasks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Rationale" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="SkillMix" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="HistoricalReferenceExplanation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK__MOQTypeSe__TaskI__2A121288" FromRole="MOQTypeSelection" ToRole="BOETaskElement" />
+          <NavigationProperty Name="CommonDisclosureSkillMixes" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection" FromRole="MOQTypeSelection" ToRole="CommonDisclosureSkillMix" />
+          <NavigationProperty Name="MOQTypeLU" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__2B0636C1" FromRole="MOQTypeSelection" ToRole="MOQTypeLU" />
+          <NavigationProperty Name="MOQTypeSelectionTableDatas" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__2FCAEBDE" FromRole="MOQTypeSelection" ToRole="MOQTypeSelectionTableData" />
+          <NavigationProperty Name="SkillMixes" Relationship="GenBOE.Models.FK_SkillMix_MOQTypeSelection" FromRole="MOQTypeSelection" ToRole="SkillMix" />
+        </EntityType>
+        <EntityType Name="SkillMix">
+          <Key>
+            <PropertyRef Name="SkillMixID" />
+          </Key>
+          <Property Name="SkillMixID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Rationale" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Included" Type="Boolean" />
+          <Property Name="ProposedHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
+          <Property Name="HistoricalHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
+          <Property Name="BOESkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
+          <Property Name="LaborSkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
+          <Property Name="ResourceOld" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ResourceNew" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="BOEID" Type="Int32" Nullable="false" />
+          <Property Name="BOETaskElementID" Type="Int32" Nullable="false" />
+          <Property Name="MOQTypeSelectionID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_SkillMix_BOE" FromRole="SkillMix" ToRole="BOE" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_SkillMix_BOETaskElement" FromRole="SkillMix" ToRole="BOETaskElement" />
+          <NavigationProperty Name="CommonDisclosureSkillMixes" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_SkillMixID" FromRole="SkillMix" ToRole="CommonDisclosureSkillMix" />
+          <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK_SkillMix_MOQTypeSelection" FromRole="SkillMix" ToRole="MOQTypeSelection" />
+        </EntityType>
+        <Association Name="FK_BOE_BOEStateLU">
+          <End Type="GenBOE.Models.BOEStateLU" Role="BOEStateLU" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOEStateLU">
+              <PropertyRef Name="BOEStateID" />
+            </Principal>
+            <Dependent Role="BOE">
+              <PropertyRef Name="BOEStateID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOE_Workspace">
+          <End Type="GenBOE.Models.Workspace" Role="Workspace" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Workspace">
+              <PropertyRef Name="WorkspaceID" />
+            </Principal>
+            <Dependent Role="BOE">
+              <PropertyRef Name="WorkspaceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOEApproval_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOEApproval" Role="BOEApproval" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="BOEApproval">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOEApprovalHistory_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOEApprovalHistory" Role="BOEApprovalHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="BOEApprovalHistory">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOEComment_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOEComment" Role="BOEComment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="BOEComment">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOECommentHistory_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOECommentHistory" Role="BOECommentHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="BOECommentHistory">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOECustomFieldValueXREF_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOECustomFieldValueXREF" Role="BOECustomFieldValueXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="BOECustomFieldValueXREF">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOEStateHistory_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOEStateHistory" Role="BOEStateHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="BOEStateHistory">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOETaskElement_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="BOETaskElement">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOEUserRole_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOEUserRole" Role="BOEUserRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="BOEUserRole">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOEUserRoleHistory_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOEUserRoleHistory" Role="BOEUserRoleHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="BOEUserRoleHistory">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommonDisclosureSkillMix_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.CommonDisclosureSkillMix" Role="CommonDisclosureSkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="CommonDisclosureSkillMix">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MaterialTaskElement_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.MaterialTaskElement" Role="MaterialTaskElement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="MaterialTaskElement">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MOQTypeSelectionTableDataResourceHours_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.MOQTypeSelectionTableDataResourceHour" Role="MOQTypeSelectionTableDataResourceHour" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="MOQTypeSelectionTableDataResourceHour">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ODCTaskElement_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.ODCTaskElement" Role="ODCTaskElement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="ODCTaskElement">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateAnswer_BoeID">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.RteTemplateAnswer" Role="RteTemplateAnswer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="RteTemplateAnswer">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SkillMix_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="SkillMix">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SumOfBOE_OrdinaryVariableXREF_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.SumOfBOE_OrdinaryVariableXREF" Role="SumOfBOE_OrdinaryVariableXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="SumOfBOE_OrdinaryVariableXREF">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SumOfBOE_WorkspaceVariableXREF_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.SumOfBOE_WorkspaceVariableXREF" Role="SumOfBOE_WorkspaceVariableXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="SumOfBOE_WorkspaceVariableXREF">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TravelTripTaskElement_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.TravelTripTaskElement" Role="TravelTripTaskElement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="TravelTripTaskElement">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WBS_CLIN_BOE_XREF_BOE">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.WBS_CLIN_BOE_XREF" Role="WBS_CLIN_BOE_XREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="WBS_CLIN_BOE_XREF">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOELaborType_BOETaskElement">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOELaborType" Role="BOELaborType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="BOELaborType">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MOQTypeSe__TaskI__2A121288">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
+          <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="MOQTypeSelection">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOETaskElement_MOQTypeLU">
+          <End Type="GenBOE.Models.MOQTypeLU" Role="MOQTypeLU" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOQTypeLU">
+              <PropertyRef Name="MOQTypeID" />
+            </Principal>
+            <Dependent Role="BOETaskElement">
+              <PropertyRef Name="MOQTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOETaskElement_TaskElementTypeLU">
+          <End Type="GenBOE.Models.TaskElementTypeLU" Role="TaskElementTypeLU" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TaskElementTypeLU">
+              <PropertyRef Name="TaskElementTypeID" />
+            </Principal>
+            <Dependent Role="BOETaskElement">
+              <PropertyRef Name="TaskElementTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOETaskElementCustomFieldValueXREF_BOETaskElement">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOETaskElementCustomFieldValueXREF" Role="BOETaskElementCustomFieldValueXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="BOETaskElementCustomFieldValueXREF">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOETaskElementMetricDetailXREF_BOETaskElement">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOETaskElementMetricDetailXREF" Role="BOETaskElementMetricDetailXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="BOETaskElementMetricDetailXREF">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
+          <End Type="GenBOE.Models.BOETaskElementWorkspaceVariableXREF" Role="BOETaskElementWorkspaceVariableXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="BOETaskElementWorkspaceVariableXREF">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommonDisclosureSkillMix_BOETaskElement">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
+          <End Type="GenBOE.Models.CommonDisclosureSkillMix" Role="CommonDisclosureSkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="CommonDisclosureSkillMix">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
+          <End Type="GenBOE.Models.MOQTypeSelectionTableDataResourceHour" Role="MOQTypeSelectionTableDataResourceHour" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="MOQTypeSelectionTableDataResourceHour">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrdinaryVariable_BOETaskElement">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
+          <End Type="GenBOE.Models.OrdinaryVariable" Role="OrdinaryVariable" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="OrdinaryVariable">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateAnswer_TaskID">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.RteTemplateAnswer" Role="RteTemplateAnswer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="RteTemplateAnswer">
+              <PropertyRef Name="TaskID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SkillMix_BOETaskElement">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
+          <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="SkillMix">
+              <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CommonDisclosureSkillMix_MOQTypeSelection">
           <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="1" />
           <End Type="GenBOE.Models.CommonDisclosureSkillMix" Role="CommonDisclosureSkillMix" Multiplicity="*" />
@@ -14296,31 +14468,48 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__MOQTypeSe__MOQTy__2B0636C1">
+          <End Type="GenBOE.Models.MOQTypeLU" Role="MOQTypeLU" Multiplicity="1" />
+          <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOQTypeLU">
+              <PropertyRef Name="MOQTypeID" />
+            </Principal>
+            <Dependent Role="MOQTypeSelection">
+              <PropertyRef Name="MOQTypeSelection1" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MOQTypeSe__MOQTy__2FCAEBDE">
+          <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="1" />
+          <End Type="GenBOE.Models.MOQTypeSelectionTableData" Role="MOQTypeSelectionTableData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOQTypeSelection">
+              <PropertyRef Name="MOQTypeSelectionId" />
+            </Principal>
+            <Dependent Role="MOQTypeSelectionTableData">
+              <PropertyRef Name="MOQTypeSelectionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SkillMix_MOQTypeSelection">
+          <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="1" />
+          <End Type="GenBOE.Models.SkillMix" Role="SkillMix" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOQTypeSelection">
+              <PropertyRef Name="MOQTypeSelectionId" />
+            </Principal>
+            <Dependent Role="SkillMix">
+              <PropertyRef Name="MOQTypeSelectionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
 	  </Schema>
 	</edmx:ConceptualModels>
 	<!-- C-S mapping content -->
 	<edmx:Mappings>
 	  <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
 		<EntityContainerMapping StorageEntityContainer="GenBOEModelsStoreContainer" CdmEntityContainer="GenBoeEntities">
-		  <EntitySetMapping Name="BOEs">
-			<EntityTypeMapping TypeName="GenBOE.Models.BOE">
-			  <MappingFragment StoreEntitySet="BOE">
-				<ScalarProperty Name="BOEID" ColumnName="BOEID" />
-				<ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
-				<ScalarProperty Name="BOEStateID" ColumnName="BOEStateID" />
-				<ScalarProperty Name="BOEStartDate" ColumnName="BOEStartDate" />
-				<ScalarProperty Name="BOEEndDate" ColumnName="BOEEndDate" />
-				<ScalarProperty Name="BOEDescription" ColumnName="BOEDescription" />
-				<ScalarProperty Name="DataSource" ColumnName="DataSource" />
-				<ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
-				<ScalarProperty Name="MetricDisclosureAcknowledge" ColumnName="MetricDisclosureAcknowledge" />
-				<ScalarProperty Name="NumAuthorReassigned" ColumnName="NumAuthorReassigned" />
-				<ScalarProperty Name="IsMaterial" ColumnName="IsMaterial" />
-				<ScalarProperty Name="BOETitle" ColumnName="BOETitle" />
-				<ScalarProperty Name="IsMultiClinWbs" ColumnName="IsMultiClinWbs" />
-			  </MappingFragment>
-			</EntityTypeMapping>
-		  </EntitySetMapping>
 		  <EntitySetMapping Name="BOEApprovals">
 			<EntityTypeMapping TypeName="GenBOE.Models.BOEApproval">
 			  <MappingFragment StoreEntitySet="BOEApproval">
@@ -14462,28 +14651,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 				<ScalarProperty Name="BOEStateID" ColumnName="BOEStateID" />
 				<ScalarProperty Name="BOEState" ColumnName="BOEState" />
 			  </MappingFragment>
-			</EntityTypeMapping>
-		  </EntitySetMapping>
-		  <EntitySetMapping Name="BOETaskElements">
-			<EntityTypeMapping TypeName="GenBOE.Models.BOETaskElement">
-			  <MappingFragment StoreEntitySet="BOETaskElement">
-				<ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
-				<ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
-				<ScalarProperty Name="TaskID" ColumnName="TaskID" />
-				<ScalarProperty Name="TaskTitle" ColumnName="TaskTitle" />
-				<ScalarProperty Name="TaskDescription" ColumnName="TaskDescription" />
-				<ScalarProperty Name="TaskStartDate" ColumnName="TaskStartDate" />
-				<ScalarProperty Name="TaskEndDate" ColumnName="TaskEndDate" />
-				<ScalarProperty Name="MOQHoursEquation" ColumnName="MOQHoursEquation" />
-				<ScalarProperty Name="MOQCostEquation" ColumnName="MOQCostEquation" />
-				<ScalarProperty Name="MOQText" ColumnName="MOQText" />
-				<ScalarProperty Name="MOQTypeID" ColumnName="MOQTypeID" />
-				<ScalarProperty Name="BOEID" ColumnName="BOEID" />
-				<ScalarProperty Name="LaborTypeWarningFlag" ColumnName="LaborTypeWarningFlag" />
-				<ScalarProperty Name="IMS_ID" ColumnName="IMS_ID" />
-				<ScalarProperty Name="TaskElementTypeID" ColumnName="TaskElementTypeID" />
-				<ScalarProperty Name="SortOrderID" ColumnName="SortOrderID" />
-				</MappingFragment>
 			</EntityTypeMapping>
 		  </EntitySetMapping>
 		  <EntitySetMapping Name="BOETaskElementCustomFieldValueXREFs">
@@ -16382,26 +16549,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			  </MappingFragment>
 			</EntityTypeMapping>
 		  </EntitySetMapping>
-		  <EntitySetMapping Name="MOQTypeSelections">
-			<EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelection">
-			  <MappingFragment StoreEntitySet="MOQTypeSelection">
-				<ScalarProperty Name="HistoricalReferenceExplanation" ColumnName="HistoricalReferenceExplanation" />
-				<ScalarProperty Name="CERName" ColumnName="CERName" />
-				<ScalarProperty Name="SkillMix" ColumnName="SkillMix" />
-				<ScalarProperty Name="Rationale" ColumnName="Rationale" />
-				<ScalarProperty Name="EstimateTasks" ColumnName="EstimateTasks" />
-				<ScalarProperty Name="DurationLogicAndAssumptions" ColumnName="DurationLogicAndAssumptions" />
-				<ScalarProperty Name="HoursLogicAndAssumptions" ColumnName="HoursLogicAndAssumptions" />
-				<ScalarProperty Name="SubjectMatterExpert" ColumnName="SubjectMatterExpert" />
-				<ScalarProperty Name="HoursDescription" ColumnName="HoursDescription" />
-				<ScalarProperty Name="Order" ColumnName="Order" />
-				<ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
-				<ScalarProperty Name="MOQTypeSelection1" ColumnName="MOQTypeSelection" />
-				<ScalarProperty Name="TaskId" ColumnName="TaskId" />
-				<ScalarProperty Name="MOQTypeSelectionId" ColumnName="MOQTypeSelectionId" />
-			  </MappingFragment>
-			</EntityTypeMapping>
-		  </EntitySetMapping>
 		  <FunctionImportMapping FunctionImportName="copyWorkspace" FunctionName="GenBOE.Models.Store.copyWorkspace" />
 		  <EntitySetMapping Name="MoqTypeTableCustomFieldValueXREFs">
 			<EntityTypeMapping TypeName="GenBOE.Models.MoqTypeTableCustomFieldValueXREF">
@@ -16523,6 +16670,105 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <FunctionImportMapping FunctionImportName="getResourceInUseFlagByResourceListIDviaTableParameter" FunctionName="GenBOE.Models.Store.getResourceInUseFlagByResourceListIDviaTableParameter" />
           <FunctionImportMapping FunctionImportName="insertWorkspaceResourceviaTableParameter" FunctionName="GenBOE.Models.Store.insertWorkspaceResourceviaTableParameter" />
           <FunctionImportMapping FunctionImportName="updateWorkspaceResourceviaTableParameter" FunctionName="GenBOE.Models.Store.updateWorkspaceResourceviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="deleteSkillMix" FunctionName="GenBOE.Models.Store.deleteSkillMix" />
+          <FunctionImportMapping FunctionImportName="insertSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertSkillMixviaTableParameter" />
+          <FunctionImportMapping FunctionImportName="deleteCommonDisclosureSkillMix" FunctionName="GenBOE.Models.Store.deleteCommonDisclosureSkillMix" />
+          <FunctionImportMapping FunctionImportName="insertCommonDisclosureSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertCommonDisclosureSkillMixviaTableParameter" />
+          <EntitySetMapping Name="MOQTypeSelectionTableDataResourceHours">
+            <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelectionTableDataResourceHour">
+              <MappingFragment StoreEntitySet="MOQTypeSelectionTableDataResourceHours">
+                <ScalarProperty Name="BOEID" ColumnName="BOEID" />
+                <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
+                <ScalarProperty Name="MOQTypeSelectionTableDataId" ColumnName="MOQTypeSelectionTableDataId" />
+                <ScalarProperty Name="TotalHours" ColumnName="TotalHours" />
+                <ScalarProperty Name="WbsHours" ColumnName="WbsHours" />
+                <ScalarProperty Name="ResourceName" ColumnName="ResourceName" />
+                <ScalarProperty Name="MOQTypeSelectionTableDataResourceHoursId" ColumnName="MOQTypeSelectionTableDataResourceHoursId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteMOQTypeSelectionTableDataResourceHours" FunctionName="GenBOE.Models.Store.deleteMOQTypeSelectionTableDataResourceHours" />
+          <FunctionImportMapping FunctionImportName="insertMOQTypeSelectionTableDataResourceHoursviaTableParameter" FunctionName="GenBOE.Models.Store.insertMOQTypeSelectionTableDataResourceHoursviaTableParameter" />
+          <EntitySetMapping Name="BOEs">
+            <EntityTypeMapping TypeName="GenBOE.Models.BOE">
+              <MappingFragment StoreEntitySet="BOE">
+                <ScalarProperty Name="IsMultiClinWbs" ColumnName="IsMultiClinWbs" />
+                <ScalarProperty Name="BOETitle" ColumnName="BOETitle" />
+                <ScalarProperty Name="IsMaterial" ColumnName="IsMaterial" />
+                <ScalarProperty Name="NumAuthorReassigned" ColumnName="NumAuthorReassigned" />
+                <ScalarProperty Name="MetricDisclosureAcknowledge" ColumnName="MetricDisclosureAcknowledge" />
+                <ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
+                <ScalarProperty Name="DataSource" ColumnName="DataSource" />
+                <ScalarProperty Name="BOEDescription" ColumnName="BOEDescription" />
+                <ScalarProperty Name="BOEEndDate" ColumnName="BOEEndDate" />
+                <ScalarProperty Name="BOEStartDate" ColumnName="BOEStartDate" />
+                <ScalarProperty Name="BOEStateID" ColumnName="BOEStateID" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="BOEID" ColumnName="BOEID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BOETaskElements">
+            <EntityTypeMapping TypeName="GenBOE.Models.BOETaskElement">
+              <MappingFragment StoreEntitySet="BOETaskElement">
+                <ScalarProperty Name="SortOrderID" ColumnName="SortOrderID" />
+                <ScalarProperty Name="TaskElementTypeID" ColumnName="TaskElementTypeID" />
+                <ScalarProperty Name="IMS_ID" ColumnName="IMS_ID" />
+                <ScalarProperty Name="LaborTypeWarningFlag" ColumnName="LaborTypeWarningFlag" />
+                <ScalarProperty Name="BOEID" ColumnName="BOEID" />
+                <ScalarProperty Name="MOQTypeID" ColumnName="MOQTypeID" />
+                <ScalarProperty Name="MOQText" ColumnName="MOQText" />
+                <ScalarProperty Name="MOQCostEquation" ColumnName="MOQCostEquation" />
+                <ScalarProperty Name="MOQHoursEquation" ColumnName="MOQHoursEquation" />
+                <ScalarProperty Name="TaskEndDate" ColumnName="TaskEndDate" />
+                <ScalarProperty Name="TaskStartDate" ColumnName="TaskStartDate" />
+                <ScalarProperty Name="TaskDescription" ColumnName="TaskDescription" />
+                <ScalarProperty Name="TaskTitle" ColumnName="TaskTitle" />
+                <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CommonDisclosureSkillMixes">
+            <EntityTypeMapping TypeName="GenBOE.Models.CommonDisclosureSkillMix">
+              <MappingFragment StoreEntitySet="CommonDisclosureSkillMix">
+                <ScalarProperty Name="MOQTypeSelectionID" ColumnName="MOQTypeSelectionID" />
+                <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
+                <ScalarProperty Name="BOEID" ColumnName="BOEID" />
+                <ScalarProperty Name="SkillMixID" ColumnName="SkillMixID" />
+                <ScalarProperty Name="BusinessResourceID" ColumnName="BusinessResourceID" />
+                <ScalarProperty Name="ResourceID" ColumnName="ResourceID" />
+                <ScalarProperty Name="LaborSkillMix" ColumnName="LaborSkillMix" />
+                <ScalarProperty Name="BOESkillMix" ColumnName="BOESkillMix" />
+                <ScalarProperty Name="HistoricalHours" ColumnName="HistoricalHours" />
+                <ScalarProperty Name="ProposedHours" ColumnName="ProposedHours" />
+                <ScalarProperty Name="Included" ColumnName="Included" />
+                <ScalarProperty Name="Rationale" ColumnName="Rationale" />
+                <ScalarProperty Name="CommonDisclosureSkillMixID" ColumnName="CommonDisclosureSkillMixID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MOQTypeSelections">
+            <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelection">
+              <MappingFragment StoreEntitySet="MOQTypeSelection">
+                <ScalarProperty Name="HistoricalReferenceExplanation" ColumnName="HistoricalReferenceExplanation" />
+                <ScalarProperty Name="SkillMix" ColumnName="SkillMix" />
+                <ScalarProperty Name="Rationale" ColumnName="Rationale" />
+                <ScalarProperty Name="EstimateTasks" ColumnName="EstimateTasks" />
+                <ScalarProperty Name="DurationLogicAndAssumptions" ColumnName="DurationLogicAndAssumptions" />
+                <ScalarProperty Name="HoursLogicAndAssumptions" ColumnName="HoursLogicAndAssumptions" />
+                <ScalarProperty Name="SubjectMatterExpert" ColumnName="SubjectMatterExpert" />
+                <ScalarProperty Name="HoursDescription" ColumnName="HoursDescription" />
+                <ScalarProperty Name="CERName" ColumnName="CERName" />
+                <ScalarProperty Name="Order" ColumnName="Order" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="MOQTypeSelection1" ColumnName="MOQTypeSelection" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="MOQTypeSelectionId" ColumnName="MOQTypeSelectionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="SkillMixes">
             <EntityTypeMapping TypeName="GenBOE.Models.SkillMix">
               <MappingFragment StoreEntitySet="SkillMix">
@@ -16541,27 +16787,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="deleteSkillMix" FunctionName="GenBOE.Models.Store.deleteSkillMix" />
-          <FunctionImportMapping FunctionImportName="insertSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertSkillMixviaTableParameter" />
-          <EntitySetMapping Name="CommonDisclosureSkillMixes">
-            <EntityTypeMapping TypeName="GenBOE.Models.CommonDisclosureSkillMix">
-              <MappingFragment StoreEntitySet="CommonDisclosureSkillMix">
-                <ScalarProperty Name="MOQTypeSelectionID" ColumnName="MOQTypeSelectionID" />
-                <ScalarProperty Name="SkillMixID" ColumnName="SkillMixID" />
-                <ScalarProperty Name="BusinessResourceID" ColumnName="BusinessResourceID" />
-                <ScalarProperty Name="ResourceID" ColumnName="ResourceID" />
-                <ScalarProperty Name="LaborSkillMix" ColumnName="LaborSkillMix" />
-                <ScalarProperty Name="BOESkillMix" ColumnName="BOESkillMix" />
-                <ScalarProperty Name="HistoricalHours" ColumnName="HistoricalHours" />
-                <ScalarProperty Name="ProposedHours" ColumnName="ProposedHours" />
-                <ScalarProperty Name="Included" ColumnName="Included" />
-                <ScalarProperty Name="Rationale" ColumnName="Rationale" />
-                <ScalarProperty Name="CommonDisclosureSkillMixID" ColumnName="CommonDisclosureSkillMixID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="deleteCommonDisclosureSkillMix" FunctionName="GenBOE.Models.Store.deleteCommonDisclosureSkillMix" />
-          <FunctionImportMapping FunctionImportName="insertCommonDisclosureSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertCommonDisclosureSkillMixviaTableParameter" />
 		</EntityContainerMapping>
 	  </Mapping>
 	</edmx:Mappings>

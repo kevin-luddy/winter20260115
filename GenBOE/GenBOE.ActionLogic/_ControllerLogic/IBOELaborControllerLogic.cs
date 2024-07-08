@@ -358,5 +358,26 @@ namespace GenBOE.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         Task<ICollection<IESResponse<CalculateActualsViewModel>>> CalculateAllActualsSap(ICollection<MoqTableDataModelView> tableData);
 
-    }
+		/// <summary>
+        /// Validates Actuals data for SAP
+        /// </summary>
+        /// <param name="tableData">The MOQ Table Data</param>
+        /// <returns>Validation Response</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData);
+
+        /// <summary>
+		/// Get Resources converted to Business Resource Code List
+		/// </summary>
+		/// <returns>List of Resources and their respective Business Resource Codes</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        Task<IESResponse<SkillMixConvertedResourceViewModel>> GetSkillMixConvertedResources();
+
+		/// <summary>
+		/// Refreshes the Skill Mix Table with updated resource hours
+		/// </summary>
+		/// <param name="resourceHours">MOQ Table Resource Hours</param>
+		/// <param name="currentSkillMixData">The current skill mix data</param>
+		ICollection<SkillMixModelView> RefreshSkillMixTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData);
+	}
 }

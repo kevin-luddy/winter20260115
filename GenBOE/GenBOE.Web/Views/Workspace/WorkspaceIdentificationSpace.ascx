@@ -17,6 +17,7 @@
 	var formConfigs = [];
 	var originalTrackingNumber = "";
 	var previousTrackingNumber = "";
+	var previousTrackingNumberSelection = "";
 	var originalSapConnectionEnabled = false;
 
 	formConfigs.push({
@@ -226,11 +227,13 @@
 	WorkspaceIdentificationWidget.OnTrackingNumberChange = function () {
 		var options = $('#' + $('#proposalSelect').attr('list') + ' option');
 		var selectedVal = $('#proposalSelect').val();
+		var selectedTrackingNumber = selectedVal.split(' - ')[0].trim();
 
 		// Only continue if new value is selected
-		if (originalTrackingNumber === '' || !selectedVal.startsWith(originalTrackingNumber)) {
+		if (originalTrackingNumber === '' || selectedTrackingNumber !== originalTrackingNumber) {
 			$('#TrackingNumber').val(''); //clear previous value
-			previousTrackingNumber = selectedVal;
+			previousTrackingNumberSelection = selectedVal;
+			previousTrackingNumber = selectedTrackingNumber;
 
 			for (var i = 0; i < options.length; i++) {
 				var option = options.eq(i);
@@ -262,7 +265,7 @@
 					break;
 				}
 			}
-		} else if (previousTrackingNumber != "" && !originalTrackingNumber.startsWith(previousTrackingNumber)) {
+		} else if (previousTrackingNumber !== '' && originalTrackingNumber !== previousTrackingNumber) {
 			GenSession.confirmDialog("PTM Tracking Number Change",
 				"Changing the PTM Tracking Number back to its current value will refresh the page.  Are you sure?  No will cancel this selection.",
 				function () {
@@ -270,7 +273,7 @@
 					window.location.reload(true);
 				},
 				function () {
-					$('#proposalSelect').val(previousTrackingNumber);
+					$('#proposalSelect').val(previousTrackingNumberSelection);
 				}
 			);
 		} else {

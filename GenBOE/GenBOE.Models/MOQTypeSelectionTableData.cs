@@ -18,6 +18,7 @@ namespace GenBOE.Models
         public MOQTypeSelectionTableData()
         {
             this.MoqTypeTableCustomFieldValueXREFs = new HashSet<MoqTypeTableCustomFieldValueXREF>();
+            this.MOQTypeSelectionTableDataResourceHours = new HashSet<MOQTypeSelectionTableDataResourceHour>();
         }
     
         public int MOQTypeSelectionTableDataId { get; set; }
@@ -37,8 +38,10 @@ namespace GenBOE.Models
         public string AdditionalQueryFilters { get; set; }
         public decimal TotalRelevantHoursAfterQueryFilters { get; set; }
     
-        public virtual MOQTypeSelection MOQTypeSelection { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MoqTypeTableCustomFieldValueXREF> MoqTypeTableCustomFieldValueXREFs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MOQTypeSelectionTableDataResourceHour> MOQTypeSelectionTableDataResourceHours { get; set; }
+        public virtual MOQTypeSelection MOQTypeSelection { get; set; }
     }
 }

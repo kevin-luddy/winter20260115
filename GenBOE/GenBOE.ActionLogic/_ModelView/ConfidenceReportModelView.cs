@@ -23,19 +23,19 @@ namespace GenBOE.ActionLogic.ModelView
 		}
 
 		/// <summary>
-		/// Total number of tasks in the report
+		/// Total number of Confidence Error checks in the report
 		/// </summary>
-		public int TotalTaskCount { get; set; }
+		public int MaximumConfidenceValue { get; set; }
 
 		/// <summary>
-		/// Total number of tasks with no errors in the report
+		/// Total number successful Confidence Error checks in the report
 		/// </summary>
-		public int TasksWithoutErrors { get; set; }
+		public int ConfidenceValue { get; set; }
 
 		/// <summary>
 		/// Confidence Score for the report
 		/// </summary>
-		public string ConfidenceScore => $"{TasksWithoutErrors}/{TotalTaskCount}";
+		public string ConfidenceScore => $"{ConfidenceValue}/{MaximumConfidenceValue}";
 
 		/// <summary>
 		/// Collection of data for the report

@@ -29,6 +29,7 @@
 	$scope.SelectedMoqTypes = [];
 	$scope.IsDraftOrDraftLocked = false;
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
+	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
 
 	$scope.isPreviousTaskDisabled = function () {
 		return $scope.model.AdjacentItems.PreviousId === undefined || $scope.model.AdjacentItems.PreviousId === null;

@@ -15,7 +15,8 @@
 			boeController: '<%: WebConstants.CONTROLLER_BOE %>',
 			editBoeAction: '<%: WebConstants.ACTION_EDIT_BOE_INDEX %>',
 			reportsController: '<%: WebConstants.CONTROLLER_REPORTS %>',
-			exportConfidenceReportAction: '<%: WebConstants.ACTION_EXPORT_CONFIDENCE_REPORT %>'
+			exportConfidenceReportAction: '<%: WebConstants.ACTION_EXPORT_CONFIDENCE_REPORT %>',
+			boeId: '<%=ViewData["BOEID"]%>'
 		});
 
 		var ConfidenceReport;

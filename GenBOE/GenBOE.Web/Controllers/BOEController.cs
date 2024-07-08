@@ -208,6 +208,7 @@ namespace GenBOE.Web.Controllers
 			this.ViewData["SapFields"] = await _ControllerLogic.GetAllFields();
 			this.ViewData["SapOperators"] = await _ControllerLogic.GetAllOperators();
 			this.ViewData["EnableSAPConnection"] = ws.EnableSAPConnection;
+			this.ViewData["IsSkillMixEnabled"] = Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
 
 			ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
 

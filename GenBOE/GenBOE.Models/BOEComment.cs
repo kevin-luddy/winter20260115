@@ -29,7 +29,6 @@ namespace GenBOE.Models
         public Nullable<int> BOEResponseToCommentID { get; set; }
         public int BOEID { get; set; }
     
-        public virtual BOE BOE { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOEComment> BOEComment1 { get; set; }
         public virtual BOEComment BOEComment2 { get; set; }
@@ -37,5 +36,6 @@ namespace GenBOE.Models
         public virtual FieldLU FieldLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOECommentHistory> BOECommentHistories { get; set; }
+        public virtual BOE BOE { get; set; }
     }
 }

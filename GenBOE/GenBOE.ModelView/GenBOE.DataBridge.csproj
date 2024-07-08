@@ -121,6 +121,8 @@
     <Compile Include="Common\Delegates.cs" />
     <Compile Include="Common\Interfaces\ISecurityUserAuthorizationsDataLoader.cs" />
     <Compile Include="Common\security\SecurityAccessSpaceSystems.cs" />
+    <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\IMOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
+    <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\MOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
     <Compile Include="DTO\MOQTypes\IMoqTypeDataLoader.cs" />
     <Compile Include="DTO\MOQTypes\IMoqTypeTableCustomFieldValueXREFLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTableData.cs" />
@@ -129,8 +131,13 @@
     <Compile Include="DTO\MOQTypes\MoqTypeSelection.cs" />
     <Compile Include="DTO\MOQTypes\MoqTypeTableCustomFieldValueXREFLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTypeTableDataLabels.cs" />
+    <Compile Include="DTO\MOQTypes\SkillMixModelView.cs" />
     <Compile Include="DTO\RteTemplate\IRteTemplateDataLoader.cs" />
     <Compile Include="DTO\RteTemplate\RteTemplateDataLoader.cs" />
+    <Compile Include="DTO\SkillMix\ISkillMixDTOLoader.cs" />
+    <Compile Include="DTO\SkillMix\SkillMixDTOLoader.cs" />
+    <Compile Include="DTO\CommonDisclosureSkillMix\ICommonDisclosureSMDTODataLoader.cs" />
+    <Compile Include="DTO\CommonDisclosureSkillMix\CommonDisclosureSMDTODataLoader.cs" />
     <Compile Include="GenBOE.Dtos\Common\IBOEMembership.cs" />
     <Compile Include="GenBOE.Dtos\Common\IVariableDTO.cs" />
     <Compile Include="GenBOE.Dtos\Common\IWorkspaceMembership.cs" />
@@ -160,6 +167,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\MetricNameTaskElementMappingDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MileReimbursementRateDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MiscTravelRateDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MOQTypeSelectionTableDataResourceHoursDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MPBoeDataDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricDetailsDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchCriteriaDTO.cs" />
@@ -190,6 +198,8 @@
     <Compile Include="GenBOE.Dtos\DTOs\ResourceTypeDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\SelectBOEsToSum.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\SikorskyLegacyResourceDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\SkillMixDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\CommonDisclosureSkillMixDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\SubResourceTypeDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\SystemSettingDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\TaskElement\LaborSpreadRequest.cs" />

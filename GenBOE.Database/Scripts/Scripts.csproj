@@ -278,6 +278,7 @@
     <Content Include="Object Scripts\Table Based Processing\LaborSpreadViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\LaborTypeCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\LaborTypeViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\MOQTypeSelectionTableDataResourceHoursViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\MoqTypeTableCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\OrdinaryVariableViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\OrdinaryVarSumVarViaTable.sql" />
@@ -396,6 +397,7 @@
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.05 Generated On 2_28_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.06 Generated On 3_25_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.09 Generated On 5_7_2024.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2024.10 Generated On 6_25_2024.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Insert Application Administrator.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Scrub database data.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genTrac - Insert Application Administrator.sql" />

@@ -15,6 +15,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web;
 	using System.Web.Configuration;
 	using System.Web.Mvc;
+	using System.Windows.Input;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -60,6 +61,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IMoqTableImporter moqTableImporter;
 		private readonly IESSAPClient iesSapClient;
 		private readonly ITokenService tokenservice;
+		private readonly ICache cache;
 
 		/// <summary>
 		/// Task Element Validation Class
@@ -93,7 +95,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IMoqTableExporter moqTableExporter,
 			IMoqTableImporter moqTableImporter,
 			IESSAPClient iesSapClient,
-			ITokenService tokenservice)
+			ITokenService tokenservice,
+			ICache cache)
 		{
 			this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
 			this._boeStateMachine = inBoeStateMachine;
@@ -119,6 +122,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.moqTableImporter = moqTableImporter;
 			this.tokenservice = tokenservice;
 			this.iesSapClient = iesSapClient;
+			this.cache = cache;
 		}
 
 		#region Public Members
@@ -3923,6 +3927,197 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					Messages = r.Messages,
 					IsSuccessful = r.IsSuccessful,
 					Data = new List<CalculateActualsViewModel> { r.Data }
+				}).ToList();
+
+			}
+			catch (Exception ex)
+			{
+				// throw error and let UI handle it
+				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
+				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+			}
+
+			return response;
+		}
+
+		/// <summary>
+		/// Get Resources converted to Business Resource Code List
+		/// </summary>
+		/// <returns>List of Resources and their respective Business Resource Codes</returns>
+		public async Task<IESResponse<SkillMixConvertedResourceViewModel>> GetSkillMixConvertedResources()
+		{
+			IESResponse<SkillMixConvertedResourceViewModel> response = new IESResponse<SkillMixConvertedResourceViewModel>();
+
+			try
+			{
+				if (!this.cache.Contains(WebConstants.SKILLMIX_RESOURCE_CACHE_KEY))
+				{
+					// Get Token
+					Token token = await this.tokenservice.GetToken();
+					Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+					// Convert company configuration
+					ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
+
+					// Call Swagger Client
+					SkillMixConvertedResourceViewModelICollectionResult result = await iesSapClient.ApiQueryParserGetSkillMixConvertedResourcesAsync(companyConfiguration);
+
+					response.Messages = result.Messages;
+					response.IsSuccessful = result.IsSuccessful;
+					response.Data = result.Data;
+
+					if (result.IsSuccessful)
+					{
+						// The time being set in seconds represents 1 day that the data will be cached in the system
+						this.cache.Add(WebConstants.SKILLMIX_RESOURCE_CACHE_KEY, result.Data, WebConstants.SECONDS_TO_CACHE_SKILLMIX_RESOURCES);
+					}
+				}
+				else
+				{
+					ICollection<SkillMixConvertedResourceViewModel> resources = new List<SkillMixConvertedResourceViewModel>();
+
+					resources = (ICollection<SkillMixConvertedResourceViewModel>)this.cache.GetData(WebConstants.SKILLMIX_RESOURCE_CACHE_KEY);
+
+					if (resources.Count > 0)
+					{
+						response.Messages.Add("Retrieved Resources from Cache");
+						response.IsSuccessful = true;
+						response.Data = resources;
+					}
+					else
+					{
+						response.Messages.Add("Failed to get Resources from Cache");
+						response.IsSuccessful = false;
+						response.Data = new List<SkillMixConvertedResourceViewModel>();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				// throw error and let UI handle it
+				logger.Error(ex, "Error calling SAP API to get SkillMix Converted Resources");
+				throw new GeneralAppException("Error calling SAP API to get SkillMix Converted Resources");
+			}
+
+			return response;
+		}
+
+		/// <summary>
+		/// Refreshes the Skill Mix Table with updated resource hours
+		/// </summary>
+		/// <param name="resourceHours">MOQ Table Resource Hours</param>
+		/// <param name="currentSkillMixData">The current skill mix data</param>
+		public ICollection<SkillMixModelView> RefreshSkillMixTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData)
+		{
+			ICollection<SkillMixModelView> newTable = new List<SkillMixModelView>();
+
+			if (resourceHours != null && resourceHours.Any())
+			{
+				decimal totalHours = resourceHours.Sum(n => n.TotalHours);
+				IEnumerable<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key);
+				foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
+				{
+					decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
+					string resourceOld = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ? string.Empty : grouping.Key;
+					string resourceNew = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ? grouping.Key : string.Empty;
+
+					newTable.Add(
+						new SkillMixModelView
+						{
+							HistoricalHours = totalGroupHours,
+							ResourceOld = resourceOld,
+							ResourceNew = resourceNew,
+							LaborSkillMix = totalGroupHours / totalHours
+						}
+					);
+				}
+
+				// reconcile the other values in the rows (if any)
+				if (currentSkillMixData != null && currentSkillMixData.Any())
+				{
+					foreach (SkillMixModelView currentData in currentSkillMixData)
+					{
+						SkillMixModelView newData;
+						if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+						{
+							// Space will match on ResourceNew (they do not use previous resource)
+							newData = newTable.FirstOrDefault(s => s.ResourceNew == currentData.ResourceNew);
+						}
+						else
+						{
+							// RMS will match on ResourceOld
+							newData = newTable.FirstOrDefault(s => s.ResourceOld == currentData.ResourceOld);
+						}
+
+						if (newData != null)
+						{
+							// If there is a match, then copy over the other row information
+							newData.Included = currentData.Included;
+							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
+							
+							if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+							{
+								newData.ResourceNew = currentData.ResourceNew;
+							}
+
+							newData.Rationale = currentData.Rationale;
+
+							if (newData.Included)
+							{
+								newData.BOESkillMix = currentData.BOESkillMix;
+								newData.ProposedHours = currentData.ProposedHours;
+							}
+							else
+							{
+								newData.BOESkillMix = 0m;
+								newData.ProposedHours = 0m;
+							}
+						}
+					}
+				}
+			}
+			return newTable;
+		}
+
+		/// <summary>
+		/// Validates Actuals data for SAP
+		/// </summary>
+		/// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+		public async Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData)
+		{
+			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = new List<IESResponse<CalculateActualsWithSkillMixViewModel>>();
+
+			try
+			{
+				// Get Token
+				Token token = await this.tokenservice.GetToken();
+				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+				// Convert company configuration
+				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
+
+				// Convert table data
+				ICollection<DataTableViewModel> dataTables = tableData.Select(t =>
+				new DataTableViewModel()
+				{
+					Filters = t.Filters,
+					PoPEnd = t.PoPEnd,
+					PoPStart = t.PoPStart,
+					IsWeekly = t.QueryType == MoqTableData.WEEKLY_DATETIME,
+					WbsElement = t.WbsElement,
+					TableId = t.TableId
+				}).ToList();
+
+				// Call Swagger Client
+				ICollection<CalculateActualsWithSkillMixViewModelResult> result = await iesSapClient.ApiQueryParserCalculateActualsWithSkillMixAsync(companyConfiguration, dataTables);
+
+				response = result.Select(r =>
+				new IESResponse<CalculateActualsWithSkillMixViewModel>
+				{
+					Messages = r.Messages,
+					IsSuccessful = r.IsSuccessful,
+					Data = new List<CalculateActualsWithSkillMixViewModel> { r.Data }
 				}).ToList();
 
 			}

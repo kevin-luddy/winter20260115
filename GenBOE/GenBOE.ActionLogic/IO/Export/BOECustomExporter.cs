@@ -3737,10 +3737,13 @@ namespace GenBOE.ActionLogic.IO.Export
                             this.RemoveElement(childRun);
                         }
 
-                        // remove the top border
+                        // remove the top border if it exists
                         TableCell firstCell = currRowSummaryDataTag.Ancestors<TableCell>().First();
-                        TopBorder topBorder = firstCell.Descendants<TopBorder>().First();
-                        topBorder.Val = new EnumValue<BorderValues>(BorderValues.Nil);
+                        TopBorder topBorder = firstCell.Descendants<TopBorder>().FirstOrDefault();
+						if (topBorder != null)
+						{
+							topBorder.Val = new EnumValue<BorderValues>(BorderValues.Nil);
+						}
                     }
 
                     // add the row to the table

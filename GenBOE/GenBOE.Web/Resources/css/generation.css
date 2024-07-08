@@ -8798,3 +8798,7 @@ span.blue-link a{
     margin-right: 70px;
     float: right;
 }
+
+.skill-mix-numerical {
+    text-align: right;
+}
