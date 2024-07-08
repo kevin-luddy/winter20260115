@@ -252,13 +252,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	// Remove existing Table Data
-	$scope.RemoveTable = function (item, tableDataArray) {
+	$scope.RemoveTable = function (item, moqType) {
 		GenSession.confirmDialog('Delete Data Table?', 'Are you sure you want to delete the selected Data Table?<br/> Once deleted, this can not be undone.', function () {
 			$scope.$apply(function () {
-				var index = tableDataArray.indexOf(item);
-				tableDataArray.splice(index, 1);
+				var index = moqType.TableData.indexOf(item);
+				moqType.TableData.splice(index, 1);
 				MOQEquationFieldWidget.setDirty();
 				$scope.actualsValidation.isDirty.delete(item.Id);
+				$scope.refreshSkillMixTable(moqType);
 				$scope.refreshDisableSave();
 			});
 		});
