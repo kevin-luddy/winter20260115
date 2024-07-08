@@ -1599,64 +1599,6 @@ WHERE MOQTypeSelectionId = @MOQTypeSelectionId
 
 END
 
-/** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
-DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
-(
-	[MOQTypeSelectionTableDataResourceHoursId] [int] NOT NULL,
-	[ResourceName] [varchar] NOT NULL,
-	[WbsHours] [decimal] NOT NULL,
-	[TotalHours] [decimal] NOT NULL,
-	[MOQTypeSelectionTableDataId] [int] NOT NULL,
-	[BOETaskElementID] [int] NULL,
-	[BOEID] [int] NULL,
-	Processed bit,
-	NewMOQTypeSelectionTableDataResourceHoursId int,
-	NewMOQTypeSelectionTableDataId int
-)
-INSERT INTO @MOQTypeSelectionTableDataResourceHours
-SELECT
-	M.[MOQTypeSelectionTableDataResourceHoursId],
-	M.[ResourceName],
-	M.[WbsHours],
-	M.[TotalHours],
-	M.[MOQTypeSelectionTableDataId],
-	M.[BOETaskElementID],
-	M.[BOEID],
-	0,
-	NULL,
-	T.MOQTypeSelectionTableDataId
-FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
-INNER JOIN @MOQTypeSelectionTableDataId T ON M.MOQTypeSelectionTableDataId = T.MOQTypeSelectionTableDataId
-
-DECLARE @MOQTypeSelectionTableDataResourceHoursId int
-WHILE EXISTS (SELECT 1 FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0)
-BEGIN
-SELECT TOP 1 @MOQTypeSelectionTableDataResourceHoursId = MOQTypeSelectionTableDataResourceHoursId FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0
-INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
-			([ResourceName],
-			[WbsHours],
-			[TotalHours],
-			[MOQTypeSelectionTableDataId],
-			[BOETaskElementID],
-			[BOEID]
-			)
-SELECT MOQTypeSelectionTableDataId,
-	[ResourceName],
-	[WbsHours],
-	[TotalHours],
-	[MOQTypeSelectionTableDataId],
-	[BOETaskElementID],
-	[BOEID]
-FROM @MOQTypeSelectionTableDataResourceHours
-WHERE MOQTypeSelectionTableDataResourceHoursId = @MOQTypeSelectionTableDataResourceHoursId
-
-UPDATE @MOQTypeSelectionTableDataResourceHours
-SET NewMOQTypeSelectionTableDataResourceHoursId = SCOPE_IDENTITY(),
-	Processed = 1
-WHERE MOQTypeSelectionTableDataResourceHoursId = @MOQTypeSelectionTableDataResourceHoursId
-
-END
-
 /** [dbo].[MOQTypeSelectionTableData] **/
 DECLARE @MOQTypeSelectionTableData TABLE
 (
@@ -1751,6 +1693,64 @@ UPDATE @MOQTypeSelectionTableData
 SET NewMOQTypeSelectionTableDataId = SCOPE_IDENTITY(),
 	Processed = 1
 WHERE MOQTypeSelectionTableDataId = @MOQTypeSelectionTableDataId
+
+END
+
+/** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
+DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
+(
+	[MOQTypeSelectionTableDataResourceHoursId] [int] NOT NULL,
+	[ResourceName] [varchar] NOT NULL,
+	[WbsHours] [decimal] NOT NULL,
+	[TotalHours] [decimal] NOT NULL,
+	[MOQTypeSelectionTableDataId] [int] NOT NULL,
+	[BOETaskElementID] [int] NULL,
+	[BOEID] [int] NULL,
+	Processed bit,
+	NewMOQTypeSelectionTableDataResourceHoursId int,
+	NewMOQTypeSelectionTableDataId int
+)
+INSERT INTO @MOQTypeSelectionTableDataResourceHours
+SELECT
+	M.[MOQTypeSelectionTableDataResourceHoursId],
+	M.[ResourceName],
+	M.[WbsHours],
+	M.[TotalHours],
+	M.[MOQTypeSelectionTableDataId],
+	M.[BOETaskElementID],
+	M.[BOEID],
+	0,
+	NULL,
+	T.MOQTypeSelectionTableDataId
+FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
+INNER JOIN @MOQTypeSelectionTableDataId T ON M.MOQTypeSelectionTableDataId = T.MOQTypeSelectionTableDataId
+
+DECLARE @MOQTypeSelectionTableDataResourceHoursId int
+WHILE EXISTS (SELECT 1 FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0)
+BEGIN
+SELECT TOP 1 @MOQTypeSelectionTableDataResourceHoursId = MOQTypeSelectionTableDataResourceHoursId FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0
+INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
+			([ResourceName],
+			[WbsHours],
+			[TotalHours],
+			[MOQTypeSelectionTableDataId],
+			[BOETaskElementID],
+			[BOEID]
+			)
+SELECT MOQTypeSelectionTableDataId,
+	[ResourceName],
+	[WbsHours],
+	[TotalHours],
+	[MOQTypeSelectionTableDataId],
+	[BOETaskElementID],
+	[BOEID]
+FROM @MOQTypeSelectionTableDataResourceHours
+WHERE MOQTypeSelectionTableDataResourceHoursId = @MOQTypeSelectionTableDataResourceHoursId
+
+UPDATE @MOQTypeSelectionTableDataResourceHours
+SET NewMOQTypeSelectionTableDataResourceHoursId = SCOPE_IDENTITY(),
+	Processed = 1
+WHERE MOQTypeSelectionTableDataResourceHoursId = @MOQTypeSelectionTableDataResourceHoursId
 
 END
 
