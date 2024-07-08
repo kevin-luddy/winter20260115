@@ -123,6 +123,7 @@
     <Compile Include="Common\security\SecurityAccessSpaceSystems.cs" />
     <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\IMOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
     <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\MOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
+    <Compile Include="DTO\MOQTypes\CommonDisclosureModelView.cs" />
     <Compile Include="DTO\MOQTypes\IMoqTypeDataLoader.cs" />
     <Compile Include="DTO\MOQTypes\IMoqTypeTableCustomFieldValueXREFLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTableData.cs" />
