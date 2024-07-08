@@ -14,8 +14,10 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Models;
 	using System.Data;
 	using System;
-	using GenBOE.ActionLogic.ModelView;
 
+	/// <summary>
+	/// Common Disclosure Skill Mix DTO Data Loader
+	/// </summary>
 	public class CommonDisclosureSMDTODataLoader : ICommonDisclosureSMDTODataLoader
 	{
 		private readonly Logger _log = new Logger(typeof(CommonDisclosureSMDTODataLoader));
@@ -26,7 +28,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="moqTypeSelectionID"></param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
 		[DbQuery]
-		virtual public ICollection<CommonDisclosureSkillMixDTO> GetByMOQTypeSelectionID(int moqTypeSelectionID)
+		public virtual ICollection<CommonDisclosureSkillMixDTO> GetByMOQTypeSelectionID(int moqTypeSelectionID)
 		{
 			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
 
@@ -53,6 +55,48 @@ namespace GenBOE.DataBridge.DTO
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
 							  }).ToList();
 				}
+				DoPostProcessiong(result);
+
+				return result;
+			}
+		}
+
+		/// <summary>
+		/// Get all Common disclosure Skill Mix values by Workspace Id
+		/// </summary>
+		/// <param name="workspaceId">Workspace Id</param>
+		/// <returns>List of Common Disclosure Skill Mixes</returns>
+		[DbQuery]
+		public ICollection<CommonDisclosureSkillMixDTO> GetByWorkspaceId(int workspaceId)
+		{
+			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from cdsm in gbe.CommonDisclosureSkillMixes
+							  join b in gbe.BOEs on cdsm.BOEID equals b.BOEID
+							  where b.WorkspaceID == workspaceId
+							  select new CommonDisclosureSkillMixDTO
+							  {
+								  CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
+								  Rationale = cdsm.Rationale,
+								  Included = cdsm.Included,
+								  ProposedHours = cdsm.ProposedHours,
+								  HistoricalHours = cdsm.HistoricalHours,
+								  BOESkillMix = cdsm.BOESkillMix,
+								  LaborSkillMix = cdsm.LaborSkillMix,
+								  ResourceID = cdsm.ResourceID,
+								  BusinessResourceID = cdsm.BusinessResourceID,
+								  SkillMixID = cdsm.SkillMixID,
+								  BOEID = cdsm.BOEID,
+								  BOETaskElementID = cdsm.BOETaskElementID,
+								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
+							  }).ToList();
+				}
+				DoPostProcessiong(result);
+
 				return result;
 			}
 		}
@@ -63,7 +107,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeID">int</param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
 		[DbQuery]
-		virtual public ICollection<CommonDisclosureSkillMixDTO> GetByBOEID(int boeID)
+		public virtual ICollection<CommonDisclosureSkillMixDTO> GetByBOEID(int boeID)
 		{
 			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
 
@@ -90,6 +134,8 @@ namespace GenBOE.DataBridge.DTO
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
 							  }).ToList();
 				}
+				DoPostProcessiong(result);
+
 				return result;
 			}
 		}
@@ -100,7 +146,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeTaskElementID">int</param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
 		[DbQuery]
-		virtual public ICollection<CommonDisclosureSkillMixDTO> GetByBOETaskElementID(int boeTaskElementID)
+		public virtual ICollection<CommonDisclosureSkillMixDTO> GetByBOETaskElementID(int boeTaskElementID)
 		{
 			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
 
@@ -127,6 +173,8 @@ namespace GenBOE.DataBridge.DTO
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
 							  }).ToList();
 				}
+				DoPostProcessiong(result);
+
 				return result;
 			}
 		}
@@ -137,7 +185,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="commonDisclosureSkillMixIDs">ICollection<int></param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
 		[DbQuery]
-		virtual public ICollection<CommonDisclosureSkillMixDTO> GetByIds(ICollection<int> commonDisclosureSkillMixIDs)
+		public virtual ICollection<CommonDisclosureSkillMixDTO> GetByIds(ICollection<int> commonDisclosureSkillMixIDs)
 		{
 			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
 
@@ -164,6 +212,8 @@ namespace GenBOE.DataBridge.DTO
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
 							  }).ToList();
 				}
+				DoPostProcessiong(result);
+
 				return result;
 			}
 		}
@@ -173,7 +223,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="commonDisclosureSkillMixID"></param>
 		/// <returns>Common Disclosure Skill Mix</returns>
-		virtual public CommonDisclosureSkillMixDTO GetById(int commonDisclosureSkillMixID)
+		public virtual CommonDisclosureSkillMixDTO GetById(int commonDisclosureSkillMixID)
 		{
 			return this.GetByIds(new Collection<int>() { commonDisclosureSkillMixID }).FirstOrDefault();
 		}
@@ -184,7 +234,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="skillMixIDs">ICollection<int></param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
 		[DbQuery]
-		virtual public ICollection<CommonDisclosureSkillMixDTO> GetBySkillMixIds(ICollection<int> skillMixIDs)
+		public virtual ICollection<CommonDisclosureSkillMixDTO> GetBySkillMixIds(ICollection<int> skillMixIDs)
 		{
 			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
 
@@ -211,6 +261,8 @@ namespace GenBOE.DataBridge.DTO
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
 							  }).ToList();
 				}
+				DoPostProcessiong(result);
+
 				return result;
 			}
 		}
@@ -220,7 +272,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="skillMixID"></param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
-		virtual public ICollection<CommonDisclosureSkillMixDTO> GetBySkillMixId(int skillMixID)
+		public virtual ICollection<CommonDisclosureSkillMixDTO> GetBySkillMixId(int skillMixID)
 		{
 			return this.GetBySkillMixIds(new Collection<int>() { skillMixID });
 		}
@@ -230,7 +282,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="moqTypeSelectionID">int</param>
 		/// <returns>Number of Common Disclosure Skill Mixes deleted</returns>
-		virtual public int? DeleteCommonDisclosureSMByMoqTypeSelection(int moqTypeSelectionID)
+		public virtual int? DeleteCommonDisclosureSMByMoqTypeSelection(int moqTypeSelectionID)
 		{
 			int? toReturn = null;
 
@@ -252,7 +304,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="commonDisclosureSkillMixes">SkillMixDTO</param>
 		/// <returns>Num rows that were inserted</returns>
-		virtual public int? InsertCommonDisclosureSM(ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixes)
+		public virtual int? InsertCommonDisclosureSM(ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixes)
 		{
 			int? toReturn = null;
 			if (commonDisclosureSkillMixes == null || commonDisclosureSkillMixes.Count == 0) { throw new ArgumentNullException(nameof(commonDisclosureSkillMixes)); }
@@ -277,6 +329,28 @@ namespace GenBOE.DataBridge.DTO
 						).FirstOrDefault().Key;
 				}
 				return toReturn;
+			}
+		}
+
+		/// <summary>
+		/// Do post processing on the Common Disclosure dtos
+		/// </summary>
+		/// <param name="commonDisclosures">Common disclosure dtos</param>
+		private void DoPostProcessiong(ICollection<CommonDisclosureSkillMixDTO> commonDisclosures)
+		{
+			IEnumerable<IGrouping<int, CommonDisclosureSkillMixDTO>> groupedResourceHours =
+				commonDisclosures.GroupBy(r => r.MOQTypeSelectionID);
+			
+			foreach (IGrouping<int, CommonDisclosureSkillMixDTO> grouping in groupedResourceHours)
+			{
+				decimal totalGroupHours = grouping.Sum(g => g.HistoricalHours);
+				if (totalGroupHours != 0m)
+				{
+					foreach (CommonDisclosureSkillMixDTO dto in grouping)
+					{
+						dto.LaborSkillMix = dto.HistoricalHours / totalGroupHours;
+					}
+				}
 			}
 		}
 	}

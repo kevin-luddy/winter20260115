@@ -9,6 +9,9 @@ namespace GenBOE.Dtos
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 
+	/// <summary>
+	/// Common Disclosure Skill Mix DTO
+	/// </summary>
 	[Serializable()]
 	[ExcludeFromCodeCoverage]
 	public class CommonDisclosureSkillMixDTO
@@ -67,9 +70,11 @@ namespace GenBOE.Dtos
 		/// BRC ID; Resource ID can have many
 		/// </summary>
 		public string BusinessResourceID { get; set; }
+
 		/// <summary>
-		/// forien key to related row in Skill Mix table
+		/// foreign key to related row in Skill Mix table
 		/// </summary>
+		[Obsolete("This is not needed")]
 		public int SkillMixID { get; set; }
 		/// <summary>
 		/// Foreign Key to BOE table

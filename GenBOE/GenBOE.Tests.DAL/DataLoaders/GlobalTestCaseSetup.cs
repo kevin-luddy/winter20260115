@@ -1574,9 +1574,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
 			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
 			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
-            MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader);
+			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
 
-            MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
+			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader, commonDisclosureLoader);
+
+			MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
             {
                 Id = -1,
                 TaskId = GlobalTestCaseSetup.GlobalTaskElementID,
@@ -1633,7 +1635,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
 			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
 			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
-			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader);
+			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
+
+			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader, commonDisclosureLoader);
 
 
 			// Get MOQ Type Selection and get ID from there

@@ -36,18 +36,24 @@ namespace GenBOE.DataBridge.DTO
 		private readonly ISkillMixDTOLoader skillMixDTOLoader;
 
 		/// <summary>
+		/// Common Disclosure loader
+		/// </summary>
+		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureLoader;
+
+		/// <summary>
 		/// constructor
 		/// </summary>
 		/// <param name="moqTypeTableCustomFieldValueXREFLoader">MOQ Type Table Custom Field Value XREF Loader</param>
 		/// <param name="moqTypeSelectionTableDataResourceHoursDTOLoader">MOQ Type Resource Hours Loader</param>
 		/// <param name="skillMixDTOLoader">Skill Mix Loader</param>
 		public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader, IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader,
-			ISkillMixDTOLoader skillMixDTOLoader)
+			ISkillMixDTOLoader skillMixDTOLoader, ICommonDisclosureSMDTODataLoader commonDisclosureLoader)
         {
             this.Log = new Logger(typeof(MoqTypeDataLoader));
             this.moqTypeTableCustomFieldValueXREFLoader = moqTypeTableCustomFieldValueXREFLoader;
 			this.moqTypeSelectionTableDataResourceHoursDTOLoader = moqTypeSelectionTableDataResourceHoursDTOLoader;
 			this.skillMixDTOLoader = skillMixDTOLoader;
+			this.commonDisclosureLoader = commonDisclosureLoader;
 		}
 
         /// <summary>
@@ -87,7 +93,7 @@ namespace GenBOE.DataBridge.DTO
                     this.GetTableDataForMoqTypes(toReturn, gbe);
 				}
 
-				this.DoPostProcessing(toReturn, null, null);
+				this.DoPostProcessing(toReturn, null, null, null);
             }
 
             return toReturn;
@@ -104,6 +110,7 @@ namespace GenBOE.DataBridge.DTO
             ICollection<MoqTypeSelection> toReturn = new Collection<MoqTypeSelection>();
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours;
 			ICollection<SkillMixDTO> skillMix = new Collection<SkillMixDTO>();
+			ICollection<CommonDisclosureSkillMixDTO> commonDislosures = new Collection<CommonDisclosureSkillMixDTO>();
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
@@ -137,8 +144,9 @@ namespace GenBOE.DataBridge.DTO
 
 				resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByWorkspaceId(workspaceId);
 				skillMix = this.skillMixDTOLoader.GetByWorkspaceId(workspaceId);
+				commonDislosures = this.commonDisclosureLoader.GetByWorkspaceId(workspaceId);
 
-				this.DoPostProcessing(toReturn, resourceHours, skillMix);
+				this.DoPostProcessing(toReturn, resourceHours, skillMix, commonDislosures);
             }
 
             return toReturn;
@@ -155,38 +163,41 @@ namespace GenBOE.DataBridge.DTO
             ICollection<MoqTypeSelection> toReturn = new Collection<MoqTypeSelection>();
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = new Collection<MOQTypeSelectionTableDataResourceHoursDTO>();
 			ICollection<SkillMixDTO> skillMix = new Collection<SkillMixDTO>();
-            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			ICollection<CommonDisclosureSkillMixDTO> commonDislosures = new Collection<CommonDisclosureSkillMixDTO>(); 
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
-                using (GenBoeEntities gbe = new GenBoeEntities())
-                {
-                    toReturn = (from m in gbe.MOQTypeSelections
-                                join t in gbe.BOETaskElements on m.TaskId equals t.BOETaskElementID
-                                where t.BOEID == boeId
-                                select new MoqTypeSelection
-                                {
-                                    Id = m.MOQTypeSelectionId,
-                                    TaskId = m.TaskId,
-                                    SelectedMOQType = (MOQType)m.MOQTypeSelection1,
-                                    UpdateDate = m.UpdateDT,
-                                    Order = m.Order,
-                                    CerName = m.CERName,
-                                    DescriptionHoursRequired = m.HoursDescription,
-                                    SmeReason = m.SubjectMatterExpert,
-                                    SmeHoursLogic = m.HoursLogicAndAssumptions,
-                                    SmeDurationLogic = m.DurationLogicAndAssumptions,
-                                    SmeTaskEstimates = m.EstimateTasks,
-                                    Rationale = m.Rationale,
-                                    SkillMixRationale = m.SkillMix,
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					toReturn = (from m in gbe.MOQTypeSelections
+								join t in gbe.BOETaskElements on m.TaskId equals t.BOETaskElementID
+								where t.BOEID == boeId
+								select new MoqTypeSelection
+								{
+									Id = m.MOQTypeSelectionId,
+									TaskId = m.TaskId,
+									SelectedMOQType = (MOQType)m.MOQTypeSelection1,
+									UpdateDate = m.UpdateDT,
+									Order = m.Order,
+									CerName = m.CERName,
+									DescriptionHoursRequired = m.HoursDescription,
+									SmeReason = m.SubjectMatterExpert,
+									SmeHoursLogic = m.HoursLogicAndAssumptions,
+									SmeDurationLogic = m.DurationLogicAndAssumptions,
+									SmeTaskEstimates = m.EstimateTasks,
+									Rationale = m.Rationale,
+									SkillMixRationale = m.SkillMix,
 									HistoricalReferenceExplanation = m.HistoricalReferenceExplanation,
 									BoeId = t.BOEID
-                                }).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
+								}).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
 
-                    this.GetTableDataForMoqTypes(toReturn, gbe);
-					resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByBOEID(boeId);
-					skillMix = this.skillMixDTOLoader.GetByBOEID(boeId);
+					this.GetTableDataForMoqTypes(toReturn, gbe);
 				}
+				
+				resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByBOEID(boeId);
+				skillMix = this.skillMixDTOLoader.GetByBOEID(boeId);
+				commonDislosures = this.commonDisclosureLoader.GetByBOEID(boeId);
 
-                this.DoPostProcessing(toReturn, resourceHours, skillMix);
+                this.DoPostProcessing(toReturn, resourceHours, skillMix, commonDislosures);
             }
 
             return toReturn;
@@ -294,6 +305,22 @@ namespace GenBOE.DataBridge.DTO
 
 						this.skillMixDTOLoader.InsertSkillMix(dtos);
 					}
+
+					// Save the Common Disclosure DTOs
+					if (dtoToUpsert.CommonDisclosureTable != null && dtoToUpsert.CommonDisclosureTable.Any())
+					{
+						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+						foreach (CommonDisclosureModelView commonDisclosure in dtoToUpsert.CommonDisclosureTable)
+						{
+							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+							dto.BOEID = dtoToUpsert.BoeId;
+							dto.MOQTypeSelectionID = toReturn.Value;
+							dto.BOETaskElementID = dtoToUpsert.TaskId;
+							dtos.Add(dto);
+						}
+
+						this.commonDisclosureLoader.InsertCommonDisclosureSM(dtos);
+					}
 				}
 			}
 
@@ -400,13 +427,15 @@ namespace GenBOE.DataBridge.DTO
             }
         }
 
-        /// <summary>
-        /// Do post processing after saving MOQ Type Selections
-        /// </summary>
-        /// <param name="moqTypeSelections">The MOQ Type selections to process</param>
+		/// <summary>
+		/// Do post processing after saving MOQ Type Selections
+		/// </summary>
+		/// <param name="moqTypeSelections">The MOQ Type selections to process</param>
 		/// <param name="resourceHours">The Resource Hours to attach to this MOQ Type (if loaded already)</param>
-        private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<SkillMixDTO> skillMix)
+		/// <param name="skillMix">Skill Mix DTOs</param>
+		/// <param name="commonDisclosures">Common Disclosures DTOs</param>
+		private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+			ICollection<SkillMixDTO> skillMix, ICollection<CommonDisclosureSkillMixDTO> commonDisclosures)
         {
             // Handle custom field enums and resource Hours
             foreach (MoqTypeSelection selection in moqTypeSelections.Where(x => x.TableData.Any()))
@@ -428,13 +457,21 @@ namespace GenBOE.DataBridge.DTO
 
 				if (skillMix == null)
 				{
-					selection.SkillMixTable = this.skillMixDTOLoader.GetByMOQTypeSelectionID(selection.Id).Select(x => new SkillMixModelView(x)).ToCollection();
+					selection.SkillMixTable = this.skillMixDTOLoader.GetByMOQTypeSelectionID(selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
 				}
 				else
 				{
-					selection.SkillMixTable = skillMix.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new SkillMixModelView(x)).ToCollection();
+					selection.SkillMixTable = skillMix.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
 				}
 
+				if (commonDisclosures == null)
+				{
+					selection.CommonDisclosureTable = this.commonDisclosureLoader.GetByMOQTypeSelectionID(selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+				}
+				else
+				{
+					selection.CommonDisclosureTable = commonDisclosures.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+				}
             }
         }
     }
