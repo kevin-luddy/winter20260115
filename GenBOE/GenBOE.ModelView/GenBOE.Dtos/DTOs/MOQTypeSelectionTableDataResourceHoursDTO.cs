@@ -1,8 +1,11 @@
 ﻿namespace GenBOE.Dtos
 {
+	using System;
+
 	/// <summary>
 	/// DTO for MOQ Type Selection Table Data Resource Hours.
 	/// </summary>
+	[Serializable()]
 	public class MOQTypeSelectionTableDataResourceHoursDTO
 	{
 		/// <summary>
