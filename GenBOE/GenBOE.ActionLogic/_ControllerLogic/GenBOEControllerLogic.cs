@@ -98,24 +98,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				#pragma warning restore S3267 // Loops should be simplified with "LINQ" expressions
 			}
 
-			//if (skillMixTable != null && skillMixTable.Any())
-			//{
-			//	foreach (SkillMixModelView skillMixRow in skillMixTable)
-			//	{
-			//		if (string.IsNullOrEmpty(skillMixRow.Rationale))
-			//		{
-			//			validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("Rationale is missing for {0}.", skillMixRow.ResourceNew)));
-			//		}
-			//		else
-			//		{
-			//			if (skillMixRow.Rationale.Length > 255)
-			//			{
-			//				validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("The maximum length of the Rationale field for {0} is {1} characters.", skillMixRow.ResourceNew, 255)));
-			//			}
-			//		}
-			//	}
-			//}
-
 			return validationMessages;
 		}
 

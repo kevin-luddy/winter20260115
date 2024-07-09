@@ -1102,15 +1102,12 @@
 	 */
 
 	$scope.saveAndContinue = function () {
-		console.log('')
-
 		save(function () {
 			$scope.refresh();
 		});
 	};
 
 	$scope.refresh = function () {
-		console.log('in refresh');
 		var data = {};
 		data.taskElementID = $scope.taskElementId;
 		$(document).trigger('DISPLAY_TASK_ELEMENT_DETAILS', data);  // this will destroy the angular scope and refresh task composites
@@ -1147,7 +1144,6 @@
 			wsLocked = false;
 		}
 
-		console.log('in save')
 		if (TaskElementDetailsWidget.isAnyDirty() && !TaskElementDetailsWidget.waitingBeforeSubmit) {
 			var invalidResources = $("#LaborTypesFixed td.resources.inputError").length > 0;
 			var invalidBusinessResourceCodes = ManageTaskModel.IsBRCEnabled && $("#LaborTypesFixed td.business-resource-codes.inputError").length > 0;
