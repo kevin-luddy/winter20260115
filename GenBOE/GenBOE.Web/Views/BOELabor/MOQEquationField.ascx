@@ -256,7 +256,7 @@
                                 </span>
                             </td>
                         </tr>
-                        <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
+                        <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPMonths}}</td>
                             <td><input data-ng-readonly="true" type="text" data-ng-model="tableData.PoPMonthsString" /></td>
                         </tr>
