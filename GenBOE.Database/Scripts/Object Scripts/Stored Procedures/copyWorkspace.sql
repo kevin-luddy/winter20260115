@@ -1707,8 +1707,9 @@ DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
 	[BOETaskElementID] [int] NULL,
 	[BOEID] [int] NULL,
 	Processed bit,
-	NewMOQTypeSelectionTableDataResourceHoursId int,
-	NewMOQTypeSelectionTableDataId int
+	NewMOQTypeSelectionTableDataId int,
+    NewBOETaskElementID int,
+    NewBOEID int
 )
 INSERT INTO @MOQTypeSelectionTableDataResourceHours
 SELECT
@@ -1721,9 +1722,11 @@ SELECT
 	M.[BOEID],
 	0,
 	NULL,
-	T.MOQTypeSelectionTableDataId
+	M.[MOQTypeSelectionTableDataId]
 FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
 INNER JOIN @MOQTypeSelectionTableDataId T ON M.MOQTypeSelectionTableDataId = T.MOQTypeSelectionTableDataId
+INNER JOIN @BOE B ON M.BOEID = B.BOEID
+LEFT JOIN @BOETaskElement T on T.[BOETaskElementID] = M.[BOETaskElementID]
 
 DECLARE @MOQTypeSelectionTableDataResourceHoursId int
 WHILE EXISTS (SELECT 1 FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0)
@@ -1748,8 +1751,7 @@ FROM @MOQTypeSelectionTableDataResourceHours
 WHERE MOQTypeSelectionTableDataResourceHoursId = @MOQTypeSelectionTableDataResourceHoursId
 
 UPDATE @MOQTypeSelectionTableDataResourceHours
-SET NewMOQTypeSelectionTableDataResourceHoursId = SCOPE_IDENTITY(),
-	Processed = 1
+SET Processed = 1
 WHERE MOQTypeSelectionTableDataResourceHoursId = @MOQTypeSelectionTableDataResourceHoursId
 
 END
