@@ -6,8 +6,10 @@
 
 namespace GenBOE.ActionLogic.ModelView
 {
+	using System;
 	using GenBOE.Dtos;
 
+	[Serializable]
 	public class CommonDisclosureModelView : CommonDisclosureSkillMixDTO
 	{
 		public CommonDisclosureModelView()
