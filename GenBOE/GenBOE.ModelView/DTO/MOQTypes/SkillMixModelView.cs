@@ -6,8 +6,8 @@
 
 namespace GenBOE.ActionLogic.ModelView
 {
-	using GenBOE.Dtos;
 	using System;
+	using GenBOE.Dtos;
 
 	[Serializable]
 	public class SkillMixModelView : SkillMixDTO
