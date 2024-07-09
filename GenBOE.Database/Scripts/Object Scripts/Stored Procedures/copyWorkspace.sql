@@ -1695,6 +1695,7 @@ SET NewMOQTypeSelectionTableDataId = SCOPE_IDENTITY(),
 WHERE MOQTypeSelectionTableDataId = @MOQTypeSelectionTableDataId
 
 END
+
 /** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
 DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
 (
@@ -1724,7 +1725,7 @@ SELECT
     M.[BOETaskElementID],
     M.[BOEID]
 FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
-INNER JOIN @MOQTypeSelectionTableDataId T ON M.MOQTypeSelectionTableDataId = T.MOQTypeSelectionTableDataId
+INNER JOIN @MOQTypeSelectionTableData T ON M.MOQTypeSelectionTableDataId = T.MOQTypeSelectionTableDataId
 INNER JOIN @BOE B ON M.BOEID = B.BOEID
 LEFT JOIN @BOETaskElement T on T.[BOETaskElementID] = M.[BOETaskElementID]
 
