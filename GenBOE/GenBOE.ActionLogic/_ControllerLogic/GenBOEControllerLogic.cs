@@ -63,44 +63,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             return allValidationMessages;
         }
 
-		/// <summary>
-		/// Validate the Skill Mix Table for any errors
-		/// </summary>
-		/// <param name="moqTypes">The MOQ Types</param>
-		/// <returns>A collection of any validation errors/messages</returns>
-		public ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes)
-		{
-			List<ValidationMessage> validationMessages = new List<ValidationMessage>();
-
-			if (moqTypes != null)
-			{
-				#pragma warning disable S3267 // Loops should be simplified with "LINQ" expressions
-				foreach (MoqTypeSelection moqType in moqTypes)
-				{
-					if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
-					{
-						foreach (SkillMixModelView skillMixRow in moqType.SkillMixTable)
-						{
-							if (string.IsNullOrEmpty(skillMixRow.Rationale))
-							{
-								validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("Rationale is missing for {0}.", skillMixRow.ResourceNew)));
-							}
-							else
-							{
-								if (skillMixRow.Rationale.Length > 255)
-								{
-									validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("The maximum length of the Rationale field for {0} is {1} characters.", skillMixRow.ResourceNew, 255)));
-								}
-							}
-						}
-					}
-				}
-				#pragma warning restore S3267 // Loops should be simplified with "LINQ" expressions
-			}
-
-			return validationMessages;
-		}
-
         /// <summary>
         /// For any properties marked as rich-text, remove styling and/or markup that are known to cause problems
         /// for the third-party HTML conversion utility.

@@ -848,7 +848,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Validate Skill Mix Table
-			ICollection<ValidationMessage> skillMixValidationErrors = this.ValidateSkillMixTable(modelView.MOQTypes);
+			ICollection<ValidationMessage> skillMixValidationErrors = this._BoeLaborControllerLogic.ValidateSkillMixTable(modelView.MOQTypes, ws.CreationDate);
 			if (skillMixValidationErrors.Any())
 			{
 				validationErrors.AddRange(skillMixValidationErrors);

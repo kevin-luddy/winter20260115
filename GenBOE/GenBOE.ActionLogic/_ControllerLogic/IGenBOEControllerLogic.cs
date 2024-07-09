@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.Dtos;
 	using IES.Common.Exceptions;
 	using GenBOE.ActionLogic.ModelView;
+	using System;
 
 	/// <summary>
 	/// Controller logic interface for the base controller logic class
@@ -54,12 +55,5 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
         /// <returns>Validation warnings.</returns>
         ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit);
-
-		/// <summary>
-		/// Validate the Skill Mix Table for any errors
-		/// </summary>
-		/// <param name="moqTypes">The MOQ Types</param>
-		/// <returns>A collection of any validation errors/messages</returns>
-		ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes);
 	}
 }

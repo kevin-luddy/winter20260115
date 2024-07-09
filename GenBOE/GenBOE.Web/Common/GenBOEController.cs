@@ -927,15 +927,6 @@ namespace GenBOE.Web.Common
             return this._ControllerLogic.ValidateRteAnswers(answers, sources, rteSizeLimit);
         }
 
-		/// <summary>
-		/// Validate if all of the Rationale fields for the Skill Mix Table are filled out
-		/// </summary>
-		/// <param name="moqTypes">The MOQ Types</param>
-		protected ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes)
-		{
-			return this._ControllerLogic.ValidateSkillMixTable(moqTypes);
-		}
-
         /// <summary>
         /// Assemble a JSON response containing a list of validation errors
         /// </summary>
