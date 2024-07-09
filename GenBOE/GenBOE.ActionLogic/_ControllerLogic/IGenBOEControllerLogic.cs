@@ -58,8 +58,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Validate the Skill Mix Table for any errors
 		/// </summary>
-		/// <param name="skillMixTable">The Skill Mix table, as a model view</param>
+		/// <param name="moqTypes">The MOQ Types</param>
 		/// <returns>A collection of any validation errors/messages</returns>
-		ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixTable);
+		ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes);
 	}
 }

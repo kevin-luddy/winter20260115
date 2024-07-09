@@ -1414,10 +1414,7 @@
 				// Filter out the blank row before save
 				postedData.LaborTypesData = postedData.LaborTypesData.filter(function (d) { return d.NewLaborType === false });
 
-				// Get Skill Mix table data
-				var skillMixTable = angular.copy(MOQEquationFieldModel.SkillMixTable);
-
-				var data = { modelView: postedData, skillMixTable: skillMixTable };
+				var data = { modelView: postedData };
 
 				var saveAction = wsLocked ? "SaveLockedTaskDataModel" : ManageTaskModel.saveAction;
 

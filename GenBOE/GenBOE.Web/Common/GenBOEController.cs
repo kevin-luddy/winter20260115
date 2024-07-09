@@ -930,9 +930,10 @@ namespace GenBOE.Web.Common
 		/// <summary>
 		/// Validate if all of the Rationale fields for the Skill Mix Table are filled out
 		/// </summary>
-		protected ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixTable)
+		/// <param name="moqTypes">The MOQ Types</param>
+		protected ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes)
 		{
-			return this._ControllerLogic.ValidateSkillMixTable(skillMixTable);
+			return this._ControllerLogic.ValidateSkillMixTable(moqTypes);
 		}
 
         /// <summary>

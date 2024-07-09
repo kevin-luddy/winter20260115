@@ -66,29 +66,55 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Validate the Skill Mix Table for any errors
 		/// </summary>
-		/// <param name="skillMixTable">The Skill Mix table, as a model view</param>
+		/// <param name="moqTypes">The MOQ Types</param>
 		/// <returns>A collection of any validation errors/messages</returns>
-		public ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixTable)
+		public ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes)
 		{
 			List<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
-			if (skillMixTable != null && skillMixTable.Any())
+			if (moqTypes != null)
 			{
-				foreach (SkillMixModelView skillMixRow in skillMixTable)
+				#pragma warning disable S3267 // Loops should be simplified with "LINQ" expressions
+				foreach (MoqTypeSelection moqType in moqTypes)
 				{
-					if (string.IsNullOrEmpty(skillMixRow.Rationale))
+					if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
 					{
-						validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("Rationale is missing for {0}.", skillMixRow.ResourceNew)));
-					}
-					else
-					{
-						if (skillMixRow.Rationale.Length > 255)
+						foreach (SkillMixModelView skillMixRow in moqType.SkillMixTable)
 						{
-							validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("The maximum length of the Rationale field for {0} is {1} characters.", skillMixRow.ResourceNew, 255)));
+							if (string.IsNullOrEmpty(skillMixRow.Rationale))
+							{
+								validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("Rationale is missing for {0}.", skillMixRow.ResourceNew)));
+							}
+							else
+							{
+								if (skillMixRow.Rationale.Length > 255)
+								{
+									validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("The maximum length of the Rationale field for {0} is {1} characters.", skillMixRow.ResourceNew, 255)));
+								}
+							}
 						}
 					}
 				}
+				#pragma warning restore S3267 // Loops should be simplified with "LINQ" expressions
 			}
+
+			//if (skillMixTable != null && skillMixTable.Any())
+			//{
+			//	foreach (SkillMixModelView skillMixRow in skillMixTable)
+			//	{
+			//		if (string.IsNullOrEmpty(skillMixRow.Rationale))
+			//		{
+			//			validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("Rationale is missing for {0}.", skillMixRow.ResourceNew)));
+			//		}
+			//		else
+			//		{
+			//			if (skillMixRow.Rationale.Length > 255)
+			//			{
+			//				validationMessages.Add(new ValidationMessage(skillMixRow.ResourceNew, string.Format("The maximum length of the Rationale field for {0} is {1} characters.", skillMixRow.ResourceNew, 255)));
+			//			}
+			//		}
+			//	}
+			//}
 
 			return validationMessages;
 		}
