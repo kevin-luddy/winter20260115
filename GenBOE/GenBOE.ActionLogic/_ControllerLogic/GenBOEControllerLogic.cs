@@ -63,6 +63,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
             return allValidationMessages;
         }
 
+		/// <summary>
+		/// Validate the Skill Mix Table for any errors
+		/// </summary>
+		/// <param name="skillMixTable">The Skill Mix table, as a model view</param>
+		/// <returns>A collection of any validation errors/messages</returns>
 		public ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixTable)
 		{
 			List<ValidationMessage> validationMessages = new List<ValidationMessage>();
@@ -84,6 +89,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 			}
+
+			return validationMessages;
 		}
 
         /// <summary>

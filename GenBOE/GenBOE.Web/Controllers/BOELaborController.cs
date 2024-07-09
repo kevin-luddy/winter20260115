@@ -758,11 +758,17 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="modelView">The model view.</param>
 		/// <returns></returns>
-		public ActionResult SaveTaskDataModel(string workspace, LaborTaskDataModelView modelView, bool isLocked = false)
+		public ActionResult SaveTaskDataModel(string workspace, LaborTaskDataModelView modelView, ICollection<SkillMixModelView> skillMixTable, bool isLocked = false)
 		{
 			_ = modelView ?? throw new ArgumentNullException(nameof(modelView));
 			_ = modelView.TaskElementData ?? throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
 			_ = modelView.LaborTypesData ?? throw new ArgumentNullException("modelView", "LaborTypesData is null inside modelView");
+
+			if (skillMixTable != null)
+			{
+				string test = skillMixTable.Count.ToString();
+				test += workspace;
+			}
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, modelView.TaskElementData.BOEID);
@@ -848,7 +854,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Validate Skill Mix Table
-
+			//ICollection<ValidationMessage> skillMixValidationErrors = this.ValidateSkillMixTable();
 
 			BoeTaskElementDTO dto = this._BoeLaborControllerLogic.ConvertModelViewToDto(modelView, ws);
 
@@ -879,7 +885,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="modelView">The model view.</param>
 		/// <returns></returns>
-		public ActionResult SaveLockedTaskDataModel(string workspace, LaborTaskDataModelView modelView)
+		public ActionResult SaveLockedTaskDataModel(string workspace, LaborTaskDataModelView modelView, ICollection<SkillMixModelView> skillMixTable)
 		{
 			if (modelView == null)
 			{
@@ -900,7 +906,7 @@ namespace GenBOE.Web.Controllers
 				throw new GenValidationException(validationErrors);
 			}
 
-			return SaveTaskDataModel(workspace, modelView, true);
+			return SaveTaskDataModel(workspace, modelView, skillMixTable, true);
 		}
 
 		/// <summary>
