@@ -1102,6 +1102,8 @@
 	 */
 
 	$scope.saveAndContinue = function () {
+		console.log('')
+
 		save(function () {
 			$scope.refresh();
 		});
@@ -1145,6 +1147,7 @@
 			wsLocked = false;
 		}
 
+		console.log('in save')
 		if (TaskElementDetailsWidget.isAnyDirty() && !TaskElementDetailsWidget.waitingBeforeSubmit) {
 			var invalidResources = $("#LaborTypesFixed td.resources.inputError").length > 0;
 			var invalidBusinessResourceCodes = ManageTaskModel.IsBRCEnabled && $("#LaborTypesFixed td.business-resource-codes.inputError").length > 0;
@@ -1411,7 +1414,10 @@
 				// Filter out the blank row before save
 				postedData.LaborTypesData = postedData.LaborTypesData.filter(function (d) { return d.NewLaborType === false });
 
-				var data = { modelView: postedData };
+				// Get Skill Mix table data
+				var skillMixTable = angular.copy(MOQEquationFieldModel.SkillMixTable);
+
+				var data = { modelView: postedData, skillMixTable: skillMixTable };
 
 				var saveAction = wsLocked ? "SaveLockedTaskDataModel" : ManageTaskModel.saveAction;
 

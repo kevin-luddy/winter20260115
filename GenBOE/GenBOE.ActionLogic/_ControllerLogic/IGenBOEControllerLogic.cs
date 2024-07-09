@@ -7,13 +7,14 @@
 namespace GenBOE.ActionLogic.ControllerLogic
 {
     using System.Collections.Generic;
-    using GenBOE.Dtos;
-    using IES.Common.Exceptions;
+	using GenBOE.Dtos;
+	using IES.Common.Exceptions;
+	using GenBOE.ActionLogic.ModelView;
 
-    /// <summary>
-    /// Controller logic interface for the base controller logic class
-    /// </summary>
-    public interface IGenBOEControllerLogic
+	/// <summary>
+	/// Controller logic interface for the base controller logic class
+	/// </summary>
+	public interface IGenBOEControllerLogic
     {
         /// <summary>
         /// For any properties marked as rich-text, remove styling and/or markup that is incompatible with saving.
@@ -53,5 +54,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
         /// <returns>Validation warnings.</returns>
         ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit);
-    }
+
+		/// <summary>
+		/// Validate the Skill Mix Table for any errors
+		/// </summary>
+		/// <param name="skillMixTable">The Skill Mix table, as a model view</param>
+		/// <returns>A collection of any validation errors/messages</returns>
+		ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixTable);
+	}
 }

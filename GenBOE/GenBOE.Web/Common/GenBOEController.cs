@@ -932,7 +932,7 @@ namespace GenBOE.Web.Common
 		/// </summary>
 		protected ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixTable)
 		{
-			return this._ControllerLogic
+			return this._ControllerLogic.ValidateSkillMixTable(skillMixTable);
 		}
 
         /// <summary>

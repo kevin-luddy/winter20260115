@@ -468,7 +468,7 @@
                                 </td>
                                 <td>
                                     <div id="skill-mix-table-rationale">
-                                        <input type="text" maxlength="255" data-ng-model="item.Rationale" />
+                                        <input type="text" maxlength="255" id="rationale" data-ng-model="item.Rationale" />
                                     </div>
                                 </td>
                             </tr>
