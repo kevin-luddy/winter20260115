@@ -513,6 +513,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		tableData.PoPEnd = undefined;
 		tableData.PoPEndWeek = undefined;
 		tableData.PoPEndYear = undefined;
+		tableData.PoPMonthsString = '';
 	}
 
 	$scope.disableHistoricalComparativeConvertButtons = function () {
@@ -1540,6 +1541,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		// Get the difference between the two dates in months (30.42 days), rounded to 2 decimals
 		return +(((popEnd.getTime() - popStart.getTime() + ((popStart.getTimezoneOffset() - popEnd.getTimezoneOffset()) * (60 * 1000))) / (1000 * 60 * 60 * 24)) / ManageTaskModel.PoPMonthsDivisor).toFixed(2);
 	};
+
+	$scope.DateChanged = function (tableData) {
+		tableData.PoPMonthsString = $scope.RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);
+		$scope.SetTableDirty(tableData);
+	}
 
 	$scope.IsSapEnabledAndSetAsRepository = function (repositoryName) {
 		if ($scope.model.IsRMS) {
