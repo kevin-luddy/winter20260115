@@ -6,13 +6,12 @@
 
 namespace IESPortal.Backend.Controllers
 {
-	using System;
 	using System.Collections.Generic;
 	using IES.ActionLogic.Core.Common;
 	using IES.Common.Core;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
-	using IES.DataBridge.Loaders;
+	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
 	using IESPortal.Backend.Models;
 	using Microsoft.AspNetCore.Mvc;
@@ -28,6 +27,11 @@ namespace IESPortal.Backend.Controllers
 		private readonly BannerMediator bannerMediator;
 
 		/// <summary>
+		/// Active Directory Service
+		/// </summary>
+		private readonly IActiveDirectoryService activeDirectoryService;
+
+		/// <summary>
 		/// Configuration
 		/// </summary>
 		private readonly IConfiguration configuration;
@@ -37,11 +41,31 @@ namespace IESPortal.Backend.Controllers
 		/// </summary>
 		/// <param name="securityInformation">The security information.</param>
 		/// <param name="bannerMediator">The banner mediator.</param>
-		public HomeController(ILogger<HomeController> logger, IConfiguration configuration, ISecurityInformation securityInformation, BannerMediator bannerMediator)
+		/// <param name="activeDirectory">Active directory</param>
+		public HomeController(ILogger<HomeController> logger, IConfiguration configuration, ISecurityInformation securityInformation, BannerMediator bannerMediator,
+			IActiveDirectoryService activeDirectory)
 			: base(logger, securityInformation, configuration)
 		{
 			this.configuration = configuration;
 			this.bannerMediator = bannerMediator;
+			this.activeDirectoryService = activeDirectory;
+		}
+
+		/// <summary>
+		/// Get User Data
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet("[action]")]
+		public UserData GetUserData()
+		{
+			UserData user = null;
+			string ntId = this.securityInformation.ActiveUserNTID;
+			if (!string.IsNullOrWhiteSpace(ntId))
+			{
+				user = this.activeDirectoryService.GetUserByQualifiedAccount(ntId, false);
+			}
+
+			return user;
 		}
 
 		/// <summary>

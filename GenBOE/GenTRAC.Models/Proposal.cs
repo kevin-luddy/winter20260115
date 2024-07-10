@@ -102,6 +102,7 @@ namespace GenTRAC.Models
         public string ContractActionTypeOtherText { get; set; }
         public int CostVolumeToolID { get; set; }
         public string CostVolumeToolName { get; set; }
+        public Nullable<bool> AdditionalClassification { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }

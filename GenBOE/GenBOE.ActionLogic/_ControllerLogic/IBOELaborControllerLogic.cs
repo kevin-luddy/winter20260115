@@ -265,13 +265,21 @@ namespace GenBOE.ActionLogic
         /// <returns>Any Validation errors</returns>
         ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement);
 
-        /// <summary>
-        /// Recalculates the labor types that have percent spread locked.
-        /// </summary>
-        /// <param name="workspaceData">The workspace data.</param>
-        /// <param name="laborTabData">The labor tab data.</param>
-        /// <param name="moqTotalHours">The moq total hours.</param>
-        void RecalculateLaborSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours);
+		/// <summary>
+		/// Validate the Skill Mix Table for any errors
+		/// </summary>
+		/// <param name="moqTypes">The MOQ Types</param>
+		/// <param name="workspaceCreationDate">The workspace creation date</param>
+		/// <returns>A collection of any validation errors/messages</returns>
+		ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate);
+
+		/// <summary>
+		/// Recalculates the labor types that have percent spread locked.
+		/// </summary>
+		/// <param name="workspaceData">The workspace data.</param>
+		/// <param name="laborTabData">The labor tab data.</param>
+		/// <param name="moqTotalHours">The moq total hours.</param>
+		void RecalculateLaborSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours);
 
         /// <summary>
         /// Updates the OrderList for the Labor Types in a Task Element

@@ -27,6 +27,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
+	p.AdditionalClassification,
 	CAST (P.DateCreated AS DATE) AS DateCreated,
 	YEAR(P.DateCreated) AS [Year],	
 	PA.ProgramAreaID as ProgramAreaID,
