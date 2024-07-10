@@ -4119,7 +4119,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					foreach (CommonDisclosureModelView currentData in commonDisclosureSMData)
 					{
 						CommonDisclosureModelView newData;
-						newData = newTable.FirstOrDefault(s => s.ResourceID == currentData.ResourceID);
+						newData = newTable.FirstOrDefault(s => s.ResourceID == currentData.ResourceID && s.BusinessResourceID == currentData.BusinessResourceID);
 
 						if (newData != null)
 						{

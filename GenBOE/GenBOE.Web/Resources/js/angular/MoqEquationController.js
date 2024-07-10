@@ -257,7 +257,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				MOQEquationFieldWidget.setDirty();
 				$scope.actualsValidation.isDirty.delete(item.Id);
 				$scope.refreshSkillMixTable(moqType);
-				$scope.refreshCommonDisclosureTable(moqType);
 				$scope.refreshDisableSave();
 			});
 		});
@@ -1121,7 +1120,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								$scope.actualsValidation.isDirty.delete(res.TableId);
 								$scope.refreshDisableSave();
 								$scope.refreshSkillMixTable(moqType);
-								$scope.refreshCommonDisclosureTable(moqType);
 							}
 						});
 					}
@@ -1329,7 +1327,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								if (moqTypes) {
 									moqTypes.forEach(moq => {
 										$scope.refreshSkillMixTable(moq);
-										$scope.refreshCommonDisclosureTable(moq);
 									});
 								}
 							}
@@ -1337,7 +1334,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 						moqTypes2.forEach(moq => {
 							$scope.refreshSkillMixTable(moq);
-							$scope.refreshCommonDisclosureTable(moq);
 						});
 					}
 
@@ -1394,6 +1390,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					if (response.data.data) {
 						moqType.SkillMixTable = response.data.data;
 					}
+					$scope.refreshCommonDisclosureTable(moqType);
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
 				}
@@ -1690,7 +1687,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 		$scope.IsSapSetAndAnyTableSapRepository();
 		$scope.refreshSkillMixTable(moqType);
-		$scope.refreshCommonDisclosureTable(moqType);
 		$scope.refreshDisableSave();
     }
 
