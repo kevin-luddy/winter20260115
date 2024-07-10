@@ -4149,19 +4149,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					IList<SkillMixModelView> skillMixRowsEmptyRationales = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
 					IList<SkillMixModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 
-					if (skillMixRowsEmptyRationales.Any())
+					foreach (string skillMixResourceNew in skillMixRowsEmptyRationales.Select(x => x.ResourceNew))
 					{
-						foreach (string skillMixResourceNew in skillMixRowsEmptyRationales.Select(x => x.ResourceNew))
-						{
-							validationMessages.Add(new ValidationMessage(skillMixResourceNew, string.Format("Rationale is missing for {0}.", skillMixResourceNew)));
-						}
+						validationMessages.Add(new ValidationMessage(skillMixResourceNew, string.Format("Rationale is missing for {0}.", skillMixResourceNew)));
 					}
-					if (skillMixRowsExceedChars.Any())
+					foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
 					{
-						foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
-						{
-							validationMessages.Add(new ValidationMessage(skillMixResourceNew, string.Format("The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255)));
-						}
+						validationMessages.Add(new ValidationMessage(skillMixResourceNew, string.Format("The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255)));
 					}
 				}
 			}
