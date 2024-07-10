@@ -453,7 +453,7 @@
                                     <div id="labor-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
                                 <td>
-                                    <select data-ng-style="{ padding: '2px 5px' }">
+                                    <select data-ng-style="{ padding: '2px 5px' }" data-ng-change="refreshCommonDisclosureTable(moqType)">
                                         <option></option>
                                         <option value="">Yes</option>
                                         <option value="">No</option>
@@ -496,51 +496,32 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-ng-repeat="item in commonDisclosureTableData | filter: { Deleted: false }" data-ng-hide="item.Deleted">
+                            <tr data-ng-repeat="item in moqType.CommonDisclosureTable">
                                 <td>
+                                    <div class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.ResourceID }} </div>
                                 </td>
                                 <td>
+                                    <div class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.BusinessResourceID }} </div>
                                 </td>
                                 <td>
+                                    <div id="cd-historical-hours" class="text skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
+                                    <div id="cd-labor-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
                                 <td>
-                                    <select>
+                                    <select data-ng-style="{ padding: '2px 5px' }">
                                         <option></option>
                                         <option value="">Yes</option>
                                         <option value="">No</option>
                                     </select>
                                 </td>
                                 <td>
+                                    <div id="cd-boe-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"></div>
                                 </td>
                                 <td>
-                                </td>
-                                <td>
-                                </td>									
-                            </tr>
-                        </tbody>
-                        <tbody>
-                            <tr>
-                                <td>
-                                <div title="Total">Total</div>
-                                </td>
-                                <td>
-                                </td>	
-                                <td>
-                                    <div id="cd-historical-hours-total"></div>
-                                </td>
-                                <td>
-                                    <div id="cd-labor-skill-mix-total"></div>
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                    <div id="cd-boe-skill-mix-total"></div>
-                                </td>
-                                <td>
-                                    <div id="cd-proposed-hours-total"></div>
-                                </td>
+                                    <div id="cd-proposed-hours" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"></div>
+                                                                </td>
                                 <td>
                                 </td>									
                             </tr>

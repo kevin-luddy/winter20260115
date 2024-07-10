@@ -47,6 +47,7 @@
 			CalculateAllActualsSapWithSkillMixAction: '<%: WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX %>',
 			ExportActualsSapAction: '<%: WebConstants.ACTION_EXPORT_ACTUALS_SAP %>',
 			RefreshSkillMixTableAction: '<%: WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE %>',
+			RefreshCommonDisclosureTableAction: '<%: WebConstants.ACTION_REFRESH_COMMON_DISCLOSURE_TABLE %>',
 			DisableSave: false,
 			DisableSaveText: '',
 			SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',

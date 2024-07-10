@@ -1122,6 +1122,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								$scope.actualsValidation.isDirty.delete(res.TableId);
 								$scope.refreshDisableSave();
 								$scope.refreshSkillMixTable(moqType);
+								$scope.refreshCommonDisclosureTable(moqType);
 							}
 						});
 					}
@@ -1326,6 +1327,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								if (moqTypes) {
 									moqTypes.forEach(moq => {
 										$scope.refreshSkillMixTable(moq);
+										$scope.refreshCommonDisclosureTable(moq);
 									});
 								}
 							}
@@ -1392,6 +1394,58 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				$(document).trigger("HIDE_LOADING_BOX");
 			}).catch(function () {
 				RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+	};
+
+	$scope.refreshCommonDisclosureTable = function (moqType) {
+		// Get all the data tables
+		const data = {
+			resourceHours: [],
+			currentSkillMixData: [],
+			commonDisclosureSMData: []
+		};
+
+
+		if (moqType.TableData) {
+			moqType.TableData.forEach(tableData => {
+				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName) && $scope.model.CommonDisclosureEnabled) {
+
+					tableData.ResourceHours.forEach(hours => {
+						data.resourceHours.push(hours);
+					});
+				}
+			});
+		}
+
+		data.boeId = ManageTaskModel.boeId;
+		data.currentSkillMixData = moqType.SkillMixTable;
+		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
+
+		if (data.resourceHours.length > 0) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data) {
+						moqType.CommonDisclosureTable = response.data.data;
+					}
+				} else {
+					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
 				$(document).trigger("HIDE_LOADING_BOX");
 			});
 		}
