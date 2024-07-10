@@ -83,7 +83,8 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @ContractActionType int = NULL,
 	  @ContractActionTypeOtherText VARCHAR(100) = NULL,
 	  @CostVolumeToolID int,
-	  @CostVolumeToolName VARCHAR(50)
+	  @CostVolumeToolName VARCHAR(50),
+	  @AdditionalClassification BIT
 )
 AS
 /******************************************************************************
@@ -122,6 +123,7 @@ AS
 **			4/28/2022	jquijano				IES-1067 Show Certification TimelineCompleted Date
 **			7/19/2022	ranzalon				IES-1504 - Contract Action Type
 **			10/12/2022	ranzalon				IES-1933 - Cost Volume Tool
+**			7/9/23		Dusan					PROPH-1563 - Added an Additional Classification Column
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -270,6 +272,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[ContractActionTypeOtherText]
 		,[CostVolumeToolID]
 		,[CostVolumeToolName]
+		,[AdditionalClassification]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -341,6 +344,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@ContractActionTypeOtherText
 		,@CostVolumeToolID
 		,@CostVolumeToolName
+		,@AdditionalClassification
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -446,6 +450,7 @@ ELSE
 						,[ContractActionTypeOtherText] = @ContractActionTypeOtherText
 						,[CostVolumeToolID] = @CostVolumeToolID
 						,[CostVolumeToolName] = @CostVolumeToolName
+						,[AdditionalClassification] = @AdditionalClassification
 						WHERE 
 							ProposalID = @ProposalID;
 

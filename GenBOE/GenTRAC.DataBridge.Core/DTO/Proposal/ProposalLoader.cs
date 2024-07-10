@@ -187,7 +187,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							entity.ContractActionType,
 							entity.ContractActionTypeOtherText,
 							CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
-							entity.CostVolumeToolName
+							entity.CostVolumeToolName,
+							entity.AdditionalClassification
 						}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -262,7 +263,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							ContractActionType = (ContractActionType?)entity.ContractActionType,
 							ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
 							CostVolumeTool = entity.CostVolumeTool,
-							CostVolumeToolName = entity.CostVolumeToolName
+							CostVolumeToolName = entity.CostVolumeToolName,
+							AdditionalClassification = entity.AdditionalClassification
 						}).ToList();
 				}
 			}
@@ -572,7 +574,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							(int?)dtoToUpsert.ContractActionType,
 							dtoToUpsert.ContractActionTypeOtherText,
 							(int)dtoToUpsert.CostVolumeTool,
-							dtoToUpsert.CostVolumeToolName = dtoToUpsert.CostVolumeTool != CostVolumeTool.Other ? string.Empty : dtoToUpsert.CostVolumeToolName).FirstOrDefault();
+							dtoToUpsert.CostVolumeToolName = dtoToUpsert.CostVolumeTool != CostVolumeTool.Other ? string.Empty : dtoToUpsert.CostVolumeToolName,
+							dtoToUpsert.AdditionalClassification
+							).FirstOrDefault();
 					}
 				}
 			}
@@ -906,7 +910,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 						entity.ContractActionType,
 						entity.ContractActionTypeOtherText,
 						CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
-						entity.CostVolumeToolName
+						entity.CostVolumeToolName,
+						entity.AdditionalClassification
 					}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -980,7 +985,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							ContractActionType = (ContractActionType?)entity.ContractActionType,
 							ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
 							CostVolumeTool = entity.CostVolumeTool,
-							CostVolumeToolName = entity.CostVolumeToolName
+							CostVolumeToolName = entity.CostVolumeToolName,
+							AdditionalClassification = entity.AdditionalClassification
 						}).ToList();
 				}
 			}
@@ -1075,7 +1081,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 						entity.ContractActionType,
 						entity.ContractActionTypeOtherText,
 						CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
-						entity.CostVolumeToolName
+						entity.CostVolumeToolName,
+						entity.AdditionalClassification
 					}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -1149,7 +1156,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							ContractActionType = (ContractActionType?)entity.ContractActionType,
 							ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
 							CostVolumeTool = entity.CostVolumeTool,
-							CostVolumeToolName = entity.CostVolumeToolName
+							CostVolumeToolName = entity.CostVolumeToolName,
+							AdditionalClassification = entity.AdditionalClassification
 						}).ToList();
 				}
 			}
@@ -1246,7 +1254,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							entity.ContractActionType,
 							entity.ContractActionTypeOtherText,
 							CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
-							entity.CostVolumeToolName
+							entity.CostVolumeToolName,
+							entity.AdditionalClassification
 						}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -1320,7 +1329,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							ContractActionType = (ContractActionType?)entity.ContractActionType,
 							ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
 							CostVolumeTool = entity.CostVolumeTool,
-							CostVolumeToolName = entity.CostVolumeToolName
+							CostVolumeToolName = entity.CostVolumeToolName,
+							AdditionalClassification = entity.AdditionalClassification
 						}).ToList();
 				}
 			}
@@ -1432,7 +1442,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							entity.ContractActionType,
 							entity.ContractActionTypeOtherText,
 							CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
-							entity.CostVolumeToolName
+							entity.CostVolumeToolName,
+							entity.AdditionalClassification
 						}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -1506,7 +1517,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							ContractActionType = (ContractActionType?)entity.ContractActionType,
 							ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
 							CostVolumeTool = entity.CostVolumeTool,
-							CostVolumeToolName = entity.CostVolumeToolName
+							CostVolumeToolName = entity.CostVolumeToolName,
+							AdditionalClassification = entity.AdditionalClassification
 						}).ToList();
 				}
 			}
@@ -1616,7 +1628,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 					ContractActionType = (ContractActionType?)x.Proposals.ContractActionType,
 					ContractActionTypeOtherText = x.Proposals.ContractActionTypeOtherText,
 					CostVolumeTool = (CostVolumeTool)x.Proposals.CostVolumeToolID,
-					CostVolumeToolName = x.Proposals.CostVolumeToolName
+					CostVolumeToolName = x.Proposals.CostVolumeToolName,
+					AdditionalClassification = x.Proposals.AdditionalClassification
 				}).ToList();
 			}
 
@@ -1717,7 +1730,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 						entity.Proposals.ContractActionType,
 						entity.Proposals.ContractActionTypeOtherText,
 						CostVolumeTool = (CostVolumeTool)entity.Proposals.CostVolumeToolID,
-						entity.Proposals.CostVolumeToolName
+						entity.Proposals.CostVolumeToolName,
+						entity.Proposals.AdditionalClassification
 					}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -1791,7 +1805,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							ContractActionType = (ContractActionType?)entity.ContractActionType,
 							ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
 							CostVolumeTool = entity.CostVolumeTool,
-							CostVolumeToolName = entity.CostVolumeToolName
+							CostVolumeToolName = entity.CostVolumeToolName,
+							AdditionalClassification = entity.AdditionalClassification
 						}).ToList();
 				}
 			}

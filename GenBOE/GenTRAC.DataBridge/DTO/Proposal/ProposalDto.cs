@@ -417,5 +417,10 @@ namespace GenTRAC.DataBridge.DTO
         /// The timestamp of the last time this proposal sent Mod Executed Date Reminders
         /// </summary>
         public DateTime? ModExecutedLastEmailed { get; set; }
-    }
+
+		/// <summary>
+		/// Higher level clearance required beyond standard clearance requirements
+		/// </summary>
+		public bool? AdditionalClassification { get; set; }
+	}
 }
