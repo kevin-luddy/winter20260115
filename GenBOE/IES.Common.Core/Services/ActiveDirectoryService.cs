@@ -144,6 +144,7 @@ namespace IES.Common.Core.Services
 										ds.PropertiesToLoad.Add("lmcUSAPersonIndicator");
 										ds.PropertiesToLoad.Add("employeeType");
 										ds.PropertiesToLoad.Add("title");
+										ds.PropertiesToLoad.Add("lmcDepartmentName");
 										ds.PropertiesToLoad.Add("department");
 									}
 
@@ -183,6 +184,7 @@ namespace IES.Common.Core.Services
 
 									if (!isGroup)
 									{
+										string departmentName = CommonUtilities.TryGetPropertyValue(user.Properties, "lmcDepartmentName");
 										currentAccount = new UserData
 										{
 											FirstName = CommonUtilities.TryGetPropertyValue(user.Properties, "givenname"),
@@ -194,7 +196,7 @@ namespace IES.Common.Core.Services
 											IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y" : null,
 											IsSubcontractor = user.Properties.Contains("employeeType") ? user.Properties["employeeType"][0].ToString().ToUpper() != "E" : null,
 											Title = CommonUtilities.TryGetPropertyValue(user.Properties, "title"),
-											Department = CommonUtilities.TryGetPropertyValue(user.Properties, "department")
+											Department = string.IsNullOrWhiteSpace(departmentName) ? CommonUtilities.TryGetPropertyValue(user.Properties, "department") : departmentName
 										};
 									}
 									else
