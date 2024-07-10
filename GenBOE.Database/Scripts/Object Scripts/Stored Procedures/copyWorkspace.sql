@@ -1790,12 +1790,10 @@ DECLARE @CommonDisclosureSkillMix TABLE
 	[LaborSkillMix] [decimal] NOT NULL,
     [ResourceID] [varchar] NOT NULL,
     [BusinessResourceID] [varchar] NOT NULL,
-    [SkillMixID] [int] NOT NULL,
     [BOEID] [int] NOT NULL,
     [BOETaskElementID] [int] NOT NULL,
     [MOQTypeSelectionID] [int] NOT NULL,
 	Processed bit,
-    NewSkillMixID int,
     NewBOEID int,
     NewBOETaskElementID int,
     NewMOQTypeSelectionID int
@@ -1811,12 +1809,10 @@ SELECT
 	CD.[LaborSkillMix],
     CD.[ResourceID],
     CD.[BusinessResourceID],
-    CD.[SkillMixID],
     CD.[BOEID],
     CD.[BOETaskElementID],
     CD.[MOQTypeSelectionID],
 	0,
-    0,
     B.[NewBOEID],
     T.[NewBOETaskElementID],
     M.[NewMOQTypeSelectionID]
@@ -1838,7 +1834,6 @@ INSERT INTO [dbo].[CommonDisclosureSkillMix]
 			[LaborSkillMix],
             [ResourceID],
             [BusinessResourceID],
-            [SkillMixID],
             [BOEID],
             [BOETaskElementID],
             [MOQTypeSelectionID]
@@ -1852,7 +1847,6 @@ SELECT
 	[LaborSkillMix],
     [ResourceID],
     [BusinessResourceID],
-    [NewSkillMixID],
     [NewBOEID],
     [NewBOETaskElementID],
     [NewMOQTypeSelectionID]
