@@ -14,7 +14,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Net;
     using System.Reflection;
     using System.Text;
-    using GenBOE.Dtos;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.Dtos;
     using IES.Common;
     using IES.Common.Exceptions;
 

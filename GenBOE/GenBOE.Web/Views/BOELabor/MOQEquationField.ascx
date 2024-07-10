@@ -466,7 +466,9 @@
                                     <div id="proposed-hours" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"></div>
                                 </td>
                                 <td>
-                                    <div id="skill-mix-table-rationale"></div> <!-- TO-DO for PROPH-1982 -->
+                                    <div id="skill-mix-table-rationale">
+                                        <input type="text" maxlength="255" id="rationale" data-ng-model="item.Rationale" />
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
