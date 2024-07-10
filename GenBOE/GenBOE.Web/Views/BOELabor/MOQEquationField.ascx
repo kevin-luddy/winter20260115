@@ -453,10 +453,11 @@
                                     <div id="labor-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
                                 <td>
-                                    <select data-ng-style="{ padding: '2px 5px' }" data-ng-change="refreshCommonDisclosureTable(moqType)">
-                                        <option></option>
-                                        <option value="">Yes</option>
-                                        <option value="">No</option>
+                                    <!-- when included is yes, add row to common disclosure table, will need to do other stuff later -->
+                                    <select data-ng-style="{ padding: '2px 5px' }" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
+                                        <option value="null"></option>
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
                                     </select>
                                 </td>
                                 <td>
@@ -512,19 +513,23 @@
                                     <div id="cd-labor-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
                                 <td>
-                                    <select data-ng-style="{ padding: '2px 5px' }">
-                                        <option></option>
-                                        <option value="">Yes</option>
-                                        <option value="">No</option>
+                                    <!-- when included is yes, refresh to get boe skill mix and proposed hours, will need some work to maintain selected value-->
+                                    <select data-ng-style="{ padding: '2px 5px' }" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
+                                        <option value="null"></option>
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <div id="cd-boe-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"></div>
+                                    <div id="cd-boe-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }">{{ item.BOESkillMix * 100 | number: 2 }}% </div>
                                 </td>
                                 <td>
-                                    <div id="cd-proposed-hours" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"></div>
-                                                                </td>
+                                    <div id="cd-proposed-hours" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"> {{ item.ProposedHours }} </div>
+                                </td>
                                 <td>
+                                    <div id="cd-table-rationale">
+                                        <input type="text" maxlength="255" id="cd-rationale" data-ng-model="item.Rationale" />
+                                    </div>
                                 </td>									
                             </tr>
                         </tbody>

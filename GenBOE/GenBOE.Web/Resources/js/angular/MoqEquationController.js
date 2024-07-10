@@ -1459,6 +1459,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				$(document).trigger("HIDE_LOADING_BOX");
 			});
 		}
+		else {
+			moqType.CommonDisclosureTable = [];
+		}
 	};
 
 	$scope.setActualsErrors = function (id, errors) {
