@@ -105,7 +105,7 @@ namespace GenTRAC.ActionLogic.Validation
             public const string CERTIFIED_COST_PRICING_DATA_CLASSIFIED_REQUIRED = GENERAL_INFO_VALIDATION + "\"Is Certified Cost and Pricing Data Classified?\" response is required.";
 
 			/// <summary>
-			/// The certified cost pricing data is required on the Proposal tab.
+			/// Higher level clearance required beyond standard clearance requirements required on the Proposal tab.
 			/// </summary>
 			public const string ADITIONAL_CLASSIFICATION_REQUIRED = GENERAL_INFO_VALIDATION + "\"Higher level clearance required beyond standard clearance requirements?\" response is required.";
 
