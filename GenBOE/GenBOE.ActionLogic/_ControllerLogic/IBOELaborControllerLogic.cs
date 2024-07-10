@@ -393,7 +393,7 @@ namespace GenBOE.ActionLogic
 		/// </summary>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
-		/// <param name="currentSkillMixData">The current skill mix data</param>
+		/// <param name="commonDisclosureSMData">The current skill mix data</param>
 		ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData);
 	}
 }
