@@ -2224,7 +2224,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (tables.Any())
 			{
 				Dictionary<int, string> tasks = ws.TaskElements.ToDictionary(t => t.Id, x => x.TaskTitle);
-				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType);
+				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate, moqTypesToSave);
 				SaveRecalculateActuals(ws, boes, moqTypesToSave, boesUpdated);
 			}
 
@@ -2245,8 +2245,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="tasks">Dictionary of Tasks</param>
 		/// <param name="tables">Dictionary of MOQ Tables</param>
 		/// <param name="tableIdToMoqType">Dictionary of MOQ Types keyed by Table Id</param>
+		/// <param name="workspaceCreationDate">Workspace Creation Date</param>
+		/// <param name="moqTypes">The MOQ Types</param>
 		/// <returns></returns>
-		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType)
+		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate, ICollection<MoqTypeSelection> moqTypes)
 		{
 			ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
 				new MoqTableDataModelView()
@@ -2260,64 +2262,140 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			).ToList();
 
-			// Make one bulk call to SAP
-			ICollection<IESResponse<CalculateActualsViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSap(tableData);
 
 			List<int> boesUpdated = new List<int>();
-
-			foreach (IESResponse<CalculateActualsViewModel> response in responses)
+			// Make one bulk call to SAP
+			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
 			{
-				WorkspaceCalculateActualsModelView resultModel = new WorkspaceCalculateActualsModelView();
-				CalculateActualsViewModel model = response.Data.First();
-
-				// get the original table and moqType
-				MoqTableData table = tables[model.TableId];
-				MoqTypeSelection moqType = tableIdToMoqType[model.TableId];
-				FullBoe boe = boes[moqType.BoeId];
-
-				resultModel.TableName = table.TableName;
-				resultModel.WbsHoursPrevious = table.TotalWbsHours;
-				resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
-				resultModel.BoeStatePrevious = boe.State.GetDescription(); 
-				resultModel.ClinString = boe.Clin?.ClinString;
-				resultModel.WbsString = boe.Wbs?.WbsString;
-				resultModel.BoeTitle = boe.Title;
-				resultModel.Task = tasks[moqType.TaskId];
-				resultModel.Order = table.Order;
-				resultModel.IsSuccessful = response.IsSuccessful;
-				
-				if (response.IsSuccessful)
+				ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSapWithSkillMix(tableData);
+				foreach (IESResponse<CalculateActualsWithSkillMixViewModel> response in responses)
 				{
-					if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
-					{
-						resultModel.WbsHoursPrevious = table.TotalWbsHours;
-						table.TotalWbsHours = model.WbsHours.HasValue ? Convert.ToDecimal(model.WbsHours.Value) : default(decimal);
-						resultModel.WbsHours = table.TotalWbsHours;
+					WorkspaceCalculateActualsModelView resultModel = new WorkspaceCalculateActualsModelView();
+					CalculateActualsWithSkillMixViewModel model = response.Data.First();
 
-						if (string.IsNullOrWhiteSpace(table.ContractNumber) && !string.IsNullOrWhiteSpace(model.ContractNumber))
+					// get the original table and moqType
+					MoqTableData table = tables[model.TableId];
+					MoqTypeSelection moqType = tableIdToMoqType[model.TableId];
+					FullBoe boe = boes[moqType.BoeId];
+
+					resultModel.TableName = table.TableName;
+					resultModel.WbsHoursPrevious = table.TotalWbsHours;
+					resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
+					resultModel.BoeStatePrevious = boe.State.GetDescription();
+					resultModel.ClinString = boe.Clin?.ClinString;
+					resultModel.WbsString = boe.Wbs?.WbsString;
+					resultModel.BoeTitle = boe.Title;
+					resultModel.Task = tasks[moqType.TaskId];
+					resultModel.Order = table.Order;
+					resultModel.IsSuccessful = response.IsSuccessful;
+					
+					if (response.IsSuccessful)
+					{
+						if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
 						{
-							table.ContractNumber = model.ContractNumber;
+							double? wbsHoursSum = model.SkillMixDataTable.Sum(s => s.WbsHours);
+							resultModel.WbsHoursPrevious = table.TotalWbsHours;
+							table.TotalWbsHours = wbsHoursSum.HasValue ? Convert.ToDecimal(wbsHoursSum.Value) : default(decimal);
+							resultModel.WbsHours = table.TotalWbsHours;
+
+							if (string.IsNullOrWhiteSpace(table.ContractNumber) && !string.IsNullOrWhiteSpace(model.ContractNumber))
+							{
+								table.ContractNumber = model.ContractNumber;
+							}
+
+							table.RepositoryName = RepositoryName.SAP.GetDescription();
 						}
 
-						table.RepositoryName = RepositoryName.SAP.GetDescription();
+						double totalHoursSum = model.SkillMixDataTable.Sum(s => s.TotalHours);
+						resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
+						table.DateOfReport = DateTime.Now;
+						table.TotalRelevantHours = Convert.ToDecimal(totalHoursSum);
+						resultModel.TotalRelevantHours = table.TotalRelevantHours;
+
+						table.ResourceHours = model.SkillMixDataTable.Select(skillMix => new MOQTypeSelectionTableDataResourceHoursDTO
+							{ 
+								ResourceName= skillMix.ResourceID, 
+								WbsHours= skillMix.WbsHours.HasValue ? Convert.ToDecimal(skillMix.WbsHours.Value) : default(decimal), 
+								TotalHours= Convert.ToDecimal(skillMix.TotalHours) 
+							}).ToArray();
+
+						// only return to UI if Total Relevant Hours changes
+						if (resultModel.TotalRelevantHours != resultModel.TotalRelevantHoursPrevious)
+						{
+							result.Add(resultModel);
+							boesUpdated.Add(moqType.BoeId);
+						}
 					}
-
-					resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
-					table.DateOfReport = DateTime.Now;
-					table.TotalRelevantHours = Convert.ToDecimal(model.TotalHours);
-					resultModel.TotalRelevantHours = table.TotalRelevantHours;
-
-					// only return to UI if Total Relevant Hours changes
-					if (resultModel.TotalRelevantHours != resultModel.TotalRelevantHoursPrevious)
+					else
 					{
+						resultModel.Messages = response.Messages;
 						result.Add(resultModel);
-						boesUpdated.Add(moqType.BoeId);
 					}
 				}
-				else
+
+				foreach (MoqTypeSelection moqType in moqTypes)
 				{
-					resultModel.Messages = response.Messages;
-					result.Add(resultModel);
+					moqType.SkillMixTable = this.boeLaborControllerLogic.RefreshSkillMixTable(moqType.TableData.SelectMany(t => t.ResourceHours).ToArray(), moqType.SkillMixTable);
+				}
+			}
+			else
+			{
+				ICollection<IESResponse<CalculateActualsViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSap(tableData);
+
+				foreach (IESResponse<CalculateActualsViewModel> response in responses)
+				{
+					WorkspaceCalculateActualsModelView resultModel = new WorkspaceCalculateActualsModelView();
+					CalculateActualsViewModel model = response.Data.First();
+
+					// get the original table and moqType
+					MoqTableData table = tables[model.TableId];
+					MoqTypeSelection moqType = tableIdToMoqType[model.TableId];
+					FullBoe boe = boes[moqType.BoeId];
+
+					resultModel.TableName = table.TableName;
+					resultModel.WbsHoursPrevious = table.TotalWbsHours;
+					resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
+					resultModel.BoeStatePrevious = boe.State.GetDescription();
+					resultModel.ClinString = boe.Clin?.ClinString;
+					resultModel.WbsString = boe.Wbs?.WbsString;
+					resultModel.BoeTitle = boe.Title;
+					resultModel.Task = tasks[moqType.TaskId];
+					resultModel.Order = table.Order;
+					resultModel.IsSuccessful = response.IsSuccessful;
+
+					if (response.IsSuccessful)
+					{
+						if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+						{
+							resultModel.WbsHoursPrevious = table.TotalWbsHours;
+							table.TotalWbsHours = model.WbsHours.HasValue ? Convert.ToDecimal(model.WbsHours.Value) : default(decimal);
+							resultModel.WbsHours = table.TotalWbsHours;
+
+							if (string.IsNullOrWhiteSpace(table.ContractNumber) && !string.IsNullOrWhiteSpace(model.ContractNumber))
+							{
+								table.ContractNumber = model.ContractNumber;
+							}
+
+							table.RepositoryName = RepositoryName.SAP.GetDescription();
+						}
+
+						resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
+						table.DateOfReport = DateTime.Now;
+						table.TotalRelevantHours = Convert.ToDecimal(model.TotalHours);
+						resultModel.TotalRelevantHours = table.TotalRelevantHours;
+
+						// only return to UI if Total Relevant Hours changes
+						if (resultModel.TotalRelevantHours != resultModel.TotalRelevantHoursPrevious)
+						{
+							result.Add(resultModel);
+							boesUpdated.Add(moqType.BoeId);
+						}
+					}
+					else
+					{
+						resultModel.Messages = response.Messages;
+						result.Add(resultModel);
+					}
 				}
 			}
 
