@@ -130,7 +130,7 @@ namespace IES.Common
         /// <returns>A string representation</returns>
         public override string ToString()
         {
-            return string.Format("Ntid [{0}], Email [{1}], DisplayName [{2}], FirstName [{3}], LastName [{4}], Phone [{5}], Company [{6}], Title [{7}], State [{8}], Country [{9}]",
+            return string.Format("Ntid [{0}], Email [{1}], DisplayName [{2}], FirstName [{3}], LastName [{4}], Phone [{5}], Company [{6}], Title [{7}], Department [{8}], State [{9}], Country [{10}]",
                 this.Ntid,
                 this.Email,
                 this.DisplayName,
@@ -139,6 +139,7 @@ namespace IES.Common
                 this.Phone,
                 this.Company,
                 this.Title,
+				this.Department,
                 this.State,
                 this.Country);
         }
@@ -187,5 +188,10 @@ namespace IES.Common
         /// AD Property -> employeeType -> values: G sub, E is emp
         /// </summary>
         public bool? IsSubcontractor { get; set; }
-    }
+
+		/// <summary>
+		/// Gets the user's department
+		/// </summary>
+		public string Department { get; set; }
+	}
 }
