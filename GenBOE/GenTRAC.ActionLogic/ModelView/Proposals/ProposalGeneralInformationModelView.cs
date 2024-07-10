@@ -160,10 +160,15 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// </summary>
         public bool IsCCPDReadOnly { get; set; }
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public ProposalGeneralInformationModelView()
+		/// <summary>
+		/// Higher level clearance required beyond standard clearance requirements
+		/// </summary>
+		public bool? AdditionalClassification { get; set; }
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public ProposalGeneralInformationModelView()
         {
             this.ProposalID = -1;
             this.LineOfBusiness = string.Empty;

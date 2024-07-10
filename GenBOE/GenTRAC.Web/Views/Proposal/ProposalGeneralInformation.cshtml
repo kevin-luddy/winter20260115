@@ -7,6 +7,17 @@
 
     var ProposalGeneralInformationWidget;
 
+    ClassificationChanged = function (isTrue) {
+        if (isTrue) {
+            $('#AdditionalClassificationField').show();
+        }
+        else {
+            $('#AdditionalClassificationField').hide();
+            $('#AdditionalClassification-Yes').prop("checked", false);
+            $('#AdditionalClassification-No').prop("checked", false);
+        }
+    }
+
     $(function () {
         var readOnly = @Model.IsReadOnly;
         var GeneralInformationWidgetConfig = {};
@@ -89,6 +100,7 @@
         $('#PricingToolName').hide();
         $('#BOEToolName').hide();
         $('#CostVolumeToolName').hide();
+        ClassificationChanged('@Model.IsCostVolumeClassified'.isTrue());
 
         // If Other is selected, update the value but do NOT show the textbox as ProposalLocationName
         //  is now a legacy field.  It is no longer displayed, but we want to retain current values
@@ -264,9 +276,22 @@
                 <div class="form-element">
                     <div>
                         <label for="IsCostVolumeClassified-Yes">Yes</label>
-                        <input type="radio" class="radio" id="IsCostVolumeClassified-Yes" value="true" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
+                        <input type="radio" class="radio" id="IsCostVolumeClassified-Yes" onchange="ClassificationChanged(true)" value="true" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
                         <label for="IsCCPDClassified-No">No</label>
-                        <input type="radio" class="radio" id="IsCostVolumeClassified-No" value="false" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && !Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
+                        <input type="radio" class="radio" id="IsCostVolumeClassified-No" onchange="ClassificationChanged(false)" value="false" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && !Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
+                    </div>
+                </div>
+            </div>
+            <div class="form-row" id="AdditionalClassificationField">
+                <div class="form-label">
+                    <span helptext="Select “Yes” if a higher level of classification is required. Otherwise, select “No”.">Higher level clearance required beyond standard clearance requirements?*:</span>
+                </div>
+                <div class="form-element">
+                    <div>
+                        <label for="AdditionalClassification-Yes">Yes</label>
+                        <input type="radio" class="radio" id="AdditionalClassification-Yes" value="true" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && Model.AdditionalClassification.Value) { <text> checked</text>} />
+                        <label for="IsCCPDClassified-No">No</label>
+                        <input type="radio" class="radio" id="AdditionalClassification-No" value="false" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && !Model.AdditionalClassification.Value) { <text> checked</text>} />
                     </div>
                 </div>
             </div>
