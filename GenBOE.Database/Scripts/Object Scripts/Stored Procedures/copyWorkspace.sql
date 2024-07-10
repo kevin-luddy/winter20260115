@@ -1754,7 +1754,7 @@ INSERT INTO [dbo].[SkillMix]
             [ResourceNew],
             [BOETaskElementID],
             [BOEID],
-            [MOQTypeSelectionID],
+            [MOQTypeSelectionID]
 			)
 SELECT NewMOQTypeSelectionID,
 	[Rationale],
