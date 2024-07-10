@@ -413,7 +413,7 @@
                     <table name="currentSkillMix"  class="grid editable">
                         <thead>
                             <tr>
-                                <th data-ng-show="model.IsRMS" class="resource">Resource ID</th>
+                                <th data-ng-show="model.IsRMS" class="resource">Resource</th>
                                 <th class="current-resource-id">Current Resource</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
@@ -486,7 +486,7 @@
                         <thead>
                             <tr>
                                 <th class="current-resource-id">Current Resource</th>
-                                <th class="brc-id">Business Resource ID</th>
+                                <th class="brc-id">Business Resource Code</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
                                 <th class="included">Included *</th>
