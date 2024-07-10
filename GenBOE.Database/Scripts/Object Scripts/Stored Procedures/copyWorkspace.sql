@@ -1731,9 +1731,9 @@ SELECT
     SM.[BOEID],
     SM.[MOQTypeSelectionID],
 	0,
-    SM.[BOETaskElementID],
-    SM.[BOEID],
-    SM.[MOQTypeSelectionID]
+    SM.[NewBOETaskElementID],
+    SM.[NewBOEID],
+    SM.[NewMOQTypeSelectionID]
 FROM [dbo].[SkillMix] SM
 INNER JOIN @MOQTypeSelection T ON M.MOQTypeSelectionID = T.MOQTypeSelectionID
 INNER JOIN @BOE B ON M.BOEID = B.BOEID
@@ -1765,8 +1765,8 @@ SELECT NewMOQTypeSelectionID,
 	[LaborSkillMix],
     [ResourceOld],
     [ResourceNew],
-    [BOETaskElementID],
-    [BOEID]
+    [NewBOETaskElementID],
+    [NewBOEID]
 FROM @SkillMix
 WHERE SkillMixID = @SkillMixID
 
@@ -1801,9 +1801,9 @@ SELECT
 	M.[BOETaskElementID],
 	M.[BOEID],
 	0,
-	M.[MOQTypeSelectionTableDataId],
-    M.[BOETaskElementID],
-    M.[BOEID]
+	M.[NewMOQTypeSelectionTableDataId],
+    M.[NewBOETaskElementID],
+    M.[NewBOEID]
 FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
 INNER JOIN @MOQTypeSelectionTableData T ON M.MOQTypeSelectionTableDataId = T.MOQTypeSelectionTableDataId
 INNER JOIN @BOE B ON M.BOEID = B.BOEID
@@ -1825,9 +1825,9 @@ SELECT NewMOQTypeSelectionTableDataId,
 	[ResourceName],
 	[WbsHours],
 	[TotalHours],
-	[MOQTypeSelectionTableDataId],
-	[BOETaskElementID],
-	[BOEID]
+	[NewMOQTypeSelectionTableDataId],
+	[NewBOETaskElementID],
+	[NewBOEID]
 FROM @MOQTypeSelectionTableDataResourceHours
 WHERE MOQTypeSelectionTableDataResourceHoursId = @MOQTypeSelectionTableDataResourceHoursId
 
