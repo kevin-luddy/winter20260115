@@ -290,7 +290,7 @@
                     <div>
                         <label for="AdditionalClassification-Yes">Yes</label>
                         <input type="radio" class="radio" id="AdditionalClassification-Yes" value="true" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && Model.AdditionalClassification.Value) { <text> checked</text>} />
-                        <label for="IsCCPDClassified-No">No</label>
+                        <label for="AdditionalClassification-No">No</label>
                         <input type="radio" class="radio" id="AdditionalClassification-No" value="false" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && !Model.AdditionalClassification.Value) { <text> checked</text>} />
                     </div>
                 </div>
