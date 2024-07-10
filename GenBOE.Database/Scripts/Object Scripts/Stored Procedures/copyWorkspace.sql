@@ -1696,6 +1696,86 @@ WHERE MOQTypeSelectionTableDataId = @MOQTypeSelectionTableDataId
 
 END
 
+/** [dbo].[[SkillMix]] **/
+DECLARE @SkillMix TABLE
+(
+	[SkillMixID] [int] NOT NULL,
+	[Rationale] [varchar] NOT NULL,
+	[Included] [bit] NOT NULL,
+	[ProposedHours] [decimal] NOT NULL,
+	[HistoricalHours] [decimal] NOT NULL,
+	[BOESkillMix] [decimal] NOT NULL,
+	[LaborSkillMix] [decimal] NOT NULL,
+    [ResourceOld] [varchar] NOT NULL,
+    [ResourceNew] [varchar] NOT NULL,
+    [BOETaskElementID] [int] NOT NULL,
+    [BOEID] [int] NOT NULL,
+    [MOQTypeSelectionID] [int] NOT NULL,
+	Processed bit,
+    NewBOETaskElementID int,
+    NewBOEID int,
+    NewMOQTypeSelectionID int
+)
+INSERT INTO @SkillMix
+SELECT
+	SM.[SkillMixID],
+	SM.[Rationale],
+	SM.[Included],
+	SM.[ProposedHours],
+	SM.[HistoricalHours],
+	SM.[BOESkillMix],
+	SM.[LaborSkillMix],
+    SM.[ResourceOld],
+    SM.[ResourceNew],
+    SM.[BOETaskElementID],
+    SM.[BOEID],
+    SM.[MOQTypeSelectionID],
+	0,
+    SM.[BOETaskElementID],
+    SM.[BOEID],
+    SM.[MOQTypeSelectionID]
+FROM [dbo].[SkillMix] SM
+INNER JOIN @MOQTypeSelection T ON M.MOQTypeSelectionID = T.MOQTypeSelectionID
+INNER JOIN @BOE B ON M.BOEID = B.BOEID
+LEFT JOIN @BOETaskElement T on T.[BOETaskElementID] = M.[BOETaskElementID]
+
+DECLARE @SkillMixID int
+WHILE EXISTS (SELECT 1 FROM @SkillMix WHERE Processed = 0)
+BEGIN
+SELECT TOP 1 @SkillMixID = SkillMixID FROM @SkillMix WHERE Processed = 0
+INSERT INTO [dbo].[SkillMix]
+			([Rationale],
+			[Included],
+			[ProposedHours],
+			[HistoricalHours],
+			[BOESkillMix],
+			[LaborSkillMix],
+            [ResourceOld],
+            [ResourceNew],
+            [BOETaskElementID],
+            [BOEID],
+            [MOQTypeSelectionID],
+			)
+SELECT NewMOQTypeSelectionID,
+	[Rationale],
+	[Included],
+	[ProposedHours],
+	[HistoricalHours],
+	[BOESkillMix],
+	[LaborSkillMix],
+    [ResourceOld],
+    [ResourceNew],
+    [BOETaskElementID],
+    [BOEID]
+FROM @SkillMix
+WHERE SkillMixID = @SkillMixID
+
+UPDATE @SkillMix
+SET Processed = 1
+WHERE SkillMixID = @SkillMixID
+
+END
+
 /** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
 DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
 (
