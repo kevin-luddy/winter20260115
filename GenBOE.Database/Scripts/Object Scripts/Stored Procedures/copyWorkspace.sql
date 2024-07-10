@@ -45,6 +45,7 @@ AS
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 **		3/18/24		twilson3			PROPH-1760 Fix BRC IDs for new WS
+**		7/10/24		e405721				PROPH-2019 Skill Mix, Common Disclosure, MOQ Type Resource Hours Updates
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1696,7 +1697,7 @@ WHERE MOQTypeSelectionTableDataId = @MOQTypeSelectionTableDataId
 
 END
 
-/** [dbo].[SkillMix] **/
+/** [dbo].[[SkillMix]] **/
 DECLARE @SkillMix TABLE
 (
 	[SkillMixID] [int] NOT NULL,
@@ -1731,13 +1732,13 @@ SELECT
     SM.[BOEID],
     SM.[MOQTypeSelectionID],
 	0,
-    SM.[NewBOETaskElementID],
-    SM.[NewBOEID],
-    SM.[NewMOQTypeSelectionID]
+    T.[NewBOETaskElementID],
+    B.[NewBOEID],
+    M.[NewMOQTypeSelectionID]
 FROM [dbo].[SkillMix] SM
-INNER JOIN @MOQTypeSelection T ON SM.MOQTypeSelectionID = T.MOQTypeSelectionID
+INNER JOIN @MOQTypeSelection M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
 INNER JOIN @BOE B ON SM.BOEID = B.BOEID
-LEFT JOIN @BOETaskElement T on T.[BOETaskElementID] = SM.[BOETaskElementID]
+INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = SM.[BOETaskElementID]
 
 DECLARE @SkillMixID int
 WHILE EXISTS (SELECT 1 FROM @SkillMix WHERE Processed = 0)
@@ -1754,9 +1755,9 @@ INSERT INTO [dbo].[SkillMix]
             [ResourceNew],
             [BOETaskElementID],
             [BOEID],
-            [MOQTypeSelectionID]
+            [MOQTypeSelectionID],
 			)
-SELECT NewMOQTypeSelectionID,
+SELECT
 	[Rationale],
 	[Included],
 	[ProposedHours],
@@ -1766,7 +1767,8 @@ SELECT NewMOQTypeSelectionID,
     [ResourceOld],
     [ResourceNew],
     [NewBOETaskElementID],
-    [NewBOEID]
+    [NewBOEID],
+    [NewMOQTypeSelectionID]
 FROM @SkillMix
 WHERE SkillMixID = @SkillMixID
 
@@ -1793,7 +1795,6 @@ DECLARE @CommonDisclosureSkillMix TABLE
     [BOETaskElementID] [int] NOT NULL,
     [MOQTypeSelectionID] [int] NOT NULL,
 	Processed bit,
-    NewCommonDisclosureSkillMixID int,
     NewSkillMixID int,
     NewBOEID int,
     NewBOETaskElementID int,
@@ -1815,15 +1816,14 @@ SELECT
     CD.[BOETaskElementID],
     CD.[MOQTypeSelectionID],
 	0,
-    CD.[NewSkillMixID],
-    CD.[NewBOEID],
-    CD.[NewBOETaskElementID],
-    CD.[NewMOQTypeSelectionID]
+    0,
+    B.[NewBOEID],
+    T.[NewBOETaskElementID],
+    M.[NewMOQTypeSelectionID]
 FROM [dbo].[CommonDisclosureSkillMix] CD
-INNER JOIN @MOQTypeSelection T ON CD.MOQTypeSelectionID = T.MOQTypeSelectionID
-INNER JOIN @SkillMix SM ON CD.SkillMixID = SM.SkillMixID
+INNER JOIN @MOQTypeSelection M ON CD.MOQTypeSelectionID = M.MOQTypeSelectionID
 INNER JOIN @BOE B ON CD.BOEID = B.BOEID
-LEFT JOIN @BOETaskElement T on T.[BOETaskElementID] = CD.[BOETaskElementID]
+INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = CD.[BOETaskElementID]
 
 DECLARE @CommonDisclosureSkillMixID int
 WHILE EXISTS (SELECT 1 FROM @CommonDisclosureSkillMix WHERE Processed = 0)
@@ -1843,7 +1843,7 @@ INSERT INTO [dbo].[CommonDisclosureSkillMix]
             [BOETaskElementID],
             [MOQTypeSelectionID]
 			)
-SELECT NewMOQTypeSelectionID,
+SELECT
 	[Rationale],
 	[Included],
 	[ProposedHours],
@@ -1854,7 +1854,8 @@ SELECT NewMOQTypeSelectionID,
     [BusinessResourceID],
     [NewSkillMixID],
     [NewBOEID],
-    [NewBOETaskElementID]
+    [NewBOETaskElementID],
+    [NewMOQTypeSelectionID]
 FROM @CommonDisclosureSkillMix
 WHERE CommonDisclosureSkillMixID = @CommonDisclosureSkillMixID
 
@@ -1889,13 +1890,13 @@ SELECT
 	M.[BOETaskElementID],
 	M.[BOEID],
 	0,
-	M.[NewMOQTypeSelectionTableDataId],
-    M.[NewBOETaskElementID],
-    M.[NewBOEID]
+	MOQ.[NewMOQTypeSelectionTableDataId],
+    T.[NewBOETaskElementID],
+    B.[NewBOEID]
 FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
-INNER JOIN @MOQTypeSelectionTableData T ON M.MOQTypeSelectionTableDataId = T.MOQTypeSelectionTableDataId
+INNER JOIN @MOQTypeSelectionTableData MOQ ON M.MOQTypeSelectionTableDataId = MOQ.MOQTypeSelectionTableDataId
 INNER JOIN @BOE B ON M.BOEID = B.BOEID
-LEFT JOIN @BOETaskElement T on T.[BOETaskElementID] = M.[BOETaskElementID]
+INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = M.[BOETaskElementID]
 
 DECLARE @MOQTypeSelectionTableDataResourceHoursId int
 WHILE EXISTS (SELECT 1 FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0)
@@ -1909,7 +1910,7 @@ INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
 			[BOETaskElementID],
 			[BOEID]
 			)
-SELECT NewMOQTypeSelectionTableDataId,
+SELECT
 	[ResourceName],
 	[WbsHours],
 	[TotalHours],
