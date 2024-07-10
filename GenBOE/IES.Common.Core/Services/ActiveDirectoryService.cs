@@ -143,6 +143,8 @@ namespace IES.Common.Core.Services
 										ds.PropertiesToLoad.Add("mobile");
 										ds.PropertiesToLoad.Add("lmcUSAPersonIndicator");
 										ds.PropertiesToLoad.Add("employeeType");
+										ds.PropertiesToLoad.Add("title");
+										ds.PropertiesToLoad.Add("department");
 									}
 
 									SearchResult searchResult = ds.FindOne();
@@ -190,7 +192,9 @@ namespace IES.Common.Core.Services
 											Ntid = inNtid,
 											Phone = CommonUtilities.GetUserPhoneNumber(user.Properties),
 											IsUsPerson = user.Properties.Contains("lmcUSAPersonIndicator") ? user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y" : null,
-											IsSubcontractor = user.Properties.Contains("employeeType") ? user.Properties["employeeType"][0].ToString().ToUpper() != "E" : null
+											IsSubcontractor = user.Properties.Contains("employeeType") ? user.Properties["employeeType"][0].ToString().ToUpper() != "E" : null,
+											Title = CommonUtilities.TryGetPropertyValue(user.Properties, "title"),
+											Department = CommonUtilities.TryGetPropertyValue(user.Properties, "department")
 										};
 									}
 									else
