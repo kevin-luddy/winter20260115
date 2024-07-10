@@ -1741,7 +1741,7 @@ INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
 			[BOETaskElementID],
 			[BOEID]
 			)
-SELECT MOQTypeSelectionTableDataId,
+SELECT NewMOQTypeSelectionTableDataId,
 	[ResourceName],
 	[WbsHours],
 	[TotalHours],
