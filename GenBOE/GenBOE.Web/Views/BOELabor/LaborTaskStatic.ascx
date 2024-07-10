@@ -11,6 +11,7 @@
 %>
 <script type="text/javascript">
 	var debugOutputEnabled = false;
+	var isSaveButtonHidden = '<%: ViewData["READONLY"] %>'.isTrue();
 
 	// Get the read-only attribute passed in from the controller
 	var TaskElementsComposite_ReadOnly = <%= ViewData["READONLY"] %>;

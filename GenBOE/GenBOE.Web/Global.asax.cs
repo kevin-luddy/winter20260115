@@ -408,8 +408,9 @@ namespace GenBOE
                     new ResolvedParameter(typeof(IEscalationRatesDTOLoader)),
                     new ResolvedParameter(typeof(IMSTTravelNonzoneFeesAndCostsDTODataLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(ISkillMixDTOLoader), typeof(SkillMixDTOLoader), GetLifetimeManager(), new InjectionMember[] { });
+			GenBOEUnityContainer.Container.RegisterType(typeof(ICommonDisclosureSMDTODataLoader), typeof(CommonDisclosureSMDTODataLoader), GetLifetimeManager(), new InjectionMember[] { });
 
-            switch (SysConfig.CompanyMode)
+			switch (SysConfig.CompanyMode)
             {
                 case CompanyConfiguration.MST:
                     GenBOEUnityContainer.Container.RegisterType(typeof(ITravelDTODataLoader), typeof(MSTTravelDTODataLoader), GetLifetimeManager(), new InjectionConstructor(
@@ -1475,7 +1476,7 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(ISystemSettingDTODataLoader), typeof(SystemSettingDTODataLoader), GetLifetimeManager());
             GenBOEUnityContainer.Container.RegisterType(typeof(IRteTemplateDataLoader), typeof(RteTemplateDataLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader), typeof(MOQTypeSelectionTableDataResourceHoursDTOLoader), GetLifetimeManager());
-			GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)), new ResolvedParameter(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader)), new ResolvedParameter(typeof(ISkillMixDTOLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
+			GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)), new ResolvedParameter(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader)), new ResolvedParameter(typeof(ISkillMixDTOLoader)), new ResolvedParameter(typeof(ICommonDisclosureSMDTODataLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 
         }
 

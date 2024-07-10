@@ -334,6 +334,7 @@ SELECT V.[ProposalID]
 	 ,V.CostThroughCom
 	 ,V.CustomerDueDate
 	 ,V.NlfResponse
+	 ,V.AdditionalClassification
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(

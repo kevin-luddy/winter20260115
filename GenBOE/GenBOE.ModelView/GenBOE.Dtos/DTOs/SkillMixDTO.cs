@@ -1,8 +1,11 @@
 ﻿namespace GenBOE.Dtos
 {
+	using System;
+
 	/// <summary>
 	/// DTO for SkillMix table data
 	/// </summary>
+	[Serializable()]
 	public class SkillMixDTO
 	{
 		/// <summary>
