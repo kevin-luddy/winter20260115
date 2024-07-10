@@ -49,6 +49,7 @@
 	}
 
 	var debugOutputEnabled = false;
+	var isSaveButtonHidden = false;
 
 	// Get the read-only attribute passed in from the controller
 	var ManageWBS_ContainsOCI = <%= Model.ContainsOci.ToString().ToLower() %>;
@@ -910,6 +911,7 @@
 		</div>
 		<div class="oci-note"><b>Note: </b><span id="Task-OCINote"></span></div>
 		<div class="disable-save-text" data-ng-show="ManageTaskModel.DisableSave">{{ManageTaskModel.DisableSaveText}}</div>
+
 		<button data-ng-if="taskElementId" data-ng-hide="isSaving || ManageTaskModel.DisableSave" data-ng-click="saveAndContinue()" id="Save-BOEUpdatesAndContinue" class="ies-action stateful_button" name="save-button" type="button">Save & Continue</button>
 		<button id="Save-BOEUpdatesAndClose" data-ng-hide="isSaving || ManageTaskModel.DisableSave" data-ng-click="saveAndClose()" class="ies-action stateful_button" name="save-button" type="button">Save & Close</button>
 		<button id="Save-BOEUpdatesAndAddAnother" data-ng-hide="isSaving || ManageTaskModel.DisableSave" data-ng-click="saveAndAddAnother()" class="ies-action stateful_button" name="save-button" type="button">Save & Add Another</button>

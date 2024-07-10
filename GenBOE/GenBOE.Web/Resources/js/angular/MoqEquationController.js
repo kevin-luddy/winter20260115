@@ -234,10 +234,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	// Actual Read Only, including reversal
 	$scope.ActualReadOnly = function () {
-		if ($scope.model.ReadOnlyMode) {
-			return true
-		}
-		return $scope.model.IsReadOnly && !$scope.model.ShouldMoqReadOnlyBeReversed;
+		return isSaveButtonHidden;
 	};
 
 	// Create New Table Data for the MOQ Type
