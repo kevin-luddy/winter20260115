@@ -426,7 +426,7 @@
                         <tbody>
                             <tr data-ng-repeat="item in moqType.SkillMixTable">
                                 <td data-ng-if="model.IsRMS">
-                                    <div class="text skillMixPadding"> {{ item.ResourceOld }} </div>
+                                    <div class="text skill-mix-padding"> {{ item.ResourceOld }} </div>
                                 </td>
                                 <td data-ng-if="model.IsRMS" class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels) === false }">
                                     <div class="resource-selection" ng-style="{ padding: '2px 5px' }">
@@ -444,27 +444,27 @@
                                     </div>
                                 </td>
                                 <td data-ng-if="!model.IsRMS">
-                                    <div class="text skillMixPadding"> {{ item.ResourceNew }} </div>
+                                    <div class="text skill-mix-padding"> {{ item.ResourceNew }} </div>
                                 </td>
                                 <td>
-                                    <div id="historical-hours" class="text skill-mix-numerical skillMixPadding"> {{ item.HistoricalHours }} </div>
+                                    <div id="historical-hours" class="text skill-mix-numerical skill-mix-padding"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
-                                    <div id="labor-skill-mix" class="skill-mix-numerical skillMixPadding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
+                                    <div id="labor-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
                                 <td>
                                     <!-- when included is yes, add row to common disclosure table, will need to do other stuff later -->
-                                    <select class="skillMixPadding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
+                                    <select class="skill-mix-padding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
                                         <option value="null"></option>
                                         <option value="true">Yes</option>
                                         <option value="false">No</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <div id="boe-skill-mix" class="skill-mix-numerical skillMixPadding"></div>
+                                    <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding"></div>
                                 </td>
                                 <td>
-                                    <div id="proposed-hours" class="skill-mix-numerical skillMixPadding"></div>
+                                    <div id="proposed-hours" class="skill-mix-numerical skill-mix-padding"></div>
                                 </td>
                                 <td>
                                     <div id="skill-mix-table-rationale">
@@ -501,30 +501,30 @@
                         <tbody>
                             <tr data-ng-repeat="item in moqType.CommonDisclosureTable">
                                 <td>
-                                    <div class="text skillMixPadding"> {{ item.ResourceID }} </div>
+                                    <div class="text skill-mix-padding"> {{ item.ResourceID }} </div>
                                 </td>
                                 <td>
-                                    <div class="text skillMixPadding"> {{ item.BusinessResourceID }} </div>
+                                    <div class="text skill-mix-padding"> {{ item.BusinessResourceID }} </div>
                                 </td>
                                 <td>
-                                    <div id="cd-historical-hours" class="text skill-mix-numerical skillMixPadding"> {{ item.HistoricalHours }} </div>
+                                    <div id="cd-historical-hours" class="text skill-mix-numerical skill-mix-padding"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
-                                    <div id="cd-labor-skill-mix" class="skill-mix-numerical skillMixPadding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
+                                    <div id="cd-labor-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
                                 <td>
                                     <!-- when included is yes, refresh to get boe skill mix and proposed hours, will need some work to maintain selected value-->
-                                    <select class=" skillMixPadding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
+                                    <select class=" skill-mix-padding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
                                         <option value="null"></option>
                                         <option value="true">Yes</option>
                                         <option value="false">No</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <div id="cd-boe-skill-mix" class="skill-mix-numerical skillMixPadding">{{ item.BOESkillMix * 100 | number: 2 }}% </div>
+                                    <div id="cd-boe-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.BOESkillMix * 100 | number: 2 }}% </div>
                                 </td>
                                 <td>
-                                    <div id="cd-proposed-hours" class="skill-mix-numerical skillMixPadding"> {{ item.ProposedHours }} </div>
+                                    <div id="cd-proposed-hours" class="skill-mix-numerical skill-mix-padding"> {{ item.ProposedHours }} </div>
                                 </td>
                                 <td>
                                     <div id="cd-table-rationale">

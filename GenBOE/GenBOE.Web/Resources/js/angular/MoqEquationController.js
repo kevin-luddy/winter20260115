@@ -1261,7 +1261,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								Filters: tableData.AdditionalQueryFilters,
 								TableId: tableData.Id
 							};
-							
+
 							if ($scope.model.IsRMS) {
 								// Set the repo name to the source once we've checked that it is an SAP Enabled Source
 								tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
@@ -1304,7 +1304,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 							if (result.Messages && result.Messages.length > 0) {
 								$scope.setActualsErrors(res.TableId, result.Messages);
 							} else {
-								
+
 								moqTypes2.forEach(moq => {
 									const tableData = moq.TableData.find(t => t.Id == res.TableId);
 									if (tableData) {
@@ -1322,13 +1322,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 										MOQEquationFieldWidget.setDirty();
 									}
 								});
-
-								const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
-								if (moqTypes) {
-									moqTypes.forEach(moq => {
-										$scope.refreshSkillMixTable(moq);
-									});
-								}
 							}
 						});
 
