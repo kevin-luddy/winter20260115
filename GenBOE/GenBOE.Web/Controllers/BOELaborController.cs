@@ -1708,11 +1708,10 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="boeId">BOE Id</param>
-		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="commonDisclosureSMData">The common disclosure skill mix data</param>
 		/// <returns></returns>
-		public ActionResult RefreshCommonDisclosureTable(string workspace, int boeId, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
+		public ActionResult RefreshCommonDisclosureTable(string workspace, int boeId, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1720,7 +1719,7 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_COMMON_DISCLOSURE_TABLE, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
 			// Call to Controller Logic
-			ICollection<CommonDisclosureModelView> response = this._BoeLaborControllerLogic.RefreshCommonDisclosureTable(resourceHours, currentSkillMixData, commonDisclosureSMData);
+			ICollection<CommonDisclosureModelView> response = this._BoeLaborControllerLogic.RefreshCommonDisclosureTable(currentSkillMixData, commonDisclosureSMData);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 

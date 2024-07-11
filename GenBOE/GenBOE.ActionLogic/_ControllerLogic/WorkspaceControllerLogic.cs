@@ -2337,7 +2337,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					moqType.SkillMixTable = this.boeLaborControllerLogic.RefreshSkillMixTable(moqType.TableData.SelectMany(t => t.ResourceHours).ToArray(), moqType.SkillMixTable);
 					//need to refresh common disclosure with updated resource hours
-					moqType.CommonDisclosureTable = this.boeLaborControllerLogic.RefreshCommonDisclosureTable(moqType.TableData.SelectMany(t => t.ResourceHours).ToArray(), moqType.SkillMixTable, moqType.CommonDisclosureTable);
+					moqType.CommonDisclosureTable = this.boeLaborControllerLogic.RefreshCommonDisclosureTable(moqType.SkillMixTable, moqType.CommonDisclosureTable);
 				}
 			}
 			else

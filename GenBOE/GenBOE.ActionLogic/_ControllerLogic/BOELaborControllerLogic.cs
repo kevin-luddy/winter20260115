@@ -4082,35 +4082,25 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Refreshes the Common Disclosure Skill Mix Table with updated resource hours
 		/// </summary>
-		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
-		public ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
+		/// <param name="commonDisclosureSMData">The current skill mix data</param>
+		public ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
 		{
 			ICollection<CommonDisclosureModelView> newTable = new List<CommonDisclosureModelView>();
-
-			if (resourceHours != null && resourceHours.Any())
+			
+			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				decimal totalHours = resourceHours.Sum(n => n.TotalHours);
-				IEnumerable<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key);
-				foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
+				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included))
 				{
-					decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
-					string resourceID = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ? grouping.Key : string.Empty;
-					//only add row if inlcuded is yes in skill mix table - so rows will never show until user manually includes skill mix rows
-					//first check if skillmix table is populated - it won't be if this is the first go around
-					SkillMixModelView skillMixRow = currentSkillMixData != null && currentSkillMixData.Any() ? currentSkillMixData.FirstOrDefault(s => s.ResourceNew == resourceID) : null;
-					if (skillMixRow != null && skillMixRow.Included)
-					{
-						//TODO: BRCs when sap is hooked up
-						newTable.Add(
-							new CommonDisclosureModelView
-							{
-								HistoricalHours = totalGroupHours,
-								ResourceID = resourceID,
-								LaborSkillMix = totalGroupHours / totalHours
-							}
-						);
-					}
+					//TODO: BRCs when sap is hooked up
+					newTable.Add(
+						new CommonDisclosureModelView
+						{
+							HistoricalHours = skillMix.HistoricalHours,
+							ResourceID = skillMix.ResourceNew,
+							LaborSkillMix = skillMix.LaborSkillMix
+						}
+					);
 				}
 
 				// reconcile the other values in the existing rows (if any)
