@@ -485,6 +485,8 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="BOEID" Type="int" Nullable="false" />
           <Property Name="BOETaskElementID" Type="int" Nullable="false" />
           <Property Name="MOQTypeSelectionID" Type="int" Nullable="false" />
+          <Property Name="IsPercentLocked" Type="bit" Nullable="false" />
+          <Property Name="IsUserInput" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="ContractTypeLU">
           <Key>
@@ -1202,6 +1204,7 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="BOEID" Type="int" Nullable="false" />
           <Property Name="BOETaskElementID" Type="int" Nullable="false" />
           <Property Name="MOQTypeSelectionID" Type="int" Nullable="false" />
+          <Property Name="IsPercentLocked" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="SortByLU">
           <Key>
@@ -14375,6 +14378,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_BOE" FromRole="CommonDisclosureSkillMix" ToRole="BOE" />
           <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_BOETaskElement" FromRole="CommonDisclosureSkillMix" ToRole="BOETaskElement" />
           <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection" FromRole="CommonDisclosureSkillMix" ToRole="MOQTypeSelection" />
+          <Property Name="IsPercentLocked" Type="Boolean" Nullable="false" />
+          <Property Name="IsUserInput" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="SkillMix">
           <Key>
@@ -14395,6 +14400,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_SkillMix_BOE" FromRole="SkillMix" ToRole="BOE" />
           <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_SkillMix_BOETaskElement" FromRole="SkillMix" ToRole="BOETaskElement" />
           <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK_SkillMix_MOQTypeSelection" FromRole="SkillMix" ToRole="MOQTypeSelection" />
+          <Property Name="IsPercentLocked" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_CommonDisclosureSkillMix_BOE">
           <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
@@ -16717,6 +16723,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="CommonDisclosureSkillMixes">
             <EntityTypeMapping TypeName="GenBOE.Models.CommonDisclosureSkillMix">
               <MappingFragment StoreEntitySet="CommonDisclosureSkillMix">
+                <ScalarProperty Name="IsUserInput" ColumnName="IsUserInput" />
+                <ScalarProperty Name="IsPercentLocked" ColumnName="IsPercentLocked" />
                 <ScalarProperty Name="MOQTypeSelectionID" ColumnName="MOQTypeSelectionID" />
                 <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
                 <ScalarProperty Name="BOEID" ColumnName="BOEID" />
@@ -16735,6 +16743,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="SkillMixes">
             <EntityTypeMapping TypeName="GenBOE.Models.SkillMix">
               <MappingFragment StoreEntitySet="SkillMix">
+                <ScalarProperty Name="IsPercentLocked" ColumnName="IsPercentLocked" />
                 <ScalarProperty Name="MOQTypeSelectionID" ColumnName="MOQTypeSelectionID" />
                 <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
                 <ScalarProperty Name="BOEID" ColumnName="BOEID" />

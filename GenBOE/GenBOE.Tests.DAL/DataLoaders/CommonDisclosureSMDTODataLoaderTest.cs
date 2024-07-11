@@ -47,6 +47,8 @@
 			updateCommonDisclosureSkillMix.BOEID = GlobalTestCaseSetup.GlobalBOEID;
 			updateCommonDisclosureSkillMix.BOETaskElementID = GlobalTestCaseSetup.GlobalTaskElementID;
 			updateCommonDisclosureSkillMix.MOQTypeSelectionID = GlobalTestCaseSetup.GlobalMoqTypeSelectionId;
+			updateCommonDisclosureSkillMix.IsPercentLocked = true;
+			updateCommonDisclosureSkillMix.IsUserInput = true;
 			ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixes = new List<CommonDisclosureSkillMixDTO>() { updateCommonDisclosureSkillMix };
 			int? numRowsInserted = sut.InsertCommonDisclosureSM(commonDisclosureSkillMixes);
 			Assert.AreEqual(1, numRowsInserted);

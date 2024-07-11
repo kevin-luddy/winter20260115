@@ -32,6 +32,8 @@ namespace GenBOE.ActionLogic.ModelView
 				this.MOQTypeSelectionID = disclosureDTO.MOQTypeSelectionID;
 				this.BusinessResourceID = disclosureDTO.BusinessResourceID;
 				this.ResourceID = disclosureDTO.ResourceID;
+				this.IsPercentLocked = disclosureDTO.IsPercentLocked;
+				this.IsUserInput = disclosureDTO.IsUserInput;
 			}
 		}
 
@@ -55,6 +57,8 @@ namespace GenBOE.ActionLogic.ModelView
 				BOEID = this.BOEID,
 				BOETaskElementID = this.BOETaskElementID,
 				MOQTypeSelectionID = this.MOQTypeSelectionID,
+				IsPercentLocked = this.IsPercentLocked,
+				IsUserInput = this.IsUserInput
 			};
 		}
 	}

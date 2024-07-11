@@ -26,6 +26,7 @@ namespace GenBOE.Models
         public int BOEID { get; set; }
         public int BOETaskElementID { get; set; }
         public int MOQTypeSelectionID { get; set; }
+        public bool IsPercentLocked { get; set; }
     
         public virtual BOE BOE { get; set; }
         public virtual BOETaskElement BOETaskElement { get; set; }

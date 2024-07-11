@@ -49,6 +49,7 @@ AS
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 **		7/11/24		e405721				PROPH-2156: Update Copy Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
+**		07/11/24	twilson3			proph-2166 Missing Columns
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1977,6 +1978,7 @@ BEGIN TRY
 		[BOETaskElementID] [int] NOT NULL,
 		[BOEID] [int] NOT NULL,
 		[MOQTypeSelectionID] [int] NOT NULL,
+		[IsPercentLocked] bit NOT NULL,
 		Processed bit,
 		NewBOETaskElementID int,
 		NewBOEID int,
@@ -1996,6 +1998,7 @@ BEGIN TRY
 		SM.[BOETaskElementID],
 		SM.[BOEID],
 		SM.[MOQTypeSelectionID],
+		SM.[IsPercentLocked],
 		0,
 		T.[NewBOETaskElementID],
 		B.[NewBOEID],
@@ -2021,7 +2024,8 @@ BEGIN TRY
             [ResourceNew],
             [BOETaskElementID],
             [BOEID],
-            [MOQTypeSelectionID]
+            [MOQTypeSelectionID],
+			[IsPercentLocked]
 			)
 	SELECT
 		[Rationale],
@@ -2034,7 +2038,8 @@ BEGIN TRY
 		[ResourceNew],
 		[NewBOETaskElementID],
 		[NewBOEID],
-		[NewMOQTypeSelectionID]
+		[NewMOQTypeSelectionID],
+		[IsPercentLocked]
 	FROM @SkillMix
 	WHERE SkillMixID = @SkillMixID
 
@@ -2059,6 +2064,8 @@ BEGIN TRY
 	    [BOEID] [int] NOT NULL,
 	    [BOETaskElementID] [int] NOT NULL,
 	    [MOQTypeSelectionID] [int] NOT NULL,
+		[IsPercentLocked] bit NOT NULL,
+		[IsUserInput] bit NOT NULL,
 		Processed bit,
 	    NewBOEID int,
 	    NewBOETaskElementID int,
@@ -2078,6 +2085,8 @@ BEGIN TRY
 	    CD.[BOEID],
 	    CD.[BOETaskElementID],
 	    CD.[MOQTypeSelectionID],
+		CD.[IsPercentLocked],
+		CD.[IsUserInput],
 		0,
 	    B.[NewBOEID],
 	    T.[NewBOETaskElementID],
@@ -2103,7 +2112,9 @@ BEGIN TRY
 	            [BusinessResourceID],
 	            [BOEID],
 	            [BOETaskElementID],
-	            [MOQTypeSelectionID]
+	            [MOQTypeSelectionID],
+				[IsPercentLocked],
+				[IsUserInput]
 				)
 	SELECT
 		[Rationale],
@@ -2116,7 +2127,9 @@ BEGIN TRY
 	    [BusinessResourceID],
 	    [NewBOEID],
 	    [NewBOETaskElementID],
-	    [NewMOQTypeSelectionID]
+	    [NewMOQTypeSelectionID],
+		[IsPercentLocked],
+		[IsUserInput]
 	FROM @CommonDisclosureSkillMix
 	WHERE CommonDisclosureSkillMixID = @CommonDisclosureSkillMixID
 	

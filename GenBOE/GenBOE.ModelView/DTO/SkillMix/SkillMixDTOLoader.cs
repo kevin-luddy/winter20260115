@@ -49,7 +49,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -87,7 +88,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -125,7 +127,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -163,7 +166,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -234,7 +238,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -257,7 +262,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				Collection<string> skillMixVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "MOQTypeSelectionID"
+					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "MOQTypeSelectionID", "IsPercentLocked"
 				};
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
