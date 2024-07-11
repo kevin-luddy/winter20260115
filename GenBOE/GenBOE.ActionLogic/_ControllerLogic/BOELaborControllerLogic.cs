@@ -4080,6 +4080,63 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
+		/// Refreshes the Common Disclosure Skill Mix Table with updated resource hours
+		/// </summary>
+		/// <param name="currentSkillMixData">The current skill mix data</param>
+		/// <param name="commonDisclosureSMData">The current skill mix data</param>
+		public ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
+		{
+			ICollection<CommonDisclosureModelView> newTable = new List<CommonDisclosureModelView>();
+			
+			if (currentSkillMixData != null && currentSkillMixData.Any())
+			{
+				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included))
+				{
+					//TODO: BRCs when sap is hooked up
+					newTable.Add(
+						new CommonDisclosureModelView
+						{
+							HistoricalHours = skillMix.HistoricalHours,
+							ResourceID = skillMix.ResourceNew,
+							LaborSkillMix = skillMix.LaborSkillMix
+						}
+					);
+				}
+
+				// reconcile the other values in the existing rows (if any)
+				if (commonDisclosureSMData != null && commonDisclosureSMData.Any())
+				{
+					foreach (CommonDisclosureModelView currentData in commonDisclosureSMData)
+					{
+						CommonDisclosureModelView newData;
+						newData = newTable.FirstOrDefault(s => s.ResourceID == currentData.ResourceID && s.BusinessResourceID == currentData.BusinessResourceID);
+
+						if (newData != null)
+						{
+							// If there is a match, then copy over the other row information
+							newData.Included = currentData.Included;
+							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
+
+							newData.Rationale = currentData.Rationale;
+							if (newData.Included)
+							{
+								newData.BOESkillMix = currentData.BOESkillMix;
+								newData.ProposedHours = currentData.ProposedHours;
+							}
+							else
+							{
+								//if included, 0 else blank but required to fill in (included is blank by default though so this is weird)
+								newData.BOESkillMix = 0m;
+								newData.ProposedHours = 0m;
+							}
+						}
+					}
+				}
+			}
+			return newTable;
+		}
+
+		/// <summary>
 		/// Validates Actuals data for SAP
 		/// </summary>
 		/// <param name="tableData">The MOQ Table Data</param>
