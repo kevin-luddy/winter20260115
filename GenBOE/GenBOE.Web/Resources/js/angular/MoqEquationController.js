@@ -24,6 +24,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.boeCommonDisclosureTotal = 0;
 		$scope.proposedCommonDisclosureHoursTotal = 0;
 
+		$scope.setSkillMixTotals();
+
+		if ($scope.model.CommonDisclosureEnabled) {
+			$scope.setCommonDisclosureTotals();
+		}
+
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
 			initializeWidget();
@@ -1652,19 +1658,21 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
             || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
             item.IsResourceValid = false;
 		}
-
-		// We will call the Skill Mix total calculation per item as the UI calls this parent method
-		$scope.setSkillMixTotals(item);
-
         return item.IsResourceValid;
 	}
 
 	$scope.setSkillMixTotals = function () {
-		// Set Skill Mix Totals
-		$scope.historicalSkillMixHoursTotal += item.HistoricalHours;
-		$scope.laborSkillMixTotal += item.LaborSkillMix;
-		$scope.boeSkillMixTotal += item.BOESkillMix;
-		$scope.proposedSkillMixHoursTotal += item.ProposedHours;
+		$scope.ResourceModels.forEach(item => {
+			// Set Skill Mix Totals
+			$scope.historicalSkillMixHoursTotal += item.HistoricalHours;
+			$scope.laborSkillMixTotal += item.LaborSkillMix;
+			$scope.boeSkillMixTotal += item.BOESkillMix;
+			$scope.proposedSkillMixHoursTotal += item.ProposedHours;
+		});
+	}
+
+	$scope.setCommonDisclosureTotals = function () {
+
 	}
 
     $scope.resourceSelected = function (item, model) {
