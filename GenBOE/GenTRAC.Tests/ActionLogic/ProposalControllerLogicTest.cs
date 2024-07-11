@@ -284,11 +284,12 @@ namespace GenTRAC.Tests.ActionLogic
                 RequestType = 0
             };
 
-            ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
-            {
-                ProgramArea = "1",
-                LineOfBusiness = "1",
-                IsCostVolumeClassified = false
+			ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
+			{
+				ProgramArea = "1",
+				LineOfBusiness = "1",
+				IsCostVolumeClassified = false,
+				AdditionalClassification = true
             };
 
             // setup all 9 user ids

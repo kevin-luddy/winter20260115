@@ -17,7 +17,6 @@ CREATE TYPE [dbo].[TT_CommonDisclosureSkillMix] AS TABLE(
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
 		,[ResourceID] [varchar](20) NOT NULL
 		,[BusinessResourceID] [varchar](20) NOT NULL
-		,[SkillMixID] int NOT NULL
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
@@ -50,6 +49,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
 **      06/16/24	e302876				PROPH-2018 Common Disclosure Skill Mix DB Table
+**	    07/10/24    e302876             PROPH-2157: Drop [SkillMixID] Column from Common Disclosure Skill Mix Table
 *******************************************************************************/
 BEGIN
 	DECLARE @DistinctMOQTypeSelectionID int
@@ -71,11 +71,9 @@ BEGIN
 		 ,[LaborSkillMix]
 		 ,[ResourceID]
 		 ,[BusinessResourceID]
-		 ,[SkillMixID]
 		 ,[BOEID]
 		 ,[BOETaskElementID]
 		 ,[MOQTypeSelectionID]
-		 ,[OrderID]
 		 )
 	SELECT T.[Rationale]
 		 ,T.[Included]
@@ -85,13 +83,10 @@ BEGIN
 		 ,T.[LaborSkillMix]
 		 ,T.[ResourceID]
 		 ,T.[BusinessResourceID]
-		 ,T.[SkillMixID]
 		 ,T.[BOEID]
 		 ,T.[BOETaskElementID]
 		 ,T.[MOQTypeSelectionID]
-		 ,T.[OrderID]
 	FROM @CommonDisclosureSkillMixTableParameter T
-	ORDER BY T.OrderID
 END
 
 IF @@ERROR = 0

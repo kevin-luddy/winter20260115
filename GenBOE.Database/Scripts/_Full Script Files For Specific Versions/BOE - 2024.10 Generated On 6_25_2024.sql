@@ -118,11 +118,9 @@ BEGIN
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
 		,[ResourceID] [varchar](20) NOT NULL
 		,[BusinessResourceID] [varchar](20) NOT NULL
-		,[SkillMixID] int NOT NULL
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
-		,CONSTRAINT FK_CommonDisclosureSkillMix_SkillMixID FOREIGN KEY (SkillMixID) REFERENCES [dbo].[SkillMix] ([SkillMixID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] ([BOEID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_MOQTypeSelection FOREIGN KEY(MOQTypeSelectionID) REFERENCES [dbo].[MOQTypeSelection] ([MOQTypeSelectionId])
@@ -145,7 +143,6 @@ BEGIN
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
 		,[ResourceID] [varchar](20) NOT NULL
 		,[BusinessResourceID] [varchar](20) NOT NULL
-		,[SkillMixID] int NOT NULL
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
@@ -36248,7 +36245,6 @@ CREATE TYPE [dbo].[TT_CommonDisclosureSkillMix] AS TABLE(
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
 		,[ResourceID] [varchar](20) NOT NULL
 		,[BusinessResourceID] [varchar](20) NOT NULL
-		,[SkillMixID] int NOT NULL
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
@@ -36302,11 +36298,9 @@ BEGIN
 		 ,[LaborSkillMix]
 		 ,[ResourceID]
 		 ,[BusinessResourceID]
-		 ,[SkillMixID]
 		 ,[BOEID]
 		 ,[BOETaskElementID]
 		 ,[MOQTypeSelectionID]
-		 ,[OrderID]
 		 )
 	SELECT T.[Rationale]
 		 ,T.[Included]
@@ -36316,13 +36310,10 @@ BEGIN
 		 ,T.[LaborSkillMix]
 		 ,T.[ResourceID]
 		 ,T.[BusinessResourceID]
-		 ,T.[SkillMixID]
 		 ,T.[BOEID]
 		 ,T.[BOETaskElementID]
 		 ,T.[MOQTypeSelectionID]
-		 ,T.[OrderID]
 	FROM @CommonDisclosureSkillMixTableParameter T
-	ORDER BY T.OrderID
 END
 
 IF @@ERROR = 0

@@ -44,7 +44,6 @@
 			updateCommonDisclosureSkillMix.LaborSkillMix = 100;
 			updateCommonDisclosureSkillMix.ResourceID = "Resource";
 			updateCommonDisclosureSkillMix.BusinessResourceID = "Business Resource";
-			updateCommonDisclosureSkillMix.SkillMixID = -1;
 			updateCommonDisclosureSkillMix.BOEID = GlobalTestCaseSetup.GlobalBOEID;
 			updateCommonDisclosureSkillMix.BOETaskElementID = GlobalTestCaseSetup.GlobalTaskElementID;
 			updateCommonDisclosureSkillMix.MOQTypeSelectionID = GlobalTestCaseSetup.GlobalMoqTypeSelectionId;

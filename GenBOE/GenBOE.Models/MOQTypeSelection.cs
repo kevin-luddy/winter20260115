@@ -17,8 +17,8 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MOQTypeSelection()
         {
-            this.CommonDisclosureSkillMixes = new HashSet<CommonDisclosureSkillMix>();
             this.MOQTypeSelectionTableDatas = new HashSet<MOQTypeSelectionTableData>();
+            this.CommonDisclosureSkillMixes = new HashSet<CommonDisclosureSkillMix>();
             this.SkillMixes = new HashSet<SkillMix>();
         }
     
@@ -38,11 +38,11 @@ namespace GenBOE.Models
         public string HistoricalReferenceExplanation { get; set; }
     
         public virtual BOETaskElement BOETaskElement { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
         public virtual MOQTypeLU MOQTypeLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MOQTypeSelectionTableData> MOQTypeSelectionTableDatas { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SkillMix> SkillMixes { get; set; }
     }
