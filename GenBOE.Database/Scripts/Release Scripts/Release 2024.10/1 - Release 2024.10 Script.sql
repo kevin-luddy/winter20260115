@@ -1,7 +1,5 @@
-﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.09';
+﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.10';
 GO
-
-/*  twilson proph-2079 Updates to RateCode Bulk Table stored procedures  */
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SkillMix]') AND type in (N'U'))
 BEGIN
@@ -18,6 +16,7 @@ BEGIN
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
+		,[IsPercentLocked] bit DEFAULT 0
 		,CONSTRAINT FK_SkillMix_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] ([BOEID])
 		,CONSTRAINT FK_SkillMix_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID])
 		,CONSTRAINT FK_SkillMix_MOQTypeSelection FOREIGN KEY(MOQTypeSelectionID) REFERENCES [dbo].[MOQTypeSelection] ([MOQTypeSelectionId])
@@ -41,6 +40,7 @@ BEGIN
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
+		,[IsPercentLocked] bit NOT NULL
 		,[VersionID] int NOT NULL
 	);
 END

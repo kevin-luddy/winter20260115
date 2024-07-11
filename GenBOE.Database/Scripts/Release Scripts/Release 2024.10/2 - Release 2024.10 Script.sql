@@ -17,6 +17,8 @@ BEGIN
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
+		,[IsPercentLocked] bit DEFAULT 0 NOT NULL
+		,[IsUserInput] bit DEFAULT 0 NOT NULL
 		,CONSTRAINT FK_CommonDisclosureSkillMix_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] ([BOEID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_MOQTypeSelection FOREIGN KEY(MOQTypeSelectionID) REFERENCES [dbo].[MOQTypeSelection] ([MOQTypeSelectionId])
@@ -42,6 +44,8 @@ BEGIN
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
+		,[IsPercentLocked] bit NOT NULL
+		,[IsUserInput] bit NOT NULL
 		,[VersionID] int NOT NULL
 	);
 END
@@ -50,18 +54,21 @@ GO
 /*
 	## START ##
 	06/16/2024 [e302876] - PROPH-2018 Common Disclosure Skill Mix DB Table
-*/
+
 
 -- 06/16/2024 [e302876] - PROPH-2018 Common Disclosure Skill Mix DB Table
 -- Stored procs created:
 	-- CommonDisclosureSkillMixViaTable.sql
 	-- deleteCommonDisclosureSkillMix.sql
-/*
+
    06/16/2024 [e302876] - PROPH-2018 Common Disclosure Skill Mix DB Table
 
    
 	7/10/2024 [e302876] - SLMX_POLM_PROPH-2157: Drop [SkillMixID] Column from Common Disclosure Skill Mix Table
 	-- drop column and FK
 	-- CommonDisclosureSkillMixViaTable.sql updated to reflect
+
+	7/11/2024 twilson3 - PROPH-2166 added missing columns
    ## END ##
 */
+

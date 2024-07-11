@@ -7,7 +7,6 @@ IF  EXISTS (SELECT 1 FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.
 	DROP TYPE [dbo].[TT_CommonDisclosureSkillMix];
 GO
 
-
 CREATE TYPE [dbo].[TT_CommonDisclosureSkillMix] AS TABLE(
 		[Rationale] varchar(255) NOT NULL
 		,[Included] bit DEFAULT 0 NOT NULL
@@ -20,6 +19,9 @@ CREATE TYPE [dbo].[TT_CommonDisclosureSkillMix] AS TABLE(
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
+		,[IsPercentLocked] bit NOT NULL
+		,[IsUserInput] bit NOT NULL
+		/* OrderID is automatically added in the code, so it HAS to be last */
 		,[OrderID] int NOT NULL
 );
 GO
@@ -50,6 +52,7 @@ AS
 **		--------	--------			-------------------------------------------
 **      06/16/24	e302876				PROPH-2018 Common Disclosure Skill Mix DB Table
 **	    07/10/24    e302876             PROPH-2157: Drop [SkillMixID] Column from Common Disclosure Skill Mix Table
+**		07/11/24	twilson3			proph-2166 Missing Column
 *******************************************************************************/
 BEGIN
 	DECLARE @DistinctMOQTypeSelectionID int
@@ -74,7 +77,9 @@ BEGIN
 		 ,[BOEID]
 		 ,[BOETaskElementID]
 		 ,[MOQTypeSelectionID]
-		 )
+		 ,[IsPercentLocked]
+		 ,[IsUserInput]
+		)
 	SELECT T.[Rationale]
 		 ,T.[Included]
 		 ,T.[ProposedHours]
@@ -86,6 +91,8 @@ BEGIN
 		 ,T.[BOEID]
 		 ,T.[BOETaskElementID]
 		 ,T.[MOQTypeSelectionID]
+		 ,T.[IsPercentLocked]
+		 ,T.[IsUserInput]
 	FROM @CommonDisclosureSkillMixTableParameter T
 END
 

@@ -31,6 +31,8 @@ namespace GenBOE.Dtos
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
 			this.MOQTypeSelectionID = -1;
+			this.IsPercentLocked = false;
+			this.IsUserInput = false;
 		}
 
 		/// <summary>
@@ -81,5 +83,15 @@ namespace GenBOE.Dtos
 		/// foreign key to moq type (historical or comparative)
 		/// </summary>
 		public int MOQTypeSelectionID { get; set; }
+
+		/// <summary>
+		/// Is the BOE Skill Mix Percent locked
+		/// </summary>
+		public bool IsPercentLocked { get; set; }
+
+		/// <summary>
+		/// Is this data User Input
+		/// </summary>
+		public bool IsUserInput { get; set; }
 	}
 }

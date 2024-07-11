@@ -49,6 +49,7 @@ AS
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 **		7/11/24		e405721				PROPH-2156: Update Copy Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
+**		07/11/24	twilson3			proph-2166 Missing Columns
 *******************************************************************************/
 SET NOCOUNT ON 
 
