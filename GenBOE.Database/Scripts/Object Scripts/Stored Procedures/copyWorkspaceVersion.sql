@@ -2127,7 +2127,7 @@ BEGIN TRY
 	    [BusinessResourceID],
 	    [NewBOEID],
 	    [NewBOETaskElementID],
-	    [NewMOQTypeSelectionID]
+	    [NewMOQTypeSelectionID],
 		[IsPercentLocked],
 		[IsUserInput]
 	FROM @CommonDisclosureSkillMix
