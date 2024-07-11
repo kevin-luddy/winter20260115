@@ -14,11 +14,9 @@ BEGIN
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
 		,[ResourceID] [varchar](20) NOT NULL
 		,[BusinessResourceID] [varchar](20) NOT NULL
-		,[SkillMixID] int NOT NULL
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
-		,CONSTRAINT FK_CommonDisclosureSkillMix_SkillMixID FOREIGN KEY (SkillMixID) REFERENCES [dbo].[SkillMix] ([SkillMixID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] ([BOEID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_BOETaskElement FOREIGN KEY(BOETaskElementID) REFERENCES [dbo].[BOETaskElement] ([BOETaskElementID])
 		,CONSTRAINT FK_CommonDisclosureSkillMix_MOQTypeSelection FOREIGN KEY(MOQTypeSelectionID) REFERENCES [dbo].[MOQTypeSelection] ([MOQTypeSelectionId])
@@ -41,7 +39,6 @@ BEGIN
 		,[LaborSkillMix] decimal(5, 2) NOT NULL
 		,[ResourceID] [varchar](20) NOT NULL
 		,[BusinessResourceID] [varchar](20) NOT NULL
-		,[SkillMixID] int NOT NULL
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
@@ -61,5 +58,10 @@ GO
 	-- deleteCommonDisclosureSkillMix.sql
 /*
    06/16/2024 [e302876] - PROPH-2018 Common Disclosure Skill Mix DB Table
+
+   
+	7/10/2024 [e302876] - SLMX_POLM_PROPH-2157: Drop [SkillMixID] Column from Common Disclosure Skill Mix Table
+	-- drop column and FK
+	-- CommonDisclosureSkillMixViaTable.sql updated to reflect
    ## END ##
 */

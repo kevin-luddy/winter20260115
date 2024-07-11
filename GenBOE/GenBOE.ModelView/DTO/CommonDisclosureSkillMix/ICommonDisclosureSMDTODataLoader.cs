@@ -54,20 +54,6 @@ namespace GenBOE.DataBridge.DTO
 		CommonDisclosureSkillMixDTO GetById(int commonDisclosureSkillMixID);
 
 		/// <summary>
-		/// Get Common disclosure Skill Mixes by skill mix id values
-		/// </summary>
-		/// <param name="skillMixIDs"></param>
-		/// <returns>List of Common Disclosure Skill Mixes</returns>
-		ICollection<CommonDisclosureSkillMixDTO> GetBySkillMixIds(ICollection<int> skillMixIDs);
-
-		/// <summary>
-		/// Get Common disclosure Skill Mixes  by a specific skill mix
-		/// </summary>
-		/// <param name="skillMixID"></param>
-		/// <returns>List of Common Disclosure Skill Mixes</returns>
-		ICollection<CommonDisclosureSkillMixDTO> GetBySkillMixId(int skillMixID);
-
-		/// <summary>
 		/// Delete Common disclosure Skill Mix by MOQ Type Selection ID
 		/// </summary>
 		/// <param name="moqTypeSelectionID"></param>
