@@ -8802,3 +8802,7 @@ span.blue-link a{
 .skill-mix-numerical {
     text-align: right;
 }
+
+.skillMixPadding {
+    padding: 2px 5px;
+}
