@@ -42,6 +42,7 @@ AS
 **		7/28/2022	Dusan				IES-1578 Add [Profit/Fee] and [COM] individual fields to the report
 **		10/13/2022	RJ					IES-1933 Cost Volume Tool
 **		02/22/23	ranzalon			Add CustomerDueDate
+**		7/10/23		Dusan				PROPH-1563: Add AdditionalClassification field
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -334,7 +335,12 @@ SELECT V.[ProposalID]
 	 ,V.CostThroughCom
 	 ,V.CustomerDueDate
 	 ,V.NlfResponse
-	 ,V.AdditionalClassification
+	 ,AdditionalClassification =
+		CASE V.[AdditionalClassification]
+			WHEN 1 THEN 'Yes'
+			WHEN 0 THEN 'No'
+			ELSE NULL
+			END
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(

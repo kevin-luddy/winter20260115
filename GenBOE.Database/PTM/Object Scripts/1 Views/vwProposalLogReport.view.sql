@@ -24,6 +24,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **										Removed contract offer code.
 **		7/25/2022	Dusan / Thomas		IES-1499, IES-1510, IES-1511: Added new fields into the report: Cage Codes, Type of Contract Action, Cost thru COM
 **		2/22/2023	ranzalon			Add CustomerDueDate
+**		7/10/23		Dusan				PROPH-1563: Add AdditionalClassification field
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
