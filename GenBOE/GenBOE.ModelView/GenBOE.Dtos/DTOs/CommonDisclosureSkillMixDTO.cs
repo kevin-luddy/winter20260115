@@ -28,7 +28,6 @@ namespace GenBOE.Dtos
 			this.LaborSkillMix = 0;
 			this.ResourceID = String.Empty;
 			this.BusinessResourceID = String.Empty;
-			this.SkillMixID = -1;
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
 			this.MOQTypeSelectionID = -1;
@@ -70,12 +69,6 @@ namespace GenBOE.Dtos
 		/// BRC ID; Resource ID can have many
 		/// </summary>
 		public string BusinessResourceID { get; set; }
-
-		/// <summary>
-		/// foreign key to related row in Skill Mix table
-		/// </summary>
-		[Obsolete("This is not needed")]
-		public int SkillMixID { get; set; }
 		/// <summary>
 		/// Foreign Key to BOE table
 		/// </summary>
