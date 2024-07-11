@@ -2124,7 +2124,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				cdsm.LaborSkillMix = 100;
 				cdsm.ResourceID = resource;
 				cdsm.BusinessResourceID = businessResource;
-				cdsm.SkillMixID = -1;
 				cdsm.BOEID = GlobalBOEID;
 				cdsm.BOETaskElementID = GlobalTaskElementID;
 				cdsm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
@@ -2132,7 +2131,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				gbe.SaveChanges();
 				commonDisclosureSkillMixId = (from s in gbe.CommonDisclosureSkillMixes
 							  where s.Rationale == rat
-							  select s.SkillMixID).FirstOrDefault();
+							  select s.CommonDisclosureSkillMixID).FirstOrDefault();
 			}
 			return commonDisclosureSkillMixId;
 		}

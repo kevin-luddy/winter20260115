@@ -21,13 +21,11 @@ namespace GenBOE.ActionLogic.ModelView
 			if (disclosureDTO != null)
 			{
 				this.Included = disclosureDTO.Included;
-				this.SkillMixID = disclosureDTO.SkillMixID;
 				this.Rationale = disclosureDTO.Rationale;
 				this.ProposedHours = disclosureDTO.ProposedHours;
 				this.HistoricalHours = disclosureDTO.HistoricalHours;
 				this.BOESkillMix = disclosureDTO.BOESkillMix;
 				this.LaborSkillMix = disclosureDTO.LaborSkillMix;
-				this.SkillMixID = disclosureDTO.SkillMixID;
 				this.CommonDisclosureSkillMixID = disclosureDTO.CommonDisclosureSkillMixID;
 				this.BOEID = disclosureDTO.BOEID;
 				this.BOETaskElementID = disclosureDTO.BOETaskElementID;
@@ -46,7 +44,6 @@ namespace GenBOE.ActionLogic.ModelView
 			return new CommonDisclosureSkillMixDTO
 			{
 				Included = this.Included,
-				SkillMixID = this.SkillMixID,
 				Rationale = this.Rationale ?? string.Empty,
 				ProposedHours = this.ProposedHours,
 				HistoricalHours = this.HistoricalHours,

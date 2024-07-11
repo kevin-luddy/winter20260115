@@ -49,7 +49,6 @@ namespace GenBOE.DataBridge.DTO
 								  LaborSkillMix = cdsm.LaborSkillMix,
 								  ResourceID = cdsm.ResourceID,
 								  BusinessResourceID = cdsm.BusinessResourceID,
-								  SkillMixID = cdsm.SkillMixID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
@@ -89,7 +88,6 @@ namespace GenBOE.DataBridge.DTO
 								  LaborSkillMix = cdsm.LaborSkillMix,
 								  ResourceID = cdsm.ResourceID,
 								  BusinessResourceID = cdsm.BusinessResourceID,
-								  SkillMixID = cdsm.SkillMixID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
@@ -128,7 +126,6 @@ namespace GenBOE.DataBridge.DTO
 								  LaborSkillMix = cdsm.LaborSkillMix,
 								  ResourceID = cdsm.ResourceID,
 								  BusinessResourceID = cdsm.BusinessResourceID,
-								  SkillMixID = cdsm.SkillMixID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
@@ -167,7 +164,6 @@ namespace GenBOE.DataBridge.DTO
 								  LaborSkillMix = cdsm.LaborSkillMix,
 								  ResourceID = cdsm.ResourceID,
 								  BusinessResourceID = cdsm.BusinessResourceID,
-								  SkillMixID = cdsm.SkillMixID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
@@ -206,7 +202,6 @@ namespace GenBOE.DataBridge.DTO
 								  LaborSkillMix = cdsm.LaborSkillMix,
 								  ResourceID = cdsm.ResourceID,
 								  BusinessResourceID = cdsm.BusinessResourceID,
-								  SkillMixID = cdsm.SkillMixID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
@@ -228,54 +223,6 @@ namespace GenBOE.DataBridge.DTO
 			return this.GetByIds(new Collection<int>() { commonDisclosureSkillMixID }).FirstOrDefault();
 		}
 
-		/// <summary>
-		/// Get Common Disclosure Skill Mixes by skill mix values
-		/// </summary>
-		/// <param name="skillMixIDs">ICollection<int></param>
-		/// <returns>List of Common Disclosure Skill Mixes</returns>
-		[DbQuery]
-		public virtual ICollection<CommonDisclosureSkillMixDTO> GetBySkillMixIds(ICollection<int> skillMixIDs)
-		{
-			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
-
-			using (StopwatchTimer sw = new StopwatchTimer(this._log))
-			{
-				using (GenBoeEntities gbe = new GenBoeEntities())
-				{
-					result = (from cdsm in gbe.CommonDisclosureSkillMixes
-							  where skillMixIDs.Contains(cdsm.SkillMixID)
-							  select new CommonDisclosureSkillMixDTO
-							  {
-								  CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
-								  Rationale = cdsm.Rationale,
-								  Included = cdsm.Included,
-								  ProposedHours = cdsm.ProposedHours,
-								  HistoricalHours = cdsm.HistoricalHours,
-								  BOESkillMix = cdsm.BOESkillMix,
-								  LaborSkillMix = cdsm.LaborSkillMix,
-								  ResourceID = cdsm.ResourceID,
-								  BusinessResourceID = cdsm.BusinessResourceID,
-								  SkillMixID = cdsm.SkillMixID,
-								  BOEID = cdsm.BOEID,
-								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
-							  }).ToList();
-				}
-				DoPostProcessiong(result);
-
-				return result;
-			}
-		}
-
-		/// <summary>
-		/// Get Common Disclosure Skill Mixes value by a skill mix id
-		/// </summary>
-		/// <param name="skillMixID"></param>
-		/// <returns>List of Common Disclosure Skill Mixes</returns>
-		public virtual ICollection<CommonDisclosureSkillMixDTO> GetBySkillMixId(int skillMixID)
-		{
-			return this.GetBySkillMixIds(new Collection<int>() { skillMixID });
-		}
 
 		/// <summary>
 		/// Delete Common Disclosure Skill Mixes by MOQ Type Selection ID

@@ -14,12 +14,6 @@ namespace GenBOE.Models
     
     public partial class SkillMix
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public SkillMix()
-        {
-            this.CommonDisclosureSkillMixes = new HashSet<CommonDisclosureSkillMix>();
-        }
-    
         public int SkillMixID { get; set; }
         public string Rationale { get; set; }
         public Nullable<bool> Included { get; set; }
@@ -35,8 +29,6 @@ namespace GenBOE.Models
     
         public virtual BOE BOE { get; set; }
         public virtual BOETaskElement BOETaskElement { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
         public virtual MOQTypeSelection MOQTypeSelection { get; set; }
     }
 }
