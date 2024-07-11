@@ -1280,7 +1280,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								Filters: tableData.AdditionalQueryFilters,
 								TableId: tableData.Id
 							};
-							
+
 							if ($scope.model.IsRMS) {
 								// Set the repo name to the source once we've checked that it is an SAP Enabled Source
 								tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
@@ -1323,7 +1323,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 							if (result.Messages && result.Messages.length > 0) {
 								$scope.setActualsErrors(res.TableId, result.Messages);
 							} else {
-								
+
 								moqTypes2.forEach(moq => {
 									const tableData = moq.TableData.find(t => t.Id == res.TableId);
 									if (tableData) {
@@ -1401,6 +1401,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
 						moqType.SkillMixTable = response.data.data;
+						if ($scope.model.CommonDisclosureEnabled) {
+							$scope.refreshCommonDisclosureTable(moqType);
+						}
 					}
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
@@ -1414,6 +1417,48 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 		else {
 			moqType.SkillMixTable = [];
+		}
+	};
+
+	$scope.refreshCommonDisclosureTable = function (moqType) {
+		// Get all the data tables
+		const data = {
+			currentSkillMixData: [],
+			commonDisclosureSMData: []
+		};
+
+		data.boeId = ManageTaskModel.boeId;
+		data.currentSkillMixData = moqType.SkillMixTable;
+		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
+
+		if (data.currentSkillMixData.length > 0) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data) {
+						moqType.CommonDisclosureTable = response.data.data;
+					}
+				} else {
+					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+		else {
+			moqType.CommonDisclosureTable = [];
 		}
 	};
 
