@@ -471,6 +471,26 @@
                                     </div>
                                 </td>
                             </tr>
+							<tr>
+								<td>
+									<div class="skill-mix-totals">Total</div>
+								</td>
+								<td></td>
+								<td>
+									<div class="skill-mix-historical-hours-total">{{ historicalSkillMixHoursTotal }}</div>
+								</td>
+								<td>
+									<div class="skill-mix-labor-total">{{ laborSkillMixTotal }}</div>
+								</td>
+								<td></td>
+								<td>
+									<div class="skill-mix-boe-total">{{ boeSkillMixTotal }}</div>
+								</td>
+								<td>
+									<div class="skill-mix-proposed-hours-total">{{ proposedSkillMixHoursTotal }}</div>
+								</td>
+								<td></td>
+							</tr>
                         </tbody>
                     </table>
                 </div>

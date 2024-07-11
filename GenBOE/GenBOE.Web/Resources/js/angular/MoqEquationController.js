@@ -10,7 +10,19 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.model.insertWorkspaceModalOpen = false;
 
         $scope.newTableId = -1;
-        $scope.ResourceModels = BOEDetails.WSResources;
+		$scope.ResourceModels = BOEDetails.WSResources;
+
+		// Skill Mix Table Totals
+		$scope.historicalSkillMixHoursTotal = 0;
+		$scope.laborSkillMixTotal = 0;
+		$scope.boeSkillMixTotal = 0;
+		$scope.proposedSkillMixHoursTotal = 0;
+
+		// Common Disclosure SkillMix Table Totals
+		$scope.historicalCommonDisclosureHoursTotal = 0;
+		$scope.laborCommonDisclosureTotal = 0;
+		$scope.boeCommonDisclosureTotal = 0;
+		$scope.proposedCommonDisclosureHoursTotal = 0;
 
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
@@ -1639,9 +1651,21 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         if (input === undefined || (typeof input === 'string' && (input.length === 0
             || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
             item.IsResourceValid = false;
-        }
+		}
+
+		// We will call the Skill Mix total calculation per item as the UI calls this parent method
+		$scope.setSkillMixTotals(item);
+
         return item.IsResourceValid;
-    }
+	}
+
+	$scope.setSkillMixTotals = function () {
+		// Set Skill Mix Totals
+		$scope.historicalSkillMixHoursTotal += item.HistoricalHours;
+		$scope.laborSkillMixTotal += item.LaborSkillMix;
+		$scope.boeSkillMixTotal += item.BOESkillMix;
+		$scope.proposedSkillMixHoursTotal += item.ProposedHours;
+	}
 
     $scope.resourceSelected = function (item, model) {
         $scope.setDirty();
