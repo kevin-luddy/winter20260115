@@ -1978,6 +1978,7 @@ BEGIN TRY
 		[BOETaskElementID] [int] NOT NULL,
 		[BOEID] [int] NOT NULL,
 		[MOQTypeSelectionID] [int] NOT NULL,
+		[IsPercentLocked] bit NOT NULL,
 		Processed bit,
 		NewBOETaskElementID int,
 		NewBOEID int,
@@ -1997,6 +1998,7 @@ BEGIN TRY
 		SM.[BOETaskElementID],
 		SM.[BOEID],
 		SM.[MOQTypeSelectionID],
+		SM.[IsPercentLocked],
 		0,
 		T.[NewBOETaskElementID],
 		B.[NewBOEID],
@@ -2022,7 +2024,8 @@ BEGIN TRY
             [ResourceNew],
             [BOETaskElementID],
             [BOEID],
-            [MOQTypeSelectionID]
+            [MOQTypeSelectionID],
+			[IsPercentLocked]
 			)
 	SELECT
 		[Rationale],
@@ -2035,7 +2038,8 @@ BEGIN TRY
 		[ResourceNew],
 		[NewBOETaskElementID],
 		[NewBOEID],
-		[NewMOQTypeSelectionID]
+		[NewMOQTypeSelectionID],
+		[IsPercentLocked]
 	FROM @SkillMix
 	WHERE SkillMixID = @SkillMixID
 
@@ -2060,6 +2064,8 @@ BEGIN TRY
 	    [BOEID] [int] NOT NULL,
 	    [BOETaskElementID] [int] NOT NULL,
 	    [MOQTypeSelectionID] [int] NOT NULL,
+		[IsPercentLocked] bit NOT NULL,
+		[IsUserInput] bit NOT NULL,
 		Processed bit,
 	    NewBOEID int,
 	    NewBOETaskElementID int,
@@ -2079,6 +2085,8 @@ BEGIN TRY
 	    CD.[BOEID],
 	    CD.[BOETaskElementID],
 	    CD.[MOQTypeSelectionID],
+		CD.[IsPercentLocked],
+		CD.[IsUserInput],
 		0,
 	    B.[NewBOEID],
 	    T.[NewBOETaskElementID],
@@ -2104,7 +2112,9 @@ BEGIN TRY
 	            [BusinessResourceID],
 	            [BOEID],
 	            [BOETaskElementID],
-	            [MOQTypeSelectionID]
+	            [MOQTypeSelectionID],
+				[IsPercentLocked],
+				[IsUserInput]
 				)
 	SELECT
 		[Rationale],
@@ -2118,6 +2128,8 @@ BEGIN TRY
 	    [NewBOEID],
 	    [NewBOETaskElementID],
 	    [NewMOQTypeSelectionID]
+		[IsPercentLocked],
+		[IsUserInput]
 	FROM @CommonDisclosureSkillMix
 	WHERE CommonDisclosureSkillMixID = @CommonDisclosureSkillMixID
 	
