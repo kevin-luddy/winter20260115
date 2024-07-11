@@ -1383,8 +1383,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
 						moqType.SkillMixTable = response.data.data;
+						if ($scope.model.CommonDisclosureEnabled) {
+							$scope.refreshCommonDisclosureTable(moqType);
+						}
 					}
-					$scope.refreshCommonDisclosureTable(moqType);
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
 				}
@@ -1403,28 +1405,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.refreshCommonDisclosureTable = function (moqType) {
 		// Get all the data tables
 		const data = {
-			resourceHours: [],
 			currentSkillMixData: [],
 			commonDisclosureSMData: []
 		};
-
-
-		if (moqType.TableData) {
-			moqType.TableData.forEach(tableData => {
-				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName) && $scope.model.CommonDisclosureEnabled) {
-
-					tableData.ResourceHours.forEach(hours => {
-						data.resourceHours.push(hours);
-					});
-				}
-			});
-		}
 
 		data.boeId = ManageTaskModel.boeId;
 		data.currentSkillMixData = moqType.SkillMixTable;
 		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
 
-		if (data.resourceHours.length > 0) {
+		if (data.currentSkillMixData.length > 0) {
 			// send to backend
 			// display response to user
 			$(document).trigger("SHOW_LOADING_BOX");
