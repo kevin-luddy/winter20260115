@@ -50,6 +50,7 @@ AS
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 **		7/11/24		e405721				PROPH-2156: Update Copy Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
 **		07/11/24	twilson3			proph-2166 Missing Columns
+**		07/12/24	twilson3			proph-2019 Fix @Temp Table definitions
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1967,14 +1968,14 @@ BEGIN TRY
 	DECLARE @SkillMix TABLE
 	(
 		[SkillMixID] [int] NOT NULL,
-		[Rationale] [varchar] NOT NULL,
+		[Rationale] varchar(255) NOT NULL,
 		[Included] [bit] NOT NULL,
-		[ProposedHours] [decimal] NOT NULL,
-		[HistoricalHours] [decimal] NOT NULL,
-		[BOESkillMix] [decimal] NOT NULL,
-		[LaborSkillMix] [decimal] NOT NULL,
-		[ResourceOld] [varchar] NOT NULL,
-		[ResourceNew] [varchar] NOT NULL,
+		[ProposedHours] decimal(11,2) NOT NULL,
+		[HistoricalHours] decimal(11,2) NOT NULL,
+		[BOESkillMix] decimal(5,2) NOT NULL,
+		[LaborSkillMix] decimal(5,2) NOT NULL,
+		[ResourceOld] varchar(20) NOT NULL,
+		[ResourceNew] varchar(20) NOT NULL,
 		[BOETaskElementID] [int] NOT NULL,
 		[BOEID] [int] NOT NULL,
 		[MOQTypeSelectionID] [int] NOT NULL,
@@ -2053,14 +2054,14 @@ BEGIN TRY
 	DECLARE @CommonDisclosureSkillMix TABLE
 	(
 		[CommonDisclosureSkillMixID] [int] NOT NULL,
-		[Rationale] [varchar] NOT NULL,
+		[Rationale] varchar(255) NOT NULL,
 		[Included] [bit] NOT NULL,
-		[ProposedHours] [decimal] NOT NULL,
-		[HistoricalHours] [decimal] NOT NULL,
-		[BOESkillMix] [decimal] NOT NULL,
-		[LaborSkillMix] [decimal] NOT NULL,
-	    [ResourceID] [varchar] NOT NULL,
-	    [BusinessResourceID] [varchar] NOT NULL,
+		[ProposedHours] decimal(11,2) NOT NULL,
+		[HistoricalHours] decimal(11,2) NOT NULL,
+		[BOESkillMix] decimal(5,2) NOT NULL,
+		[LaborSkillMix] decimal(5,2) NOT NULL,
+		[ResourceID] varchar(20) NOT NULL,
+		[BusinessResourceID] varchar(20) NOT NULL,
 	    [BOEID] [int] NOT NULL,
 	    [BOETaskElementID] [int] NOT NULL,
 	    [MOQTypeSelectionID] [int] NOT NULL,
@@ -2143,9 +2144,9 @@ BEGIN TRY
 	DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
 	(
 		[MOQTypeSelectionTableDataResourceHoursId] [int] NOT NULL,
-		[ResourceName] [varchar] NOT NULL,
-		[WbsHours] [decimal] NOT NULL,
-		[TotalHours] [decimal] NOT NULL,
+		[ResourceName] varchar(20) NULL,
+		[WbsHours] decimal(11,2) NOT NULL,
+		[TotalHours] decimal(11,2) NOT NULL,
 		[MOQTypeSelectionTableDataId] [int] NOT NULL,
 		[BOETaskElementID] [int] NOT NULL,
 		[BOEID] [int] NOT NULL,
