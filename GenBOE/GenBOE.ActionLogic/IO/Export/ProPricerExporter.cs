@@ -439,6 +439,9 @@ namespace GenBOE.ActionLogic.IO.Export
 							taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
 						}
 
+						// If we are processing a labor type, and it has both resource and BRC IDs (should only have 1/labor type), it gets split and changes the start/end date
+						// to differentiate between resource and BRC
+
 						IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
 							elementOfCost, taskResourcesEntriesForElementOfCost, boeTask, taskResourcesEntriesForElementOfCost.Any(x => x.IsOffloaded));
 
@@ -995,6 +998,8 @@ namespace GenBOE.ActionLogic.IO.Export
              * Loop over the list of resource type entries (for the current task) that correspond to the designated Element of Cost (input parameter).
              * 
              */
+			bool shouldTaskIncrement = true;
+			int previousBusinessResourceCodeID = 0;
 			foreach (ResourceTypeDto resourceTypeEntry in taskResourcesEntriesForElementOfCost)
 			{
 				// ProjectMap only wants the task exported once whereas everyone else wants it 1:1 with the number of ResourceTypes inside it
@@ -1016,7 +1021,36 @@ namespace GenBOE.ActionLogic.IO.Export
 					if (elementOfCost == ElementOfCostType.LMLabor)
 					{
 						taskIDString = ISGS_LABOR_LIDN;
-						incrementCount = ++wsLevelData.ItemCounters.LaborId;
+						
+						if (Utilities.IsBRCEnabledForSystem)
+						{
+							// If this is split between a BRC and current resource, we should flag it to not increment for the next 
+							if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
+								&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
+							{
+								shouldTaskIncrement = true;
+								previousBusinessResourceCodeID = resourceTypeEntry.BusinessResourceCodeID.Value;
+							}
+							// After 1LMX start date and the previous row's BRC ID matches = we have a shared resource
+							else if (resourceTypeEntry.StartDate >= Utilities.OneLmxStartDate && resourceTypeEntry.BusinessResourceCodeID.HasValue
+								&& previousBusinessResourceCodeID == resourceTypeEntry.BusinessResourceCodeID.Value)
+							{
+								shouldTaskIncrement = false;
+							}
+							else
+							{
+								shouldTaskIncrement = true;
+							}
+						}
+
+						if (shouldTaskIncrement)
+						{
+							incrementCount = ++wsLevelData.ItemCounters.LaborId;
+						}
+						else
+						{
+							incrementCount = wsLevelData.ItemCounters.LaborId;
+						}
 					}
 					else if (elementOfCost == ElementOfCostType.IWTA)
 					{
