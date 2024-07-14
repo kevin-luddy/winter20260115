@@ -77,6 +77,7 @@ namespace GenTRAC.Models
         public virtual DbSet<CageCode> CageCodes { get; set; }
         public virtual DbSet<ContractActionTypeLU> ContractActionTypeLUs { get; set; }
         public virtual DbSet<CostVolumeToolLU> CostVolumeToolLUs { get; set; }
+        public virtual DbSet<CcopdReasonsNo> CcopdReasonsNoes { get; set; }
     
         public virtual ObjectResult<Nullable<int>> archiveProposal(Nullable<System.DateTime> createStartDate, Nullable<System.DateTime> createEndDate, string lineOfBusinessID, string programAreaID)
         {
