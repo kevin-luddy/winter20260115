@@ -268,13 +268,13 @@ namespace GenBOE.DataBridge.DTO
 
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
 			{
-				Collection<string> skillMixVariablesPropertiesToIncludeInTable = new Collection<string>()
+				Collection<string> commonDisclosureVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceID", "BusinessResourceID", "SkillMixID", "BOEID", "BOETaskElementID", "MOQTypeSelectionID", "IsPercentLocked", "IsUserInput"
+					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceID", "BusinessResourceID", "BOEID", "BOETaskElementID", "MOQTypeSelectionID", "IsPercentLocked", "IsUserInput"
 				};
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					DataTable commonDisclosureSkillMixVariablesDataTable = StoredProcedureHelper.ToDataTable<CommonDisclosureSkillMixDTO>(commonDisclosureSkillMixes, skillMixVariablesPropertiesToIncludeInTable);
+					DataTable commonDisclosureSkillMixVariablesDataTable = StoredProcedureHelper.ToDataTable<CommonDisclosureSkillMixDTO>(commonDisclosureSkillMixes, commonDisclosureVariablesPropertiesToIncludeInTable);
 
 					toReturn = StoredProcedureHelper.ExecuteTableValueProcedure(
 						gbe,
