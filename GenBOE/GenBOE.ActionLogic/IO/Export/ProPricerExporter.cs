@@ -439,9 +439,6 @@ namespace GenBOE.ActionLogic.IO.Export
 							taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
 						}
 
-						// If we are processing a labor type, and it has both resource and BRC IDs (should only have 1/labor type), it gets split and changes the start/end date
-						// to differentiate between resource and BRC
-
 						IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
 							elementOfCost, taskResourcesEntriesForElementOfCost, boeTask, taskResourcesEntriesForElementOfCost.Any(x => x.IsOffloaded));
 
@@ -1024,7 +1021,6 @@ namespace GenBOE.ActionLogic.IO.Export
 					if (elementOfCost == ElementOfCostType.LMLabor)
 					{
 						taskIDString = ISGS_LABOR_LIDN;
-						//shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2);
 
 						if (shouldTaskIncrementAndPrevID.Item1)
 						{
@@ -1303,12 +1299,14 @@ namespace GenBOE.ActionLogic.IO.Export
 		}
 
 		/// <summary>
-		/// 
+		/// Should the task number increment?
 		/// </summary>
+		/// <param name="resourceTypeEntry">The resource type entry</param>
+		/// <param name="previousBusinessResourceCodeID">The Business Resource Code ID in the previous row</param>
+		/// <returns>A tuple, denoting if the task number should increment and the previous BRC ID</returns>
 		private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID)
 		{
 			Tuple<bool, int> shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
-			//bool shouldTaskIncrement = true;
 
 			if (Utilities.IsBRCEnabledForSystem)
 			{
@@ -1316,25 +1314,20 @@ namespace GenBOE.ActionLogic.IO.Export
 				if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
 					&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
 				{
-					//shouldTaskIncrement = true;
-					//previousBusinessResourceCodeID = resourceTypeEntry.BusinessResourceCodeID.Value;
 					shouldTaskIncrementResult = Tuple.Create(true, resourceTypeEntry.BusinessResourceCodeID.Value);
 				}
-				// After 1LMX start date and the previous row's BRC ID matches = we have a shared resource
+				// After 1LMX start date and the previous row's BRC ID matches means we have a shared resource
 				else if (resourceTypeEntry.StartDate >= Utilities.OneLmxStartDate && resourceTypeEntry.BusinessResourceCodeID.HasValue
 					&& previousBusinessResourceCodeID == resourceTypeEntry.BusinessResourceCodeID.Value)
 				{
-					//shouldTaskIncrement = false;
 					shouldTaskIncrementResult = Tuple.Create(false, previousBusinessResourceCodeID);
 				}
 				else
 				{
-					//shouldTaskIncrement = true;
 					shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
 				}
 			}
 
-			//return shouldTaskIncrement;
 			return shouldTaskIncrementResult;
 		}
 
