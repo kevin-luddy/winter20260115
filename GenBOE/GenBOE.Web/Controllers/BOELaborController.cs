@@ -847,13 +847,6 @@ namespace GenBOE.Web.Controllers
 				validationErrors.AddRange(rteValidationErrors);
 			}
 
-			// Validate Skill Mix Table
-			ICollection<ValidationMessage> skillMixValidationErrors = this._BoeLaborControllerLogic.ValidateSkillMixTable(modelView.MOQTypes, ws.CreationDate);
-			if (skillMixValidationErrors.Any())
-			{
-				validationErrors.AddRange(skillMixValidationErrors);
-			}
-
 			BoeTaskElementDTO dto = this._BoeLaborControllerLogic.ConvertModelViewToDto(modelView, ws);
 
 			// Validate DTO 

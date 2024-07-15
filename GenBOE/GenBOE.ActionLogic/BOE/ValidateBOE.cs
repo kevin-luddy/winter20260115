@@ -781,6 +781,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.HistoricalReferenceExplanation, "Provide an explanation of Why the Historical Reference was Selected", ws.RteSizeLimit, errorMessages);
 							}
 
+							errorMessages.AddRange(ValidateSkillMixTable(new Collection<MoqTypeSelection>() { moqType }, ws.CreationDate, onButtonPress));
+
                             break;
                         case (MOQType.CostEstimatingRelationships):
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
@@ -822,15 +824,48 @@ namespace GenBOE.ActionLogic.WBS.BOE
             return errorMessages;
         }
 
-        /// <summary>
-        /// Validates a required field
-        /// </summary>
-        /// <param name="moqType">Moq Type</param>
-        /// <param name="field">Property to check</param>
-        /// <param name="label">Label for the field</param>
-        /// <param name="maxFieldLength">RTE Size Limit</param>
-        /// <param name="errorMessages">Error Messages</param>
-        private static void ValidateRequiredField(MOQType moqType, string field, string label, int? maxFieldLength, Collection<string> errorMessages)
+		/// <summary>
+		/// Validate the Skill Mix Table for any errors
+		/// </summary>
+		/// <param name="moqTypes">The MOQ Types</param>
+		/// <param name="workspaceCreationDate">The workspace creation date</param>
+		/// <param name="onButtonPress">Is this being validated for Validate BOE or Submit For Approval?</param>
+		/// <returns>A collection of any validation errors/messages</returns>
+		private ICollection<string> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate, bool onButtonPress)
+		{
+			ICollection<string> errorMessages = new Collection<string>();
+
+			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && moqTypes != null)
+			{
+				IList<SkillMixModelView> skillMixRowsEmptyRationales = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
+				IList<SkillMixModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
+
+				if (onButtonPress)
+				{
+					foreach (string skillMixResourceNew in skillMixRowsEmptyRationales.Select(x => x.ResourceNew))
+					{
+						errorMessages.Add(string.Format("Current Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
+					}
+				}
+
+				foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
+				{
+					errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
+				}
+			}
+
+			return errorMessages;
+		}
+
+		/// <summary>
+		/// Validates a required field
+		/// </summary>
+		/// <param name="moqType">Moq Type</param>
+		/// <param name="field">Property to check</param>
+		/// <param name="label">Label for the field</param>
+		/// <param name="maxFieldLength">RTE Size Limit</param>
+		/// <param name="errorMessages">Error Messages</param>
+		private static void ValidateRequiredField(MOQType moqType, string field, string label, int? maxFieldLength, Collection<string> errorMessages)
         {
             if (string.IsNullOrEmpty(field)) 
             { 

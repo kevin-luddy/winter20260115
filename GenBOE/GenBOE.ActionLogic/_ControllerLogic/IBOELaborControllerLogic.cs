@@ -266,14 +266,6 @@ namespace GenBOE.ActionLogic
         ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement);
 
 		/// <summary>
-		/// Validate the Skill Mix Table for any errors
-		/// </summary>
-		/// <param name="moqTypes">The MOQ Types</param>
-		/// <param name="workspaceCreationDate">The workspace creation date</param>
-		/// <returns>A collection of any validation errors/messages</returns>
-		ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate);
-
-		/// <summary>
 		/// Recalculates the labor types that have percent spread locked.
 		/// </summary>
 		/// <param name="workspaceData">The workspace data.</param>

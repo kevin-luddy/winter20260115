@@ -4120,5 +4120,222 @@ namespace GenBOE.Tests.ActionLogic
 			// Assert no results because field is not required before the start date
 			Assert.IsFalse(result.Any());
 		}
+
+		/// <summary>
+		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a successful Skill Mix Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_SkillMixTable_Success()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						Rationale = "Test Skill Mix Table Rationale"
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsFalse(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a Rationale in the Skill Mix Table being over the maximum length
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_SkillMixTable_RationaleMaxLength()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						// 256 characters, 1 over the limit of 255
+						Rationale = "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches."
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+		}
+
+		/// <summary>
+		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a missing required Rationale in the Skill Mix Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_SkillMixTable_MissingRationale()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						Rationale = string.Empty
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+		}
+
+		/// <summary>
+		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a missing Rationale in the Skill Mix Table when not required on task save
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_SkillMixTable_MissingRationaleNotRequired()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						Rationale = string.Empty
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// if onButtonPress is false for ValidateTemplateMoqForTask, rationale is not required so we expect no errors
+			Assert.IsFalse(result.Any());
+		}
 	}
 }

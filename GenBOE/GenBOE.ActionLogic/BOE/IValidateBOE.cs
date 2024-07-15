@@ -6,15 +6,15 @@
 
 namespace GenBOE.ActionLogic.WBS.BOE
 {
-    using System.Collections.Generic;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
+	using System.Collections.Generic;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
 
-    /// <summary>
-    /// IValidate Interface
-    /// </summary>
-    public interface IValidateBOE
+	/// <summary>
+	/// IValidate Interface
+	/// </summary>
+	public interface IValidateBOE
     {
         /// <summary>
         /// Validate all BOE data (BOE Header, task element details, labor type, and labor spreads)
@@ -40,5 +40,5 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
         /// <returns>Errors, if any</returns>
         ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress);
-    }
+	}
 }
