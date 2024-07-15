@@ -12,18 +12,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         $scope.newTableId = -1;
 		$scope.ResourceModels = BOEDetails.WSResources;
 
-		// Skill Mix Table Totals
-		$scope.model.HistoricalSkillMixHoursTotal = 0;
-		$scope.model.LaborSkillMixTotal = 0;
-		$scope.model.BoeSkillMixTotal = 0;
-		$scope.model.ProposedSkillMixHoursTotal = 0;
-
-		// Common Disclosure SkillMix Table Totals
-		$scope.model.HistoricalCommonDisclosureHoursTotal = 0;
-		$scope.model.LaborCommonDisclosureTotal = 0;
-		$scope.model.BoeCommonDisclosureTotal = 0;
-		$scope.model.ProposedCommonDisclosureHoursTotal = 0;
-
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
 			initializeWidget();
@@ -1719,33 +1707,33 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.setSkillMixTotals = function (moqType) {
 		// Reset Totals because this method can be called multiple times from multiple areas
-		$scope.model.HistoricalSkillMixHoursTotal = 0;
-		$scope.model.LaborSkillMixTotal = 0;
-		$scope.model.BoeSkillMixTotal = 0;
-		$scope.model.ProposedSkillMixHoursTotal = 0;
+		moqType.HistoricalSkillMixHoursTotal = 0;
+		moqType.LaborSkillMixTotal = 0;
+		moqType.BoeSkillMixTotal = 0;
+		moqType.ProposedSkillMixHoursTotal = 0;
 
 		moqType.SkillMixTable.forEach(item => {
 			// Set Skill Mix Totals
-			$scope.model.HistoricalSkillMixHoursTotal += item.HistoricalHours;
-			$scope.model.LaborSkillMixTotal += item.LaborSkillMix;
-			$scope.model.BoeSkillMixTotal += item.BOESkillMix;
-			$scope.model.ProposedSkillMixHoursTotal += item.ProposedHours;
+			moqType.HistoricalSkillMixHoursTotal += item.HistoricalHours;
+			moqType.LaborSkillMixTotal += item.LaborSkillMix;
+			moqType.BoeSkillMixTotal += item.BOESkillMix;
+			moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
 		});
 	}
 
 	$scope.setCommonDisclosureTotals = function (moqType) {
 		// Reset Totals because this method can be called multiple times from multiple areas
-		$scope.model.HistoricalCommonDisclosureHoursTotal = 0;
-		$scope.model.LaborCommonDisclosureTotal = 0;
-		$scope.model.BoeCommonDisclosureTotal = 0;
-		$scope.model.ProposedCommonDisclosureHoursTotal = 0;
+		moqType.HistoricalCommonDisclosureHoursTotal = 0;
+		moqType.LaborCommonDisclosureTotal = 0;
+		moqType.BoeCommonDisclosureTotal = 0;
+		moqType.ProposedCommonDisclosureHoursTotal = 0;
 
 		moqType.CommonDisclosureTable.forEach(item => {
 			// Set Skill Mix Totals
-			$scope.model.HistoricalCommonDisclosureHoursTotal += item.HistoricalHours;
-			$scope.model.LaborCommonDisclosureTotal += item.LaborSkillMix;
-			$scope.model.BoeCommonDisclosureTotal += item.BOESkillMix;
-			$scope.model.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
+			moqType.HistoricalCommonDisclosureHoursTotal += item.HistoricalHours;
+			moqType.LaborCommonDisclosureTotal += item.LaborSkillMix;
+			moqType.BoeCommonDisclosureTotal += item.BOESkillMix;
+			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
 		});
 	}
 

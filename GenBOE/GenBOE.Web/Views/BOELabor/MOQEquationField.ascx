@@ -48,15 +48,7 @@
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
-		CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue(),
-		HistoricalSkillMixHoursTotal: <%= 0%>,
-		LaborSkillMixTotal: <%= 0%>,
-		BoeSkillMixTotal: <%= 0%>,
-		ProposedSkillMixHoursTotal: <%= 0%>,
-		HistoricalCommonDisclosureHoursTotal: <%= 0%>,
-		LaborCommonDisclosureTotal: <%= 0%>,
-		BoeCommonDisclosureTotal: <%= 0%>,
-		ProposedCommonDisclosureHoursTotal: <%= 0%>
+		CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -486,17 +478,17 @@
 								</td>
 								<td data-ng-show="model.IsRMS"></td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ model.HistoricalSkillMixHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalSkillMixHoursTotal }}</div>
 								</td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ model.LaborSkillMixTotal * 100 | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborSkillMixTotal * 100 | number: 2 }}%</div>
 								</td>
 								<td></td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ model.BoeSkillMixTotal * 100 | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeSkillMixTotal * 100 | number: 2 }}%</div>
 								</td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ model.ProposedSkillMixHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.ProposedSkillMixHoursTotal }}</div>
 								</td>
 								<td></td>
 							</tr>
@@ -566,17 +558,17 @@
 								</td>
 								<td></td>	
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ model.HistoricalCommonDisclosureHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal }}</div>
 								</td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ model.LaborCommonDisclosureTotal * 100 | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborCommonDisclosureTotal * 100 | number: 2 }}%</div>
 								</td>
 								<td></td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ model.BoeCommonDisclosureTotal * 100 | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeCommonDisclosureTotal * 100 | number: 2 }}%</div>
 								</td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ model.ProposedCommonDisclosureHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.ProposedCommonDisclosureHoursTotal }}</div>
 								</td>
 								<td></td>									
 							</tr>
