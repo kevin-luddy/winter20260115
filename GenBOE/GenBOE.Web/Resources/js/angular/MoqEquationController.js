@@ -1426,7 +1426,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				// place returned html into the content div
 				if (response.data.IsSuccessful === true) {
 					// the response is wrapped inside response.data.data array
-					if (response.data.data && $scope.model.CommonDisclosureEnabled) {
+					if (response.data.data) {
 						moqType.CommonDisclosureTable = response.data.data;
 					}
 				} else {
