@@ -13,28 +13,31 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.ResourceModels = BOEDetails.WSResources;
 
 		// Skill Mix Table Totals
-		$scope.historicalSkillMixHoursTotal = 0;
-		$scope.laborSkillMixTotal = 0;
-		$scope.boeSkillMixTotal = 0;
-		$scope.proposedSkillMixHoursTotal = 0;
+		$scope.model.HistoricalSkillMixHoursTotal = 0;
+		$scope.model.LaborSkillMixTotal = 0;
+		$scope.model.BoeSkillMixTotal = 0;
+		$scope.model.ProposedSkillMixHoursTotal = 0;
 
 		// Common Disclosure SkillMix Table Totals
-		$scope.historicalCommonDisclosureHoursTotal = 0;
-		$scope.laborCommonDisclosureTotal = 0;
-		$scope.boeCommonDisclosureTotal = 0;
-		$scope.proposedCommonDisclosureHoursTotal = 0;
-
-		$scope.setSkillMixTotals();
-
-		if ($scope.model.CommonDisclosureEnabled) {
-			$scope.setCommonDisclosureTotals();
-		}
+		$scope.model.HistoricalCommonDisclosureHoursTotal = 0;
+		$scope.model.LaborCommonDisclosureTotal = 0;
+		$scope.model.BoeCommonDisclosureTotal = 0;
+		$scope.model.ProposedCommonDisclosureHoursTotal = 0;
 
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
 			initializeWidget();
 
-			angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
+			// Updating ForEach call to make the call to calculate totals
+			angular.forEach($scope.model.SelectedMoqTypes.map(e => {
+				$scope.setSkillMixTotals(e);
+
+				if ($scope.model.CommonDisclosureEnabled) {
+					$scope.setCommonDisclosureTotals(e);
+				}
+
+				return e.SelectedMOQType.toString();
+			}), function (id) {
 				$scope.InitializeRteFields(id);
 			});
 
@@ -1401,8 +1404,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
 						moqType.SkillMixTable = response.data.data;
+
+						// Recalculate Totals for Skill Mix
+						$scope.setSkillMixTotals(moqType);
+
 						if ($scope.model.CommonDisclosureEnabled) {
 							$scope.refreshCommonDisclosureTable(moqType);
+
+							// Recalculate Totals for Common Disclosure Table
+							$scope.setCommonDisclosureTotals(moqType);
 						}
 					}
 				} else {
@@ -1446,6 +1456,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
 						moqType.CommonDisclosureTable = response.data.data;
+						$scope.setCommonDisclosureTotals(moqType);
 					}
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
@@ -1706,18 +1717,36 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         return item.IsResourceValid;
 	}
 
-	$scope.setSkillMixTotals = function () {
-		$scope.ResourceModels.forEach(item => {
+	$scope.setSkillMixTotals = function (moqType) {
+		// Reset Totals because this method can be called multiple times from multiple areas
+		$scope.model.HistoricalSkillMixHoursTotal = 0;
+		$scope.model.LaborSkillMixTotal = 0;
+		$scope.model.BoeSkillMixTotal = 0;
+		$scope.model.ProposedSkillMixHoursTotal = 0;
+
+		moqType.SkillMixTable.forEach(item => {
 			// Set Skill Mix Totals
-			$scope.historicalSkillMixHoursTotal += item.HistoricalHours;
-			$scope.laborSkillMixTotal += item.LaborSkillMix;
-			$scope.boeSkillMixTotal += item.BOESkillMix;
-			$scope.proposedSkillMixHoursTotal += item.ProposedHours;
+			$scope.model.HistoricalSkillMixHoursTotal += item.HistoricalHours;
+			$scope.model.LaborSkillMixTotal += item.LaborSkillMix;
+			$scope.model.BoeSkillMixTotal += item.BOESkillMix;
+			$scope.model.ProposedSkillMixHoursTotal += item.ProposedHours;
 		});
 	}
 
-	$scope.setCommonDisclosureTotals = function () {
+	$scope.setCommonDisclosureTotals = function (moqType) {
+		// Reset Totals because this method can be called multiple times from multiple areas
+		$scope.model.HistoricalCommonDisclosureHoursTotal = 0;
+		$scope.model.LaborCommonDisclosureTotal = 0;
+		$scope.model.BoeCommonDisclosureTotal = 0;
+		$scope.model.ProposedCommonDisclosureHoursTotal = 0;
 
+		moqType.CommonDisclosureTable.forEach(item => {
+			// Set Skill Mix Totals
+			$scope.model.HistoricalCommonDisclosureHoursTotal += item.HistoricalHours;
+			$scope.model.LaborCommonDisclosureTotal += item.LaborSkillMix;
+			$scope.model.BoeCommonDisclosureTotal += item.BOESkillMix;
+			$scope.model.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
+		});
 	}
 
     $scope.resourceSelected = function (item, model) {

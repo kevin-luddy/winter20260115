@@ -48,7 +48,15 @@
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
-        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
+		CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue(),
+		HistoricalSkillMixHoursTotal: <%= 0%>,
+		LaborSkillMixTotal: <%= 0%>,
+		BoeSkillMixTotal: <%= 0%>,
+		ProposedSkillMixHoursTotal: <%= 0%>,
+		HistoricalCommonDisclosureHoursTotal: <%= 0%>,
+		LaborCommonDisclosureTotal: <%= 0%>,
+		BoeCommonDisclosureTotal: <%= 0%>,
+		ProposedCommonDisclosureHoursTotal: <%= 0%>
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -476,19 +484,19 @@
 								<td>
 									<div class="skill-mix-totals">Total</div>
 								</td>
+								<td data-ng-show="model.IsRMS"></td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ model.HistoricalSkillMixHoursTotal }}</div>
+								</td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ model.LaborSkillMixTotal * 100 | number: 2 }}%</div>
+								</td>
 								<td></td>
 								<td>
-									<div class="skill-mix-historical-hours-total">{{ historicalSkillMixHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ model.BoeSkillMixTotal * 100 | number: 2 }}%</div>
 								</td>
 								<td>
-									<div class="skill-mix-labor-total">{{ laborSkillMixTotal }}</div>
-								</td>
-								<td></td>
-								<td>
-									<div class="skill-mix-boe-total">{{ boeSkillMixTotal }}</div>
-								</td>
-								<td>
-									<div class="skill-mix-proposed-hours-total">{{ proposedSkillMixHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ model.ProposedSkillMixHoursTotal }}</div>
 								</td>
 								<td></td>
 							</tr>
@@ -552,6 +560,26 @@
                                     </div>
                                 </td>									
                             </tr>
+							<tr>
+								<td>
+									<div title="Total">Total</div>
+								</td>
+								<td></td>	
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ model.HistoricalCommonDisclosureHoursTotal }}</div>
+								</td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ model.LaborCommonDisclosureTotal * 100 | number: 2 }}%</div>
+								</td>
+								<td></td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ model.BoeCommonDisclosureTotal * 100 | number: 2 }}%</div>
+								</td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ model.ProposedCommonDisclosureHoursTotal }}</div>
+								</td>
+								<td></td>									
+							</tr>
                         </tbody>
                     </table>
                 </div>
