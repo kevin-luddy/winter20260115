@@ -1021,27 +1021,29 @@ namespace GenBOE.ActionLogic.IO.Export
 					if (elementOfCost == ElementOfCostType.LMLabor)
 					{
 						taskIDString = ISGS_LABOR_LIDN;
-						
-						if (Utilities.IsBRCEnabledForSystem)
-						{
-							// If this is split between a BRC and current resource, we should flag it to not increment for the next 
-							if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
-								&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
-							{
-								shouldTaskIncrement = true;
-								previousBusinessResourceCodeID = resourceTypeEntry.BusinessResourceCodeID.Value;
-							}
-							// After 1LMX start date and the previous row's BRC ID matches = we have a shared resource
-							else if (resourceTypeEntry.StartDate >= Utilities.OneLmxStartDate && resourceTypeEntry.BusinessResourceCodeID.HasValue
-								&& previousBusinessResourceCodeID == resourceTypeEntry.BusinessResourceCodeID.Value)
-							{
-								shouldTaskIncrement = false;
-							}
-							else
-							{
-								shouldTaskIncrement = true;
-							}
-						}
+
+						//if (Utilities.IsBRCEnabledForSystem)
+						//{
+						//	// If this is split between a BRC and current resource, we should flag it to not increment for the next 
+						//	if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
+						//		&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
+						//	{
+						//		shouldTaskIncrement = true;
+						//		previousBusinessResourceCodeID = resourceTypeEntry.BusinessResourceCodeID.Value;
+						//	}
+						//	// After 1LMX start date and the previous row's BRC ID matches = we have a shared resource
+						//	else if (resourceTypeEntry.StartDate >= Utilities.OneLmxStartDate && resourceTypeEntry.BusinessResourceCodeID.HasValue
+						//		&& previousBusinessResourceCodeID == resourceTypeEntry.BusinessResourceCodeID.Value)
+						//	{
+						//		shouldTaskIncrement = false;
+						//	}
+						//	else
+						//	{
+						//		shouldTaskIncrement = true;
+						//	}
+						//}
+
+						shouldTaskIncrement = ShouldTaskIncrement(elementOfCost, resourceTypeEntry);
 
 						if (shouldTaskIncrement)
 						{
@@ -1277,6 +1279,39 @@ namespace GenBOE.ActionLogic.IO.Export
 			}
 
 			return laborTypeIdToProPricerIdMappings;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		private static bool ShouldTaskIncrement(ElementOfCostType elementOfCost, ResourceTypeDto resourceTypeEntry)
+		{
+			int finalIncrementCount = 0;
+			int previousBusinessResourceCodeID = 0;	// The BRC ID in the previous row
+			bool shouldTaskIncrement = true;
+
+			if (Utilities.IsBRCEnabledForSystem)
+			{
+				// If this is split between a BRC and current resource, we should flag it to not increment for the next 
+				if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
+					&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
+				{
+					shouldTaskIncrement = true;
+					previousBusinessResourceCodeID = resourceTypeEntry.BusinessResourceCodeID.Value;
+				}
+				// After 1LMX start date and the previous row's BRC ID matches = we have a shared resource
+				else if (resourceTypeEntry.StartDate >= Utilities.OneLmxStartDate && resourceTypeEntry.BusinessResourceCodeID.HasValue
+					&& previousBusinessResourceCodeID == resourceTypeEntry.BusinessResourceCodeID.Value)
+				{
+					shouldTaskIncrement = false;
+				}
+				else
+				{
+					shouldTaskIncrement = true;
+				}
+			}
+
+			return shouldTaskIncrement;
 		}
 
 		/// <summary>
