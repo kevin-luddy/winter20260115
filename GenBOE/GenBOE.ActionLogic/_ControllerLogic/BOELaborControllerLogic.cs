@@ -4054,7 +4054,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							// If there is a match, then copy over the other row information
 							newData.Included = currentData.Included;
 							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
-							
+							newData.IsPercentLocked = currentData.IsPercentLocked;
+
 							if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
 							{
 								newData.ResourceNew = currentData.ResourceNew;
@@ -4116,6 +4117,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							// If there is a match, then copy over the other row information
 							newData.Included = currentData.Included;
 							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
+							newData.IsPercentLocked = currentData.IsPercentLocked;
+							newData.IsUserInput = currentData.IsUserInput;
 
 							newData.Rationale = currentData.Rationale;
 							if (newData.Included)

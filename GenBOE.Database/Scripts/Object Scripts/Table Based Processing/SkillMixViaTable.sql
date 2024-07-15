@@ -19,6 +19,7 @@ CREATE TYPE [dbo].[TT_SkillMix] AS TABLE(
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
 		,[MOQTypeSelectionID] int NOT NULL
+		,[IsPercentLocked] bit NOT NULL
 		/* OrderID is automatically added in the code, so it HAS to be last */
 		,[OrderID] [int] NOT NULL
 );
@@ -49,6 +50,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
 **      06/12/24	e374897				PROPH-2047 Initial insert logic
+**		07/11/24	twilson3			proph-2166 Missing Column
 *******************************************************************************/
 BEGIN
 	DECLARE @DistinctMOQTypeSelectionID int
@@ -73,6 +75,7 @@ BEGIN
 		 ,[BOEID]
 		 ,[BOETaskElementID]
 		 ,[MOQTypeSelectionID]
+		 ,[IsPercentLocked]
 		 )
 	SELECT Rationale
 		,Included
@@ -85,6 +88,7 @@ BEGIN
 		,BOEID
 		,BOETaskElementID
 		,MOQTypeSelectionID
+		,IsPercentLocked
 	FROM @SkillMixTableParameter
 END
 

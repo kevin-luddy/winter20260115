@@ -48,6 +48,8 @@ AS
 **      8/10/23     twilson             PROPH-1029 Investigate Project Spreads
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
+**		7/11/24		e405721				PROPH-2156: Update Copy Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
+**		07/11/24	twilson3			proph-2166 Missing Columns
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1960,6 +1962,244 @@ BEGIN TRY
 
 	END
 
+	
+	/** [dbo].[[SkillMix]] **/
+	DECLARE @SkillMix TABLE
+	(
+		[SkillMixID] [int] NOT NULL,
+		[Rationale] [varchar] NOT NULL,
+		[Included] [bit] NOT NULL,
+		[ProposedHours] [decimal] NOT NULL,
+		[HistoricalHours] [decimal] NOT NULL,
+		[BOESkillMix] [decimal] NOT NULL,
+		[LaborSkillMix] [decimal] NOT NULL,
+		[ResourceOld] [varchar] NOT NULL,
+		[ResourceNew] [varchar] NOT NULL,
+		[BOETaskElementID] [int] NOT NULL,
+		[BOEID] [int] NOT NULL,
+		[MOQTypeSelectionID] [int] NOT NULL,
+		[IsPercentLocked] bit NOT NULL,
+		Processed bit,
+		NewBOETaskElementID int,
+		NewBOEID int,
+		NewMOQTypeSelectionID int
+	)
+	INSERT INTO @SkillMix
+	SELECT
+		SM.[SkillMixID],
+		SM.[Rationale],
+		SM.[Included],
+		SM.[ProposedHours],
+		SM.[HistoricalHours],
+		SM.[BOESkillMix],
+		SM.[LaborSkillMix],
+		SM.[ResourceOld],
+		SM.[ResourceNew],
+		SM.[BOETaskElementID],
+		SM.[BOEID],
+		SM.[MOQTypeSelectionID],
+		SM.[IsPercentLocked],
+		0,
+		T.[NewBOETaskElementID],
+		B.[NewBOEID],
+		M.[NewMOQTypeSelectionID]
+	FROM [version].[SkillMix] SM
+	INNER JOIN @MOQTypeSelection M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
+	INNER JOIN @BOE B ON SM.BOEID = B.BOEID
+	INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = SM.[BOETaskElementID]
+	WHERE SM.VersionId = @VersionID
+
+	DECLARE @SkillMixID int
+	WHILE EXISTS (SELECT 1 FROM @SkillMix WHERE Processed = 0)
+	BEGIN
+	SELECT TOP 1 @SkillMixID = SkillMixID FROM @SkillMix WHERE Processed = 0
+	INSERT INTO [dbo].[SkillMix]
+			([Rationale],
+			[Included],
+			[ProposedHours],
+			[HistoricalHours],
+			[BOESkillMix],
+			[LaborSkillMix],
+            [ResourceOld],
+            [ResourceNew],
+            [BOETaskElementID],
+            [BOEID],
+            [MOQTypeSelectionID],
+			[IsPercentLocked]
+			)
+	SELECT
+		[Rationale],
+		[Included],
+		[ProposedHours],
+		[HistoricalHours],
+		[BOESkillMix],
+		[LaborSkillMix],
+		[ResourceOld],
+		[ResourceNew],
+		[NewBOETaskElementID],
+		[NewBOEID],
+		[NewMOQTypeSelectionID],
+		[IsPercentLocked]
+	FROM @SkillMix
+	WHERE SkillMixID = @SkillMixID
+
+	UPDATE @SkillMix
+	SET Processed = 1
+	WHERE SkillMixID = @SkillMixID
+
+	END
+
+	/** [dbo].[CommonDisclosureSkillMix] **/
+	DECLARE @CommonDisclosureSkillMix TABLE
+	(
+		[CommonDisclosureSkillMixID] [int] NOT NULL,
+		[Rationale] [varchar] NOT NULL,
+		[Included] [bit] NOT NULL,
+		[ProposedHours] [decimal] NOT NULL,
+		[HistoricalHours] [decimal] NOT NULL,
+		[BOESkillMix] [decimal] NOT NULL,
+		[LaborSkillMix] [decimal] NOT NULL,
+	    [ResourceID] [varchar] NOT NULL,
+	    [BusinessResourceID] [varchar] NOT NULL,
+	    [BOEID] [int] NOT NULL,
+	    [BOETaskElementID] [int] NOT NULL,
+	    [MOQTypeSelectionID] [int] NOT NULL,
+		[IsPercentLocked] bit NOT NULL,
+		[IsUserInput] bit NOT NULL,
+		Processed bit,
+	    NewBOEID int,
+	    NewBOETaskElementID int,
+	    NewMOQTypeSelectionID int
+	)
+	INSERT INTO @CommonDisclosureSkillMix
+	SELECT
+		CD.[CommonDisclosureSkillMixID],
+		CD.[Rationale],
+		CD.[Included],
+		CD.[ProposedHours],
+		CD.[HistoricalHours],
+		CD.[BOESkillMix],
+		CD.[LaborSkillMix],
+	    CD.[ResourceID],
+	    CD.[BusinessResourceID],
+	    CD.[BOEID],
+	    CD.[BOETaskElementID],
+	    CD.[MOQTypeSelectionID],
+		CD.[IsPercentLocked],
+		CD.[IsUserInput],
+		0,
+	    B.[NewBOEID],
+	    T.[NewBOETaskElementID],
+	    M.[NewMOQTypeSelectionID]
+	FROM [version].[CommonDisclosureSkillMix] CD
+	INNER JOIN @MOQTypeSelection M ON CD.MOQTypeSelectionID = M.MOQTypeSelectionID
+	INNER JOIN @BOE B ON CD.BOEID = B.BOEID
+	INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = CD.[BOETaskElementID]
+	WHERE CD.VersionId = @VersionID
+	
+	DECLARE @CommonDisclosureSkillMixID int
+	WHILE EXISTS (SELECT 1 FROM @CommonDisclosureSkillMix WHERE Processed = 0)
+	BEGIN
+	SELECT TOP 1 @CommonDisclosureSkillMixID = CommonDisclosureSkillMixID FROM @CommonDisclosureSkillMix WHERE Processed = 0
+	INSERT INTO [dbo].[CommonDisclosureSkillMix]
+				([Rationale],
+				[Included],
+				[ProposedHours],
+				[HistoricalHours],
+				[BOESkillMix],
+				[LaborSkillMix],
+	            [ResourceID],
+	            [BusinessResourceID],
+	            [BOEID],
+	            [BOETaskElementID],
+	            [MOQTypeSelectionID],
+				[IsPercentLocked],
+				[IsUserInput]
+				)
+	SELECT
+		[Rationale],
+		[Included],
+		[ProposedHours],
+		[HistoricalHours],
+		[BOESkillMix],
+		[LaborSkillMix],
+	    [ResourceID],
+	    [BusinessResourceID],
+	    [NewBOEID],
+	    [NewBOETaskElementID],
+	    [NewMOQTypeSelectionID],
+		[IsPercentLocked],
+		[IsUserInput]
+	FROM @CommonDisclosureSkillMix
+	WHERE CommonDisclosureSkillMixID = @CommonDisclosureSkillMixID
+	
+	UPDATE @CommonDisclosureSkillMix
+	SET Processed = 1
+	WHERE CommonDisclosureSkillMixID = @CommonDisclosureSkillMixID
+	
+	END
+	
+	/** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
+	DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
+	(
+		[MOQTypeSelectionTableDataResourceHoursId] [int] NOT NULL,
+		[ResourceName] [varchar] NOT NULL,
+		[WbsHours] [decimal] NOT NULL,
+		[TotalHours] [decimal] NOT NULL,
+		[MOQTypeSelectionTableDataId] [int] NOT NULL,
+		[BOETaskElementID] [int] NOT NULL,
+		[BOEID] [int] NOT NULL,
+		Processed bit,
+		NewMOQTypeSelectionTableDataId int,
+	    NewBOETaskElementID int,
+	    NewBOEID int
+	)
+	INSERT INTO @MOQTypeSelectionTableDataResourceHours
+	SELECT
+		M.[MOQTypeSelectionTableDataResourceHoursId],
+		M.[ResourceName],
+		M.[WbsHours],
+		M.[TotalHours],
+		M.[MOQTypeSelectionTableDataId],
+		M.[BOETaskElementID],
+		M.[BOEID],
+		0,
+		MOQ.[NewMOQTypeSelectionTableDataId],
+	    T.[NewBOETaskElementID],
+	    B.[NewBOEID]
+	FROM [version].[MOQTypeSelectionTableDataResourceHours] M
+	INNER JOIN @MOQTypeSelectionTableData MOQ ON M.MOQTypeSelectionTableDataId = MOQ.MOQTypeSelectionTableDataId
+	INNER JOIN @BOE B ON M.BOEID = B.BOEID
+	INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = M.[BOETaskElementID]
+	WHERE M.VersionId = @VersionID
+	
+	DECLARE @MOQTypeSelectionTableDataResourceHoursId int
+	WHILE EXISTS (SELECT 1 FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0)
+	BEGIN
+	SELECT TOP 1 @MOQTypeSelectionTableDataResourceHoursId = MOQTypeSelectionTableDataResourceHoursId FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0
+	INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
+				([ResourceName],
+				[WbsHours],
+				[TotalHours],
+				[MOQTypeSelectionTableDataId],
+				[BOETaskElementID],
+				[BOEID]
+				)
+	SELECT
+		[ResourceName],
+		[WbsHours],
+		[TotalHours],
+		[NewMOQTypeSelectionTableDataId],
+		[NewBOETaskElementID],
+		[NewBOEID]
+	FROM @MOQTypeSelectionTableDataResourceHours
+	WHERE MOQTypeSelectionTableDataResourceHoursId = @MOQTypeSelectionTableDataResourceHoursId
+	
+	UPDATE @MOQTypeSelectionTableDataResourceHours
+	SET Processed = 1
+	WHERE MOQTypeSelectionTableDataResourceHoursId = @MOQTypeSelectionTableDataResourceHoursId
+	
+	END
 
 	DECLARE @BOELaborType TABLE 
 	(
