@@ -2566,7 +2566,7 @@ BEGIN
 
 		END
 
-		/** [dbo].[[SkillMix]] **/
+		/** [dbo].[SkillMix] **/
 		IF EXISTS (SELECT 1 FROM [version].[SkillMix] WHERE VersionID = @VersionID)
 		BEGIN
 		SET IDENTITY_INSERT [dbo].[SkillMix] ON
@@ -2580,8 +2580,8 @@ BEGIN
 		[LaborSkillMix],
 		[ResourceOld],
 		[ResourceNew],
-		[BOETaskElementID],
 		[BOEID],
+		[BOETaskElementID],
 		[MOQTypeSelectionID]
 		)
 		SELECT SM.[SkillMixID],
@@ -2593,27 +2593,110 @@ BEGIN
 			SM.[LaborSkillMix],
 			SM.[ResourceOld],
 			SM.[ResourceNew],
-			SM.[BOETaskElementID],
 			SM.[BOEID],
+			SM.[BOETaskElementID],
 			SM.[MOQTypeSelectionID]
-		FROM [version].[[SkillMixID] SM
-		INNER JOIN [version].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
+		FROM [version].[SkillMixID] SM
 		INNER JOIN [version].[BOE] B ON T.BOEID  = B.BOEID
+		INNER JOIN [version].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
+		INNER JOIN [version].[MOQTypeSelection] M ON SM.[MOQTypeSelectionId] = M.[MOQTypeSelectionId]
 		INNER JOIN [version].[Workspace] WS ON B.WorkspaceID = WS.WorkspaceID
 		WHERE 
 		SM.VersionId = @VersionID AND
-		M.VersionId = @VersionID AND
 		T.VersionID = @VersionID AND
 		B.VersionID = @VersionID AND
+		M.VersionId = @VersionID AND
 		WS.VersionID = @VersionID AND
 		WS.WorkspaceID = @WorkspaceID
 
+		SET IDENTITY_INSERT [dbo].[SkillMix] OFF
 
+		END
 
+		/** [dbo].[CommonDisclosureSkillMix] **/
+		IF EXISTS (SELECT 1 FROM [version].[CommonDisclosureSkillMix] WHERE VersionID = @VersionID)
+		BEGIN
+		SET IDENTITY_INSERT [dbo].[CommonDisclosureSkillMix] ON
+		INSERT INTO [dbo].[CommonDisclosureSkillMix]
+		([CommonDisclosureSkillMixID],
+		[Rationale],
+		[Included],
+		[ProposedHours],
+		[HistoricalHours],
+		[BOESkillMix],
+		[LaborSkillMix],
+		[ResourceID],
+		[BusinessResourceID],
+		[BOEID],
+		[BOETaskElementID],
+		[MOQTypeSelectionID]
+		)
+		SELECT CD.[CommonDisclosureSkillMixID],
+			CD.[Rationale],
+			CD.[Included],
+			CD.[ProposedHours],
+			CD.[HistoricalHours],
+			CD.[BOESkillMix],
+			CD.[LaborSkillMix],
+			CD.[ResourceID],
+			CD.[ResourceNew],
+			CD.[BusinessResourceID],
+			CD.[BOEID],
+			CD.[BOETaskElementID],
+			CD.[MOQTypeSelectionID]
+		FROM [version].[CommonDisclosureSkillMixID] CD
+		INNER JOIN [version].[BOETaskElement] T on CD.TaskId = T.BOETaskElementID
+		INNER JOIN [version].[BOE] B ON T.BOEID  = B.BOEID
+		INNER JOIN [version].[MOQTypeSelection] M ON CD.[MOQTypeSelectionId] = M.[MOQTypeSelectionId]
+		INNER JOIN [version].[Workspace] WS ON B.WorkspaceID = WS.WorkspaceID
+		WHERE 
+		CD.VersionId = @VersionID AND
+		T.VersionID = @VersionID AND
+		B.VersionID = @VersionID AND
+		M.VersionId = @VersionID AND
+		WS.VersionID = @VersionID AND
+		WS.WorkspaceID = @WorkspaceID
 
-		/** TODO Thomas: DELETE THIS SPACING **/
+		SET IDENTITY_INSERT [dbo].[CommonDisclosureSkillMixID] OFF
 
+		END
 
+		/** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
+		IF EXISTS (SELECT 1 FROM [version].[MOQTypeSelectionTableDataResourceHours] WHERE VersionID = @VersionID)
+		BEGIN
+		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableDataResourceHours] ON
+		INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
+		([MOQTypeSelectionTableDataResourceHoursId],
+		[ResourceName],
+		[WbsHours],
+		[TotalHours],
+		[MOQTypeSelectionTableDataId],
+		[BOETaskElementID],
+		[BOEID]
+		)
+		SELECT M.[MOQTypeSelectionTableDataResourceHoursId],
+			M.[ResourceName],
+			M.[WbsHours],
+			M.[TotalHours],
+			M.[MOQTypeSelectionTableDataId],
+			M.[BOETaskElementID],
+			M.[BOEID]
+		FROM [version].[MOQTypeSelectionTableDataResourceHoursId] M
+		INNER JOIN [version].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+		INNER JOIN [version].[BOE] B ON T.BOEID  = B.BOEID
+		INNER JOIN [version].[MOQTypeSelectionTableData] MOQ ON M.[MOQTypeSelectionTableDataId] = MOQ.[MOQTypeSelectionTableDataId]
+		INNER JOIN [version].[Workspace] WS ON B.WorkspaceID = WS.WorkspaceID
+		WHERE 
+		M.VersionId = @VersionID AND
+		T.VersionID = @VersionID AND
+		B.VersionID = @VersionID AND
+		MOQ.VersionId = @VersionID AND
+		WS.VersionID = @VersionID AND
+		WS.WorkspaceID = @WorkspaceID
+
+		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableDataResourceHours] OFF
+
+		END
 
 		IF EXISTS (SELECT 1 FROM [version].[BOELaborType] WHERE VersionID = @VersionID)
 		BEGIN
@@ -3075,7 +3158,7 @@ BEGIN
 
 		EXECUTE [dbo].[updateTravelTripInUse]
 		SELECT @ErrorMessage AS ErrorMessage 
-	END TRY -- left off here?
+	END TRY
 
 	BEGIN CATCH	
 		SET IDENTITY_INSERT [dbo].[BOE] OFF
