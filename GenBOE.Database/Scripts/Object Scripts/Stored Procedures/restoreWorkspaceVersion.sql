@@ -226,6 +226,24 @@ BEGIN
 			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
 			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
+		DELETE FROM [dbo].[SkillMix]
+			FROM [dbo].[SkillMix] SM
+			INNER JOIN @MOQTypeSelection M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
+			INNER JOIN [dbo].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
+			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
+		DELETE FROM [dbo].[CommonDisclosureSkillMix]
+			FROM [dbo].[CommonDisclosureSkillMix] CD
+			INNER JOIN @MOQTypeSelection M ON CD.MOQTypeSelectionID = M.MOQTypeSelectionID
+			INNER JOIN [dbo].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
+			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
+		DELETE FROM [dbo].[MOQTypeSelectionTableDataResourceHours]
+			FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
+			INNER JOIN @MOQTypeSelectionTableData MOQ ON M.MOQTypeSelectionTableDataId = MOQ.MOQTypeSelectionTableDataId
+			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[BOETaskElement]
 			FROM [dbo].[BOETaskElement] BTE
 				INNER JOIN dbo.BOE B ON BTE.BOEID  = B.BOEID
@@ -2424,6 +2442,7 @@ BEGIN
 		SET IDENTITY_INSERT  [dbo].[RteTemplateAnswer] OFF
 
 		END
+		/** [dbo].[MOQTypeSelection] **/
 		IF EXISTS (SELECT 1 FROM [version].[MOQTypeSelection] WHERE VersionID = @VersionID)
 		BEGIN
 
@@ -2472,6 +2491,7 @@ BEGIN
 		SET IDENTITY_INSERT [dbo].[MOQTypeSelection] OFF
 
 		END
+		/** [dbo].[MOQTypeSelectionTableData] **/
 		IF EXISTS (SELECT 1 FROM [version].[MOQTypeSelectionTableData] WHERE VersionID = @VersionID)
 		BEGIN
 
@@ -2545,6 +2565,55 @@ BEGIN
 			SET IDENTITY_INSERT [dbo].[MoqTypeTableCustomFieldValueXREF] OFF
 
 		END
+
+		/** [dbo].[[SkillMix]] **/
+		IF EXISTS (SELECT 1 FROM [version].[SkillMix] WHERE VersionID = @VersionID)
+		BEGIN
+		SET IDENTITY_INSERT [dbo].[SkillMix] ON
+		INSERT INTO [dbo].[SkillMix]
+		([SkillMixID],
+		[Rationale],
+		[Included],
+		[ProposedHours],
+		[HistoricalHours],
+		[BOESkillMix],
+		[LaborSkillMix],
+		[ResourceOld],
+		[ResourceNew],
+		[BOETaskElementID],
+		[BOEID],
+		[MOQTypeSelectionID]
+		)
+		SELECT SM.[SkillMixID],
+			SM.[Rationale],
+			SM.[Included],
+			SM.[ProposedHours],
+			SM.[HistoricalHours],
+			SM.[BOESkillMix],
+			SM.[LaborSkillMix],
+			SM.[ResourceOld],
+			SM.[ResourceNew],
+			SM.[BOETaskElementID],
+			SM.[BOEID],
+			SM.[MOQTypeSelectionID]
+		FROM [version].[[SkillMixID] SM
+		INNER JOIN [version].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
+		INNER JOIN [version].[BOE] B ON T.BOEID  = B.BOEID
+		INNER JOIN [version].[Workspace] WS ON B.WorkspaceID = WS.WorkspaceID
+		WHERE 
+		SM.VersionId = @VersionID AND
+		M.VersionId = @VersionID AND
+		T.VersionID = @VersionID AND
+		B.VersionID = @VersionID AND
+		WS.VersionID = @VersionID AND
+		WS.WorkspaceID = @WorkspaceID
+
+
+
+
+		/** TODO Thomas: DELETE THIS SPACING **/
+
+
 
 		IF EXISTS (SELECT 1 FROM [version].[BOELaborType] WHERE VersionID = @VersionID)
 		BEGIN
@@ -3039,6 +3108,9 @@ BEGIN
 		SET IDENTITY_INSERT [dbo].[MileageReimbursementRate] OFF
 		SET IDENTITY_INSERT [dbo].[MOQTypeSelection] OFF
 		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableData] OFF
+		SET IDENTITY_INSERT [dbo].[SkillMix] OFF
+		SET IDENTITY_INSERT [dbo].[CommonDisclosureSkillMix] OFF
+		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableDataResourceHours] OFF
 		SET IDENTITY_INSERT [dbo].[MoqTypeTableCustomFieldValueXREF] OFF
 		SET IDENTITY_INSERT [dbo].[ODCSpread] OFF
 		SET IDENTITY_INSERT [dbo].[ODCTaskElement] OFF
