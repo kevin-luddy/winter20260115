@@ -39,6 +39,8 @@ namespace IES.Common
 
 		private static string versionAndUpdatedDate = null;
 		private static object lockObject = new object();
+		private static string jobTitle;
+		private static string departmentTitle;
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? skillMixStartDate;
 		private static DateTime? oneLmxStartDate;
@@ -65,6 +67,56 @@ namespace IES.Common
 
 				return oneLmxStartDate.Value;
 			}
+		}
+
+		/// <summary>
+		/// get user JobTitle from active directories utility
+		/// </summary>
+		public static string JobTitle
+		{
+			get
+			{
+				if (string.IsNullOrWhiteSpace(jobTitle))
+				{
+					UserData user = GetUser();
+					jobTitle = user?.Title;
+				}
+
+				return jobTitle;
+			}
+			
+		}
+
+		/// <summary>
+		/// get user department from active directories utility
+		/// </summary>
+		public static string DepartmentTitle
+		{
+			get
+			{
+				if (string.IsNullOrWhiteSpace(departmentTitle))
+				{
+					UserData user = GetUser();
+					departmentTitle = user?.Department;
+				}
+
+				return departmentTitle;
+			}
+
+		}
+
+		/// <summary>
+		/// get user data from active directories utility
+		/// </summary>
+		private static UserData GetUser()
+		{
+			IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
+			string currentUserNtid = Thread.CurrentPrincipal.Identity.Name;
+			if ((!string.IsNullOrEmpty(currentUserNtid)) && (currentUserNtid.Contains('\\')))
+			{
+				currentUserNtid = currentUserNtid.Split('\\').Last();
+			}
+			return activeDirectoryUtilities.GetUserByQualifiedAccount(currentUserNtid, false);
 		}
 
 		/// <summary>
