@@ -3075,7 +3075,7 @@ BEGIN
 
 		EXECUTE [dbo].[updateTravelTripInUse]
 		SELECT @ErrorMessage AS ErrorMessage 
-	END TRY
+	END TRY -- left off here?
 
 	BEGIN CATCH	
 		SET IDENTITY_INSERT [dbo].[BOE] OFF
