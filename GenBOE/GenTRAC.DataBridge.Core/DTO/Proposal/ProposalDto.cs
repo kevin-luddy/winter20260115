@@ -423,5 +423,15 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// Higher level clearance required beyond standard clearance requirements
 		/// </summary>
 		public bool? AdditionalClassification { get; set; }
+
+		/// <summary>
+		/// When CCOPD = no, a reason needs to be provided
+		/// </summary>
+		public CcopdOptionalReason? CcopdNoReason { get; set; }
+
+		/// <summary>
+		/// When CCOPD = no, and reason is selected as other, this is the text for it
+		/// </summary>
+		public string CcopdNoOtherReason { get; set; }
 	}
 }
