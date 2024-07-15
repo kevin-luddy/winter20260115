@@ -1413,7 +1413,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		data.currentSkillMixData = moqType.SkillMixTable;
 		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
 
-		if (data.currentSkillMixData.length > 0) {
+		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
 			// send to backend
 			// display response to user
 			$(document).trigger("SHOW_LOADING_BOX");
@@ -1426,7 +1426,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				// place returned html into the content div
 				if (response.data.IsSuccessful === true) {
 					// the response is wrapped inside response.data.data array
-					if (response.data.data) {
+					if (response.data.data && $scope.model.CommonDisclosureEnabled) {
 						moqType.CommonDisclosureTable = response.data.data;
 					}
 				} else {
