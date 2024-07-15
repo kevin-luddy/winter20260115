@@ -998,8 +998,10 @@ namespace GenBOE.ActionLogic.IO.Export
              * Loop over the list of resource type entries (for the current task) that correspond to the designated Element of Cost (input parameter).
              * 
              */
-			bool shouldTaskIncrement = true;
-			int previousBusinessResourceCodeID = 0;
+
+			// Bool - Should the task increment?
+			// Int - The previous Business Resource Code ID
+			Tuple<bool, int> shouldTaskIncrementAndPrevID = Tuple.Create(true, 0);
 			foreach (ResourceTypeDto resourceTypeEntry in taskResourcesEntriesForElementOfCost)
 			{
 				// ProjectMap only wants the task exported once whereas everyone else wants it 1:1 with the number of ResourceTypes inside it
@@ -1016,36 +1018,15 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					// Pro Pricer Task ID. This may or may not be selected, but we may need to keep track of it for Resources too
 					string taskIDString = string.Empty;
+					shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2);
 
 					int incrementCount = 0;
 					if (elementOfCost == ElementOfCostType.LMLabor)
 					{
 						taskIDString = ISGS_LABOR_LIDN;
+						//shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2);
 
-						//if (Utilities.IsBRCEnabledForSystem)
-						//{
-						//	// If this is split between a BRC and current resource, we should flag it to not increment for the next 
-						//	if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
-						//		&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
-						//	{
-						//		shouldTaskIncrement = true;
-						//		previousBusinessResourceCodeID = resourceTypeEntry.BusinessResourceCodeID.Value;
-						//	}
-						//	// After 1LMX start date and the previous row's BRC ID matches = we have a shared resource
-						//	else if (resourceTypeEntry.StartDate >= Utilities.OneLmxStartDate && resourceTypeEntry.BusinessResourceCodeID.HasValue
-						//		&& previousBusinessResourceCodeID == resourceTypeEntry.BusinessResourceCodeID.Value)
-						//	{
-						//		shouldTaskIncrement = false;
-						//	}
-						//	else
-						//	{
-						//		shouldTaskIncrement = true;
-						//	}
-						//}
-
-						shouldTaskIncrement = ShouldTaskIncrement(elementOfCost, resourceTypeEntry);
-
-						if (shouldTaskIncrement)
+						if (shouldTaskIncrementAndPrevID.Item1)
 						{
 							incrementCount = ++wsLevelData.ItemCounters.LaborId;
 						}
@@ -1057,27 +1038,67 @@ namespace GenBOE.ActionLogic.IO.Export
 					else if (elementOfCost == ElementOfCostType.IWTA)
 					{
 						taskIDString = IWTA_IIDN;
-						incrementCount = ++wsLevelData.ItemCounters.IwtaId;
+
+						if (shouldTaskIncrementAndPrevID.Item1)
+						{
+							incrementCount = ++wsLevelData.ItemCounters.IwtaId;
+						}
+						else
+						{
+							incrementCount = wsLevelData.ItemCounters.IwtaId;
+						}
 					}
 					else if (elementOfCost == ElementOfCostType.Sub)
 					{
 						taskIDString = SUBCONTRACTOR_SIDN;
-						incrementCount = ++wsLevelData.ItemCounters.SubId;
+
+						if (shouldTaskIncrementAndPrevID.Item1)
+						{
+							incrementCount = ++wsLevelData.ItemCounters.SubId;
+						}
+						else
+						{
+							incrementCount = wsLevelData.ItemCounters.SubId;
+						}
 					}
 					else if (elementOfCost == ElementOfCostType.Materials)
 					{
 						taskIDString = MATERIAL_MIDN;
-						incrementCount = ++wsLevelData.ItemCounters.MaterialId;
+
+						if (shouldTaskIncrementAndPrevID.Item1)
+						{
+							incrementCount = ++wsLevelData.ItemCounters.MaterialId;
+						}
+						else
+						{
+							incrementCount = wsLevelData.ItemCounters.MaterialId;
+						}
 					}
 					else if (elementOfCost == ElementOfCostType.Travel)
 					{
 						taskIDString = TRAVEL_TIDN;
-						incrementCount = ++wsLevelData.ItemCounters.TravelId;
+
+						if (shouldTaskIncrementAndPrevID.Item1)
+						{
+							incrementCount = ++wsLevelData.ItemCounters.TravelId;
+						}
+						else
+						{
+							incrementCount = wsLevelData.ItemCounters.TravelId;
+						}
 					}
 					else if (elementOfCost == ElementOfCostType.ODC)
 					{
 						taskIDString = ODC_OIDN;
-						incrementCount = ++wsLevelData.ItemCounters.OdcId;
+
+						if (shouldTaskIncrementAndPrevID.Item1)
+						{
+							incrementCount = ++wsLevelData.ItemCounters.OdcId;
+						}
+						else
+						{
+							incrementCount = wsLevelData.ItemCounters.OdcId;
+						}
 					}
 
 					proPricerId = taskIDString + incrementCount.ToString(FORMAT);
@@ -1284,11 +1305,10 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <summary>
 		/// 
 		/// </summary>
-		private static bool ShouldTaskIncrement(ElementOfCostType elementOfCost, ResourceTypeDto resourceTypeEntry)
+		private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID)
 		{
-			int finalIncrementCount = 0;
-			int previousBusinessResourceCodeID = 0;	// The BRC ID in the previous row
-			bool shouldTaskIncrement = true;
+			Tuple<bool, int> shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
+			//bool shouldTaskIncrement = true;
 
 			if (Utilities.IsBRCEnabledForSystem)
 			{
@@ -1296,22 +1316,26 @@ namespace GenBOE.ActionLogic.IO.Export
 				if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
 					&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
 				{
-					shouldTaskIncrement = true;
-					previousBusinessResourceCodeID = resourceTypeEntry.BusinessResourceCodeID.Value;
+					//shouldTaskIncrement = true;
+					//previousBusinessResourceCodeID = resourceTypeEntry.BusinessResourceCodeID.Value;
+					shouldTaskIncrementResult = Tuple.Create(true, resourceTypeEntry.BusinessResourceCodeID.Value);
 				}
 				// After 1LMX start date and the previous row's BRC ID matches = we have a shared resource
 				else if (resourceTypeEntry.StartDate >= Utilities.OneLmxStartDate && resourceTypeEntry.BusinessResourceCodeID.HasValue
 					&& previousBusinessResourceCodeID == resourceTypeEntry.BusinessResourceCodeID.Value)
 				{
-					shouldTaskIncrement = false;
+					//shouldTaskIncrement = false;
+					shouldTaskIncrementResult = Tuple.Create(false, previousBusinessResourceCodeID);
 				}
 				else
 				{
-					shouldTaskIncrement = true;
+					//shouldTaskIncrement = true;
+					shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
 				}
 			}
 
-			return shouldTaskIncrement;
+			//return shouldTaskIncrement;
+			return shouldTaskIncrementResult;
 		}
 
 		/// <summary>
