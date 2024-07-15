@@ -39,13 +39,12 @@ namespace IES.Common
 
 		private static string versionAndUpdatedDate = null;
 		private static object lockObject = new object();
-		private static string jobTitle;
-		private static string departmentTitle;
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? skillMixStartDate;
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? historicalReferenceExplanationStartDate;
-
+		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
+		
 		/// <summary>
 		/// 1LMX boundary time
 		/// </summary>
@@ -76,15 +75,8 @@ namespace IES.Common
 		{
 			get
 			{
-				if (string.IsNullOrWhiteSpace(jobTitle))
-				{
-					UserData user = GetUser();
-					jobTitle = user?.Title;
-				}
-
-				return jobTitle;
+				return GetUser()?.Title;
 			}
-			
 		}
 
 		/// <summary>
@@ -94,15 +86,8 @@ namespace IES.Common
 		{
 			get
 			{
-				if (string.IsNullOrWhiteSpace(departmentTitle))
-				{
-					UserData user = GetUser();
-					departmentTitle = user?.Department;
-				}
-
-				return departmentTitle;
+				return GetUser()?.Department;
 			}
-
 		}
 
 		/// <summary>
@@ -110,7 +95,6 @@ namespace IES.Common
 		/// </summary>
 		private static UserData GetUser()
 		{
-			IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
 			string currentUserNtid = Thread.CurrentPrincipal.Identity.Name;
 			if ((!string.IsNullOrEmpty(currentUserNtid)) && (currentUserNtid.Contains('\\')))
 			{
