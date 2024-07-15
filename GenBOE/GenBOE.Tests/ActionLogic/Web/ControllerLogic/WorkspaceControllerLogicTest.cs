@@ -86,7 +86,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this._commonDatamapper.Object,
                 this._permissionLoader.Object,
                 this._boeImporterMock.Object,
-                this._BOELaborControllerLogic.Object,
+				this._BOELaborControllerLogic.Object,
                 this.fullWsRecalc.Object,
                 this.workspaceVariableLoader.Object,
                 this._customFieldValueLoader.Object,
@@ -2378,7 +2378,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		{
 			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
 
-			FullWorkspace ws = new FullWorkspace() { Id = 101, CostDecimalPrecision = 0, ResourceDecimalPrecision = 0, CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace() { Id = 101, CostDecimalPrecision = 0, ResourceDecimalPrecision = 0, CreationDate = Utilities.SkillMixStartDate.AddDays(-3.0) };
 
 			FullBoe boe1 = new FullBoe
 			{
@@ -2574,6 +2574,266 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(25, fourth.TotalRelevantHoursPrevious);
 			Assert.AreEqual(BOEState.Draft, boe1.State);
 			Assert.AreEqual(BOEState.Draft, boe2.State);
+		}
+
+		/// <summary>
+		/// Test Recalculating SAP Actuals
+		/// </summary>
+		[TestMethod]
+		public async Task TestRecalculateActualsWithSkillMix()
+		{
+			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
+			
+			FullWorkspace ws = new FullWorkspace() { Id = 101, CostDecimalPrecision = 0, ResourceDecimalPrecision = 0, CreationDate = Utilities.SkillMixStartDate.AddDays(1) };
+
+			FullBoe boe1 = new FullBoe
+			{
+				Id = 1,
+				State = BOEState.Draft,
+				Title = "First Boe",
+			};
+
+			FullBoe boe2 = new FullBoe
+			{
+				Id = 2,
+				State = BOEState.AwaitingApproval,
+				Title = "Second Boe"
+			};
+
+			List<FullBoe> boes = new List<FullBoe>()
+			{
+				boe1,
+				boe2
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				BoeID = boe1.Id,
+				MOQType = MOQType.SSCActual,
+				MOQText = "Text 1"
+			};
+
+			BoeTaskElementDTO task2 = new BoeTaskElementDTO()
+			{
+				Id = 2,
+				BoeID = boe2.Id,
+				MOQType = MOQType.SSCBottomUp,
+				MOQText = "Text 2"
+			};
+
+			List<BoeTaskElementDTO> tasks = new List<BoeTaskElementDTO>()
+			{
+				task1,
+				task2
+			};
+
+			List<MoqTypeSelection> moqs = new List<MoqTypeSelection>()
+			{
+				new MoqTypeSelection()
+				{
+					BoeId = boe1.Id,
+					TaskId = task1.Id,
+					Id = 1,
+					SelectedMOQType = MOQType.Historical,
+					TableData = new List<MoqTableData>
+					{
+						new MoqTableData()
+						{
+							TableName = "First table",
+							Id = 1,
+							DateOfReport = DateTime.Today.AddDays(-1),
+							TotalRelevantHours = 10,
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							ResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+								{
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", MOQTypeSelectionTableDataId = 1, TotalHours = 10 }
+								}
+						},
+						new MoqTableData()
+						{
+							TableName = "Second table",
+							Id = 2,
+							DateOfReport = DateTime.Today.AddDays(-1),
+							TotalRelevantHours = 15,
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							ResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+								{
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", MOQTypeSelectionTableDataId = 1, TotalHours = 10 },
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "bb", MOQTypeSelectionTableDataId = 1, TotalHours = 5 }
+								}
+						}
+					},
+					SkillMixTable = new List<SkillMixModelView>
+					{
+						new SkillMixModelView { ResourceNew = "aa", HistoricalHours = 20m },
+						new SkillMixModelView { ResourceNew = "bb", HistoricalHours = 15m }
+					}
+				},
+				new MoqTypeSelection()
+				{
+					BoeId = boe1.Id,
+					TaskId = task1.Id,
+					Id = 2,
+					SelectedMOQType = MOQType.Comparative,
+					TableData = new List<MoqTableData>
+					{
+						new MoqTableData()
+						{
+							TableName = "Third table",
+							Id = 3,
+							DateOfReport = DateTime.Today.AddDays(-1),
+							TotalRelevantHours = 20,
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							ResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+								{
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", MOQTypeSelectionTableDataId = 1, TotalHours = 20 }
+								}
+						}
+					},
+					SkillMixTable = new List<SkillMixModelView>
+					{
+						new SkillMixModelView { ResourceNew = "aa", HistoricalHours = 20m }
+					}
+				},
+				new MoqTypeSelection()
+				{
+					BoeId = boe2.Id,
+					TaskId = task2.Id,
+					Id = 3,
+					SelectedMOQType = MOQType.Comparative,
+					TableData = new List<MoqTableData>
+					{
+						new MoqTableData()
+						{
+							TableName = "Fourth table",
+							Id = 4,
+							DateOfReport = DateTime.Today.AddDays(-1),
+							TotalRelevantHours = 25,
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							ResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+								{
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "cc", MOQTypeSelectionTableDataId = 1, TotalHours = 25 }
+								}
+						}
+					},
+					SkillMixTable = new List<SkillMixModelView>
+					{
+						new SkillMixModelView { ResourceNew = "cc", HistoricalHours = 25m }
+					}
+				}
+			};
+
+			ICollection<IESResponse<IESSAPClient.CalculateActualsWithSkillMixViewModel>> sapResponse = new List<IESResponse<IESSAPClient.CalculateActualsWithSkillMixViewModel>>
+			{
+				new IESResponse<IESSAPClient.CalculateActualsWithSkillMixViewModel>
+				{
+					IsSuccessful = true,
+					Data = new List<IESSAPClient.CalculateActualsWithSkillMixViewModel> ()
+					{
+						new IESSAPClient.CalculateActualsWithSkillMixViewModel()
+						{
+							TableId = 1,
+							SkillMixDataTable = new List<IESSAPClient.SkillMixResourceViewModel>
+							{
+								new IESSAPClient.SkillMixResourceViewModel { ResourceID = "aa", TotalHours = 25 },
+								new IESSAPClient.SkillMixResourceViewModel { ResourceID = "bb", TotalHours = 5 }
+							}
+						}
+					}
+				},
+				new IESResponse<IESSAPClient.CalculateActualsWithSkillMixViewModel>
+				{
+					IsSuccessful = false,
+					Data = new List<IESSAPClient.CalculateActualsWithSkillMixViewModel> ()
+					{
+						new IESSAPClient.CalculateActualsWithSkillMixViewModel()
+						{
+							TableId = 2
+						}
+					},
+					Messages = new List<string>()
+					{
+						"Error happened"
+					}
+				},
+				new IESResponse<IESSAPClient.CalculateActualsWithSkillMixViewModel>
+				{
+					IsSuccessful = true,
+					Data = new List<IESSAPClient.CalculateActualsWithSkillMixViewModel> ()
+					{
+						new IESSAPClient.CalculateActualsWithSkillMixViewModel()
+						{
+							TableId = 3,
+							SkillMixDataTable = new List<IESSAPClient.SkillMixResourceViewModel>
+							{
+								new IESSAPClient.SkillMixResourceViewModel { ResourceID = "aa", TotalHours = 20 }
+							}// same total hours
+						}
+					}
+				},
+				new IESResponse<IESSAPClient.CalculateActualsWithSkillMixViewModel>
+				{
+					IsSuccessful = true,
+					Data = new List<IESSAPClient.CalculateActualsWithSkillMixViewModel> ()
+					{
+						new IESSAPClient.CalculateActualsWithSkillMixViewModel()
+						{
+							TableId = 4,
+							SkillMixDataTable = new List<IESSAPClient.SkillMixResourceViewModel>
+							{
+								new IESSAPClient.SkillMixResourceViewModel { ResourceID = "cc", TotalHours = 50 }
+							}
+						}
+					}
+				},
+			};
+
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, ws.DecimalPrecision, ws.CostDecimalPrecision)).Returns(tasks);
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
+			this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(ws.Id)).Returns(moqs);
+			this.retriever.Setup(x => x.GetCurrentActiveUser()).Returns(new UserDTO());
+			this._BOELaborControllerLogic.Setup(x => x.CalculateAllActualsSapWithSkillMix(It.IsAny<ICollection<MoqTableDataModelView>>())).Returns(Task.FromResult(sapResponse));
+			this.factory.Setup(x => x.CreateFullBoe(boe1)).Returns(boe1);
+			this.factory.Setup(x => x.CreateFullBoe(boe2)).Returns(boe2);
+			string validationMessage;
+			this._boeStateMachine.Setup(x => x.PerformStateTransitionValidation(boe1, It.IsAny<FullWorkspace>(), BOEState.Draft, BOEState.Draft, out validationMessage)).Returns(true);
+			this._boeStateMachine.Setup(x => x.PerformStateTransitionValidation(boe2, It.IsAny<FullWorkspace>(), BOEState.AwaitingApproval, BOEState.Draft, out validationMessage)).Returns(true);
+			
+			ICollection<WorkspaceCalculateActualsModelView> models = await sut.RecalculateActuals(ws);
+
+			Assert.IsNotNull(models);
+			Assert.AreEqual(3, models.Count); // only getting 3 models because one had same hours as previous
+
+			WorkspaceCalculateActualsModelView first = models.First();
+			WorkspaceCalculateActualsModelView second = models.Skip(1).First();
+			WorkspaceCalculateActualsModelView fourth = models.Last(); // the fourth table
+
+			Assert.IsTrue(first.IsSuccessful);
+			Assert.IsFalse(second.IsSuccessful);
+			Assert.IsTrue(second.Messages.Any());
+			Assert.AreEqual(BOEState.Draft.GetDescription(), first.BoeStatePrevious);
+			Assert.AreEqual(BOEState.AwaitingApproval.GetDescription(), fourth.BoeStatePrevious);
+			Assert.AreEqual(30, first.TotalRelevantHours);
+			Assert.AreEqual(10, first.TotalRelevantHoursPrevious);
+			Assert.AreEqual(50, fourth.TotalRelevantHours);
+			Assert.AreEqual(25, fourth.TotalRelevantHoursPrevious);
+			Assert.AreEqual(BOEState.Draft, boe1.State);
+			Assert.AreEqual(BOEState.Draft, boe2.State);
+
+			// This is needed since there is no feasible way to override a member of the class with MOQ and use the original code :(
+			BOELaborControllerLogic boeLaborControllerLogic = new BOELaborControllerLogic(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+
+			// Check skill mix tables
+			foreach (MoqTypeSelection moq in moqs)
+			{
+				// This is needed since there is no feasible way to override a member of the class with MOQ and use the original code :(
+				//   Refresh the skill mix table
+				moq.SkillMixTable = boeLaborControllerLogic.RefreshSkillMixTable(moq.TableData.SelectMany(t => t.ResourceHours).ToList(), moq.SkillMixTable);
+
+				Assert.AreEqual(moq.SkillMixTable?.Sum(s => s.HistoricalHours), moq.TableData?.Sum(t => t.TotalRelevantHours));
+				Assert.AreEqual(moq.SkillMixTable?.Sum(s => s.HistoricalHours), moq.TableData?.SelectMany(t => t.ResourceHours)?.Sum(x => x.TotalHours));
+			}
 		}
 
 		/// <summary>

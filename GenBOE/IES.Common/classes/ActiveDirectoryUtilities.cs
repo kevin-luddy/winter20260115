@@ -147,7 +147,10 @@ namespace IES.Common
 									ds.PropertiesToLoad.Add("mobile");
                                     ds.PropertiesToLoad.Add("lmcUSAPersonIndicator");
                                     ds.PropertiesToLoad.Add("employeeType");
-                                }
+									ds.PropertiesToLoad.Add("title");
+									ds.PropertiesToLoad.Add("lmcDepartmentName");
+									ds.PropertiesToLoad.Add("department");
+								}
 
                                 SearchResult searchResult = ds.FindOne();
 
@@ -185,6 +188,7 @@ namespace IES.Common
 
                                 if (!isGroup)
                                 {
+									string departmentName = Utilities.TryGetPropertyValue(user.Properties, "lmcDepartmentName");
 									currentAccount = new UserData
 									{
 										FirstName = Utilities.TryGetPropertyValue(user.Properties, "givenname"),
@@ -194,8 +198,10 @@ namespace IES.Common
                                         Ntid = inNtid,
                                         Phone = Utilities.GetUserPhoneNumber(user.Properties),
                                         IsUsPerson =user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
-                                        IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null
-                                    };
+                                        IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null,
+										Title = Utilities.TryGetPropertyValue(user.Properties, "title"),
+										Department = string.IsNullOrWhiteSpace(departmentName) ? Utilities.TryGetPropertyValue(user.Properties, "department") : departmentName
+									};
                                 }
                                 else
                                 {

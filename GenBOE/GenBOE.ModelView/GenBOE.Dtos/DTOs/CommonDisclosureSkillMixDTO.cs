@@ -9,6 +9,9 @@ namespace GenBOE.Dtos
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 
+	/// <summary>
+	/// Common Disclosure Skill Mix DTO
+	/// </summary>
 	[Serializable()]
 	[ExcludeFromCodeCoverage]
 	public class CommonDisclosureSkillMixDTO
@@ -25,10 +28,11 @@ namespace GenBOE.Dtos
 			this.LaborSkillMix = 0;
 			this.ResourceID = String.Empty;
 			this.BusinessResourceID = String.Empty;
-			this.SkillMixID = -1;
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
 			this.MOQTypeSelectionID = -1;
+			this.IsPercentLocked = false;
+			this.IsUserInput = false;
 		}
 
 		/// <summary>
@@ -68,10 +72,6 @@ namespace GenBOE.Dtos
 		/// </summary>
 		public string BusinessResourceID { get; set; }
 		/// <summary>
-		/// forien key to related row in Skill Mix table
-		/// </summary>
-		public int SkillMixID { get; set; }
-		/// <summary>
 		/// Foreign Key to BOE table
 		/// </summary>
 		public int BOEID { get; set; }
@@ -83,5 +83,15 @@ namespace GenBOE.Dtos
 		/// foreign key to moq type (historical or comparative)
 		/// </summary>
 		public int MOQTypeSelectionID { get; set; }
+
+		/// <summary>
+		/// Is the BOE Skill Mix Percent locked
+		/// </summary>
+		public bool IsPercentLocked { get; set; }
+
+		/// <summary>
+		/// Is this data User Input
+		/// </summary>
+		public bool IsUserInput { get; set; }
 	}
 }

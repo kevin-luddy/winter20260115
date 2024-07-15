@@ -41,6 +41,7 @@ CREATE  PROCEDURE [dbo].[deleteWorkspaceVersion]
 **		12/17/19	twilson3			BOEJ-4434 Fix Assigned
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF; additional cleanup
+**		7/11/2024	e405721				PROPH-2136: Update for Skill Mix, Common Disclosure, and MOQ Type Selection Table Data Resource Hours
 *******************************************************************************/
 AS
 SET NOCOUNT ON
@@ -78,9 +79,12 @@ BEGIN
 	DELETE FROM [version].[CustomField] WHERE VersionID = @VersionID
 	DELETE FROM [version].[CustomFieldValue] WHERE VersionID = @VersionID
 	DELETE FROM [version].[MaterialTaskElement] WHERE VersionID = @VersionID
-	DELETE FROM [version].[MOQTypeSelection] WHERE VersionID = @VersionID
-	DELETE FROM [version].[MoqTypeTableCustomFieldValueXREF] WHERE VersionID = @VersionID
+	DELETE FROM [version].[MOQTypeSelectionTableDataResourceHours] WHERE VersionID = @VersionID
+	DELETE FROM [version].[CommonDisclosureSkillMix] WHERE VersionID = @VersionID
+	DELETE FROM [version].[SkillMix] WHERE VersionID = @VersionID
 	DELETE FROM [version].[MOQTypeSelectionTableData] WHERE VersionID = @VersionID
+	DELETE FROM [version].[MoqTypeTableCustomFieldValueXREF] WHERE VersionID = @VersionID
+	DELETE FROM [version].[MOQTypeSelection] WHERE VersionID = @VersionID
 	DELETE FROM [version].[ODCSpread] WHERE VersionID = @VersionID
 	DELETE FROM [version].[ODCTaskElement] WHERE VersionID = @VersionID
 	DELETE FROM [version].[ODCType] WHERE VersionID = @VersionID

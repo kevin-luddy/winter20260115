@@ -23,14 +23,14 @@ namespace GenBOE.Models
         public decimal LaborSkillMix { get; set; }
         public string ResourceID { get; set; }
         public string BusinessResourceID { get; set; }
-        public int SkillMixID { get; set; }
         public int BOEID { get; set; }
         public int BOETaskElementID { get; set; }
         public int MOQTypeSelectionID { get; set; }
+        public bool IsPercentLocked { get; set; }
+        public bool IsUserInput { get; set; }
     
         public virtual BOE BOE { get; set; }
         public virtual BOETaskElement BOETaskElement { get; set; }
         public virtual MOQTypeSelection MOQTypeSelection { get; set; }
-        public virtual SkillMix SkillMix { get; set; }
     }
 }

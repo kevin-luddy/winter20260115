@@ -234,10 +234,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	// Actual Read Only, including reversal
 	$scope.ActualReadOnly = function () {
-		if ($scope.model.ReadOnlyMode) {
-			return true
-		}
-		return $scope.model.IsReadOnly && !$scope.model.ShouldMoqReadOnlyBeReversed;
+		return isSaveButtonHidden;
 	};
 
 	// Create New Table Data for the MOQ Type
@@ -252,13 +249,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	// Remove existing Table Data
-	$scope.RemoveTable = function (item, tableDataArray) {
+	$scope.RemoveTable = function (item, moqType) {
 		GenSession.confirmDialog('Delete Data Table?', 'Are you sure you want to delete the selected Data Table?<br/> Once deleted, this can not be undone.', function () {
 			$scope.$apply(function () {
-				var index = tableDataArray.indexOf(item);
-				tableDataArray.splice(index, 1);
+				var index = moqType.TableData.indexOf(item);
+				moqType.TableData.splice(index, 1);
 				MOQEquationFieldWidget.setDirty();
 				$scope.actualsValidation.isDirty.delete(item.Id);
+				$scope.refreshSkillMixTable(moqType);
 				$scope.refreshDisableSave();
 			});
 		});
@@ -513,6 +511,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		tableData.PoPEnd = undefined;
 		tableData.PoPEndWeek = undefined;
 		tableData.PoPEndYear = undefined;
+		tableData.PoPMonthsString = '';
 	}
 
 	$scope.disableHistoricalComparativeConvertButtons = function () {
@@ -1009,7 +1008,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data && Array.isArray(response.data.data)) {
 
-						// update the moq data table with calcualted values
+						// update the moq data table with calculated values
 						response.data.data.forEach(result => {
 							const res = result.Data[0];
 							if (result.Messages && result.Messages.length > 0) {
@@ -1094,7 +1093,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data && Array.isArray(response.data.data)) {
 
-						// update the moq data table with calcualted values
+						// update the moq data table with calculated values
 						response.data.data.forEach(result => {
 							const res = result.Data[0];
 							if (result.Messages && result.Messages.length > 0) {
@@ -1195,14 +1194,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data && Array.isArray(response.data.data)) {
 
-						// find the moq table data and update the data with calcualted values
+						// find the moq table data and update the data with calculated values
 						response.data.data.forEach(result => {
-							var res = result.Data[0];
+							const res = result.Data[0];
 							if (result.Messages && result.Messages.length > 0) {
 								$scope.setActualsErrors(res.TableId, result.Messages);
 							} else {
-								moqTypes.forEach(moq => {
-									var tableData = moq.TableData.find(t => t.Id == res.TableId);
+								const moqTypes2 = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+								moqTypes2.forEach(moq => {
+									const tableData = moq.TableData.find(t => t.Id == res.TableId);
 									if (tableData) {
 										tableData.DateOfReport = new Date();
 										tableData.TotalRelevantHours = res.TotalHours;
@@ -1262,7 +1262,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								Filters: tableData.AdditionalQueryFilters,
 								TableId: tableData.Id
 							};
-							
+
 							if ($scope.model.IsRMS) {
 								// Set the repo name to the source once we've checked that it is an SAP Enabled Source
 								tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
@@ -1298,14 +1298,16 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data && Array.isArray(response.data.data)) {
 
-						// find the moq table data and update the data with calcualted values
+						const moqTypes2 = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+						// find the moq table data and update the data with calculated values
 						response.data.data.forEach(result => {
-							var res = result.Data[0];
+							const res = result.Data[0];
 							if (result.Messages && result.Messages.length > 0) {
 								$scope.setActualsErrors(res.TableId, result.Messages);
 							} else {
-								moqTypes.forEach(moq => {
-									var tableData = moq.TableData.find(t => t.Id == res.TableId);
+
+								moqTypes2.forEach(moq => {
+									const tableData = moq.TableData.find(t => t.Id == res.TableId);
 									if (tableData) {
 										tableData.DateOfReport = new Date();
 										tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
@@ -1321,14 +1323,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 										MOQEquationFieldWidget.setDirty();
 									}
 								});
-
-								const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
-								if (moqTypes) {
-									moqTypes.forEach(moq => {
-										$scope.refreshSkillMixTable(moq);
-									});
-								}
 							}
+						});
+
+						moqTypes2.forEach(moq => {
+							$scope.refreshSkillMixTable(moq);
 						});
 					}
 
@@ -1384,6 +1383,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
 						moqType.SkillMixTable = response.data.data;
+						if ($scope.model.CommonDisclosureEnabled) {
+							$scope.refreshCommonDisclosureTable(moqType);
+						}
 					}
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
@@ -1394,6 +1396,51 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
 				$(document).trigger("HIDE_LOADING_BOX");
 			});
+		}
+		else {
+			moqType.SkillMixTable = [];
+		}
+	};
+
+	$scope.refreshCommonDisclosureTable = function (moqType) {
+		// Get all the data tables
+		const data = {
+			currentSkillMixData: [],
+			commonDisclosureSMData: []
+		};
+
+		data.boeId = ManageTaskModel.boeId;
+		data.currentSkillMixData = moqType.SkillMixTable;
+		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
+
+		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data) {
+						moqType.CommonDisclosureTable = response.data.data;
+					}
+				} else {
+					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+		else {
+			moqType.CommonDisclosureTable = [];
 		}
 	};
 
@@ -1541,6 +1588,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		return +(((popEnd.getTime() - popStart.getTime() + ((popStart.getTimezoneOffset() - popEnd.getTimezoneOffset()) * (60 * 1000))) / (1000 * 60 * 60 * 24)) / ManageTaskModel.PoPMonthsDivisor).toFixed(2);
 	};
 
+	$scope.DateChanged = function (tableData) {
+		tableData.PoPMonthsString = $scope.RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);
+		$scope.SetTableDirty(tableData);
+	}
+
 	$scope.IsSapEnabledAndSetAsRepository = function (repositoryName) {
 		if ($scope.model.IsRMS) {
 			// RMS does not use Repository Name, so just return SAP Enabled
@@ -1610,17 +1662,19 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.SetTableDirty(tableData);
 	};
 
-	$scope.UpdateRepository = function (tableData) {
+	$scope.UpdateRepository = function (tableData, moqType) {
 		if (tableData.RepositoryNameSelection == $scope.model.SapWebiRepository) {
 			$scope.actualsValidation.isDirty.set(tableData.Id, true);
 			tableData.RepositoryName = $scope.model.SapWebiRepository;
 		} else {
 			$scope.actualsValidation.isDirty.delete(tableData.Id);
 			tableData.RepositoryName = "";
+			tableData.ResourceHours = [];
 			$scope.actualsValidation.errors.set(tableData.Id, []); // clear SAP validation messages
 		}
 
 		$scope.IsSapSetAndAnyTableSapRepository();
+		$scope.refreshSkillMixTable(moqType);
 		$scope.refreshDisableSave();
     }
 

@@ -49,7 +49,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -87,7 +88,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -125,7 +127,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -163,7 +166,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -209,6 +213,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="workspaceId">Workspace Id</param>
 		/// <returns>List of Skill Mix rows</returns>
+		[DbQuery]
 		public ICollection<SkillMixDTO> GetByWorkspaceId(int workspaceId)
 		{
 			List<SkillMixDTO> result = new List<SkillMixDTO>();
@@ -233,7 +238,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID
+								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
+								  IsPercentLocked = sm.IsPercentLocked
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -256,7 +262,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				Collection<string> skillMixVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "MOQTypeSelectionID"
+					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "MOQTypeSelectionID", "IsPercentLocked"
 				};
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -278,29 +284,22 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Do post processing on the skill mix dtos
 		/// </summary>
-		/// <param name="skillMixes"></param>
+		/// <param name="skillMixes">skill mix dtos</param>
 		private void DoPostProcessiong(ICollection<SkillMixDTO> skillMixes)
 		{
-			decimal totalHours = skillMixes.Sum(n => n.HistoricalHours);
-			IEnumerable<IGrouping<string, SkillMixDTO>> groupedResourceHours;
+			IEnumerable<IGrouping<int, SkillMixDTO>> groupedResourceHours =
+				skillMixes.GroupBy(r => r.MOQTypeSelectionID);
 
-			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
-			{
-				// Space does not use ResourceOld, only ResourceNew
-				groupedResourceHours = skillMixes.GroupBy(r => r.ResourceNew).OrderBy(t => t.Key);
-			}
-			else
-			{
-				// RMS uses ResourceOld (legacy) as the grouping
-				groupedResourceHours = skillMixes.GroupBy(r => r.ResourceOld).OrderBy(t => t.Key);
-			}
-
-			foreach (IGrouping<string, SkillMixDTO> grouping in groupedResourceHours)
+			foreach (IGrouping<int, SkillMixDTO> grouping in groupedResourceHours)
 			{
 				decimal totalGroupHours = grouping.Sum(g => g.HistoricalHours);
-				foreach (SkillMixDTO dto in grouping)
+
+				if (totalGroupHours != 0m)
 				{
-					dto.LaborSkillMix = totalGroupHours / totalHours;
+					foreach (SkillMixDTO dto in grouping)
+					{
+						dto.LaborSkillMix = dto.HistoricalHours / totalGroupHours;
+					}
 				}
 			}
 		}

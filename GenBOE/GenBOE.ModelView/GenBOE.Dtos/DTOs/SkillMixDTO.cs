@@ -1,8 +1,11 @@
 ﻿namespace GenBOE.Dtos
 {
+	using System;
+
 	/// <summary>
 	/// DTO for SkillMix table data
 	/// </summary>
+	[Serializable()]
 	public class SkillMixDTO
 	{
 		/// <summary>
@@ -22,6 +25,7 @@
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
 			this.MOQTypeSelectionID = -1;
+			this.IsPercentLocked = false;
 		}
 
 		/// <summary>
@@ -84,5 +88,9 @@
 		/// </summary>
 		public int MOQTypeSelectionID { get; set; }
 
+		/// <summary>
+		/// Is the BOE Skill Mix Percent locked
+		/// </summary>
+		public bool IsPercentLocked { get; set; }
 	}
 }

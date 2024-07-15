@@ -175,8 +175,8 @@ namespace GenBOE.Models
         public virtual DbSet<MOQTypeSelectionTableDataResourceHour> MOQTypeSelectionTableDataResourceHours { get; set; }
         public virtual DbSet<BOE> BOEs { get; set; }
         public virtual DbSet<BOETaskElement> BOETaskElements { get; set; }
-        public virtual DbSet<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
         public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
+        public virtual DbSet<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
         public virtual DbSet<SkillMix> SkillMixes { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]

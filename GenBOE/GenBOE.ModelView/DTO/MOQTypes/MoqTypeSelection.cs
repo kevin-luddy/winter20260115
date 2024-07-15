@@ -116,5 +116,10 @@ namespace GenBOE.ActionLogic.ModelView
 		/// Skill Mix table
 		/// </summary>
 		public ICollection<SkillMixModelView> SkillMixTable { get; set; } = new List<SkillMixModelView>();
+
+		/// <summary>
+		/// Common Disclosure table
+		/// </summary>
+		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; } = new List<CommonDisclosureModelView>();
 	}
 }

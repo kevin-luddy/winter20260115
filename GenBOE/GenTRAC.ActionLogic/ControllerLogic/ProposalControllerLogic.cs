@@ -314,7 +314,8 @@ namespace GenTRAC.ActionLogic
 					RevisionOfId = revisionOfId,
 					ProposalSetupComments = proposalComments.Comments,
 					ContractActionType = proposalInfo.ContractActionType,
-					ContractActionTypeOtherText = proposalInfo.ContractActionTypeOtherText
+					ContractActionTypeOtherText = proposalInfo.ContractActionTypeOtherText,
+					AdditionalClassification = proposalGeneralInfo.AdditionalClassification
 				};
 
 				// copy the old values for approvals/certification (comments, workflow status, signatures, additionalapprovalemailtext)
@@ -1481,6 +1482,7 @@ namespace GenTRAC.ActionLogic
 				model.ProgramProposalStatus = fullProposalDto.ProgramProposalStatus;
 				model.IsCCPDRequired = isNewRevision ? null : fullProposalDto.IsCCPDRequired;
 				model.IsCostVolumeClassified = fullProposalDto.IsCostVolumeClassified;
+				model.AdditionalClassification = fullProposalDto.AdditionalClassification;
 				model.IsCCPDReadOnly = isNewRevision ? false : fullProposalDto.LeadEstimatorSignedDate.HasValue;
 
 				// Automatically adds selected option, even if the option is not active.
@@ -1858,6 +1860,10 @@ namespace GenTRAC.ActionLogic
 			if (!proposalGeneralInfo.IsCostVolumeClassified.HasValue)
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CERTIFIED_COST_PRICING_DATA_CLASSIFIED_REQUIRED));
+			}
+			else if (proposalGeneralInfo.IsCostVolumeClassified.Value && !proposalGeneralInfo.AdditionalClassification.HasValue)
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.ADITIONAL_CLASSIFICATION_REQUIRED));
 			}
 		}
 

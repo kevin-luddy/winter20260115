@@ -1,14 +1,16 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace GenBOE.ActionLogic.ModelView
 {
+	using System;
 	using GenBOE.Dtos;
 
-    public class SkillMixModelView : SkillMixDTO
+	[Serializable]
+	public class SkillMixModelView : SkillMixDTO
     {
 		public SkillMixModelView()
 		{
@@ -30,6 +32,7 @@ namespace GenBOE.ActionLogic.ModelView
 				this.BOEID = skillMixDTO.BOEID;
 				this.BOETaskElementID = skillMixDTO.BOETaskElementID;
 				this.MOQTypeSelectionID = skillMixDTO.MOQTypeSelectionID;
+				this.IsPercentLocked = skillMixDTO.IsPercentLocked;
 			}
         }
 
@@ -53,6 +56,7 @@ namespace GenBOE.ActionLogic.ModelView
 				BOEID = this.BOEID,
 				BOETaskElementID = this.BOETaskElementID,
 				MOQTypeSelectionID = this.MOQTypeSelectionID,
+				IsPercentLocked = this.IsPercentLocked
 			};
 		}
     }

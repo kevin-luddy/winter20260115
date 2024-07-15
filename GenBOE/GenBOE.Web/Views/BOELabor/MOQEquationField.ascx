@@ -182,7 +182,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <select data-ng-if="model.SAPEnabled" data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
+                                <select data-ng-if="model.SAPEnabled" data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData, moqType)">
                                     <option value=""></option>
                                     <option value="<%: RepositoryName.SapWebi.GetDescription() %>"><%: RepositoryName.SapWebi.GetDescription() %></option>
                                     <option value="<%: RepositoryName.Other.GetDescription() %>"><%: RepositoryName.Other.GetDescription() %></option>
@@ -196,7 +196,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeComparativeSuffix);"></div>
                             <td>
-                                <select data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.QueryType" data-ng-change="clearPoPDates(tableData)">
+                                <select data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.QueryType" data-ng-change="clearPoPDates(tableData);">
                                     <option value=""></option>
                                     <option value="<%: MoqTableData.MONTHLY%>"><%: MoqTableData.MONTHLY%></option>
                                     <option data-ng-if="model.SAPWorkspaceBeforeCutoff" value="<%: MoqTableData.WEEKLY%>"><%: MoqTableData.WEEKLY%></option>
@@ -225,11 +225,11 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" data-ng-class="{'ng-invalid': ValidatePopStart(tableData.PoPStart) }" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);SetTableDirty(tableData);" />
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPStart" data-ng-change="SetTableDirty(tableData)" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" data-ng-class="{'ng-invalid': ValidatePopStart(tableData.PoPStart) }" data-ng-change="DateChanged(tableData)" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPStart" data-ng-change="DateChanged(tableData)" />
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY_DATETIME%>'">
                                     <span data-ng-if="IsSapEnabledAndSetAsRepository(tableData.RepositoryName)">Process Pay Period Week Ending </span> 
-                                    <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date" required data-ng-model="tableData.PoPStart" data-ng-change="SetTableDirty(tableData)" />
+                                    <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date" required data-ng-model="tableData.PoPStart" data-ng-change="DateChanged(tableData)" />
                                 </span>
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
                                     FW <input data-ng-readonly="ActualReadOnly()" type="number" class="weekYear skip-read-only" min="1" max="53" step="1" required data-ng-model="tableData.PoPStartWeek" onchange="MOQEquationFieldWidget.setDirty()" />
@@ -243,11 +243,11 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" data-ng-class="{'ng-invalid': ValidatePopEnd(tableData.PoPEnd) }" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);SetTableDirty(tableData);" />
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPEnd" data-ng-change="SetTableDirty(tableData)" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" data-ng-class="{'ng-invalid': ValidatePopEnd(tableData.PoPEnd) }" data-ng-change="DateChanged(tableData)" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPEnd" data-ng-change="DateChanged(tableData)" />
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY_DATETIME%>'">
                                     <span data-ng-if="IsSapEnabledAndSetAsRepository(tableData.RepositoryName)">Process Pay Period Week Ending </span> 
-                                    <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date" required data-ng-model="tableData.PoPEnd" data-ng-change="SetTableDirty(tableData)" />
+                                    <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date" required data-ng-model="tableData.PoPEnd" data-ng-change="DateChanged(tableData)" />
                                 </span>
                                 
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
@@ -256,7 +256,7 @@
                                 </span>
                             </td>
                         </tr>
-                        <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
+                        <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPMonths}}</td>
                             <td><input data-ng-readonly="true" type="text" data-ng-model="tableData.PoPMonthsString" /></td>
                         </tr>
@@ -303,7 +303,7 @@
                 <div class="tableDataButtons">
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
-                    <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
+                    <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="exportActuals(tableData)">Export Actuals</button>
                     <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="model.SkillMixEnabled ? calculateActualsWithSkillMix(tableData, moqType) : calculateActuals(tableData)">Calculate Actuals</button>
                 </div>
@@ -413,20 +413,20 @@
                     <table name="currentSkillMix"  class="grid editable">
                         <thead>
                             <tr>
-                                <th data-ng-show="model.IsRMS" class="resource">Resource ID</th>
+                                <th data-ng-show="model.IsRMS" class="resource">Resource</th>
                                 <th class="current-resource-id">Current Resource</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
                                 <th class="included">Included *</th>
                                 <th class="boe-skill-mix">BOE Skill Mix</th>
                                 <th class="proposed-hours">Proposed Hours</th>
-                                <th class="rationale">Rationale *</th>
+                                <th class="rationale">Rationale **</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr data-ng-repeat="item in moqType.SkillMixTable">
                                 <td data-ng-if="model.IsRMS">
-                                    <div class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.ResourceOld }} </div>
+                                    <div class="text skill-mix-padding"> {{ item.ResourceOld }} </div>
                                 </td>
                                 <td data-ng-if="model.IsRMS" class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels) === false }">
                                     <div class="resource-selection" ng-style="{ padding: '2px 5px' }">
@@ -444,29 +444,32 @@
                                     </div>
                                 </td>
                                 <td data-ng-if="!model.IsRMS">
-                                    <div class="text" data-ng-style="{ padding: '2px 5px' }"> {{ item.ResourceNew }} </div>
+                                    <div class="text skill-mix-padding"> {{ item.ResourceNew }} </div>
                                 </td>
                                 <td>
-                                    <div id="historical-hours" class="text skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"> {{ item.HistoricalHours }} </div>
+                                    <div id="historical-hours" class="text skill-mix-numerical skill-mix-padding"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
-                                    <div id="labor-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
+                                    <div id="labor-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
                                 <td>
-                                    <select data-ng-style="{ padding: '2px 5px' }">
-                                        <option></option>
-                                        <option value="">Yes</option>
-                                        <option value="">No</option>
+                                    <!-- when included is yes, add row to common disclosure table, will need to do other stuff later -->
+                                    <select class="skill-mix-padding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
+                                        <option value="null"></option>
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <div id="boe-skill-mix" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"></div>
+                                    <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding"></div>
                                 </td>
                                 <td>
-                                    <div id="proposed-hours" class="skill-mix-numerical" data-ng-style="{ padding: '2px 5px' }"></div>
+                                    <div id="proposed-hours" class="skill-mix-numerical skill-mix-padding"></div>
                                 </td>
                                 <td>
-                                    <div id="skill-mix-table-rationale"></div> <!-- TO-DO for PROPH-1982 -->
+                                    <div id="skill-mix-table-rationale">
+                                        <input type="text" maxlength="255" id="rationale" data-ng-model="item.Rationale" />
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -486,7 +489,7 @@
                         <thead>
                             <tr>
                                 <th class="current-resource-id">Current Resource</th>
-                                <th class="brc-id">Business Resource ID</th>
+                                <th class="brc-id">Business Resource Code</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
                                 <th class="included">Included *</th>
@@ -496,52 +499,37 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-ng-repeat="item in commonDisclosureTableData | filter: { Deleted: false }" data-ng-hide="item.Deleted">
+                            <tr data-ng-repeat="item in moqType.CommonDisclosureTable">
                                 <td>
+                                    <div class="text skill-mix-padding"> {{ item.ResourceID }} </div>
                                 </td>
                                 <td>
+                                    <div class="text skill-mix-padding"> {{ item.BusinessResourceID }} </div>
                                 </td>
                                 <td>
+                                    <div id="cd-historical-hours" class="text skill-mix-numerical skill-mix-padding"> {{ item.HistoricalHours }} </div>
                                 </td>
                                 <td>
+                                    <div id="cd-labor-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
                                 <td>
-                                    <select>
-                                        <option></option>
-                                        <option value="">Yes</option>
-                                        <option value="">No</option>
+                                    <!-- when included is yes, refresh to get boe skill mix and proposed hours, will need some work to maintain selected value-->
+                                    <select class=" skill-mix-padding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
+                                        <option value="null"></option>
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
                                     </select>
                                 </td>
                                 <td>
+                                    <div id="cd-boe-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.BOESkillMix * 100 | number: 2 }}% </div>
                                 </td>
                                 <td>
+                                    <div id="cd-proposed-hours" class="skill-mix-numerical skill-mix-padding"> {{ item.ProposedHours }} </div>
                                 </td>
                                 <td>
-                                </td>									
-                            </tr>
-                        </tbody>
-                        <tbody>
-                            <tr>
-                                <td>
-                                <div title="Total">Total</div>
-                                </td>
-                                <td>
-                                </td>	
-                                <td>
-                                    <div id="cd-historical-hours-total"></div>
-                                </td>
-                                <td>
-                                    <div id="cd-labor-skill-mix-total"></div>
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                    <div id="cd-boe-skill-mix-total"></div>
-                                </td>
-                                <td>
-                                    <div id="cd-proposed-hours-total"></div>
-                                </td>
-                                <td>
+                                    <div id="cd-table-rationale">
+                                        <input type="text" maxlength="255" id="cd-rationale" data-ng-model="item.Rationale" />
+                                    </div>
                                 </td>									
                             </tr>
                         </tbody>

@@ -131,17 +131,18 @@ namespace IES.Common.Core.Models
 		/// <returns>A string representation</returns>
 		public override string ToString()
 		{
-			return string.Format("Ntid [{0}], Email [{1}], DisplayName [{2}], FirstName [{3}], LastName [{4}], Phone [{5}], Company [{6}], Title [{7}], State [{8}], Country [{9}]",
-				Ntid,
-				Email,
-				DisplayName,
-				FirstName,
-				LastName,
-				Phone,
-				Company,
-				Title,
-				State,
-				Country);
+			return string.Format("Ntid [{0}], Email [{1}], DisplayName [{2}], FirstName [{3}], LastName [{4}], Phone [{5}], Company [{6}], Title [{7}], Department [{8}], State [{9}], Country [{10}]",
+				this.Ntid,
+				this.Email,
+				this.DisplayName,
+				this.FirstName,
+				this.LastName,
+				this.Phone,
+				this.Company,
+				this.Title,
+				this.Department,
+				this.State,
+				this.Country);
 		}
 
 		/// <summary>
@@ -188,5 +189,10 @@ namespace IES.Common.Core.Models
 		/// AD Property -> employeeType -> values: G sub, E is emp
 		/// </summary>
 		public bool? IsSubcontractor { get; set; }
+
+		/// <summary>
+		/// Gets the user's department
+		/// </summary>
+		public string Department { get; set; }
 	}
 }

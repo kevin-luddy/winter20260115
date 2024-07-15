@@ -1574,9 +1574,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
 			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
 			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
-            MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader);
+			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
 
-            MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
+			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader, commonDisclosureLoader);
+
+			MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
             {
                 Id = -1,
                 TaskId = GlobalTestCaseSetup.GlobalTaskElementID,
@@ -1633,7 +1635,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
             IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
 			IMOQTypeSelectionTableDataResourceHoursDTOLoader resourceHoursLoader = new MOQTypeSelectionTableDataResourceHoursDTOLoader();
 			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
-			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader);
+			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
+
+			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader, commonDisclosureLoader);
 
 
 			// Get MOQ Type Selection and get ID from there
@@ -2120,7 +2124,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				cdsm.LaborSkillMix = 100;
 				cdsm.ResourceID = resource;
 				cdsm.BusinessResourceID = businessResource;
-				cdsm.SkillMixID = -1;
 				cdsm.BOEID = GlobalBOEID;
 				cdsm.BOETaskElementID = GlobalTaskElementID;
 				cdsm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
@@ -2128,7 +2131,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				gbe.SaveChanges();
 				commonDisclosureSkillMixId = (from s in gbe.CommonDisclosureSkillMixes
 							  where s.Rationale == rat
-							  select s.SkillMixID).FirstOrDefault();
+							  select s.CommonDisclosureSkillMixID).FirstOrDefault();
 			}
 			return commonDisclosureSkillMixId;
 		}
