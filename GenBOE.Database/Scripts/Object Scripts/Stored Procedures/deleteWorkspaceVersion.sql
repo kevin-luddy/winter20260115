@@ -79,12 +79,12 @@ BEGIN
 	DELETE FROM [version].[CustomField] WHERE VersionID = @VersionID
 	DELETE FROM [version].[CustomFieldValue] WHERE VersionID = @VersionID
 	DELETE FROM [version].[MaterialTaskElement] WHERE VersionID = @VersionID
-	DELETE FROM [version].[MOQTypeSelection] WHERE VersionID = @VersionID
-	DELETE FROM [version].[MoqTypeTableCustomFieldValueXREF] WHERE VersionID = @VersionID
-	DELETE FROM [version].[MOQTypeSelectionTableData] WHERE VersionID = @VersionID
-	DELETE FROM [version].[SkillMix] WHERE VersionID = @VersionID
-	DELETE FROM [version].[CommonDisclosureSkillMix] WHERE VersionID = @VersionID
 	DELETE FROM [version].[MOQTypeSelectionTableDataResourceHours] WHERE VersionID = @VersionID
+	DELETE FROM [version].[CommonDisclosureSkillMix] WHERE VersionID = @VersionID
+	DELETE FROM [version].[SkillMix] WHERE VersionID = @VersionID
+	DELETE FROM [version].[MOQTypeSelectionTableData] WHERE VersionID = @VersionID
+	DELETE FROM [version].[MoqTypeTableCustomFieldValueXREF] WHERE VersionID = @VersionID
+	DELETE FROM [version].[MOQTypeSelection] WHERE VersionID = @VersionID
 	DELETE FROM [version].[ODCSpread] WHERE VersionID = @VersionID
 	DELETE FROM [version].[ODCTaskElement] WHERE VersionID = @VersionID
 	DELETE FROM [version].[ODCType] WHERE VersionID = @VersionID
