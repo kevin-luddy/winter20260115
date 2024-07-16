@@ -214,7 +214,7 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// Number of months between PoP Start and PoP End
 		/// </summary>
-		public decimal PoPMonths { get { return this.PoPStart.MonthDifferenceDecimal(this.PoPEnd); } }
+		public decimal PoPMonths { get { return this.PoPStart.MonthDifferenceDecimal(this.PoPEnd, SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && QueryType == MoqTableData.MONTHLY); } }
 
 		/// <summary>
 		/// PoP Months as string with 2 decimal places
