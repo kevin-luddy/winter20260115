@@ -1291,7 +1291,6 @@ INSERT INTO [version].[MOQTypeSelectionTableDataResourceHours]
 [MOQTypeSelectionTableDataId],
 [BOETaskElementID],
 [BOEID],
-[LaborSkillMix],
 [VersionId]
 )
 SELECT M.[MOQTypeSelectionTableDataResourceHoursId],
@@ -1302,7 +1301,7 @@ M.[MOQTypeSelectionTableDataId],
 M.[BOETaskElementID],
 M.[BOEID],
 @VersionID
-FROM [dbo].[CommonDisclosureSkillMix] CD
+FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
 INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
 INNER JOIN [dbo].[BOETaskElement] T ON SM.TaskId = T.BOETaskElementID
 INNER JOIN dbo.[MOQTypeSelectionTableData] MOQ ON M.MOQTypeSelectionTableDataId = MOQ.MOQTypeSelectionTableDataId
