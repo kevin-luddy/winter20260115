@@ -209,6 +209,24 @@ BEGIN
 			WHERE RT.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[RteTemplate]
 			WHERE WorkspaceID = @WorkspaceID
+		DELETE FROM dbo.[MoqTypeTableCustomFieldValueXREF]
+			FROM dbo.[MoqTypeTableCustomFieldValueXREF] x
+				INNER JOIN MoqTypeSelectionTableData t ON t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId 
+				INNER JOIN MoqTypeSelection mS ON mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
+				INNER JOIN BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId 
+				INNER JOIN dbo.BOE B ON tE.BOEID = B.BOEID
+			WHERE B.WorkspaceId = @WorkspaceId
+		DELETE FROM [dbo].[MOQTypeSelectionTableData]
+			FROM [dbo].[MOQTypeSelectionTableData] TD
+			INNER JOIN [dbo].[MOQTypeSelection] M ON TD.MOQTypeSelectionId = M.MOQTypeSelectionId
+			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
+		DELETE FROM [dbo].[MOQTypeSelection]
+			FROM [dbo].[MOQTypeSelection] M
+			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[MOQTypeSelectionTableDataResourceHours]
 			FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
 			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
@@ -222,24 +240,6 @@ BEGIN
 		DELETE FROM [dbo].[SkillMix]
 			FROM [dbo].[SkillMix] SM
 			INNER JOIN [dbo].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
-			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
-			WHERE B.WorkspaceID = @WorkspaceID
-		DELETE FROM [dbo].[MOQTypeSelectionTableData]
-			FROM [dbo].[MOQTypeSelectionTableData] TD
-			INNER JOIN [dbo].[MOQTypeSelection] M ON TD.MOQTypeSelectionId = M.MOQTypeSelectionId
-			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
-			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
-			WHERE B.WorkspaceID = @WorkspaceID
-		DELETE FROM dbo.[MoqTypeTableCustomFieldValueXREF]
-			FROM dbo.[MoqTypeTableCustomFieldValueXREF] x
-				INNER JOIN MoqTypeSelectionTableData t ON t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId 
-				INNER JOIN MoqTypeSelection mS ON mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
-				INNER JOIN BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId 
-				INNER JOIN dbo.BOE B ON tE.BOEID = B.BOEID
-			WHERE B.WorkspaceId = @WorkspaceId
-		DELETE FROM [dbo].[MOQTypeSelection]
-			FROM [dbo].[MOQTypeSelection] M
-			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
 			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[BOETaskElement]
