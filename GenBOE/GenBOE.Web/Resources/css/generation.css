@@ -1759,8 +1759,7 @@ button.ui-datepicker-trigger
     overflow: hidden;
     text-overflow: ellipsis;
     border-left: none;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding: 4px;
 }
 
 .grid td > *

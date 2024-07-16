@@ -15,7 +15,7 @@
 		{
 			this.SkillMixID = -1;
 			this.Rationale = string.Empty;
-			this.Included = false;
+			this.Included = null;
 			this.ProposedHours = 0;
 			this.HistoricalHours = 0;
 			this.BOESkillMix = 0;
@@ -41,7 +41,7 @@
 		/// <summary>
 		/// Check if historical resource proposed
 		/// </summary>
-		public bool Included { get; set; }
+		public bool? Included { get; set; }
 
 		/// <summary>
 		/// User/Calculated Hours of proposed percents

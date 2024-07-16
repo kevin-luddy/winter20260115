@@ -277,7 +277,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								skillMix.ResourceNew,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.HistoricalHours,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.LaborSkillMix,
-								skillMix.Included ? "Yes" : "No",
+								skillMix.Included.HasValue && skillMix.Included.Value ? "Yes" : "No",                               
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.BOESkillMix,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
 								skillMix.Rationale

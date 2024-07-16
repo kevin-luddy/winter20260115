@@ -838,6 +838,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && moqTypes != null)
 			{
 				IList<SkillMixModelView> skillMixRowsEmptyRationales = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
+				IList<SkillMixModelView> skillMixRowsEmptyIncludeds = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !x.Included.HasValue).ToList();
 				IList<SkillMixModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 
 				if (onButtonPress)
@@ -846,6 +847,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					{
 						errorMessages.Add(string.Format("Current Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
 					}
+				}
+
+				foreach (string skillMixResourceNew in skillMixRowsEmptyIncludeds.Select(x => x.ResourceNew))
+				{
+					errorMessages.Add(string.Format("Current Skill Mix Table: Included is missing for {0}.", skillMixResourceNew));
 				}
 
 				foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))

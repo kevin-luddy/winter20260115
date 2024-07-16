@@ -36,9 +36,10 @@ namespace GenBOE.Tests.ActionLogic
         private Mock<IRetriever> retriever = new Mock<IRetriever>();
         private bool _SpaceEnabled = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
         private Mock<ICommonDataMapper> _CommonDataMapper = new Mock<ICommonDataMapper>();
-        private Mock<IPermissionsDTODataLoader> _permissions = new Mock<IPermissionsDTODataLoader>();
+		private Mock<IPermissionsDTODataLoader> _permissions = new Mock<IPermissionsDTODataLoader>();
         private Mock<IMSTZoneTravelValidator> mstZoneTravelValidator = new Mock<IMSTZoneTravelValidator>();
-        private Mock<IMSTMetricLoader> mstMetricLoader = new Mock<IMSTMetricLoader>();
+		private Mock<IMSTMetricLoader> mstMetricLoader = new Mock<IMSTMetricLoader>();
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
         private Mock<IOffloadRatesDTOLoader> offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
         private Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
 
@@ -47,9 +48,10 @@ namespace GenBOE.Tests.ActionLogic
         {
             base.Setup();
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IMSTZoneTravelValidator), mstZoneTravelValidator.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IMSTZoneTravelValidator), mstZoneTravelValidator.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IMSTMetricLoader), mstMetricLoader.Object);
 
             this.offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
@@ -4269,6 +4271,7 @@ namespace GenBOE.Tests.ActionLogic
 				{
 					new SkillMixModelView()
 					{
+						Included = false,
 						Rationale = string.Empty
 					}
 				}
@@ -4324,6 +4327,7 @@ namespace GenBOE.Tests.ActionLogic
 				{
 					new SkillMixModelView()
 					{
+						Included = false,
 						Rationale = string.Empty
 					}
 				}
@@ -4336,6 +4340,62 @@ namespace GenBOE.Tests.ActionLogic
 
 			// if onButtonPress is false for ValidateTemplateMoqForTask, rationale is not required so we expect no errors
 			Assert.IsFalse(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a missing required Rationale in the Skill Mix Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_SkillMixTable_MissingIncluded()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						Included = null,
+						Rationale = "test"
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
 		}
 	}
 }
