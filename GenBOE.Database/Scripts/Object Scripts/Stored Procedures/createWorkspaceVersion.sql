@@ -1227,24 +1227,57 @@ INSERT INTO [version].[SkillMix]
 [MOQTypeSelectionID],
 [VersionId]
 )
-SELECT M.[MOQTypeSelectionId],
-M.[TaskId],
-M.[MOQTypeSelection],
-M.[UpdateDT],
-M.[Order],
-M.[CERName],
-M.[HoursDescription],
-M.[SubjectMatterExpert],
-M.[HoursLogicAndAssumptions],
-M.[DurationLogicAndAssumptions],
-M.[EstimateTasks],
-M.[Rationale],
-M.[SkillMix],
-M.[HistoricalReferenceExplanation],
+SELECT M.[SkillMixID],
+SM.[Rationale],
+SM.[Included],
+SM.[ProposedHours],
+SM.[HistoricalHours],
+SM.[BOESkillMix],
+SM.[ResourceOld],
+SM.[ResourceNew],
+SM.[BOETaskElementID],
+SM.[BOEID],
+SM.[MOQTypeSelectionID],
 @VersionID
-FROM [dbo].[MOQTypeSelection] M
-INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID
-INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+FROM [dbo].[SkillMix] SM
+INNER JOIN [dbo].[BOETaskElement] T ON SM.TaskId = T.BOETaskElementID
+INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
+INNER JOIN dbo.[MOQTypeSelection] M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
+INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE W.WorkspaceID = @WorkspaceID
+
+/** [dbo].[CommonDisclosureSkillMix] **/
+INSERT INTO [version].[CommonDisclosureSkillMix]
+([SkillMixID],
+[Rationale],
+[Included],
+[ProposedHours],
+[HistoricalHours],
+[BOESkillMix],
+[LaborSkillMix],
+[ResourceID],
+[BusinessResourceID],
+[BOEID],
+[BOETaskElementID],
+[MOQTypeSelectionID],
+[VersionId]
+)
+SELECT M.[SkillMixID],
+CD.[Rationale],
+CD.[Included],
+CD.[ProposedHours],
+CD.[HistoricalHours],
+CD.[BOESkillMix],
+CD.[ResourceOld],
+CD.[ResourceNew],
+CD.[BOETaskElementID],
+CD.[BOEID],
+CD.[MOQTypeSelectionID],
+@VersionID
+FROM [dbo].[CommonDisclosureSkillMix] CD
+INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
+INNER JOIN [dbo].[BOETaskElement] T ON SM.TaskId = T.BOETaskElementID
+INNER JOIN dbo.[MOQTypeSelection] M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
 INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE W.WorkspaceID = @WorkspaceID
 
