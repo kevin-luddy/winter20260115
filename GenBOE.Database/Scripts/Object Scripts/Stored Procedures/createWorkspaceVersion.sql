@@ -1128,6 +1128,7 @@ INNER JOIN dbo.BOE B ON BH.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 
+/** [dbo].[MOQTypeSelection] **/
 INSERT INTO [version].[MOQTypeSelection]
 ([MOQTypeSelectionId],
 [TaskId],
@@ -1166,6 +1167,7 @@ INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE W.WorkspaceID = @WorkspaceID
 
+/** [dbo].[MOQTypeSelectionTableData] **/
 INSERT INTO [version].[MOQTypeSelectionTableData]
 ([MOQTypeSelectionTableDataId],
 [MOQTypeSelectionId],
@@ -1204,6 +1206,43 @@ TD.[TotalRelevantHoursAfterQueryFilters],
 @VersionID
 FROM [dbo].[MOQTypeSelectionTableData] TD
 INNER JOIN [dbo].[MOQTypeSelection] M ON TD.MOQTypeSelectionId = M.MOQTypeSelectionId
+INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID
+INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE W.WorkspaceID = @WorkspaceID
+
+/** [dbo].[SkillMix] **/
+INSERT INTO [version].[SkillMix]
+([SkillMixID],
+[Rationale],
+[Included],
+[ProposedHours],
+[HistoricalHours],
+[BOESkillMix],
+[LaborSkillMix],
+[ResourceOld],
+[ResourceNew],
+[BOETaskElementID],
+[BOEID],
+[MOQTypeSelectionID],
+[VersionId]
+)
+SELECT M.[MOQTypeSelectionId],
+M.[TaskId],
+M.[MOQTypeSelection],
+M.[UpdateDT],
+M.[Order],
+M.[CERName],
+M.[HoursDescription],
+M.[SubjectMatterExpert],
+M.[HoursLogicAndAssumptions],
+M.[DurationLogicAndAssumptions],
+M.[EstimateTasks],
+M.[Rationale],
+M.[SkillMix],
+M.[HistoricalReferenceExplanation],
+@VersionID
+FROM [dbo].[MOQTypeSelection] M
 INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID
 INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
