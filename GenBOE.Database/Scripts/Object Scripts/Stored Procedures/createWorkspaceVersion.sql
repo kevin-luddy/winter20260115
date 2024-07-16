@@ -51,6 +51,7 @@ AS
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
+**		7/16/24		e405721				PROPH-2160: Update Create Workspace Version for Skill Mix, Common Disclosure Skill Mix and MOQ Type Selection Table Data Resource Hours
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -1248,7 +1249,7 @@ WHERE W.WorkspaceID = @WorkspaceID
 
 /** [dbo].[CommonDisclosureSkillMix] **/
 INSERT INTO [version].[CommonDisclosureSkillMix]
-([SkillMixID],
+([CommonDisclosureSkillMixID],
 [Rationale],
 [Included],
 [ProposedHours],
@@ -1262,7 +1263,7 @@ INSERT INTO [version].[CommonDisclosureSkillMix]
 [MOQTypeSelectionID],
 [VersionId]
 )
-SELECT M.[SkillMixID],
+SELECT CD.[CommonDisclosureSkillMixID],
 CD.[Rationale],
 CD.[Included],
 CD.[ProposedHours],
@@ -1278,6 +1279,33 @@ FROM [dbo].[CommonDisclosureSkillMix] CD
 INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
 INNER JOIN [dbo].[BOETaskElement] T ON SM.TaskId = T.BOETaskElementID
 INNER JOIN dbo.[MOQTypeSelection] M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
+INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE W.WorkspaceID = @WorkspaceID
+
+/** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
+INSERT INTO [version].[MOQTypeSelectionTableDataResourceHours]
+([MOQTypeSelectionTableDataResourceHoursId],
+[ResourceName],
+[WbsHours],
+[TotalHours],
+[MOQTypeSelectionTableDataId],
+[BOETaskElementID],
+[BOEID],
+[LaborSkillMix],
+[VersionId]
+)
+SELECT M.[MOQTypeSelectionTableDataResourceHoursId],
+M.[ResourceName],
+M.[WbsHours],
+M.[TotalHours],
+M.[MOQTypeSelectionTableDataId],
+M.[BOETaskElementID],
+M.[BOEID],
+@VersionID
+FROM [dbo].[CommonDisclosureSkillMix] CD
+INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
+INNER JOIN [dbo].[BOETaskElement] T ON SM.TaskId = T.BOETaskElementID
+INNER JOIN dbo.[MOQTypeSelectionTableData] MOQ ON M.MOQTypeSelectionTableDataId = MOQ.MOQTypeSelectionTableDataId
 INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE W.WorkspaceID = @WorkspaceID
 
