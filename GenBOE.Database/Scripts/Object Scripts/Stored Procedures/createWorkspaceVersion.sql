@@ -1277,8 +1277,8 @@ CD.[MOQTypeSelectionID],
 @VersionID
 FROM [dbo].[CommonDisclosureSkillMix] CD
 INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
-INNER JOIN [dbo].[BOETaskElement] T ON SM.TaskId = T.BOETaskElementID
-INNER JOIN dbo.[MOQTypeSelection] M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
+INNER JOIN [dbo].[BOETaskElement] T ON CD.TaskId = T.BOETaskElementID
+INNER JOIN dbo.[MOQTypeSelection] M ON CD.MOQTypeSelectionID = M.MOQTypeSelectionID
 INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE W.WorkspaceID = @WorkspaceID
 
@@ -1303,7 +1303,7 @@ M.[BOEID],
 @VersionID
 FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
 INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
-INNER JOIN [dbo].[BOETaskElement] T ON SM.TaskId = T.BOETaskElementID
+INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID
 INNER JOIN dbo.[MOQTypeSelectionTableData] MOQ ON M.MOQTypeSelectionTableDataId = MOQ.MOQTypeSelectionTableDataId
 INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE W.WorkspaceID = @WorkspaceID
