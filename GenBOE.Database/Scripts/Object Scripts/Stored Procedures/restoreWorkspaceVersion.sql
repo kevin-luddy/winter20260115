@@ -211,19 +211,16 @@ BEGIN
 			WHERE WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[MOQTypeSelectionTableDataResourceHours]
 			FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
-			INNER JOIN @MOQTypeSelectionTableData MOQ ON M.MOQTypeSelectionTableDataId = MOQ.MOQTypeSelectionTableDataId
 			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
 			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[CommonDisclosureSkillMix]
 			FROM [dbo].[CommonDisclosureSkillMix] CD
-			INNER JOIN @MOQTypeSelection M ON CD.MOQTypeSelectionID = M.MOQTypeSelectionID
 			INNER JOIN [dbo].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
 			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[SkillMix]
 			FROM [dbo].[SkillMix] SM
-			INNER JOIN @MOQTypeSelection M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
 			INNER JOIN [dbo].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
 			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
@@ -2598,17 +2595,8 @@ BEGIN
 			SM.[BOETaskElementID],
 			SM.[MOQTypeSelectionID]
 		FROM [version].[SkillMixID] SM
-		INNER JOIN [version].[BOE] B ON T.BOEID  = B.BOEID
-		INNER JOIN [version].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
-		INNER JOIN [version].[MOQTypeSelection] M ON SM.[MOQTypeSelectionId] = M.[MOQTypeSelectionId]
-		INNER JOIN [version].[Workspace] WS ON B.WorkspaceID = WS.WorkspaceID
 		WHERE 
-		SM.VersionId = @VersionID AND
-		T.VersionID = @VersionID AND
-		B.VersionID = @VersionID AND
-		M.VersionId = @VersionID AND
-		WS.VersionID = @VersionID AND
-		WS.WorkspaceID = @WorkspaceID
+		SM.VersionId = @VersionID
 
 		SET IDENTITY_INSERT [dbo].[SkillMix] OFF
 
@@ -2646,19 +2634,10 @@ BEGIN
 			CD.[BOETaskElementID],
 			CD.[MOQTypeSelectionID]
 		FROM [version].[CommonDisclosureSkillMixID] CD
-		INNER JOIN [version].[BOETaskElement] T on CD.TaskId = T.BOETaskElementID
-		INNER JOIN [version].[BOE] B ON T.BOEID  = B.BOEID
-		INNER JOIN [version].[MOQTypeSelection] M ON CD.[MOQTypeSelectionId] = M.[MOQTypeSelectionId]
-		INNER JOIN [version].[Workspace] WS ON B.WorkspaceID = WS.WorkspaceID
 		WHERE 
-		CD.VersionId = @VersionID AND
-		T.VersionID = @VersionID AND
-		B.VersionID = @VersionID AND
-		M.VersionId = @VersionID AND
-		WS.VersionID = @VersionID AND
-		WS.WorkspaceID = @WorkspaceID
+		CD.VersionId = @VersionID
 
-		SET IDENTITY_INSERT [dbo].[CommonDisclosureSkillMixID] OFF
+		SET IDENTITY_INSERT [dbo].[CommonDisclosureSkillMix] OFF
 
 		END
 
@@ -2683,17 +2662,8 @@ BEGIN
 			M.[BOETaskElementID],
 			M.[BOEID]
 		FROM [version].[MOQTypeSelectionTableDataResourceHoursId] M
-		INNER JOIN [version].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
-		INNER JOIN [version].[BOE] B ON T.BOEID  = B.BOEID
-		INNER JOIN [version].[MOQTypeSelectionTableData] MOQ ON M.[MOQTypeSelectionTableDataId] = MOQ.[MOQTypeSelectionTableDataId]
-		INNER JOIN [version].[Workspace] WS ON B.WorkspaceID = WS.WorkspaceID
 		WHERE 
-		M.VersionId = @VersionID AND
-		T.VersionID = @VersionID AND
-		B.VersionID = @VersionID AND
-		MOQ.VersionId = @VersionID AND
-		WS.VersionID = @VersionID AND
-		WS.WorkspaceID = @WorkspaceID
+		M.VersionId = @VersionID
 
 		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableDataResourceHours] OFF
 
