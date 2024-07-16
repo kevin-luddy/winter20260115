@@ -579,10 +579,9 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							dtoToUpsert.ContractActionTypeOtherText,
 							(int)dtoToUpsert.CostVolumeTool,
 							dtoToUpsert.CostVolumeToolName = dtoToUpsert.CostVolumeTool != CostVolumeTool.Other ? string.Empty : dtoToUpsert.CostVolumeToolName,
-							dtoToUpsert.AdditionalClassification
-							// DUSAN
-							//(int?)dtoToUpsert.CcopdNoReason,
-							//dtoToUpsert.CcopdNoOtherReason
+							dtoToUpsert.AdditionalClassification,
+							(int?)dtoToUpsert.CcopdNoReason,
+							dtoToUpsert.CcopdNoOtherReason
 							).FirstOrDefault();
 					}
 				}
