@@ -2575,8 +2575,8 @@ BEGIN
 		[LaborSkillMix],
 		[ResourceOld],
 		[ResourceNew],
-		[BOEID],
 		[BOETaskElementID],
+		[BOEID],
 		[MOQTypeSelectionID]
 		)
 		SELECT SM.[SkillMixID],
@@ -2588,8 +2588,8 @@ BEGIN
 			SM.[LaborSkillMix],
 			SM.[ResourceOld],
 			SM.[ResourceNew],
-			SM.[BOEID],
 			SM.[BOETaskElementID],
+			SM.[BOEID],
 			SM.[MOQTypeSelectionID]
 		FROM [version].[SkillMixID] SM
 		WHERE 
