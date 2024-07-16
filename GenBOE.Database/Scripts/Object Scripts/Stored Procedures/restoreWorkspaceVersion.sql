@@ -229,18 +229,15 @@ BEGIN
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[MOQTypeSelectionTableDataResourceHours]
 			FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
-			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
-			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+			INNER JOIN dbo.BOE B ON M.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[CommonDisclosureSkillMix]
 			FROM [dbo].[CommonDisclosureSkillMix] CD
-			INNER JOIN [dbo].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
-			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+			INNER JOIN dbo.BOE B ON CD.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[SkillMix]
 			FROM [dbo].[SkillMix] SM
-			INNER JOIN [dbo].[BOETaskElement] T on SM.TaskId = T.BOETaskElementID
-			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+			INNER JOIN dbo.BOE B ON SM.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[BOETaskElement]
 			FROM [dbo].[BOETaskElement] BTE
