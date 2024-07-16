@@ -46,6 +46,8 @@ AS
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 **		3/18/24		twilson3			PROPH-1760 Fix BRC IDs for new WS
 **		7/10/24		e405721				PROPH-2019 Skill Mix, Common Disclosure, MOQ Type Resource Hours Updates
+**		07/11/24	twilson3			proph-2166 Missing Columns
+**		07/12/24	twilson3			proph-2019 Fix @Temp Table definitions
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1701,17 +1703,18 @@ END
 DECLARE @SkillMix TABLE
 (
 	[SkillMixID] [int] NOT NULL,
-	[Rationale] [varchar] NOT NULL,
+	[Rationale] varchar(255) NOT NULL,
 	[Included] [bit] NOT NULL,
-	[ProposedHours] [decimal] NOT NULL,
-	[HistoricalHours] [decimal] NOT NULL,
-	[BOESkillMix] [decimal] NOT NULL,
-	[LaborSkillMix] [decimal] NOT NULL,
-    [ResourceOld] [varchar] NOT NULL,
-    [ResourceNew] [varchar] NOT NULL,
+	[ProposedHours] decimal(11,2) NOT NULL,
+	[HistoricalHours] decimal(11,2) NOT NULL,
+	[BOESkillMix] decimal(5,2) NOT NULL,
+	[LaborSkillMix] decimal(5,2) NOT NULL,
+    [ResourceOld] varchar(20) NOT NULL,
+    [ResourceNew] varchar(20) NOT NULL,
     [BOETaskElementID] [int] NOT NULL,
     [BOEID] [int] NOT NULL,
     [MOQTypeSelectionID] [int] NOT NULL,
+	[IsPercentLocked] bit NOT NULL,
 	Processed bit,
     NewBOETaskElementID int,
     NewBOEID int,
@@ -1731,6 +1734,7 @@ SELECT
     SM.[BOETaskElementID],
     SM.[BOEID],
     SM.[MOQTypeSelectionID],
+	SM.[IsPercentLocked],
 	0,
     T.[NewBOETaskElementID],
     B.[NewBOEID],
@@ -1755,7 +1759,8 @@ INSERT INTO [dbo].[SkillMix]
             [ResourceNew],
             [BOETaskElementID],
             [BOEID],
-            [MOQTypeSelectionID]
+            [MOQTypeSelectionID],
+			[IsPercentLocked]
 			)
 SELECT
 	[Rationale],
@@ -1768,7 +1773,8 @@ SELECT
     [ResourceNew],
     [NewBOETaskElementID],
     [NewBOEID],
-    [NewMOQTypeSelectionID]
+    [NewMOQTypeSelectionID],
+	[IsPercentLocked]
 FROM @SkillMix
 WHERE SkillMixID = @SkillMixID
 
@@ -1782,17 +1788,19 @@ END
 DECLARE @CommonDisclosureSkillMix TABLE
 (
 	[CommonDisclosureSkillMixID] [int] NOT NULL,
-	[Rationale] [varchar] NOT NULL,
+	[Rationale] varchar(255) NOT NULL,
 	[Included] [bit] NOT NULL,
-	[ProposedHours] [decimal] NOT NULL,
-	[HistoricalHours] [decimal] NOT NULL,
-	[BOESkillMix] [decimal] NOT NULL,
-	[LaborSkillMix] [decimal] NOT NULL,
-    [ResourceID] [varchar] NOT NULL,
-    [BusinessResourceID] [varchar] NOT NULL,
+	[ProposedHours] decimal(11,2) NOT NULL,
+	[HistoricalHours] decimal(11,2) NOT NULL,
+	[BOESkillMix] decimal(5,2) NOT NULL,
+	[LaborSkillMix] decimal(5,2) NOT NULL,
+    [ResourceID] varchar(20) NOT NULL,
+    [BusinessResourceID] varchar(20) NOT NULL,
     [BOEID] [int] NOT NULL,
     [BOETaskElementID] [int] NOT NULL,
     [MOQTypeSelectionID] [int] NOT NULL,
+	[IsPercentLocked] bit NOT NULL,
+	[IsUserInput] bit NOT NULL,
 	Processed bit,
     NewBOEID int,
     NewBOETaskElementID int,
@@ -1812,6 +1820,8 @@ SELECT
     CD.[BOEID],
     CD.[BOETaskElementID],
     CD.[MOQTypeSelectionID],
+	CD.[IsPercentLocked],
+	CD.[IsUserInput],
 	0,
     B.[NewBOEID],
     T.[NewBOETaskElementID],
@@ -1836,7 +1846,9 @@ INSERT INTO [dbo].[CommonDisclosureSkillMix]
             [BusinessResourceID],
             [BOEID],
             [BOETaskElementID],
-            [MOQTypeSelectionID]
+            [MOQTypeSelectionID],
+			[IsPercentLocked],
+			[IsUserInput]
 			)
 SELECT
 	[Rationale],
@@ -1849,7 +1861,9 @@ SELECT
     [BusinessResourceID],
     [NewBOEID],
     [NewBOETaskElementID],
-    [NewMOQTypeSelectionID]
+    [NewMOQTypeSelectionID],
+	[IsPercentLocked],
+	[IsUserInput]
 FROM @CommonDisclosureSkillMix
 WHERE CommonDisclosureSkillMixID = @CommonDisclosureSkillMixID
 
@@ -1863,9 +1877,9 @@ END
 DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
 (
 	[MOQTypeSelectionTableDataResourceHoursId] [int] NOT NULL,
-	[ResourceName] [varchar] NOT NULL,
-	[WbsHours] [decimal] NOT NULL,
-	[TotalHours] [decimal] NOT NULL,
+	[ResourceName] varchar(20) NULL,
+	[WbsHours] decimal(11,2) NOT NULL,
+	[TotalHours] decimal(11,2) NOT NULL,
 	[MOQTypeSelectionTableDataId] [int] NOT NULL,
 	[BOETaskElementID] [int] NOT NULL,
 	[BOEID] [int] NOT NULL,
@@ -2753,6 +2767,15 @@ IF @@ERROR = 0
 END TRY
 BEGIN CATCH
 	ROLLBACK TRANSACTION
+	-- Useful for Debugging, uncomment and run in SSMS, then execute Sproc in SSMS to see the line number of the error
+	--SELECT  
+ --       ERROR_NUMBER() AS ErrorNumber  
+ --       ,ERROR_SEVERITY() AS ErrorSeverity  
+ --       ,ERROR_STATE() AS ErrorState  
+ --       ,ERROR_PROCEDURE() AS ErrorProcedure  
+ --       ,ERROR_LINE() AS ErrorLine  
+ --       ,ERROR_MESSAGE() AS ErrorMessage; 
+ 
 	DECLARE @ErrorMessage varchar (500)
 	SELECT @ErrorMessage = ERROR_MESSAGE()
 	RAISERROR (@ErrorMessage, 11, 1)

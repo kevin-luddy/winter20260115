@@ -43,7 +43,8 @@ namespace IES.Common
 		private static DateTime? skillMixStartDate;
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? historicalReferenceExplanationStartDate;
-
+		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
+		
 		/// <summary>
 		/// 1LMX boundary time
 		/// </summary>
@@ -65,6 +66,41 @@ namespace IES.Common
 
 				return oneLmxStartDate.Value;
 			}
+		}
+
+		/// <summary>
+		/// get user JobTitle from active directories utility
+		/// </summary>
+		public static string JobTitle
+		{
+			get
+			{
+				return GetUser()?.Title;
+			}
+		}
+
+		/// <summary>
+		/// get user department from active directories utility
+		/// </summary>
+		public static string DepartmentTitle
+		{
+			get
+			{
+				return GetUser()?.Department;
+			}
+		}
+
+		/// <summary>
+		/// get user data from active directories utility
+		/// </summary>
+		private static UserData GetUser()
+		{
+			string currentUserNtid = Thread.CurrentPrincipal.Identity.Name;
+			if ((!string.IsNullOrEmpty(currentUserNtid)) && (currentUserNtid.Contains('\\')))
+			{
+				currentUserNtid = currentUserNtid.Split('\\').Last();
+			}
+			return activeDirectoryUtilities.GetUserByQualifiedAccount(currentUserNtid, false);
 		}
 
 		/// <summary>

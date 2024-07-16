@@ -62,6 +62,8 @@
             // Track each user's visit
             piwikTracker3.setUserId('<%:IES.Common.Utilities.CurrentUser()%>');
             piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
+            piwikTracker3.setCustomVariable(1, "JobTitle", '<%:IES.Common.Utilities.JobTitle%>', "visit");
+            piwikTracker3.setCustomVariable(2, "DepartmentTitle", '<%:IES.Common.Utilities.DepartmentTitle %>', "visit");
 		    piwikTracker3.trackPageView();
 		    piwikTracker3.enableLinkTracking();
 	    } catch( err ) {}

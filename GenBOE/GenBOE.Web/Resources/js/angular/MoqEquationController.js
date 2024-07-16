@@ -1413,7 +1413,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		data.currentSkillMixData = moqType.SkillMixTable;
 		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
 
-		if (data.currentSkillMixData.length > 0) {
+		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
 			// send to backend
 			// display response to user
 			$(document).trigger("SHOW_LOADING_BOX");

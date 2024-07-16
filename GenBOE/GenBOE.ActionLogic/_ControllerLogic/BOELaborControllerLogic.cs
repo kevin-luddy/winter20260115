@@ -4054,7 +4054,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							// If there is a match, then copy over the other row information
 							newData.Included = currentData.Included;
 							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
-							
+							newData.IsPercentLocked = currentData.IsPercentLocked;
+
 							if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
 							{
 								newData.ResourceNew = currentData.ResourceNew;
@@ -4116,6 +4117,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							// If there is a match, then copy over the other row information
 							newData.Included = currentData.Included;
 							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
+							newData.IsPercentLocked = currentData.IsPercentLocked;
+							newData.IsUserInput = currentData.IsUserInput;
 
 							newData.Rationale = currentData.Rationale;
 							if (newData.Included)
@@ -4186,38 +4189,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return response;
-		}
-
-		/// <summary>
-		/// Validate the Skill Mix Table for any errors
-		/// </summary>
-		/// <param name="moqTypes">The MOQ Types</param>
-		/// <param name="workspaceCreationDate">The workspace creation date</param>
-		/// <returns>A collection of any validation errors/messages</returns>
-		public ICollection<ValidationMessage> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate)
-		{
-			List<ValidationMessage> validationMessages = new List<ValidationMessage>();
-
-
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
-			{
-				if (moqTypes != null)
-				{
-					IList<SkillMixModelView> skillMixRowsEmptyRationales = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
-					IList<SkillMixModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
-
-					foreach (string skillMixResourceNew in skillMixRowsEmptyRationales.Select(x => x.ResourceNew))
-					{
-						validationMessages.Add(new ValidationMessage(skillMixResourceNew, string.Format("Rationale is missing for {0}.", skillMixResourceNew)));
-					}
-					foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
-					{
-						validationMessages.Add(new ValidationMessage(skillMixResourceNew, string.Format("The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255)));
-					}
-				}
-			}
-
-			return validationMessages;
 		}
 
 		private ActionLogic.IESSAPClient.CompanyConfiguration GetCompanyConfigurationForSAP()

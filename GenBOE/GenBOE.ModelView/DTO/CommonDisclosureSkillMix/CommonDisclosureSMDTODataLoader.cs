@@ -51,7 +51,9 @@ namespace GenBOE.DataBridge.DTO
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
+								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
+								  IsPercentLocked = cdsm.IsPercentLocked,
+								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -91,6 +93,8 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
 								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
+								  IsPercentLocked = cdsm.IsPercentLocked,
+								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -128,7 +132,9 @@ namespace GenBOE.DataBridge.DTO
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
+								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
+								  IsPercentLocked = cdsm.IsPercentLocked,
+								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -166,7 +172,9 @@ namespace GenBOE.DataBridge.DTO
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
+								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
+								  IsPercentLocked = cdsm.IsPercentLocked,
+								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -204,7 +212,9 @@ namespace GenBOE.DataBridge.DTO
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID
+								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
+								  IsPercentLocked = cdsm.IsPercentLocked,
+								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -258,13 +268,13 @@ namespace GenBOE.DataBridge.DTO
 
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
 			{
-				Collection<string> skillMixVariablesPropertiesToIncludeInTable = new Collection<string>()
+				Collection<string> commonDisclosureVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceID", "BusinessResourceID", "SkillMixID", "BOEID", "BOETaskElementID", "MOQTypeSelectionID"
+					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceID", "BusinessResourceID", "BOEID", "BOETaskElementID", "MOQTypeSelectionID", "IsPercentLocked", "IsUserInput"
 				};
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					DataTable commonDisclosureSkillMixVariablesDataTable = StoredProcedureHelper.ToDataTable<CommonDisclosureSkillMixDTO>(commonDisclosureSkillMixes, skillMixVariablesPropertiesToIncludeInTable);
+					DataTable commonDisclosureSkillMixVariablesDataTable = StoredProcedureHelper.ToDataTable<CommonDisclosureSkillMixDTO>(commonDisclosureSkillMixes, commonDisclosureVariablesPropertiesToIncludeInTable);
 
 					toReturn = StoredProcedureHelper.ExecuteTableValueProcedure(
 						gbe,
