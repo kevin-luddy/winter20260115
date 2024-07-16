@@ -163,6 +163,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Adds MOQ Type to Selected MOQ Types (and removes it from the dropdown of available types)
 	$scope.AddMoqType = function () {
 		var selectedItem = $scope.model.selectedMOQType;
+		selectedItem.SkillMixTable = [];
+		selectedItem.CommonDisclosureTable = [];
+
 		selectedItem.Order = 2000;
 
 		$scope.model.SelectedMoqTypes.push(selectedItem);
@@ -240,6 +243,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Create New Table Data for the MOQ Type
 	$scope.CreateNewTable = function (tableDataArray) {
 		var newTable = {};
+		newTable.ResourceHours = [];
 		newTable.Id = $scope.newTableId--;
 		newTable.Order = 2000;
 
