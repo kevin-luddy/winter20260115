@@ -246,15 +246,22 @@ namespace IES.Common
 		/// </summary>
 		/// <param name="startDate">Start Date</param>
 		/// <param name="endDate">End Date</param>
+		/// <param name="isSpaceAndMonthly">Is Space mode & Monthly</param>
 		/// <returns>Month difference</returns>
-		public static decimal MonthDifferenceDecimal(this DateTime? startDate, DateTime? endDate)
+		public static decimal MonthDifferenceDecimal(this DateTime? startDate, DateTime? endDate, bool isSpaceAndMonthly)
 		{
 			if (startDate == null || endDate == null)
 			{
 				return 0;
 			}
 
-			return endDate.Value.Subtract(startDate.Value).Days / Constants.POP_MONTHS_DIVISOR;
+			// if Space & Monthly -> we need to add +1 month to the calculation, for the following reason:
+				// if it's March - March, it's supposed to be 1 month
+				// if it's March - April, it's supposed to be 2 months
+			// this doesn't apply to weekly, or RMS, as both of those are using actual dates, not just months
+			int additionalMonth = isSpaceAndMonthly ? 1 : 0;
+
+			return additionalMonth + (endDate.Value.Subtract(startDate.Value).Days / Constants.POP_MONTHS_DIVISOR);
 		}
 
 		/// <summary>

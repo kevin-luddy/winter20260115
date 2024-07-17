@@ -163,6 +163,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Adds MOQ Type to Selected MOQ Types (and removes it from the dropdown of available types)
 	$scope.AddMoqType = function () {
 		var selectedItem = $scope.model.selectedMOQType;
+		selectedItem.SkillMixTable = [];
+		selectedItem.CommonDisclosureTable = [];
+
 		selectedItem.Order = 2000;
 
 		$scope.model.SelectedMoqTypes.push(selectedItem);
@@ -240,6 +243,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Create New Table Data for the MOQ Type
 	$scope.CreateNewTable = function (tableDataArray) {
 		var newTable = {};
+		newTable.ResourceHours = [];
 		newTable.Id = $scope.newTableId--;
 		newTable.Order = 2000;
 
@@ -1583,13 +1587,24 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	}
 
-	$scope.RefreshPoPMonths = function (popStart, popEnd) {
+	$scope.RefreshPoPMonths = function (popStart, popEnd, monthlySpace) {
+		if (!popStart || !popEnd) {
+			return '';
+		}
+
 		// Get the difference between the two dates in months (30.42 days), rounded to 2 decimals
-		return +(((popEnd.getTime() - popStart.getTime() + ((popStart.getTimezoneOffset() - popEnd.getTimezoneOffset()) * (60 * 1000))) / (1000 * 60 * 60 * 24)) / ManageTaskModel.PoPMonthsDivisor).toFixed(2);
+
+		// if Space & Monthly -> we need to add +1 month to the calculation, for the following reason:
+			// if it's March - March, it's supposed to be 1 month
+			// if it's March - April, it's supposed to be 2 months
+		// this doesn't apply to weekly, or RMS, as both of those are using actual dates, not just months
+		var additionalMonth = monthlySpace === true ? 1 : 0;
+
+		return +(((popEnd.getTime() - popStart.getTime() + ((popStart.getTimezoneOffset() - popEnd.getTimezoneOffset()) * (60 * 1000))) / (1000 * 60 * 60 * 24)) / ManageTaskModel.PoPMonthsDivisor).toFixed(2) + additionalMonth;
 	};
 
-	$scope.DateChanged = function (tableData) {
-		tableData.PoPMonthsString = $scope.RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);
+	$scope.DateChanged = function (tableData, monthlySpace) {
+		tableData.PoPMonthsString = $scope.RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd, monthlySpace);
 		$scope.SetTableDirty(tableData);
 	}
 

@@ -86,7 +86,7 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included ?? false,
+								  Included = sm.Included,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
 								  IsPercentLocked = sm.IsPercentLocked
@@ -125,7 +125,7 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included ?? false,
+								  Included = sm.Included,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
 								  IsPercentLocked = sm.IsPercentLocked
@@ -164,7 +164,7 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included ?? false,
+								  Included = sm.Included,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
 								  IsPercentLocked = sm.IsPercentLocked
@@ -236,7 +236,7 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included ?? false,
+								  Included = sm.Included,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
 								  IsPercentLocked = sm.IsPercentLocked
