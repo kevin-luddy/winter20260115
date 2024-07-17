@@ -4109,6 +4109,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					foreach (CommonDisclosureModelView currentData in commonDisclosureSMData)
 					{
+						if (currentData.BusinessResourceID == null)
+						{
+							currentData.BusinessResourceID = string.Empty;
+						}
 						CommonDisclosureModelView newData;
 						newData = newTable.FirstOrDefault(s => s.ResourceID == currentData.ResourceID && s.BusinessResourceID == currentData.BusinessResourceID);
 
@@ -4121,7 +4125,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							newData.IsUserInput = currentData.IsUserInput;
 
 							newData.Rationale = currentData.Rationale;
-							if (newData.Included)
+							if (newData.Included.HasValue && newData.Included.Value)
 							{
 								newData.BOESkillMix = currentData.BOESkillMix;
 								newData.ProposedHours = currentData.ProposedHours;

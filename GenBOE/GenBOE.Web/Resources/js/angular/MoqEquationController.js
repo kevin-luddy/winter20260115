@@ -1421,7 +1421,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			// send to backend
 			// display response to user
 			$(document).trigger("SHOW_LOADING_BOX");
-
 			$http({
 				method: 'POST',
 				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),

@@ -1374,7 +1374,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								commonDisclosure.BusinessResourceID,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.HistoricalHours,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.LaborSkillMix,
-								commonDisclosure.Included ? "Yes" : "No",
+								!commonDisclosure.Included.HasValue ? string.Empty : commonDisclosure.Included.Value ? "Yes" : "No",
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.BOESkillMix,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
 								commonDisclosure.Rationale
