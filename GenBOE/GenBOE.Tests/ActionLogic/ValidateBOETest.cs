@@ -4295,6 +4295,13 @@ namespace GenBOE.Tests.ActionLogic
 					{
 						Rationale = string.Empty
 					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						Rationale = string.Empty
+					}
 				}
 			};
 
@@ -4349,6 +4356,13 @@ namespace GenBOE.Tests.ActionLogic
 					new SkillMixModelView()
 					{
 						Included = false,
+						Rationale = string.Empty
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
 						Rationale = string.Empty
 					}
 				},
