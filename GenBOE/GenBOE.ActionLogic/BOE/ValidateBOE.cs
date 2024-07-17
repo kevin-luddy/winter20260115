@@ -782,6 +782,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							}
 
 							errorMessages.AddRange(ValidateSkillMixTable(new Collection<MoqTypeSelection>() { moqType }, ws.CreationDate, onButtonPress));
+							errorMessages.AddRange(ValidateCommonDisclosureSkillMixTable(new Collection<MoqTypeSelection> { moqType }, ws.CreationDate, onButtonPress));
 
                             break;
                         case (MOQType.CostEstimatingRelationships):
@@ -863,6 +864,40 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				foreach (string skillMixResourceNew in commonDisclosureRowsEmptyIncludeds.Select(x => x.ResourceID))
 				{
 					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Included is missing for {0}.", skillMixResourceNew));
+				}
+			}
+
+			return errorMessages;
+		}
+
+		/// <summary>
+		/// Validate the Common Disclosure Skill Mix Table for any errors
+		/// </summary>
+		/// <param name="moqTypes">The MOQ Types</param>
+		/// <param name="workspaceCreationDate">The workspace creation date</param>
+		/// <param name="onButtonPress">Is this being validated for Validate BOE or Submit For Approval?</param>
+		/// <returns>A collection of validation errors/messages</returns>
+		private ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate, bool onButtonPress)
+		{
+			ICollection<string> errorMessages = new Collection<string>();
+
+			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && moqTypes != null)
+			{
+				IList<CommonDisclosureModelView> skillMixRowsEmptyRationales = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
+																				.Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
+				IList<CommonDisclosureModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
+																				.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
+
+				if (onButtonPress)
+				{ 
+					foreach (string skillMixResourceNew in skillMixRowsEmptyRationales.Select(x => x.ResourceID))
+					{
+						errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
+					}
+				}
+				foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceID))
+				{
+					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
 				}
 			}
 
