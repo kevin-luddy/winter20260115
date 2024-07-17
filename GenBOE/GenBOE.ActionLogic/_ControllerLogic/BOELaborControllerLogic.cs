@@ -4091,6 +4091,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
+				//decimal totalHours = resourceHours.Sum(n => n.TotalHours);
 				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value))
 				{
 					//TODO: BRCs when sap is hooked up
@@ -4109,10 +4110,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					foreach (CommonDisclosureModelView currentData in commonDisclosureSMData)
 					{
-						if (currentData.BusinessResourceID == null)
+						if (string.IsNullOrEmpty(currentData.BusinessResourceID))
 						{
 							currentData.BusinessResourceID = string.Empty;
 						}
+
 						CommonDisclosureModelView newData;
 						newData = newTable.FirstOrDefault(s => s.ResourceID == currentData.ResourceID && s.BusinessResourceID == currentData.BusinessResourceID);
 
