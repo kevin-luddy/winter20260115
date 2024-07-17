@@ -4122,7 +4122,7 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a successful Skill Mix Table
+		/// Test ValidateSkillMixTable and ValidateCommonDisclosureSkillMixTable within ValidateTemplateMoqForTask for a successful Skill Mix Table
 		/// </summary>
 		[TestMethod]
 		public void BL_ValidateTemplateMoqForTask_SkillMixTable_Success()
@@ -4161,6 +4161,13 @@ namespace GenBOE.Tests.ActionLogic
 					{
 						Rationale = "Test Skill Mix Table Rationale"
 					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						Rationale = "Common Disclosure Skill Mix Table test for Rationale"
+					}
 				}
 			};
 
@@ -4176,7 +4183,7 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a Rationale in the Skill Mix Table being over the maximum length
+		/// Test ValidateSkillMixTable and ValidateCommonDisclosureSkillMixTable within ValidateTemplateMoqForTask for a Rationale in the Skill Mix Table being over the maximum length
 		/// </summary>
 		[TestMethod]
 		public void BL_ValidateTemplateMoqForTask_SkillMixTable_RationaleMaxLength()
@@ -4216,6 +4223,13 @@ namespace GenBOE.Tests.ActionLogic
 						// 256 characters, 1 over the limit of 255
 						Rationale = "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches."
 					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						Rationale = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,."
+					}
 				}
 			};
 
@@ -4228,11 +4242,11 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
 
 			Assert.IsTrue(result.Any());
-			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(2, result.Count);
 		}
 
 		/// <summary>
-		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a missing required Rationale in the Skill Mix Table
+		/// Test ValidateSkillMixTable and ValidateCommonDisclosureSkillMixTable within ValidateTemplateMoqForTask for a missing required Rationale in the Skill Mix Table
 		/// </summary>
 		[TestMethod]
 		public void BL_ValidateTemplateMoqForTask_SkillMixTable_MissingRationale()
@@ -4271,6 +4285,13 @@ namespace GenBOE.Tests.ActionLogic
 					{
 						Rationale = string.Empty
 					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						Rationale = string.Empty
+					}
 				}
 			};
 
@@ -4283,11 +4304,11 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
 
 			Assert.IsTrue(result.Any());
-			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(2, result.Count);
 		}
 
 		/// <summary>
-		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a missing Rationale in the Skill Mix Table when not required on task save
+		/// Test ValidateSkillMixTable and ValidateCommonDisclosureSkillMixTable within ValidateTemplateMoqForTask for a missing Rationale in the Skill Mix Table when not required on task save
 		/// </summary>
 		[TestMethod]
 		public void BL_ValidateTemplateMoqForTask_SkillMixTable_MissingRationaleNotRequired()
@@ -4323,6 +4344,13 @@ namespace GenBOE.Tests.ActionLogic
 				SkillMixTable = new Collection<SkillMixModelView>()
 				{
 					new SkillMixModelView()
+					{
+						Rationale = string.Empty
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
 					{
 						Rationale = string.Empty
 					}
