@@ -35,6 +35,7 @@ AS
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 **		10/29/20	Dusan				BOEJ-4924 - MOQ Type Selection data
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		7/17/2024	e405721				PROPH-2164: Update for Skill Mix, Common Disclosure Skill Mix, MOQ Type Selection Table Data Resource Hours
 *******************************************************************************/
 SET NOCOUNT ON 
 
