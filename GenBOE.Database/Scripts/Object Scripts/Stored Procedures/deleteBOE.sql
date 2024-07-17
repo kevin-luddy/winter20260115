@@ -175,7 +175,7 @@ SET NOCOUNT ON
 			
 			DELETE FROM dbo.[MOQTypeSelectionTableDataResourceHours]
 					FROM dbo.[MOQTypeSelectionTableDataResourceHours] m
-						INNER JOIN dbo.MoqTypeSelectionTableData s ON s.MoqTypeSelectionTableDataId = m.MoqTypeTableDataId
+						INNER JOIN dbo.MoqTypeSelectionTableData s ON s.MoqTypeSelectionTableDataId = m.MOQTypeSelectionTableDataId
 			WHERE m.BOEID = @BOEID
 			
 			DELETE FROM dbo.MOQTypeSelectionTableData
