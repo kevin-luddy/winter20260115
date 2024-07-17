@@ -184,15 +184,15 @@ SET NOCOUNT ON
 				INNER JOIN dbo.BOETaskElement TE ON s.TaskId = TE.BOETaskElementID
 			WHERE TE.BOEID = @BOEID
 
-			DELETE FROM dbo.[SkillMix]
-					FROM dbo.[SkillMix] sm
-						INNER JOIN dbo.MOQTypeSelection s ON s.MOQTypeSelectionId = sm.MOQTypeSelectionId
-			WHERE sm.BOEID = @BOEID
-
 			DELETE FROM dbo.[CommonDisclosureSkillMix]
 					FROM dbo.CommonDisclosureSkillMix cd
 						INNER JOIN dbo.MOQTypeSelection s ON s.MOQTypeSelectionId = cd.MOQTypeSelectionId
 			WHERE cd.BOEID = @BOEID
+
+			DELETE FROM dbo.[SkillMix]
+					FROM dbo.[SkillMix] sm
+						INNER JOIN dbo.MOQTypeSelection s ON s.MOQTypeSelectionId = sm.MOQTypeSelectionId
+			WHERE sm.BOEID = @BOEID
 
 			DELETE FROM dbo.MOQTypeSelection
 				FROM dbo.MOQTypeSelection s
