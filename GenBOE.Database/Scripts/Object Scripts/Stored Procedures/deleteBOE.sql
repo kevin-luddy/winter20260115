@@ -173,9 +173,8 @@ SET NOCOUNT ON
 						INNER JOIN BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId 
 					WHERE tE.BOEID = @BOEID
 			
-			DELETE FROM dbo.[MOQTypeSelectionTableDataResourceHours]
+			DELETE m
 					FROM dbo.[MOQTypeSelectionTableDataResourceHours] m
-						INNER JOIN dbo.MoqTypeSelectionTableData s ON s.MoqTypeSelectionTableDataId = m.MOQTypeSelectionTableDataId
 			WHERE m.BOEID = @BOEID
 			
 			DELETE FROM dbo.MOQTypeSelectionTableData
@@ -184,14 +183,12 @@ SET NOCOUNT ON
 				INNER JOIN dbo.BOETaskElement TE ON s.TaskId = TE.BOETaskElementID
 			WHERE TE.BOEID = @BOEID
 
-			DELETE FROM dbo.[CommonDisclosureSkillMix]
+			DELETE cd
 					FROM dbo.CommonDisclosureSkillMix cd
-						INNER JOIN dbo.MOQTypeSelection s ON s.MOQTypeSelectionId = cd.MOQTypeSelectionId
 			WHERE cd.BOEID = @BOEID
 
-			DELETE FROM dbo.[SkillMix]
+			DELETE sm
 					FROM dbo.[SkillMix] sm
-						INNER JOIN dbo.MOQTypeSelection s ON s.MOQTypeSelectionId = sm.MOQTypeSelectionId
 			WHERE sm.BOEID = @BOEID
 
 			DELETE FROM dbo.MOQTypeSelection
