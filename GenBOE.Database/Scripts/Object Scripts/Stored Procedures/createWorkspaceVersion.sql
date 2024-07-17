@@ -51,6 +51,7 @@ AS
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
+**		7/16/24		e405721				PROPH-2160: Update Create Workspace Version for Skill Mix, Common Disclosure Skill Mix and MOQ Type Selection Table Data Resource Hours
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -1128,6 +1129,7 @@ INNER JOIN dbo.BOE B ON BH.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 
+/** [dbo].[MOQTypeSelection] **/
 INSERT INTO [version].[MOQTypeSelection]
 ([MOQTypeSelectionId],
 [TaskId],
@@ -1166,6 +1168,7 @@ INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE W.WorkspaceID = @WorkspaceID
 
+/** [dbo].[MOQTypeSelectionTableData] **/
 INSERT INTO [version].[MOQTypeSelectionTableData]
 ([MOQTypeSelectionTableDataId],
 [MOQTypeSelectionId],
@@ -1208,6 +1211,96 @@ INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID
 INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
 WHERE W.WorkspaceID = @WorkspaceID
+
+/** [dbo].[SkillMix] **/
+INSERT INTO [version].[SkillMix]
+([SkillMixID],
+[Rationale],
+[Included],
+[ProposedHours],
+[HistoricalHours],
+[BOESkillMix],
+[LaborSkillMix],
+[ResourceOld],
+[ResourceNew],
+[BOETaskElementID],
+[BOEID],
+[MOQTypeSelectionID],
+[VersionId]
+)
+SELECT M.[SkillMixID],
+SM.[Rationale],
+SM.[Included],
+SM.[ProposedHours],
+SM.[HistoricalHours],
+SM.[BOESkillMix],
+SM.[ResourceOld],
+SM.[ResourceNew],
+SM.[BOETaskElementID],
+SM.[BOEID],
+SM.[MOQTypeSelectionID],
+@VersionID
+FROM [dbo].[SkillMix] SM
+INNER JOIN dbo.BOE B ON SM.BOEID = B.BOEID
+INNER JOIN dbo.[MOQTypeSelection] M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
+WHERE B.WorkspaceID = @WorkspaceID
+
+/** [dbo].[CommonDisclosureSkillMix] **/
+INSERT INTO [version].[CommonDisclosureSkillMix]
+([CommonDisclosureSkillMixID],
+[Rationale],
+[Included],
+[ProposedHours],
+[HistoricalHours],
+[BOESkillMix],
+[LaborSkillMix],
+[ResourceID],
+[BusinessResourceID],
+[BOEID],
+[BOETaskElementID],
+[MOQTypeSelectionID],
+[VersionId]
+)
+SELECT CD.[CommonDisclosureSkillMixID],
+CD.[Rationale],
+CD.[Included],
+CD.[ProposedHours],
+CD.[HistoricalHours],
+CD.[BOESkillMix],
+CD.[ResourceOld],
+CD.[ResourceNew],
+CD.[BOETaskElementID],
+CD.[BOEID],
+CD.[MOQTypeSelectionID],
+@VersionID
+FROM [dbo].[CommonDisclosureSkillMix] CD
+INNER JOIN dbo.BOE B ON CD.BOEID = B.BOEID
+INNER JOIN dbo.[MOQTypeSelection] M ON CD.MOQTypeSelectionID = M.MOQTypeSelectionID
+WHERE B.WorkspaceID = @WorkspaceID
+
+/** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
+INSERT INTO [version].[MOQTypeSelectionTableDataResourceHours]
+([MOQTypeSelectionTableDataResourceHoursId],
+[ResourceName],
+[WbsHours],
+[TotalHours],
+[MOQTypeSelectionTableDataId],
+[BOETaskElementID],
+[BOEID],
+[VersionId]
+)
+SELECT M.[MOQTypeSelectionTableDataResourceHoursId],
+M.[ResourceName],
+M.[WbsHours],
+M.[TotalHours],
+M.[MOQTypeSelectionTableDataId],
+M.[BOETaskElementID],
+M.[BOEID],
+@VersionID
+FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
+INNER JOIN dbo.BOE B ON M.BOEID = B.BOEID
+INNER JOIN dbo.[MOQTypeSelectionTableData] MOQ ON M.MOQTypeSelectionTableDataId = MOQ.MOQTypeSelectionTableDataId
+WHERE B.WorkspaceID = @WorkspaceID
 
 /*Updated for WI 8398*/
 INSERT INTO [version].[BOELaborType]
@@ -1324,8 +1417,8 @@ WHERE WS.WorkspaceID = @WorkspaceID
 INSERT INTO [version].[MoqTypeTableCustomFieldValueXREF] ([Id], [UpdateDT], [MoqTypeTableDataId], [CustomFieldValueId], [VersionID])
     SELECT x.[Id], x.[UpdateDT], x.[MoqTypeTableDataId], x.[CustomFieldValueId], @VersionID
 	  FROM [dbo].[MoqTypeTableCustomFieldValueXREF] x, MoqTypeSelectionTableData t, MoqTypeSelection mS, BoeTaskElement tE, dbo.BOE B
-	  WHERE 
-		t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
+	  WHERE
+		t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND mS.MoqTypeSelectionId = t.MoqTypeSelectionId
 		AND tE.BoeTaskElementId = mS.TaskId AND tE.BOEID = B.BOEID AND B.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[SumOfBOE_OrdinaryVariableXREF]
