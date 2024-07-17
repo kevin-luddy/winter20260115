@@ -999,6 +999,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			// Bool - Should the task increment?
 			// Int - The previous Business Resource Code ID
 			Tuple<bool, int> shouldTaskIncrementAndPrevID = Tuple.Create(true, 0);
+			int test = 1;
 			foreach (ResourceTypeDto resourceTypeEntry in taskResourcesEntriesForElementOfCost)
 			{
 				// ProjectMap only wants the task exported once whereas everyone else wants it 1:1 with the number of ResourceTypes inside it
@@ -1290,6 +1291,8 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						wsLevelData.PpDataToBeExported.TaskData.Add(newTaskRow.ToString());
 					}
+
+					test++;
 				}
 
 				previousResourceTypeId = resourceTypeEntry.Id;
