@@ -512,12 +512,12 @@
                                 <td>
                                     <div id="cd-labor-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
-                                <td>
+                                <td data-ng-class="{'inputError': item.Included == null }">
                                     <!-- when included is yes, refresh to get boe skill mix and proposed hours, will need some work to maintain selected value-->
-                                    <select class=" skill-mix-padding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
-                                        <option value="null"></option>
-                                        <option value="true">Yes</option>
-                                        <option value="false">No</option>
+                                    <select class="skill-mix-padding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)">
+                                        <option data-ng-value="null"></option>
+                                        <option data-ng-value="true">Yes</option>
+                                        <option data-ng-value="false">No</option>
                                     </select>
                                 </td>
                                 <td>
