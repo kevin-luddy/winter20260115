@@ -2625,7 +2625,6 @@ BEGIN
 			CD.[BOESkillMix],
 			CD.[LaborSkillMix],
 			CD.[ResourceID],
-			CD.[ResourceNew],
 			CD.[BusinessResourceID],
 			CD.[BOEID],
 			CD.[BOETaskElementID],
@@ -3218,5 +3217,3 @@ BEGIN
 	END CATCH
 END
 GO
-
-
