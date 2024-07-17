@@ -1422,9 +1422,9 @@ WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[MoqTypeTableCustomFieldValueXREF] ([Id], [UpdateDT], [MoqTypeTableDataId], [CustomFieldValueId], [VersionID])
     SELECT x.[Id], x.[UpdateDT], x.[MoqTypeTableDataId], x.[CustomFieldValueId], @VersionID
-	  FROM [dbo].[MoqTypeTableCustomFieldValueXREF] x, MoqTypeSelectionTableData t, MoqTypeSelection mS, BoeTaskElement tE, dbo.BOE B, dbo.SkillMix SM, dbo.[CommonDisclosureSkillMix] CD, dbo.[MOQTypeSelectionTableDataResourceHours] MOQ
-	  WHERE -- TODO Thomas: Look how to integrate 3 new tables here
-		t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
+	  FROM [dbo].[MoqTypeTableCustomFieldValueXREF] x, MoqTypeSelectionTableData t, MoqTypeSelection mS, BoeTaskElement tE, dbo.BOE B
+	  WHERE
+		t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND mS.MoqTypeSelectionId = t.MoqTypeSelectionId AND SM.MoqTypeSelectionId = mS.TypeSelectionId
 		AND tE.BoeTaskElementId = mS.TaskId AND tE.BOEID = B.BOEID AND B.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[SumOfBOE_OrdinaryVariableXREF]
