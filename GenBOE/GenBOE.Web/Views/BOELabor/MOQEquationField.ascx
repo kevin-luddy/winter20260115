@@ -495,7 +495,7 @@
                                 <th class="included">Included *</th>
                                 <th class="boe-skill-mix">BOE Skill Mix</th>
                                 <th class="proposed-hours">Proposed Hours</th>
-                                <th class="rationale">Rationale *</th>
+                                <th class="rationale">Rationale **</th>
                             </tr>
                         </thead>
                         <tbody>
