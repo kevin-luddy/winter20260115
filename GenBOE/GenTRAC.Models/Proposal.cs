@@ -103,6 +103,8 @@ namespace GenTRAC.Models
         public int CostVolumeToolID { get; set; }
         public string CostVolumeToolName { get; set; }
         public Nullable<bool> AdditionalClassification { get; set; }
+        public Nullable<int> ReasonCcopdNo { get; set; }
+        public string ReasonCcopdNoOther { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
@@ -145,5 +147,6 @@ namespace GenTRAC.Models
         public virtual ICollection<CostElementLU> CostElementLUs { get; set; }
         public virtual ContractActionTypeLU ContractActionTypeLU { get; set; }
         public virtual CostVolumeToolLU CostVolumeToolLU { get; set; }
+        public virtual CcopdReasonsNo CcopdReasonsNo { get; set; }
     }
 }

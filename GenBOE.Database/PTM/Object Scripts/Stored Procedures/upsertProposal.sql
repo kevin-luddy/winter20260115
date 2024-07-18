@@ -84,7 +84,9 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @ContractActionTypeOtherText VARCHAR(100) = NULL,
 	  @CostVolumeToolID int,
 	  @CostVolumeToolName VARCHAR(50),
-	  @AdditionalClassification BIT
+	  @AdditionalClassification BIT,
+	  @ReasonCcopdNo INT,
+	  @ReasonCcopdNoOther VARCHAR(100)
 )
 AS
 /******************************************************************************
@@ -124,6 +126,7 @@ AS
 **			7/19/2022	ranzalon				IES-1504 - Contract Action Type
 **			10/12/2022	ranzalon				IES-1933 - Cost Volume Tool
 **			7/9/23		Dusan					PROPH-1563 - Added an Additional Classification Column
+**			7/14/24		Dusan					PROPH-1559: Added reason for CCOPD = No
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -273,6 +276,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[CostVolumeToolID]
 		,[CostVolumeToolName]
 		,[AdditionalClassification]
+		,ReasonCcopdNo
+		,ReasonCcopdNoOther
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -345,6 +350,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@CostVolumeToolID
 		,@CostVolumeToolName
 		,@AdditionalClassification
+		,@ReasonCcopdNo
+		,@ReasonCcopdNoOther
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -451,6 +458,8 @@ ELSE
 						,[CostVolumeToolID] = @CostVolumeToolID
 						,[CostVolumeToolName] = @CostVolumeToolName
 						,[AdditionalClassification] = @AdditionalClassification
+						,ReasonCcopdNo = @ReasonCcopdNo
+						,ReasonCcopdNoOther = @ReasonCcopdNoOther
 						WHERE 
 							ProposalID = @ProposalID;
 

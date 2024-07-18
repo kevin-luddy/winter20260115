@@ -10,13 +10,22 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.model.insertWorkspaceModalOpen = false;
 
         $scope.newTableId = -1;
-        $scope.ResourceModels = BOEDetails.WSResources;
+		$scope.ResourceModels = BOEDetails.WSResources;
 
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
 			initializeWidget();
 
-			angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
+			// Updating ForEach call to make the call to calculate totals
+			angular.forEach($scope.model.SelectedMoqTypes.map(e => {
+				$scope.setSkillMixTotals(e);
+
+				if ($scope.model.CommonDisclosureEnabled) {
+					$scope.setCommonDisclosureTotals(e);
+				}
+
+				return e.SelectedMOQType.toString();
+			}), function (id) {
 				$scope.InitializeRteFields(id);
 			});
 
@@ -163,6 +172,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Adds MOQ Type to Selected MOQ Types (and removes it from the dropdown of available types)
 	$scope.AddMoqType = function () {
 		var selectedItem = $scope.model.selectedMOQType;
+		selectedItem.SkillMixTable = [];
+		selectedItem.CommonDisclosureTable = [];
+
 		selectedItem.Order = 2000;
 
 		$scope.model.SelectedMoqTypes.push(selectedItem);
@@ -240,6 +252,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Create New Table Data for the MOQ Type
 	$scope.CreateNewTable = function (tableDataArray) {
 		var newTable = {};
+		newTable.ResourceHours = [];
 		newTable.Id = $scope.newTableId--;
 		newTable.Order = 2000;
 
@@ -1383,8 +1396,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
 						moqType.SkillMixTable = response.data.data;
+
+						// Recalculate Totals for Skill Mix
+						$scope.setSkillMixTotals(moqType);
+
 						if ($scope.model.CommonDisclosureEnabled) {
 							$scope.refreshCommonDisclosureTable(moqType);
+
+							// Recalculate Totals for Common Disclosure Table
+							$scope.setCommonDisclosureTotals(moqType);
 						}
 					}
 				} else {
@@ -1428,6 +1448,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
 						moqType.CommonDisclosureTable = response.data.data;
+						$scope.setCommonDisclosureTotals(moqType);
 					}
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
@@ -1583,13 +1604,24 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	}
 
-	$scope.RefreshPoPMonths = function (popStart, popEnd) {
+	$scope.RefreshPoPMonths = function (popStart, popEnd, monthlySpace) {
+		if (!popStart || !popEnd) {
+			return '';
+		}
+
 		// Get the difference between the two dates in months (30.42 days), rounded to 2 decimals
-		return +(((popEnd.getTime() - popStart.getTime() + ((popStart.getTimezoneOffset() - popEnd.getTimezoneOffset()) * (60 * 1000))) / (1000 * 60 * 60 * 24)) / ManageTaskModel.PoPMonthsDivisor).toFixed(2);
+
+		// if Space & Monthly -> we need to add +1 month to the calculation, for the following reason:
+			// if it's March - March, it's supposed to be 1 month
+			// if it's March - April, it's supposed to be 2 months
+		// this doesn't apply to weekly, or RMS, as both of those are using actual dates, not just months
+		var additionalMonth = monthlySpace === true ? 1 : 0;
+
+		return +(((popEnd.getTime() - popStart.getTime() + ((popStart.getTimezoneOffset() - popEnd.getTimezoneOffset()) * (60 * 1000))) / (1000 * 60 * 60 * 24)) / ManageTaskModel.PoPMonthsDivisor).toFixed(2) + additionalMonth;
 	};
 
-	$scope.DateChanged = function (tableData) {
-		tableData.PoPMonthsString = $scope.RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd);
+	$scope.DateChanged = function (tableData, monthlySpace) {
+		tableData.PoPMonthsString = $scope.RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd, monthlySpace);
 		$scope.SetTableDirty(tableData);
 	}
 
@@ -1684,9 +1716,41 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         if (input === undefined || (typeof input === 'string' && (input.length === 0
             || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
             item.IsResourceValid = false;
-        }
+		}
         return item.IsResourceValid;
-    }
+	}
+
+	$scope.setSkillMixTotals = function (moqType) {
+		// Reset Totals because this method can be called multiple times from multiple areas
+		moqType.HistoricalSkillMixHoursTotal = 0;
+		moqType.LaborSkillMixTotal = 0;
+		moqType.BoeSkillMixTotal = 0;
+		moqType.ProposedSkillMixHoursTotal = 0;
+
+		moqType.SkillMixTable.forEach(item => {
+			// Set Skill Mix Totals
+			moqType.HistoricalSkillMixHoursTotal += item.HistoricalHours;
+			moqType.LaborSkillMixTotal += item.LaborSkillMix;
+			moqType.BoeSkillMixTotal += item.BOESkillMix;
+			moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
+		});
+	}
+
+	$scope.setCommonDisclosureTotals = function (moqType) {
+		// Reset Totals because this method can be called multiple times from multiple areas
+		moqType.HistoricalCommonDisclosureHoursTotal = 0;
+		moqType.LaborCommonDisclosureTotal = 0;
+		moqType.BoeCommonDisclosureTotal = 0;
+		moqType.ProposedCommonDisclosureHoursTotal = 0;
+
+		moqType.CommonDisclosureTable.forEach(item => {
+			// Set Skill Mix Totals
+			moqType.HistoricalCommonDisclosureHoursTotal += item.HistoricalHours;
+			moqType.LaborCommonDisclosureTotal += item.LaborSkillMix;
+			moqType.BoeCommonDisclosureTotal += item.BOESkillMix;
+			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
+		});
+	}
 
     $scope.resourceSelected = function (item, model) {
         $scope.setDirty();

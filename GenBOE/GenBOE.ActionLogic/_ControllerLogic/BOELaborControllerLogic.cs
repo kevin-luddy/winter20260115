@@ -4063,7 +4063,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 							newData.Rationale = currentData.Rationale;
 
-							if (newData.Included)
+							if (newData.Included.HasValue && newData.Included.Value)
 							{
 								newData.BOESkillMix = currentData.BOESkillMix;
 								newData.ProposedHours = currentData.ProposedHours;
@@ -4091,7 +4091,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included))
+				//decimal totalHours = resourceHours.Sum(n => n.TotalHours);
+				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value))
 				{
 					//TODO: BRCs when sap is hooked up
 					newTable.Add(
@@ -4109,6 +4110,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					foreach (CommonDisclosureModelView currentData in commonDisclosureSMData)
 					{
+						if (string.IsNullOrEmpty(currentData.BusinessResourceID))
+						{
+							currentData.BusinessResourceID = string.Empty;
+						}
+
 						CommonDisclosureModelView newData;
 						newData = newTable.FirstOrDefault(s => s.ResourceID == currentData.ResourceID && s.BusinessResourceID == currentData.BusinessResourceID);
 
@@ -4121,7 +4127,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							newData.IsUserInput = currentData.IsUserInput;
 
 							newData.Rationale = currentData.Rationale;
-							if (newData.Included)
+							if (newData.Included.HasValue && newData.Included.Value)
 							{
 								newData.BOESkillMix = currentData.BOESkillMix;
 								newData.ProposedHours = currentData.ProposedHours;

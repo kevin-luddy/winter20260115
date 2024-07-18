@@ -43,6 +43,7 @@ AS
 **		10/13/2022	RJ					IES-1933 Cost Volume Tool
 **		02/22/23	ranzalon			Add CustomerDueDate
 **		7/10/23		Dusan				PROPH-1563: Add AdditionalClassification field
+**		7/14/24		Dusan				PROPH-1559: Added reason for CCOPD = No
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -341,6 +342,8 @@ SELECT V.[ProposalID]
 			WHEN 0 THEN 'No'
 			ELSE NULL
 			END
+	,V.ReasonCcopdNo
+	,V.ReasonCcopdNoOther
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(

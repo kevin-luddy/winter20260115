@@ -12,22 +12,18 @@ namespace GenTRAC.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class CageCode
+    public partial class CcopdReasonsNo
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public CageCode()
+        public CcopdReasonsNo()
         {
-            this.ProposalContractsDatas = new HashSet<ProposalContractsData>();
+            this.Proposals = new HashSet<Proposal>();
         }
     
-        public string CageCode1 { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public string Zip { get; set; }
+        public int Id { get; set; }
+        public string Text { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ProposalContractsData> ProposalContractsDatas { get; set; }
+        public virtual ICollection<Proposal> Proposals { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace GenBOE.Dtos
 		{
 			this.CommonDisclosureSkillMixID = -1;
 			this.Rationale = String.Empty;
-			this.Included = false;
+			this.Included = null;
 			this.ProposedHours = 0;
 			this.HistoricalHours = 0;
 			this.BOESkillMix = 0;
@@ -46,7 +46,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// User input to determine if BOE Skill Mix is included
 		/// </summary>
-		public bool Included { get; set; }
+		public bool? Included { get; set; }
 		/// <summary>
 		/// Proposed hours to match related Skill Mix equation
 		/// </summary>
