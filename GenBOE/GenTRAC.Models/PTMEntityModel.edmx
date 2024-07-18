@@ -1797,6 +1797,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="CostVolumeToolID" Type="int" Mode="In" />
           <Parameter Name="CostVolumeToolName" Type="varchar" Mode="In" />
           <Parameter Name="AdditionalClassification" Type="bit" Mode="In" />
+          <Parameter Name="ReasonCcopdNo" Type="int" Mode="In" />
+          <Parameter Name="ReasonCcopdNoOther" Type="varchar" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -3163,6 +3165,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="CostVolumeToolID" Mode="In" Type="Int32" />
             <Parameter Name="CostVolumeToolName" Mode="In" Type="String" />
             <Parameter Name="AdditionalClassification" Mode="In" Type="Boolean" />
+            <Parameter Name="ReasonCcopdNo" Mode="In" Type="Int32" />
+            <Parameter Name="ReasonCcopdNoOther" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
