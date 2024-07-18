@@ -426,11 +426,11 @@ using IES.Common;
 		/// <summary>
 		/// When CCOPD = no, a reason needs to be provided
 		/// </summary>
-		public CcopdOptionalReason? CcopdNoReason { get; set; } = CcopdOptionalReason.Other;
+		public CcopdOptionalReason? CcopdNoReason { get; set; }
 
 		/// <summary>
 		/// When CCOPD = no, and reason is selected as other, this is the text for it
 		/// </summary>
-		public string CcopdNoOtherReason { get; set; } = "because I said so";
+		public string CcopdNoOtherReason { get; set; }
 	}
 }
