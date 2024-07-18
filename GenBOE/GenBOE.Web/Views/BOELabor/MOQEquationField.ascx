@@ -48,7 +48,7 @@
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
-        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
+		CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -472,6 +472,26 @@
                                     </div>
                                 </td>
                             </tr>
+							<tr>
+								<td>
+									<div class="skill-mix-totals">Total</div>
+								</td>
+								<td data-ng-show="model.IsRMS"></td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalSkillMixHoursTotal }}</div>
+								</td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborSkillMixTotal * 100 | number: 2 }}%</div>
+								</td>
+								<td></td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeSkillMixTotal * 100 | number: 2 }}%</div>
+								</td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.ProposedSkillMixHoursTotal }}</div>
+								</td>
+								<td></td>
+							</tr>
                         </tbody>
                     </table>
                 </div>
@@ -495,7 +515,7 @@
                                 <th class="included">Included *</th>
                                 <th class="boe-skill-mix">BOE Skill Mix</th>
                                 <th class="proposed-hours">Proposed Hours</th>
-                                <th class="rationale">Rationale *</th>
+                                <th class="rationale">Rationale **</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -512,12 +532,12 @@
                                 <td>
                                     <div id="cd-labor-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
                                 </td>
-                                <td>
+                                <td data-ng-class="{'inputError': item.Included == null }">
                                     <!-- when included is yes, refresh to get boe skill mix and proposed hours, will need some work to maintain selected value-->
-                                    <select class=" skill-mix-padding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)"
-                                        <option value="null"></option>
-                                        <option value="true">Yes</option>
-                                        <option value="false">No</option>
+                                    <select class="skill-mix-padding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)">
+                                        <option data-ng-value="null"></option>
+                                        <option data-ng-value="true">Yes</option>
+                                        <option data-ng-value="false">No</option>
                                     </select>
                                 </td>
                                 <td>
@@ -532,6 +552,26 @@
                                     </div>
                                 </td>									
                             </tr>
+							<tr>
+								<td>
+									<div title="Total">Total</div>
+								</td>
+								<td></td>	
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal }}</div>
+								</td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborCommonDisclosureTotal * 100 | number: 2 }}%</div>
+								</td>
+								<td></td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeCommonDisclosureTotal * 100 | number: 2 }}%</div>
+								</td>
+								<td>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.ProposedCommonDisclosureHoursTotal }}</div>
+								</td>
+								<td></td>									
+							</tr>
                         </tbody>
                     </table>
                 </div>

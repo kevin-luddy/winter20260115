@@ -107,6 +107,9 @@
     <Compile Include="CannedResponsesPAR.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CcopdReasonsNo.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ChecklistTypeLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>

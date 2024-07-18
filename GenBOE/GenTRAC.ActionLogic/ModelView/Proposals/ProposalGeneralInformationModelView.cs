@@ -166,6 +166,22 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 		public bool? AdditionalClassification { get; set; }
 
 		/// <summary>
+		/// When CCOPD = no, a reason needs to be provided
+		/// </summary>
+		public CcopdOptionalReason? CcopdNoReason { get; set; }
+
+		/// <summary>
+		/// When CCOPD = no, and reason is selected as other, this is the text for it
+		/// </summary>
+		[StringLength(50)]
+		public string CcopdNoOtherReason { get; set; }
+
+		/// <summary>
+		/// List of CCOPD = No reasons
+		/// </summary>
+		public ICollection<SelectListItem> ReasonsForCcopdBeingNo { get; set; }
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		public ProposalGeneralInformationModelView()

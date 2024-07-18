@@ -1449,4 +1449,40 @@ namespace IES.Common
 		[Description("Other ")]
 		Other = 6
 	}
+
+	/// <summary>
+	/// When CCOPD = false, the user will select the reason for why it's false
+	/// </summary>
+	public enum CcopdOptionalReason
+	{
+		/// <summary>
+		/// Commercial Item Exception applies
+		/// </summary>
+		[Description("Commercial Item Exception applies")]
+		CommercialException = 1,
+
+		/// <summary>
+		/// Adequate Price Competition Exception applies
+		/// </summary>
+		[Description("Adequate Price Competition Exception applies")]
+		PriceException = 2,
+
+		/// <summary>
+		/// less than CCoPD Threshold Exception applies
+		/// </summary>
+		[Description("< CCoPD Threshold Exception applies")]
+		ThresholdException = 3,
+
+		/// <summary>
+		/// Other Transaction Authority (OTA) (non-FAR based)
+		/// </summary>
+		[Description("Other Transaction Authority (OTA) (non-FAR based)")]
+		Ota = 4,
+
+		/// <summary>
+		/// Other Exception applies (explain)
+		/// </summary>
+		[Description("Other Exception applies (explain)")]
+		Other = 5
+	}
 }

@@ -4,6 +4,14 @@
  }
 
 <script type="text/javascript">
+    // CCOPD Reason changed -> will show / hide the other text box
+    CcopdReasonChanged = function () {
+        if ($('#CcopdNoReason').val() == @CcopdOptionalReason.Other.GetNullableIntValue()) {
+            $('#CcopdNoOtherReason').show();
+        } else {
+            $('#CcopdNoOtherReason').val('').hide();
+        }
+    }
 
     var ProposalGeneralInformationWidget;
 
@@ -75,6 +83,7 @@
             ProposalGeneralInformationWidget.getElement('select[name=ProgramArea]').next('.replacedWidgetText').html('@Model.ProgramAreaSelectedText');
             ProposalGeneralInformationWidget.getElement('select[name=ProposalLocation]').next('.replacedWidgetText').html('@Model.ProposalLocation.GetDescription()');
             ProposalGeneralInformationWidget.getElement('select[name=PricingTool]').next('.replacedWidgetText').html('@Model.PricingTool.GetDescription()');
+
             if ('@Model.PricingTool.GetDescription()' == '@PricingTool.Other') {
                 ProposalGeneralInformationWidget.getElement('#PricingToolName').after('<div class="replacedWidgetText">' + '@Model.PricingToolName' + '</div>');
             }
@@ -126,6 +135,14 @@
             $('#CostVolumeToolName').val('@Model.CostVolumeToolName');
         };
 
+        $('#CcopdNoOtherReason').val('@Model.CcopdNoOtherReason');
+        if ('@Model.IsCCPDRequired'.isTrue()) {
+            $('#CcopdNoReasonOuter').hide();
+        }
+        else {
+            $('#CcopdNoReasonOuter').show();
+        }
+
         // Define functionality based on whether or not we are displaying new (PTM) or old (GenTRAC) checklists
         if (isPTMChecklistUIEnabled) {
             // If and only if CCPDRequired question is set to No, hide PPR and PAR Document sections
@@ -139,6 +156,8 @@
             };
 
             ProposalGeneralInformationWidget.ConfirmCCPDRequiredQuestionChange = function () {
+                $('#CcopdNoReasonOuter').show();
+                $('#CcopdNoOtherReason').hide();
                 $(document).trigger("CCOPD_SET_TO_NO");
             };
 
@@ -153,8 +172,13 @@
         }
 
         ProposalGeneralInformationWidget.ValidateCCPDRequiredYes = function () {
+            $('#CcopdNoReasonOuter').hide();
+            $('#CcopdNoReason').val('');
+            $('#CcopdNoOtherReason').val('');
             $(document).trigger("CCOPD_SET_TO_YES");
         };
+
+        CcopdReasonChanged();
     });
 
     // Toggle show/hide the text boxes
@@ -269,32 +293,45 @@
                     </div>
                 </div>
             </div>
-            <div class="form-row">
+
+            <div class="form-row" data-proposal-type="standard" id="CcopdNoReasonOuter">
                 <div class="form-label">
-                    <span helptext="Select “Yes” if the Cost Volume is classified for this proposal. Otherwise, select “No”.">Is the Cost Volume for this proposal Classified?*:</span>
+                    Please provide reason why CCoPD is not required: *
                 </div>
                 <div class="form-element">
-                    <div>
-                        <label for="IsCostVolumeClassified-Yes">Yes</label>
-                        <input type="radio" class="radio" id="IsCostVolumeClassified-Yes" onchange="ClassificationChanged(true)" value="true" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
-                        <label for="IsCCPDClassified-No">No</label>
-                        <input type="radio" class="radio" id="IsCostVolumeClassified-No" onchange="ClassificationChanged(false)" value="false" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && !Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
-                    </div>
-                </div>
-            </div>
-            <div class="form-row" id="AdditionalClassificationField">
-                <div class="form-label">
-                    <span helptext="Select “Yes” if a higher level of classification is required. Otherwise, select “No”.">Higher level clearance required beyond standard clearance requirements?*:</span>
+                    @Html.DropDownListFor(model => model.CcopdNoReason, Model.ReasonsForCcopdBeingNo, new { maxlength = 100, @class = "selection-width", @name = "CcopdNoReason", @onchange= "CcopdReasonChanged()" })
                 </div>
                 <div class="form-element">
-                    <div>
-                        <label for="AdditionalClassification-Yes">Yes</label>
-                        <input type="radio" class="radio" id="AdditionalClassification-Yes" value="true" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && Model.AdditionalClassification.Value) { <text> checked</text>} />
-                        <label for="AdditionalClassification-No">No</label>
-                        <input type="radio" class="radio" id="AdditionalClassification-No" value="false" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && !Model.AdditionalClassification.Value) { <text> checked</text>} />
-                    </div>
+                    <input class="free-text" id="CcopdNoOtherReason" name="CcopdNoOtherReason" type="text" maxlength="50" />
                 </div>
             </div>
-        }
+
+    <div class="form-row">
+        <div class="form-label">
+            <span helptext="Select “Yes” if the Cost Volume is classified for this proposal. Otherwise, select “No”.">Is the Cost Volume for this proposal Classified?*:</span>
+        </div>
+        <div class="form-element">
+            <div>
+                <label for="IsCostVolumeClassified-Yes">Yes</label>
+                <input type="radio" class="radio" id="IsCostVolumeClassified-Yes" onchange="ClassificationChanged(true)" value="true" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
+                <label for="IsCCPDClassified-No">No</label>
+                <input type="radio" class="radio" id="IsCostVolumeClassified-No" onchange="ClassificationChanged(false)" value="false" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && !Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
+            </div>
+        </div>
+    </div>
+    <div class="form-row" id="AdditionalClassificationField">
+        <div class="form-label">
+            <span helptext="Select “Yes” if a higher level of classification is required. Otherwise, select “No”.">Higher level clearance required beyond standard clearance requirements?*:</span>
+        </div>
+        <div class="form-element">
+            <div>
+                <label for="AdditionalClassification-Yes">Yes</label>
+                <input type="radio" class="radio" id="AdditionalClassification-Yes" value="true" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && Model.AdditionalClassification.Value) { <text> checked</text>} />
+                <label for="AdditionalClassification-No">No</label>
+                <input type="radio" class="radio" id="AdditionalClassification-No" value="false" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && !Model.AdditionalClassification.Value) { <text> checked</text>} />
+            </div>
+        </div>
+    </div>
+}
     </div>
 </div>

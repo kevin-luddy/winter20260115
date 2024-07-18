@@ -216,20 +216,15 @@ BEGIN
 				INNER JOIN BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId 
 				INNER JOIN dbo.BOE B ON tE.BOEID = B.BOEID
 			WHERE B.WorkspaceId = @WorkspaceId
+		DELETE FROM [dbo].[MOQTypeSelectionTableDataResourceHours]
+			FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
+			INNER JOIN dbo.BOE B ON M.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[MOQTypeSelectionTableData]
 			FROM [dbo].[MOQTypeSelectionTableData] TD
 			INNER JOIN [dbo].[MOQTypeSelection] M ON TD.MOQTypeSelectionId = M.MOQTypeSelectionId
 			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
 			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
-			WHERE B.WorkspaceID = @WorkspaceID
-		DELETE FROM [dbo].[MOQTypeSelection]
-			FROM [dbo].[MOQTypeSelection] M
-			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
-			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
-			WHERE B.WorkspaceID = @WorkspaceID
-		DELETE FROM [dbo].[MOQTypeSelectionTableDataResourceHours]
-			FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
-			INNER JOIN dbo.BOE B ON M.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[CommonDisclosureSkillMix]
 			FROM [dbo].[CommonDisclosureSkillMix] CD
@@ -238,6 +233,11 @@ BEGIN
 		DELETE FROM [dbo].[SkillMix]
 			FROM [dbo].[SkillMix] SM
 			INNER JOIN dbo.BOE B ON SM.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
+		DELETE FROM [dbo].[MOQTypeSelection]
+			FROM [dbo].[MOQTypeSelection] M
+			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[BOETaskElement]
 			FROM [dbo].[BOETaskElement] BTE
@@ -2625,7 +2625,6 @@ BEGIN
 			CD.[BOESkillMix],
 			CD.[LaborSkillMix],
 			CD.[ResourceID],
-			CD.[ResourceNew],
 			CD.[BusinessResourceID],
 			CD.[BOEID],
 			CD.[BOETaskElementID],
@@ -3218,5 +3217,3 @@ BEGIN
 	END CATCH
 END
 GO
-
-
