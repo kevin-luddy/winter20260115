@@ -428,7 +428,8 @@ namespace GenBOE.ActionLogic.IO.Export
 					// do not export to ProPricer if task doesn't have any total hours or cost or if there no offsets
 					if (boeTask.TotalHours != 0 || boeTask.TotalCost != 0 || offloading || boeTask.taskElementLabors.Any(l => l.ValueSpread != 0))
 					{
-						List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value)).ToList();
+						List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => (r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value))
+							|| (r.BusinessResourceCodeID.HasValue && resourceIDs.Contains(r.BusinessResourceCodeID.Value))).ToList();
 						if (Utilities.IsBRCEnabledForSystem)
 						{
 							//clone resources with brc
@@ -455,7 +456,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				// the data within the BOE Task Element will be part of the Resource Cost/Hours file
 				foreach (BoeTaskElementDTO boeTask in taskElements)
 				{
-					List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value)).ToList();
+					List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => (r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value))
+						|| (r.BusinessResourceCodeID.HasValue && resourceIDs.Contains(r.BusinessResourceCodeID.Value))).ToList();
 					if (!Utilities.IsBRCEnabledForSystem && has1LMXResources)
 					{
 						taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
