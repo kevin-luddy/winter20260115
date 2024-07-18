@@ -41,6 +41,7 @@ AS
 **		11/18/2021  e405721				IES-528: Process Soft Delete is Failing
 **		12/6/2021	Dusan				IES-666: Issue w/ order of deletions, failing due to FK constraints w/ MoqTypeTableCustomFieldValueXREF
 **		10/04/2023	hrafiqzadah			PROPH-1031: Update to delete from ProjectMapSpread
+**		7/18/2024	e405721				PROPH-2165: Update Delete Full Workspace for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
 *******************************************************************************/
 SET NOCOUNT ON 
 	IF @WorkspaceID IS NULL
@@ -146,6 +147,10 @@ SET NOCOUNT ON
 				INNER JOIN BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId 
 				INNER JOIN dbo.BOE B ON tE.BOEID = B.BOEID
 				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+		DELETE FROM dbo.[MOQTypeSelectionTableDataResourceHours]
+			FROM dbo.[MOQTypeSelectionTableDataResourceHours] M
+			INNER JOIN dbo.BOE B ON M.BOEID = B.BOEID
+			INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 		DELETE FROM dbo.MOQTypeSelectionTableData
 			FROM dbo.MOQTypeSelectionTableData TD
 				INNER JOIN dbo.MOQTypeSelection M on TD.MOQTypeSelectionId = M.MOQTypeSelectionId
@@ -187,6 +192,14 @@ SET NOCOUNT ON
 				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
 				INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
 				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+		DELETE FROM dbo.[CommonDisclosureSkillMix]
+			FROM dbo.[CommonDisclosureSkillMix] CD
+			INNER JOIN dbo.BOE B ON CD.BOEID = B.BOEID
+			INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+		DELETE FROM dbo.[SkillMix]
+			FROM dbo.[SkillMix] SM
+			INNER JOIN dbo.BOE B ON SM.BOEID = B.BOEID
+			INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 		DELETE FROM dbo.MOQTypeSelection
 			FROM dbo.MOQTypeSelection M
 				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
