@@ -28,7 +28,6 @@
 		/// <param name="secondarySortBy">Secondary sort by field</param>
 		/// <param name="usingTemplateBoe">Whether Workspace is using Template BOE</param>
 		/// <param name="usingSkillMixTables">Whether Workspace is using Skill Mix Tables</param>
-		/// <param name="usingSkillMixTables">Whether Workspace is using Skill Mix Tables</param>
 		public CustomReportSelectorModelView(string workspaceName, ICollection<BoeCustomReportBoeData> allBoeData, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy, bool usingTemplateBoe, bool usingSkillMixTables)
         {
             this.WorkspaceName = workspaceName;

@@ -39,46 +39,82 @@ namespace GenBOE.Dtos
 		/// Primary Key
 		/// </summary>
 		public int CommonDisclosureSkillMixID { get; set; }
+
 		/// <summary>
 		/// User rationale
 		/// </summary>
 		public string Rationale { get; set; }
+
 		/// <summary>
 		/// User input to determine if BOE Skill Mix is included
 		/// </summary>
 		public bool? Included { get; set; }
+
+		/// <summary>
+		/// Get "Yes" or "No" string for Included, or an empty string if null
+		/// </summary>
+		public string IncludedString
+		{
+			get
+			{
+				if (Included.HasValue)
+				{
+					if (Included.Value)
+					{
+						return "Yes";
+					}
+					else
+					{
+						return "No";
+					}
+				}
+				else
+				{
+					return string.Empty;
+				}
+			}
+		}
+
 		/// <summary>
 		/// Proposed hours to match related Skill Mix equation
 		/// </summary>
 		public decimal ProposedHours { get; set; }
+
 		/// <summary>
 		/// Historical hours to match related Skill Mix equation
 		/// </summary>
 		public decimal HistoricalHours { get; set; }
+
 		/// <summary>
 		/// BOE SKill Mix percentage
 		/// </summary>
 		public decimal BOESkillMix { get; set; }
+
 		/// <summary>
 		/// Labor Skill Mix percentage
 		/// </summary>
 		public decimal LaborSkillMix { get; set; }
+
 		/// <summary>
 		/// Resource ID matching related row in Skill Mix table if included is yes
 		/// </summary>
 		public string ResourceID { get; set; }
+
 		/// <summary>
 		/// BRC ID; Resource ID can have many
 		/// </summary>
 		public string BusinessResourceID { get; set; }
+
 		/// <summary>
 		/// Foreign Key to BOE table
 		/// </summary>
 		public int BOEID { get; set; }
+
 		/// <summary>
 		/// Foreign Key to BOETaskElement table
 		/// </summary>
 		public int BOETaskElementID { get; set; }
+
 		/// <summary>
 		/// foreign key to moq type (historical or comparative)
 		/// </summary>

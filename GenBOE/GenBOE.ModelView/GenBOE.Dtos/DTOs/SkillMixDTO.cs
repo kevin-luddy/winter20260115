@@ -44,6 +44,31 @@
 		public bool? Included { get; set; }
 
 		/// <summary>
+		/// Get "Yes" or "No" string for Included, or an empty string if null
+		/// </summary>
+		public string IncludedString
+		{
+			get
+			{
+				if (Included.HasValue)
+				{
+					if (Included.Value)
+					{
+						return "Yes";
+					}
+					else
+					{
+						return "No";
+					}
+				}
+				else
+				{
+					return string.Empty;
+				}
+			}
+		}
+
+		/// <summary>
 		/// User/Calculated Hours of proposed percents
 		/// </summary>
 		public decimal ProposedHours { get; set; }
