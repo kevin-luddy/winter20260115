@@ -37,6 +37,7 @@ AS
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 **		10/29/20	Dusan				BOEJ-4924 - MOQ Type Selection data
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		7/17/2024	e405721				PROPH-2163: Update for Skill Mix, Common Disclosure Skill Mix, MOQ Type Selection Table Data Resource Hours
 *****************************************************************************/
 SET NOCOUNT ON 
 
@@ -172,11 +173,23 @@ SET NOCOUNT ON
 						INNER JOIN BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId 
 					WHERE tE.BOEID = @BOEID
 			
+			DELETE m
+					FROM dbo.[MOQTypeSelectionTableDataResourceHours] m
+			WHERE m.BOEID = @BOEID
+			
 			DELETE FROM dbo.MOQTypeSelectionTableData
 				FROM dbo.MOQTypeSelectionTableData t
 				INNER JOIN dbo.MOQTypeSelection s ON s.MOQTypeSelectionId = t.MOQTypeSelectionId
 				INNER JOIN dbo.BOETaskElement TE ON s.TaskId = TE.BOETaskElementID
 			WHERE TE.BOEID = @BOEID
+
+			DELETE cd
+					FROM dbo.CommonDisclosureSkillMix cd
+			WHERE cd.BOEID = @BOEID
+
+			DELETE sm
+					FROM dbo.[SkillMix] sm
+			WHERE sm.BOEID = @BOEID
 
 			DELETE FROM dbo.MOQTypeSelection
 				FROM dbo.MOQTypeSelection s
