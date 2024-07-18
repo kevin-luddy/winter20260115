@@ -196,9 +196,9 @@
 <div id="checklistGeneralInformationSection" class="composite module expanded full">
     <div class="module-header-data">General Information</div>
     <div class="module-content-data expanded-content">
-       @using(Html.BeginForm("", "", FormMethod.Post, new { id=GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_GENERAL_INFO_FORM, name=GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_GENERAL_INFO_FORM}))
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_GENERAL_INFO_FORM, name = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_GENERAL_INFO_FORM }))
         {
-            <input name="ProposalID" value="@Model.ProposalID" type="hidden"/>
+            <input name="ProposalID" value="@Model.ProposalID" type="hidden" />
             <input name="ProposalChecklistID" value="@Model.ProposalChecklistID" type="hidden" />
             <input name="UpdateDateLong" value="@Model.UpdateDateLong" type="hidden" />
             <input name="PricerId" value="@Model.PricerId" type="hidden" />
@@ -209,14 +209,14 @@
                     <span helptext="@SubmittedValueHelpText">Submitted Value ($)*:</span>
                 </div>
                 <div class="form-element" style="max-width:177px;">
-                     <div>@Html.TextBoxFor(model => model.SubmittedValue, new { size = 15, name = "SubmittedValue", maxInt = 12, numDecimals = 0 })</div>
+                    <div>@Html.TextBoxFor(model => model.SubmittedValue, new { size = 15, name = "SubmittedValue", maxInt = 12, numDecimals = 0 })</div>
                 </div>
 
-                 <div class="second-form-label">
+                <div class="second-form-label">
                     <span helptext="Lead Estimator is set on the Proposal Setup Tab (Approvals section).">Lead Estimator:</span>
                 </div>
                 <div class="form-element">
-                  <div id="ChecklistGeneralInfoPricerDisplayName">@Html.DisplayTextFor(model => model.PricerDisplayName)</div>
+                    <div id="ChecklistGeneralInfoPricerDisplayName">@Html.DisplayTextFor(model => model.PricerDisplayName)</div>
                 </div>
             </div>
             <div class="form-row">
@@ -228,25 +228,40 @@
                 </div>
             </div>
 
-                <div class="form-row">
-                    <div class="form-label">
-                        <span>Date Estimating Submits to Contracts*:</span>
-                    </div>
-                    <div class="form-element">
-                        <input name="EstimatingSubmitsToContractsDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.EstimatingSubmitsToContractsDate" />
-                    </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span>Date Estimating Submits to Contracts*:</span>
                 </div>
-                <div class="form-row">
-                    <div id="deliverChecklistDFARQuestion" class="form-label">
-                        DFARS Checklist is Deliverable to Customer:
-                        <span helptext="Selecting will enable page number validation, requiring the DFARS page number field to be populated. Failing to populate the page number field will trigger an error message."></span>
-                    </div>
-                    <div id="deliverChecklistDFARRadio" class="form-element">
-                        <input id="DeliverChecklistDFARS" name="DeliverChecklistDFARS" type="checkbox" style="margin-top:3px" value="true" onclick="ChecklistGeneralInformationWidget.UpdateDeliverChecklistDFAR(this);" />
-                    </div>
+                <div class="form-element">
+                    <input name="EstimatingSubmitsToContractsDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.EstimatingSubmitsToContractsDate" />
                 </div>
-                }
             </div>
+
+            @if (Model.ShowIncludeInternationalCosts)
+            { 
+            <div class="form-row">
+                <div class="form-label">
+                    <span>Does this proposal include international costs estimated by Global Mobility?</span>
+                </div>
+                <div class="form-element">
+                    <label for="IncludeInternationalCosts-Yes">Yes</label>
+                    <input type="radio" class="radio" id="IncludeInternationalCosts-Yes" value="true" name="IncludeInternationalCosts" @if (Model.ProposalID > 0 && Model.IncludeInternationalCosts.HasValue && Model.IncludeInternationalCosts.Value) { <text> checked</text> } />
+                    <label for="IncludeInternationalCosts-No">No</label>
+                    <input type="radio" class="radio" id="IncludeInternationalCosts-No" value="false" name="IncludeInternationalCosts" @if (Model.ProposalID > 0 && Model.IncludeInternationalCosts.HasValue && !Model.IncludeInternationalCosts.Value) { <text> checked</text> } />
+                </div>
+            </div>
+            }
+            <div class="form-row">
+                <div id="deliverChecklistDFARQuestion" class="form-label">
+                    DFARS Checklist is Deliverable to Customer:
+                    <span helptext="Selecting will enable page number validation, requiring the DFARS page number field to be populated. Failing to populate the page number field will trigger an error message."></span>
+                </div>
+                <div id="deliverChecklistDFARRadio" class="form-element">
+                    <input id="DeliverChecklistDFARS" name="DeliverChecklistDFARS" type="checkbox" style="margin-top:3px" value="true" onclick="ChecklistGeneralInformationWidget.UpdateDeliverChecklistDFAR(this);" />
+                </div>
+            </div>
+        }
+    </div>
     <div id="UpdateDeliverChecklistDFARDialog" class="ui-dialog-content ui-widget-content">
          @using (Html.BeginForm("", "", FormMethod.Post, new { name = "deliverChecklistDFARForm", id = "deliverChecklistDFARForm" }))
         {       

@@ -316,7 +316,7 @@ namespace GenTRAC.Tests.DAL
             int numProperties = dtoType.GetProperties().Count();
 
             // 3 properties we can't test (primary key, update date, updatable), plus response type, and save info, plus the ones below 
-            Assert.AreEqual(UNTESTABLE_PROPERTIES + 3 + 19, numProperties, "Untested properties exist in the DTO.");
+            Assert.AreEqual(UNTESTABLE_PROPERTIES + 3 + 20, numProperties, "Untested properties exist in the DTO.");
 
             Assert.AreEqual(expectedResult.LMLaborHrs, actualResult.LMLaborHrs);
             Assert.AreEqual(expectedResult.LMLaborCost, actualResult.LMLaborCost);
@@ -348,6 +348,7 @@ namespace GenTRAC.Tests.DAL
 
             AssertChecklistResponses(expectedResult.PARResponses, actualResult.PARResponses);
             AssertChecklistResponses(expectedResult.PPRResponses, actualResult.PPRResponses);
+			Assert.AreEqual(expectedResult.IncludeInternationalCosts, actualResult.IncludeInternationalCosts);
 
             // test primary key
             Assert.AreEqual(expectedResult.Id, expectedResult.GetPrimaryKeyID());

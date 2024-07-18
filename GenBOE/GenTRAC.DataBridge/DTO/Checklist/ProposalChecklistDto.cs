@@ -149,5 +149,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Whether this is a save or a submit
         /// </summary>
         public bool IsSubmit { get; set; }
-    }
+
+		/// <summary>
+		/// Does this proposal include international costs estimated by Global Mobility?
+		/// </summary>
+		public bool? IncludeInternationalCosts { get; set; }
+	}
 }
