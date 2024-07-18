@@ -9,11 +9,11 @@ namespace GenTRAC.DataBridge.DTO
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using IES.Common;
+using IES.Common;
 
-    /// <summary>
-    /// Proposal Dto Class
-    /// </summary>
+/// <summary>
+/// Proposal Dto Class
+/// </summary>
     [Serializable]
     public class ProposalDto : IES.Common.UpdateableDTO, IES.Common.Interfaces.ICachableDTO
     {
@@ -422,5 +422,15 @@ namespace GenTRAC.DataBridge.DTO
 		/// Higher level clearance required beyond standard clearance requirements
 		/// </summary>
 		public bool? AdditionalClassification { get; set; }
+
+		/// <summary>
+		/// When CCOPD = no, a reason needs to be provided
+		/// </summary>
+		public CcopdOptionalReason? CcopdNoReason { get; set; }
+
+		/// <summary>
+		/// When CCOPD = no, and reason is selected as other, this is the text for it
+		/// </summary>
+		public string CcopdNoOtherReason { get; set; }
 	}
 }

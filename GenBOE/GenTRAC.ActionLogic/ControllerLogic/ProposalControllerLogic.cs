@@ -315,7 +315,9 @@ namespace GenTRAC.ActionLogic
 					ProposalSetupComments = proposalComments.Comments,
 					ContractActionType = proposalInfo.ContractActionType,
 					ContractActionTypeOtherText = proposalInfo.ContractActionTypeOtherText,
-					AdditionalClassification = proposalGeneralInfo.AdditionalClassification
+					AdditionalClassification = proposalGeneralInfo.AdditionalClassification,
+					CcopdNoOtherReason = proposalGeneralInfo.CcopdNoOtherReason,
+					CcopdNoReason = proposalGeneralInfo.CcopdNoReason
 				};
 
 				// copy the old values for approvals/certification (comments, workflow status, signatures, additionalapprovalemailtext)
@@ -1460,6 +1462,7 @@ namespace GenTRAC.ActionLogic
 			model.PricingToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(PricingTool), false, model.PricingTool.ToString());
 			model.BOEToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(BOETool), false, model.BOETool.ToString());
 			model.CostVolumeToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(CostVolumeTool), false, model.CostVolumeTool.ToString());
+			model.ReasonsForCcopdBeingNo = EnumUtilities.GetListItemsForEnumSorted(typeof(CcopdOptionalReason), false, model.CcopdNoReason.HasValue ? model.CcopdNoReason.ToString() : string.Empty);
 
 			model.IsReadOnly = isNewRevision ? false.ToString().ToLower() : this.IsProposalReadOnly(proposalId, fullProposalDto);
 			model.IsPTMChecklistUIEnabled = (!proposalId.HasValue || proposalId < 0 || fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
@@ -1484,6 +1487,8 @@ namespace GenTRAC.ActionLogic
 				model.IsCostVolumeClassified = fullProposalDto.IsCostVolumeClassified;
 				model.AdditionalClassification = fullProposalDto.AdditionalClassification;
 				model.IsCCPDReadOnly = isNewRevision ? false : fullProposalDto.LeadEstimatorSignedDate.HasValue;
+				model.CcopdNoOtherReason = fullProposalDto.CcopdNoOtherReason;
+				model.CcopdNoReason = fullProposalDto.CcopdNoReason;
 
 				// Automatically adds selected option, even if the option is not active.
 				model.ProposalLocationsList = EnumUtilities.GetListItemsForEnumSorted(typeof(ProposalLocation), false, model.ProposalLocation.ToString());
@@ -1855,6 +1860,14 @@ namespace GenTRAC.ActionLogic
 			if (!proposalGeneralInfo.IsCCPDRequired.HasValue)
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CERTIFIED_COST_PRICING_DATA_REQUIRED));
+			}
+			else if (!proposalGeneralInfo.IsCCPDRequired.Value && !proposalGeneralInfo.CcopdNoReason.HasValue)
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CCOPD_NO_REASON_REQUIRED));
+			}
+			else if (!proposalGeneralInfo.IsCCPDRequired.Value && proposalGeneralInfo.CcopdNoReason == CcopdOptionalReason.Other && string.IsNullOrEmpty(proposalGeneralInfo.CcopdNoOtherReason))
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CCOPD_NO_OTHER_REASON_REQUIRED));
 			}
 
 			if (!proposalGeneralInfo.IsCostVolumeClassified.HasValue)

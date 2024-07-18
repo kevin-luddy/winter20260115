@@ -15,6 +15,7 @@
     <Compile Include="..\GenTRAC.Models\BOEToolLU.cs" Link="BOEToolLU.cs" />
     <Compile Include="..\GenTRAC.Models\CageCode.cs" Link="CageCode.cs" />
     <Compile Include="..\GenTRAC.Models\CannedResponsesPAR.cs" Link="CannedResponsesPAR.cs" />
+    <Compile Include="..\GenTRAC.Models\CcopdReasonsNo.cs" Link="CcopdReasonsNo.cs" />
     <Compile Include="..\GenTRAC.Models\ChecklistTypeLU.cs" Link="ChecklistTypeLU.cs" />
     <Compile Include="..\GenTRAC.Models\ContractActionTypeLU.cs" Link="ContractActionTypeLU.cs" />
     <Compile Include="..\GenTRAC.Models\ContractTypeGroupLU.cs" Link="ContractTypeGroupLU.cs" />
