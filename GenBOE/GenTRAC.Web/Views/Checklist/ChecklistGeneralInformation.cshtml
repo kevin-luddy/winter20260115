@@ -237,19 +237,21 @@
                 </div>
             </div>
 
-            @if (Model.ShowIncludeInternationalCosts)
+            if (Model.ShowIncludeInternationalCosts)
             { 
-            <div class="form-row">
-                <div class="form-label">
-                    <span>Does this proposal include international costs estimated by Global Mobility?</span>
+                <div class="form-row">
+                    <div class="form-label">
+                        <span>Does this proposal include international costs estimated by Global Mobility?</span>
+                    </div>
+                    <div class="form-element">
+                        <label for="IncludeInternationalCosts-Yes">Yes</label>
+                        <input type="radio" class="radio" id="IncludeInternationalCosts-Yes" value="true" name="IncludeInternationalCosts" @if (Model.ProposalID > 0 && Model.IncludeInternationalCosts.HasValue && Model.IncludeInternationalCosts.Value)
+                        { <text> checked</text> } />
+                        <label for="IncludeInternationalCosts-No">No</label>
+                        <input type="radio" class="radio" id="IncludeInternationalCosts-No" value="false" name="IncludeInternationalCosts" @if (Model.ProposalID > 0 && Model.IncludeInternationalCosts.HasValue && !Model.IncludeInternationalCosts.Value)
+                        { <text> checked</text> } />
+                    </div>
                 </div>
-                <div class="form-element">
-                    <label for="IncludeInternationalCosts-Yes">Yes</label>
-                    <input type="radio" class="radio" id="IncludeInternationalCosts-Yes" value="true" name="IncludeInternationalCosts" @if (Model.ProposalID > 0 && Model.IncludeInternationalCosts.HasValue && Model.IncludeInternationalCosts.Value) { <text> checked</text> } />
-                    <label for="IncludeInternationalCosts-No">No</label>
-                    <input type="radio" class="radio" id="IncludeInternationalCosts-No" value="false" name="IncludeInternationalCosts" @if (Model.ProposalID > 0 && Model.IncludeInternationalCosts.HasValue && !Model.IncludeInternationalCosts.Value) { <text> checked</text> } />
-                </div>
-            </div>
             }
             <div class="form-row">
                 <div id="deliverChecklistDFARQuestion" class="form-label">
