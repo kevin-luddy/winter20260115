@@ -1964,12 +1964,12 @@ BEGIN TRY
 	END
 
 	
-	/** [dbo].[[SkillMix]] **/
+	/** [dbo].[SkillMix] **/
 	DECLARE @SkillMix TABLE
 	(
 		[SkillMixID] [int] NOT NULL,
 		[Rationale] varchar(255) NOT NULL,
-		[Included] [bit] NOT NULL,
+		[Included] [bit] NULL,
 		[ProposedHours] decimal(11,2) NOT NULL,
 		[HistoricalHours] decimal(11,2) NOT NULL,
 		[BOESkillMix] decimal(5,2) NOT NULL,
