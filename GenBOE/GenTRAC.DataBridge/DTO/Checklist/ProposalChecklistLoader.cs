@@ -107,10 +107,11 @@ namespace GenTRAC.DataBridge.DTO
                                 dtoToUpsert.OtherDirectCosts, 
                                 dtoToUpsert.DeliverChecklistDFARS,
                                 dtoToUpsert.AbsoluteValue,
-                                dtoToUpsert.CostThroughCom
-                                ).FirstOrDefault();
+                                dtoToUpsert.CostThroughCom,
+								dtoToUpsert.IncludeInternationalCosts
+								).FirstOrDefault();
 
-                            ProposalChecklistSaveInfo pprUserSaveInfo = dtoToUpsert.UserSaveInfo[dtoToUpsert.ResponseType][ChecklistType.ProposalPricingReview];
+							ProposalChecklistSaveInfo pprUserSaveInfo = dtoToUpsert.UserSaveInfo[dtoToUpsert.ResponseType][ChecklistType.ProposalPricingReview];
                             int pprUserId = pprUserSaveInfo.UserID;
                             string pprComment = pprUserSaveInfo.Comment;
 
@@ -275,7 +276,8 @@ namespace GenTRAC.DataBridge.DTO
                         TravelCost = entity.TravelCost,
                         OtherDirectCosts = entity.OtherDirectCost,
                         DeliverChecklistDFARS = entity.DeliverChecklistDFARS,
-                        CostThroughCom = entity.CostThroughCom
+                        CostThroughCom = entity.CostThroughCom,
+						IncludeInternationalCosts = entity.IncludeInternationalCosts
                     };
 
                     proposalChecklist.PARResponses = dbModel.ProposalPARChecklistXREFs.Where(x => x.ProposalID == entity.ProposalID).Select(x => new ChecklistResponseItem()

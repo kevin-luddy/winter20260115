@@ -393,6 +393,7 @@
           <Property Name="Profit" Type="bigint" />
           <Property Name="Com" Type="bigint" />
           <Property Name="CostThroughCom" Type="bigint" />
+          <Property Name="IncludeInternationalCosts" Type="bit" />
         </EntityType>
         <EntityType Name="ProposalChecklistComplete">
           <Key>
@@ -1820,6 +1821,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="DeliverChecklistDFARS" Type="bit" Mode="In" />
           <Parameter Name="AbsoluteValue" Type="bigint" Mode="In" />
           <Parameter Name="CostThroughCom" Type="bigint" Mode="In" />
+          <Parameter Name="IncludeInternationalCosts" Type="bit" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklistTemplate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
@@ -3188,6 +3190,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="DeliverChecklistDFARS" Mode="In" Type="Boolean" />
             <Parameter Name="AbsoluteValue" Mode="In" Type="Int64" />
             <Parameter Name="CostThroughCom" Mode="In" Type="Int64" />
+            <Parameter Name="IncludeInternationalCosts" Mode="In" Type="Boolean" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklistTemplate">
             <Parameter Name="ProposalID" Mode="In" Type="Int32" />
@@ -3987,6 +3990,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="Profit" Type="Int64" />
           <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="ProposalChecklist" ToRole="Proposal" />
           <Property Name="CostThroughCom" Type="Int64" />
+          <Property Name="IncludeInternationalCosts" Type="Boolean" />
         </EntityType>
         <EntityType Name="AttachmentTypeLU">
           <Key>
@@ -5236,6 +5240,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="ProposalChecklists">
             <EntityTypeMapping TypeName="genTRACModel.ProposalChecklist">
               <MappingFragment StoreEntitySet="ProposalChecklist">
+                <ScalarProperty Name="IncludeInternationalCosts" ColumnName="IncludeInternationalCosts" />
                 <ScalarProperty Name="CostThroughCom" ColumnName="CostThroughCom" />
                 <ScalarProperty Name="Profit" ColumnName="Profit" />
                 <ScalarProperty Name="Com" ColumnName="Com" />

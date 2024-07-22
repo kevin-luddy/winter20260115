@@ -651,6 +651,11 @@ namespace GenTRAC.ActionLogic.Validation
             public const string SUBMITTAL_DATE_FORMAT = GENERAL_INFO_VALIDATION + "Proposal Submittal Date format must be mm/dd/yyyy";
 
 			/// <summary>
+			/// proposal submittal date format 
+			/// </summary>
+			public const string INTERNATIONAL_COSTS_REQUIREED = GENERAL_INFO_VALIDATION + "Does this proposal include international costs estimated by Global Mobility is required";
+
+			/// <summary>
 			/// Proposal checklist saved already
 			/// </summary>
 			public const string DUPLICATE_CHECKLIST = GENERAL_INFO_VALIDATION + "Proposal Checklist saved in another session.  Please refresh and try again.";
