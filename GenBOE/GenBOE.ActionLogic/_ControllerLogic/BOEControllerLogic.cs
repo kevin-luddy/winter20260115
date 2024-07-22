@@ -82,14 +82,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// Memory Cache
 		/// </summary>
 		private MemoryCache memCache;
+
 		/// <summary>
 		/// Cache key for Get All Operators
 		/// </summary>
 		private const string CACHE_GET_ALL_OPERATORS = "CACHE_GET_ALL_OPERATORS";
+
 		/// <summary>
 		/// Cache key for fields for company
 		/// </summary>
 		private const string CACHE_GET_FIELDS = "CACHE_GET_FIELDS_";
+
 		/// <summary>
 		/// Cache duration - 6 hours
 		/// </summary>
