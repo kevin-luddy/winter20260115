@@ -2591,7 +2591,7 @@ BEGIN
 			SM.[BOETaskElementID],
 			SM.[BOEID],
 			SM.[MOQTypeSelectionID]
-		FROM [version].[SkillMixID] SM
+		FROM [version].[SkillMix] SM
 		WHERE 
 		SM.VersionId = @VersionID
 
@@ -2629,7 +2629,7 @@ BEGIN
 			CD.[BOEID],
 			CD.[BOETaskElementID],
 			CD.[MOQTypeSelectionID]
-		FROM [version].[CommonDisclosureSkillMixID] CD
+		FROM [version].[CommonDisclosureSkillMix] CD
 		WHERE 
 		CD.VersionId = @VersionID
 
@@ -2657,7 +2657,7 @@ BEGIN
 			M.[MOQTypeSelectionTableDataId],
 			M.[BOETaskElementID],
 			M.[BOEID]
-		FROM [version].[MOQTypeSelectionTableDataResourceHoursId] M
+		FROM [version].[MOQTypeSelectionTableDataResourceHours] M
 		WHERE 
 		M.VersionId = @VersionID
 
