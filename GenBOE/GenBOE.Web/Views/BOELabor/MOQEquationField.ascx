@@ -478,7 +478,7 @@
 								</td>
 								<td data-ng-show="model.IsRMS"></td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalSkillMixHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalSkillMixHoursTotal | number: 1 }}</div>
 								</td>
 								<td>
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborSkillMixTotal * 100 | number: 2 }}%</div>
@@ -558,7 +558,7 @@
 								</td>
 								<td></td>	
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal | number: 1 }}</div>
 								</td>
 								<td>
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborCommonDisclosureTotal * 100 | number: 2 }}%</div>
