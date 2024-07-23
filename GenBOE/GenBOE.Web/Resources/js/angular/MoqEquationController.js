@@ -1465,6 +1465,32 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
+	$scope.addRowForResource = function (item, moqType) {
+		//$scope.setDirty();
+		var dupe = angular.copy(item);
+		// TODO: percentages?
+		dupe.BusinessResourceID = "";
+		dupe.CommonDisclosureSkillMixID = -1;
+		moqType.CommonDisclosureTable.push(dupe);
+	};
+
+	$scope.deleteRowForResource = function (item, moqType) {
+		//have to find at least one other row with same resource id to be eligible to delete
+		var resourceRowCount = 0;
+		for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
+			var row = moqType.CommonDisclosureTable[i];
+			if (row.ResourceID === item.ResourceID) {
+				resourceRowCount++;
+			}
+			if (resourceRowCount > 1) {
+				item.Deleted = true;
+				//$scope.setDirty();
+				$scope.setCommonDisclosureTotals(moqType);
+				break;
+			}
+		}
+	};
+
 	$scope.setActualsErrors = function (id, errors) {
 		if (Array.isArray(errors)) {
 			if (errors.length > 0) {
@@ -1710,14 +1736,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.refreshDisableSave();
     }
 
-    $scope.getAndSetIsResourceValid = function (item, models) {
-        item.IsResourceValid = true;
-        const input = item.ResourceInput;
+    $scope.getAndSetIsResourceValid = function (input, models) {
+       var isResourceValid = true;
         if (input === undefined || (typeof input === 'string' && (input.length === 0
-            || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-            item.IsResourceValid = false;
+            || models.filter(function (r) { return r.ResourceName === input }).length < 1))) {
+            isResourceValid = false;
 		}
-        return item.IsResourceValid;
+        return isResourceValid;
 	}
 
 	$scope.setSkillMixTotals = function (moqType) {
@@ -1755,11 +1780,20 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
     $scope.resourceSelected = function (item, model) {
         $scope.setDirty();
 
-        if (item && item.ResourceDesc && item.ResourceDesc !== '') {
+		if (item && item.ResourceName && item.ResourceName !== '') {
             // resource was selected
-            model.ResourceNew = item.ResourceDesc;
-        }
-    };
+            model.ResourceNew = item.ResourceName;
+		}
+	};
+
+	$scope.brcSelected = function (item, model) {
+		$scope.setDirty();
+
+		if (item && item.ResourceName && item.ResourceName !== '') {
+			// resource was selected
+			model.BusinessResourceID = item.ResourceName;
+		}
+	};
 
 }]);
 

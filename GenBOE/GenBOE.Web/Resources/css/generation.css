@@ -8805,3 +8805,36 @@ span.blue-link a{
 .skill-mix-padding {
     padding: 2px 5px;
 }
+
+#commonDisclosureTableData td.business-resource-codes {
+    overflow: visible;
+}
+
+#commonDisclosureTableData div.resource-selection {
+    float: left;
+}
+
+
+#commonDisclosureTableData .resource-selection {
+    height: 15px;
+    width: 100%;
+}
+
+#commonDisclosureTableData .brc-button{
+    width: 13px;
+    height: 15px;
+    padding-left: 0px;
+    padding-right: 0px;
+    line-height: 0px;
+}
+
+#commonDisclosureTableData .brc-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+
+#commonDisclosureTableData input.resize {
+    height: 15px;
+    font-size: 12px;
+}

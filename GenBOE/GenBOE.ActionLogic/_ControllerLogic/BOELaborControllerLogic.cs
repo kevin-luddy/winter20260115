@@ -4125,6 +4125,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
 							newData.IsPercentLocked = currentData.IsPercentLocked;
 							newData.IsUserInput = currentData.IsUserInput;
+							newData.BusinessResourceID = currentData.BusinessResourceID;
 
 							newData.Rationale = currentData.Rationale;
 							if (newData.Included.HasValue && newData.Included.Value)

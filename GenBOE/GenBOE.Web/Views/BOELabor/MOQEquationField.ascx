@@ -428,7 +428,7 @@
                                 <td data-ng-if="model.IsRMS">
                                     <div class="text skill-mix-padding"> {{ item.ResourceOld }} </div>
                                 </td>
-                                <td data-ng-if="model.IsRMS" class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item, ResourceModels) === false }">
+                                <td data-ng-if="model.IsRMS" class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item.ResourceNew, ResourceModels) === false }">
                                     <div class="resource-selection" ng-style="{ padding: '2px 5px' }">
                                         <input
                                             tabindex="{{tabindex + 1}}" 
@@ -504,12 +504,12 @@
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeSkillMixSuffix);"></div>
             </div>
             <div class="form-element">
-                <div class="commonDisclosureTableData skillMixTable">
-                    <table name="commonDisclosureSkillMix"  class="grid editable">
+                <div class="skillMixTable">
+                    <table name="commonDisclosureSkillMix" id="commonDisclosureTableData" class="grid editable">
                         <thead>
                             <tr>
                                 <th class="current-resource-id">Current Resource</th>
-                                <th class="brc-id">Business Resource Code</th>
+                                <th class="brc-id">Business Resource Code (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController, '<%:WebConstants.ACTION_DISPLAY_BUSINESS_RESOURCE_CODES%>'); return false;">View</a>)&#10013;</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
                                 <th class="included">Included *</th>
@@ -519,12 +519,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-ng-repeat="item in moqType.CommonDisclosureTable">
+                            <tr data-ng-repeat="item in moqType.CommonDisclosureTable" | filter: { Deleted: false } track by item.ResourceID" data-ng-hide="item.Deleted">
                                 <td>
                                     <div class="text skill-mix-padding"> {{ item.ResourceID }} </div>
                                 </td>
-                                <td>
-                                    <div class="text skill-mix-padding"> {{ item.BusinessResourceID }} </div>
+                                <td class="business-resource-codes" data-ng-class="{ inputError: getAndSetIsResourceValid(item.BusinessResourceID, BusinessResourceCodeModels) === false }">
+                                    <div class="brc-wrapper">
+									    <div class="resource-selection bootstrap text skill-mix-padding">
+										    <input tabindex="{{tabindex + 2}}" type="text" data-ng-model="item.BusinessResourceID" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels  | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" typeahead-on-select="brcSelected($item, item)">
+									    </div>
+                                        <button class="ies-action brc-button" data-ng-click="addRowForResource(item, moqType)" title="Add row for additional BRCs in resource"><span>+</span></button>
+                                        <button class="ies-danger brc-button" data-ng-click="deleteRowForResource(item, moqType)" title="Delete row"><span>X</span></button>
+                                    </div>
                                 </td>
                                 <td>
                                     <div id="cd-historical-hours" class="text skill-mix-numerical skill-mix-padding"> {{ item.HistoricalHours }} </div>
