@@ -293,7 +293,7 @@
                                 </span>
                             </td>
                         </tr>
-                    <%} else {
+                    <%} else if (item.ReportID != (int)Reports.WorkbenchOffload) {
                             string ssrs = string.Empty;
                             var ssrsItem = item as GenBOE.ActionLogic.ModelView.SSRSReportsModelView;
                             if (ssrsItem != null)
@@ -301,21 +301,21 @@
                                 ssrs = "ssrsUrl=" + ssrsItem.ReportUrl;
                             }
                             %>
-                    <tr pkid="<%: item.ReportID %>" <%:ssrs %> reportName="<%: item.ReportName %>">
-                        <td><span><%: item.ReportName %></span></td>
-                        <td><span><%: item.Description %></span></td>
-                        <td style="text-align: right">
-                            <%if (item.ReportID == (int)Reports.AllBOEs) { %>
-                                <span><a name="Reports-ExportButton">Export...</a>
-                                    <%if (supportCustomExport) {%>
-                                        &nbsp;|&nbsp;<a name="Reports-CustomExportButton">Custom Export...</a>
-                                    <%}%>
-                                </span>
-                            <% } else { %>
-                                <span><a name="Reports-ExportButton">Export...</a></span>
-                            <% } %>
-                        </td>
-                    </tr>
+					<tr pkid="<%: item.ReportID %>" <%:ssrs %> reportName="<%: item.ReportName %>">
+						<td><span><%: item.ReportName %></span></td>
+						<td><span><%: item.Description %></span></td>
+						<td style="text-align: right">
+							<%if (item.ReportID == (int)Reports.AllBOEs) { %>
+								<span><a name="Reports-ExportButton">Export...</a>
+									<%if (supportCustomExport) {%>
+										&nbsp;|&nbsp;<a name="Reports-CustomExportButton">Custom Export...</a>
+									<%}%>
+								</span>
+							<% } else { %>
+								<span><a name="Reports-ExportButton">Export...</a></span>
+							<% } %>
+						</td>
+					</tr>
                 <%}%>
             <% } // end foreach 
                 if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST) {
@@ -326,12 +326,12 @@
                     <td style="text-align: right"><span><a name="ProjectMap-ViewButton">Export...</a></span>
                     </td>
                 </tr>
-                <tr offloadtype="true">
+                <%--<tr offloadtype="true">
                     <td><span>Project Map Export with Offloading</span></td>
                     <td><span>Exports all BOEs after Offloading to Project Map format.</span></td>
                     <td style="text-align: right"><span><a name="ProjectMap-ViewButton">Export...</a></span>
                     </td>
-                </tr>
+                </tr>--%>
                 <tr offloadtype="false">
                     <td><span>All Comments and Responses</span></td>
                     <td><span>Exports all Author, Reviewer and Approver comments and responses.</span></td>
