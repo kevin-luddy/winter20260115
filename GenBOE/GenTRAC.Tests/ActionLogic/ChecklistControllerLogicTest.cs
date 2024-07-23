@@ -159,7 +159,8 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
                 EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
-                SubmittedValue = 22
+                SubmittedValue = 22,
+				IncludeInternationalCosts = true
             };
 
             UserDTO peerReviewer = new UserDTO()
@@ -202,6 +203,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 Assert.AreEqual(checklistGeneralInfo.EstimatingSubmitsToContractsDate, proposalChecklist.EstimatingSubmitsToContractsDate.Value.ToString("MM/dd/yyyy"));
             }
+			Assert.AreEqual(checklistGeneralInfo.IncludeInternationalCosts, proposalChecklist.IncludeInternationalCosts);
         }
 
         /// <summary>
@@ -1404,7 +1406,8 @@ namespace GenTRAC.Tests.ActionLogic
                 EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString(),
                 PricerId = 14,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer,
-                SubmittedValue = "10"
+                SubmittedValue = "10",
+				IncludeInternationalCosts = false
             };
 
             checklistProposalPricingData = new ChecklistProposalPricingDataModelView()
@@ -1535,7 +1538,8 @@ namespace GenTRAC.Tests.ActionLogic
                 EstimatingSubmitsToContractsDate = string.Empty,
                 PricerId = 15,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer,
-                DeliverChecklistDFARS = true
+                DeliverChecklistDFARS = true,
+				IncludeInternationalCosts = true
             };
 
             ChecklistProposalPricingDataModelView checklistProposalPricingData = new ChecklistProposalPricingDataModelView()
@@ -1677,7 +1681,8 @@ namespace GenTRAC.Tests.ActionLogic
                 EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString(),
                 PricerId = 14,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer,
-                SubmittedValue = "10"
+                SubmittedValue = "10",
+				IncludeInternationalCosts = true
             };
 
             checklistProposalPricingData = new ChecklistProposalPricingDataModelView()
@@ -1963,16 +1968,17 @@ namespace GenTRAC.Tests.ActionLogic
             // fix PPR validation, general validation, and proposal pricing but validate Pricer PAR now
             proposal.IsCCPDRequired = true;
             fullProposal.IsCCPDRequired = true;
-            checklistGeneralInfo = new ChecklistGeneralInformationModelView()
-            {
-                ProposalChecklistID = checklistID,
-                ProposalID = proposalId,
-                UpdateDate = DateTime.Now,
-                EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString(),
-                PricerId = 14,
-                ShowChecklistResponse = ShowChecklistResponse.Pricer,
-                SubmittedValue = "10"
-            };
+			checklistGeneralInfo = new ChecklistGeneralInformationModelView()
+			{
+				ProposalChecklistID = checklistID,
+				ProposalID = proposalId,
+				UpdateDate = DateTime.Now,
+				EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString(),
+				PricerId = 14,
+				ShowChecklistResponse = ShowChecklistResponse.Pricer,
+				SubmittedValue = "10",
+				ShowIncludeInternationalCosts = false
+			};
             
             checklistProposalPricingData = new ChecklistProposalPricingDataModelView()
             {

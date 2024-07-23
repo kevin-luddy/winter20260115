@@ -27,7 +27,8 @@ CREATE PROCEDURE [dbo].[upsertProposalChecklist]
 	@OtherDirectCost [bigint],
 	@DeliverChecklistDFARS [bit],
 	@AbsoluteValue [bigint] = NULL,
-	@CostThroughCom [bigint] = NULL
+	@CostThroughCom [bigint] = NULL,
+	@IncludeInternationalCosts [BIT]
 )
 AS
 /******************************************************************************
@@ -68,6 +69,7 @@ AS
 **      10/13/2021  Koovackal           IES-181 DB Work - Added Profit, Com,
 **                                      ProfitFeeWithCom
 **		07/19/2022	ranzalon			IES-1505 - added CostThroughCom
+**		7/18/24		Dusan				PROPH-1560: Added Include International Costs
 *******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -96,6 +98,7 @@ INSERT INTO [dbo].[ProposalChecklist]
 		   ,[DeliverChecklistDFARS]
 		   ,[AbsoluteValue]
 		   ,[CostThroughCom]
+		   ,[IncludeInternationalCosts]
            )
      OUTPUT inserted.ProposalChecklistID INTO @Inserted
      VALUES
@@ -118,6 +121,7 @@ INSERT INTO [dbo].[ProposalChecklist]
 			,@DeliverChecklistDFARS
 			,@AbsoluteValue
 			,@CostThroughCom
+			,@IncludeInternationalCosts
            )
 
 	SELECT @ProposalChecklistID = ID FROM @Inserted
@@ -153,6 +157,7 @@ ELSE
 			  ,[DeliverChecklistDFARS] = @DeliverChecklistDFARS
 			  ,[AbsoluteValue] = @AbsoluteValue
 			  ,[CostThroughCom] = @CostThroughCom
+			  ,[IncludeInternationalCosts] = @IncludeInternationalCosts
 				 WHERE 
 					ProposalChecklistID = @ProposalChecklistID
 

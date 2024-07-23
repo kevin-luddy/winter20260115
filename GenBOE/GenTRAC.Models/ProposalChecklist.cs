@@ -33,6 +33,7 @@ namespace GenTRAC.Models
         public Nullable<long> Com { get; set; }
         public Nullable<long> Profit { get; set; }
         public Nullable<long> CostThroughCom { get; set; }
+        public Nullable<bool> IncludeInternationalCosts { get; set; }
     
         public virtual Proposal Proposal { get; set; }
     }

@@ -258,7 +258,7 @@
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPMonths}}</td>
-                            <td><input data-ng-readonly="true" type="text" data-ng-model="tableData.PoPMonthsString" /></td>
+                            <td><input data-ng-readonly="true" type="text" data-ng-model="tableData.PoPMonthsString" class="skip-read-only" /></td>
                         </tr>
                         <tr data-ng-repeat="customField in MoqTableCustomFields" data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{customField.CustomFieldMetaData.FieldName}}{{(IsMoqCustomFieldRequired(tableData.RepositoryName) && customField.CustomFieldMetaData.isRequired) ? ' *' : ''}}</td>
@@ -478,7 +478,7 @@
 								</td>
 								<td data-ng-show="model.IsRMS"></td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalSkillMixHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalSkillMixHoursTotal | number: 1 }}</div>
 								</td>
 								<td>
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborSkillMixTotal * 100 | number: 2 }}%</div>
@@ -558,7 +558,7 @@
 								</td>
 								<td></td>	
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal }}</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal | number: 1 }}</div>
 								</td>
 								<td>
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborCommonDisclosureTotal * 100 | number: 2 }}%</div>

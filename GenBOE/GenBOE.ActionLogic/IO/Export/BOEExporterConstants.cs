@@ -369,13 +369,28 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string Marker_AdditionalQueryFilters = "AdditionalQueryFiltersRowMarker";
         internal const string Table_MOQType = "MOQTypeTable";
 
-        #endregion
+		#endregion
 
-        #endregion
+		#region Skill Mix Table Constants
 
-        #region MIME Constants
+		internal const string Container_SkillMixTables = "SkillMixTablesContainer";
+		internal const string Table_CurrentSkillMix = "CurrentSkillMixTable";
+		internal const string Table_CommonDisclosureSkillMix = "CommonDisclosureSkillMixTable";
+		internal const string FieldName_CurrentResource = "CurrentResource";
+		internal const string FieldName_HistoricalHours = "HistoricalHours";
+		internal const string FieldName_LaborSkillMix = "LaborSkillMix";
+		internal const string FieldName_Included = "Included";
+		internal const string FieldName_BoeSkillMix = "BoeSkillMix";
+		internal const string FieldName_ProposedHours = "ProposedHours";
+		internal const string FieldName_BusinessResourceCode = "BusinessResourceCode";
 
-        public const string ContentType_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+		#endregion Skill Mix Table Constants
+
+		#endregion
+
+		#region MIME Constants
+
+		public const string ContentType_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
         public const string ContentType_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         public const string ContentType_XLSM = "application/vnd.ms-excel.sheet.macroEnabled.12";
         public const string ContentType_CSV = "text/csv";

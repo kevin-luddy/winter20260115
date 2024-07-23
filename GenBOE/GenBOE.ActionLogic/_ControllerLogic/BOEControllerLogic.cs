@@ -6,42 +6,42 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Transactions;
-    using System.Web;
-    using System.Web.Mvc;
-    using GenBOE.ActionLogic.BLL;
-    using GenBOE.ActionLogic.BOETransitions;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.Common.Email;
-    using GenBOE.ActionLogic.CopyBOE;
-    using GenBOE.ActionLogic.IESSAPClient;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.IO.Export.BOE;
-    using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.ModelView.BOE;
-    using GenBOE.ActionLogic.ModelView.Clin;
-    using GenBOE.ActionLogic.NewValidation;
-    using GenBOE.ActionLogic.Validation;
-    using GenBOE.ActionLogic.WBS;
-    using GenBOE.ActionLogic.WBS.BOE;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.Common.Interfaces;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.Exceptions;
-    using Microsoft.Practices.ObjectBuilder2;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using System.Transactions;
+	using System.Web;
+	using System.Web.Mvc;
+	using GenBOE.ActionLogic.BLL;
+	using GenBOE.ActionLogic.BOETransitions;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.Common.Email;
+	using GenBOE.ActionLogic.CopyBOE;
+	using GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.BOE;
+	using GenBOE.ActionLogic.ModelView.Clin;
+	using GenBOE.ActionLogic.NewValidation;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.WBS;
+	using GenBOE.ActionLogic.WBS.BOE;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
+	using Microsoft.Practices.ObjectBuilder2;
 
-    public class BOEControllerLogic : IBOEControllerLogic
+	public class BOEControllerLogic : IBOEControllerLogic
     {
         private readonly IBOESummary _BOESummary;
         private readonly IUserDTODataLoader UserLoader;
@@ -78,12 +78,32 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly ITokenService tokenService;
         private readonly Logger logger = new Logger(typeof(BOEControllerLogic));
 
-        #region Protected Properties and Constructor
+		/// <summary>
+		/// Memory Cache
+		/// </summary>
+		private MemoryCache memCache;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public BOEControllerLogic(
+		/// <summary>
+		/// Cache key for Get All Operators
+		/// </summary>
+		private const string CACHE_GET_ALL_OPERATORS = "CACHE_GET_ALL_OPERATORS";
+
+		/// <summary>
+		/// Cache key for fields for company
+		/// </summary>
+		private const string CACHE_GET_FIELDS = "CACHE_GET_FIELDS_";
+
+		/// <summary>
+		/// Cache duration - 6 hours
+		/// </summary>
+		private const int CACHE_DURATION = 6 * 60 * 60;
+
+		#region Protected Properties and Constructor
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public BOEControllerLogic(
             IBOESummary inBOESummary,
             IUserDTODataLoader inUserLoader,
             IActiveDirectoryUtilities inActiveDirectoryUtil,
@@ -151,18 +171,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.boeApproverResponseLoader = boeApproverResponseLoader;
             this.iesSapClient = iesSapClient;
             this.tokenService = tokenService;
-        }
+			memCache = new MemoryCache();
+		}
 
-        #endregion
+		#endregion
 
-        #region Get Actions
+		#region Get Actions
 
-        /// <summary>
-        /// Get BOE Header Model View
-        /// </summary>
-        /// <param name="boe">The <see cref="BoeDTO"/> used to populate the <see cref="BOEHeaderISGSModelView"/></param>
-        /// <returns>the populated <see cref="BOEHeaderISGSModelView"/></returns>
-        public virtual IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
+		/// <summary>
+		/// Get BOE Header Model View
+		/// </summary>
+		/// <param name="boe">The <see cref="BoeDTO"/> used to populate the <see cref="BOEHeaderISGSModelView"/></param>
+		/// <returns>the populated <see cref="BOEHeaderISGSModelView"/></returns>
+		public virtual IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
         {
             return new BOEHeaderISGSModelView(boe, answers);
         }
@@ -3278,11 +3299,28 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
         }
 
-        /// <summary>
+		/// <summary>
 		/// Gets all of the possible query operators.
 		/// </summary>
 		/// <returns>Collection of view model operators</returns>
 		public async Task<ICollection<QueryOperatorViewModel>> GetAllOperators()
+		{
+			ICollection<QueryOperatorViewModel> data = (ICollection<QueryOperatorViewModel>)memCache.GetData(CACHE_GET_ALL_OPERATORS);
+
+			if (data == null)
+			{
+				data = await GetAllOperatorsActual();
+				memCache.Add(CACHE_GET_ALL_OPERATORS, data, CACHE_DURATION);
+			}
+
+			return data;
+		}
+
+		/// <summary>
+		/// Gets all of the possible query operators.
+		/// </summary>
+		/// <returns>Collection of view model operators</returns>
+		private async Task<ICollection<QueryOperatorViewModel>> GetAllOperatorsActual()
 		{
             if (Utilities.IsSAPEnabledForSystem)
             {
@@ -3305,24 +3343,40 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
 		}
 
-        /// <summary>
-        /// Gets all of the possible query fields.
-        /// </summary>
-        /// <returns>Collection of view model fields</returns>
-        public async Task<ICollection<QueryFieldViewModel>> GetAllFields()
+		/// <summary>
+		/// Gets all of the possible query fields.
+		/// </summary>
+		/// <returns>Collection of view model fields</returns>
+		public async Task<ICollection<QueryFieldViewModel>> GetAllFields()
+		{
+			string company = SystemConfiguration.Instance().CompanyMode.ToString();
+			ICollection<QueryFieldViewModel> data = (ICollection<QueryFieldViewModel>)memCache.GetData(CACHE_GET_FIELDS + company);
+
+			if (data == null)
+			{
+				data = await GetAllFieldsActual(company);
+				memCache.Add(CACHE_GET_FIELDS + company, data, CACHE_DURATION);
+			}
+
+			return data;
+		}
+
+		/// <summary>
+		/// Gets all of the possible query fields.
+		/// </summary>
+		/// <returns>Collection of view model fields</returns>
+		private async Task<ICollection<QueryFieldViewModel>> GetAllFieldsActual(string company)
 		{
             if (Utilities.IsSAPEnabledForSystem)
             {
                 try
                 {
                     Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, (await tokenService.GetToken()).AccessToken);
-
-					string company = SystemConfiguration.Instance().CompanyMode.ToString();
+					
 					ActionLogic.IESSAPClient.CompanyConfiguration configuration;
 
 					if (Enum.TryParse<ActionLogic.IESSAPClient.CompanyConfiguration>(company, out configuration))
 					{
-
 						return await iesSapClient.ApiQueryFilterGetAllFieldsForCompanyCodeAsync(configuration);
 					}
 					else

@@ -43,11 +43,13 @@
         TaskMOQEmployeeIDFilters = 16,
         [Description("Task - Method of Quoting Rationale")]
         TaskMOQRationale = 17,
-        [Description("Task - Resource Types Summary Table")]
-        TaskResourceTypesSummaryTable = 18,
+		[Description("Task - Skill Mix Tables")]
+		SkillMixTables = 18,
+		[Description("Task - Resource Types Summary Table")]
+        TaskResourceTypesSummaryTable = 19,
         [Description("Task - Cost/Hours Spread Tables")]
-        TaskSpreadTables = 19,
+        TaskSpreadTables = 20,
         [Description("Resource - Information and Spread Tables")]
-        ResourceInfoAndSpreadTables = 20
+        ResourceInfoAndSpreadTables = 21
     }
 }

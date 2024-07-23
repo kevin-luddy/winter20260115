@@ -72,16 +72,29 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
         /// </summary>
         public bool? IsPTMChecklistUIEnabled { get; set; }
 
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public ChecklistGeneralInformationModelView()
+		/// <summary>
+		/// Does this proposal include international costs estimated by Global Mobility?
+		/// </summary>
+		public bool? IncludeInternationalCosts { get; set; }
+
+		/// <summary>
+		/// Should we display the Include International Costs Section?
+		/// </summary>
+		public bool ShowIncludeInternationalCosts { get; set; }
+
+		/// <summary>
+		/// constructor
+		/// </summary>
+		public ChecklistGeneralInformationModelView()
         {
             this.ProposalID = -1;
             this.ProposalChecklistID = -1;
             this.DeliverChecklistDFARS = false;
             this.ShowDFARQuestion = true;
             this.IsPTMChecklistUIEnabled = true;
-        }
+
+			// DUSAN -> Need to drive from whatever logic Frank decides he wants
+			this.ShowIncludeInternationalCosts = true;
+		}
     }
 }

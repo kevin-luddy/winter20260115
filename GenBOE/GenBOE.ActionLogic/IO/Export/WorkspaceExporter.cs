@@ -1329,7 +1329,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								skillMix.ResourceNew,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.HistoricalHours,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.LaborSkillMix,
-								!skillMix.Included.HasValue ? string.Empty : (skillMix.Included.Value ? "Yes" : "No"),
+								skillMix.IncludedString,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.BOESkillMix,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
 								skillMix.Rationale
@@ -1374,7 +1374,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								commonDisclosure.BusinessResourceID,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.HistoricalHours,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.LaborSkillMix,
-								!commonDisclosure.Included.HasValue ? string.Empty : commonDisclosure.Included.Value ? "Yes" : "No",
+								commonDisclosure.IncludedString,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.BOESkillMix,
 								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
 								commonDisclosure.Rationale

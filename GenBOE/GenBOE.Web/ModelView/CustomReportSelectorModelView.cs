@@ -19,15 +19,16 @@
         /// </summary>
         public const string SELECT_FILTER_CRITERIA = "--- Select Filter Criteria ---";
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="workspaceName">Current Workspace name</param>
-        /// <param name="allBoeData">Data on all BOEs in the WS needed for custom export</param>
-        /// <param name="sortBy">Primary sort by field</param>
-        /// <param name="secondarySortBy">Secondary sort by field</param>
-        /// <param name="usingTemplateBoe">Whether Workspace is using Template BOE</param>
-        public CustomReportSelectorModelView(string workspaceName, ICollection<BoeCustomReportBoeData> allBoeData, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy, bool usingTemplateBoe)
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="workspaceName">Current Workspace name</param>
+		/// <param name="allBoeData">Data on all BOEs in the WS needed for custom export</param>
+		/// <param name="sortBy">Primary sort by field</param>
+		/// <param name="secondarySortBy">Secondary sort by field</param>
+		/// <param name="usingTemplateBoe">Whether Workspace is using Template BOE</param>
+		/// <param name="usingSkillMixTables">Whether Workspace is using Skill Mix Tables</param>
+		public CustomReportSelectorModelView(string workspaceName, ICollection<BoeCustomReportBoeData> allBoeData, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy, bool usingTemplateBoe, bool usingSkillMixTables)
         {
             this.WorkspaceName = workspaceName;
 
@@ -94,7 +95,7 @@
 
             foreach (BoeCustomReportComponent reportComponentVal in reportComponentValues)
             {
-                if (DisplayComponent(reportComponentVal, usingTemplateBoe, companyConfig))
+                if (DisplayComponent(reportComponentVal, usingTemplateBoe, usingSkillMixTables, companyConfig))
                 {
                     this.ComponentsUnselected.Add(new SelectListItem
                     {
@@ -119,11 +120,12 @@
         /// <param name="reportComponentVal">component</param>
         /// <param name="usingTemplateBOE">if WS is using Template BOE</param>
         /// <returns>True if component should be displayed, false if not</returns>
-        private bool DisplayComponent(BoeCustomReportComponent reportComponentVal, bool usingTemplateBOE, CompanyConfiguration companyConfig)
+        private bool DisplayComponent(BoeCustomReportComponent reportComponentVal, bool usingTemplateBOE, bool skillMixEnabled, CompanyConfiguration companyConfig)
         {
-            if (reportComponentVal == BoeCustomReportComponent.TaskMOQRationale && usingTemplateBOE
-                || reportComponentVal == BoeCustomReportComponent.TaskMOQAdditionalQueryFilters && (!usingTemplateBOE || companyConfig == CompanyConfiguration.SpaceSystems)
-                || reportComponentVal == BoeCustomReportComponent.TaskMOQEmployeeIDFilters && (!usingTemplateBOE || companyConfig == CompanyConfiguration.MST))
+            if ((reportComponentVal == BoeCustomReportComponent.TaskMOQRationale && usingTemplateBOE)
+                || (reportComponentVal == BoeCustomReportComponent.TaskMOQAdditionalQueryFilters && (!usingTemplateBOE || companyConfig == CompanyConfiguration.SpaceSystems))
+				|| (reportComponentVal == BoeCustomReportComponent.TaskMOQEmployeeIDFilters && (!usingTemplateBOE || companyConfig == CompanyConfiguration.MST))
+				|| (reportComponentVal == BoeCustomReportComponent.SkillMixTables && !skillMixEnabled))
             {
                 return false;
             }
@@ -300,8 +302,8 @@
         /// <param name="secondarySortBy">Secondary sort by field</param>
         /// <param name="selections">Selections made for the custom export</param>
         /// <param name="usingTemplateBoe">Whether workspace is using Template BOE</param>
-        public CustomReportSelectorModelView(string workspaceName, ICollection<BoeCustomReportBoeData> allBoeData, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy, BoeCustomReportSelections selections, bool usingTemplateBoe)
-            : this(workspaceName, allBoeData, sortBy, secondarySortBy, usingTemplateBoe)
+        public CustomReportSelectorModelView(string workspaceName, ICollection<BoeCustomReportBoeData> allBoeData, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy, BoeCustomReportSelections selections, bool usingTemplateBoe, bool usingSkillMixTables)
+            : this(workspaceName, allBoeData, sortBy, secondarySortBy, usingTemplateBoe, usingSkillMixTables)
         {
             if (selections != null)
             {

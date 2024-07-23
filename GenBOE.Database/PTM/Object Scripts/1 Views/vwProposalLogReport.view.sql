@@ -26,6 +26,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		2/22/2023	ranzalon			Add CustomerDueDate
 **		7/10/24		Dusan				PROPH-1563: Add AdditionalClassification field
 **		7/14/24		Dusan				PROPH-1559: Added reason for CCOPD = No
+**		7/18/24		Dusan				PROPH-1560: Added Include International Costs
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -74,6 +75,7 @@ SELECT
 	PC.[ProfitFeeWithCom] AS [Profit/Fee + COM],
 	PC.[ISGSTotalPrice] AS [Total Price],
 	PC.[ROSPercentage] AS [ROS %],
+	PC.IncludeInternationalCosts,
 	CAST(PC.ProposalSubmittalDate AS DATE) AS [Actual Submittal Date],
 	PT.ProposalType AS [Proposal Type],
 	dbo.udfCreateCommaSeparatedList (P.ProposalID, 1) AS [Contract Type],
