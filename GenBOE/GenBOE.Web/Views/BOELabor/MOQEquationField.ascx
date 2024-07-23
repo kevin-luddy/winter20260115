@@ -528,8 +528,12 @@
 									    <div class="resource-selection bootstrap text skill-mix-padding">
 										    <input tabindex="{{tabindex + 2}}" type="text" data-ng-model="item.BusinessResourceID" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels  | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" typeahead-on-select="brcSelected($item, item)">
 									    </div>
-                                        <button class="ies-action brc-button" data-ng-click="addRowForResource(item, moqType)" title="Add row for additional BRCs in resource"><span>+</span></button>
-                                        <button class="ies-danger brc-button" data-ng-click="deleteRowForResource(item, moqType)" title="Delete row"><span>X</span></button>
+                                        <div class="brc-padding">
+                                            <div class="brc-button add-row" data-ng-click="addRowForResource(item, moqType)" title="Add row for additional BRCs in resource">+</div>
+                                        </div>
+                                        <div class="brc-padding">
+                                            <div class="brc-button delete-row" data-ng-click="deleteRowForResource(item, moqType)" title="Delete row">X</div>
+                                        </div>
                                     </div>
                                 </td>
                                 <td>

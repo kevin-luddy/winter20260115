@@ -8806,6 +8806,11 @@ span.blue-link a{
     padding: 2px 5px;
 }
 
+.brc-padding {
+    padding-right: 2px;
+    padding-left 2px;
+}
+
 #commonDisclosureTableData td.business-resource-codes {
     overflow: visible;
 }
@@ -8820,12 +8825,14 @@ span.blue-link a{
     width: 100%;
 }
 
-#commonDisclosureTableData .brc-button{
+#commonDisclosureTableData .brc-button {
     width: 13px;
     height: 15px;
     padding-left: 0px;
     padding-right: 0px;
-    line-height: 0px;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 2px;
 }
 
 #commonDisclosureTableData .brc-wrapper {
@@ -8837,4 +8844,14 @@ span.blue-link a{
 #commonDisclosureTableData input.resize {
     height: 15px;
     font-size: 12px;
+}
+
+#commonDisclosureTableData .add-row {
+    background: linear-gradient(to bottom, #32DE68, #7BB98F 1px, #558E65);
+    background-color: #EEEEEE;
+}
+
+#commonDisclosureTableData .delete-row {
+    background: linear-gradient(to bottom, #fe0002, #fe0002 1px, #930000);
+    background-color: #EEEEEE;
 }
