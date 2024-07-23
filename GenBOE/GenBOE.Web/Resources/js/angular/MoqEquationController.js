@@ -1712,9 +1712,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
     $scope.getAndSetIsResourceValid = function (item, models) {
         item.IsResourceValid = true;
-        const input = item.ResourceInput;
+        const input = item.ResourceNew;
         if (input === undefined || (typeof input === 'string' && (input.length === 0
-            || models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+            || models.filter(function (r) { return r.ResourceName === input }).length < 1))) {
             item.IsResourceValid = false;
 		}
         return item.IsResourceValid;
@@ -1755,10 +1755,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
     $scope.resourceSelected = function (item, model) {
         $scope.setDirty();
 
-        if (item && item.ResourceDesc && item.ResourceDesc !== '') {
+		if (item && item.ResourceName && item.ResourceName !== '') {
             // resource was selected
-            model.ResourceNew = item.ResourceDesc;
-        }
+            model.ResourceNew = item.ResourceName;
+		}
     };
 
 }]);
