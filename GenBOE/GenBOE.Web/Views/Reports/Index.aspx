@@ -85,7 +85,7 @@
         Reports.registerForEvent('<%:WebConstants.EVENT_REPORTS_VIEW_REPORT %>', function (e, params) {
             <% if (!Utilities.DisablePiwik()) { %>
                if (piwikTracker3) {
-	                piwikTracker3.trackEvent('Export', 'BOE', params.reportName);
+	                piwikTracker3.trackEvent('Export', 'Report', params.reportName);
                }
             <% } %>
 
