@@ -10,6 +10,7 @@
         $('#CustomerReports a[name="CustomerReports-ViewButton"]').click(function () {
             var data = {};
             data.reportID = $(this).parents('tr').attr('pkid');
+            data.reportName = 'Customer Reports';
             data.ssrsUrl = $(this).parents('tr').attr('ssrsUrl');
             $(document).trigger('<%: WebConstants.EVENT_REPORTS_VIEW_REPORT %>', data);
         });

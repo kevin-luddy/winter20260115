@@ -10,6 +10,7 @@
         $('#GeneralReports a[name="GeneralReports-ViewButton"]').click(function () {
             var data = {};
             data.reportID = $(this).parents('tr').attr('pkid');
+            data.reportName = 'General Reports';
             $(document).trigger('<%: WebConstants.EVENT_REPORTS_VIEW_REPORT %>', data);
         });
 

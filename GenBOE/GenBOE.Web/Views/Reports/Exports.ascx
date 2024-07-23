@@ -35,6 +35,7 @@
             var data = {};
             data.reportID = reportID;
             data.ssrsUrl = ssrsUrl;
+            data.reportName = 'Workbench Offload';
             $(document).trigger('<%: WebConstants.EVENT_REPORTS_VIEW_REPORT %>', data);
         } else {
             if (reportID == '<%:(int)Reports.StandardReports%>') {
