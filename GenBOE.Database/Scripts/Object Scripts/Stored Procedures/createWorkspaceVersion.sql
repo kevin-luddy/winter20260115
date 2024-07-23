@@ -1257,8 +1257,8 @@ INSERT INTO [version].[CommonDisclosureSkillMix]
 [LaborSkillMix],
 [ResourceID],
 [BusinessResourceID],
-[BOEID],
 [BOETaskElementID],
+[BOEID],
 [MOQTypeSelectionID],
 [VersionId]
 )
