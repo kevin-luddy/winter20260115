@@ -11,6 +11,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
         $scope.newTableId = -1;
 		$scope.ResourceModels = BOEDetails.WSResources;
+		$scope.BusinessResourceCodeModels = BOEDetails.WSBusinessResourceCodes;
 
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
