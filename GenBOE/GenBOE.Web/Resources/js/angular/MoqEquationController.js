@@ -1467,11 +1467,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.addRowForResource = function (item, moqType) {
-		//$scope.setDirty();
 		var dupe = angular.copy(item);
-		// TODO: percentages?
 		dupe.BusinessResourceID = "";
 		dupe.CommonDisclosureSkillMixID = -1;
+		dupe.HistoricalHours = 0;
+		dupe.LaborSkillMix = 0;
+
 		moqType.CommonDisclosureTable.push(dupe);
 	};
 
@@ -1484,8 +1485,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				resourceRowCount++;
 			}
 			if (resourceRowCount > 1) {
-				item.Deleted = true;
-				//$scope.setDirty();
+				var index = moqType.CommonDisclosureTable.indexOf(item);
+				if (index > -1) { 
+					moqType.CommonDisclosureTable.splice(index, 1);
+				}
 				$scope.setCommonDisclosureTotals(moqType);
 				break;
 			}

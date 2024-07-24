@@ -519,7 +519,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr data-ng-repeat="item in moqType.CommonDisclosureTable" | filter: { Deleted: false } track by item.ResourceID" data-ng-hide="item.Deleted">
+                            <tr data-ng-repeat="item in moqType.CommonDisclosureTable" | filter: { Deleted: false } track by item.ResourceID" data-ng-hide="item.Deleted" orderBy="item.ResourceID">
                                 <td>
                                     <div class="text skill-mix-padding"> {{ item.ResourceID }} </div>
                                 </td>
