@@ -222,7 +222,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (originalMoqTypes.Any())
                         {
-                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId, true, null, null);
+                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId, true, null, null, taskDuplicate.BoeID);
                         }
 
                         if (rteTemplateAnswers.Any())
