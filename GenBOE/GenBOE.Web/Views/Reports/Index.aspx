@@ -83,6 +83,12 @@
         }; 
 
         Reports.registerForEvent('<%:WebConstants.EVENT_REPORTS_VIEW_REPORT %>', function (e, params) {
+            <% if (!Utilities.DisablePiwik()) { %>
+               if (piwikTracker3) {
+	                piwikTracker3.trackEvent('Export', 'Report', params.reportName);
+               }
+            <% } %>
+
             if (params.reportID == <%: (int)Reports.BOEStatus %>)
             {
                 $('#report').children().remove();
@@ -241,30 +247,30 @@
             </div>
         </div>
         <%  Html.RenderAction(WebConstants.ACTION_DISPLAY_EXPORTS);
-            if ((bool)ViewData["DisplayProjectMapOnly"] == false)
-            {
-                Html.RenderAction(WebConstants.ACTION_DISPLAY_GENERAL_REPORTS);
-            }
+			if ((bool)ViewData["DisplayProjectMapOnly"] == false)
+			{
+				Html.RenderAction(WebConstants.ACTION_DISPLAY_GENERAL_REPORTS);
+			}
 
-            if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
-            {%>
-                <div class="export-button-module module inner-collapsible">
+			//if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+			//{%>
+                <%--<div class="export-button-module module inner-collapsible">
                     <div class="module-header-data">
                         <button class="ies-action exportReportButton" id="Export-SelectedReports" onclick="ExportSelected()" type="button">Export Selected</button>
                     </div>
-                </div>
+                </div>--%>
               <%
                   // Html.RenderAction(WebConstants.ACTION_DISPLAY_SUMMARY_REPORTS);
-                  Html.RenderAction(WebConstants.ACTION_DISPLAY_CUSTOMER_REPORTS);
-                  Html.RenderAction(WebConstants.ACTION_DISPLAY_FINANCE_REPORTS);
-                  Html.RenderAction(WebConstants.ACTION_DISPLAY_ADDITIONAL_REPORTS);
+                  //Html.RenderAction(WebConstants.ACTION_DISPLAY_CUSTOMER_REPORTS);
+                  //Html.RenderAction(WebConstants.ACTION_DISPLAY_FINANCE_REPORTS);
+                  //Html.RenderAction(WebConstants.ACTION_DISPLAY_ADDITIONAL_REPORTS);
               %>
-                <div class="export-button-module2 module inner-collapsible">
+                <%--<div class="export-button-module2 module inner-collapsible">
                     <div class="module-header-data">
                         <button class="ies-action exportReportButton" id="Export-SelectedReports2" onclick="ExportSelected()" type="button">Export Selected</button>
                     </div>
-                </div>
-            <% }%>
+                </div>--%>
+            <%--<% }%>--%>
         <div class="report-footer">
             <div class="module-footer-left">
             </div>

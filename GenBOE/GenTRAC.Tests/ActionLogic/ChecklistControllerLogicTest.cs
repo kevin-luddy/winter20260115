@@ -1977,7 +1977,7 @@ namespace GenTRAC.Tests.ActionLogic
 				PricerId = 14,
 				ShowChecklistResponse = ShowChecklistResponse.Pricer,
 				SubmittedValue = "10",
-				ShowIncludeInternationalCosts = false
+				ProposalDateCreated = new DateTime(2022, 1, 1)
 			};
             
             checklistProposalPricingData = new ChecklistProposalPricingDataModelView()
