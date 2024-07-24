@@ -876,9 +876,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
 				}
 
-				if (totalSKillMixRowsProposedHours != moqEquationTotal.Value)
+				if (moqEquationTotal.HasValue && totalSKillMixRowsProposedHours != moqEquationTotal.Value)
 				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: Proposed Hours total must be equal to MoqTotal"));
+					errorMessages.Add(string.Format("Current Skill Mix Table: Proposed Hours total must be equal to Moq Equation Total"));
 				}
 
 				foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
