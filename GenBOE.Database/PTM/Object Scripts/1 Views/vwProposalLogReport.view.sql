@@ -24,11 +24,15 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **										Removed contract offer code.
 **		7/25/2022	Dusan / Thomas		IES-1499, IES-1510, IES-1511: Added new fields into the report: Cage Codes, Type of Contract Action, Cost thru COM
 **		2/22/2023	ranzalon			Add CustomerDueDate
-**		7/10/23		Dusan				PROPH-1563: Add AdditionalClassification field
+**		7/10/24		Dusan				PROPH-1563: Add AdditionalClassification field
+**		7/14/24		Dusan				PROPH-1559: Added reason for CCOPD = No
+**		7/18/24		Dusan				PROPH-1560: Added Include International Costs
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
 	p.AdditionalClassification,
+	cNo.Text AS ReasonCcopdNo,
+	P.ReasonCcopdNoOther,
 	CAST (P.DateCreated AS DATE) AS DateCreated,
 	YEAR(P.DateCreated) AS [Year],	
 	PA.ProgramAreaID as ProgramAreaID,
@@ -71,6 +75,7 @@ SELECT
 	PC.[ProfitFeeWithCom] AS [Profit/Fee + COM],
 	PC.[ISGSTotalPrice] AS [Total Price],
 	PC.[ROSPercentage] AS [ROS %],
+	PC.IncludeInternationalCosts,
 	CAST(PC.ProposalSubmittalDate AS DATE) AS [Actual Submittal Date],
 	PT.ProposalType AS [Proposal Type],
 	dbo.udfCreateCommaSeparatedList (P.ProposalID, 1) AS [Contract Type],
@@ -323,4 +328,5 @@ SELECT
 					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
 					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%NLF Forms%')) AS ppr
 			ON ppr.ProposalId = p.ProposalId 
+	LEFT OUTER JOIN [CcopdReasonsNo] cNo ON P.ReasonCcopdNo = cNO.Id
 GO

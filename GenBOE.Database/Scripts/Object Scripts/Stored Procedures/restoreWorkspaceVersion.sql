@@ -51,6 +51,7 @@ AS
 **		1/31/23		e405721				ACV-221 - Enable SAP Connection
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
+**		7/16/24		e405721				PROPH-2161: Update Restore Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -215,11 +216,23 @@ BEGIN
 				INNER JOIN BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId 
 				INNER JOIN dbo.BOE B ON tE.BOEID = B.BOEID
 			WHERE B.WorkspaceId = @WorkspaceId
+		DELETE FROM [dbo].[MOQTypeSelectionTableDataResourceHours]
+			FROM [dbo].[MOQTypeSelectionTableDataResourceHours] M
+			INNER JOIN dbo.BOE B ON M.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[MOQTypeSelectionTableData]
 			FROM [dbo].[MOQTypeSelectionTableData] TD
 			INNER JOIN [dbo].[MOQTypeSelection] M ON TD.MOQTypeSelectionId = M.MOQTypeSelectionId
 			INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
 			INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
+		DELETE FROM [dbo].[CommonDisclosureSkillMix]
+			FROM [dbo].[CommonDisclosureSkillMix] CD
+			INNER JOIN dbo.BOE B ON CD.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
+		DELETE FROM [dbo].[SkillMix]
+			FROM [dbo].[SkillMix] SM
+			INNER JOIN dbo.BOE B ON SM.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[MOQTypeSelection]
 			FROM [dbo].[MOQTypeSelection] M
@@ -2424,6 +2437,7 @@ BEGIN
 		SET IDENTITY_INSERT  [dbo].[RteTemplateAnswer] OFF
 
 		END
+		/** [dbo].[MOQTypeSelection] **/
 		IF EXISTS (SELECT 1 FROM [version].[MOQTypeSelection] WHERE VersionID = @VersionID)
 		BEGIN
 
@@ -2472,6 +2486,7 @@ BEGIN
 		SET IDENTITY_INSERT [dbo].[MOQTypeSelection] OFF
 
 		END
+		/** [dbo].[MOQTypeSelectionTableData] **/
 		IF EXISTS (SELECT 1 FROM [version].[MOQTypeSelectionTableData] WHERE VersionID = @VersionID)
 		BEGIN
 
@@ -2543,6 +2558,110 @@ BEGIN
 					WHERE ws.WorkspaceId = @WorkspaceID
 
 			SET IDENTITY_INSERT [dbo].[MoqTypeTableCustomFieldValueXREF] OFF
+
+		END
+
+		/** [dbo].[SkillMix] **/
+		IF EXISTS (SELECT 1 FROM [version].[SkillMix] WHERE VersionID = @VersionID)
+		BEGIN
+		SET IDENTITY_INSERT [dbo].[SkillMix] ON
+		INSERT INTO [dbo].[SkillMix]
+		([SkillMixID],
+		[Rationale],
+		[Included],
+		[ProposedHours],
+		[HistoricalHours],
+		[BOESkillMix],
+		[LaborSkillMix],
+		[ResourceOld],
+		[ResourceNew],
+		[BOETaskElementID],
+		[BOEID],
+		[MOQTypeSelectionID]
+		)
+		SELECT SM.[SkillMixID],
+			SM.[Rationale],
+			SM.[Included],
+			SM.[ProposedHours],
+			SM.[HistoricalHours],
+			SM.[BOESkillMix],
+			SM.[LaborSkillMix],
+			SM.[ResourceOld],
+			SM.[ResourceNew],
+			SM.[BOETaskElementID],
+			SM.[BOEID],
+			SM.[MOQTypeSelectionID]
+		FROM [version].[SkillMix] SM
+		WHERE 
+		SM.VersionId = @VersionID
+
+		SET IDENTITY_INSERT [dbo].[SkillMix] OFF
+
+		END
+
+		/** [dbo].[CommonDisclosureSkillMix] **/
+		IF EXISTS (SELECT 1 FROM [version].[CommonDisclosureSkillMix] WHERE VersionID = @VersionID)
+		BEGIN
+		SET IDENTITY_INSERT [dbo].[CommonDisclosureSkillMix] ON
+		INSERT INTO [dbo].[CommonDisclosureSkillMix]
+		([CommonDisclosureSkillMixID],
+		[Rationale],
+		[Included],
+		[ProposedHours],
+		[HistoricalHours],
+		[BOESkillMix],
+		[LaborSkillMix],
+		[ResourceID],
+		[BusinessResourceID],
+		[BOEID],
+		[BOETaskElementID],
+		[MOQTypeSelectionID]
+		)
+		SELECT CD.[CommonDisclosureSkillMixID],
+			CD.[Rationale],
+			CD.[Included],
+			CD.[ProposedHours],
+			CD.[HistoricalHours],
+			CD.[BOESkillMix],
+			CD.[LaborSkillMix],
+			CD.[ResourceID],
+			CD.[BusinessResourceID],
+			CD.[BOEID],
+			CD.[BOETaskElementID],
+			CD.[MOQTypeSelectionID]
+		FROM [version].[CommonDisclosureSkillMix] CD
+		WHERE 
+		CD.VersionId = @VersionID
+
+		SET IDENTITY_INSERT [dbo].[CommonDisclosureSkillMix] OFF
+
+		END
+
+		/** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
+		IF EXISTS (SELECT 1 FROM [version].[MOQTypeSelectionTableDataResourceHours] WHERE VersionID = @VersionID)
+		BEGIN
+		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableDataResourceHours] ON
+		INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
+		([MOQTypeSelectionTableDataResourceHoursId],
+		[ResourceName],
+		[WbsHours],
+		[TotalHours],
+		[MOQTypeSelectionTableDataId],
+		[BOETaskElementID],
+		[BOEID]
+		)
+		SELECT M.[MOQTypeSelectionTableDataResourceHoursId],
+			M.[ResourceName],
+			M.[WbsHours],
+			M.[TotalHours],
+			M.[MOQTypeSelectionTableDataId],
+			M.[BOETaskElementID],
+			M.[BOEID]
+		FROM [version].[MOQTypeSelectionTableDataResourceHours] M
+		WHERE 
+		M.VersionId = @VersionID
+
+		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableDataResourceHours] OFF
 
 		END
 
@@ -3039,6 +3158,9 @@ BEGIN
 		SET IDENTITY_INSERT [dbo].[MileageReimbursementRate] OFF
 		SET IDENTITY_INSERT [dbo].[MOQTypeSelection] OFF
 		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableData] OFF
+		SET IDENTITY_INSERT [dbo].[SkillMix] OFF
+		SET IDENTITY_INSERT [dbo].[CommonDisclosureSkillMix] OFF
+		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableDataResourceHours] OFF
 		SET IDENTITY_INSERT [dbo].[MoqTypeTableCustomFieldValueXREF] OFF
 		SET IDENTITY_INSERT [dbo].[ODCSpread] OFF
 		SET IDENTITY_INSERT [dbo].[ODCTaskElement] OFF
@@ -3095,5 +3217,3 @@ BEGIN
 	END CATCH
 END
 GO
-
-

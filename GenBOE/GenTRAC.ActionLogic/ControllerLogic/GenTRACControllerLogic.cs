@@ -546,6 +546,11 @@ namespace GenTRAC.ActionLogic
 							inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.PROFIT_FEE_NEEDED));
 						}
 					}
+
+					if (checklistGeneralInfo.ShowIncludeInternationalCosts && !checklistGeneralInfo.IncludeInternationalCosts.HasValue)
+					{
+						inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.INTERNATIONAL_COSTS_REQUIREED));
+					}
 				}
 
 				// only do PPR validation on a submit if its the Pricer saving and 
@@ -1127,7 +1132,8 @@ namespace GenTRAC.ActionLogic
 					OtherDirectCosts = string.IsNullOrEmpty(checklistProposalPricingData.OtherDirectCosts) ? (long?)null : long.Parse(checklistProposalPricingData.OtherDirectCosts.Replace(",", string.Empty)),
 					IsSubmit = isSubmit,
 					ResponseType = checklistPARDocumentData.ShowChecklistResponse == ShowChecklistResponse.Pricer ? ChecklistResponseType.Pricer : ChecklistResponseType.Peer,
-					DeliverChecklistDFARS = checklistGeneralInfo.DeliverChecklistDFARS
+					DeliverChecklistDFARS = checklistGeneralInfo.DeliverChecklistDFARS,
+					IncludeInternationalCosts = checklistGeneralInfo.IncludeInternationalCosts
 				};
 
 				// Save PPR responses
@@ -1314,6 +1320,7 @@ namespace GenTRAC.ActionLogic
 
 			FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
 
+			model.ProposalDateCreated = fullProposalDto.DateCreated;
 			model.IsReadOnly = this.IsProposalChecklistReadOnly(fullProposalDto);
 			model.ProposalID = fullProposalDto.Id;
 			// get pricer info
@@ -1343,6 +1350,8 @@ namespace GenTRAC.ActionLogic
 				{
 					model.EstimatingSubmitsToContractsDate = checklist.EstimatingSubmitsToContractsDate.Value.ToString("MM/dd/yyyy");
 				}
+
+				model.IncludeInternationalCosts = checklist.IncludeInternationalCosts;
 
 				// submitted value is SSC total price
 				model.SubmittedValue = checklist.SubmittedValue.ToString();

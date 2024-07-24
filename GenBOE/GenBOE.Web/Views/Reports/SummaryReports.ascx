@@ -11,6 +11,7 @@
             var data = {};
             data.reportID = $(this).parents('tr').attr('pkid');
             data.ssrsUrl = $(this).parents('tr').attr('ssrsUrl');
+            data.reportName = 'Summary Reports';
             $(document).trigger('<%: WebConstants.EVENT_REPORTS_VIEW_REPORT %>', data);
         });
 

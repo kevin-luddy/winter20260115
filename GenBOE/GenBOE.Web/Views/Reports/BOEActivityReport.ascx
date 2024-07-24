@@ -26,6 +26,7 @@
             data.reportID = <%: (int)Reports.BOEActivity %>;
             data.sortField = sortField;
             data.sortDirection = 'Asc';
+            data.reportName = 'BOE Activity'
 
             if (BOEActivityReport.sortField == sortField || BOEActivityReport.sortField == '') {
                 if (BOEActivityReport.sortDirection == 'Asc') {

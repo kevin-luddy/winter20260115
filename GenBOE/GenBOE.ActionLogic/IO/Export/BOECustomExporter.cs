@@ -6,31 +6,30 @@
 
 namespace GenBOE.ActionLogic.IO.Export
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Web;
-    using DocumentFormat.OpenXml;
-    using DocumentFormat.OpenXml.Packaging;
-    using DocumentFormat.OpenXml.Wordprocessing;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.IO.Export.BOE;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.Exceptions;
-    using IES.Common.OfficeUtilities;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Globalization;
+	using System.IO;
+	using System.Linq;
+	using System.Text;
+	using System.Text.RegularExpressions;
+	using System.Web;
+	using DocumentFormat.OpenXml;
+	using DocumentFormat.OpenXml.Packaging;
+	using DocumentFormat.OpenXml.Wordprocessing;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
 
 	/// <summary>
 	/// Used for exporting a BOE to a pre-formatted Work template

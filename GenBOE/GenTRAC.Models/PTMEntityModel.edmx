@@ -91,6 +91,13 @@
           <Property Name="Text" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="QuestionId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="CcopdReasonsNo">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Text" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
         <EntityType Name="ChecklistTypeLU">
           <Key>
             <PropertyRef Name="ChecklistTypeID" />
@@ -351,6 +358,8 @@
           <Property Name="CostVolumeToolID" Type="int" Nullable="false" />
           <Property Name="CostVolumeToolName" Type="varchar" MaxLength="50" />
           <Property Name="AdditionalClassification" Type="bit" />
+          <Property Name="ReasonCcopdNo" Type="int" />
+          <Property Name="ReasonCcopdNoOther" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -384,6 +393,7 @@
           <Property Name="Profit" Type="bigint" />
           <Property Name="Com" Type="bigint" />
           <Property Name="CostThroughCom" Type="bigint" />
+          <Property Name="IncludeInternationalCosts" Type="bit" />
         </EntityType>
         <EntityType Name="ProposalChecklistComplete">
           <Key>
@@ -714,6 +724,18 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="Proposal">
               <PropertyRef Name="ReasonCertificationNotRequired" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Proposal__Reason__43EBED27">
+          <End Role="CcopdReasonsNo" Type="Self.CcopdReasonsNo" Multiplicity="0..1" />
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CcopdReasonsNo">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ReasonCcopdNo" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1776,6 +1798,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="CostVolumeToolID" Type="int" Mode="In" />
           <Parameter Name="CostVolumeToolName" Type="varchar" Mode="In" />
           <Parameter Name="AdditionalClassification" Type="bit" Mode="In" />
+          <Parameter Name="ReasonCcopdNo" Type="int" Mode="In" />
+          <Parameter Name="ReasonCcopdNoOther" Type="varchar" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -1797,6 +1821,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="DeliverChecklistDFARS" Type="bit" Mode="In" />
           <Parameter Name="AbsoluteValue" Type="bigint" Mode="In" />
           <Parameter Name="CostThroughCom" Type="bigint" Mode="In" />
+          <Parameter Name="IncludeInternationalCosts" Type="bit" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklistTemplate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
@@ -1848,6 +1873,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="BOEToolLU" EntityType="Self.BOEToolLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CageCodes" EntityType="Self.CageCodes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CannedResponsesPAR" EntityType="Self.CannedResponsesPAR" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CcopdReasonsNo" EntityType="Self.CcopdReasonsNo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChecklistTypeLU" EntityType="Self.ChecklistTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ContractActionTypeLU" EntityType="Self.ContractActionTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ContractTypeGroupLU" EntityType="Self.ContractTypeGroupLU" Schema="dbo" store:Type="Tables" />
@@ -1966,6 +1992,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           </AssociationSet>
           <AssociationSet Name="FK__Proposal__Reason__04DA9AE4" Association="Self.FK__Proposal__Reason__04DA9AE4">
             <End Role="ReasonCertificationNotRequiredLU" EntitySet="ReasonCertificationNotRequiredLU" />
+            <End Role="Proposal" EntitySet="Proposal" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Proposal__Reason__43EBED27" Association="Self.FK__Proposal__Reason__43EBED27">
+            <End Role="CcopdReasonsNo" EntitySet="CcopdReasonsNo" />
             <End Role="Proposal" EntitySet="Proposal" />
           </AssociationSet>
           <AssociationSet Name="FK__ProposalC__CageC__6E4C3B47" Association="Self.FK__ProposalC__CageC__6E4C3B47">
@@ -3137,6 +3167,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="CostVolumeToolID" Mode="In" Type="Int32" />
             <Parameter Name="CostVolumeToolName" Mode="In" Type="String" />
             <Parameter Name="AdditionalClassification" Mode="In" Type="Boolean" />
+            <Parameter Name="ReasonCcopdNo" Mode="In" Type="Int32" />
+            <Parameter Name="ReasonCcopdNoOther" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
@@ -3158,6 +3190,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="DeliverChecklistDFARS" Mode="In" Type="Boolean" />
             <Parameter Name="AbsoluteValue" Mode="In" Type="Int64" />
             <Parameter Name="CostThroughCom" Mode="In" Type="Int64" />
+            <Parameter Name="IncludeInternationalCosts" Mode="In" Type="Boolean" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklistTemplate">
             <Parameter Name="ProposalID" Mode="In" Type="Int32" />
@@ -3520,6 +3553,11 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="CostVolumeToolLUs" EntityType="genTRACModel.CostVolumeToolLU" />
           <AssociationSet Name="FK__Proposal__CostVo__1D072A30" Association="genTRACModel.FK__Proposal__CostVo__1D072A30">
             <End Role="CostVolumeToolLU" EntitySet="CostVolumeToolLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <EntitySet Name="CcopdReasonsNoes" EntityType="genTRACModel.CcopdReasonsNo" />
+          <AssociationSet Name="FK__Proposal__Reason__43EBED27" Association="genTRACModel.FK__Proposal__Reason__43EBED27">
+            <End Role="CcopdReasonsNo" EntitySet="CcopdReasonsNoes" />
             <End Role="Proposal" EntitySet="Proposals" />
           </AssociationSet>
           </EntityContainer>
@@ -3952,6 +3990,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="Profit" Type="Int64" />
           <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="ProposalChecklist" ToRole="Proposal" />
           <Property Name="CostThroughCom" Type="Int64" />
+          <Property Name="IncludeInternationalCosts" Type="Boolean" />
         </EntityType>
         <EntityType Name="AttachmentTypeLU">
           <Key>
@@ -4164,6 +4203,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="CostVolumeToolName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CostVolumeToolLU" Relationship="genTRACModel.FK__Proposal__CostVo__1D072A30" FromRole="Proposal" ToRole="CostVolumeToolLU" />
           <Property Name="AdditionalClassification" Type="Boolean" />
+          <Property Name="ReasonCcopdNo" Type="Int32" />
+          <Property Name="ReasonCcopdNoOther" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CcopdReasonsNo" Relationship="genTRACModel.FK__Proposal__Reason__43EBED27" FromRole="Proposal" ToRole="CcopdReasonsNo" />
         </EntityType>
         <Association Name="FK_Proposal_BOEToolLU">
           <End Type="genTRACModel.BOEToolLU" Role="BOEToolLU" Multiplicity="1" />
@@ -4535,6 +4577,26 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="Proposal">
               <PropertyRef Name="CostVolumeToolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CcopdReasonsNo">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Text" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK__Proposal__Reason__43EBED27" FromRole="CcopdReasonsNo" ToRole="Proposal" />
+        </EntityType>
+        <Association Name="FK__Proposal__Reason__43EBED27">
+          <End Type="genTRACModel.CcopdReasonsNo" Role="CcopdReasonsNo" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CcopdReasonsNo">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ReasonCcopdNo" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5178,6 +5240,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="ProposalChecklists">
             <EntityTypeMapping TypeName="genTRACModel.ProposalChecklist">
               <MappingFragment StoreEntitySet="ProposalChecklist">
+                <ScalarProperty Name="IncludeInternationalCosts" ColumnName="IncludeInternationalCosts" />
                 <ScalarProperty Name="CostThroughCom" ColumnName="CostThroughCom" />
                 <ScalarProperty Name="Profit" ColumnName="Profit" />
                 <ScalarProperty Name="Com" ColumnName="Com" />
@@ -5301,6 +5364,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="ReasonCcopdNoOther" ColumnName="ReasonCcopdNoOther" />
+                <ScalarProperty Name="ReasonCcopdNo" ColumnName="ReasonCcopdNo" />
                 <ScalarProperty Name="AdditionalClassification" ColumnName="AdditionalClassification" />
                 <ScalarProperty Name="CostVolumeToolName" ColumnName="CostVolumeToolName" />
                 <ScalarProperty Name="CostVolumeToolID" ColumnName="CostVolumeToolID" />
@@ -5419,6 +5484,14 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="CostVolumeTool" ColumnName="CostVolumeTool" />
                 <ScalarProperty Name="CostVolumeToolID" ColumnName="CostVolumeToolID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CcopdReasonsNoes">
+            <EntityTypeMapping TypeName="genTRACModel.CcopdReasonsNo">
+              <MappingFragment StoreEntitySet="CcopdReasonsNo">
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

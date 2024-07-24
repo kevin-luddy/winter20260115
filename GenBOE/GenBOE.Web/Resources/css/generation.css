@@ -1759,8 +1759,7 @@ button.ui-datepicker-trigger
     overflow: hidden;
     text-overflow: ellipsis;
     border-left: none;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding: 4px;
 }
 
 .grid td > *
@@ -3442,7 +3441,6 @@ table.manage-historical-metrics-grid
 {
     margin-top: 2px;
     overflow:auto;
-    height:300px;
 }
 
 .boevalidate-validation-results h1,

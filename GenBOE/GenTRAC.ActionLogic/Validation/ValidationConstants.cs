@@ -99,10 +99,20 @@ namespace GenTRAC.ActionLogic.Validation
             /// </summary>
             public const string CERTIFIED_COST_PRICING_DATA_REQUIRED = GENERAL_INFO_VALIDATION + "\"Is Certified Cost and Pricing Data Required?\" response is required.";
 
-            /// <summary>
-            /// The certified cost pricing data is required on the Proposal tab.
-            /// </summary>
-            public const string CERTIFIED_COST_PRICING_DATA_CLASSIFIED_REQUIRED = GENERAL_INFO_VALIDATION + "\"Is Certified Cost and Pricing Data Classified?\" response is required.";
+			/// <summary>
+			/// If CCOPD = no, reason is required
+			/// </summary>
+			public const string CCOPD_NO_REASON_REQUIRED = GENERAL_INFO_VALIDATION + "\"Please provide reason why CCoPD is not required\" response is required.";
+
+			/// <summary>
+			/// If CCOPD = no reason is other, then other text is required
+			/// </summary>
+			public const string CCOPD_NO_OTHER_REASON_REQUIRED = GENERAL_INFO_VALIDATION + "\"Please provide reason why CCoPD is not required - Other\" response is required.";
+
+			/// <summary>
+			/// The certified cost pricing data is required on the Proposal tab.
+			/// </summary>
+			public const string CERTIFIED_COST_PRICING_DATA_CLASSIFIED_REQUIRED = GENERAL_INFO_VALIDATION + "\"Is Certified Cost and Pricing Data Classified?\" response is required.";
 
 			/// <summary>
 			/// Higher level clearance required beyond standard clearance requirements required on the Proposal tab.
@@ -639,6 +649,11 @@ namespace GenTRAC.ActionLogic.Validation
             /// proposal submittal date format 
             /// </summary>
             public const string SUBMITTAL_DATE_FORMAT = GENERAL_INFO_VALIDATION + "Proposal Submittal Date format must be mm/dd/yyyy";
+
+			/// <summary>
+			/// proposal submittal date format 
+			/// </summary>
+			public const string INTERNATIONAL_COSTS_REQUIREED = GENERAL_INFO_VALIDATION + "Does this proposal include international costs estimated by Global Mobility is required";
 
 			/// <summary>
 			/// Proposal checklist saved already

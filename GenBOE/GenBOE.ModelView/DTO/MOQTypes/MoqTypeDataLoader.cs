@@ -264,6 +264,11 @@ namespace GenBOE.DataBridge.DTO
 						dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale, 
 						dtoToUpsert.HistoricalReferenceExplanation).FirstOrDefault();
 
+					if (dtoToUpsert.BoeId < 1)
+					{
+						dtoToUpsert.BoeId = gbe.BOETaskElements.Where(b => b.BOETaskElementID == dtoToUpsert.TaskId).Select(t => t.BOEID).First();
+					}
+
 					foreach(MoqTableData table in dtoToUpsert.TableData.Where(x => x.DateOfReport.Date != DateTime.MinValue.Date))
 					{
 						int? tableId = gbe.upsertMOQTypeSelectionTableData(table.Id, toReturn, table.UpdateDate, table.Order, table.TableName, table.RepositoryName, table.QueryType,
