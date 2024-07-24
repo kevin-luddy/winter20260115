@@ -815,6 +815,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="copyWithinSameWorkspace">Are we copying within the same workspace</param>
         /// <param name="originalWorkspaceCreationDate">Original workspace creation date</param>
         /// <param name="workspaceCreationDate">Workspace Creation Date</param>
+		/// <param name="newBoeId">New BOE ID</param>
         internal void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, bool copyWithinSameWorkspace, DateTime? originalWorkspaceCreationDate,
 DateTime? workspaceCreationDate, int newBoeId)
         {

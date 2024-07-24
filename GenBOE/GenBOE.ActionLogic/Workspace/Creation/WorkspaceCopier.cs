@@ -1338,11 +1338,10 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 		/// Copies MOQ Type Selections
 		/// </summary>
 		/// <param name="moqTypesToCopy">MOQ Types to copy</param>
-		/// <param name="newTaskId">New Task Id</param>
-		/// <param name="newBoeId">New Boe Id</param>
 		/// <param name="customFieldIDMapping">Workspace custom field id mappings</param>
 		/// <param name="customFieldValueIDMapping">Custom Field Value Id Mapping</param>
 		/// <param name="workspaceCreationDate">Original Workspace Creation Date</param>
+		/// <param name="boeIdMapping">Boe ID mapping.</param>
 		private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, IDictionary<int, int> taskIdMapping, IDictionary<int, int> customFieldIDMapping, IDictionary<int, int> customFieldValueIDMapping,
             DateTime? workspaceCreationDate, IDictionary<int, int> boeIdMapping)
         {
