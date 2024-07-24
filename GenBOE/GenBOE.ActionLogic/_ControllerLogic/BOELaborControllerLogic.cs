@@ -16,7 +16,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web.Configuration;
 	using System.Web.Mvc;
 	using System.Windows.Input;
-	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -4110,22 +4109,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				if (commonDisclosureSMData != null && commonDisclosureSMData.Any())
 				{
 					//get a map of the old rows that match resources in the new data since you can have multiple for brc
-					Dictionary<string, ICollection<CommonDisclosureModelView>> resourceToRowMap = new Dictionary<string, ICollection<CommonDisclosureModelView>>();
-					foreach (CommonDisclosureModelView newRow in newRows)
-					{
-						foreach (CommonDisclosureModelView oldRow in commonDisclosureSMData)
-						{
-							if (newRow.ResourceID == oldRow.ResourceID)
-							{
-								if (!resourceToRowMap.ContainsKey(newRow.ResourceID))
-								{
-									resourceToRowMap.Add(newRow.ResourceID, new List<CommonDisclosureModelView>());
-								}
-							
-								resourceToRowMap[newRow.ResourceID].Add(oldRow);
-							}
-						}
-					}
+
+					Dictionary<string, List<CommonDisclosureModelView>> resourceToRowMap = commonDisclosureSMData.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
+
 					//for all data in skill mix, either create a new row or if it exists (by resource), create a row for each of the brcs
 					//TODO: might have to fix for BRC when they come from mapping and not user input
 					foreach (CommonDisclosureModelView newRow in newRows)
