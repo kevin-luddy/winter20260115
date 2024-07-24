@@ -4091,24 +4091,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				IEnumerable<IGrouping<int, SkillMixModelView>> groupedResourceHours = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value)
-					.GroupBy(r => r.MOQTypeSelectionID);
-				foreach (IGrouping<int, SkillMixModelView> grouping in groupedResourceHours)
-				{
-					decimal totalGroupHours = grouping.Sum(g => g.HistoricalHours);
+				IEnumerable<SkillMixModelView> filteredSkillMixData = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value);
+				decimal totalGroupHours = filteredSkillMixData.Sum(g => g.HistoricalHours);
 
-					foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value))
-					{
-						//TODO: BRCs when sap is hooked up
-						newTable.Add(
-							new CommonDisclosureModelView
-							{
-								HistoricalHours = skillMix.HistoricalHours,
-								ResourceID = skillMix.ResourceNew,
-								LaborSkillMix = skillMix.HistoricalHours / totalGroupHours
-							}
-						);
-					}
+				foreach (SkillMixModelView skillMix in filteredSkillMixData)
+				{
+					//TODO: BRCs when sap is hooked up
+					newTable.Add(
+						new CommonDisclosureModelView
+						{
+							HistoricalHours = skillMix.HistoricalHours,
+							ResourceID = skillMix.ResourceNew,
+							LaborSkillMix = skillMix.HistoricalHours / totalGroupHours
+						}
+					);
 				}
 
 				// reconcile the other values in the existing rows (if any)
