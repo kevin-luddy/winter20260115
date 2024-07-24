@@ -97,6 +97,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
         /// <summary>
         /// Performs a non-exact copy of a workspace
+		/// TODO Thomas: Update this
         /// </summary>
         /// <param name="workspaceToCopy">Workspace to copy</param>
         /// <param name="newWorkspace">Workspace being copied to</param>
@@ -1111,6 +1112,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
         /// <summary>
         /// Copy BOE Task Elements
+		/// TODO Thomas: This is where I need to look into copying
         /// </summary>
         /// <param name="boeIDMapping">Boe Id Mapping</param>
         /// <param name="wbsIDMapping">Wbs Id Mapping</param>
