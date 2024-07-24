@@ -189,7 +189,6 @@ namespace GenBOE.ActionLogic.CopyBOE
 
         /// <summary>
         /// Duplicates labor tasks within a BOE. This is used for task duplication, not during the BOE copy process.
-		/// TODO Thomas: Need to make changes here
         /// </summary>
         /// <param name="duplicateRequest">Dictionary of labor task IDs and the number of duplicates requested for the task.</param>
         /// <param name="boe">BOE that contains the task to be duplicated</param>
@@ -602,7 +601,6 @@ namespace GenBOE.ActionLogic.CopyBOE
 
         /// <summary>
         /// Copies task elements from one BOE to another.
-		/// TODO Thomas: Make changes here.
         /// </summary>
         /// <param name="inSourceBOE">Source BOE.</param>
         /// <param name="inDestinationBOE">Destination BOE.</param>
@@ -742,7 +740,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (moqTypesToCopy.Any())
                         {
-                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, copyWithinSameWorkspace, inSourceBOE.Workspace.CreationDate, inDestinationWorkspace.CreationDate);
+                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, copyWithinSameWorkspace, inSourceBOE.Workspace.CreationDate, inDestinationWorkspace.CreationDate, taskElementCopy.BoeID);
                         }
 
                         if (inUseMetricIDs.Any())
@@ -818,7 +816,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="originalWorkspaceCreationDate">Original workspace creation date</param>
         /// <param name="workspaceCreationDate">Workspace Creation Date</param>
         internal void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, bool copyWithinSameWorkspace, DateTime? originalWorkspaceCreationDate,
-DateTime? workspaceCreationDate)
+DateTime? workspaceCreationDate, int newBoeId)
         {
             _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
 
@@ -833,6 +831,7 @@ DateTime? workspaceCreationDate)
                 newMoqType.Id = --i;
                 newMoqType.Updateable = UpdateType.Upsert;
                 newMoqType.TaskId = newTaskId;
+				newMoqType.BoeId = newBoeId;
 
                 existingMoqType.TableData.ForEach(existingTable =>
                 {
@@ -870,7 +869,6 @@ Utilities.IsSAPEnabledForSystem && (Utilities.ShowSAPForWorkspace(originalWorksp
 
         /// <summary>
         /// Returns a duplicate of a labor task that can be saved.
-		/// TODO Thomas: Make changes here.
         /// </summary>
         /// <param name="inSourceBOE">Full BOE</param>
         /// <param name="taskElementToCopy">ID of task to be copied</param>

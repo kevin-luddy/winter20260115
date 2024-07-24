@@ -97,7 +97,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
         /// <summary>
         /// Performs a non-exact copy of a workspace
-		/// TODO Thomas: Update this
         /// </summary>
         /// <param name="workspaceToCopy">Workspace to copy</param>
         /// <param name="newWorkspace">Workspace being copied to</param>
@@ -1112,7 +1111,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
         /// <summary>
         /// Copy BOE Task Elements
-		/// TODO Thomas: This is where I need to look into copying
         /// </summary>
         /// <param name="boeIDMapping">Boe Id Mapping</param>
         /// <param name="wbsIDMapping">Wbs Id Mapping</param>
@@ -1299,7 +1297,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 
                 originalTaskIdMapping.ForEach(x => { postSaveMapping.Add(x.Key, postSaveTaskElementMapping[x.Value]); } );
 
-                this.CopyMoqTypes(moqTypesToCopy, postSaveMapping, customFieldIDMapping, customFieldValueIDMapping, workspaceCreationDate);
+                this.CopyMoqTypes(moqTypesToCopy, postSaveMapping, customFieldIDMapping, customFieldValueIDMapping, workspaceCreationDate, boeIDMapping);
             }
 
             // Copy any Task-level RTE Custom Template Answers
@@ -1346,7 +1344,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 		/// <param name="customFieldValueIDMapping">Custom Field Value Id Mapping</param>
 		/// <param name="workspaceCreationDate">Original Workspace Creation Date</param>
 		private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, IDictionary<int, int> taskIdMapping, IDictionary<int, int> customFieldIDMapping, IDictionary<int, int> customFieldValueIDMapping,
-            DateTime? workspaceCreationDate)
+            DateTime? workspaceCreationDate, IDictionary<int, int> boeIdMapping)
         {
             _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
             _ = taskIdMapping ?? throw new ArgumentNullException(nameof(taskIdMapping));
@@ -1362,6 +1360,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 newMoqType.Id = --i;
                 newMoqType.Updateable = UpdateType.Upsert;
                 newMoqType.TaskId = taskIdMapping[existingMoqType.TaskId];
+				newMoqType.BoeId = boeIdMapping[existingMoqType.BoeId];
 
                 existingMoqType.TableData.ForEach(existingTable =>
                 {
