@@ -86,7 +86,7 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
 		/// <summary>
 		/// Should we display the Include International Costs Section?
 		/// </summary>
-		public bool ShowIncludeInternationalCosts { get; set; }
+		public bool ShowIncludeInternationalCosts => (ProposalDateCreated ?? DateTime.Now) >= ConfigurationUtilities.GetAppSetting<DateTime>("InternationalCostStartDate");
 
 		/// <summary>
 		/// constructor
@@ -98,8 +98,6 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
             this.DeliverChecklistDFARS = false;
             this.ShowDFARQuestion = true;
             this.IsPTMChecklistUIEnabled = true;
-
-			this.ShowIncludeInternationalCosts = (ProposalDateCreated ?? DateTime.Now) >= ConfigurationUtilities.GetAppSetting<DateTime>("InternationalCostStartDate");
 		}
     }
 }
