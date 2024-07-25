@@ -4091,19 +4091,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="commonDisclosureSMData">The current skill mix data</param>
-		public ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
+		public  ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
 		{
 			ICollection<CommonDisclosureModelView> newTable = new List<CommonDisclosureModelView>();
-			
+
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				IEnumerable<SkillMixModelView> filteredSkillMixData = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value);
+				ICollection<CommonDisclosureModelView> newRows  = new List<CommonDisclosureModelView>();
+
+				//get all the data from skill mix 
+				//for RMS, the current resource can be empty until the user sets it, don't add this to common disclosure
+				IEnumerable<SkillMixModelView> filteredSkillMixData = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew));
 				decimal totalGroupHours = filteredSkillMixData.Sum(g => g.HistoricalHours);
 
 				foreach (SkillMixModelView skillMix in filteredSkillMixData)
 				{
-					//TODO: BRCs when sap is hooked up
-					newTable.Add(
+					newRows.Add(
 						new CommonDisclosureModelView
 						{
 							HistoricalHours = skillMix.HistoricalHours,
@@ -4112,40 +4115,49 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 					);
 				}
-
-				// reconcile the other values in the existing rows (if any)
 				if (commonDisclosureSMData != null && commonDisclosureSMData.Any())
 				{
-					foreach (CommonDisclosureModelView currentData in commonDisclosureSMData)
+					//get mapping of resources to brcs
+
+					//get a map of the old rows that match resources in the new data since you can have multiple for brc
+					Dictionary<string, List<CommonDisclosureModelView>> resourceToRowMap = commonDisclosureSMData.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
+
+					//for all data in skill mix, either create a new row or if it exists (by resource), create a row for each of the brcs
+					//TODO: might have to fix for BRC when they come from mapping and not user input
+					foreach (CommonDisclosureModelView newRow in newRows)
 					{
-						if (string.IsNullOrEmpty(currentData.BusinessResourceID))
+						if (resourceToRowMap.TryGetValue(newRow.ResourceID, out List<CommonDisclosureModelView> foundValue))
 						{
-							currentData.BusinessResourceID = string.Empty;
+							foreach (CommonDisclosureModelView oldRow in foundValue)
+							{
+								newTable.Add(
+									new CommonDisclosureModelView
+									{
+										HistoricalHours = oldRow.HistoricalHours,
+										ResourceID = newRow.ResourceID,
+										LaborSkillMix = oldRow.LaborSkillMix,
+										Included = oldRow.Included,
+										MOQTypeSelectionID = oldRow.MOQTypeSelectionID,
+										IsPercentLocked = oldRow.IsPercentLocked,
+										IsUserInput = oldRow.IsUserInput,
+										BusinessResourceID = string.IsNullOrEmpty(oldRow.BusinessResourceID) ? string.Empty : oldRow.BusinessResourceID,
+										Rationale = oldRow.Rationale,
+										BOESkillMix = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.BOESkillMix : 0m,
+										ProposedHours = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.ProposedHours : 0m
+									}
+								);
+							}
 						}
-
-						CommonDisclosureModelView newData;
-						newData = newTable.FirstOrDefault(s => s.ResourceID == currentData.ResourceID && s.BusinessResourceID == currentData.BusinessResourceID);
-
-						if (newData != null)
+						else
 						{
-							// If there is a match, then copy over the other row information
-							newData.Included = currentData.Included;
-							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
-							newData.IsPercentLocked = currentData.IsPercentLocked;
-							newData.IsUserInput = currentData.IsUserInput;
-
-							newData.Rationale = currentData.Rationale;
-							if (newData.Included.HasValue && newData.Included.Value)
-							{
-								newData.BOESkillMix = currentData.BOESkillMix;
-								newData.ProposedHours = currentData.ProposedHours;
-							}
-							else
-							{
-								//if included, 0 else blank but required to fill in (included is blank by default though so this is weird)
-								newData.BOESkillMix = 0m;
-								newData.ProposedHours = 0m;
-							}
+							newTable.Add(
+								new CommonDisclosureModelView
+								{
+									HistoricalHours = newRow.HistoricalHours,
+									ResourceID = newRow.ResourceID,
+									LaborSkillMix = newRow.LaborSkillMix
+								}
+							);
 						}
 					}
 				}
