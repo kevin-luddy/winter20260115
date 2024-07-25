@@ -4091,8 +4091,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				//decimal totalHours = resourceHours.Sum(n => n.TotalHours);
-				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value))
+				IEnumerable<SkillMixModelView> filteredSkillMixData = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value);
+				decimal totalGroupHours = filteredSkillMixData.Sum(g => g.HistoricalHours);
+
+				foreach (SkillMixModelView skillMix in filteredSkillMixData)
 				{
 					//TODO: BRCs when sap is hooked up
 					newTable.Add(
@@ -4100,7 +4102,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						{
 							HistoricalHours = skillMix.HistoricalHours,
 							ResourceID = skillMix.ResourceNew,
-							LaborSkillMix = skillMix.LaborSkillMix
+							LaborSkillMix = skillMix.HistoricalHours / totalGroupHours
 						}
 					);
 				}
