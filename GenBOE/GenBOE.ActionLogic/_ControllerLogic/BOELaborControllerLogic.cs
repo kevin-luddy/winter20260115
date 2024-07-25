@@ -4089,12 +4089,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			ICollection<CommonDisclosureModelView> newTable = new List<CommonDisclosureModelView>();
 
-			Task<IESResponse<SkillMixConvertedResourceViewModel>> response;
-
-			response = Task.Run(async () => await GetSkillMixConvertedResources());
-
-			ICollection<SkillMixConvertedResourceViewModel>  test = response.Result.Data;
-
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
 				ICollection<CommonDisclosureModelView> newRows  = new List<CommonDisclosureModelView>();
@@ -4126,9 +4120,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					//TODO: might have to fix for BRC when they come from mapping and not user input
 					foreach (CommonDisclosureModelView newRow in newRows)
 					{
-						if (resourceToRowMap.ContainsKey(newRow.ResourceID))
+						if (resourceToRowMap.TryGetValue(newRow.ResourceID, out List<CommonDisclosureModelView> foundValue))
 						{
-							foreach (CommonDisclosureModelView oldRow in resourceToRowMap[newRow.ResourceID])
+							foreach (CommonDisclosureModelView oldRow in foundValue)
 							{
 								newTable.Add(
 									new CommonDisclosureModelView
@@ -4150,11 +4144,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 						else
 						{
-							//
-							//foreach (SkillMixConvertedResourceViewModel convertedResource in convertedResources)
-							//{
-
-							//}
 							newTable.Add(
 								new CommonDisclosureModelView
 								{
