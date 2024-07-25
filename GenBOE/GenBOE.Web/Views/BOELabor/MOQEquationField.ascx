@@ -462,8 +462,8 @@
                                 </td>
                                 <td data-ng-class="{'inputError': item.Included === true && item.BOESkillMix === null }">
                                         <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding boe-skill-mix">
-                                            <div style="display: flex; align-items: center;">
-                                                <input type="number" maxlength="5" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false" style="width: 100%;" />
+                                            <div>
+                                                <input type="number" maxlength="5" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false" />
                                                 <div>%</div>
                                             </div>
                                         </div>
