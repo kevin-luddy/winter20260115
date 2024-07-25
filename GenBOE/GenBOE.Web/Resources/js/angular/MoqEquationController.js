@@ -1106,7 +1106,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				if (response.data.IsSuccessful === true) {
 					// the response is wrapped inside response.data.data array
 					if (response.data.data && Array.isArray(response.data.data)) {
-
 						// update the moq data table with calculated values
 						response.data.data.forEach(result => {
 							const res = result.Data[0];
@@ -1423,6 +1422,49 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
+	$scope.getMOQTotal = function () {
+		// Ensure the element with id 'equals' exists
+		var moqEquationElement = $('#equals');
+		if (moqEquationElement.length === 0) {
+			return 0;
+		}
+
+		// Get the text content and remove non-numeric characters (except for the decimal point)
+		var moqEquationTotal = moqEquationElement.text().replace(/,/g, '');
+
+		// Parse the string to a float
+		var parsedMoq = parseFloat(moqEquationTotal);
+		if (isNaN(parsedMoq)) {
+			parsedMoq = 0;
+		}
+
+		return parsedMoq;
+	};
+
+	$scope.updateBOESkillMixFromIncludedChange = function (item) {
+		if (item.Included === false || item.Included === null) {
+			item.BOESkillMix = 0;
+		}
+		if (item.Included === true) {
+			item.BOESkillMix = null;
+		}
+		$scope.updateProposedHours(item);
+	};
+
+	$scope.updateProposedHours = function (item) {
+		let totalMOQ = $scope.getMOQTotal();
+		if (totalMOQ > 0) {
+			item.ProposedHours = parseFloat((totalMOQ * (item.BOESkillMix / 100)).toFixed(1));
+		}
+	};
+
+	$scope.updateBOESkillMix = function (item) {
+		let totalMOQ = $scope.getMOQTotal();
+		if (totalMOQ > 0) {
+			item.BOESkillMix = parseFloat(((item.ProposedHours / totalMOQ) * 100).toFixed(2));
+		}
+	};
+
 	$scope.refreshCommonDisclosureTable = function (moqType) {
 		// Get all the data tables
 		const data = {
@@ -1438,7 +1480,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			// send to backend
 			// display response to user
 			$(document).trigger("SHOW_LOADING_BOX");
-
 			$http({
 				method: 'POST',
 				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
@@ -1758,7 +1799,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			// Set Skill Mix Totals
 			moqType.HistoricalSkillMixHoursTotal += item.HistoricalHours;
 			moqType.LaborSkillMixTotal += item.LaborSkillMix;
-			moqType.BoeSkillMixTotal += item.BOESkillMix;
+			moqType.BoeSkillMixTotal += parseFloat(item.BOESkillMix) || 0;
 			moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
 		});
 	}
@@ -2387,6 +2428,10 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
 			var scope = angular.element(document.querySelector("#TaskElementsComposite")).scope();
 			scope.moqUpdated(MOQEquationFieldWidget.initialLoad);
 			scope.$apply();
+
+			var moqScope = angular.element(document.querySelector("#MOQEquationField")).scope();
+			moqScope.moqUpdated(MOQEquationFieldWidget.initialLoad);
+			moqScope.$apply();
 		}
 		else {
 			MOQEquationFieldWidget.MOQCalculationError(results.Message);

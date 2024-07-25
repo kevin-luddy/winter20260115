@@ -378,8 +378,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				this.CleanupLaborTaskData(ws, modelView);
 
-				// Validate Task Details Composite
-				this.ValidateTaskDetails(boe, modelView, validationErrors, ws);
+
 
 				// Validate Task Variables
 				bool addNullValidationError = true;
@@ -396,7 +395,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 
 				// Validate Numbers
-				this.ValidateMoqEquationAndValues(ws, boe, modelView, validationErrors);
+				decimal? moqEquationTotal = this.ValidateMoqEquationAndValues(ws, boe, modelView, validationErrors);
+
+				// Validate Task Details Composite
+				this.ValidateTaskDetails(boe, modelView, validationErrors, ws, moqEquationTotal);
 
 				// Validate Precision
 				if (modelView.LaborTypesData.Any())
@@ -447,7 +449,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="boe">Full BOE</param>
 		/// <param name="modelView">Model to validate</param>
 		/// <param name="validationErrors">Validation Errors</param>
-		private void ValidateMoqEquationAndValues(FullWorkspace ws, FullBoe boe, LaborTaskDataModelView modelView, ICollection<ValidationMessage> validationErrors)
+		/// <returns>Moq Equation Total</returns>
+		private decimal? ValidateMoqEquationAndValues(FullWorkspace ws, FullBoe boe, LaborTaskDataModelView modelView, ICollection<ValidationMessage> validationErrors)
 		{
 			decimal? moqResult = 0;
 			decimal tempMoqResult;
@@ -509,6 +512,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 			}
+			return moqResult;
 		}
 
 		/// <summary>
@@ -1460,8 +1464,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="boeDTO">boe</param>
 		/// <param name="laborTaskData">task modelview includes task details, labors, and spreads</param>
 		/// <param name="inValidationErrors">validation errors</param>
-		/// <param name="ws">workspace</param>
-		public void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws)
+		/// <param name="ws">workspace</param>		
+		/// <param name="moqEquationTotal"> Moq equation total</param>
+		public void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws, decimal? moqEquationTotal = null)
 		{
 			_ = boeDTO ?? throw new ArgumentNullException(nameof(boeDTO));
 			_ = inValidationErrors ?? throw new ArgumentNullException(nameof(inValidationErrors));
@@ -1479,7 +1484,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
 			this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
 			this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
-			this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors);
+			this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors, moqEquationTotal);
 			this.ValidateMoqTypeTableCustomFields(laborTaskData, ws, inValidationErrors);
 		}
 
@@ -1806,12 +1811,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="ws">Full WS</param>
 		/// <param name="taskData">Task Data</param>
-		/// <param name="errors">Validation Errors</param>
-		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
+		/// <param name="errors">Validation Errors</param>		
+		/// <param name="moqEquationTotal"> Moq equation total</param>
+		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, decimal? moqEquationTotal = null)
 		{
 			if (ws.UsingTemplateBOE)
 			{
-				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false);
+				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal);
 				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 			}
 		}

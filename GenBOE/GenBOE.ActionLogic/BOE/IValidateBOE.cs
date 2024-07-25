@@ -32,13 +32,14 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <returns>Validation data</returns>
         ValidationAllBOEModelView ValidateAllBOEs(FullWorkspace ws);
 
-        /// <summary>
-        /// Validate MOQ Template data on a Task Level. Does NOT validate Labor Type level selection
-        /// </summary>
-        /// <param name="moqTypesForTask">MOQ Types that belong to the task</param>
-        /// <param name="ws">the workspace</param>
-        /// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
-        /// <returns>Errors, if any</returns>
-        ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress);
+		/// <summary>
+		/// Validate MOQ Template data on a Task Level. Does NOT validate Labor Type level selection
+		/// </summary>
+		/// <param name="moqTypesForTask">MOQ Types that belong to the task</param>
+		/// <param name="ws">the workspace</param>
+		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>		
+		/// <param name="moqEquationTotal"> Moq equation total</param>
+		/// <returns>Errors, if any</returns>
+		ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress, decimal? moqEquationTotal = null);
 	}
 }
