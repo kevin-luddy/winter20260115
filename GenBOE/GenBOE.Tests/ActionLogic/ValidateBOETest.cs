@@ -4475,6 +4475,7 @@ namespace GenBOE.Tests.ActionLogic
 				{
 					new SkillMixModelView()
 					{
+						ResourceNew = "Mix 1",
 						Included = true,
 						Rationale = "test",
 						BOESkillMix = null,
@@ -4492,6 +4493,8 @@ namespace GenBOE.Tests.ActionLogic
 
 			Assert.IsTrue(result.Any());
 			Assert.AreEqual(2, result.Count);
+			Assert.IsTrue(result.Contains("Current Skill Mix Table: BOE Skill Mix is missing for Mix 1."));
+			Assert.IsTrue(result.Contains("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
 		}
 
 		/// <summary>

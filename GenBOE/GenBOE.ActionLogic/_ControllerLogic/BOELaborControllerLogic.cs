@@ -449,6 +449,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="boe">Full BOE</param>
 		/// <param name="modelView">Model to validate</param>
 		/// <param name="validationErrors">Validation Errors</param>
+		/// <returns>Moq Equation Total</returns>
 		private decimal? ValidateMoqEquationAndValues(FullWorkspace ws, FullBoe boe, LaborTaskDataModelView modelView, ICollection<ValidationMessage> validationErrors)
 		{
 			decimal? moqResult = 0;
