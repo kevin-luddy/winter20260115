@@ -4096,8 +4096,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				//decimal totalHours = resourceHours.Sum(n => n.TotalHours);
 				//get all the data from skill mix 
 				//for RMS, the current resource can be empty until the user sets it, don't add this to common disclosure
-				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew)))
-				IEnumerable<SkillMixModelView> filteredSkillMixData = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value);
+				IEnumerable<SkillMixModelView> filteredSkillMixData = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew));
 				decimal totalGroupHours = filteredSkillMixData.Sum(g => g.HistoricalHours);
 
 				foreach (SkillMixModelView skillMix in filteredSkillMixData)
