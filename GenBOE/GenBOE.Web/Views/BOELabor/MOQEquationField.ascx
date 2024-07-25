@@ -440,7 +440,7 @@
                                             typeahead-select-on-exact="true" 
                                             typeahead-show-hint="false" 
                                             typeahead-min-length="2" 
-                                            typeahead-on-select="resourceSelected($item, item)">
+                                            typeahead-on-select="resourceSelected($item, item, moqType)">
                                     </div>
                                 </td>
                                 <td data-ng-if="!model.IsRMS">
@@ -523,7 +523,10 @@
                                 <td>
                                     <div class="text skill-mix-padding"> {{ item.ResourceID }} </div>
                                 </td>
-                                <td class="business-resource-codes" data-ng-class="{ inputError: getAndSetIsResourceValid(item.BusinessResourceID, BusinessResourceCodeModels) === false }">
+                                <td data-ng-if="!item.IsUserInput">
+                                    <div class="text skill-mix-padding"> {{ item.BusinessResourceID }} </div>
+                                </td>
+                                <td data-ng-if="item.IsUserInput" class="business-resource-codes" data-ng-class="{ inputError: getAndSetIsResourceValid(item.BusinessResourceID, BusinessResourceCodeModels) === false }">
                                     <div class="brc-wrapper">
 									    <div class="resource-selection bootstrap text skill-mix-padding">
 										    <input tabindex="{{tabindex + 2}}" type="text" data-ng-model="item.BusinessResourceID" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels  | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" typeahead-on-select="brcSelected($item, item)">

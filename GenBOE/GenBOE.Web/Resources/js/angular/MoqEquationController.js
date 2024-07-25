@@ -1781,12 +1781,16 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		});
 	}
 
-    $scope.resourceSelected = function (item, model) {
+    $scope.resourceSelected = function (item, model, moqType) {
         $scope.setDirty();
 
 		if (item && item.ResourceName && item.ResourceName !== '') {
             // resource was selected
             model.ResourceNew = item.ResourceName;
+		}
+		//update the common disclosure table when resource is changed
+		if (model.Included) {
+			$scope.refreshCommonDisclosureTable(moqType);
 		}
 	};
 
