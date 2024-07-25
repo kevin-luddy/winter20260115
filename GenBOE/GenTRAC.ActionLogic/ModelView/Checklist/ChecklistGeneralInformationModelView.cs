@@ -6,7 +6,8 @@
 
 namespace GenTRAC.ActionLogic.ModelView.Checklist
 {
-    using System.ComponentModel.DataAnnotations;
+	using System;
+	using System.ComponentModel.DataAnnotations;
     using GenTRAC.ActionLogic.Validation;
     using IES.Common;
 
@@ -15,6 +16,11 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
     /// </summary>
     public class ChecklistGeneralInformationModelView : PersistedDataModelView
     {
+		/// <summary>
+		/// Proposal Date Created
+		/// </summary>
+		public DateTime? ProposalDateCreated { get; set; }
+
         /// <summary>
         /// Gets or sets Proposal ID
         /// </summary>
@@ -80,7 +86,7 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
 		/// <summary>
 		/// Should we display the Include International Costs Section?
 		/// </summary>
-		public bool ShowIncludeInternationalCosts { get; set; }
+		public bool ShowIncludeInternationalCosts => (ProposalDateCreated ?? DateTime.Now) >= ConfigurationUtilities.GetAppSetting<DateTime>("InternationalCostStartDate");
 
 		/// <summary>
 		/// constructor
@@ -92,9 +98,6 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
             this.DeliverChecklistDFARS = false;
             this.ShowDFARQuestion = true;
             this.IsPTMChecklistUIEnabled = true;
-
-			// DUSAN -> Need to drive from whatever logic Frank decides he wants
-			this.ShowIncludeInternationalCosts = true;
 		}
     }
 }

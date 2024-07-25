@@ -832,6 +832,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="moqTypes">The MOQ Types</param>
 		/// <param name="workspaceCreationDate">The workspace creation date</param>
 		/// <param name="onButtonPress">Is this being validated for Validate BOE or Submit For Approval?</param>
+		/// <param name="moqEquationTotal">The Moq equation total</param>
 		/// <returns>A collection of any validation errors/messages</returns>
 		private ICollection<string> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate, bool onButtonPress, decimal? moqEquationTotal = null)
 		{
@@ -842,7 +843,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				IList<SkillMixModelView> skillMixRowsEmptyRationales = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
 				IList<SkillMixModelView> skillMixRowsEmptyIncludeds = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !x.Included.HasValue).ToList();
 				IList<SkillMixModelView> skillMixRowsEmptyBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && !x.BOESkillMix.HasValue).ToList();
-				IList<SkillMixModelView> skillMixRowsValidBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
+				IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
 				IList<SkillMixModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 				IList<CommonDisclosureModelView> commonDisclosureRowsEmptyIncludeds = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(x => !x.Included.HasValue).ToList();
 				decimal totalSKillMixRowsBOESkillMix = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
@@ -866,7 +867,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
 				}
 
-				foreach (string skillMixResourceNew in skillMixRowsValidBoeMixWhenIncluded.Select(x => x.ResourceNew))
+				foreach (string skillMixResourceNew in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceNew))
 				{
 					errorMessages.Add(string.Format("Current Skill Mix Table: BOE kill Mix has invalid value for {0}.", skillMixResourceNew));
 				}
@@ -876,9 +877,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
 				}
 
-				if (totalSKillMixRowsProposedHours != moqEquationTotal.Value)
+				if (moqEquationTotal.HasValue && totalSKillMixRowsProposedHours != moqEquationTotal.Value)
 				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: Proposed Hours total must be equal to MoqTotal"));
+					errorMessages.Add(string.Format("Current Skill Mix Table: Proposed Hours total must be equal to Moq Equation Total"));
 				}
 
 				foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))

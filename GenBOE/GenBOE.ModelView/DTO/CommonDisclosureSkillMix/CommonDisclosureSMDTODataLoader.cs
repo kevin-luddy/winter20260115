@@ -56,7 +56,7 @@ namespace GenBOE.DataBridge.DTO
 								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
-				DoPostProcessiong(result);
+				DoPostProcessing(result);
 
 				return result;
 			}
@@ -97,7 +97,7 @@ namespace GenBOE.DataBridge.DTO
 								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
-				DoPostProcessiong(result);
+				DoPostProcessing(result);
 
 				return result;
 			}
@@ -137,7 +137,7 @@ namespace GenBOE.DataBridge.DTO
 								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
-				DoPostProcessiong(result);
+				DoPostProcessing(result);
 
 				return result;
 			}
@@ -177,7 +177,7 @@ namespace GenBOE.DataBridge.DTO
 								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
-				DoPostProcessiong(result);
+				DoPostProcessing(result);
 
 				return result;
 			}
@@ -217,7 +217,7 @@ namespace GenBOE.DataBridge.DTO
 								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
-				DoPostProcessiong(result);
+				DoPostProcessing(result);
 
 				return result;
 			}
@@ -293,7 +293,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Do post processing on the Common Disclosure dtos
 		/// </summary>
 		/// <param name="commonDisclosures">Common disclosure dtos</param>
-		private void DoPostProcessiong(ICollection<CommonDisclosureSkillMixDTO> commonDisclosures)
+		private void DoPostProcessing(ICollection<CommonDisclosureSkillMixDTO> commonDisclosures)
 		{
 			IEnumerable<IGrouping<int, CommonDisclosureSkillMixDTO>> groupedResourceHours =
 				commonDisclosures.GroupBy(r => r.MOQTypeSelectionID);

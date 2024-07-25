@@ -461,12 +461,15 @@
                                     </select>
                                 </td>
                                 <td data-ng-class="{'inputError': item.Included === true && item.BOESkillMix === null }">
-                                    <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding">
-                                        <input type="number" maxlength="5" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false" />
-                                    </div>
+                                        <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding boe-skill-mix">
+                                            <div>
+                                                <input type="number" maxlength="5" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false" />
+                                                <div>%</div>
+                                            </div>
+                                        </div>
                                 </td>
                                 <td>
-                                    <div id="skill-mix-table-proposed-hours">
+                                    <div id="skill-mix-table-proposed-hours" class="skill-mix-numerical proposed-hours">
                                         <input type="number" maxlength="255" id="proposed-hours" data-ng-blur="updateBOESkillMix(item); setSkillMixTotals(moqType);" data-ng-model="item.ProposedHours" />
                                     </div>
                                 </td>

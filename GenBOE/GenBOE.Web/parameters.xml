@@ -222,6 +222,12 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SkillMixStartDate']/@value">
 		</parameterentry>
 	</parameter>
+	<parameter name="InternationalCostStartDate" description="doesn't matter" defaultvalue="__InternationalCostStartDate__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='InternationalCostStartDate']/@value">
+		</parameterentry>
+	</parameter>
+
 	<!--system.web-->
 	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">

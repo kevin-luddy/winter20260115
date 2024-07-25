@@ -1861,7 +1861,7 @@ namespace GenTRAC.ActionLogic
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CERTIFIED_COST_PRICING_DATA_REQUIRED));
 			}
-			else if (!proposalGeneralInfo.IsCCPDRequired.Value && !proposalGeneralInfo.CcopdNoReason.HasValue)
+			else if (!proposalGeneralInfo.IsCCPDRequired.Value && (!proposalGeneralInfo.CcopdNoReason.HasValue || proposalGeneralInfo.CcopdNoReason == CcopdOptionalReason.NotSet))
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CCOPD_NO_REASON_REQUIRED));
 			}

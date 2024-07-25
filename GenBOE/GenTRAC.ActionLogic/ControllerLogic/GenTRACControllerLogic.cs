@@ -1320,6 +1320,7 @@ namespace GenTRAC.ActionLogic
 
 			FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
 
+			model.ProposalDateCreated = fullProposalDto.DateCreated;
 			model.IsReadOnly = this.IsProposalChecklistReadOnly(fullProposalDto);
 			model.ProposalID = fullProposalDto.Id;
 			// get pricer info
