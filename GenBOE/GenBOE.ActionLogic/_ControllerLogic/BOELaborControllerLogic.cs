@@ -4095,7 +4095,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				//decimal totalHours = resourceHours.Sum(n => n.TotalHours);
 				//get all the data from skill mix 
-				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value))
+				//for RMS, the current resource can be empty until the user sets it, don't add this to common disclosure
+				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew)))
 				{
 					newRows.Add(
 						new CommonDisclosureModelView
@@ -4108,8 +4109,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 				if (commonDisclosureSMData != null && commonDisclosureSMData.Any())
 				{
-					//get a map of the old rows that match resources in the new data since you can have multiple for brc
+					//get mapping of resources to brcs
+					//Task <IESResponse<SkillMixConvertedResourceViewModel>> response = await.this.GetSkillMixConvertedResources();
 
+					//get a map of the old rows that match resources in the new data since you can have multiple for brc
 					Dictionary<string, List<CommonDisclosureModelView>> resourceToRowMap = commonDisclosureSMData.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
 
 					//for all data in skill mix, either create a new row or if it exists (by resource), create a row for each of the brcs
@@ -4123,10 +4126,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								newTable.Add(
 									new CommonDisclosureModelView
 									{
-										HistoricalHours = newRow.HistoricalHours,
+										HistoricalHours = oldRow.HistoricalHours,
 										ResourceID = newRow.ResourceID,
-										LaborSkillMix = newRow.LaborSkillMix,
-
+										LaborSkillMix = oldRow.LaborSkillMix,
 										Included = oldRow.Included,
 										MOQTypeSelectionID = oldRow.MOQTypeSelectionID,
 										IsPercentLocked = oldRow.IsPercentLocked,
@@ -4141,6 +4143,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 						else
 						{
+							//
+							//foreach (SkillMixConvertedResourceViewModel convertedResource in convertedResources)
+							//{
+
+							//}
 							newTable.Add(
 								new CommonDisclosureModelView
 								{
