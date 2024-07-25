@@ -4097,13 +4097,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				//get all the data from skill mix 
 				//for RMS, the current resource can be empty until the user sets it, don't add this to common disclosure
 				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew)))
+				IEnumerable<SkillMixModelView> filteredSkillMixData = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value);
+				decimal totalGroupHours = filteredSkillMixData.Sum(g => g.HistoricalHours);
+
+				foreach (SkillMixModelView skillMix in filteredSkillMixData)
 				{
 					newRows.Add(
 						new CommonDisclosureModelView
 						{
 							HistoricalHours = skillMix.HistoricalHours,
 							ResourceID = skillMix.ResourceNew,
-							LaborSkillMix = skillMix.LaborSkillMix
+							LaborSkillMix = skillMix.HistoricalHours / totalGroupHours
 						}
 					);
 				}

@@ -10,6 +10,30 @@
         $('#GeneralReports a[name="GeneralReports-ViewButton"]').click(function () {
             var data = {};
             data.reportID = $(this).parents('tr').attr('pkid');
+            data.reportName = 'General Reports';
+            switch (data.reportID) {
+                case '<%: (int)Reports.BOEStatus %>':
+                    data.reportName += ' - BOE Status';
+                    break;
+                case '<%: (int)Reports.BOEActivity %>':
+                    data.reportName += ' - BOE Activity';
+                    break;
+				case '<%: (int)Reports.WorkspaceActivity %>':
+                    data.reportName += ' - Workspace Activity';
+                    break;
+				case '<%: (int)Reports.BoeDiscrepancy %>':
+                    data.reportName += ' - BOE Discrepancy';
+                    break;
+				case '<%: (int)Reports.ValidateAllBOE %>':
+                    data.reportName += ' - Validate All BOEs';
+                    break;				case '<%: (int)Reports.ConfidenceReport %>':
+					data.reportName += ' - Confidence Report';
+                    break;
+                default:
+                    data.reportName += ' - SSRS Reports';
+                    break;
+            }
+
             $(document).trigger('<%: WebConstants.EVENT_REPORTS_VIEW_REPORT %>', data);
         });
 

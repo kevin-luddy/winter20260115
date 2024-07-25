@@ -1740,12 +1740,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.refreshDisableSave();
     }
 
+<<<<<<< HEAD
     $scope.getAndSetIsResourceValid = function (input, models) {
        var isResourceValid = true;
-        if (input === undefined || (typeof input === 'string' && (input.length === 0
-            || models.filter(function (r) { return r.ResourceName === input }).length < 1))) {
+		if (input === undefined || (typeof input === 'string' && (input.length === 0
+			|| models.filter(function (r) { return r.ResourceName === input }).length < 1))) {
             isResourceValid = false;
-		}
         return isResourceValid;
 	}
 

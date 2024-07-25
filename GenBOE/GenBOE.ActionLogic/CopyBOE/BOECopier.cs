@@ -222,7 +222,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (originalMoqTypes.Any())
                         {
-                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId, true, null, null);
+                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId, true, null, null, taskDuplicate.BoeID);
                         }
 
                         if (rteTemplateAnswers.Any())
@@ -740,7 +740,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (moqTypesToCopy.Any())
                         {
-                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, copyWithinSameWorkspace, inSourceBOE.Workspace.CreationDate, inDestinationWorkspace.CreationDate);
+                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, copyWithinSameWorkspace, inSourceBOE.Workspace.CreationDate, inDestinationWorkspace.CreationDate, taskElementCopy.BoeID);
                         }
 
                         if (inUseMetricIDs.Any())
@@ -815,8 +815,9 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="copyWithinSameWorkspace">Are we copying within the same workspace</param>
         /// <param name="originalWorkspaceCreationDate">Original workspace creation date</param>
         /// <param name="workspaceCreationDate">Workspace Creation Date</param>
+		/// <param name="newBoeId">New BOE ID</param>
         internal void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, bool copyWithinSameWorkspace, DateTime? originalWorkspaceCreationDate,
-DateTime? workspaceCreationDate)
+DateTime? workspaceCreationDate, int newBoeId)
         {
             _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
 
@@ -831,6 +832,7 @@ DateTime? workspaceCreationDate)
                 newMoqType.Id = --i;
                 newMoqType.Updateable = UpdateType.Upsert;
                 newMoqType.TaskId = newTaskId;
+				newMoqType.BoeId = newBoeId;
 
                 existingMoqType.TableData.ForEach(existingTable =>
                 {
