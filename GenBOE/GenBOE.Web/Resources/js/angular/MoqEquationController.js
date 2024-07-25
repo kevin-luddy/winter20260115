@@ -1739,8 +1739,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.refreshSkillMixTable(moqType);
 		$scope.refreshDisableSave();
     }
-
-<<<<<<< HEAD
     $scope.getAndSetIsResourceValid = function (input, models) {
        var isResourceValid = true;
 		if (input === undefined || (typeof input === 'string' && (input.length === 0
