@@ -88,7 +88,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// BOE SKill Mix percentage
 		/// </summary>
-		public decimal BOESkillMix { get; set; }
+		public decimal? BOESkillMix { get; set; }
 
 		/// <summary>
 		/// Labor Skill Mix percentage
