@@ -454,17 +454,24 @@
                                 </td>
                                 <td data-ng-class="{'inputError': item.Included == null }">
                                     <!-- when included is yes, add row to common disclosure table, will need to do other stuff later -->
-                                    <select class="skill-mix-padding" data-ng-model="item.Included" data-ng-change="refreshCommonDisclosureTable(moqType)">
+                                    <select class="skill-mix-padding" data-ng-model="item.Included" data-ng-change="updateBOESkillMixFromIncludedChange(item); refreshCommonDisclosureTable(moqType); setSkillMixTotals(moqType);">
                                         <option data-ng-value="null"></option>
                                         <option data-ng-value="true">Yes</option>
                                         <option data-ng-value="false">No</option>
                                     </select>
                                 </td>
-                                <td>
-                                    <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding"></div>
+                                <td data-ng-class="{'inputError': item.Included === true && item.BOESkillMix === null }">
+                                        <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding boe-skill-mix">
+                                            <div>
+                                                <input type="number" maxlength="5" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false" />
+                                                <div>%</div>
+                                            </div>
+                                        </div>
                                 </td>
                                 <td>
-                                    <div id="proposed-hours" class="skill-mix-numerical skill-mix-padding"></div>
+                                    <div id="skill-mix-table-proposed-hours" class="skill-mix-numerical proposed-hours">
+                                        <input type="number" maxlength="255" id="proposed-hours" data-ng-blur="updateBOESkillMix(item); setSkillMixTotals(moqType);" data-ng-model="item.ProposedHours" />
+                                    </div>
                                 </td>
                                 <td>
                                     <div id="skill-mix-table-rationale">
@@ -484,10 +491,10 @@
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborSkillMixTotal * 100 | number: 2 }}%</div>
 								</td>
 								<td></td>
-								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeSkillMixTotal * 100 | number: 2 }}%</div>
+								<td data-ng-class="{'inputError': moqType.BoeSkillMixTotal !== 100 }">
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeSkillMixTotal | number: 2 }}%</div>
 								</td>
-								<td>
+								<td data-ng-class="{'inputError': moqType.ProposedSkillMixHoursTotal !== getMOQTotal() }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.ProposedSkillMixHoursTotal }}</div>
 								</td>
 								<td></td>

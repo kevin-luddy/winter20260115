@@ -79,15 +79,16 @@ namespace GenBOE.ActionLogic
         /// <returns>The MOQ equation result, if valid</returns>
         string ValidateMOQEquation(int inBoeID, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace inWorkspaceDTO);
 
-        /// <summary>
-        /// This function will validate task start/end date, labor type level custom fields, task element level custom fields, task ID being unique with the BOE,
-        /// and task variable unique name
-        /// </summary>
-        /// <param name="boeDTO">boe</param>
-        /// <param name="laborTaskData">task modelview includes task details, labors, and spreads</param>
-        /// <param name="inValidationErrors">validation errors</param>
-        /// <param name="ws">workspace</param>
-        void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws);
+		/// <summary>
+		/// This function will validate task start/end date, labor type level custom fields, task element level custom fields, task ID being unique with the BOE,
+		/// and task variable unique name
+		/// </summary>
+		/// <param name="boeDTO">boe</param>
+		/// <param name="laborTaskData">task modelview includes task details, labors, and spreads</param>
+		/// <param name="inValidationErrors">validation errors</param>
+		/// <param name="ws">workspace</param>		
+		/// <param name="moqEquationTotal"> Moq equation total</param>
+		void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws, decimal? moqEquationTotal = null);
 
         /// <summary>
         /// Calculate Labor Spreads

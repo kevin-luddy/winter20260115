@@ -81,7 +81,7 @@
 		/// <summary>
 		/// User/Calculated % of proposed hours
 		/// </summary>
-		public decimal BOESkillMix { get; set; }
+		public decimal? BOESkillMix { get; set; }
 
 		/// <summary>
 		/// % of Total hours in Ledgers
