@@ -4085,15 +4085,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="commonDisclosureSMData">The current skill mix data</param>
-		public ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
+		public  ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
 		{
 			ICollection<CommonDisclosureModelView> newTable = new List<CommonDisclosureModelView>();
+
+			Task<IESResponse<SkillMixConvertedResourceViewModel>> response;
+
+			response = Task.Run(async () => await GetSkillMixConvertedResources());
+
+			ICollection<SkillMixConvertedResourceViewModel>  test = response.Result.Data;
 
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
 				ICollection<CommonDisclosureModelView> newRows  = new List<CommonDisclosureModelView>();
 
-				//decimal totalHours = resourceHours.Sum(n => n.TotalHours);
 				//get all the data from skill mix 
 				//for RMS, the current resource can be empty until the user sets it, don't add this to common disclosure
 				IEnumerable<SkillMixModelView> filteredSkillMixData = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew));
@@ -4113,7 +4118,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				if (commonDisclosureSMData != null && commonDisclosureSMData.Any())
 				{
 					//get mapping of resources to brcs
-					//Task <IESResponse<SkillMixConvertedResourceViewModel>> response = await.this.GetSkillMixConvertedResources();
 
 					//get a map of the old rows that match resources in the new data since you can have multiple for brc
 					Dictionary<string, List<CommonDisclosureModelView>> resourceToRowMap = commonDisclosureSMData.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
