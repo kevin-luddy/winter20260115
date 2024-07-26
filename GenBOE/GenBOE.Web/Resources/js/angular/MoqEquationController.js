@@ -1785,7 +1785,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
        var isResourceValid = true;
 		if (input === undefined || (typeof input === 'string' && (input.length === 0
 			|| models.filter(function (r) { return r.ResourceName === input }).length < 1))) {
-            isResourceValid = false;
+			isResourceValid = false;
+		}
         return isResourceValid;
 	}
 
