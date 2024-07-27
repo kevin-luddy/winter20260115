@@ -1779,14 +1779,17 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.IsSapSetAndAnyTableSapRepository();
 		$scope.refreshSkillMixTable(moqType);
 		$scope.refreshDisableSave();
-    }
-    $scope.getAndSetIsResourceValid = function (input, models) {
-       var isResourceValid = true;
-		if (input === undefined || (typeof input === 'string' && (input.length === 0
-			|| models.filter(function (r) { return r.ResourceName === input }).length < 1))) {
-            isResourceValid = false;
-        return isResourceValid;
-	}
+	};
+
+	$scope.getAndSetIsResourceValid = function (input, models) {
+		var isResourceValid = true;
+		if (input === undefined ||
+			(typeof input === 'string' &&
+				(input.length === 0 || models.filter(function (r) { return r.ResourceName === input }).length < 1))) {
+			isResourceValid = false;
+		}
+		return isResourceValid;
+	};
 
 	$scope.setSkillMixTotals = function (moqType) {
 		// Reset Totals because this method can be called multiple times from multiple areas
@@ -1802,7 +1805,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			moqType.BoeSkillMixTotal += parseFloat(item.BOESkillMix) || 0;
 			moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
 		});
-	}
+	};
 
 	$scope.setCommonDisclosureTotals = function (moqType) {
 		// Reset Totals because this method can be called multiple times from multiple areas
@@ -1818,7 +1821,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			moqType.BoeCommonDisclosureTotal += item.BOESkillMix;
 			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
 		});
-	}
+	};
 
     $scope.resourceSelected = function (item, model, moqType) {
         $scope.setDirty();
