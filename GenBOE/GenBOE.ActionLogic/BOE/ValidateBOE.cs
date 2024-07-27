@@ -944,7 +944,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceNew));
 				}
 
-				if (commonDisclosureIncludedHasValue.Count <= 0)
+				if (commonDisclosureIncludedHasTrueValue.Count <= 0)
 				{
 					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Included has to be yes"));
 				}
