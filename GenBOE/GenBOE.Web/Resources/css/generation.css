@@ -150,6 +150,12 @@ span.disabled,
     background-color: rgb(235, 235, 228);
 }
 
+input:disabled,
+span.disabled,
+#MOQEquationField input.disabled {
+    background-color: rgb(235, 235, 228);
+}
+
 a:hover,
 .link:hover
 {
@@ -7292,8 +7298,28 @@ table.moduled-table {
     width: 100%;
 }
 
+#skillMixDiv img.UnlockImage {
+    cursor: pointer;
+}
+
+td.smboeskillmix div.ScrollingLock div div {
+    width: 110px;
+}
+
+td.smproposedhours div.ScrollingLock div div {
+    width: 110px;
+}
+
+.smboeskillmix input.boeskillmix {
+    width: 105px;
+}
+
+.smproposedhours input.proposedhours {
+    width: 105px;
+}
+
 td.lthourspread div.ScrollingLock div div {
-    width:120px;
+    width: 120px;
 }
 
 td.ltpercentspread div.ScrollingLock div div {
