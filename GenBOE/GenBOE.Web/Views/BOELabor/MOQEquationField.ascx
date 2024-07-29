@@ -460,17 +460,27 @@
                                         <option data-ng-value="false">No</option>
                                     </select>
                                 </td>
-                                <td data-ng-class="{'inputError': item.Included === true && item.BOESkillMix === null }">
+                                <td data-ng-class="{'inputError': (item.Included === true && (item.BOESkillMix === null || item.BOESkillMix < 1))}">
                                         <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding boe-skill-mix">
                                             <div>
-                                                <input type="number" maxlength="5" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false" />
-                                                <div>%</div>
+                                                <input type="number" maxlength="5" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false || item.IsPercentLocked" />
+                                                <div>% &nbsp;</div>
+										        <div>
+											        <img data-ng-if="item.Included === null || item.Included === false || item.IsPercentLocked" data-ng-click="updateBoeSkillMixLock(item)" class="LockImage UnLockImage" src="../../../../Resources/css/images/unlock_resource_toggle.png" title="Select lock for either Boe Skill Mix or Proposed Hours to maintain that value when the MOQ Equation is adjusted." />
+											        <img data-ng-if="item.Included !== null && item.Included !== false && !item.IsPercentLocked" class="LockImage" src="../../../../Resources/css/images/lock_resource_toggle.png" title="Select lock for either Boe Skill Mix or Proposed Hours to maintain that value when the MOQ Equation is adjusted." />
+                                                </div>
                                             </div>
                                         </div>
                                 </td>
-                                <td>
+                                <td data-ng-class="{'inputError': item.Included === true && (item.ProposedHours === null || item.ProposedHours < 1)}">
                                     <div id="skill-mix-table-proposed-hours" class="skill-mix-numerical proposed-hours">
-                                        <input type="number" maxlength="255" id="proposed-hours" data-ng-blur="updateBOESkillMix(item); setSkillMixTotals(moqType);" data-ng-model="item.ProposedHours" />
+                                        <div>
+                                            <input type="number" maxlength="255" id="proposed-hours" data-ng-blur="updateBOESkillMix(item); setSkillMixTotals(moqType);" data-ng-model="item.ProposedHours" ng-disabled="item.Included === null || item.Included === false || !item.IsPercentLocked"/>
+                                            <div>
+                                                <img data-ng-if="item.Included === null || item.Included === false || !item.IsPercentLocked" data-ng-click="updateProposedHoursLock(item)" class="LockImage UnLockImage" src="../../../../Resources/css/images/unlock_resource_toggle.png" title="Select lock for either Boe Skill Mix or Proposed Hours to maintain that value when the MOQ Equation is adjusted." />
+											    <img data-ng-if="item.IsPercentLocked" class="LockImage" src="../../../../Resources/css/images/lock_resource_toggle.png" title="Select lock for either Boe Skill Mix or Proposed Hours to maintain that value when the MOQ Equation is adjusted." />
+                                            </div>
+                                        </div>
                                     </div>
                                 </td>
                                 <td>

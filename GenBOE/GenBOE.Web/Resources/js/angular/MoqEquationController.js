@@ -1825,6 +1825,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 		moqType.ProposedCommonDisclosureHoursTotal = Math.round(moqType.ProposedCommonDisclosureHoursTotal)
 	}
+
 	$scope.updateBoeSkillMixLock = function (item) {
 		$scope.setDirty();
 		if (item.IsPercentLocked && item.Included != null && item.Included) {
@@ -1843,8 +1844,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		if (!initialLoad) {
 			angular.forEach($scope.model.SelectedMoqTypes.map(e => {
 				if ($scope.model.CommonDisclosureEnabled) {
-					recalculateSkillMix(e);
+					recalculateCommonDisclosure(e);
 					$scope.setCommonDisclosureTotals(e);
+				}
+				if ($scope.model.SkillMixEnabled) {
+					recalculateSkillMix(e);
+					$scope.setSkillMixTotals(e);
 				}
 				return e.SelectedMOQType.toString();
 			}), function (id) {
@@ -1854,10 +1859,26 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
-	var recalculateSkillMix = function (moqType) {
+	var recalculateCommonDisclosure = function (moqType) {
 		var moqTotal = $scope.getMOQTotal();
 
 		moqType.CommonDisclosureTable.forEach(item => {
+			if (item.Included) {
+				if (!item.IsPercentLocked) {
+					item.ProposedHours = parseFloat((moqTotal * (item.BOESkillMix / 100)).toFixed(1));
+				} else {
+					item.BOESkillMix = parseFloat(((item.ProposedHours / moqTotal) * 100).toFixed(3));
+				}
+			}
+		});
+	}
+
+	
+
+	var recalculateSkillMix = function (moqType) {
+		var moqTotal = $scope.getMOQTotal();
+
+		moqType.SkillMixTable.forEach(item => {
 			if (item.Included) {
 				if (!item.IsPercentLocked) {
 					item.ProposedHours = parseFloat((moqTotal * (item.BOESkillMix / 100)).toFixed(1));
