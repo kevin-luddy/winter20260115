@@ -39,6 +39,7 @@ namespace GenBOE.DataBridge.DTO
 							  {
 								  MOQTypeSelectionTableDataResourceHoursId = moq.MOQTypeSelectionTableDataResourceHoursId,
 								  ResourceName = moq.ResourceName,
+								  BRCName = moq.BRCName,
 								  WbsHours = moq.WbsHours,
 								  TotalHours = moq.TotalHours,
 								  MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
@@ -72,6 +73,7 @@ namespace GenBOE.DataBridge.DTO
 								{
 									MOQTypeSelectionTableDataResourceHoursId = moq.MOQTypeSelectionTableDataResourceHoursId,
 									ResourceName = moq.ResourceName,
+									BRCName = moq.BRCName,
 									WbsHours = moq.WbsHours,
 									TotalHours = moq.TotalHours,
 									MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
@@ -103,6 +105,7 @@ namespace GenBOE.DataBridge.DTO
 							  {
 								  MOQTypeSelectionTableDataResourceHoursId = moq.MOQTypeSelectionTableDataResourceHoursId,
 								  ResourceName = moq.ResourceName,
+								  BRCName = moq.BRCName,
 								  WbsHours = moq.WbsHours,
 								  TotalHours = moq.TotalHours,
 								  MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
@@ -134,6 +137,7 @@ namespace GenBOE.DataBridge.DTO
 							  {
 								  MOQTypeSelectionTableDataResourceHoursId = moq.MOQTypeSelectionTableDataResourceHoursId,
 								  ResourceName = moq.ResourceName,
+								  BRCName = moq.BRCName,
 								  WbsHours = moq.WbsHours,
 								  TotalHours = moq.TotalHours,
 								  MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
@@ -165,6 +169,7 @@ namespace GenBOE.DataBridge.DTO
 							  {
 								  MOQTypeSelectionTableDataResourceHoursId = moq.MOQTypeSelectionTableDataResourceHoursId,
 								  ResourceName = moq.ResourceName,
+								  BRCName = moq.BRCName,
 								  WbsHours = moq.WbsHours,
 								  TotalHours = moq.TotalHours,
 								  MOQTypeSelectionTableDataId = moq.MOQTypeSelectionTableDataId,
@@ -222,7 +227,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				Collection<string> resourceHoursVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"ResourceName", "WbsHours", "TotalHours", "MOQTypeSelectionTableDataId", "BOETaskElementID", "BOEID"
+					"ResourceName", "BRCName", "WbsHours", "TotalHours", "MOQTypeSelectionTableDataId", "BOETaskElementID", "BOEID"
 				};
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{

@@ -2647,7 +2647,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 							RepositoryName = RepositoryName.SapWebi.GetDescription(),
 							ResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 								{
-									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", MOQTypeSelectionTableDataId = 1, TotalHours = 10 }
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", BRCName = "ab", MOQTypeSelectionTableDataId = 1, TotalHours = 10 }
 								}
 						},
 						new MoqTableData()
@@ -2659,8 +2659,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 							RepositoryName = RepositoryName.SapWebi.GetDescription(),
 							ResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 								{
-									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", MOQTypeSelectionTableDataId = 1, TotalHours = 10 },
-									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "bb", MOQTypeSelectionTableDataId = 1, TotalHours = 5 }
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", BRCName = "ab", MOQTypeSelectionTableDataId = 1, TotalHours = 10 },
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "bb", BRCName = "ab", MOQTypeSelectionTableDataId = 1, TotalHours = 5 }
 								}
 						}
 					},
@@ -2687,7 +2687,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 							RepositoryName = RepositoryName.SapWebi.GetDescription(),
 							ResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 								{
-									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", MOQTypeSelectionTableDataId = 1, TotalHours = 20 }
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", BRCName = "ab", MOQTypeSelectionTableDataId = 1, TotalHours = 20 }
 								}
 						}
 					},
@@ -2713,7 +2713,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 							RepositoryName = RepositoryName.SapWebi.GetDescription(),
 							ResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 								{
-									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "cc", MOQTypeSelectionTableDataId = 1, TotalHours = 25 }
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "cc", BRCName = "cd", MOQTypeSelectionTableDataId = 1, TotalHours = 25 }
 								}
 						}
 					},
