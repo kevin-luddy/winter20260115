@@ -48,7 +48,9 @@
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
-		CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
+        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue(),
+		<%--DatepickerRestrictionRMS: '<%:ViewData["DatepickerRestrictionRMS"]%>'--%>
+        DatepickerRestrictionRMS: '<%:Utilities.DatepickerRestrictionRMS%>'
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -60,6 +62,7 @@
     var isNotSubContractor = '<%:(bool)ViewData["IsSubContractor"] == false%>'.isTrue();
     var sortBOEByWBS = '<%:(int)VarSortBOEBy.WBS%>';
     var sortBOEByClin = '<%:(int)VarSortBOEBy.CLIN%>';
+    ////////var datepickerRestrictionRMS = '<%:ViewData["DatepickerRestrictionRMS"]%>';
 
     var validationUrl = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                         '<%: WebConstants.CONTROLLER_BOE_LABOR%>',
@@ -220,6 +223,7 @@
                             <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" placeholder="If entering multiple WBS Elements, please separate them with a comma ',' or a semicolon ';'" required data-ng-model="tableData.WbsElement" data-ng-change="SetTableDirty(tableData)" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
+                            <!-- TODO: KATIE -->
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPStart}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartComparativeSuffix);"></div>
