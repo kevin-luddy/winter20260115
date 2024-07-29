@@ -9,6 +9,7 @@ GO
 
 CREATE TYPE [dbo].[TT_MOQTypeSelectionTableDataResourceHours] AS TABLE(
 		[ResourceName] varchar(20) NULL,
+		[BRCName] varchar(20) NULL,
 		[WbsHours] decimal(11,2) NOT NULL,
 		[TotalHours] decimal(11,2) NOT NULL,
 		[MOQTypeSelectionTableDataId] int NOT NULL,
@@ -58,6 +59,7 @@ BEGIN
 
 	INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
 		([ResourceName]
+		 ,[BRCName]
 		 ,[WbsHours]
 		 ,[TotalHours]
 		 ,[MOQTypeSelectionTableDataId]
@@ -65,6 +67,7 @@ BEGIN
 		 ,[BOEID]
 		 )
 	SELECT ResourceName
+	    ,[BRCName]
 		,WbsHours
 		,TotalHours
 		,MOQTypeSelectionTableDataId
