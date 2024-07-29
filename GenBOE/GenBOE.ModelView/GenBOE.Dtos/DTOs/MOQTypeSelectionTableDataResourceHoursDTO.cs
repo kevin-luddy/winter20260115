@@ -33,6 +33,11 @@
 		public string ResourceName { get; set; }
 
 		/// <summary>
+		/// BRC name
+		/// </summary>
+		public string BRCName { get; set; }
+
+		/// <summary>
 		/// Wbs Hours
 		/// </summary>
 		public decimal WbsHours { get; set; }
