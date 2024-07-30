@@ -146,7 +146,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             this._boeStateMachine = new Mock<IBOEStateMachine>();
             this._BoeMediator = new Mock<IBoeMediator>();
-            this._BoeTaskElementMediator = new Mock<IBoeTaskElementMediator>();
             this._VariableSelectBoeToSum = new Mock<IVariableSelectBOEtoSumCalculation>();
 
             this.factory = new Mock<IFullObjectFactory>();
@@ -156,7 +155,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             this._commonDatamapper = new Mock<ICommonDataMapper>();
             this._permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
-            this.boeLoader = new Mock<IBoeDTODataLoader>();
             
             this._BOELaborControllerLogic = new Mock<IBOELaborControllerLogic>();
 

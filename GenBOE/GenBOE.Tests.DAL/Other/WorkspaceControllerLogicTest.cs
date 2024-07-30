@@ -114,7 +114,7 @@ namespace GenBOE.Tests.DAL.Other
 			return new WorkspaceControllerLogicMST(new WorkspaceDTODataLoader(), null, new ResourceDTODataLoader(),
 				null, null, null, this.fullObjectFactory,
 				this.commonDataMapper.Object, this.permissionsLoader.Object, null, null, null, null, null, null, null,
-				null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), new BoePickListMapper(new LineOfBusinessDataLoader(), new ProposalClassLoader(),
+				null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), new BoePickListMapper(new LineOfBusinessDataLoader(), new ProposalClassLoader(),
 				new ContractTypeLoader()), new GenTRAC.DataBridge.DTO.PtmPickListMapper(new GenTRAC.DataBridge.DTO.ProposalTypeLULoader(), new GenTRAC.DataBridge.DTO.ProposalClassLULoader(),
 				new GenTRAC.DataBridge.DTO.TypeOfRequestLULoader(), new GenTRAC.DataBridge.DTO.LineOfBusinessDataLoader(), new GenTRAC.DataBridge.DTO.ProgramAreaDataLoader(),
 				new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader()), null, null, null, null, null);
