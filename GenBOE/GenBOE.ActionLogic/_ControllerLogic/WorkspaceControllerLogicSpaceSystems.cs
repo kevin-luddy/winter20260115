@@ -40,17 +40,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="inTmResourceRateDataLoader">The in tm resource rate data loader.</param>
 		/// <param name="inBoeTaskElementRecalc">The in BOE task element recalc.</param>
 		/// <param name="inUseDataLoader">The in use data loader.</param>
-		/// <param name="retriever">The retriever.</param>
 		/// <param name="factory">The factory.</param>
 		/// <param name="inCommonDataMapper">The in common data mapper.</param>
 		/// <param name="inPermissionLoader">The in permission loader.</param>
-		/// <param name="inBoeImporter">The in BOE importer.</param>
 		/// <param name="inBOELaborControllerLogic">The in BOE labor controller logic.</param>
 		/// <param name="fullWsRecalc">The full ws recalc.</param>
 		/// <param name="inWorkspaceVariableLoader">The in workspace variable loader.</param>
 		/// <param name="inCustomFieldValueLoader">CF value loader</param>
 		/// <param name="customFieldLoader">The custom field loader.</param>
-		/// <param name="offloadRatesDTOLoader">Offload Rates Loader</param>
 		/// <param name="projectMapDataLoader">The project map data loader.</param>
 		/// <param name="boePickListMapper">The BOE pick list mapper.</param>
 		/// <param name="ptmPickListMapper">The PTM pick list mapper.</param>
@@ -67,7 +64,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IFullObjectFactory factory,
 			ICommonDataMapper inCommonDataMapper,
 			IPermissionsDTODataLoader inPermissionLoader,
-			FullBoeDataImporter inBoeImporter,
 			IBOELaborControllerLogic inBOELaborControllerLogic,
 			IFullWorkspaceRecalculation fullWsRecalc,
 			IWorkspaceVariableDTODataLoader inWorkspaceVariableLoader,
@@ -91,7 +87,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				factory,
 				inCommonDataMapper,
 				inPermissionLoader,
-				inBoeImporter,
 				inBOELaborControllerLogic,
 				fullWsRecalc,
 				inWorkspaceVariableLoader,
@@ -200,18 +195,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return this.GetFilteredWorkspaceResources(inWorkspaceResources);
-		}
-
-		/// <summary>
-		/// Return true, if user is BOE Author or Workspace Administrator.
-		/// </summary>
-		/// <param name="isAuthor">true, if user is BOE Author</param>
-		/// <param name="isWorkspaceAdmin">true, if user is Workspace Administrator</param>
-		/// <returns></returns>
-		public override bool CanExportBoeForWorkoffline(bool isAuthor, bool isWorkspaceAdmin)
-		{
-			// For Space Systems, a BOE can only be exported for Workoffline if they are the author or workspace administrator.
-			return isAuthor || isWorkspaceAdmin;
 		}
 
 		/// <summary>
