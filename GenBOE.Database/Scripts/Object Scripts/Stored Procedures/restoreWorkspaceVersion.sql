@@ -2644,6 +2644,7 @@ BEGIN
 		INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
 		([MOQTypeSelectionTableDataResourceHoursId],
 		[ResourceName],
+		[BRCName],
 		[WbsHours],
 		[TotalHours],
 		[MOQTypeSelectionTableDataId],
@@ -2652,6 +2653,7 @@ BEGIN
 		)
 		SELECT M.[MOQTypeSelectionTableDataResourceHoursId],
 			M.[ResourceName],
+			M.[BRCName],
 			M.[WbsHours],
 			M.[TotalHours],
 			M.[MOQTypeSelectionTableDataId],

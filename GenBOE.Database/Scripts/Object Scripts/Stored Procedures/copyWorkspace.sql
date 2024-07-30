@@ -1878,6 +1878,7 @@ DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
 (
 	[MOQTypeSelectionTableDataResourceHoursId] [int] NOT NULL,
 	[ResourceName] varchar(20) NULL,
+	[BRCName] varchar(20) NULL,
 	[WbsHours] decimal(11,2) NOT NULL,
 	[TotalHours] decimal(11,2) NOT NULL,
 	[MOQTypeSelectionTableDataId] [int] NOT NULL,
@@ -1892,6 +1893,7 @@ INSERT INTO @MOQTypeSelectionTableDataResourceHours
 SELECT
 	M.[MOQTypeSelectionTableDataResourceHoursId],
 	M.[ResourceName],
+	M.[BRCName],
 	M.[WbsHours],
 	M.[TotalHours],
 	M.[MOQTypeSelectionTableDataId],
@@ -1912,6 +1914,7 @@ BEGIN
 SELECT TOP 1 @MOQTypeSelectionTableDataResourceHoursId = MOQTypeSelectionTableDataResourceHoursId FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0
 INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
 			([ResourceName],
+			[BRCName],
 			[WbsHours],
 			[TotalHours],
 			[MOQTypeSelectionTableDataId],
@@ -1920,6 +1923,7 @@ INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
 			)
 SELECT
 	[ResourceName],
+	[BRCName],
 	[WbsHours],
 	[TotalHours],
 	[NewMOQTypeSelectionTableDataId],

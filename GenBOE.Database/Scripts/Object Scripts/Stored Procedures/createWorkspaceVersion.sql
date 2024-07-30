@@ -1284,6 +1284,7 @@ WHERE B.WorkspaceID = @WorkspaceID
 INSERT INTO [version].[MOQTypeSelectionTableDataResourceHours]
 ([MOQTypeSelectionTableDataResourceHoursId],
 [ResourceName],
+[BRCName],
 [WbsHours],
 [TotalHours],
 [MOQTypeSelectionTableDataId],
@@ -1293,6 +1294,7 @@ INSERT INTO [version].[MOQTypeSelectionTableDataResourceHours]
 )
 SELECT M.[MOQTypeSelectionTableDataResourceHoursId],
 M.[ResourceName],
+M.[BRCName],
 M.[WbsHours],
 M.[TotalHours],
 M.[MOQTypeSelectionTableDataId],
