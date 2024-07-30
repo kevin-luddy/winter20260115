@@ -323,12 +323,12 @@ namespace IES.DataBridge.ModelViews
 		/// Disclosure Type
 		/// </summary>
 		[JsonProperty(PropertyName = "DT")]
-		public DisclosureType? DisclosureType { get; set; }
+		public DisclosureType? DisclosureType => IES.Common.Core.Enums.DisclosureType.LegacySpace;
 
-        /// <summary>
-        /// GenerateAdditionalDirectLaborRates
-        /// </summary>
-        [JsonProperty(PropertyName = "Gen")]
+		/// <summary>
+		/// GenerateAdditionalDirectLaborRates
+		/// </summary>
+		[JsonProperty(PropertyName = "Gen")]
         public bool GenerateAdditionalDirectLaborRates { get; set; }
 
         /// <summary>
