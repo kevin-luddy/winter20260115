@@ -45,11 +45,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="tmResourceRateDTODataLoader">The T&amp;M resource rate dto data loader.</param>
 		/// <param name="boeTaskElementRecalc">The boe task element recalc.</param>
 		/// <param name="inUseDataLoader">The In-Use data loader.</param>
-		/// <param name="retriever">The retriever.</param>
 		/// <param name="factory">The factory.</param>
 		/// <param name="commonDataMapper">The common data mapper.</param>
 		/// <param name="permissionLoader">The permission loader.</param>
-		/// <param name="boeImporter">The boe importer.</param>
 		/// <param name="boeLaborControllerLogic">The boe labor controller logic.</param>
 		/// <param name="fullWsRecalc">The full ws recalc.</param>
 		/// <param name="zoneTravelRatesFeesLoader">The zone travel rates fees loader.</param>
@@ -75,7 +73,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IFullObjectFactory factory,
 			ICommonDataMapper commonDataMapper,
 			IPermissionsDTODataLoader permissionLoader,
-			FullBoeDataImporter boeImporter,
 			IBOELaborControllerLogic boeLaborControllerLogic,
 			IFullWorkspaceRecalculation fullWsRecalc,
 			RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
@@ -104,7 +101,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				factory,
 				commonDataMapper,
 				permissionLoader,
-				boeImporter,
 				boeLaborControllerLogic,
 				fullWsRecalc,
 				workspaceVariableLoader,
@@ -216,18 +212,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return this.GetFilteredWorkspaceResources(inWorkspaceResources);
-		}
-
-		/// <summary>
-		/// Return true, if user is BOE Author or Workspace Administrator.
-		/// </summary>
-		/// <param name="isAuthor">true, if user is BOE Author</param>
-		/// <param name="isWorkspaceAdmin">true, if user is Workspace Administrator</param>
-		/// <returns></returns>
-		public override bool CanExportBoeForWorkoffline(bool isAuthor, bool isWorkspaceAdmin)
-		{
-			// For MST, a BOE can only be exported for Workoffline if they are the author or workspace administrator.
-			return isAuthor || isWorkspaceAdmin;
 		}
 
 		/// <summary>
