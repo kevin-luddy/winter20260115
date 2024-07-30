@@ -486,7 +486,6 @@
     <Compile Include="_ModelView\Workspace\WorkspaceSearchResultModelView.cs" />
     <Compile Include="_ModelView\Workspace\CreateWorkspaceMSTModelView.cs" />
     <Compile Include="_ModelView\Workspace\CreateWorkspaceStepOneMSTModelView.cs" />
-    <Compile Include="_ModelView\Workspace\ExportBOEModelView.cs" />
     <Compile Include="_ControllerLogic\IBOELaborControllerLogic.cs" />
     <Compile Include="_ControllerLogic\PermissionControllerLogic.cs" />
     <Compile Include="NewValidation\IMSTZoneTravelValidator.cs" />
