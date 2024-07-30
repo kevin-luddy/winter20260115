@@ -155,7 +155,6 @@ namespace IES.DataBridge.Loaders
 						RateCategory = (RateCategory)r.CategoryID,
 						RateCode = r.RateCode1,                     // Entity Framework adds 1 to avoid name collision.
 						RateType = r.RateTypeID == null ? RateType.NotSet : (RateType)r.RateTypeID,
-						DisclosureType = r.DisclosureTypeId == null ? DisclosureType.None : (DisclosureType)r.DisclosureTypeId,
 						ResourceType = r.ResourceTypeID == null ? DirectRateMappingResourceType.None : (DirectRateMappingResourceType)r.ResourceTypeID,
 						RevisionId = r.RevisionID,
 						Section = r.SectionID ?? 0, // special case because of angular dropdowns such that a zero comes back instead of null
@@ -982,7 +981,6 @@ namespace IES.DataBridge.Loaders
 					foreach (RateDetailModelView rateDetailModelView in dtosToSave)
 					{
 						rateDetailModelView.RateType = rateDetailModelView.RateType.HasValue && rateDetailModelView.RateType.Value == RateType.NotSet ? null : rateDetailModelView.RateType;
-						rateDetailModelView.DisclosureType = rateDetailModelView.DisclosureType.HasValue && rateDetailModelView.DisclosureType.Value == DisclosureType.None ? null : rateDetailModelView.DisclosureType;
 						rateDetailModelView.ResourceType = rateDetailModelView.ResourceType.HasValue && rateDetailModelView.ResourceType.Value == DirectRateMappingResourceType.None ? null : rateDetailModelView.ResourceType;
 						rateDetailModelView.GovernmentBurdenPoolId = rateDetailModelView.GovernmentBurdenPoolId.HasValue && rateDetailModelView.GovernmentBurdenPoolId.Value < 1 ? null : rateDetailModelView.GovernmentBurdenPoolId;
 						rateDetailModelView.CommercialBurdenPoolId = rateDetailModelView.CommercialBurdenPoolId.HasValue && rateDetailModelView.CommercialBurdenPoolId.Value < 1 ? null : rateDetailModelView.CommercialBurdenPoolId;
