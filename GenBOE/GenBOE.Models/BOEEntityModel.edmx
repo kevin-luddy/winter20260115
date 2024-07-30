@@ -739,6 +739,7 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="MOQTypeSelectionTableDataId" Type="int" Nullable="false" />
           <Property Name="BOETaskElementID" Type="int" Nullable="false" />
           <Property Name="BOEID" Type="int" Nullable="false" />
+          <Property Name="BRCName" Type="varchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="MoqTypeTableCustomFieldValueXREF">
           <Key>
@@ -13877,6 +13878,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="MOQTypeSelectionTableData" Relationship="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId" FromRole="MOQTypeSelectionTableDataResourceHour" ToRole="MOQTypeSelectionTableData" />
           <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOE" FromRole="MOQTypeSelectionTableDataResourceHour" ToRole="BOE" />
           <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement" FromRole="MOQTypeSelectionTableDataResourceHour" ToRole="BOETaskElement" />
+          <Property Name="BRCName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId">
           <End Type="GenBOE.Models.MOQTypeSelectionTableData" Role="MOQTypeSelectionTableData" Multiplicity="1" />
@@ -16647,6 +16649,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="MOQTypeSelectionTableDataResourceHours">
             <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelectionTableDataResourceHour">
               <MappingFragment StoreEntitySet="MOQTypeSelectionTableDataResourceHours">
+                <ScalarProperty Name="BRCName" ColumnName="BRCName" />
                 <ScalarProperty Name="BOEID" ColumnName="BOEID" />
                 <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
                 <ScalarProperty Name="MOQTypeSelectionTableDataId" ColumnName="MOQTypeSelectionTableDataId" />

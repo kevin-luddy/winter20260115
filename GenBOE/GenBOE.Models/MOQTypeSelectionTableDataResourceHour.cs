@@ -21,6 +21,7 @@ namespace GenBOE.Models
         public int MOQTypeSelectionTableDataId { get; set; }
         public int BOETaskElementID { get; set; }
         public int BOEID { get; set; }
+        public string BRCName { get; set; }
     
         public virtual MOQTypeSelectionTableData MOQTypeSelectionTableData { get; set; }
         public virtual BOE BOE { get; set; }

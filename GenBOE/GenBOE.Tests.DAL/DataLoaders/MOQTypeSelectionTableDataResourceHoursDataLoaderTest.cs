@@ -42,6 +42,7 @@
 
 			MOQTypeSelectionTableDataResourceHoursDTO updateMOQTypeSelectionTableDataResourceHours = new MOQTypeSelectionTableDataResourceHoursDTO();
 			updateMOQTypeSelectionTableDataResourceHours.ResourceName = "Updated Rationale";
+			updateMOQTypeSelectionTableDataResourceHours.BRCName = "Updated Rationale BRC";
 			updateMOQTypeSelectionTableDataResourceHours.WbsHours = 100;
 			updateMOQTypeSelectionTableDataResourceHours.TotalHours = 100;
 			updateMOQTypeSelectionTableDataResourceHours.MOQTypeSelectionTableDataId = 100;
