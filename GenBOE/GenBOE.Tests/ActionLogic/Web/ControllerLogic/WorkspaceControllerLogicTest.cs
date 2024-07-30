@@ -46,7 +46,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<ICustomFieldValueDTODataLoader> _customFieldValueLoader = null;
         private Mock<IBOEStateMachine> _boeStateMachine = null;
         private Mock<IBoeMediator> _BoeMediator = null;
-        private Mock<IBoeTaskElementMediator> _BoeTaskElementMediator = null;
         private Mock<IVariableSelectBOEtoSumCalculation> _VariableSelectBoeToSum = null;
         private Mock<BoeTaskElementRecalculation> _BoeTaskElementRecalculation = null;
         private Mock<IInUseDataLoader> _InUseDataLoader = null;
@@ -54,9 +53,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<IFullObjectFactory> factory;
         private Mock<ICommonDataMapper> _commonDatamapper = null;
         private Mock<IPermissionsDTODataLoader> _permissionLoader = null;
-        private Mock<BoeTaskElementImportMerge> _taskElementMergeMock = null;
-        private Mock<ResourceTypeImportMerge> _resourceMergeMock = null;
-        private Mock<IBoeDTODataLoader> boeLoader = null;
         private Mock<IBOELaborControllerLogic> _BOELaborControllerLogic = null;
         private Mock<IFullWorkspaceRecalculation> fullWsRecalc = null;
         private Mock<IWorkspaceDTODataLoader> wsLoader = null;
@@ -83,7 +79,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.factory.Object,
                 this._commonDatamapper.Object,
                 this._permissionLoader.Object,
-                this._boeImporterMock.Object,
 				this._BOELaborControllerLogic.Object,
                 this.fullWsRecalc.Object,
                 this.workspaceVariableLoader.Object,
@@ -112,7 +107,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.factory.Object,
                 this._commonDatamapper.Object,
                 this._permissionLoader.Object,
-                this._boeImporterMock.Object,
                 this._BOELaborControllerLogic.Object,
                 this.fullWsRecalc.Object,
                 this.zoneTravelRatesFeesLoader.Object,
@@ -163,12 +157,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             this._permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
             this.boeLoader = new Mock<IBoeDTODataLoader>();
-            this._boeMergeMock = new Mock<BOEImportMerge>(this.boeLoader.Object, this._customFieldValueLoader.Object);
-            this._taskElementMergeMock = new Mock<BoeTaskElementImportMerge>(this.factory.Object, this._customFieldValueLoader.Object);
-            this._resourceMergeMock = new Mock<ResourceTypeImportMerge>(this._VariableSelectBoeToSum.Object, this._customFieldValueLoader.Object);
-            this._boeImporterMock = new Mock<FullBoeDataImporter>(this._BoeMediator.Object, this._BoeTaskElementMediator.Object, this._boeMergeMock.Object,
-                this._taskElementMergeMock.Object, this._resourceMergeMock.Object);
-
+            
             this._BOELaborControllerLogic = new Mock<IBOELaborControllerLogic>();
 
             this.fullWsRecalc = new Mock<IFullWorkspaceRecalculation>();
