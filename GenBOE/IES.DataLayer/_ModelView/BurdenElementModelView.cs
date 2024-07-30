@@ -20,6 +20,7 @@ namespace IES.DataBridge.ModelViews
             this.DisplayOrder = -1;
             this.Name = string.Empty;
             this.Description = string.Empty;
+			this.DisplayOrder1LMX = -1;
         }
 
         /// <summary>
@@ -29,10 +30,12 @@ namespace IES.DataBridge.ModelViews
         /// <param name="displayOrder">Display Order value.</param>
         /// <param name="name">Burden Element name.</param>
         /// <param name="description">Burden Element description.</param>
-        public BurdenElementModelView(int id, int displayOrder, string name, string description)
+		/// <param name="displayOrder1LMX">Display Order 1LMX</param>
+        public BurdenElementModelView(int id, int displayOrder, string name, string description, int displayOrder1LMX)
         {
             this.Id = id;
             this.DisplayOrder = displayOrder;
+			this.DisplayOrder1LMX = displayOrder1LMX;
             this.Name = name;
             this.Description = description;
         }
@@ -56,5 +59,10 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets the description.
         /// </summary>
         public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or sets the display order for 1LMX
+		/// </summary>
+		public int DisplayOrder1LMX { get; set; }
     }
 }

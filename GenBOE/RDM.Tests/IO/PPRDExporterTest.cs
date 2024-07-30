@@ -6,7 +6,8 @@
 
 namespace RDM.Tests.IO
 {
-    using IES.ActionLogic.IO.Export;
+	using System.Configuration;
+	using IES.ActionLogic.IO.Export;
 	using IES.Common;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -22,7 +23,8 @@ namespace RDM.Tests.IO
         /// <returns>sut</returns>
         private PPRDExporter CreateSut()
         {
-            return new PPRDExporter(new TokenService(new MemoryCache()));
+			ConfigurationManager.AppSettings["oAuthDomain"] = "https://authuat.p.external.lmco.com/";
+			return new PPRDExporter(new TokenService(new MemoryCache()));
         }
 
         /// <summary>

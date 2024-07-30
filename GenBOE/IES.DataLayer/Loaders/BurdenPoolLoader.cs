@@ -64,9 +64,10 @@ namespace IES.DataBridge.Loaders
                                 Id = e.ID,
                                 DisplayOrder = e.DisplayOrder,
                                 Name = e.BurdenElement,
-                                Description = e.Description
+                                Description = e.Description,
+								DisplayOrder1LMX = e.DisplayOrder1LMX
                             })
-                        .OrderBy(e => e.DisplayOrder)
+                        .OrderBy(e => e.DisplayOrder1LMX)
                         .ToList();
 
                     // Get Burden Pools and Mappings.

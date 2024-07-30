@@ -128,6 +128,7 @@ namespace RDM.Tests.ControllerLogic
             {
                 new RateDetailModelView
                 {
+					DisclosureType = DisclosureType.LegacySpace,
                     Id = 1,
                     RateCode = "FXEDAA",
                     RateCategoryDescription = "Direct Labor",
@@ -176,7 +177,8 @@ namespace RDM.Tests.ControllerLogic
                 },
                 new RateDetailModelView
                 {
-                    Id = 2,
+					DisclosureType = DisclosureType.LegacySpace,
+					Id = 2,
                     RateCode = "XXJDAB",
                     RateCategoryDescription = "Direct Labor",
                     RateCategory = RateCategory.DirectLabor,
@@ -224,7 +226,8 @@ namespace RDM.Tests.ControllerLogic
 				},
                 new RateDetailModelView
                 {
-                    Id = 3,
+					DisclosureType = DisclosureType.LegacySpace,
+					Id = 3,
                     RateCode = "541976LB",
                     RateCategoryDescription = "Service Center",
                     RateCategory = RateCategory.ServiceCenter,
@@ -272,7 +275,8 @@ namespace RDM.Tests.ControllerLogic
 				},
                 new RateDetailModelView
                 {
-                    Id = 4,
+					DisclosureType = DisclosureType.LegacySpace,
+					Id = 4,
                     RateCode = "TRAVLOTC",
                     RateCategoryDescription = "Travel OTC",
                     RateCategory = RateCategory.TravelOtc,
@@ -322,7 +326,8 @@ namespace RDM.Tests.ControllerLogic
 
 			testRateCodes["FXDDAB"] = new RateDetailModelView
             {
-                Id = 11,
+				DisclosureType = DisclosureType.LegacySpace,
+				Id = 11,
                 RateCode = "FXDDAB",
                 RateCategoryDescription = "Direct Labor",
                 RateCategory = RateCategory.DirectLabor,
@@ -370,7 +375,8 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["C1NDAB"] = new RateDetailModelView
             {
-                Id = 12,
+				DisclosureType = DisclosureType.LegacySpace,
+				Id = 12,
                 RateCode = "C1NDAB",
                 RateCategoryDescription = "Direct Labor",
                 RateCategory = RateCategory.DirectLabor,
@@ -418,7 +424,8 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["CASPRNET"] = new RateDetailModelView
             {
-                Id = 13,
+				DisclosureType = DisclosureType.LegacySpace,
+				Id = 13,
                 RateCode = "CASPRNET",
                 RateCategoryDescription = "FCCOM",
                 RateCategory = RateCategory.Fccom,
@@ -466,7 +473,8 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["Travel SERV Esc"] = new RateDetailModelView
             {
-                Id = 14,
+				DisclosureType = DisclosureType.LegacySpace,
+				Id = 14,
                 RateCode = "Travel SERV Esc",
                 RateCategoryDescription = "Non-Labor Escalation Factor",
                 RateCategory = RateCategory.NonLaborEscalationFactor,
@@ -514,7 +522,8 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["NLBESCCH"] = new RateDetailModelView
             {
-                Id = 15,
+				DisclosureType = DisclosureType.LegacySpace,
+				Id = 15,
                 RateCode = "NLBESCCH",
                 RateCategoryDescription = "Non-Labor Escalation Percentage",
                 RateCategory = RateCategory.NonLaborEscalationPercentage,
@@ -562,7 +571,8 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["OHDEVNET"] = new RateDetailModelView
             {
-                Id = 16,
+				DisclosureType = DisclosureType.LegacySpace,
+				Id = 16,
                 RateCode = "OHDEVNET",
                 RateCategoryDescription = "Overhead",
                 RateCategory = RateCategory.Overhead,
@@ -610,7 +620,8 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["541760NL"] = new RateDetailModelView
             {
-                Id = 17,
+				DisclosureType = DisclosureType.LegacySpace,
+				Id = 17,
                 RateCode = "541760NL",
                 RateCategoryDescription = "Service Center",
                 RateCategory = RateCategory.ServiceCenter,
@@ -658,7 +669,8 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["Mileage Serv"] = new RateDetailModelView
             {
-                Id = 18,
+				DisclosureType = DisclosureType.LegacySpace,
+				Id = 18,
                 RateCode = "Mileage Serv",
                 RateCategoryDescription = "Travel Mlge",
                 RateCategory = RateCategory.TravelMlge,
@@ -910,8 +922,9 @@ namespace RDM.Tests.ControllerLogic
                 RateType = RateType.Hours,
                 ResourceType = DirectRateMappingResourceType.Labor,
                 GenerateAdditionalDirectLaborRates = false,
-                RateDescription = "Test Rate"
-            };
+                RateDescription = "Test Rate",
+				DisclosureType = DisclosureType.LegacySpace
+			};
             
             ICollection<ValidationMessage> result = sut.ValidateRateDetailModelViews(new Collection<RateDetailModelView>() { rateDetails }, 2012, 2012);
 
@@ -966,7 +979,8 @@ namespace RDM.Tests.ControllerLogic
                 RateType = RateType.NotSet,
                 ResourceType = DirectRateMappingResourceType.None,
                 GenerateAdditionalDirectLaborRates = false,
-                RateDescription = string.Empty
+                RateDescription = string.Empty,
+				DisclosureType = DisclosureType.LegacySpace
             };
 
             ICollection<ValidationMessage> result = sut.ValidateRateDetailModelViews(new Collection<RateDetailModelView>() { rateDetails }, 2012, 2012);
@@ -988,12 +1002,13 @@ namespace RDM.Tests.ControllerLogic
             result = sut.ValidateRateDetailModelViews(new Collection<RateDetailModelView>() { rateDetails }, 2012, 2012);
 
             // Should have validation messages for commercial burden pool not set (when gov't is) and additional descriptions not set
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(3, result.Count);
             Assert.IsTrue(result.ElementAt(0).ValidationIssue.Contains(RateMappingValidationConstants.RATEMAPPING_COMMERCIAL_BURDENPOOL_REQUIRED));
             Assert.IsTrue(result.ElementAt(1).ValidationIssue.Contains(RateMappingValidationConstants.RATEMAPPING_ADDITIONAL_DESCRIPTIONS_REQUIRED));
+			Assert.IsTrue(result.ElementAt(2).ValidationIssue.Contains(RateMappingValidationConstants.RATEMAPPING_ADDITIONAL_DESCRIPTIONS_REQUIRED));
 
-            // Fix above issues and test both burden pools not set (for unapproved rate code)
-            rateDetails.GovernmentBurdenPoolId = 0;
+			// Fix above issues and test both burden pools not set (for unapproved rate code)
+			rateDetails.GovernmentBurdenPoolId = 0;
             rateDetails.RateDescription1 = "Test1";
 
             result = sut.ValidateRateDetailModelViews(new Collection<RateDetailModelView>() { rateDetails }, 2012, 2012);
