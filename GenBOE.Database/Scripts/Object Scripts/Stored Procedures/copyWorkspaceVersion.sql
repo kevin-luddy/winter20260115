@@ -51,6 +51,7 @@ AS
 **		7/11/24		e405721				PROPH-2156: Update Copy Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
 **		07/11/24	twilson3			proph-2166 Missing Columns
 **		07/12/24	twilson3			proph-2019 Fix @Temp Table definitions
+**		07/30/24	e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 *******************************************************************************/
 SET NOCOUNT ON 
 

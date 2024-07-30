@@ -52,6 +52,7 @@ AS
 **		1/18/24		ranzalon			PROPH-1070 Update for HistoricalReferenceExplanation
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 **		7/16/24		e405721				PROPH-2160: Update Create Workspace Version for Skill Mix, Common Disclosure Skill Mix and MOQ Type Selection Table Data Resource Hours
+**		7/30/24		e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
