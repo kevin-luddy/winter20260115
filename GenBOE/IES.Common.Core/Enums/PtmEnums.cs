@@ -1457,6 +1457,12 @@ namespace IES.Common.Core.Enums
 	public enum CcopdOptionalReason
 	{
 		/// <summary>
+		/// Uninitialized/default value
+		/// </summary>
+		[Description("")]
+		NotSet = 0,
+
+		/// <summary>
 		/// Commercial Item Exception applies
 		/// </summary>
 		[Description("Commercial Item Exception applies")]
