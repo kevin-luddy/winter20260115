@@ -24,19 +24,20 @@ namespace IES.DataBridge.Loaders
         /// <param name="governmentBurdenPoolsOptions">Out parameter for returning Government Burden Pool options.</param>
         void GetBurdenPoolOptions(int revisionId, out ICollection<OptionModelView> commercialBurdenPoolOptions, out ICollection<OptionModelView> governmentBurdenPoolsOptions);
 
-        /// <summary>
-        /// BurdenPoolGridModelView GetByRevision
-        /// </summary>
-        /// <param name="revisionId">int</param>
-        /// <returns>BurdenPoolGridModelView</returns>
-        BurdenPoolGridModelView GetByRevision(int revisionId);
+		/// <summary>
+		/// BurdenPoolGridModelView GetByRevision
+		/// </summary>
+		/// <param name="revisionId">int</param>
+		/// <param name="isLegacy">Is this only Legacy Burden Pools</param>
+		/// <returns>BurdenPoolGridModelView</returns>
+		BurdenPoolGridModelView GetByRevision(int revisionId, bool isLegacy = false);
 
-        /// <summary>
-        /// Save collection of BurdenPools. All pools are passed in, then all reference data
-        /// can be retrieved in one DB call to get RateCodes and BurdenElements.
-        /// </summary>
-        /// <param name="dtosIn">BurdenPoolDetailModelView</param>
-        /// <param name="revisionId">Should be the WIP revision.</param>
-        void SaveBurdenPools(ICollection<BurdenPoolDetailModelView> dtosIn, int revisionId);
+		/// <summary>
+		/// Save collection of BurdenPools. All pools are passed in, then all reference data
+		/// can be retrieved in one DB call to get RateCodes and BurdenElements.
+		/// </summary>
+		/// <param name="dtosIn">BurdenPoolDetailModelView</param>
+		/// <param name="revisionId">Should be the WIP revision.</param>
+		void SaveBurdenPools(ICollection<BurdenPoolDetailModelView> dtosIn, int revisionId);
     }
 }
