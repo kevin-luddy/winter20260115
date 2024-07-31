@@ -4114,18 +4114,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 					);
 				}
-				//get mapping of resources to brcs if RMS
-				//space should return empty mapping
-				Task<IESResponse<SkillMixConvertedResourceViewModel>> response;
-				response = Task.Run(async () => await GetSkillMixConvertedResources());
-				ICollection<SkillMixConvertedResourceViewModel> convertedResources = response.Result.Data;
-				Dictionary<string, List<SkillMixConvertedResourceViewModel>> convertedResourcesMap = convertedResources?.GroupBy(r => r.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
+
 				//case 1: found a mapping for resource (user input false)
 				//case 1a: add a row for each brc in mapping
 				//case 1b: row already esists so update its historical and skill mix hours and perserve the other user input info
 				//case 2: no mapping (user input)
 				//case 2a: create a new row for resource
 				//case 2b: row already exists, update it with changes from skill mix and perserve other user input
+
+				//get mapping of resources to brcs if RMS
+				Task<IESResponse<SkillMixConvertedResourceViewModel>> response;
+				response = Task.Run(async () => await GetSkillMixConvertedResources());
+				ICollection<SkillMixConvertedResourceViewModel> convertedResources = response.Result.Data;
+				Dictionary<string, List<SkillMixConvertedResourceViewModel>> convertedResourcesMap = convertedResources?.GroupBy(r => r.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
 
 				//get a map of the old rows that match resources in the new data since you can have multiple for brc
 				Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosureSMData != null && commonDisclosureSMData.Any() ? commonDisclosureSMData.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
