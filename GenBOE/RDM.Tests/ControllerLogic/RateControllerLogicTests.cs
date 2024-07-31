@@ -128,8 +128,7 @@ namespace RDM.Tests.ControllerLogic
             {
                 new RateDetailModelView
                 {
-					DisclosureType = DisclosureType.LegacySpace,
-                    Id = 1,
+					Id = 1,
                     RateCode = "FXEDAA",
                     RateCategoryDescription = "Direct Labor",
                     RateCategory = RateCategory.DirectLabor,
@@ -177,7 +176,6 @@ namespace RDM.Tests.ControllerLogic
                 },
                 new RateDetailModelView
                 {
-					DisclosureType = DisclosureType.LegacySpace,
 					Id = 2,
                     RateCode = "XXJDAB",
                     RateCategoryDescription = "Direct Labor",
@@ -226,7 +224,6 @@ namespace RDM.Tests.ControllerLogic
 				},
                 new RateDetailModelView
                 {
-					DisclosureType = DisclosureType.LegacySpace,
 					Id = 3,
                     RateCode = "541976LB",
                     RateCategoryDescription = "Service Center",
@@ -275,7 +272,6 @@ namespace RDM.Tests.ControllerLogic
 				},
                 new RateDetailModelView
                 {
-					DisclosureType = DisclosureType.LegacySpace,
 					Id = 4,
                     RateCode = "TRAVLOTC",
                     RateCategoryDescription = "Travel OTC",
@@ -326,7 +322,6 @@ namespace RDM.Tests.ControllerLogic
 
 			testRateCodes["FXDDAB"] = new RateDetailModelView
             {
-				DisclosureType = DisclosureType.LegacySpace,
 				Id = 11,
                 RateCode = "FXDDAB",
                 RateCategoryDescription = "Direct Labor",
@@ -375,7 +370,6 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["C1NDAB"] = new RateDetailModelView
             {
-				DisclosureType = DisclosureType.LegacySpace,
 				Id = 12,
                 RateCode = "C1NDAB",
                 RateCategoryDescription = "Direct Labor",
@@ -424,7 +418,6 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["CASPRNET"] = new RateDetailModelView
             {
-				DisclosureType = DisclosureType.LegacySpace,
 				Id = 13,
                 RateCode = "CASPRNET",
                 RateCategoryDescription = "FCCOM",
@@ -473,7 +466,6 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["Travel SERV Esc"] = new RateDetailModelView
             {
-				DisclosureType = DisclosureType.LegacySpace,
 				Id = 14,
                 RateCode = "Travel SERV Esc",
                 RateCategoryDescription = "Non-Labor Escalation Factor",
@@ -522,7 +514,6 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["NLBESCCH"] = new RateDetailModelView
             {
-				DisclosureType = DisclosureType.LegacySpace,
 				Id = 15,
                 RateCode = "NLBESCCH",
                 RateCategoryDescription = "Non-Labor Escalation Percentage",
@@ -571,7 +562,6 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["OHDEVNET"] = new RateDetailModelView
             {
-				DisclosureType = DisclosureType.LegacySpace,
 				Id = 16,
                 RateCode = "OHDEVNET",
                 RateCategoryDescription = "Overhead",
@@ -620,7 +610,6 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["541760NL"] = new RateDetailModelView
             {
-				DisclosureType = DisclosureType.LegacySpace,
 				Id = 17,
                 RateCode = "541760NL",
                 RateCategoryDescription = "Service Center",
@@ -669,7 +658,6 @@ namespace RDM.Tests.ControllerLogic
 			};
             testRateCodes["Mileage Serv"] = new RateDetailModelView
             {
-				DisclosureType = DisclosureType.LegacySpace,
 				Id = 18,
                 RateCode = "Mileage Serv",
                 RateCategoryDescription = "Travel Mlge",
@@ -922,8 +910,7 @@ namespace RDM.Tests.ControllerLogic
                 RateType = RateType.Hours,
                 ResourceType = DirectRateMappingResourceType.Labor,
                 GenerateAdditionalDirectLaborRates = false,
-                RateDescription = "Test Rate",
-				DisclosureType = DisclosureType.LegacySpace
+                RateDescription = "Test Rate"
 			};
             
             ICollection<ValidationMessage> result = sut.ValidateRateDetailModelViews(new Collection<RateDetailModelView>() { rateDetails }, 2012, 2012);
@@ -979,8 +966,7 @@ namespace RDM.Tests.ControllerLogic
                 RateType = RateType.NotSet,
                 ResourceType = DirectRateMappingResourceType.None,
                 GenerateAdditionalDirectLaborRates = false,
-                RateDescription = string.Empty,
-				DisclosureType = DisclosureType.LegacySpace
+                RateDescription = string.Empty
             };
 
             ICollection<ValidationMessage> result = sut.ValidateRateDetailModelViews(new Collection<RateDetailModelView>() { rateDetails }, 2012, 2012);
