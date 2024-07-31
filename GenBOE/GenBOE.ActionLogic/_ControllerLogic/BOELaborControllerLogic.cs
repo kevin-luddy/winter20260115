@@ -4122,7 +4122,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				//case 2a: create a new row for resource
 				//case 2b: row already exists, update it with changes from skill mix and perserve other user input
 
-				//get mapping of resources to brcs if RMS
+				//get mapping of resources to brcs if RMS (space should return empty)
 				Task<IESResponse<SkillMixConvertedResourceViewModel>> response;
 				response = Task.Run(async () => await GetSkillMixConvertedResources());
 				ICollection<SkillMixConvertedResourceViewModel> convertedResources = response.Result.Data;
