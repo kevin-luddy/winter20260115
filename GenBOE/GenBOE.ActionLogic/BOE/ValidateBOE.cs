@@ -11,9 +11,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Common;
-    using GenBOE.ActionLogic.Common.Calculations;
-	using GenBOE.ActionLogic.IO;
+	using Common;
+	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Validation;
@@ -782,8 +781,17 @@ namespace GenBOE.ActionLogic.WBS.BOE
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.HistoricalReferenceExplanation, "Provide an explanation of Why the Historical Reference was Selected", ws.RteSizeLimit, errorMessages);
 							}
 
-							errorMessages.AddRange(ValidateSkillMixTable(new Collection<MoqTypeSelection>() { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
-							errorMessages.AddRange(ValidateCommonDisclosureSkillMixTable(new Collection<MoqTypeSelection> { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
+							if (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+							{
+								if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
+								{
+									errorMessages.AddRange(ValidateSkillMixTable(new Collection<MoqTypeSelection>() { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
+								}
+								if (moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any())
+								{
+									errorMessages.AddRange(ValidateCommonDisclosureSkillMixTable(new Collection<MoqTypeSelection> { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
+								}
+							}
 
                             break;
                         case (MOQType.CostEstimatingRelationships):
@@ -920,6 +928,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				IList<CommonDisclosureModelView> commonDisclosureIncludedHasTrueValue = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(x => x.Included.HasValue && x.Included.Value).ToList();
 				decimal totalCommonDisclosureRowsBOESkillMix = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
 				decimal totalCommonDisclosureRowsProposedHours = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Sum(p => p.ProposedHours);
+				IList<CommonDisclosureModelView> commonDisclosureHasBRC = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
+																				.Where(x => string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
 
 
 				if (onButtonPress)
@@ -946,7 +956,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 				if (commonDisclosureIncludedHasTrueValue.Count <= 0)
 				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Included has to be yes"));
+					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
 				}
 
 				if (totalCommonDisclosureRowsBOESkillMix != 100)
@@ -954,15 +964,46 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
 				}
 
-				if (totalCommonDisclosureRowsProposedHours != moqEquationTotal.Value)
+				if (moqEquationTotal.HasValue && totalCommonDisclosureRowsProposedHours != moqEquationTotal.Value)
 				{
 					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Proposed Hours total must be equal to MoqTotal"));
 				}
+
+				foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
+				{
+					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BRC must be selected for each occurance of Resource {0}.", commonDisclosureRow));
+				}
+
+				ValidateResourceAndBRCCombos(moqTypes, errorMessages);
+				
 			}
 
 			return errorMessages;
 		}
 
+		/// <summary>
+		/// Validate  each Resource and BRC combo is unique in the Common Disclosure Table
+		/// </summary>
+		/// <param name="moqTypes">The MOQ Types</param>
+		/// <param name="errorMessages">Error Messages</param>
+		private static void ValidateResourceAndBRCCombos(ICollection<MoqTypeSelection> moqTypes, ICollection<String> errorMessages)
+		{
+			foreach (MoqTypeSelection moqType in moqTypes)
+			{
+				Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any() ? moqType.CommonDisclosureTable.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
+				resourceToCDRowMap.ForEach(pair =>
+				{
+					//don't need to count the null ones - that validation is checked above
+					List<CommonDisclosureModelView> brcsForResource = pair.Value.Where(x => !string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
+					int brcsForResourceCount = brcsForResource.Count();
+					bool isUnique = brcsForResource.Select(x => x.BusinessResourceID).Distinct().ToList().Count() == brcsForResourceCount;
+					if (!isUnique)
+					{
+						errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Each BRC must be unique for Resource {0}.", pair.Key));
+					}
+				});
+			}
+		}	
 		/// <summary>
 		/// Validates a required field
 		/// </summary>

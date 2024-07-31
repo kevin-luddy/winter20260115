@@ -521,7 +521,7 @@
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeSkillMixSuffix);"></div>
             </div>
             <div class="form-element">
-                <div id="skillMixDiv" class="commonDisclosureTableData skillMixTable">
+                <div id="commonDisclosureTableData" class="skillMixTable">
                     <table name="commonDisclosureSkillMix"  class="grid editable">
                         <thead>
                             <tr>
