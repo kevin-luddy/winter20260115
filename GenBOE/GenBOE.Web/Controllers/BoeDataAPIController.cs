@@ -16,6 +16,8 @@ namespace GenBOE.Web.Controllers
 	using System.Net.Http.Headers;
 	using System.Web.Http;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.BOE;
+	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Export.BOE;
@@ -102,9 +104,24 @@ namespace GenBOE.Web.Controllers
 		private readonly ContractTypeLoader contractTypeLoader;
 
 		/// <summary>
+		/// Resource Loader
+		/// </summary>
+		private readonly IResourceDTODataLoader resourceLoader;
+
+		/// <summary>
 		/// Security Information
 		/// </summary>
 		private ISecurityInformation securityInformation;
+
+		/// <summary>
+		/// TM Resource Loader
+		/// </summary>
+		private readonly ITMResourceRateDTODataLoader tmResourceRateLoader;
+
+		/// <summary>
+		/// TM Calculator Utility
+		/// </summary>
+		private readonly TMCalculator tmCalculator;
 
 		/// <summary>
 		/// Logger
@@ -128,7 +145,8 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
 		/// <param name="securityInformation">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, ISecurityInformation securityInformation)
+		/// <par
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, ISecurityInformation securityInformation, ITMResourceRateDTODataLoader tmResourceRateLoader, TMCalculator tmCalculator)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -143,7 +161,10 @@ namespace GenBOE.Web.Controllers
 			this.activeDirectoryUtilities = activeDirectoryUtilities;
 			this.userDataLoader = userDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
+			this.resourceLoader = resourceLoader;
 			this.securityInformation = securityInformation;
+			this.tmResourceRateLoader = tmResourceRateLoader;
+			this.tmCalculator = tmCalculator;
 		}
 		#endregion
 
@@ -1142,6 +1163,78 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown Error occured returning PBoe Data for given Workspace with tracking number: {trackingNumber} and PBOE ID: {pboeID}: {ex.Message}");
+			}
+
+			return result;
+		}
+
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<PBOERow> GetBOETotals(string trackingNumber, BOEFormType boeFormType, ElementOfCostType elementOfCostType, IDictionary<int, ICollection<string>> nlfResources)
+		{
+			IESResponse<PBOERow> result = new IESResponse<PBOERow>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// Check if user is System Admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
+
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
+
+				if (isAllowed)
+				{
+					ICollection<BOEFormPBOEDTO> pboeDtoList = new HashSet<BOEFormPBOEDTO>();
+					foreach (WorkspaceDTO ws in workspaces)
+					{
+						if (ws.IsUsingTM)
+						{
+							// Get Prerequisite Data
+							FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws);
+							ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(ws.ResourceListID);
+
+							Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+							Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
+
+							foreach (KeyValuePair<int, ICollection<string>> entry in nlfResources)
+							{
+								// Get The Resource Model from incoming Nlf Resources
+								ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => entry.Value.Contains(x.ResourceName)).ToList();
+
+								// Add the PBOE Data to list that will get sent to Utility Method to do the Calculations
+								BOEFormPBOEDTO pboeDto = new BOEFormPBOEDTO
+								{
+									Id = entry.Key,
+									ResourceIds = actualResources.Select(x => x.Id).ToList()
+								};
+
+								pboeDtoList.Add(pboeDto);
+							}
+
+							tmCalculator.ValidateBOEFormsTMResources(validationErrors, resourceIdsWithValidTMRates, fullWorkspace,
+								new List<BOEFormIBOEDTO>(), pboeDtoList, tmResourceRateLoader, resourceLoader);
+							result.Data = tmCalculator.GetBOETotals(pboeDtoList, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
+						}
+					}
+
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					string message = $"Invalid permission to Workspace with tracking number: {trackingNumber}";
+					logger.Error(message + " NTID: " + ntid);
+					result.Messages.Add(message);
+					result.IsSuccessful = false;
+					result.Data = null;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occured returning BOE Totals : {ex.Message}");
 			}
 
 			return result;
