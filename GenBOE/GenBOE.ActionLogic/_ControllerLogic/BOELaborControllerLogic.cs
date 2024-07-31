@@ -15,8 +15,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web;
 	using System.Web.Configuration;
 	using System.Web.Mvc;
-	using System.Windows.Input;
-	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -4169,7 +4167,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 						else
 						{
-							//no mapping (or mapping deleeted?) so persist the old rows and make sure user input is true
+							//no mapping (or mapping deleted?) so persist the old rows and make sure user input is true
 							foreach (CommonDisclosureModelView oldRow in foundOldRows)
 							{
 								newTable.Add(
