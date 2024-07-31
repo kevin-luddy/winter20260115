@@ -24,6 +24,7 @@ namespace IES.Models
         public string BurdenElement { get; set; }
         public string Description { get; set; }
         public int DisplayOrder { get; set; }
+        public int DisplayOrder1LMX { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProPricerBurdenRateMap> ProPricerBurdenRateMaps { get; set; }

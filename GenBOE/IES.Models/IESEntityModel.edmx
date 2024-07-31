@@ -34,6 +34,7 @@
           <Property Name="BurdenElement" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="4000" />
           <Property Name="DisplayOrder" Type="int" Nullable="false" />
+          <Property Name="DisplayOrder1LMX" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="BurdenPoolLU">
           <Key>
@@ -857,7 +858,9 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Parameter Name="RevisionUniqueSectionId" Type="int" Mode="In" />
           <Parameter Name="IsRdsbRequired" Type="bit" Mode="In" />
           <Parameter Name="SectionContainsCasbDisclosure" Type="bit" Mode="In" />
+          <Parameter Name="IsDisclosureStatementAdequate" Type="bit" Mode="In" />
           <Parameter Name="SectionContainsNonCompliance" Type="bit" Mode="In" />
+          <Parameter Name="NonComplianceNotification" Type="bit" Mode="In" />
           <Parameter Name="Office" Type="varchar" Mode="In" />
           <Parameter Name="Agency" Type="varchar" Mode="In" />
           <Parameter Name="LMBA" Type="varchar" Mode="In" />
@@ -1114,7 +1117,9 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             <Parameter Name="RevisionUniqueSectionId" Mode="In" Type="Int32" />
             <Parameter Name="IsRdsbRequired" Mode="In" Type="Boolean" />
             <Parameter Name="SectionContainsCasbDisclosure" Mode="In" Type="Boolean" />
+            <Parameter Name="IsDisclosureStatementAdequate" Mode="In" Type="Boolean" />
             <Parameter Name="SectionContainsNonCompliance" Mode="In" Type="Boolean" />
+            <Parameter Name="NonComplianceNotification" Mode="In" Type="Boolean" />
             <Parameter Name="Office" Mode="In" Type="String" />
             <Parameter Name="Agency" Mode="In" Type="String" />
             <Parameter Name="LMBA" Mode="In" Type="String" />
@@ -1584,6 +1589,7 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
           <Property Name="DisplayOrder" Type="Int32" Nullable="false" />
           <NavigationProperty Name="ProPricerBurdenRateMaps" Relationship="IESModel.FK_ProPricerBurdenRateMap_BurdenElementLU" FromRole="BurdenElementLU" ToRole="ProPricerBurdenRateMap" />
+          <Property Name="DisplayOrder1LMX" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="CategoryLU">
           <Key>
@@ -2435,6 +2441,7 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <EntitySetMapping Name="BurdenElementLUs">
             <EntityTypeMapping TypeName="IESModel.BurdenElementLU">
               <MappingFragment StoreEntitySet="BurdenElementLU">
+                <ScalarProperty Name="DisplayOrder1LMX" ColumnName="DisplayOrder1LMX" />
                 <ScalarProperty Name="DisplayOrder" ColumnName="DisplayOrder" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="BurdenElement" ColumnName="BurdenElement" />

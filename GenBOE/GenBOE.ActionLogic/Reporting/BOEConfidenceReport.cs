@@ -124,13 +124,6 @@ namespace GenBOE.ActionLogic.Reporting
 					};
 
 					// replace variables in the MOQ Equation
-					Dictionary<string, decimal> variableReplacements = new Dictionary<string, decimal>();
-					variableReplacements.AddRange(wsVariableReplacements);
-					foreach (OrdinaryVariableDto taskVariable in task.OrdinaryVariables)
-					{
-						variableReplacements.Add(taskVariable.OrdinaryVariableName, taskVariable.OrdinaryVariableValue ?? 0);
-					}
-
 					string moqEquation = ReplaceVariablesWithValues(task, wsVariableReplacements);
 
 					// Get the MOQ numeric values - the equation and the result
@@ -432,6 +425,8 @@ namespace GenBOE.ActionLogic.Reporting
 
 		/// <summary>
 		/// Helper: Replaces variables in the MOQ Equation with their corresponding numerical value
+		/// 
+		/// We have to process WS variables first, then Task variables, to prevent a situation where the variables may have the same name.. just in case
 		/// </summary>
 		/// <param name="task">Task containing MOQ Equation and ordinary variables</param>
 		/// <param name="wsReplacements">Workspace Variables and their corresponding value</param>
@@ -440,15 +435,14 @@ namespace GenBOE.ActionLogic.Reporting
 		{
 			string toReturn = task.MOQHoursEquation;
 
-			// combine WS variable replacements with ordinary (task-level) variable replacements
-			Dictionary<string, decimal> replacements = wsReplacements;
-			foreach (OrdinaryVariableDto taskVariable in task.OrdinaryVariables)
+			// replace the variables with their value - WS variables first
+			foreach (KeyValuePair<string, decimal> item in wsReplacements)
 			{
-				replacements.Add(taskVariable.OrdinaryVariableName, taskVariable.OrdinaryVariableValue ?? 0);
+				toReturn = toReturn.Replace(item.Key, item.Value.ToString());
 			}
 
-			// replace the variables with their value
-			foreach (KeyValuePair<string, decimal> item in replacements)
+			// replace the variables with their value - task variables next
+			foreach (KeyValuePair<string, decimal> item in task.OrdinaryVariables.Select(x => new { x.OrdinaryVariableName, x.OrdinaryVariableValue }).ToDictionary(x => x.OrdinaryVariableName, x => x.OrdinaryVariableValue ?? 0))
 			{
 				toReturn = toReturn.Replace(item.Key, item.Value.ToString());
 			}

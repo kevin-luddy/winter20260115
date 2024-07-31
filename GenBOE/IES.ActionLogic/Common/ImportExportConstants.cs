@@ -343,22 +343,7 @@ namespace IES.ActionLogic.Common
 		/// Commercial Burden Pool Column Offset
 		/// </summary>
 		public const int COMM_BURDEN_POOL_CELL_COLUMN_OFFSET = 118;
-		/// <summary>
-		/// Worksheets to be hidden on export, and excluded from import
-		/// </summary>
-		private static string[] excludedSheetNames = { OPTIONS_LISTS };
-
-		/// <summary>
-		/// Excluded sheet names
-		/// </summary>
-		static public IList<string> ExcludedSheetNames
-		{
-			get
-			{
-				return excludedSheetNames;
-			}
-		}
-
+		
 		// Options Lists column headers
 
 		/// <summary>

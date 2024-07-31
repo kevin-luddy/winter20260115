@@ -453,7 +453,6 @@ namespace RDM.Tests.IO
                         RateCategory = (RateCategory)r.CategoryID,
                         RateCode = r.RateCode1,                     // Entity Framework adds 1 to avoid name collision.
                         RateType = (RateType)r.RateTypeID,
-						DisclosureType = (DisclosureType)r.DisclosureTypeId,
                         ResourceType = (DirectRateMappingResourceType)r.ResourceTypeID,
                         RevisionId = r.RevisionID,
                         Section = r.Section.ID,

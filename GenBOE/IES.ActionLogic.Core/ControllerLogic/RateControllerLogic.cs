@@ -958,7 +958,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			updatedRateCode.Section = importedRateCode.Section;
 			updatedRateCode.ResourceType = importedRateCode.ResourceType;
 			updatedRateCode.RateType = importedRateCode.RateType;
-			updatedRateCode.DisclosureType = importedRateCode.DisclosureType;
 			updatedRateCode.GenerateAdditionalDirectLaborRates = importedRateCode.GenerateAdditionalDirectLaborRates;
 			updatedRateCode.RateDescription = importedRateCode.RateDescription;
 			updatedRateCode.RateDescription1 = importedRateCode.RateDescription1;

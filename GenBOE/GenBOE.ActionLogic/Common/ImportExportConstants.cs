@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -10,99 +10,23 @@ namespace GenBOE.ActionLogic.Common
 
     public static class ImportExportConstants
     {
-        public static readonly string PATH_TO_WORKOFFLINE_TEMPLATE = "~/Templates/Export/Workoffline.xlsm";
         public static readonly string EXPORT_PATH = "~/Templates/Export/";
 
         // worksheet names
         public static readonly string OPTIONS_LISTS = "Options Lists";
-        public static readonly string TABLE_TEMPLATES = "TableTemplates";
-        public static readonly string TEST_TEMPLATES = "TestTemplates";
+       
+		public const int RESOURCETYPE_RESOURCE_CELL_COLUMN_OFFSET = 1;
+		public const int RESOURCETYPE_PERFORG_CELL_COLUMN_OFFSET = 2;
+		public const int CLIN_CONTRACT_TYPE_COLUMN_OFFSET = 5;
+		public const int PROJECTMAP_RESOURCE_CELL_COLUMN_OFFSET = 3;
+		public const int PROJECTMAP_PERFORG_CELL_COLUMN_OFFSET = 4;
+		public const int PROJECTMAP_LEGACY_RESOURCE_CELL_COLUMN_OFFSET = 5;
+		public const int PROJECTMAP_CLIN_CELL_COLUMN_OFFSET = 8;
+		public const int PROJECTMAP_OFFLOAD_CELL_COLUMN_OFFSET = 17;
+		public const int PROJECTMAP_CLASS_OF_COST_CELL_COLUMN_OFFSET = 18;
+		public const int PROJECTMAP_ADD_DELETE_CELL_COLUMN_OFFSET = 19;
 
-        // workoffline template table names
-        public const string WORKSPACE_TABLE_TEMPLATE = "WorkspaceTableTemplate";
-        public const string BOE_TABLE_TEMPLATE = "BoeTableTemplate";
-        public const string TASK_TABLE_TEMPLATE = "TaskTableTemplate";
-        public const string RESOURCE_TABLE_TEMPLATE = "ResourceTableTemplate";
-        public const string DYNAMIC_COLUMNS_TEMPLATE = "DynamicColumns";
-
-        // Workoffline template table offsets
-        // Offsets are from the top left corner of the table
-        public const int WORKSPACE_ID_CELL_COLUMN_OFFSET = 0;
-        public const int WORKSPACE_ID_CELL_ROW_OFFSET = 0;
-        public const int WORKSPACE_NAME_CELL_COLUMN_OFFSET = 2;
-        public const int WORKSPACE_NAME_CELL_ROW_OFFSET = 1;
-        public const int BOE_ID_CELL_COLUMN_OFFSET = 0;
-        public const int BOE_ID_CELL_ROW_OFFSET = 0;
-        public const int BOE_MULTI_CELL_COLUMN_OFFSET = 0;
-        public const int BOE_MULTI_CELL_ROW_OFFSET = 1;
-        public const int BOE_WBS_CELL_COLUMN_OFFSET = 1;
-        public const int BOE_WBS_CELL_ROW_OFFSET = 1;
-        public const int BOE_CLIN_CELL_COLUMN_OFFSET = 2;
-        public const int BOE_CLIN_CELL_ROW_OFFSET = 1;
-        public const int BOE_STARTDATE_CELL_COLUMN_OFFSET = 2;
-        public const int BOE_STARTDATE_CELL_ROW_OFFSET = 2;
-        public const int BOE_ENDDATE_CELL_COLUMN_OFFSET = 2;
-        public const int BOE_ENDDATE_CELL_ROW_OFFSET = 3;
-        public const int BOE_TITLE_CELL_COLUMN_OFFSET = 2;
-        public const int BOE_TITLE_CELL_ROW_OFFSET = 4;
-        public const int BOE_DESCRIPTION_CELL_COLUMN_OFFSET = 2;
-        public const int BOE_DESCRIPTION_CELL_ROW_OFFSET = 5;
-        public const int BOE_SOURCESOFDATA_CELL_COLUMN_OFFSET = 2;
-        public const int BOE_SOURCESOFDATA_CELL_ROW_OFFSET = 6;
-        public const int BOE_CUSTOMFIELD_LABEL_CELL_COLUMN_OFFSET = 1;
-        public const int BOE_CUSTOMFIELD_VALUE_CELL_COLUMN_OFFSET = 2;
-        public const int BOE_FIRST_CUSTOMFIELD_ROW_OFFSET = 7;
-        public const int TASKELEMENT_ID_CELL_COLUMN_OFFSET = 0;
-        public const int TASKELEMENT_ID_CELL_ROW_OFFSET = 0;
-        public const int TASK_TYPE_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_TYPE_CELL_ROW_OFFSET = 1;
-        public const int TASK_ID_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_ID_CELL_ROW_OFFSET = 2;
-        public const int TASK_TITLE_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_TITLE_CELL_ROW_OFFSET = 3;
-        public const int TASK_DESCRIPTION_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_DESCRIPTION_CELL_ROW_OFFSET = 4;
-        public const int TASK_STARTDATE_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_STARTDATE_CELL_ROW_OFFSET = 5;
-        public const int TASK_ENDDATE_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_ENDDATE_CELL_ROW_OFFSET = 6;
-        public const int TASK_MOQHOURSEQU_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_MOQHOURSEQU_CELL_ROW_OFFSET = 7;
-        public const int TASK_MOQTYPE_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_MOQTYPE_CELL_ROW_OFFSET = 8;
-        public const int TASK_MOQTEXT_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_MOQTEXT_CELL_ROW_OFFSET = 9;
-        public const int TASK_CUSTOMFIELD_LABEL_CELL_COLUMN_OFFSET = 1;
-        public const int TASK_CUSTOMFIELD_VALUE_CELL_COLUMN_OFFSET = 2;
-        public const int TASK_FIRST_CUSTOMFIELD_ROW_OFFSET = 10;
-        public const int FIRSTRESOURCETYPE_ID_CELL_COLUMN_OFFSET = 0;
-        public const int FIRSTRESOURCETYPE_ID_CELL_ROW_OFFSET = 2;
-        public const int RESOURCETYPE_RESOURCE_CELL_COLUMN_OFFSET = 1;
-        public const int RESOURCETYPE_PERFORG_CELL_COLUMN_OFFSET = 2;
-        public const int RESOURCETYPE_STARTDATE_CELL_COLUMN_OFFSET = 3;
-        public const int RESOURCETYPE_ENDDATE_CELL_COLUMN_OFFSET = 4;
-        public const int RESOURCETYPE_SPREADCURVE_CELL_COLUMN_OFFSET = 5;
-        public const int RESOURCETYPE_PERCENTSPREAD_CELL_COLUMN_OFFSET = 6;
-        public const int RESOURCETYPE_HOURSSPREAD_CELL_COLUMN_OFFSET = 7;
-        public const int RESOURCETYPE_CLIN_CELL_COLUMN_OFFSET = 10;
-        public const int RESOURCETYPE_WBS_CELL_COLUMN_OFFSET = 9;
-        public const int RESOURCETYPE_COST_CELL_COLUMN_OFFSET = 8;
-        public const int CLIN_CONTRACT_TYPE_COLUMN_OFFSET = 5;
-        public const int PROJECTMAP_RESOURCE_CELL_COLUMN_OFFSET = 3;
-        public const int PROJECTMAP_PERFORG_CELL_COLUMN_OFFSET = 4;
-        public const int PROJECTMAP_LEGACY_RESOURCE_CELL_COLUMN_OFFSET = 5;
-        public const int PROJECTMAP_CLIN_CELL_COLUMN_OFFSET = 8;
-        public const int PROJECTMAP_OFFLOAD_CELL_COLUMN_OFFSET = 17;
-        public const int PROJECTMAP_CLASS_OF_COST_CELL_COLUMN_OFFSET = 18;
-        public const int PROJECTMAP_ADD_DELETE_CELL_COLUMN_OFFSET = 19;
-
-        public const int RESOURCETYPE_SPREAD_HEADER_ROW_OFFSET = 1;
-
-        // worksheets to be hidden on export, and excluded from import
-        private static string[] excludedSheetNames = { OPTIONS_LISTS, TABLE_TEMPLATES, TEST_TEMPLATES };
-        public static IList<string> ExcludedSheetNames { get { return excludedSheetNames; } }
-
-        // Options Lists column headers
+		// Options Lists column headers
         public static readonly string MOQ_TYPE_COLUMN_HEADER = "MOQ Type";
         public static readonly string RESOURCE_COLUMN_HEADER = "Resource";
 		public static readonly string BUSINESS_RESOURCE_CODE_COLUMN_HEADER = "Business Resource Code";

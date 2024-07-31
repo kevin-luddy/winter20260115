@@ -15,6 +15,7 @@
 		{
 			this.MOQTypeSelectionTableDataResourceHoursId = -1;
 			this.ResourceName = string.Empty;
+			this.BRCName = string.Empty;
 			this.WbsHours = 0;
 			this.TotalHours = 0;
 			this.MOQTypeSelectionTableDataId = 0;
@@ -31,6 +32,11 @@
 		/// Resource
 		/// </summary>
 		public string ResourceName { get; set; }
+
+		/// <summary>
+		/// BRC name
+		/// </summary>
+		public string BRCName { get; set; }
 
 		/// <summary>
 		/// Wbs Hours

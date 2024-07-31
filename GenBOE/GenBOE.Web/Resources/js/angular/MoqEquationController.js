@@ -11,6 +11,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
         $scope.newTableId = -1;
 		$scope.ResourceModels = BOEDetails.WSResources;
+		$scope.BusinessResourceCodeModels = BOEDetails.WSBusinessResourceCodes;
 
 		// This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
 		setTimeout(function () {
@@ -1105,7 +1106,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				if (response.data.IsSuccessful === true) {
 					// the response is wrapped inside response.data.data array
 					if (response.data.data && Array.isArray(response.data.data)) {
-
 						// update the moq data table with calculated values
 						response.data.data.forEach(result => {
 							const res = result.Data[0];
@@ -1422,6 +1422,50 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
+	$scope.getMOQTotal = function () {
+		// Ensure the element with id 'equals' exists
+		var moqEquationElement = $('#equals');
+		if (moqEquationElement.length === 0) {
+			return 0;
+		}
+
+		// Get the text content and remove non-numeric characters (except for the decimal point)
+		var moqEquationTotal = moqEquationElement.text().replace(/,/g, '');
+
+		// Parse the string to a float
+		var parsedMoq = parseFloat(moqEquationTotal);
+		if (isNaN(parsedMoq)) {
+			parsedMoq = 0;
+		}
+
+		return parsedMoq;
+	};
+
+	$scope.updateBOESkillMixFromIncludedChange = function (item) {
+		if (item.Included === false || item.Included === null) {
+			item.BOESkillMix = 0;
+			item.IsPercentLocked = false;
+		}
+		if (item.Included === true) {
+			item.BOESkillMix = null;
+		}
+		$scope.updateProposedHours(item);
+	};
+
+	$scope.updateProposedHours = function (item) {
+		let totalMOQ = $scope.getMOQTotal();
+		if (totalMOQ > 0) {
+			item.ProposedHours = parseFloat((totalMOQ * (item.BOESkillMix / 100)).toFixed(1));
+		}
+	};
+
+	$scope.updateBOESkillMix = function (item) {
+		let totalMOQ = $scope.getMOQTotal();
+		if (totalMOQ > 0) {
+			item.BOESkillMix = parseFloat(((item.ProposedHours / totalMOQ) * 100).toFixed(3));
+		}
+	};
+
 	$scope.refreshCommonDisclosureTable = function (moqType) {
 		// Get all the data tables
 		const data = {
@@ -1437,7 +1481,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			// send to backend
 			// display response to user
 			$(document).trigger("SHOW_LOADING_BOX");
-
 			$http({
 				method: 'POST',
 				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
@@ -1462,6 +1505,35 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 		else {
 			moqType.CommonDisclosureTable = [];
+		}
+	};
+
+	$scope.addRowForResource = function (item, moqType) {
+		var dupe = angular.copy(item);
+		dupe.BusinessResourceID = "";
+		dupe.CommonDisclosureSkillMixID = -1;
+		dupe.HistoricalHours = 0;
+		dupe.LaborSkillMix = 0;
+
+		moqType.CommonDisclosureTable.push(dupe);
+	};
+
+	$scope.deleteRowForResource = function (item, moqType) {
+		//have to find at least one other row with same resource id to be eligible to delete
+		var resourceRowCount = 0;
+		for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
+			var row = moqType.CommonDisclosureTable[i];
+			if (row.ResourceID === item.ResourceID) {
+				resourceRowCount++;
+			}
+			if (resourceRowCount > 1) {
+				var index = moqType.CommonDisclosureTable.indexOf(item);
+				if (index > -1) { 
+					moqType.CommonDisclosureTable.splice(index, 1);
+				}
+				$scope.setCommonDisclosureTotals(moqType);
+				break;
+			}
 		}
 	};
 
@@ -1708,17 +1780,17 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.IsSapSetAndAnyTableSapRepository();
 		$scope.refreshSkillMixTable(moqType);
 		$scope.refreshDisableSave();
-    }
+	};
 
-    $scope.getAndSetIsResourceValid = function (item, models) {
-        item.IsResourceValid = true;
-        const input = item.ResourceNew;
-        if (input === undefined || (typeof input === 'string' && (input.length === 0
-            || models.filter(function (r) { return r.ResourceName === input }).length < 1))) {
-            item.IsResourceValid = false;
+	$scope.getAndSetIsResourceValid = function (input, models) {
+		var isResourceValid = true;
+		if (input === undefined ||
+			(typeof input === 'string' &&
+				(input.length === 0 || models.filter(function (r) { return r.ResourceName === input }).length < 1))) {
+			isResourceValid = false;
 		}
-        return item.IsResourceValid;
-	}
+		return isResourceValid;
+	};
 
 	$scope.setSkillMixTotals = function (moqType) {
 		// Reset Totals because this method can be called multiple times from multiple areas
@@ -1731,10 +1803,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			// Set Skill Mix Totals
 			moqType.HistoricalSkillMixHoursTotal += item.HistoricalHours;
 			moqType.LaborSkillMixTotal += item.LaborSkillMix;
-			moqType.BoeSkillMixTotal += item.BOESkillMix;
+			moqType.BoeSkillMixTotal += parseFloat(item.BOESkillMix) || 0;
 			moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
 		});
-	}
+	};
 
 	$scope.setCommonDisclosureTotals = function (moqType) {
 		// Reset Totals because this method can be called multiple times from multiple areas
@@ -1747,19 +1819,97 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			// Set Skill Mix Totals
 			moqType.HistoricalCommonDisclosureHoursTotal += item.HistoricalHours;
 			moqType.LaborCommonDisclosureTotal += item.LaborSkillMix;
-			moqType.BoeCommonDisclosureTotal += item.BOESkillMix;
+			moqType.BoeCommonDisclosureTotal += parseFloat(item.BOESkillMix) || 0;
 			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
+		});
+
+		moqType.ProposedCommonDisclosureHoursTotal = Math.round(moqType.ProposedCommonDisclosureHoursTotal)
+	}
+
+	$scope.updateBoeSkillMixLock = function (item) {
+		$scope.setDirty();
+		if (item.IsPercentLocked && item.Included != null && item.Included) {
+			item.IsPercentLocked = !item.IsPercentLocked;
+		}
+	}
+
+	$scope.updateProposedHoursLock = function (item) {
+		$scope.setDirty();
+		if (!item.IsPercentLocked && item.Included != null && item.Included) {
+			item.IsPercentLocked = !item.IsPercentLocked;
+		}
+	}
+
+	$scope.moqUpdated = function (initialLoad) {
+		if (!initialLoad) {
+			angular.forEach($scope.model.SelectedMoqTypes.map(e => {
+				if ($scope.model.CommonDisclosureEnabled) {
+					recalculateCommonDisclosure(e);
+					$scope.setCommonDisclosureTotals(e);
+				}
+				if ($scope.model.SkillMixEnabled) {
+					recalculateSkillMix(e);
+					$scope.setSkillMixTotals(e);
+				}
+				return e.SelectedMOQType.toString();
+			}), function (id) {
+				$scope.InitializeRteFields(id);
+			});
+			$scope.setDirty();
+		}
+	};
+
+	var recalculateCommonDisclosure = function (moqType) {
+		var moqTotal = $scope.getMOQTotal();
+
+		moqType.CommonDisclosureTable.forEach(item => {
+			if (item.Included) {
+				if (!item.IsPercentLocked) {
+					item.ProposedHours = parseFloat((moqTotal * (item.BOESkillMix / 100)).toFixed(1));
+				} else {
+					item.BOESkillMix = parseFloat(((item.ProposedHours / moqTotal) * 100).toFixed(3));
+				}
+			}
 		});
 	}
 
-    $scope.resourceSelected = function (item, model) {
+	
+
+	var recalculateSkillMix = function (moqType) {
+		var moqTotal = $scope.getMOQTotal();
+
+		moqType.SkillMixTable.forEach(item => {
+			if (item.Included) {
+				if (!item.IsPercentLocked) {
+					item.ProposedHours = parseFloat((moqTotal * (item.BOESkillMix / 100)).toFixed(1));
+				} else {
+					item.BOESkillMix = parseFloat(((item.ProposedHours / moqTotal) * 100).toFixed(3));
+				}
+			}
+		});
+	}
+
+    $scope.resourceSelected = function (item, model, moqType) {
         $scope.setDirty();
 
 		if (item && item.ResourceName && item.ResourceName !== '') {
             // resource was selected
             model.ResourceNew = item.ResourceName;
 		}
-    };
+		//update the common disclosure table when resource is changed
+		if (model.Included) {
+			$scope.refreshCommonDisclosureTable(moqType);
+		}
+	};
+
+	$scope.brcSelected = function (item, model) {
+		$scope.setDirty();
+
+		if (item && item.ResourceName && item.ResourceName !== '') {
+			// resource was selected
+			model.BusinessResourceID = item.ResourceName;
+		}
+	};
 
 }]);
 
@@ -2347,6 +2497,10 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
 			var scope = angular.element(document.querySelector("#TaskElementsComposite")).scope();
 			scope.moqUpdated(MOQEquationFieldWidget.initialLoad);
 			scope.$apply();
+
+			var moqScope = angular.element(document.querySelector("#MOQEquationField")).scope();
+			moqScope.moqUpdated(MOQEquationFieldWidget.initialLoad);
+			moqScope.$apply();
 		}
 		else {
 			MOQEquationFieldWidget.MOQCalculationError(results.Message);

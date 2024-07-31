@@ -635,8 +635,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_EXPORT_BOE_CUSTOM_FIELD_PERFORMING_ORG = "ExportBOECustomFieldPerfOrg";
 		public static readonly string ACTION_EXPORT_BOE_CUSTOM_FIELD_RESOURCE = "ExportBOECustomFieldResource";
 		public static readonly string ACTION_EXPORT_BOE_CUSTOM_FIELD_RESOURCE_TEMPLATE = "ExportBOECustomFieldResourceTemplate";
-		public static readonly string ACTION_EXPORT_ALL_BOES_WORKOFFLINE = "ExportAllBOEsWorkoffline";
-		public static readonly string ACTION_EXPORT_BOES_WORKOFFLINE = "ExportBOEsWorkoffline";
 		public static readonly string ACTION_EXPORT_PROJECT_MAP = "ExportProjectMapData";
 		public static readonly string ACTION_EXPORT_WORKSPACE_COMMENTS_AND_RESPONSES = "ExportWorkspaceCommentsAndResponses";
 		public static readonly string ACTION_FIND_VALID_BOES_FOR_WORKSPACE_VARIABLE = "FindValidBOEsForWorkspaceVariable";
@@ -690,9 +688,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_EXPORT_BLANK_WORKSPACE_RESOURCE_RATES = "ExportBlankWorkspaceResourceRates";
 		public static readonly string ACTION_EXPORT_WORKSPACE_RESOURCE_RATES_TM = "ExportWorkspaceResourceRatesTM";
 		public static readonly string ACTION_EXPORT_BLANK_WORKSPACE_RESOURCE_RATES_TM = "ExportBlankWorkspaceResourceRatesTM";
-		public static readonly string ACTION_COMPLETE_WORKOFFLINE_IMPORT_WORKSPACE_HOME = "CompleteImportWorkspaceHome";
 		public static readonly string ACTION_GET_WORKSPACE_HOME_MODEL = "GetWorkspaceHomeModel";
-		public static readonly string ACTION_GET_EXPORT_BOE_MODEL = "GetExportBOEModel";
 		public static readonly string ACTION_SAVE_WORKSPACE_EMAIL_PREFERENCES = "SaveWorkspaceEmailPreferences";
 		public static readonly string ACTION_GET_WORKSPACE_EMAIL_PREFERENCES = "GetWorkspaceEmailPreferences";
 		public static readonly string ACTION_GET_BOE_BULK_SUBMIT_MODEL = "GetBOEBulkSubmitModel";
@@ -815,7 +811,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_BOE_OFFLOAD_RESULTS = "BOEOffloadResults";
 		public static readonly string VIEW_EDIT_BOE_INDEX = "EditBOEIndex";
 		public static readonly string VIEW_MANAGE_BOE_IMPORT_VERIFICATION = "ManageBOEImportVerification";
-		public static readonly string VIEW_WORKSPACE_WORKOFFLINE_IMPORT_VERIFICATION = "WorkspaceHomeWorkofflineImportVerification";
 		public static readonly string VIEW_TASK_ELEMENT_GRID = "TaskElementGrid";
 		public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid";
 		public static readonly string VIEW_BOE_COPY_CONFLICTS = "BOECopyConflicts";

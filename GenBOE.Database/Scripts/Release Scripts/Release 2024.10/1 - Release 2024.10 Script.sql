@@ -51,6 +51,7 @@ BEGIN
 	CREATE TABLE [dbo].[MOQTypeSelectionTableDataResourceHours] (
 		[MOQTypeSelectionTableDataResourceHoursId] int IDENTITY(1,1) PRIMARY KEY CLUSTERED,
 		[ResourceName] varchar(20) NULL,
+		[BRCName] varchar(20) NULL,
 		[WbsHours] decimal(11,2) NOT NULL,
 		[TotalHours] decimal(11,2) NOT NULL,
 		[MOQTypeSelectionTableDataId] int NOT NULL,
@@ -61,6 +62,14 @@ BEGIN
 		CONSTRAINT FK_MOQTypeSelectionTableDataResourceHours_BOE FOREIGN KEY (BOEID) REFERENCES [dbo].[BOE] (BOEID)
 	);
 END
+ ELSE 
+	BEGIN 
+		IF NOT EXISTS (SELECT * FROM sys.columns WHERE Name = N'BRCName' AND Object_ID = OBJECT_ID(N'[dbo].[MOQTypeSelectionTableDataResourceHours]')) 
+	BEGIN 
+	ALTER TABLE [dbo].[MOQTypeSelectionTableDataResourceHours] 
+		ADD [BRCName] varchar(20) NULL
+	END 
+ END 
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[MOQTypeSelectionTableDataResourceHours]') AND type in (N'U'))
@@ -69,6 +78,7 @@ BEGIN
 	(
 		[MOQTypeSelectionTableDataResourceHoursId] int NOT NULL,
 		[ResourceName] varchar(20) NULL,
+		[BRCName] varchar(20) NULL,
 		[WbsHours] decimal(11,2) NOT NULL,
 		[TotalHours] decimal(11,2) NOT NULL,
 		[MOQTypeSelectionTableDataId] int NOT NULL,
@@ -77,6 +87,15 @@ BEGIN
 		[VersionID] int NOT NULL,
 	);
 END
+ ELSE 
+	BEGIN 
+		IF NOT EXISTS (SELECT * FROM sys.columns WHERE Name = N'BRCName' AND Object_ID = OBJECT_ID(N'[version].[MOQTypeSelectionTableDataResourceHours]')) 
+	BEGIN 
+	ALTER TABLE [version].[MOQTypeSelectionTableDataResourceHours] 
+		ADD [BRCName] varchar(20) NULL; 
+	END 
+ END 
+
 GO
 
 -- 06/17/2024 - twilson3 - PROPH-2065 Missing Index causing Snapshot Transaction to Fail

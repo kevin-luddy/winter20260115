@@ -150,6 +150,12 @@ span.disabled,
     background-color: rgb(235, 235, 228);
 }
 
+input:disabled,
+span.disabled,
+#MOQEquationField input.disabled {
+    background-color: rgb(235, 235, 228);
+}
+
 a:hover,
 .link:hover
 {
@@ -7292,8 +7298,28 @@ table.moduled-table {
     width: 100%;
 }
 
+#skillMixDiv img.UnlockImage {
+    cursor: pointer;
+}
+
+td.smboeskillmix div.ScrollingLock div div {
+    width: 110px;
+}
+
+td.smproposedhours div.ScrollingLock div div {
+    width: 110px;
+}
+
+.smboeskillmix input.boeskillmix {
+    width: 105px;
+}
+
+.smproposedhours input.proposedhours {
+    width: 105px;
+}
+
 td.lthourspread div.ScrollingLock div div {
-    width:120px;
+    width: 120px;
 }
 
 td.ltpercentspread div.ScrollingLock div div {
@@ -8801,6 +8827,66 @@ span.blue-link a{
     text-align: right;
 }
 
+.skill-mix-numerical > div {
+    display: flex;
+    align-items: center;
+}
+
+.skill-mix-numerical input {
+    text-align: right;
+    width: 100%;
+}
+
 .skill-mix-padding {
     padding: 2px 5px;
+}
+
+.brc-padding {
+    padding-right: 2px;
+    padding-left 2px;
+}
+
+#commonDisclosureTableData td.business-resource-codes {
+    overflow: visible;
+}
+
+#commonDisclosureTableData div.resource-selection {
+    float: left;
+}
+
+
+#commonDisclosureTableData .resource-selection {
+    height: 15px;
+    width: 100%;
+}
+
+#commonDisclosureTableData .brc-button {
+    width: 13px;
+    height: 15px;
+    padding-left: 0px;
+    padding-right: 0px;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 2px;
+}
+
+#commonDisclosureTableData .brc-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+
+#commonDisclosureTableData input.resize {
+    height: 15px;
+    font-size: 12px;
+}
+
+#commonDisclosureTableData .add-row {
+    background: linear-gradient(to bottom, #32DE68, #7BB98F 1px, #558E65);
+    background-color: #EEEEEE;
+}
+
+#commonDisclosureTableData .delete-row {
+    background: linear-gradient(to bottom, #fe0002, #fe0002 1px, #930000);
+    background-color: #EEEEEE;
 }

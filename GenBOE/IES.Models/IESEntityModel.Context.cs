@@ -340,20 +340,20 @@ namespace IES.Models
             var sectionContainsCasbDisclosureParameter = sectionContainsCasbDisclosure.HasValue ?
                 new ObjectParameter("SectionContainsCasbDisclosure", sectionContainsCasbDisclosure) :
                 new ObjectParameter("SectionContainsCasbDisclosure", typeof(bool));
-
-			var isDisclosureStatementAdequateParameter = isDisclosureStatementAdequate.HasValue ?
-				new ObjectParameter("IsDisclosureStatementAdequate", isDisclosureStatementAdequate) :
-				new ObjectParameter("IsDisclosureStatementAdequate", typeof(bool));
+    
+            var isDisclosureStatementAdequateParameter = isDisclosureStatementAdequate.HasValue ?
+                new ObjectParameter("IsDisclosureStatementAdequate", isDisclosureStatementAdequate) :
+                new ObjectParameter("IsDisclosureStatementAdequate", typeof(bool));
     
             var sectionContainsNonComplianceParameter = sectionContainsNonCompliance.HasValue ?
                 new ObjectParameter("SectionContainsNonCompliance", sectionContainsNonCompliance) :
                 new ObjectParameter("SectionContainsNonCompliance", typeof(bool));
-
-			var nonComplianceNotificationParameter = nonComplianceNotification.HasValue ?
-				new ObjectParameter("NonComplianceNotification", nonComplianceNotification) :
-				new ObjectParameter("NonComplianceNotification", typeof(bool));
-
-			var officeParameter = office != null ?
+    
+            var nonComplianceNotificationParameter = nonComplianceNotification.HasValue ?
+                new ObjectParameter("NonComplianceNotification", nonComplianceNotification) :
+                new ObjectParameter("NonComplianceNotification", typeof(bool));
+    
+            var officeParameter = office != null ?
                 new ObjectParameter("Office", office) :
                 new ObjectParameter("Office", typeof(string));
     

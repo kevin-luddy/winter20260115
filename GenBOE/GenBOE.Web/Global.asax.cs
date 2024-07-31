@@ -683,7 +683,6 @@ namespace GenBOE
                                                                                                                               new ResolvedParameter(typeof(IFullObjectFactory)),
                                                                                                                               new ResolvedParameter(typeof(ICommonDataMapper)),
                                                                                                                               new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
-                                                                                                                              new ResolvedParameter(typeof(FullBoeDataImporter)),
                                                                                                                               new ResolvedParameter(typeof(IBOELaborControllerLogic)),
                                                                                                                               new ResolvedParameter(typeof(IFullWorkspaceRecalculation)),
                                                                                                                               new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader)),
@@ -727,7 +726,6 @@ namespace GenBOE
                                                                                                                               new ResolvedParameter(typeof(IFullObjectFactory)),
                                                                                                                               new ResolvedParameter(typeof(ICommonDataMapper)),
                                                                                                                               new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
-                                                                                                                              new ResolvedParameter(typeof(FullBoeDataImporter)),
                                                                                                                               new ResolvedParameter(typeof(IBOELaborControllerLogic)),
                                                                                                                               new ResolvedParameter(typeof(IFullWorkspaceRecalculation)),
                                                                                                                               new ResolvedParameter(typeof(IWorkspaceVariableDTODataLoader)),
@@ -996,13 +994,7 @@ namespace GenBOE
                                                                                                                                     ));
                     break;
             }
-
-            GenBOEUnityContainer.Container.RegisterType(typeof(WorkofflineExporter), typeof(WorkofflineExporter), GetLifetimeManager(), new InjectionConstructor(
-                                                                                                                            new ResolvedParameter(typeof(ICommonDataMapper)),
-                                                                                                                            new ResolvedParameter(typeof(IResourceDTODataLoader)),
-                                                                                                                            new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
-                                                                                                                            new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader))));
-
+            
             GenBOEUnityContainer.Container.RegisterType(typeof(BOEDiscrepancyReport), typeof(BOEDiscrepancyReport), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                 new ResolvedParameter(typeof(IFullWorkspaceRecalculation)),
                                                                                                                 new ResolvedParameter(typeof(IUserDTODataLoader))));
@@ -1026,13 +1018,6 @@ namespace GenBOE
                                                                                                                     new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
                                                                                                                     new ResolvedParameter(typeof(MSTZoneTravelResourceDTODataLoader)),
                                                                                                                     new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader))));
-                    // The ISGS logic can be used here.  The MST requirements are identical.  If this changes MST specific classes should be created.
-                    GenBOEUnityContainer.Container.RegisterType(typeof(IWorkOfflineImporter), typeof(WorkOfflineImporter), GetLifetimeManager(), new InjectionConstructor(
-                                                                                                                                    new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
-                                                                                                                                    new ResolvedParameter(typeof(ICommonDataMapper)),
-                                                                                                                                    new ResolvedParameter(typeof(IResourceDTODataLoader)),
-                                                                                                                                    new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
-                                                                                                                                    new ResolvedParameter(typeof(IVariableCircularReferenceChecker))));
                     break;
 
                 case CompanyConfiguration.SpaceSystems:
@@ -1041,12 +1026,6 @@ namespace GenBOE
                                                                                                                         new ResolvedParameter(typeof(ICommonDataMapper)),
                                                                                                                         new ResolvedParameter(typeof(TravelTripCostCalculation)),
                                                                                                                         new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation))));
-                    GenBOEUnityContainer.Container.RegisterType(typeof(IWorkOfflineImporter), typeof(WorkOfflineImporterSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
-                                                                                                                                        new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
-                                                                                                                                        new ResolvedParameter(typeof(ICommonDataMapper)),
-                                                                                                                                        new ResolvedParameter(typeof(IResourceDTODataLoader)),
-                                                                                                                                        new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
-                                                                                                                                        new ResolvedParameter(typeof(IVariableCircularReferenceChecker))));
                     break;
 
                 case CompanyConfiguration.ISGS:
@@ -1056,12 +1035,6 @@ namespace GenBOE
                                                                                                                                 new ResolvedParameter(typeof(ICommonDataMapper)),
                                                                                                                                 new ResolvedParameter(typeof(TravelTripCostCalculation)),
                                                                                                                                 new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation))));
-                    GenBOEUnityContainer.Container.RegisterType(typeof(IWorkOfflineImporter), typeof(WorkOfflineImporter), GetLifetimeManager(), new InjectionConstructor(
-                                                                                                                                    new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
-                                                                                                                                    new ResolvedParameter(typeof(ICommonDataMapper)),
-                                                                                                                                    new ResolvedParameter(typeof(IResourceDTODataLoader)),
-                                                                                                                                    new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
-                                                                                                                                    new ResolvedParameter(typeof(IVariableCircularReferenceChecker))));
                     break;
             }
 
@@ -1160,18 +1133,6 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(WbsExporter), typeof(WbsExporter), GetLifetimeManager(), new InjectionConstructor());
 
 			GenBOEUnityContainer.Container.RegisterType(typeof(IBOEConfidenceReportExporter), typeof(BOEConfidenceReportExporter), GetLifetimeManager(), new InjectionConstructor());
-
-            //Import/merge classes
-            GenBOEUnityContainer.Container.RegisterType(typeof(BOEImportMerge), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IBoeDTODataLoader)), new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader))));
-            GenBOEUnityContainer.Container.RegisterType(typeof(BoeTaskElementImportMerge), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IFullObjectFactory)), new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader))));
-            GenBOEUnityContainer.Container.RegisterType(typeof(ResourceTypeImportMerge), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)), new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader))));
-            GenBOEUnityContainer.Container.RegisterType(typeof(FullBoeDataImporter), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IBoeMediator)),
-                                                                                                                                    new ResolvedParameter(typeof(IBoeTaskElementMediator)),
-                                                                                                                                    new ResolvedParameter(typeof(BOEImportMerge)),
-                                                                                                                                    new ResolvedParameter(typeof(BoeTaskElementImportMerge)),
-                                                                                                                                    new ResolvedParameter(typeof(ResourceTypeImportMerge))));
-
-
 
             switch (SysConfig.CompanyMode)
             {

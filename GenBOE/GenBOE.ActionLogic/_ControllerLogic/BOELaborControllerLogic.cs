@@ -378,8 +378,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				this.CleanupLaborTaskData(ws, modelView);
 
-				// Validate Task Details Composite
-				this.ValidateTaskDetails(boe, modelView, validationErrors, ws);
+
 
 				// Validate Task Variables
 				bool addNullValidationError = true;
@@ -396,7 +395,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 
 				// Validate Numbers
-				this.ValidateMoqEquationAndValues(ws, boe, modelView, validationErrors);
+				decimal? moqEquationTotal = this.ValidateMoqEquationAndValues(ws, boe, modelView, validationErrors);
+
+				// Validate Task Details Composite
+				this.ValidateTaskDetails(boe, modelView, validationErrors, ws, moqEquationTotal);
 
 				// Validate Precision
 				if (modelView.LaborTypesData.Any())
@@ -447,7 +449,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="boe">Full BOE</param>
 		/// <param name="modelView">Model to validate</param>
 		/// <param name="validationErrors">Validation Errors</param>
-		private void ValidateMoqEquationAndValues(FullWorkspace ws, FullBoe boe, LaborTaskDataModelView modelView, ICollection<ValidationMessage> validationErrors)
+		/// <returns>Moq Equation Total</returns>
+		private decimal? ValidateMoqEquationAndValues(FullWorkspace ws, FullBoe boe, LaborTaskDataModelView modelView, ICollection<ValidationMessage> validationErrors)
 		{
 			decimal? moqResult = 0;
 			decimal tempMoqResult;
@@ -509,6 +512,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 			}
+			return moqResult;
 		}
 
 		/// <summary>
@@ -1460,8 +1464,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="boeDTO">boe</param>
 		/// <param name="laborTaskData">task modelview includes task details, labors, and spreads</param>
 		/// <param name="inValidationErrors">validation errors</param>
-		/// <param name="ws">workspace</param>
-		public void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws)
+		/// <param name="ws">workspace</param>		
+		/// <param name="moqEquationTotal"> Moq equation total</param>
+		public void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws, decimal? moqEquationTotal = null)
 		{
 			_ = boeDTO ?? throw new ArgumentNullException(nameof(boeDTO));
 			_ = inValidationErrors ?? throw new ArgumentNullException(nameof(inValidationErrors));
@@ -1479,7 +1484,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
 			this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
 			this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
-			this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors);
+			this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors, moqEquationTotal);
 			this.ValidateMoqTypeTableCustomFields(laborTaskData, ws, inValidationErrors);
 		}
 
@@ -1806,12 +1811,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="ws">Full WS</param>
 		/// <param name="taskData">Task Data</param>
-		/// <param name="errors">Validation Errors</param>
-		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
+		/// <param name="errors">Validation Errors</param>		
+		/// <param name="moqEquationTotal"> Moq equation total</param>
+		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, decimal? moqEquationTotal = null)
 		{
 			if (ws.UsingTemplateBOE)
 			{
-				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false);
+				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal);
 				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 			}
 		}
@@ -4085,59 +4091,73 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="commonDisclosureSMData">The current skill mix data</param>
-		public ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
+		public  ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
 		{
 			ICollection<CommonDisclosureModelView> newTable = new List<CommonDisclosureModelView>();
-			
+
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				//decimal totalHours = resourceHours.Sum(n => n.TotalHours);
-				foreach (SkillMixModelView skillMix in currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value))
+				ICollection<CommonDisclosureModelView> newRows  = new List<CommonDisclosureModelView>();
+
+				//get all the data from skill mix 
+				//for RMS, the current resource can be empty until the user sets it, don't add this to common disclosure
+				IEnumerable<SkillMixModelView> filteredSkillMixData = currentSkillMixData.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew));
+				decimal totalGroupHours = filteredSkillMixData.Sum(g => g.HistoricalHours);
+
+				foreach (SkillMixModelView skillMix in filteredSkillMixData)
 				{
-					//TODO: BRCs when sap is hooked up
-					newTable.Add(
+					newRows.Add(
 						new CommonDisclosureModelView
 						{
 							HistoricalHours = skillMix.HistoricalHours,
 							ResourceID = skillMix.ResourceNew,
-							LaborSkillMix = skillMix.LaborSkillMix
+							LaborSkillMix = skillMix.HistoricalHours / totalGroupHours
 						}
 					);
 				}
-
-				// reconcile the other values in the existing rows (if any)
 				if (commonDisclosureSMData != null && commonDisclosureSMData.Any())
 				{
-					foreach (CommonDisclosureModelView currentData in commonDisclosureSMData)
+					//get mapping of resources to brcs
+
+					//get a map of the old rows that match resources in the new data since you can have multiple for brc
+					Dictionary<string, List<CommonDisclosureModelView>> resourceToRowMap = commonDisclosureSMData.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
+
+					//for all data in skill mix, either create a new row or if it exists (by resource), create a row for each of the brcs
+					//TODO: might have to fix for BRC when they come from mapping and not user input
+					foreach (CommonDisclosureModelView newRow in newRows)
 					{
-						if (string.IsNullOrEmpty(currentData.BusinessResourceID))
+						if (resourceToRowMap.TryGetValue(newRow.ResourceID, out List<CommonDisclosureModelView> foundValue))
 						{
-							currentData.BusinessResourceID = string.Empty;
+							foreach (CommonDisclosureModelView oldRow in foundValue)
+							{
+								newTable.Add(
+									new CommonDisclosureModelView
+									{
+										HistoricalHours = oldRow.HistoricalHours,
+										ResourceID = newRow.ResourceID,
+										LaborSkillMix = oldRow.LaborSkillMix,
+										Included = oldRow.Included,
+										MOQTypeSelectionID = oldRow.MOQTypeSelectionID,
+										IsPercentLocked = oldRow.IsPercentLocked,
+										IsUserInput = oldRow.IsUserInput,
+										BusinessResourceID = string.IsNullOrEmpty(oldRow.BusinessResourceID) ? string.Empty : oldRow.BusinessResourceID,
+										Rationale = oldRow.Rationale,
+										BOESkillMix = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.BOESkillMix : 0m,
+										ProposedHours = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.ProposedHours : 0m
+									}
+								);
+							}
 						}
-
-						CommonDisclosureModelView newData;
-						newData = newTable.FirstOrDefault(s => s.ResourceID == currentData.ResourceID && s.BusinessResourceID == currentData.BusinessResourceID);
-
-						if (newData != null)
+						else
 						{
-							// If there is a match, then copy over the other row information
-							newData.Included = currentData.Included;
-							newData.MOQTypeSelectionID = currentData.MOQTypeSelectionID;
-							newData.IsPercentLocked = currentData.IsPercentLocked;
-							newData.IsUserInput = currentData.IsUserInput;
-
-							newData.Rationale = currentData.Rationale;
-							if (newData.Included.HasValue && newData.Included.Value)
-							{
-								newData.BOESkillMix = currentData.BOESkillMix;
-								newData.ProposedHours = currentData.ProposedHours;
-							}
-							else
-							{
-								//if included, 0 else blank but required to fill in (included is blank by default though so this is weird)
-								newData.BOESkillMix = 0m;
-								newData.ProposedHours = 0m;
-							}
+							newTable.Add(
+								new CommonDisclosureModelView
+								{
+									HistoricalHours = newRow.HistoricalHours,
+									ResourceID = newRow.ResourceID,
+									LaborSkillMix = newRow.LaborSkillMix
+								}
+							);
 						}
 					}
 				}
