@@ -4181,7 +4181,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 										Included = oldRow.Included,
 										MOQTypeSelectionID = oldRow.MOQTypeSelectionID,
 										IsPercentLocked = oldRow.IsPercentLocked,
-										IsUserInput = true,
+										IsUserInput = SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.SpaceSystems,
 										BusinessResourceID = string.IsNullOrEmpty(oldRow.BusinessResourceID) ? string.Empty : oldRow.BusinessResourceID,
 										Rationale = oldRow.Rationale,
 										BOESkillMix = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.BOESkillMix : 0m,
@@ -4224,7 +4224,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 										HistoricalHours = skillMixRow.HistoricalHours,
 										ResourceID = skillMixRow.ResourceID,
 										LaborSkillMix = skillMixRow.LaborSkillMix,
-										IsUserInput = true,
+										IsUserInput = SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.SpaceSystems,
 										BOESkillMix = 0m,
 										ProposedHours = 0m
 									}

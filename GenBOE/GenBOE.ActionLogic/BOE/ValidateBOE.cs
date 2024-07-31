@@ -784,8 +784,17 @@ namespace GenBOE.ActionLogic.WBS.BOE
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.HistoricalReferenceExplanation, "Provide an explanation of Why the Historical Reference was Selected", ws.RteSizeLimit, errorMessages);
 							}
 
-							errorMessages.AddRange(ValidateSkillMixTable(new Collection<MoqTypeSelection>() { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
-							errorMessages.AddRange(ValidateCommonDisclosureSkillMixTable(new Collection<MoqTypeSelection> { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
+							if (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+							{
+								if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
+								{
+									errorMessages.AddRange(ValidateSkillMixTable(new Collection<MoqTypeSelection>() { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
+								}
+								if (moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any())
+								{
+									errorMessages.AddRange(ValidateCommonDisclosureSkillMixTable(new Collection<MoqTypeSelection> { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
+								}
+							}
 
                             break;
                         case (MOQType.CostEstimatingRelationships):
@@ -958,7 +967,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
 				}
 
-				if (totalCommonDisclosureRowsProposedHours != moqEquationTotal.Value)
+				if (moqEquationTotal.HasValue && totalCommonDisclosureRowsProposedHours != moqEquationTotal.Value)
 				{
 					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Proposed Hours total must be equal to MoqTotal"));
 				}
