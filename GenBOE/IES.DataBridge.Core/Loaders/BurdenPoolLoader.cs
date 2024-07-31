@@ -68,9 +68,10 @@ namespace IES.DataBridge.Loaders
                                 Id = e.ID,
                                 DisplayOrder = e.DisplayOrder,
                                 Name = e.BurdenElement,
-                                Description = e.Description
-                            })
-                        .OrderBy(e => e.DisplayOrder)
+                                Description = e.Description,
+								DisplayOrder1LMX = e.DisplayOrder1LMX
+							})
+                        .OrderBy(e => e.DisplayOrder1LMX)
                         .ToList();
 
                     // Get Burden Pools and Mappings.
@@ -164,7 +165,7 @@ namespace IES.DataBridge.Loaders
         private BurdenPoolGridModelView AddProPricerMapping(BurdenPoolGridModelView model)
         {
             // Create a lookup list of burden element Ids that correspond to items in the BurdenElements array.
-            List<int> burdenElementIds = model.BurdenElements.Select(x => x.Id).ToList();
+            List<int> burdenElementIds = model.BurdenElements.OrderBy(b => b.DisplayOrder1LMX).Select(x => x.Id).ToList();
 
             foreach (BurdenPoolDetailModelView bpdmv in model.BurdenPools)
             {

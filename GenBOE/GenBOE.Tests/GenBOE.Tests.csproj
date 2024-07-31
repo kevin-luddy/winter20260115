@@ -188,12 +188,8 @@
     <Compile Include="ActionLogic\CustomFields\RestoreDefaultOptionsTestCase.cs" />
     <Compile Include="ActionLogic\Export\BOEExporterDataTests.cs" />
     <Compile Include="ActionLogic\Export\LaborExporterTest.cs" />
-    <Compile Include="ActionLogic\Export\WorkofflineExporter_WorkofflineTemplateTest.cs" />
     <Compile Include="ActionLogic\Import\BOEImporterTest.cs" />
-    <Compile Include="ActionLogic\Import\BOEImportMergeTests.cs" />
-    <Compile Include="ActionLogic\Import\BoeTaskElementImportMergeTests.cs" />
     <Compile Include="ActionLogic\Import\Labor\LaborImporterTest.cs" />
-    <Compile Include="ActionLogic\Import\WorkOfflineImportTests.cs" />
     <Compile Include="ActionLogic\NewValidation\ValidateProjectMapImportTest.cs" />
     <Compile Include="ActionLogic\PerfOrgSearchTest.cs" />
     <Compile Include="ActionLogic\Permissions\PermissionsWorkspaceAdminValidationTest.cs" />

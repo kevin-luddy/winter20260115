@@ -580,7 +580,7 @@ namespace GenTRAC.DataBridge.DTO
 							(int)dtoToUpsert.CostVolumeTool,
 							dtoToUpsert.CostVolumeToolName = dtoToUpsert.CostVolumeTool != CostVolumeTool.Other ? string.Empty : dtoToUpsert.CostVolumeToolName,
 							dtoToUpsert.AdditionalClassification,
-							(int?)dtoToUpsert.CcopdNoReason,
+							dtoToUpsert.CcopdNoReason == CcopdOptionalReason.NotSet ? null : (int?)dtoToUpsert.CcopdNoReason,
 							dtoToUpsert.CcopdNoOtherReason
 							).FirstOrDefault();
 					}

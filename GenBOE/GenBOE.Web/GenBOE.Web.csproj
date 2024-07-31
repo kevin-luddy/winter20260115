@@ -866,7 +866,6 @@
     <Content Include="Scripts\ui-tinymce.js" />
     <Content Include="Scripts\ui-tinymce.min.js" />
     <Content Include="Templates\Export\Temp\this directory is for cached files.txt" />
-    <Content Include="Templates\Export\Workoffline.xlsm" />
     <Content Include="Views\Admin\ManageCreateWorkspacePermissionsGrid.ascx" />
     <Content Include="Views\Admin\ManageEmailPreferences.ascx" />
     <Content Include="Views\Admin\ManageLegacyResources.ascx" />
@@ -954,7 +953,6 @@
     <Content Include="Views\Workspace\CreateWorkspaceDiv.ascx" />
     <Content Include="Views\Workspace\DiscreteWorkspaceVariables.ascx" />
     <Content Include="Views\Workspace\WorkspaceIdentificationMST.ascx" />
-    <Content Include="Views\Workspace\WorkspaceHomeWorkofflineImportVerification.ascx" />
     <Content Include="Views\CLIN\Index.aspx" />
     <Content Include="Views\BOETravel\BOETravelComposite.ascx" />
     <Content Include="Views\BOETravel\BOETravelGrid.ascx" />
