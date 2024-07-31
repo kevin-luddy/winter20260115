@@ -966,7 +966,8 @@ namespace RDM.Tests.ControllerLogic
                 RateType = RateType.NotSet,
                 ResourceType = DirectRateMappingResourceType.None,
                 GenerateAdditionalDirectLaborRates = false,
-                RateDescription = string.Empty
+                RateDescription = string.Empty,
+				DisclosureType = DisclosureType.LegacySpace
             };
 
             ICollection<ValidationMessage> result = sut.ValidateRateDetailModelViews(new Collection<RateDetailModelView>() { rateDetails }, 2012, 2012);
