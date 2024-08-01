@@ -463,7 +463,7 @@
                                 <td data-ng-class="{'inputError': (item.Included === true && (item.BOESkillMix === null || item.BOESkillMix < 1))}">
                                         <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding boe-skill-mix">
                                             <div>
-                                                <input type="number" maxlength="5" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false || item.IsPercentLocked" />
+                                                <input type="number" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false || item.IsPercentLocked" />
                                                 <div>% &nbsp;</div>
 										        <div>
 											        <img data-ng-if="item.Included === null || item.Included === false || item.IsPercentLocked" data-ng-click="updateBoeSkillMixLock(item)" class="LockImage UnLockImage" src="../../../../Resources/css/images/unlock_resource_toggle.png" title="Select lock for either Boe Skill Mix or Proposed Hours to maintain that value when the MOQ Equation is adjusted." />
@@ -502,7 +502,7 @@
 								</td>
 								<td></td>
 								<td data-ng-class="{'inputError': moqType.BoeSkillMixTotal !== 100 }">
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeSkillMixTotal | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeSkillMixTotal }}%</div>
 								</td>
 								<td data-ng-class="{'inputError': moqType.ProposedSkillMixHoursTotal !== getMOQTotal() }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.ProposedSkillMixHoursTotal }}</div>
@@ -570,11 +570,11 @@
                                         <option data-ng-value="false">No</option>
                                     </select>
                                 </td>
-                                <td class="smboeskillmix" data-ng-class="{'inputError': item.Included === true && item.BOESkillMix === null }">
+                                <td class="smboeskillmix" data-ng-class="{'inputError': (item.Included === true && (item.BOESkillMix === null || item.BOESkillMix < 1))}">
                                     <div id="cd-boe-skill-mix" class="ScrollingLock" style="position: static; height: 16px;">
 										<div>
                                             <div class="float-left">
-                                                <input type="number" maxlength="6" data-ng-click="updateBoeSkillMixLock(item)" data-ng-blur="updateProposedHours(item); setCommonDisclosureTotals(moqType);" data-ng-model="item.BOESkillMix" data-ng-class="{'disabled': item.Included === null || item.Included === false || item.IsPercentLocked}" class="boeskillmix" />
+                                                <input type="number" data-ng-click="updateBoeSkillMixLock(item)" data-ng-blur="updateProposedHours(item); setCommonDisclosureTotals(moqType);" data-ng-model="item.BOESkillMix" data-ng-class="{'disabled': item.Included === null || item.Included === false || item.IsPercentLocked}" class="boeskillmix" />
                                             </div>
 										    <div>
 											    <img data-ng-if="item.Included === null || item.Included === false || item.IsPercentLocked" data-ng-click="updateBoeSkillMixLock(item)" class="LockImage UnLockImage" src="../../../../Resources/css/images/unlock_resource_toggle.png" title="Select lock for either Boe Skill Mix or Proposed Hours to maintain that value when the MOQ Equation is adjusted." />
@@ -615,7 +615,7 @@
 								</td>
 								<td></td>
 								<td data-ng-class="{'inputError': moqType.BoeCommonDisclosureTotal !== 100 }">
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeCommonDisclosureTotal | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeCommonDisclosureTotal }}%</div>
 								</td>
 								<td data-ng-class="{'inputError': moqType.ProposedCommonDisclosureHoursTotal !== getMOQTotal() }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.ProposedCommonDisclosureHoursTotal }}</div>
