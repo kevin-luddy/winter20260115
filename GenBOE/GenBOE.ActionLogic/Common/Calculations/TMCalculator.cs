@@ -118,32 +118,6 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		}
 
 		/// <summary>
-		/// Get BOE Totals 
-		/// </summary>
-		/// <param name="pboeDtos">Collection of PBOE DTO's</param>
-		/// <param name="fullWorkspace">Full Workspace</param>
-		/// <param name="resourceLoader">Resource Loader</param>
-		/// <param name="resourceIdsWithValidTMRates">Collection of Resource with Valid T&M Rates</param>
-		/// <returns></returns>
-		public ICollection<PBOERow> GetBOETotals(ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
-		{
-			return GetPBOETotals(pboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
-		}
-
-		/// <summary>
-		/// Get BOE Totals 
-		/// </summary>
-		/// <param name="iboeDtos">Collection of PBOE DTO's</param>
-		/// <param name="fullWorkspace">Full Workspace</param>
-		/// <param name="resourceLoader">Resource Loader</param>
-		/// <param name="resourceIdsWithValidTMRates">Collection of Resource with Valid T&M Rates</param>
-		/// <returns></returns>
-		public ICollection<IBOERow> GetBOETotals(ICollection<BOEFormIBOEDTO> iboeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
-		{
-			return GetIBOETotals(iboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
-		}
-
-		/// <summary>
 		/// Validates the specified IBOE and PBOE Form T&amp;M resources.
 		/// </summary>
 		/// <param name="validationErrors">output parameter - collection of error messages</param>
