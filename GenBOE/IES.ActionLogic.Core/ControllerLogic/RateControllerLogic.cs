@@ -420,13 +420,12 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			bool commercialBurdenPoolSet = rateDetailModelView.CommercialBurdenPoolId is not null and > 0;
 			bool governmentBurdenPoolSet = rateDetailModelView.GovernmentBurdenPoolId is not null and > 0;
 			bool rateTypeSet = rateDetailModelView.RateType is not null and not RateType.NotSet;
-			bool disclosureTypeSet = rateDetailModelView.DisclosureType is not null and not DisclosureType.None;
 			bool resourceTypeSet = rateDetailModelView.ResourceType is not null and not DirectRateMappingResourceType.None;
 
 			// if nothing is entered or all values have been cleared by user, nothing to validate
 			if (!commercialBurdenPoolSet && !governmentBurdenPoolSet &&
 				IsAllRateDescriptionsAndResourceClassesEmpty(rateDetailModelView) &&
-				!rateTypeSet && !resourceTypeSet && !disclosureTypeSet)
+				!rateTypeSet && !resourceTypeSet)
 			{
 				return validationErrors;
 			}
@@ -453,11 +452,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			if (!rateTypeSet)
 			{
 				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RATETYPE_REQUIRED));
-			}
-
-			if (!disclosureTypeSet)
-			{
-				validationErrors.Add(FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_DISCLOSURETYPE_REQUIRED));
 			}
 
 			if (!resourceTypeSet)
@@ -1165,7 +1159,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				!IsStringPropertyEquivalent(existingRateCode.RateDescription94, importedRateCode.RateDescription94) ||
 				!IsStringPropertyEquivalent(existingRateCode.RateDescription95, importedRateCode.RateDescription95) ||
 				!IsNullableIdPropertyEquivalent((int?)existingRateCode.RateType, (int?)importedRateCode.RateType) ||
-				!IsNullableIdPropertyEquivalent((int?)existingRateCode.DisclosureType, (int?)importedRateCode.DisclosureType) ||
 				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId, importedRateCode.ResourceClassId) ||
 				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId1, importedRateCode.ResourceClassId1) ||
 				!IsNullableIdPropertyEquivalent(existingRateCode.ResourceClassId2, importedRateCode.ResourceClassId2) ||

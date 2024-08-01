@@ -403,13 +403,12 @@ namespace IES.ActionLogic.ControllerLogic
 			bool commercialBurdenPoolSet = rateDetailModelView.CommercialBurdenPoolId != null && rateDetailModelView.CommercialBurdenPoolId > 0;
 			bool governmentBurdenPoolSet = rateDetailModelView.GovernmentBurdenPoolId != null && rateDetailModelView.GovernmentBurdenPoolId > 0;
 			bool rateTypeSet = rateDetailModelView.RateType != null && rateDetailModelView.RateType != RateType.NotSet;
-			bool disclosureTypeSet = rateDetailModelView.DisclosureType != null && rateDetailModelView.DisclosureType != DisclosureType.None;
 			bool resourceTypeSet = rateDetailModelView.ResourceType != null && rateDetailModelView.ResourceType != DirectRateMappingResourceType.None;
 
 			// if nothing is entered or all values have been cleared by user, nothing to validate
 			if (!commercialBurdenPoolSet && !governmentBurdenPoolSet &&
 				this.IsAllRateDescriptionsAndResourceClassesEmpty(rateDetailModelView) &&
-				!rateTypeSet && !resourceTypeSet && !disclosureTypeSet)
+				!rateTypeSet && !resourceTypeSet)
 			{
 				return validationErrors;
 			}
@@ -436,11 +435,6 @@ namespace IES.ActionLogic.ControllerLogic
 			if (!rateTypeSet)
 			{
 				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_RATETYPE_REQUIRED));
-			}
-
-			if (!disclosureTypeSet)
-			{
-				validationErrors.Add(this.FormatValidationMessage(rateDetailModelView, RateMappingValidationConstants.RATEMAPPING_DISCLOSURETYPE_REQUIRED));
 			}
 
 			if (!resourceTypeSet)
