@@ -8827,6 +8827,10 @@ span.blue-link a{
     text-align: right;
 }
 
+.test-skillmix {
+    background-color: lightblue;
+}
+
 .skill-mix-numerical > div {
     display: flex;
     align-items: center;
