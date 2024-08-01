@@ -1171,9 +1171,9 @@ namespace GenBOE.Web.Controllers
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<PBOERow> GetBOETotals(string trackingNumber, BOEFormType boeFormType, ElementOfCostType elementOfCostType, IDictionary<int, ICollection<string>> nlfResources)
+		public IESResponse<T> GetBOETotals<T>(string trackingNumber, BOEFormType boeFormType, IDictionary<int, ICollection<string>> nlfResources)
 		{
-			IESResponse<PBOERow> result = new IESResponse<PBOERow>();
+			IESResponse<T> result = new IESResponse<T>();
 
 			try
 			{
@@ -1187,7 +1187,13 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					ICollection<BOEFormPBOEDTO> pboeDtoList = new HashSet<BOEFormPBOEDTO>();
+					// Create Tuple that will hold all BOE DTO's
+					Tuple<ICollection<BOEFormIBOEDTO>, ICollection<BOEFormPBOEDTO>> boeDtoTuple = new Tuple<ICollection<BOEFormIBOEDTO>, ICollection<BOEFormPBOEDTO>>
+					(
+						new HashSet<BOEFormIBOEDTO>(),
+						new HashSet<BOEFormPBOEDTO>()
+					);
+
 					foreach (WorkspaceDTO ws in workspaces)
 					{
 						if (ws.IsUsingTM)
@@ -1199,24 +1205,42 @@ namespace GenBOE.Web.Controllers
 							Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 							Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
 
-							foreach (KeyValuePair<int, ICollection<string>> entry in nlfResources)
+							if (boeFormType == BOEFormType.PBOE) 
 							{
-								// Get The Resource Model from incoming Nlf Resources
-								ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => entry.Value.Contains(x.ResourceName)).ToList();
-
-								// Add the PBOE Data to list that will get sent to Utility Method to do the Calculations
-								BOEFormPBOEDTO pboeDto = new BOEFormPBOEDTO
+								foreach (KeyValuePair<int, ICollection<string>> entry in nlfResources)
 								{
-									Id = entry.Key,
-									ResourceIds = actualResources.Select(x => x.Id).ToList()
-								};
+									// Get The Resource Model from incoming Nlf Resources
+									ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => entry.Value.Contains(x.ResourceName)).ToList();
 
-								pboeDtoList.Add(pboeDto);
+									// Add the PBOE Data to list that will get sent to Utility Method to do the Calculations
+									BOEFormPBOEDTO pboeDto = new BOEFormPBOEDTO
+									{
+										Id = entry.Key,
+										ResourceIds = actualResources.Select(x => x.Id).ToList()
+									};
+
+									boeDtoTuple.Item2.Add(pboeDto);
+								}
+							}
+
+							if (boeFormType == BOEFormType.IBOE)
+							{
+								// TODO: In future task populate iboeDtoList
 							}
 
 							tmCalculator.ValidateBOEFormsTMResources(validationErrors, resourceIdsWithValidTMRates, fullWorkspace,
-								new List<BOEFormIBOEDTO>(), pboeDtoList, tmResourceRateLoader, resourceLoader);
-							result.Data = tmCalculator.GetBOETotals(pboeDtoList, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
+								boeDtoTuple.Item1, boeDtoTuple.Item2, tmResourceRateLoader, resourceLoader);
+							
+							if (boeFormType == BOEFormType.PBOE)
+							{
+								result.Data = tmCalculator.GetBOETotals<T>(boeDtoTuple, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
+							}
+
+							if (boeFormType == BOEFormType.IBOE)
+							{
+								// TODO: In future Task call tmCalculator Method that calculates totals for IBOE
+								//result.Data = tmCalculator.GetBOETotals<T>(boeDtoTuple, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
+							}
 						}
 					}
 
