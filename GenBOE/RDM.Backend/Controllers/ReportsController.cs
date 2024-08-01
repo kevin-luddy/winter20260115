@@ -155,14 +155,15 @@ namespace RDM.Backend.Controllers
 		/// Exports the ProPricer Data.
 		/// </summary>
 		/// <param name="id">Revision Id</param>
+		/// <param name="isLegacy">Is the export for Legacy Space or 1LMX</param>
 		/// <returns>An ActionResult.</returns>
 		[HttpGet("[action]")]
-		public async Task<IActionResult> ExportProPricerData(int id)
+		public async Task<IActionResult> ExportProPricerData(int id, bool isLegacy)
 		{
 			try
 			{
 				string zipPathFile = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/ProPricerExport.zip");
-				BurdenPoolGridModelView burdenPoolGridModel = this.burdenPoolLoader.GetByRevision(id);
+				BurdenPoolGridModelView burdenPoolGridModel = this.burdenPoolLoader.GetByRevision(id, isLegacy);
 				RevisionModelView selectedRevision = this.Logic.RevisionMediator.GetById(id);
 				ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(selectedRevision);
 

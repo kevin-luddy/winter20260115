@@ -145,19 +145,20 @@ namespace RDM.Web.Controllers
             }
         }
 
-        /// <summary>
-        /// Exports the ProPricer Data.
-        /// </summary>
-        /// <param name="id">Revision Id</param>
-        /// <returns>An ActionResult.</returns>
-        public ActionResult ExportProPricerData(string id)
+		/// <summary>
+		/// Exports the ProPricer Data.
+		/// </summary>
+		/// <param name="id">Revision Id</param>
+		/// <param name="isLegacy">Is the export for Legacy Space or 1LMX</param>
+		/// <returns>An ActionResult.</returns>
+		public ActionResult ExportProPricerData(string id, bool isLegacy)
         {
             try
             {
                 string zipPathFile = this.Server.MapPath("~/Templates/Export/ProPricerExport.zip");                
                 int revisionId;
                 int.TryParse(id, out revisionId);
-                BurdenPoolGridModelView burdenPoolGridModel = this.burdenPoolLoader.GetByRevision(revisionId);
+                BurdenPoolGridModelView burdenPoolGridModel = this.burdenPoolLoader.GetByRevision(revisionId, isLegacy);
                 RevisionModelView selectedRevision = this.Logic.RevisionMediator.GetById(revisionId);
                 ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(selectedRevision);
 
