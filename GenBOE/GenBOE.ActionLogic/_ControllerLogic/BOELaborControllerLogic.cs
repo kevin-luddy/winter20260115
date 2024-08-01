@@ -4012,6 +4012,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
+		
 		public ICollection<SkillMixModelView> RefreshSkillMixTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData)
 		{
 			ICollection<SkillMixModelView> newTable = new List<SkillMixModelView>();
@@ -4090,7 +4091,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="commonDisclosureSMData">The current skill mix data</param>
-		public  ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData)
+		/// <param name="resourceHours">The MOQ Table Resource Hours</param>
+		/// Also pass in the refresh common disclosure into this method, do a select and a .first (only for space)
+		public ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData,
+			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours)
 		{
 			ICollection<CommonDisclosureModelView> newTable = new List<CommonDisclosureModelView>();
 
@@ -4115,6 +4119,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					);
 				}
 
+				// TO-DO FOR KATIE ON MON: How would this be woven into Breanne's code???
+				// For Space, the BRC data is in the resource hours, a one-to-one
+				//if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+				//{
+				//	foreach (CommonDisclosureModelView skillMixRow in skillMixRows)
+				//	{
+				//		skillMixRow.BusinessResourceID = resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault();
+				//	}
+				//}
+
 				//case 1: found a mapping for resource (user input false)
 				//case 1a: add a row for each brc in mapping
 				//case 1b: row already esists so update its historical and skill mix hours and perserve the other user input info
@@ -4122,14 +4136,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				//case 2a: create a new row for resource
 				//case 2b: row already exists, update it with changes from skill mix and perserve other user input
 
-				//get mapping of resources to brcs if RMS (space should return empty)
-				Task<IESResponse<SkillMixConvertedResourceViewModel>> response;
-				response = Task.Run(async () => await GetSkillMixConvertedResources());
-				ICollection<SkillMixConvertedResourceViewModel> convertedResources = response.Result.Data;
-				Dictionary<string, List<SkillMixConvertedResourceViewModel>> convertedResourcesMap = convertedResources?.GroupBy(r => r.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
+				//if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+				//{
+					//get mapping of resources to brcs if RMS (space should return empty)
+					Task<IESResponse<SkillMixConvertedResourceViewModel>> response;
+					response = Task.Run(async () => await GetSkillMixConvertedResources());
+					ICollection<SkillMixConvertedResourceViewModel> convertedResources = response.Result.Data;
+					Dictionary<string, List<SkillMixConvertedResourceViewModel>> convertedResourcesMap = convertedResources?.GroupBy(r => r.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
 
-				//get a map of the old rows that match resources in the new data since you can have multiple for brc
-				Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosureSMData != null && commonDisclosureSMData.Any() ? commonDisclosureSMData.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
+					//get a map of the old rows that match resources in the new data since you can have multiple for brc
+					Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosureSMData != null && commonDisclosureSMData.Any() ? commonDisclosureSMData.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
 
 				//for all data in skill mix, either create a new row or if it exists (by resource), create a row for each of the brcs
 				foreach (CommonDisclosureModelView skillMixRow in skillMixRows)
@@ -4149,20 +4165,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								newRow.BOESkillMix = 0m;
 								newRow.ProposedHours = 0m;
 
-								CommonDisclosureModelView matchingRow = foundOldRows.FirstOrDefault(r => r.BusinessResourceID == convertedResource.BusinessResourceCodeID);
+									CommonDisclosureModelView matchingRow = foundOldRows.FirstOrDefault(r => r.BusinessResourceID == convertedResource.BusinessResourceCodeID);
 
-								if (matchingRow != null)
-								{
-									//found a matching row so preserve the data
-									newRow.Included = matchingRow.Included;
-									newRow.MOQTypeSelectionID = matchingRow.MOQTypeSelectionID;
-									newRow.IsPercentLocked = matchingRow.IsPercentLocked;
-									newRow.Rationale = matchingRow.Rationale;
-									newRow.BOESkillMix = matchingRow.BOESkillMix;
-									newRow.ProposedHours = matchingRow.ProposedHours;
+									if (matchingRow != null)
+									{
+										//found a matching row so preserve the data
+										newRow.Included = matchingRow.Included;
+										newRow.MOQTypeSelectionID = matchingRow.MOQTypeSelectionID;
+										newRow.IsPercentLocked = matchingRow.IsPercentLocked;
+										newRow.Rationale = matchingRow.Rationale;
+										newRow.BOESkillMix = matchingRow.BOESkillMix;
+										newRow.ProposedHours = matchingRow.ProposedHours;
+									}
+									newTable.Add(newRow);
 								}
-								newTable.Add(newRow);
-							}
 
 						}
 						else
