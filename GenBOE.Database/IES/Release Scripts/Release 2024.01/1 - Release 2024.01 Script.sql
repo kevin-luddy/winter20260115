@@ -6,12 +6,12 @@ Story: SLMX_POLM_PROPH-2219 */
 
 IF NOT EXISTS(SELECT * FROM sys.columns WHERE Name = N'DisplayOrder1LMX' AND Object_ID = Object_ID(N'[dbo].[[BurdenElementLU]]'))
 BEGIN
-    ALTER TABLE [dbo].[ProPricerRateCodeXref] ADD [DisplayOrder1LMX] int NOT NULL default(0);
+    ALTER TABLE [dbo].[BurdenElementLU] ADD [DisplayOrder1LMX] int NOT NULL default(0);
 END
 
 GO
 
-IF NOT EXISTS(SELECT * FROM [dbo].[ProPricerRateCodeXref] WHERE [BurdenElement] = 'Ent Fringe')
+IF NOT EXISTS(SELECT * FROM [dbo].[BurdenElementLU] WHERE [BurdenElement] = 'Frg Ent')
 BEGIN
     UPDATE [dbo].[BurdenElementLU] SET [DisplayOrder1LMX] = 1 WHERE [BurdenElement] = 'ESCAL';
     INSERT INTO [dbo].[BurdenElementLU] ([DisplayOrder], [BurdenElement], [Description], [DisplayOrder1LMX]) VALUES ( 0, 'Frg Ent', 'Enterprise Fringe', 2);

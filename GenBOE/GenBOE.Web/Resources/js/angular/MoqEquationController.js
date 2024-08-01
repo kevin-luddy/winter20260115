@@ -1115,7 +1115,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								tableData.DateOfReport = new Date();
 								tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
 								tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
-								tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours }));
+								tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
 								
 								// this is RMS only
 								if (!ManageTaskModel.IsSpace) {
@@ -1325,7 +1325,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 										tableData.DateOfReport = new Date();
 										tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
 										tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
-										tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours }));
+										tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
 
 										// this is RMS only
 										if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
@@ -1806,6 +1806,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			moqType.BoeSkillMixTotal += parseFloat(item.BOESkillMix) || 0;
 			moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
 		});
+
+		moqType.BoeSkillMixTotal = parseFloat((moqType.BoeSkillMixTotal).toFixed(3));
+		moqType.ProposedSkillMixHoursTotal = parseFloat((moqType.ProposedSkillMixHoursTotal).toFixed(1));
 	};
 
 	$scope.setCommonDisclosureTotals = function (moqType) {
@@ -1823,7 +1826,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
 		});
 
-		moqType.ProposedCommonDisclosureHoursTotal = Math.round(moqType.ProposedCommonDisclosureHoursTotal)
+		moqType.BoeCommonDisclosureTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(3));
+		moqType.ProposedCommonDisclosureHoursTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(1));
 	}
 
 	$scope.updateBoeSkillMixLock = function (item) {
@@ -1865,9 +1869,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		moqType.CommonDisclosureTable.forEach(item => {
 			if (item.Included) {
 				if (!item.IsPercentLocked) {
-					item.ProposedHours = parseFloat((moqTotal * (item.BOESkillMix / 100)).toFixed(1));
+					item.ProposedHours = parseFloat(((moqTotal * (item.BOESkillMix / 100)).toFixed(1)));
 				} else {
-					item.BOESkillMix = parseFloat(((item.ProposedHours / moqTotal) * 100).toFixed(3));
+					item.BOESkillMix = parseFloat((((item.ProposedHours / moqTotal) * 100).toFixed(3)));
 				}
 			}
 		});
