@@ -1168,11 +1168,19 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-
+		/// <summary>
+		/// Get BOE Totals for NLF
+		/// </summary>
+		/// <typeparam name="T">Type of BOE (IBOE, PBOE)</typeparam>
+		/// <param name="postModel">Post Model containing all required data to retrieve Totals for BOE</param>
+		/// <returns>Collection of Rows for the BOE that have totals calculated</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[HttpGet]
-		public IESResponse<T> GetBOETotals<T>(string trackingNumber, BOEFormType boeFormType, IDictionary<int, ICollection<string>> nlfResources)
+		[HttpPost]
+		public IESResponse<T> GetBOETotals<T>([FromBody] BOETotalsPostModel postModel)
 		{
+			// Validations
+			_ = postModel ?? throw new ArgumentNullException(nameof(postModel));
+
 			IESResponse<T> result = new IESResponse<T>();
 
 			try
@@ -1181,18 +1189,14 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(postModel.TrackingNumber);
 
 				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
 				if (isAllowed)
 				{
-					// Create Tuple that will hold all BOE DTO's
-					Tuple<ICollection<BOEFormIBOEDTO>, ICollection<BOEFormPBOEDTO>> boeDtoTuple = new Tuple<ICollection<BOEFormIBOEDTO>, ICollection<BOEFormPBOEDTO>>
-					(
-						new HashSet<BOEFormIBOEDTO>(),
-						new HashSet<BOEFormPBOEDTO>()
-					);
+					ICollection<BOEFormIBOEDTO> iboeDtos = new List<BOEFormIBOEDTO>(); 
+					ICollection<BOEFormPBOEDTO> pboeDtos = new List<BOEFormPBOEDTO>();
 
 					foreach (WorkspaceDTO ws in workspaces)
 					{
@@ -1205,38 +1209,38 @@ namespace GenBOE.Web.Controllers
 							Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 							Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
 
-							if (boeFormType == BOEFormType.PBOE) 
+							if (postModel.BOEFormType == BOEFormType.PBOE) 
 							{
-								foreach (KeyValuePair<int, ICollection<string>> entry in nlfResources)
+								foreach (BOEResourcesPair entry in postModel.NlfResources)
 								{
 									// Get The Resource Model from incoming Nlf Resources
-									ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => entry.Value.Contains(x.ResourceName)).ToList();
+									ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => entry.Resources.Contains(x.ResourceName)).ToList();
 
 									// Add the PBOE Data to list that will get sent to Utility Method to do the Calculations
 									BOEFormPBOEDTO pboeDto = new BOEFormPBOEDTO
 									{
-										Id = entry.Key,
+										Id = entry.BOEId,
 										ResourceIds = actualResources.Select(x => x.Id).ToList()
 									};
 
-									boeDtoTuple.Item2.Add(pboeDto);
+									pboeDtos.Add(pboeDto);
 								}
 							}
 
-							if (boeFormType == BOEFormType.IBOE)
+							if (postModel.BOEFormType == BOEFormType.IBOE)
 							{
-								// TODO: In future task populate iboeDtoList
+								// TODO: In future task populate iboeDtoList (in Tuple as Item 1)
 							}
 
 							tmCalculator.ValidateBOEFormsTMResources(validationErrors, resourceIdsWithValidTMRates, fullWorkspace,
-								boeDtoTuple.Item1, boeDtoTuple.Item2, tmResourceRateLoader, resourceLoader);
+								iboeDtos, pboeDtos, tmResourceRateLoader, resourceLoader);
 							
-							if (boeFormType == BOEFormType.PBOE)
+							if (postModel.BOEFormType == BOEFormType.PBOE)
 							{
-								result.Data = tmCalculator.GetBOETotals<T>(boeDtoTuple, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
+								result.Data = tmCalculator.GetBOETotals<T>(iboeDtos, pboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
 							}
 
-							if (boeFormType == BOEFormType.IBOE)
+							if (postModel.BOEFormType == BOEFormType.IBOE)
 							{
 								// TODO: In future Task call tmCalculator Method that calculates totals for IBOE
 								//result.Data = tmCalculator.GetBOETotals<T>(boeDtoTuple, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
@@ -1248,7 +1252,7 @@ namespace GenBOE.Web.Controllers
 				}
 				else
 				{
-					string message = $"Invalid permission to Workspace with tracking number: {trackingNumber}";
+					string message = $"Invalid permission to Workspace with tracking number: {postModel.TrackingNumber} and BOE Type: {postModel.BOEFormType.GetDescription()}";
 					logger.Error(message + " NTID: " + ntid);
 					result.Messages.Add(message);
 					result.IsSuccessful = false;

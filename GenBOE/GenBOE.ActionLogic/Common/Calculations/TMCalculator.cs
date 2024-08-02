@@ -77,6 +77,10 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <returns>Converted modelview from dto.</returns>
 		public BOEFormModelView ConvertSummaryDtoToModelView(BOEFormDTO dto, FullWorkspace workspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
 		{
+			// Validations
+			_ = dto ?? throw new ArgumentNullException(nameof(dto));
+			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
+
 			decimal totalCost = 0m;
 			decimal tmTotalCost = 0m;
 			bool hasValidTMRates = true;
@@ -96,18 +100,23 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			};
 		}
 
-		public ICollection<T> GetBOETotals<T>(Tuple<ICollection<BOEFormIBOEDTO>, ICollection<BOEFormPBOEDTO>> boeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
+		public ICollection<T> GetBOETotals<T>(ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
 		{
+			// Validations
+			_ = iboeDtos ?? throw new ArgumentNullException(nameof(iboeDtos));
+			_ = pboeDtos ?? throw new ArgumentNullException(nameof(pboeDtos));
+			_ = fullWorkspace ?? throw new ArgumentNullException(nameof(fullWorkspace));
+
 			Type objectType = typeof(T);
 			ICollection<T> resultList;
 
 			switch (objectType.FullName) 
 			{
 				case "PBOERow":
-					resultList = GetPBOETotals(boeDtos.Item2, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates) as ICollection<T>;
+					resultList = GetPBOETotals(pboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates) as ICollection<T>;
 					break;
 				case "IBOERow":
-					resultList = GetIBOETotals(boeDtos.Item1, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates) as ICollection<T>;
+					resultList = GetIBOETotals(iboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates) as ICollection<T>;
 					break;
 				default:
 					resultList = new List<T>();
@@ -449,6 +458,10 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			// TODO: In future task
 			// Do calculations for IBOE Totals as required
 			// Will require that IBOERow Model be completed!
+			iboeDtos.Clear();
+			fullWorkspace.IsUsingEquivalentPerson = false;
+			_ = resourceLoader.GlobalListID;
+			resourceIdsWithValidTMRates.Clear();
 
 			return iboeRows;
 		}
