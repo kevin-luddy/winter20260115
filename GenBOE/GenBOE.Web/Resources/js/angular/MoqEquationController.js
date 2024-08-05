@@ -1826,7 +1826,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
 		});
 
-		moqType.BoeCommonDisclosureTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(3));
+		moqType.BoeCommonDisclosureTotal = parseFloat((moqType.BoeCommonDisclosureTotal).toFixed(3));
 		moqType.ProposedCommonDisclosureHoursTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(1));
 	}
 
