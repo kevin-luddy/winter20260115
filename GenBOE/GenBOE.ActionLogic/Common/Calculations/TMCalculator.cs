@@ -87,7 +87,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 
 			foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
 			{
-				CalculateTotals(dto, workspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement);
+				CalculateTotalsForBOEFormModelView(dto, workspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement);
 			}
 			return new BOEFormModelView
 			{
@@ -100,30 +100,32 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			};
 		}
 
-		public ICollection<T> GetBOETotals<T>(ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
+		/// <summary>
+		/// Generic Method called from Controller that breaks out the call to Calculate Totals for PBOE and IBOE
+		/// </summary>
+		/// <typeparam name="T">Type of Model</typeparam>
+		/// <param name="postModel">Post Model sent into Controller containing Data for the BOE</param>
+		/// <param name="result">Return Result for the BOE</param>
+		/// <param name="iboeDtos">IBOE Dtos</param>
+		/// <param name="pboeDtos">PBOE Dtos</param>
+		/// <param name="fullWorkspace">Full Workspace</param>
+		/// <param name="workspaceResources">Workspace Resources</param>
+		/// <param name="resourceLoader">Resource Loader</param>
+		/// <param name="tmResourceRateLoader">T&M Resource Loader</param>
+		public void GetBOETotals<T>(BOETotalsPostModel postModel, IESResponse<T> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
 		{
-			// Validations
-			_ = iboeDtos ?? throw new ArgumentNullException(nameof(iboeDtos));
-			_ = pboeDtos ?? throw new ArgumentNullException(nameof(pboeDtos));
-			_ = fullWorkspace ?? throw new ArgumentNullException(nameof(fullWorkspace));
-
-			Type objectType = typeof(T);
-			ICollection<T> resultList;
-
-			switch (objectType.FullName) 
+			Type type = typeof(T);
+			switch (type.FullName) 
 			{
 				case "PBOERow":
-					resultList = GetPBOETotals(pboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates) as ICollection<T>;
+					GetPBOETotals(postModel, result as IESResponse<PBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader); 
 					break;
 				case "IBOERow":
-					resultList = GetIBOETotals(iboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates) as ICollection<T>;
+					GetIBOETotals(postModel, result as IESResponse<IBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
 					break;
 				default:
-					resultList = new List<T>();
 					break;
 			}
-
-			return resultList;
 		}
 
 		/// <summary>
@@ -174,6 +176,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		#endregion Public Methods
 
 		#region Private / Internal Methods
+
 		/// <summary>
 		/// Validates the IBOE or PBOE Form T&amp;M Resources
 		/// </summary>
@@ -328,7 +331,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="tmTotalCost">Reference to T&M Total Cost</param>
 		/// <param name="hasValidTMRates">Bool to show Valid TM Rates</param>
 		/// <param name="taskElement">Workspace Task Element</param>
-		private void CalculateTotals(BOEFormDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
+		private void CalculateTotalsForBOEFormModelView(BOEFormDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
 		{
 			//get brc labors based on 1lmx start date
 			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToList();
@@ -371,7 +374,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="tmTotalCost">Reference to T&M Total Cost</param>
 		/// <param name="hasValidTMRates">Bool to show Valid TM Rates</param>
 		/// <param name="taskElement">Workspace Task Element</param>
-		private void CalculateTotals(BOEFormPBOEDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
+		private void CalculateTotalsForBOE(BOEFormPBOEDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
 		{
 			//get brc labors based on 1lmx start date
 			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToList();
@@ -404,14 +407,89 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		}
 
 		/// <summary>
-		/// Gets PBOE Totals
+		/// Specific Method to Get PBOE Totals
+		/// </summary>
+		/// <param name="postModel">Post Model that Contains data passed in to Controller</param>
+		/// <param name="result">Returning Result List of PBOE Row Data</param>
+		/// <param name="iboeDtos">IBOE DTO's (Done to make the actual calculation methods generic)</param>
+		/// <param name="pboeDtos">PBOE DTO's (Done to make the actual calculation methods generic)</param>
+		/// <param name="fullWorkspace">Full Workspace</param>
+		/// <param name="workspaceResources">List of Resources for the Workspace</param>
+		/// <param name="resourceLoader">Resource Loader</param>
+		/// <param name="tmResourceRateLoader">T&M Resource Loader</param>
+		private void GetPBOETotals(BOETotalsPostModel postModel, IESResponse<PBOERow> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
+		{
+			Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
+
+			foreach (BOEResourcesPair entry in postModel.NlfResources)
+			{
+				// Get The Resource Model from incoming Nlf Resources
+				ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => entry.Resources.Contains(x.ResourceName)).ToList();
+
+				// Add the PBOE Data to list that will get sent to Utility Method to do the Calculations
+				BOEFormPBOEDTO pboeDto = new BOEFormPBOEDTO
+				{
+					Id = entry.BOEId,
+					ResourceIds = actualResources.Select(x => x.Id).ToList()
+				};
+
+				pboeDtos.Add(pboeDto);
+			}
+
+			this.ValidateBOEFormsTMResources(validationErrors, resourceIdsWithValidTMRates, fullWorkspace,
+				iboeDtos, pboeDtos, tmResourceRateLoader, resourceLoader);
+
+			result.Data = this.CalculatePBOETotals(pboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
+		}
+
+		/// <summary>
+		/// Specific Method to Get IBOE Totals
+		/// </summary>
+		/// <param name="postModel">Post Model that Contains data passed in to Controller</param>
+		/// <param name="result">Returning Result List of PBOE Row Data</param>
+		/// <param name="iboeDtos">IBOE DTO's (Done to make the actual calculation methods generic)</param>
+		/// <param name="pboeDtos">PBOE DTO's (Done to make the actual calculation methods generic)</param>
+		/// <param name="fullWorkspace">Full Workspace</param>
+		/// <param name="workspaceResources">List of Resources for the Workspace</param>
+		/// <param name="resourceLoader">Resource Loader</param>
+		/// <param name="tmResourceRateLoader">T&M Resource Loader</param>
+		private void GetIBOETotals(BOETotalsPostModel postModel, IESResponse<IBOERow> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
+		{
+			Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
+
+			// TODO: In future task populate iboeDtoList (Modify code below as needed)
+			foreach (BOEResourcesPair entry in postModel.NlfResources)
+			{
+				// Get The Resource Model from incoming Nlf Resources
+				ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => entry.Resources.Contains(x.ResourceName)).ToList();
+
+				// Add the IBOE Data to list that will get sent to Utility Method to do the Calculations
+				BOEFormIBOEDTO iboeDto = new BOEFormIBOEDTO
+				{
+					Id = entry.BOEId,
+					ResourceIds = actualResources.Select(x => x.Id).ToList()
+				};
+
+				iboeDtos.Add(iboeDto);
+			}
+
+			this.ValidateBOEFormsTMResources(validationErrors, resourceIdsWithValidTMRates, fullWorkspace,
+				iboeDtos, pboeDtos, tmResourceRateLoader, resourceLoader);
+
+			result.Data = this.CalculateIBOETotals(iboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
+		}
+
+		/// <summary>
+		/// Calculates PBOE Totals
 		/// </summary>
 		/// <param name="pboeDtos">Collection of PBOE DTOs</param>
 		/// <param name="fullWorkspace">Full Workspace</param>
 		/// <param name="resourceLoader">Resource Loader</param>
 		/// <param name="resourceIdsWithValidTMRates">Collection of Id's with Valid TM Rates</param>
 		/// <returns>Collection of PBOE Row Data</returns>
-		private ICollection<PBOERow> GetPBOETotals(ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
+		private ICollection<PBOERow> CalculatePBOETotals(ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
 		{
 			ICollection<PBOERow> rowList = new List<PBOERow>();
 
@@ -423,7 +501,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			{
 				foreach (BoeTaskElementDTO taskElement in fullWorkspace.TaskElements)
 				{
-					CalculateTotals(pboe, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement);
+					CalculateTotalsForBOE(pboe, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement);
 				}
 
 				rowList.Add(new PBOERow
@@ -444,14 +522,14 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		}
 
 		/// <summary>
-		/// Gets IBOE Totals
+		/// Calculates IBOE Totals
 		/// </summary>
 		/// <param name="iboeDtos">Collection of IBOE DTOs</param>
 		/// <param name="fullWorkspace">Full Workspace</param>
 		/// <param name="resourceLoader">Resource Loader</param>
 		/// <param name="resourceIdsWithValidTMRates">Collection of Id's with Valid TM Rates</param>
 		/// <returns>Collection of IBOE Row Data</returns>
-		private ICollection<IBOERow> GetIBOETotals(ICollection<BOEFormIBOEDTO> iboeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
+		private ICollection<IBOERow> CalculateIBOETotals(ICollection<BOEFormIBOEDTO> iboeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
 		{
 			ICollection<IBOERow> iboeRows = new HashSet<IBOERow>();
 

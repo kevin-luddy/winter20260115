@@ -687,7 +687,7 @@ namespace GenBOE.Web.Controllers
 				bool isAdmin = this.securityInformation.IsSystemOrSubcontractAdmin(ntid);
 
 				if (!isAdmin)
-				{ 
+				{
 					throw new UnauthorizedAccessException();
 				}
 
@@ -722,7 +722,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>List of Workspace Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpPost]
-		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf([FromBody]ICollection<string> trackingNumbers)
+		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf([FromBody] ICollection<string> trackingNumbers)
 		{
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
 			try
@@ -1058,7 +1058,7 @@ namespace GenBOE.Web.Controllers
 							LeadEstimatorEmail = leadEstimator != null ? leadEstimator.EmailAddress : string.Empty,
 							SupplierProposalManagerDisplayName = approver != null ? approver.DisplayName : string.Empty,
 							SupplierProposalManagerEmail = approver != null ? approver.Email : string.Empty,
-							WorkspaceId = x.WorkspaceId 
+							WorkspaceId = x.WorkspaceId
 						};
 					}).ToList();
 
@@ -1169,19 +1169,18 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Get BOE Totals for NLF
+		/// Get PBOE Totals for NLF
 		/// </summary>
-		/// <typeparam name="T">Type of BOE (IBOE, PBOE)</typeparam>
-		/// <param name="postModel">Post Model containing all required data to retrieve Totals for BOE</param>
-		/// <returns>Collection of Rows for the BOE that have totals calculated</returns>
+		/// <param name="postModel">Post Model containing all required data to retrieve Totals for PBOE</param>
+		/// <returns>Collection of Rows for the PBOE that have totals calculated</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpPost]
-		public IESResponse<T> GetBOETotals<T>([FromBody] BOETotalsPostModel postModel)
+		public IESResponse<PBOERow> GetPBOETotals([FromBody] BOETotalsPostModel postModel)
 		{
 			// Validations
 			_ = postModel ?? throw new ArgumentNullException(nameof(postModel));
 
-			IESResponse<T> result = new IESResponse<T>();
+			IESResponse<PBOERow> result = new IESResponse<PBOERow>();
 
 			try
 			{
@@ -1195,7 +1194,7 @@ namespace GenBOE.Web.Controllers
 
 				if (isAllowed)
 				{
-					ICollection<BOEFormIBOEDTO> iboeDtos = new List<BOEFormIBOEDTO>(); 
+					ICollection<BOEFormIBOEDTO> iboeDtos = new List<BOEFormIBOEDTO>();
 					ICollection<BOEFormPBOEDTO> pboeDtos = new List<BOEFormPBOEDTO>();
 
 					foreach (WorkspaceDTO ws in workspaces)
@@ -1205,46 +1204,7 @@ namespace GenBOE.Web.Controllers
 							// Get Prerequisite Data
 							FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws);
 							ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(ws.ResourceListID);
-
-							Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
-							Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
-
-							if (postModel.BOEFormType == BOEFormType.PBOE) 
-							{
-								foreach (BOEResourcesPair entry in postModel.NlfResources)
-								{
-									// Get The Resource Model from incoming Nlf Resources
-									ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => entry.Resources.Contains(x.ResourceName)).ToList();
-
-									// Add the PBOE Data to list that will get sent to Utility Method to do the Calculations
-									BOEFormPBOEDTO pboeDto = new BOEFormPBOEDTO
-									{
-										Id = entry.BOEId,
-										ResourceIds = actualResources.Select(x => x.Id).ToList()
-									};
-
-									pboeDtos.Add(pboeDto);
-								}
-							}
-
-							if (postModel.BOEFormType == BOEFormType.IBOE)
-							{
-								// TODO: In future task populate iboeDtoList (in Tuple as Item 1)
-							}
-
-							tmCalculator.ValidateBOEFormsTMResources(validationErrors, resourceIdsWithValidTMRates, fullWorkspace,
-								iboeDtos, pboeDtos, tmResourceRateLoader, resourceLoader);
-							
-							if (postModel.BOEFormType == BOEFormType.PBOE)
-							{
-								result.Data = tmCalculator.GetBOETotals<T>(iboeDtos, pboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
-							}
-
-							if (postModel.BOEFormType == BOEFormType.IBOE)
-							{
-								// TODO: In future Task call tmCalculator Method that calculates totals for IBOE
-								//result.Data = tmCalculator.GetBOETotals<T>(boeDtoTuple, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
-							}
+							tmCalculator.GetBOETotals<PBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
 						}
 					}
 
@@ -1262,7 +1222,67 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning BOE Totals : {ex.Message}");
+				result.Messages.Add($"Unknown Error occured returning PBOE Totals : {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get IBOE Totals for NLF
+		/// </summary>
+		/// <param name="postModel">Post Model containing all required data to retrieve Totals for IBOE</param>
+		/// <returns>Collection of Rows for the IBOE that have totals calculated</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
+		public IESResponse<IBOERow> GetIBOETotals([FromBody] BOETotalsPostModel postModel)
+		{
+			// Validations
+			_ = postModel ?? throw new ArgumentNullException(nameof(postModel));
+
+			IESResponse<IBOERow> result = new IESResponse<IBOERow>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// Check if user is System Admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(postModel.TrackingNumber);
+
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
+
+				if (isAllowed)
+				{
+					ICollection<BOEFormIBOEDTO> iboeDtos = new List<BOEFormIBOEDTO>();
+					ICollection<BOEFormPBOEDTO> pboeDtos = new List<BOEFormPBOEDTO>();
+
+					foreach (WorkspaceDTO ws in workspaces)
+					{
+						if (ws.IsUsingTM)
+						{
+							// Get Prerequisite Data
+							FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws);
+							ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(ws.ResourceListID);
+							tmCalculator.GetBOETotals<IBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
+						}
+					}
+
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					string message = $"Invalid permission to Workspace with tracking number: {postModel.TrackingNumber} and BOE Type: {postModel.BOEFormType.GetDescription()}";
+					logger.Error(message + " NTID: " + ntid);
+					result.Messages.Add(message);
+					result.IsSuccessful = false;
+					result.Data = null;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occured returning IBOE Totals : {ex.Message}");
 			}
 
 			return result;
