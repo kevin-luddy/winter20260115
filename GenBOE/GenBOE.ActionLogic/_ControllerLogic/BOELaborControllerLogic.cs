@@ -4146,7 +4146,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								newRow.IsUserInput = false;
 								newRow.BusinessResourceID = convertedResource.BusinessResourceCodeID;
 								newRow.HistoricalHours = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.HistoricalHours : 0m;
-								newRow.LaborSkillMix = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.LaborSkillMix : 0m;
 								newRow.BOESkillMix = 0m;
 								newRow.ProposedHours = 0m;
 
@@ -4198,12 +4197,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							//there is a mapping for brc
 							foreach (SkillMixConvertedResourceViewModel convertedResource in brcsForResource)
 							{
+								decimal historicalHours = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.HistoricalHours : 0m;
 								newTable.Add(
 									new CommonDisclosureModelView
 									{
-										HistoricalHours = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.HistoricalHours : 0m,
+										HistoricalHours = historicalHours,
 										ResourceID = skillMixRow.ResourceID,
-										LaborSkillMix = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.LaborSkillMix : 0m,
 										IsUserInput = false,
 										BusinessResourceID = convertedResource.BusinessResourceCodeID,
 										BOESkillMix = 0m,
@@ -4222,7 +4221,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 									{
 										HistoricalHours = skillMixRow.HistoricalHours,
 										ResourceID = skillMixRow.ResourceID,
-										LaborSkillMix = skillMixRow.LaborSkillMix,
 										IsUserInput = true,
 										BOESkillMix = 0m,
 										ProposedHours = 0m

@@ -1466,6 +1466,30 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
+	$scope.updateLaborSkillMix = function (item, moqType) {
+		//get historical hours from skill mix table
+		let totalHistoricalHours = $scope.getTotalHistoricalHours(moqType);
+		if (totalHistoricalHours > 0) {
+			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
+		}
+	};
+
+	$scope.getTotalHistoricalHours = function (moqType) {
+		let totalHistoricalHours = 0;
+		moqType.CommonDisclosureTable.forEach(item => {
+			totalHistoricalHours += item.HistoricalHours;
+		});
+		return totalHistoricalHours;
+	};
+
+	$scope.getTotalSMHistoricalHours = function (moqType) {
+		let totalHistoricalHours = 0;
+		moqType.SkillMixTable.forEach(item => {
+			totalHistoricalHours += item.HistoricalHours;
+		});
+		return totalHistoricalHours;
+	};
+
 	$scope.refreshCommonDisclosureTable = function (moqType) {
 		// Get all the data tables
 		const data = {
@@ -1812,6 +1836,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.setCommonDisclosureTotals = function (moqType) {
+		//first set the labor skill mix column before calculating totals
+		$scope.setLaborSkillMixForCD(moqType);
+
 		// Reset Totals because this method can be called multiple times from multiple areas
 		moqType.HistoricalCommonDisclosureHoursTotal = 0;
 		moqType.LaborCommonDisclosureTotal = 0;
@@ -1828,6 +1855,20 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 		moqType.BoeCommonDisclosureTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(3));
 		moqType.ProposedCommonDisclosureHoursTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(1));
+	}
+
+	$scope.setLaborSkillMixForCD = function (moqType) {
+		let totalHistoricalHours = 0;
+
+		//get total historical hours in CD table
+		moqType.CommonDisclosureTable.forEach(item => {
+			totalHistoricalHours += item.HistoricalHours;
+		});
+
+		//get labor skill mix % by taking row's historical hours / total
+		moqType.CommonDisclosureTable.forEach(item => {
+			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
+		});
 	}
 
 	$scope.updateBoeSkillMixLock = function (item) {
