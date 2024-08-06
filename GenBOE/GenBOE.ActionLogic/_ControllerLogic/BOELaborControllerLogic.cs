@@ -4012,7 +4012,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
-		
 		public ICollection<SkillMixModelView> RefreshSkillMixTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData)
 		{
 			ICollection<SkillMixModelView> newTable = new List<SkillMixModelView>();
@@ -4209,7 +4208,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						// no current rows in CD for this resource
 						if (convertedResourcesMap != null && convertedResourcesMap.TryGetValue(skillMixRow.ResourceID, out List<SkillMixConvertedResourceViewModel> brcsForResource))
 						{
-							//there is a mapping for brc - RMS only
+							//there is a mapping for brc
 							foreach (SkillMixConvertedResourceViewModel convertedResource in brcsForResource)
 							{
 								newTable.Add(
