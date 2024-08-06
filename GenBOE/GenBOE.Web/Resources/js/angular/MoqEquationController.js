@@ -1468,13 +1468,16 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.updateLaborSkillMix = function (item, moqType) {
 		//get historical hours from skill mix table
-		let totalHistoricalHours = $scope.getTotalHistoricalHours(moqType);
-		if (totalHistoricalHours > 0) {
+		let totalHistoricalHours = $scope.getTotalCDHistoricalHours(moqType);
+		if (totalHistoricalHours === 0) {
+			item.LaborSkillMix = 0;
+		}
+		else {
 			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
 		}
 	};
 
-	$scope.getTotalHistoricalHours = function (moqType) {
+	$scope.getTotalCDHistoricalHours = function (moqType) {
 		let totalHistoricalHours = 0;
 		moqType.CommonDisclosureTable.forEach(item => {
 			totalHistoricalHours += item.HistoricalHours;
