@@ -4033,7 +4033,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							HistoricalHours = totalGroupHours,
 							ResourceOld = resourceOld,
 							ResourceNew = resourceNew,
-							LaborSkillMix = totalGroupHours / totalHours
+							LaborSkillMix = totalGroupHours / totalHours,
+							ShouldIncludedBeDisabled = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ?
+								!(resourceHours.Any(x => x.ResourceName != null && x.ResourceName.Equals(resourceNew)))
+								: !(resourceHours.Any(x => x.ResourceName != null && x.ResourceName.Equals(resourceOld)))
 						}
 					);
 				}
@@ -4147,23 +4150,25 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					//get a map of the old rows that match resources in the new data since you can have multiple for brc
 					Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosureSMData != null && commonDisclosureSMData.Any() ? commonDisclosureSMData.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
 
-				//for all data in skill mix, either create a new row or if it exists (by resource), create a row for each of the brcs
-				foreach (CommonDisclosureModelView skillMixRow in skillMixRows)
-				{
-					if (resourceToCDRowMap != null && resourceToCDRowMap.TryGetValue(skillMixRow.ResourceID, out List<CommonDisclosureModelView> foundOldRows))
+					//for all data in skill mix, either create a new row or if it exists (by resource), create a row for each of the brcs
+					foreach (CommonDisclosureModelView skillMixRow in skillMixRows)
 					{
-						//there are existing rows in the common disclosure table for this resource
-						if (convertedResourcesMap != null && convertedResourcesMap.TryGetValue(skillMixRow.ResourceID, out List<SkillMixConvertedResourceViewModel> brcsForResource)) {
-							//there is a mapping - either update current rows (maybe percentages changed) or add new rows (more brc mapping), if a row exists in CD but isn't in mapping anymore, don't add it back
-							foreach (SkillMixConvertedResourceViewModel convertedResource in brcsForResource)
+						if (resourceToCDRowMap != null && resourceToCDRowMap.TryGetValue(skillMixRow.ResourceID, out List<CommonDisclosureModelView> foundOldRows))
+						{
+							//there are existing rows in the common disclosure table for this resource
+							if (convertedResourcesMap != null && convertedResourcesMap.TryGetValue(skillMixRow.ResourceID, out List<SkillMixConvertedResourceViewModel> brcsForResource))
 							{
-								CommonDisclosureModelView newRow = new CommonDisclosureModelView();
-								newRow.ResourceID = convertedResource.ResourceID;
-								newRow.IsUserInput = false;
-								newRow.BusinessResourceID = convertedResource.BusinessResourceCodeID;
-								newRow.HistoricalHours = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.HistoricalHours : 0m;
-								newRow.BOESkillMix = 0m;
-								newRow.ProposedHours = 0m;
+								//there is a mapping - either update current rows (maybe percentages changed) or add new rows (more brc mapping), if a row exists in CD but isn't in mapping anymore, don't add it back
+								foreach (SkillMixConvertedResourceViewModel convertedResource in brcsForResource)
+								{
+									CommonDisclosureModelView newRow = new CommonDisclosureModelView();
+									newRow.ResourceID = convertedResource.ResourceID;
+									newRow.IsUserInput = false;
+									newRow.BusinessResourceID = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ? convertedResource.BusinessResourceCodeID
+										: resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault();
+									newRow.HistoricalHours = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.HistoricalHours : 0m;
+									newRow.BOESkillMix = 0m;
+									newRow.ProposedHours = 0m;
 
 									CommonDisclosureModelView matchingRow = foundOldRows.FirstOrDefault(r => r.BusinessResourceID == convertedResource.BusinessResourceCodeID);
 
@@ -4180,52 +4185,55 @@ namespace GenBOE.ActionLogic.ControllerLogic
 									newTable.Add(newRow);
 								}
 
+							}
+							else
+							{
+								//no mapping (or mapping deleted?) so persist the old rows and make sure user input is true
+								foreach (CommonDisclosureModelView oldRow in foundOldRows)
+								{
+								string tempBusinessResourceID = resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault();
+									newTable.Add(
+										new CommonDisclosureModelView
+										{
+											HistoricalHours = oldRow.HistoricalHours,
+											ResourceID = oldRow.ResourceID,
+											LaborSkillMix = oldRow.LaborSkillMix,
+											Included = oldRow.Included,
+											MOQTypeSelectionID = oldRow.MOQTypeSelectionID,
+											IsPercentLocked = oldRow.IsPercentLocked,
+											IsUserInput = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && !string.IsNullOrEmpty(tempBusinessResourceID) ? false : true,
+											BusinessResourceID = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems
+												? tempBusinessResourceID : string.IsNullOrEmpty(oldRow.BusinessResourceID) ? string.Empty : oldRow.BusinessResourceID,
+											Rationale = oldRow.Rationale,
+											BOESkillMix = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.BOESkillMix : 0m,
+											ProposedHours = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.ProposedHours : 0m
+										}
+									);
+								}
+							}
 						}
 						else
 						{
-							//no mapping (or mapping deleted?) so persist the old rows and make sure user input is true
-							foreach (CommonDisclosureModelView oldRow in foundOldRows)
+							// no current rows in CD for this resource
+							if (convertedResourcesMap != null && convertedResourcesMap.TryGetValue(skillMixRow.ResourceID, out List<SkillMixConvertedResourceViewModel> brcsForResource))
 							{
-								newTable.Add(
-									new CommonDisclosureModelView
-									{
-										HistoricalHours = oldRow.HistoricalHours,
-										ResourceID = oldRow.ResourceID,
-										LaborSkillMix = oldRow.LaborSkillMix,
-										Included = oldRow.Included,
-										MOQTypeSelectionID = oldRow.MOQTypeSelectionID,
-										IsPercentLocked = oldRow.IsPercentLocked,
-										IsUserInput = true,
-										BusinessResourceID = string.IsNullOrEmpty(oldRow.BusinessResourceID) ? string.Empty : oldRow.BusinessResourceID,
-										Rationale = oldRow.Rationale,
-										BOESkillMix = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.BOESkillMix : 0m,
-										ProposedHours = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.ProposedHours : 0m
-									}
-								);
-							}
-						}
-					}
-					else
-					{
-						// no current rows in CD for this resource
-						if (convertedResourcesMap != null &&  convertedResourcesMap.TryGetValue(skillMixRow.ResourceID, out List<SkillMixConvertedResourceViewModel> brcsForResource))
-						{
-							//there is a mapping for brc
-							foreach (SkillMixConvertedResourceViewModel convertedResource in brcsForResource)
-							{
-								decimal historicalHours = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.HistoricalHours : 0m;
-								newTable.Add(
-									new CommonDisclosureModelView
-									{
-										HistoricalHours = historicalHours,
-										ResourceID = skillMixRow.ResourceID,
-										IsUserInput = false,
-										BusinessResourceID = convertedResource.BusinessResourceCodeID,
-										BOESkillMix = 0m,
-										ProposedHours = 0m
-									}
-								);
-							}
+								//there is a mapping for brc
+								foreach (SkillMixConvertedResourceViewModel convertedResource in brcsForResource)
+								{
+									decimal historicalHours = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.HistoricalHours : 0m;
+									newTable.Add(
+										new CommonDisclosureModelView
+										{
+											HistoricalHours = historicalHours,
+											ResourceID = skillMixRow.ResourceID,
+											IsUserInput = false,
+											BusinessResourceID = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ? convertedResource.BusinessResourceCodeID
+												: resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault(),
+											BOESkillMix = 0m,
+											ProposedHours = 0m
+										}
+									);
+								}
 
 						}
 						else

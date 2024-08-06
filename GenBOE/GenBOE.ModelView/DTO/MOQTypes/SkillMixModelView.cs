@@ -12,6 +12,11 @@ namespace GenBOE.ActionLogic.ModelView
 	[Serializable]
 	public class SkillMixModelView : SkillMixDTO
     {
+		/// <summary>
+		/// Should the Included dropdown be disabled?
+		/// </summary>
+		public bool ShouldIncludedBeDisabled { get; set; } = true;
+
 		public SkillMixModelView()
 		{
 		}
