@@ -1515,7 +1515,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				}
 			});
 		}
-		console.log(data.resourceHours);
 
 		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
 			// send to backend

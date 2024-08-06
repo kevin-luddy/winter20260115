@@ -4012,7 +4012,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
-		
 		public ICollection<SkillMixModelView> RefreshSkillMixTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData)
 		{
 			ICollection<SkillMixModelView> newTable = new List<SkillMixModelView>();
