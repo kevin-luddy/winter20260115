@@ -4033,7 +4033,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							HistoricalHours = totalGroupHours,
 							ResourceOld = resourceOld,
 							ResourceNew = resourceNew,
-							LaborSkillMix = totalGroupHours / totalHours
+							LaborSkillMix = totalGroupHours / totalHours,
+							ShouldIncludedBeDisabled = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ?
+								!(resourceHours.Any(x => x.ResourceName != null && x.ResourceName.Equals(resourceNew)))
+								: !(resourceHours.Any(x => x.ResourceName != null && x.ResourceName.Equals(resourceOld)))
 						}
 					);
 				}
@@ -4161,7 +4164,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 									CommonDisclosureModelView newRow = new CommonDisclosureModelView();
 									newRow.ResourceID = convertedResource.ResourceID;
 									newRow.IsUserInput = false;
-									newRow.BusinessResourceID = convertedResource.BusinessResourceCodeID;
+									newRow.BusinessResourceID = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ? convertedResource.BusinessResourceCodeID
+										: resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault();
 									newRow.HistoricalHours = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.HistoricalHours : 0m;
 									newRow.LaborSkillMix = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.LaborSkillMix : 0m;
 									newRow.BOESkillMix = 0m;
@@ -4188,6 +4192,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								//no mapping (or mapping deleted?) so persist the old rows and make sure user input is true
 								foreach (CommonDisclosureModelView oldRow in foundOldRows)
 								{
+								string tempBusinessResourceID = resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault();
 									newTable.Add(
 										new CommonDisclosureModelView
 										{
@@ -4197,8 +4202,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 											Included = oldRow.Included,
 											MOQTypeSelectionID = oldRow.MOQTypeSelectionID,
 											IsPercentLocked = oldRow.IsPercentLocked,
-											IsUserInput = true,
-											BusinessResourceID = string.IsNullOrEmpty(oldRow.BusinessResourceID) ? string.Empty : oldRow.BusinessResourceID,
+											IsUserInput = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && !string.IsNullOrEmpty(tempBusinessResourceID) ? false : true,
+											BusinessResourceID = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems
+												? tempBusinessResourceID : string.IsNullOrEmpty(oldRow.BusinessResourceID) ? string.Empty : oldRow.BusinessResourceID,
 											Rationale = oldRow.Rationale,
 											BOESkillMix = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.BOESkillMix : 0m,
 											ProposedHours = oldRow.Included.HasValue && oldRow.Included.Value ? oldRow.ProposedHours : 0m
@@ -4212,7 +4218,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							// no current rows in CD for this resource
 							if (convertedResourcesMap != null && convertedResourcesMap.TryGetValue(skillMixRow.ResourceID, out List<SkillMixConvertedResourceViewModel> brcsForResource))
 							{
-								//there is a mapping for brc
+								//there is a mapping for brc - RMS only
 								foreach (SkillMixConvertedResourceViewModel convertedResource in brcsForResource)
 								{
 									newTable.Add(
@@ -4222,7 +4228,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 											ResourceID = skillMixRow.ResourceID,
 											LaborSkillMix = convertedResource.PercentHours.HasValue ? (decimal)convertedResource.PercentHours * skillMixRow.LaborSkillMix : 0m,
 											IsUserInput = false,
-											BusinessResourceID = convertedResource.BusinessResourceCodeID,
+											BusinessResourceID = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ? convertedResource.BusinessResourceCodeID
+												: resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault(),
 											BOESkillMix = 0m,
 											ProposedHours = 0m
 										}
