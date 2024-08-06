@@ -556,8 +556,15 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>
-                                    <div id="cd-historical-hours" class="text skill-mix-numerical skill-mix-padding"> {{ item.HistoricalHours }} </div>
+                                <td data-ng-if="!item.IsUserInput">
+                                    <div class="text skill-mix-numerical skill-mix-padding"> {{ item.HistoricalHours }} </div>
+                                </td>
+                                <td  data-ng-if="item.IsUserInput" >
+                                    <div class="skill-mix-numerical skill-mix-padding">
+                                        <div>
+                                            <input type="number" maxlength="5" data-ng-blur="updateLaborSkillMix(item, moqType); setCommonDisclosureTotals(moqType);" id="cd-historical-hours" data-ng-model="item.HistoricalHours" />       
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>
                                     <div id="cd-labor-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
@@ -607,7 +614,7 @@
 									<div title="Total">Total</div>
 								</td>
 								<td></td>	
-								<td>
+								<td data-ng-class="{'inputError': moqType.HistoricalCommonDisclosureHoursTotal !== getTotalSMHistoricalHours(moqType) }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal | number: 1 }}</div>
 								</td>
 								<td>
