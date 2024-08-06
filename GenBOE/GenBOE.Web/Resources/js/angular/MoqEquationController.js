@@ -23,8 +23,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 				if ($scope.model.CommonDisclosureEnabled) {
 					$scope.setCommonDisclosureTotals(e);
+					$scope.refreshResourceGroupColors(e);
 				}
-
 				return e.SelectedMOQType.toString();
 			}), function (id) {
 				$scope.InitializeRteFields(id);
@@ -1519,6 +1519,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					if (response.data.data) {
 						moqType.CommonDisclosureTable = response.data.data;
 						$scope.setCommonDisclosureTotals(moqType);
+						$scope.refreshResourceGroupColors(moqType);
 					}
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
@@ -1562,6 +1563,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				break;
 			}
 		}
+	};
+
+	$scope.refreshResourceGroupColors = function (moqType) {
+		// coming soon
+	};
+	$scope.sortCD = function (moqType) {
+		let colName = "ResourceID";
+		moqType.CommonDisclosureTable.sort((a, b) => a[colName] > b[colName] ? 1 : a[colName] < b[colName] ? -1 : 0);
+		$scope.refreshResourceGroupColors(moqType);
 	};
 
 	$scope.setActualsErrors = function (id, errors) {
