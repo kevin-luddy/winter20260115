@@ -1488,7 +1488,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.getTotalSMHistoricalHours = function (moqType) {
 		let totalHistoricalHours = 0;
 		moqType.SkillMixTable.forEach(item => {
-			totalHistoricalHours += item.HistoricalHours;
+			if (item.Included) {
+				totalHistoricalHours += item.HistoricalHours;
+			}
 		});
 		return totalHistoricalHours;
 	};
