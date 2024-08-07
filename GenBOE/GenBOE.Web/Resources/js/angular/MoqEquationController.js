@@ -1564,6 +1564,21 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			}
 		}
 	};
+	$scope.canDelete = function (item, moqType) {
+		//have to find at least one other row with same resource id to be eligible to delete
+		var resourceRowCount = 0;
+		var canDelete = true;
+		for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
+			var row = moqType.CommonDisclosureTable[i];
+			if (row.ResourceID === item.ResourceID) {
+				resourceRowCount++;
+			}
+		}
+		if (resourceRowCount == 1) {
+			canDelete = false;
+		}
+		return canDelete;
+	};
 
 	$scope.refreshResourceGroupColors = function (moqType) {
 		// coming soon

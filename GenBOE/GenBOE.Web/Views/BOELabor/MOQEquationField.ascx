@@ -551,7 +551,7 @@
                                         <div class="brc-padding">
                                             <div class="brc-button add-row" data-ng-click="addRowForResource(item, moqType); sortCD(moqType);" title="Add row for additional BRCs in resource">+</div>
                                         </div>
-                                        <div class="brc-padding">
+                                        <div data-ng-if="canDelete(item, moqType)" class="brc-padding">
                                             <div class="brc-button delete-row" data-ng-click="deleteRowForResource(item, moqType)" title="Delete row">X</div>
                                         </div>
                                     </div>
