@@ -250,7 +250,7 @@ namespace RDM.Tests.ControllerLogic
             this.sectionLoader.Setup(x => x.GetAll(revision, false, null, It.IsAny<string>())).Returns(new Collection<SectionModelView>());
             this.rateDetailLoader.Setup(x => x.GetRatesByRevision(revision)).Returns(new Collection<RateDetailModelView>());
             this.cobraDetailLoader.Setup(x => x.GetCobraDetailsByRevision(revision)).Returns(new Collection<CobraDetailModelView>());
-            this.burdenPoolLoader.Setup(x => x.GetByRevision(revision.Id)).Returns(new BurdenPoolGridModelView());
+            this.burdenPoolLoader.Setup(x => x.GetByRevision(revision.Id, It.IsAny<bool>())).Returns(new BurdenPoolGridModelView());
 
             sut.ExportRevisionAsJson(id, serverFileName);
 
