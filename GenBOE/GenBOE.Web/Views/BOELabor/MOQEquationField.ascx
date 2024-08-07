@@ -443,7 +443,7 @@
                                             typeahead-on-select="resourceSelected($item, item, moqType)">
                                     </div>
                                 </td>
-                                <td data-ng-if="!model.IsRMS">
+                                <td class="sm-resource-id" data-ng-if="!model.IsRMS">
                                     <div class="text skill-mix-padding"> {{ item.ResourceNew }} </div>
                                 </td>
                                 <td>
@@ -463,7 +463,7 @@
                                 <td data-ng-class="{'inputError': (item.Included === true && (item.BOESkillMix === null || item.BOESkillMix < 1))}">
                                         <div id="boe-skill-mix" class="skill-mix-numerical skill-mix-padding boe-skill-mix">
                                             <div>
-                                                <input type="number" maxlength="5" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false || item.IsPercentLocked" />
+                                                <input type="number" id="BOESkillMix" data-ng-blur="updateProposedHours(item); setSkillMixTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false || item.IsPercentLocked" />
                                                 <div>% &nbsp;</div>
 										        <div>
 											        <img data-ng-if="item.Included === null || item.Included === false || item.IsPercentLocked" data-ng-click="updateBoeSkillMixLock(item)" class="LockImage UnLockImage" src="../../../../Resources/css/images/unlock_resource_toggle.png" title="Select lock for either Boe Skill Mix or Proposed Hours to maintain that value when the MOQ Equation is adjusted." />
@@ -502,7 +502,7 @@
 								</td>
 								<td></td>
 								<td data-ng-class="{'inputError': moqType.BoeSkillMixTotal !== 100 }">
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeSkillMixTotal | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeSkillMixTotal }}%</div>
 								</td>
 								<td data-ng-class="{'inputError': moqType.ProposedSkillMixHoursTotal !== getMOQTotal() }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.ProposedSkillMixHoursTotal }}</div>
@@ -521,7 +521,7 @@
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeSkillMixSuffix);"></div>
             </div>
             <div class="form-element">
-                <div id="skillMixDiv" class="commonDisclosureTableData skillMixTable">
+                <div id="commonDisclosureTableData" class="skillMixTable">
                     <table name="commonDisclosureSkillMix"  class="grid editable">
                         <thead>
                             <tr>
@@ -537,7 +537,7 @@
                         </thead>
                         <tbody>
                             <tr data-ng-repeat="item in moqType.CommonDisclosureTable" | filter: { Deleted: false } track by item.ResourceID" data-ng-hide="item.Deleted" orderBy="item.ResourceID">
-                                <td>
+                                <td class="cd-resource-id">
                                     <div class="text skill-mix-padding"> {{ item.ResourceID }} </div>
                                 </td>
                                 <td data-ng-if="!item.IsUserInput">
@@ -546,18 +546,25 @@
                                 <td data-ng-if="item.IsUserInput" class="business-resource-codes" data-ng-class="{ inputError: getAndSetIsResourceValid(item.BusinessResourceID, BusinessResourceCodeModels) === false }">
                                     <div class="brc-wrapper">
 									    <div class="resource-selection bootstrap text skill-mix-padding">
-										    <input tabindex="{{tabindex + 2}}" type="text" data-ng-model="item.BusinessResourceID" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels  | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" typeahead-on-select="brcSelected($item, item)">
+										    <input tabindex="{{tabindex + 2}}" type="text" data-ng-model="item.BusinessResourceID" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels  | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="brc-input form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="2" typeahead-on-select="brcSelected($item, item)">
 									    </div>
                                         <div class="brc-padding">
-                                            <div class="brc-button add-row" data-ng-click="addRowForResource(item, moqType)" title="Add row for additional BRCs in resource">+</div>
+                                            <div class="brc-button add-row" data-ng-click="addRowForResource(item, moqType); sortCD(moqType);" title="Add row for additional BRCs in resource">+</div>
                                         </div>
                                         <div class="brc-padding">
                                             <div class="brc-button delete-row" data-ng-click="deleteRowForResource(item, moqType)" title="Delete row">X</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td>
-                                    <div id="cd-historical-hours" class="text skill-mix-numerical skill-mix-padding"> {{ item.HistoricalHours }} </div>
+                                <td data-ng-if="!item.IsUserInput">
+                                    <div class="text skill-mix-numerical skill-mix-padding"> {{ item.HistoricalHours }} </div>
+                                </td>
+                                <td  data-ng-if="item.IsUserInput" >
+                                    <div class="skill-mix-numerical skill-mix-padding">
+                                        <div>
+                                            <input type="number" maxlength="5" data-ng-blur="updateLaborSkillMix(item, moqType); setCommonDisclosureTotals(moqType);" id="cd-historical-hours" data-ng-model="item.HistoricalHours" />       
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>
                                     <div id="cd-labor-skill-mix" class="skill-mix-numerical skill-mix-padding">{{ item.LaborSkillMix * 100 | number: 2 }}%</div>
@@ -570,11 +577,11 @@
                                         <option data-ng-value="false">No</option>
                                     </select>
                                 </td>
-                                <td class="smboeskillmix" data-ng-class="{'inputError': item.Included === true && item.BOESkillMix === null }">
+                                <td class="smboeskillmix" data-ng-class="{'inputError': (item.Included === true && (item.BOESkillMix === null || item.BOESkillMix < 1))}">
                                     <div id="cd-boe-skill-mix" class="ScrollingLock" style="position: static; height: 16px;">
 										<div>
                                             <div class="float-left">
-                                                <input type="number" maxlength="6" data-ng-click="updateBoeSkillMixLock(item)" data-ng-blur="updateProposedHours(item); setCommonDisclosureTotals(moqType);" data-ng-model="item.BOESkillMix" data-ng-class="{'disabled': item.Included === null || item.Included === false || item.IsPercentLocked}" class="boeskillmix" />
+                                                <input type="number" data-ng-click="updateBoeSkillMixLock(item)" data-ng-blur="updateProposedHours(item); setCommonDisclosureTotals(moqType);" data-ng-model="item.BOESkillMix" ng-disabled="item.Included === null || item.Included === false || !item.IsPercentLocked" class="boeskillmix" />
                                             </div>
 										    <div>
 											    <img data-ng-if="item.Included === null || item.Included === false || item.IsPercentLocked" data-ng-click="updateBoeSkillMixLock(item)" class="LockImage UnLockImage" src="../../../../Resources/css/images/unlock_resource_toggle.png" title="Select lock for either Boe Skill Mix or Proposed Hours to maintain that value when the MOQ Equation is adjusted." />
@@ -587,7 +594,7 @@
                                     <div id="cd-proposed-hours" class="ScrollingLock" style="position: static; height: 16px;">
 										<div>
                                             <div class="float-left">
-                                                <input type="number" maxlength="255" data-ng-click="updateProposedHoursLock(item)" data-ng-blur="updateBOESkillMix(item); setCommonDisclosureTotals(moqType);" data-ng-model="item.ProposedHours" data-ng-class="{'disabled': item.Included === null || item.Included === false || !item.IsPercentLocked}" class="proposedhours" />
+                                                <input type="number" maxlength="255" data-ng-click="updateProposedHoursLock(item)" data-ng-blur="updateBOESkillMix(item); setCommonDisclosureTotals(moqType);" data-ng-model="item.ProposedHours" ng-disabled="item.Included === null || item.Included === false || !item.IsPercentLocked" class="proposedhours" />
                                             </div>
 										    <div>
 											    <img data-ng-if="item.Included === null || item.Included === false || !item.IsPercentLocked" data-ng-click="updateProposedHoursLock(item)" class="LockImage UnLockImage" src="../../../../Resources/css/images/unlock_resource_toggle.png" title="Select lock for either Boe Skill Mix or Proposed Hours to maintain that value when the MOQ Equation is adjusted." />
@@ -607,7 +614,7 @@
 									<div title="Total">Total</div>
 								</td>
 								<td></td>	
-								<td>
+								<td data-ng-class="{'inputError': moqType.HistoricalCommonDisclosureHoursTotal !== getTotalSMHistoricalHours(moqType) }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal | number: 1 }}</div>
 								</td>
 								<td>
@@ -615,7 +622,7 @@
 								</td>
 								<td></td>
 								<td data-ng-class="{'inputError': moqType.BoeCommonDisclosureTotal !== 100 }">
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeCommonDisclosureTotal | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeCommonDisclosureTotal }}%</div>
 								</td>
 								<td data-ng-class="{'inputError': moqType.ProposedCommonDisclosureHoursTotal !== getMOQTotal() }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.ProposedCommonDisclosureHoursTotal }}</div>

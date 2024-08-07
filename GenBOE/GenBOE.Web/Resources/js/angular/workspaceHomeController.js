@@ -10,25 +10,6 @@
         updateDate: 'UpdateDate'
     };
 
-    $scope.dialog = {
-        title: 'Import/Export BOEs',
-        open: false,
-        validBOEs: [],
-        file: null,
-        importWorking: false,
-        completeImportWorking: false,
-        showImportResults: false,
-        disableImport: true,
-        invalidData: false,
-        importResults: [],
-        importExport: '',
-        exportValue: 'Export',
-        importValue: 'Import',
-        exportSelect: '',
-        exportAllValue: 'ExportAllBoes',
-        exportSelectValue: 'SelectBoesToExport'
-    };
-
     $scope.filter = {
         wbs: {}, boe: {}, clin: {}, author: {}, approver: {}, status: {},
         filterColumn: '',
@@ -515,125 +496,9 @@
      * Functions below relate to the logic of the dialog import/export
      * ***************************************************************
      */
-    $scope.disableExportButton = function () {
-        // if we are exporting all then don't disable the button
-        if ($scope.dialog.exportSelect === $scope.dialog.exportAllValue) {
-            return false;
-        }
-
-        // if we find at least 1 item checked, don't disable the button
-        var foundSelectedBOEs = $scope.dialog.validBOEs.some(function (item) {
-            if (item.checked) {
-                return true;
-            }
-        });
-
-        return !foundSelectedBOEs;
-    };
-
+    
     $scope.disableValidBOE = function (item) {
         return angular.isDefined(item) && (item.isMaterial || item.state != WorkspaceHomeModel.draftState);
-    };
-
-    $scope.fileUploadChange = function (element) {
-        $scope.$apply(function($scope) {
-            $scope.dialog.disableImport = element.value.endsWith('.xlsm') ? false : true;
-            $scope.dialog.file = $scope.dialog.disableImport ? null : element.files[0];
-        });
-    };
-
-    $scope.exportBOEs = function () {
-        // remove old iframe
-        $('#DownloadTarget-ExportBOE').remove();
-
-        // export all boes
-        if ($scope.dialog.exportSelect === $scope.dialog.exportAllValue) {
-            // Create a new hidden iFrame and set it's source to the chosen report's URL
-            var targetIFrame = $('<iframe />', {
-                'id': 'DownloadTarget-ExportBOE',
-                'class': 'display-none',
-                'src': CreatePostURL(WorkspaceHomeModel.workspace, WorkspaceHomeModel.controller, WorkspaceHomeModel.exportAllAction, '')
-            });
-            // Append the iFrame to the body, causing the controller action to fire and
-            // the download to occur inside the iFrame
-            targetIFrame.appendTo('body');
-        } else if ($scope.dialog.exportSelect === $scope.dialog.exportSelectValue) {
-            // gather up selected BOEs
-            var selectedBoeIDs = [];
-            $scope.dialog.validBOEs.forEach(function (item) {
-                if (item.checked) {
-                    selectedBoeIDs.push(item.BoeID);
-                }
-            });
-
-            // Create a new hidden iFrame and set it's source to the chosen report's URL
-            var targetIFrame = $('<iframe />', {
-                'id': 'DownloadTarget-ExportBOE',
-                'class': 'display-none',
-                'src': CreatePostURL(WorkspaceHomeModel.workspace, WorkspaceHomeModel.controller, WorkspaceHomeModel.exportSelectAction, selectedBoeIDs)
-            });
-            // Append the iFrame to the body, causing the controller action to fire and
-            // the download to occur inside the iFrame
-            targetIFrame.appendTo('body');
-        }
-
-        $scope.toggleImportExport();
-    };
-
-    $scope.importBOEs = function () {
-        if (!$scope.dialog.disableImport) {
-            // create form data
-            var fd = new FormData();
-            fd.append("file", $scope.dialog.file);
-
-            // get url from form
-            var url = $('#ImportExportBoesDialog-Form').attr('action');
-            $scope.dialog.importWorking = true;
-
-            $http.post(url, fd, {
-                headers: {
-                    'Content-Type': undefined
-                }
-            }).then(function (response) {
-                $scope.dialog.importWorking = false;
-                $scope.dialog.showImportResults = true;
-
-                // place returned html into the content div
-                $('#ImportResults .content').html(response.data);
-
-                // grab the two values returned as JS inside the new html
-                $timeout(function () {
-                    $scope.dialog.invalidData = window.WorkspaceHomeWorkofflineImportVerificationWidget.invalidData;
-                    $scope.dialog.importResults = window.WorkspaceHomeWorkofflineImportVerificationWidget.importResults;
-                }, 0);
-            });
-        }
-    };
-
-    $scope.completeImportBOEs = function () {
-        $scope.dialog.completeImportWorking = true;
-
-        $http({
-            method: 'POST',
-            url: CreatePostURL(WorkspaceHomeModel.workspace, WorkspaceHomeModel.controller, WorkspaceHomeModel.importAction, ''),
-            data: JSON.stringify($scope.dialog.importResults)
-        }).then(function () {
-            $scope.toggleImportExport();
-            loadBOEs();
-            RaiseNotification('Import Successful');
-        }).catch(function () {
-            $scope.toggleImportExport();
-            loadBOEs();
-            RaiseNotification('Import Failed');
-        }).finally(function () {
-            $scope.backFromImport();
-        });
-    };
-
-    // clicking back from import results
-    $scope.backFromImport = function () {
-        resetUploadForm();
-        $scope.dialog.showImportResults = false;
     };
 
     /*
@@ -752,17 +617,5 @@
         });
     }    
 
-    var loadValidBOEs = function () {
-        $scope.dialog.validBOEs = [];
-
-        return $http({
-            method: 'POST',
-            url: CreatePostURL(WorkspaceHomeModel.workspace, WorkspaceHomeModel.controller, WorkspaceHomeModel.loadValidBOEsAction, '')
-        }).then(function (response) {
-            $scope.dialog.validBOEs = response.data;
-        });
-    };
-
-    // load the main data then load the valid BOEs for the import/export dialog
-    loadBOEs().then(loadValidBOEs);
+    loadBOEs();
 }]);

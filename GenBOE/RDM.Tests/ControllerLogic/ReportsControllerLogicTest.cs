@@ -189,7 +189,7 @@ namespace RDM.Tests.ControllerLogic
         /// Test GenerateFullPPRD for an invalid Id string
         /// </summary>
         [TestMethod, ExpectedException(typeof(ArgumentException))]
-        public void TestGenerateFullPPRD_InvalidId()
+        public async Task TestGenerateFullPPRD_InvalidId()
         {
             ReportsControllerLogic sut = this.CreateSut();
 
@@ -198,14 +198,14 @@ namespace RDM.Tests.ControllerLogic
             string serverFileName = "TestFile";
             Mock<HttpResponseBase> httpResponse = new Mock<HttpResponseBase>();
 
-            sut.GenerateFullPPRD(id, serverFileName, httpResponse.Object, portionMarkingRequired);
+            await sut.GenerateFullPPRD(id, serverFileName, httpResponse.Object, portionMarkingRequired);
         }
 
         /// <summary>
         /// Test GenerateFullPPRD for a null Id
         /// </summary>
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
-        public void TestGenerateFullPPRD_NullId()
+        public async Task TestGenerateFullPPRD_NullId()
         {
             ReportsControllerLogic sut = this.CreateSut();
 
@@ -213,7 +213,7 @@ namespace RDM.Tests.ControllerLogic
             string serverFileName = "TestFile";
             Mock<HttpResponseBase> httpResponse = new Mock<HttpResponseBase>();
 
-            sut.GenerateFullPPRD(null, serverFileName, httpResponse.Object, portionMarkingRequired);
+            await sut.GenerateFullPPRD(null, serverFileName, httpResponse.Object, portionMarkingRequired);
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace RDM.Tests.ControllerLogic
             this.sectionLoader.Setup(x => x.GetAll(revision, false, null, It.IsAny<string>())).Returns(new Collection<SectionModelView>());
             this.rateDetailLoader.Setup(x => x.GetRatesByRevision(revision)).Returns(new Collection<RateDetailModelView>());
             this.cobraDetailLoader.Setup(x => x.GetCobraDetailsByRevision(revision)).Returns(new Collection<CobraDetailModelView>());
-            this.burdenPoolLoader.Setup(x => x.GetByRevision(revision.Id)).Returns(new BurdenPoolGridModelView());
+            this.burdenPoolLoader.Setup(x => x.GetByRevision(revision.Id, It.IsAny<bool>())).Returns(new BurdenPoolGridModelView());
 
             sut.ExportRevisionAsJson(id, serverFileName);
 

@@ -145,7 +145,6 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
 		/// <param name="securityInformation">Pick List loader for Contract Types</param>
-		/// <par
 		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, ISecurityInformation securityInformation, ITMResourceRateDTODataLoader tmResourceRateLoader, TMCalculator tmCalculator)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
@@ -687,7 +686,7 @@ namespace GenBOE.Web.Controllers
 				bool isAdmin = this.securityInformation.IsSystemOrSubcontractAdmin(ntid);
 
 				if (!isAdmin)
-				{
+				{ 
 					throw new UnauthorizedAccessException();
 				}
 

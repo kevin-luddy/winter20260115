@@ -51,6 +51,7 @@ AS
 **		7/11/24		e405721				PROPH-2156: Update Copy Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
 **		07/11/24	twilson3			proph-2166 Missing Columns
 **		07/12/24	twilson3			proph-2019 Fix @Temp Table definitions
+**		07/30/24	e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2145,6 +2146,7 @@ BEGIN TRY
 	(
 		[MOQTypeSelectionTableDataResourceHoursId] [int] NOT NULL,
 		[ResourceName] varchar(20) NULL,
+		[BRCName] varchar(20) NULL,
 		[WbsHours] decimal(11,2) NOT NULL,
 		[TotalHours] decimal(11,2) NOT NULL,
 		[MOQTypeSelectionTableDataId] [int] NOT NULL,
@@ -2159,6 +2161,7 @@ BEGIN TRY
 	SELECT
 		M.[MOQTypeSelectionTableDataResourceHoursId],
 		M.[ResourceName],
+		M.[BRCName],
 		M.[WbsHours],
 		M.[TotalHours],
 		M.[MOQTypeSelectionTableDataId],
@@ -2180,6 +2183,7 @@ BEGIN TRY
 	SELECT TOP 1 @MOQTypeSelectionTableDataResourceHoursId = MOQTypeSelectionTableDataResourceHoursId FROM @MOQTypeSelectionTableDataResourceHours WHERE Processed = 0
 	INSERT INTO [dbo].[MOQTypeSelectionTableDataResourceHours]
 				([ResourceName],
+				[BRCName],
 				[WbsHours],
 				[TotalHours],
 				[MOQTypeSelectionTableDataId],
@@ -2188,6 +2192,7 @@ BEGIN TRY
 				)
 	SELECT
 		[ResourceName],
+		[BRCName],
 		[WbsHours],
 		[TotalHours],
 		[NewMOQTypeSelectionTableDataId],

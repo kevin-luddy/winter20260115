@@ -89,20 +89,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <returns></returns>
 		ICollection<ResourceDTO> GetFilteredOtherWorkspaceResources(IReadOnlyCollection<ResourceDTO> inWorkspaceResources);
 
-		/// <summary>
-		/// Get a collection of ModelView objects for BOEs that are potential candidates for Workoffline export.
-		/// </summary>
-		/// <param name="workspace">The <see cref="FullWorkspace"/> object</param>
-		/// <returns></returns>
-		ICollection<ExportBOEModelView> GetExportBOEModelData(FullWorkspace workspace);
-
-		/// <summary>
-		/// Return true, if user can export boe.
-		/// </summary>
-		/// <param name="isAuthor">A boolean idicating if this is an author</param>
-		/// <param name="isWorkspaceAdmin">This parameter is ignored in IS&amp;GS mode.</param>
-		/// <returns></returns>
-		bool CanExportBoeForWorkoffline(bool isAuthor, bool isWorkspaceAdmin);
 		WorkspaceResourceRateTMModelView CreateWorkspaceResourceRateTMModelView();
 		WorkspaceResourceRateTMModelView CreateWorkspaceResourceRateTMModelView(TMResourceRateDTO resourceRateDTO, ResourceDTO workspaceResourceDTO, bool inUse);
 
@@ -113,14 +99,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="workspaceId">The workspace Id.</param>
 		/// <returns>Model Views for the Custom Fields grid</returns>
 		ICollection<BOECustomFieldsGridModelView> GetCustomFieldsGridModelViews(ICollection<CustomFieldDTO> customFields, int workspaceId);
-
-		/// <summary>
-		/// Takes a ModelView object and persists the data contained
-		/// </summary>
-		/// <param name="importedData">ModelView containing the import data</param>
-		/// <param name="workspace">Workspace to import data into</param>
-		/// <returns></returns>
-		bool CompleteImportWorkspaceFromExcel(ImportWorkofflineResultsModelView importedData, FullWorkspace workspace);
 
 		/// <summary>
 		/// Gets the default ExcelReportTemplateType for a new workspace

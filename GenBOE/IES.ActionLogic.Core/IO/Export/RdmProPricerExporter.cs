@@ -593,7 +593,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			ICollection<IProPricerExportModelView> toReturn = new Collection<IProPricerExportModelView>();
 			// get the index of the "G&A T2" (Services G&A) column, as it requires special handling below
 			BurdenElementModelView burdenElement = BurdenElements.Single(x => x.Name == "G&A T2");
-			List<BurdenElementModelView> orderedList = BurdenElements.OrderBy(x => x.DisplayOrder).ToList();
+			List<BurdenElementModelView> orderedList = BurdenElements.ToList();
 			int gat2BurdenElementIndex = orderedList.IndexOf(burdenElement);
 			List<int> fccomIndices = new();
 			for (int i = 0; i < orderedList.Count; i++)
@@ -611,7 +611,7 @@ namespace IES.ActionLogic.Core.IO.Export
 				Description = "Description",
 				EffectiveDate = "Effective Date",
 				Date = "Date",
-				Rates = BurdenElements.OrderBy(x => x.DisplayOrder).Select(bp => bp.Name).ToList()
+				Rates = BurdenElements.Select(bp => bp.Name).ToList()
 			});
 
 			foreach (BurdenPoolDetailModelView burdenPool in BurdenPools)

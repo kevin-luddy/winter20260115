@@ -29,17 +29,18 @@ namespace IES.DataBridge.Loaders
             this.Log = new Logger(typeof(BurdenPoolLoader));
         }
 
-        #endregion
+		#endregion
 
-        #region Retrieves
+		#region Retrieves
 
-        /// <summary>
-        /// BurdenPoolGridModelView GetByRevision
-        /// </summary>
-        /// <param name="revisionId">int</param>
-        /// <returns>BurdenPoolGridModelView</returns>
-        public BurdenPoolGridModelView GetByRevision(int revisionId)
-        {
+		/// <summary>
+		/// BurdenPoolGridModelView GetByRevision
+		/// </summary>
+		/// <param name="revisionId">int</param>
+		/// <param name="isLegacy">Return only legacy burden pools</param>
+		/// <returns>BurdenPoolGridModelView</returns>
+		public BurdenPoolGridModelView GetByRevision(int revisionId, bool isLegacy = false)
+		{
             BurdenPoolGridModelView result = new BurdenPoolGridModelView();
 
             using (StopwatchTimer sw = new StopwatchTimer(this.Log))
@@ -64,9 +65,10 @@ namespace IES.DataBridge.Loaders
                                 Id = e.ID,
                                 DisplayOrder = e.DisplayOrder,
                                 Name = e.BurdenElement,
-                                Description = e.Description
+                                Description = e.Description,
+								DisplayOrder1LMX = e.DisplayOrder1LMX
                             })
-                        .OrderBy(e => e.DisplayOrder)
+                        .OrderBy(e => e.DisplayOrder1LMX)
                         .ToList();
 
                     // Get Burden Pools and Mappings.
@@ -94,7 +96,18 @@ namespace IES.DataBridge.Loaders
                                 }).ToList()
                         }).ToList();
 
-                    result = this.AddProPricerMapping(result);
+					if (isLegacy)
+					{
+						// only return Legacy Burden Pools for Legacy ProPricer Export format
+						result.BurdenElements = result.BurdenElements.Where(b => b.DisplayOrder > 0).OrderBy(x => x.DisplayOrder).ToList();
+						HashSet<int> burdenElementIds = result.BurdenElements.Select(b => b.Id).ToHashSet<int>();
+						foreach (BurdenPoolDetailModelView burdenPool in result.BurdenPools)
+						{
+							burdenPool.BurdenElementRateCodeMappings = burdenPool.BurdenElementRateCodeMappings.Where(b => burdenElementIds.Contains(b.BurdenElementId)).ToList();
+						}
+					}
+
+					result = this.AddProPricerMapping(result);
 
                     return result;
                 }
