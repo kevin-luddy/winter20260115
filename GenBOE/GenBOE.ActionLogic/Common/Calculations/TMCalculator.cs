@@ -115,10 +115,10 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		public void GetBOETotals<T>(BOETotalsPostModel postModel, IESResponse<T> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
 		{
 			Type type = typeof(T);
-			switch (type.FullName) 
+			switch (type.FullName)
 			{
 				case "PBOERow":
-					GetPBOETotals(postModel, result as IESResponse<PBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader); 
+					GetPBOETotals(postModel, result as IESResponse<PBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
 					break;
 				case "IBOERow":
 					GetIBOETotals(postModel, result as IESResponse<IBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
@@ -507,7 +507,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				rowList.Add(new PBOERow
 				{
 					PBOEId = pboe.Id,
-					PBOEName = string.Empty,
+					FormName = string.Empty,
 					Cost = totalCost,
 					TMCost = tmTotalCost,
 					TotalCost = totalCost + tmTotalCost,

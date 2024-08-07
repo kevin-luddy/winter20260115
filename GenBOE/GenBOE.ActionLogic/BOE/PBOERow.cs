@@ -6,6 +6,8 @@
 
 namespace GenBOE.ActionLogic.BOE
 {
+	using System;
+
 	/// <summary>
 	/// Row Data for PBOE used for PBOE Table on NLF
 	/// </summary>
@@ -19,7 +21,7 @@ namespace GenBOE.ActionLogic.BOE
 		/// <summary>
 		/// PBOE Name
 		/// </summary>
-		public string PBOEName { get; set; }
+		public string FormName { get; set; }
 
 		/// <summary>
 		/// Cost - Total Cost in calculations
@@ -35,5 +37,15 @@ namespace GenBOE.ActionLogic.BOE
 		/// Total Cost => Cost + T&M Cost
 		/// </summary>
 		public decimal TotalCost { get; set; }
+
+		/// <summary>
+		/// Update Date of the BOE
+		/// </summary>
+		public DateTime UpdateDT { get; set; }
+
+		/// <summary>
+		/// BOE Validation Status
+		/// </summary>
+		public string ValidationStatus { get; set; }
 	}
 }

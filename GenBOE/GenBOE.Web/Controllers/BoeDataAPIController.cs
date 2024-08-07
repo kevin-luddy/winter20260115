@@ -1199,13 +1199,10 @@ namespace GenBOE.Web.Controllers
 
 					foreach (WorkspaceDTO ws in workspaces)
 					{
-						if (ws.IsUsingTM)
-						{
-							// Get Prerequisite Data
-							FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws);
-							ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(ws.ResourceListID);
-							tmCalculator.GetBOETotals<PBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
-						}
+						// Get Prerequisite Data
+						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws);
+						ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(ws.ResourceListID);
+						tmCalculator.GetBOETotals<PBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
 					}
 
 					result.IsSuccessful = true;
