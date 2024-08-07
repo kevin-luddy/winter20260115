@@ -751,7 +751,7 @@ namespace GenBOE.Web.Controllers
 					Value = ((int)projectMapTypeValue).ToString()
 				});
 			}
-			model.ProjectMapTypes = projectMapTypes;
+			model.ProjectMapTypes = projectMapTypes.Where(x => !x.Text.Equals(Constants.PROJECT_TYPE_MAP_STANDARD_WITH_OFFLOAD)).ToList();
 			model.LineOfBusinessTypes = this.boePickListMapper.GetPickListValues(PickListEnum.LineOfBusiness).PickLists;
 			model.ProposalClassTypes = this.boePickListMapper.GetPickListValues(PickListEnum.ProposalClass).PickLists;
 			model.ContractTypes = this.boePickListMapper.GetPickListValues(PickListEnum.ContractType).PickLists;
