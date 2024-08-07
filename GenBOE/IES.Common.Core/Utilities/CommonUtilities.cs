@@ -402,9 +402,7 @@ namespace IES.Common.Core.Utilities
 			}
 			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
-				// Since Space does not have link yet the next line of code is replaced with plain text from config file
-				//supportLink = "<a href=\"" + Utilities.ServiceCentralLinkSpaceSystems() + "\" target=\"_blank\">" + "Service Central Space Ticket</a>";
-				supportLink = ConfigurationUtilities.GetAppSetting("ServiceCentralLinkSpaceSystems");
+				supportLink = "<a href=\"mailto:" + ConfigurationUtilities.GetAppSetting("ServiceCentralLinkSpaceSystems") + "\">" + "Service Central Space Email</a>";
 			}
 
 			return supportLink;
