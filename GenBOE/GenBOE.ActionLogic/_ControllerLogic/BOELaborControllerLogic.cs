@@ -4095,7 +4095,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="commonDisclosureSMData">The current skill mix data</param>
 		/// <param name="resourceHours">The MOQ Table Resource Hours</param>
-		/// Also pass in the refresh common disclosure into this method, do a select and a .first (only for space)
 		public ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData,
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours)
 		{
@@ -4181,7 +4180,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							//no mapping (or mapping deleted?) so persist the old rows and make sure user input is true
 							foreach (CommonDisclosureModelView oldRow in foundOldRows)
 							{
-							string tempBusinessResourceID = resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault();
+								string tempBusinessResourceID = resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault();
 								newTable.Add(
 									new CommonDisclosureModelView
 									{
@@ -4247,8 +4246,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								);
 						}
 					}
-
-
 				}
 			}
 			return newTable;
