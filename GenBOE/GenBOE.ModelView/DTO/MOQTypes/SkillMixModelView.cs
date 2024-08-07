@@ -12,11 +12,19 @@ namespace GenBOE.ActionLogic.ModelView
 	[Serializable]
 	public class SkillMixModelView : SkillMixDTO
     {
+		/// <summary>
+		/// Ctor
+		/// </summary>
 		public SkillMixModelView()
 		{
 		}
 
-        public SkillMixModelView(SkillMixDTO skillMixDTO)
+		/// <summary>
+		/// Should the Included dropdown be disabled?
+		/// </summary>
+		public bool ShouldIncludedBeDisabled { get; set; } = true;
+
+		public SkillMixModelView(SkillMixDTO skillMixDTO)
         {
 			if (skillMixDTO != null)
 			{

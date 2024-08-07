@@ -1499,12 +1499,24 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		// Get all the data tables
 		const data = {
 			currentSkillMixData: [],
-			commonDisclosureSMData: []
+			commonDisclosureSMData: [],
+			resourceHours: []
 		};
 
 		data.boeId = ManageTaskModel.boeId;
 		data.currentSkillMixData = moqType.SkillMixTable;
 		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
+
+		if (moqType.TableData) {
+			moqType.TableData.forEach(tableData => {
+				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+
+					tableData.ResourceHours.forEach(hours => {
+						data.resourceHours.push(hours);
+					});
+				}
+			});
+		}
 
 		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
 			// send to backend

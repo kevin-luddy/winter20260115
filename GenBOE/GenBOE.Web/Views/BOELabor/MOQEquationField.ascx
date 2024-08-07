@@ -455,7 +455,7 @@
                                 </td>
                                 <td data-ng-class="{'inputError': item.Included == null }">
                                     <!-- when included is yes, add row to common disclosure table, will need to do other stuff later -->
-                                    <select class="skill-mix-padding" data-ng-model="item.Included" data-ng-change="updateBOESkillMixFromIncludedChange(item); refreshCommonDisclosureTable(moqType); setSkillMixTotals(moqType);">
+                                    <select class="skill-mix-padding" ng-disabled="item.ShouldIncludedBeDisabled" data-ng-model="item.Included" data-ng-change="updateBOESkillMixFromIncludedChange(item); refreshCommonDisclosureTable(moqType); setSkillMixTotals(moqType);">
                                         <option data-ng-value="null"></option>
                                         <option data-ng-value="true">Yes</option>
                                         <option data-ng-value="false">No</option>
