@@ -414,7 +414,8 @@
                         <thead>
                             <tr>
                                 <th data-ng-show="model.IsRMS" class="resource">Resource</th>
-                                <th class="current-resource-id">Current Resource</th>
+                                <th data-ng-if="model.IsRMS" class="current-resource-id">Current Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>){{IsBRCEnabled ? '&#10013;' : '*'}}</th>
+                                <th data-ng-if="!model.IsRMS" class="current-resource-id">Current Resource</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
                                 <th class="included">Included *</th>
