@@ -77,7 +77,7 @@
                     <%--Form is needed so that the old error messages work--%>
                     <% Html.BeginForm("", "", FormMethod.Post, new { id = "CreateWorkspaceForm", name = "CreateWorkspaceForm" }); %>
                     <div class="wizard-breadcrumb" id="CreateWorkspace-Breadcrumb">
-                        <span data-ng-click="step == 1 || goToStep(1)" data-ng-class="{'prev-step': step> 1, 'current-step': step == 1}">Workspace Type aklsjflk</span> 
+                        <span data-ng-click="step == 1 || goToStep(1)" data-ng-class="{'prev-step': step> 1, 'current-step': step == 1}">Workspace Type</span> 
                         <span data-ng-show='data.IsAttemptingToImport'>&gt; <span data-ng-click="step<= 2 || goToStep(2)" data-ng-class="{'prev-step': step> 2, 'current-step': step == 2}">Search & Copy Existing Workspace</span> </span>
                         <span data-ng-hide="data.IsAttemptingToImport && data.WSExactCopy">&gt; <span data-ng-click="step<= 3 || goToStep(3)" data-ng-class="{'prev-step': step> 3, 'current-step': step == 3}">Workspace Identification</span> &gt; 
                         <span data-ng-click="step<= 4 || goToStep(4)" data-ng-class="{'prev-step': step> 4, 'current-step': step == 4}">Share &amp; Allow Search Settings</span> </span>&gt; 

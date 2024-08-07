@@ -113,7 +113,7 @@
 		$scope.step = newStep;
 		switch ($scope.step) {
 			case 1:
-				$scope.model.stepTitle = 'Workspace Type asdf';
+				$scope.model.stepTitle = 'Workspace Type';
 				$scope.model.showOCINote = false;
 				$scope.model.showBackButton = false;
 				break;
