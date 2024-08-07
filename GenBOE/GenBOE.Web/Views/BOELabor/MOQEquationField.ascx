@@ -414,7 +414,8 @@
                         <thead>
                             <tr>
                                 <th data-ng-show="model.IsRMS" class="resource">Resource</th>
-                                <th class="current-resource-id">Current Resource</th>
+                                <th data-ng-if="model.IsRMS" class="current-resource-id">Current Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>){{IsBRCEnabled ? '&#10013;' : '*'}}</th>
+                                <th data-ng-if="!model.IsRMS" class="current-resource-id">Current Resource</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
                                 <th class="included">Included *</th>
@@ -551,7 +552,7 @@
                                         <div class="brc-padding">
                                             <div class="brc-button add-row" data-ng-click="addRowForResource(item, moqType); sortCD(moqType);" title="Add row for additional BRCs in resource">+</div>
                                         </div>
-                                        <div class="brc-padding">
+                                        <div data-ng-if="canDelete(item, moqType)" class="brc-padding">
                                             <div class="brc-button delete-row" data-ng-click="deleteRowForResource(item, moqType)" title="Delete row">X</div>
                                         </div>
                                     </div>
@@ -562,7 +563,7 @@
                                 <td  data-ng-if="item.IsUserInput" >
                                     <div class="skill-mix-numerical skill-mix-padding">
                                         <div>
-                                            <input type="number" maxlength="5" data-ng-blur="updateLaborSkillMix(item, moqType); setCommonDisclosureTotals(moqType);" id="cd-historical-hours" data-ng-model="item.HistoricalHours" />       
+                                            <input type="number" step="0.1" maxlength="5" data-ng-blur="updateLaborSkillMix(item, moqType); setCommonDisclosureTotals(moqType);" id="cd-historical-hours" data-ng-model="item.HistoricalHours" />       
                                         </div>
                                     </div>
                                 </td>

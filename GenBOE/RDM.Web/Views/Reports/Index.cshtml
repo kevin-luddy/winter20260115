@@ -131,14 +131,30 @@
                         <tr data-ng-hide="!data.AdminUser">
                             <td>
                                 <div class="row">
-                                    Export a ProPricer rate file for selected revision.
+                                    Export a Legacy ProPricer rate file for selected revision.
                                     <button class="ies-action floatRight"
                                             id="Export-ProPricer2"
                                             type="button"
                                             data-ng-disabled="isExportingProPricer"
-                                            data-ng-click="exportProPricerClick()"
+                                            data-ng-click="exportProPricerClick(true)"
                                             style="min-width: 280px ">
-                                        <div id="Export-ProPricerText" data-ng-hide="isExportingProPricer">Export ProPricer Rates</div>
+                                        <div id="Export-ProPricerText" data-ng-hide="isExportingProPricer">Export Legacy ProPricer Rates</div>
+                                        <div id="Export-ProPricer" data-ng-show="isExportingProPricer" class="loader button-loader"></div>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-ng-hide="!data.AdminUser">
+                            <td>
+                                <div class="row">
+                                    Export a 1LMX ProPricer rate file for selected revision.
+                                    <button class="ies-action floatRight"
+                                            id="Export-ProPricer2"
+                                            type="button"
+                                            data-ng-disabled="isExportingProPricer"
+                                            data-ng-click="exportProPricerClick(false)"
+                                            style="min-width: 280px ">
+                                        <div id="Export-ProPricerText" data-ng-hide="isExportingProPricer">Export 1LMX ProPricer Rates</div>
                                         <div id="Export-ProPricer" data-ng-show="isExportingProPricer" class="loader button-loader"></div>
                                     </button>
                                 </div>
