@@ -1110,6 +1110,10 @@
           "totalHours": {
             "type": "number",
             "format": "double"
+          },
+          "brc": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

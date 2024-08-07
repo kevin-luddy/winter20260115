@@ -4124,7 +4124,7 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test ValidateSkillMixTable and ValidateCommonDisclosureSkillMixTable within ValidateTemplateMoqForTask for a successful Skill Mix Table
+		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a successful Skill Mix Table
 		/// </summary>
 		[TestMethod]
 		public void BL_ValidateTemplateMoqForTask_SkillMixTable_Success()
@@ -4165,14 +4165,6 @@ namespace GenBOE.Tests.ActionLogic
 						BOESkillMix = 100,
 						Rationale = "Test Skill Mix Table Rationale"
 					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						Included = false,
-						Rationale = "Common Disclosure Skill Mix Table test for Rationale"
-					}
 				}
 			};
 
@@ -4188,7 +4180,7 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test ValidateSkillMixTable and ValidateCommonDisclosureSkillMixTable within ValidateTemplateMoqForTask for a Rationale in the Skill Mix Table being over the maximum length
+		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a Rationale in the Skill Mix Table being over the maximum length
 		/// </summary>
 		[TestMethod]
 		public void BL_ValidateTemplateMoqForTask_SkillMixTable_RationaleMaxLength()
@@ -4230,14 +4222,6 @@ namespace GenBOE.Tests.ActionLogic
 						// 256 characters, 1 over the limit of 255
 						Rationale = "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches."
 					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						Included = false,
-						Rationale = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,."
-					}
 				}
 			};
 
@@ -4250,11 +4234,11 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
 
 			Assert.IsTrue(result.Any());
-			Assert.AreEqual(2, result.Count);
+			Assert.AreEqual(1, result.Count);
 		}
 
 		/// <summary>
-		/// Test ValidateSkillMixTable and ValidateCommonDisclosureSkillMixTable within ValidateTemplateMoqForTask for a missing required Rationale in the Skill Mix Table
+		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a missing required Rationale in the Skill Mix Table
 		/// </summary>
 		[TestMethod]
 		public void BL_ValidateTemplateMoqForTask_SkillMixTable_MissingRationale()
@@ -4295,14 +4279,6 @@ namespace GenBOE.Tests.ActionLogic
 						Rationale = string.Empty,
 						BOESkillMix = 100
 					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						Included = false,
-						Rationale = string.Empty
-					}
 				}
 			};
 
@@ -4315,11 +4291,11 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
 
 			Assert.IsTrue(result.Any());
-			Assert.AreEqual(2, result.Count);
+			Assert.AreEqual(1, result.Count);
 		}
 
 		/// <summary>
-		/// Test ValidateSkillMixTable and ValidateCommonDisclosureSkillMixTable within ValidateTemplateMoqForTask for a missing Rationale in the Skill Mix Table when not required on task save
+		/// Test ValidateSkillMixTable within ValidateTemplateMoqForTask for a missing Rationale in the Skill Mix Table when not required on task save
 		/// </summary>
 		[TestMethod]
 		public void BL_ValidateTemplateMoqForTask_SkillMixTable_MissingRationaleNotRequired()
@@ -4359,14 +4335,6 @@ namespace GenBOE.Tests.ActionLogic
 						Included = false,
 						Rationale = string.Empty,
 						BOESkillMix = 100
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						Included = false,
-						Rationale = string.Empty
 					}
 				}
 			};
@@ -4610,6 +4578,858 @@ namespace GenBOE.Tests.ActionLogic
 
 			Assert.IsTrue(result.Any());
 			Assert.AreEqual(1, result.Count);
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for a successful Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_Success()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						BusinessResourceID = "testBRC",
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsFalse(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for BRC missing Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_MissingBRC()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count());
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for unique Resource to BRC combos in Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_UniqueResourceBRCCombo()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						ResourceID = "CD 1",
+						BusinessResourceID = "testBRC",
+						BOESkillMix = 50,
+						Rationale = "Good Rationale",
+						Included = true
+					},
+					new CommonDisclosureModelView()
+					{
+						ResourceID = "CD 1",
+						BusinessResourceID = "testBRC",
+						BOESkillMix = 50,
+						Rationale = "Good Rationale",
+						Included = true
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count());
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for a Rationale in the Common Disclosure Table being over the maximum length
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_RationaleMaxLength()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true,
+						ProposedHours = 50
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						BusinessResourceID = "testBRC",
+						Included = true,
+						BOESkillMix = 100,
+						// 256 characters, 1 over the limit of 255
+						Rationale = "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches."
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for a missing required Rationale in the Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_MissingRationale()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true,
+						ProposedHours = 50
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						BusinessResourceID = "testBRC",
+						Included = false,
+						Rationale = string.Empty,
+						BOESkillMix = 50
+					},
+					new CommonDisclosureModelView()
+					{
+						BusinessResourceID = "testBRC1",
+						Included = true,
+						Rationale = "test",
+						BOESkillMix = 50
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for a missing Rationale in the Common Disclosure Table when not required on task save
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_MissingRationaleNotRequired()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true,
+						ProposedHours = 50
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						BusinessResourceID = "testBRC",
+						Included = true,
+						Rationale = string.Empty,
+						BOESkillMix = 100
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// if onButtonPress is false for ValidateTemplateMoqForTask, rationale is not required so we expect no errors
+			Assert.IsFalse(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for at least one row included in the Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_AtLeastOneIncluded()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true,
+						ProposedHours = 50
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						ResourceID = "CD 1",
+						BusinessResourceID = "testBRC",
+						Included = false,
+						Rationale = "test",
+						BOESkillMix = 50
+					},
+					new CommonDisclosureModelView()
+					{
+						ResourceID = "CD 1",
+						BusinessResourceID = "testBRC1",
+						Included = false,
+						Rationale = "test",
+						BOESkillMix = 50
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+			Assert.IsTrue(result.Contains("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for a missing required Rationale in the Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_MissingIncluded()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true,
+						ProposedHours = 50
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						ResourceID = "CD 1",
+						BusinessResourceID = "testBRC",
+						Included = null,
+						Rationale = "test",
+						BOESkillMix = 100
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(2, result.Count);
+			Assert.IsTrue(result.Contains("Common Disclosure Skill Mix Table: Included is missing for CD 1."));
+			Assert.IsTrue(result.Contains("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for a missing required BoeSkillMix in the Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_MissingBoeSkillMix()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						ResourceID = "CD 1",
+						BusinessResourceID = "testBRC",
+						Included = true,
+						Rationale = "test",
+						BOESkillMix = null,
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(2, result.Count);
+			Assert.IsTrue(result.Contains("Common Disclosure Skill Mix Table: BOE Skill Mix is missing for CD 1."));
+			Assert.IsTrue(result.Contains("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for a incorrect BoeSkillMix Total in the Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_IncorrectBoeSkillMixTotal()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						BusinessResourceID = "testBRC",
+						Included = true,
+						Rationale = "test",
+						BOESkillMix = 20,
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for a incorrect Proposed hours Total in the Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_IncorrectProposedHoursTotal()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true,
+						ProposedHours = 50
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						BusinessResourceID = "testBRC",
+						Included = true,
+						Rationale = "test",
+						BOESkillMix = 100,
+						ProposedHours = 40
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true, 50);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+		}
+
+		/// <summary>
+		/// Test ValidateCommonDisclosureTable within ValidateTemplateMoqForTask for historical hours in Common Disclosure Table
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_CommonDisclosureTable_HistoricalHours()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+			Utilities.IsSkillMixEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.WEEKLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 2), // Sunday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
+				SkillMixTable = new Collection<SkillMixModelView>()
+				{
+					new SkillMixModelView()
+					{
+						ResourceNew = "CD 1",
+						BOESkillMix = 100,
+						Rationale = "Good Rationale",
+						Included = true,
+						HistoricalHours = 100
+					}
+				},
+				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
+				{
+					new CommonDisclosureModelView()
+					{
+						ResourceID = "CD 1",
+						BusinessResourceID = "testBRC",
+						BOESkillMix = 50,
+						Rationale = "Good Rationale",
+						Included = true,
+						HistoricalHours = 49
+					},
+					new CommonDisclosureModelView()
+					{
+						ResourceID = "CD 1",
+						BusinessResourceID = "testBRC1",
+						BOESkillMix = 50,
+						Rationale = "Good Rationale",
+						Included = true,
+						HistoricalHours = 17
+					}
+				}
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new Collection<MoqTypeSelection>() { moqType });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count());
 		}
 	}
 }

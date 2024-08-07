@@ -23,8 +23,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 				if ($scope.model.CommonDisclosureEnabled) {
 					$scope.setCommonDisclosureTotals(e);
+					$scope.refreshResourceGroupColors(e);
 				}
-
 				return e.SelectedMOQType.toString();
 			}), function (id) {
 				$scope.InitializeRteFields(id);
@@ -1115,7 +1115,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								tableData.DateOfReport = new Date();
 								tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
 								tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
-								tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours }));
+								tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
 								
 								// this is RMS only
 								if (!ManageTaskModel.IsSpace) {
@@ -1325,7 +1325,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 										tableData.DateOfReport = new Date();
 										tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
 										tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
-										tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours }));
+										tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
 
 										// this is RMS only
 										if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
@@ -1466,6 +1466,33 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
+	$scope.updateLaborSkillMix = function (item, moqType) {
+		//get historical hours from skill mix table
+		let totalHistoricalHours = $scope.getTotalCDHistoricalHours(moqType);
+		if (totalHistoricalHours === 0) {
+			item.LaborSkillMix = 0;
+		}
+		else {
+			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
+		}
+	};
+
+	$scope.getTotalCDHistoricalHours = function (moqType) {
+		let totalHistoricalHours = 0;
+		moqType.CommonDisclosureTable.forEach(item => {
+			totalHistoricalHours += item.HistoricalHours;
+		});
+		return totalHistoricalHours;
+	};
+
+	$scope.getTotalSMHistoricalHours = function (moqType) {
+		let totalHistoricalHours = 0;
+		moqType.SkillMixTable.forEach(item => {
+			totalHistoricalHours += item.HistoricalHours;
+		});
+		return totalHistoricalHours;
+	};
+
 	$scope.refreshCommonDisclosureTable = function (moqType) {
 		// Get all the data tables
 		const data = {
@@ -1492,6 +1519,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					if (response.data.data) {
 						moqType.CommonDisclosureTable = response.data.data;
 						$scope.setCommonDisclosureTotals(moqType);
+						$scope.refreshResourceGroupColors(moqType);
 					}
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
@@ -1535,6 +1563,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				break;
 			}
 		}
+	};
+
+	$scope.refreshResourceGroupColors = function (moqType) {
+		// coming soon
+	};
+	$scope.sortCD = function (moqType) {
+		let colName = "ResourceID";
+		moqType.CommonDisclosureTable.sort((a, b) => a[colName] > b[colName] ? 1 : a[colName] < b[colName] ? -1 : 0);
+		$scope.refreshResourceGroupColors(moqType);
 	};
 
 	$scope.setActualsErrors = function (id, errors) {
@@ -1806,9 +1843,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			moqType.BoeSkillMixTotal += parseFloat(item.BOESkillMix) || 0;
 			moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
 		});
+
+		moqType.BoeSkillMixTotal = parseFloat((moqType.BoeSkillMixTotal).toFixed(3));
+		moqType.ProposedSkillMixHoursTotal = parseFloat((moqType.ProposedSkillMixHoursTotal).toFixed(1));
 	};
 
 	$scope.setCommonDisclosureTotals = function (moqType) {
+		//first set the labor skill mix column before calculating totals
+		$scope.setLaborSkillMixForCD(moqType);
+
 		// Reset Totals because this method can be called multiple times from multiple areas
 		moqType.HistoricalCommonDisclosureHoursTotal = 0;
 		moqType.LaborCommonDisclosureTotal = 0;
@@ -1823,7 +1866,22 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
 		});
 
-		moqType.ProposedCommonDisclosureHoursTotal = Math.round(moqType.ProposedCommonDisclosureHoursTotal)
+		moqType.BoeCommonDisclosureTotal = parseFloat((moqType.BoeCommonDisclosureTotal).toFixed(3));
+		moqType.ProposedCommonDisclosureHoursTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(1));
+	}
+
+	$scope.setLaborSkillMixForCD = function (moqType) {
+		let totalHistoricalHours = 0;
+
+		//get total historical hours in CD table
+		moqType.CommonDisclosureTable.forEach(item => {
+			totalHistoricalHours += item.HistoricalHours;
+		});
+
+		//get labor skill mix % by taking row's historical hours / total
+		moqType.CommonDisclosureTable.forEach(item => {
+			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
+		});
 	}
 
 	$scope.updateBoeSkillMixLock = function (item) {
@@ -1865,9 +1923,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		moqType.CommonDisclosureTable.forEach(item => {
 			if (item.Included) {
 				if (!item.IsPercentLocked) {
-					item.ProposedHours = parseFloat((moqTotal * (item.BOESkillMix / 100)).toFixed(1));
+					item.ProposedHours = parseFloat(((moqTotal * (item.BOESkillMix / 100)).toFixed(1)));
 				} else {
-					item.BOESkillMix = parseFloat(((item.ProposedHours / moqTotal) * 100).toFixed(3));
+					item.BOESkillMix = parseFloat((((item.ProposedHours / moqTotal) * 100).toFixed(3)));
 				}
 			}
 		});
