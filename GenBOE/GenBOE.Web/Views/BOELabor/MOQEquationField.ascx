@@ -526,7 +526,7 @@
                         <thead>
                             <tr>
                                 <th class="current-resource-id">Current Resource</th>
-                                <th class="brc-id">Business Resource Code</th>
+                                <th class="brc-id">Business Resource Code (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController, '<%:WebConstants.ACTION_DISPLAY_BUSINESS_RESOURCE_CODES%>'); return false;">View</a>)&#10013;</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
                                 <th class="included">Included *</th>
@@ -562,7 +562,7 @@
                                 <td  data-ng-if="item.IsUserInput" >
                                     <div class="skill-mix-numerical skill-mix-padding">
                                         <div>
-                                            <input type="number" step="0.1" value="0.0"  maxlength="5" data-ng-blur="updateLaborSkillMix(item, moqType); setCommonDisclosureTotals(moqType);" id="cd-historical-hours" data-ng-model="item.HistoricalHours" />       
+                                            <input type="number" step="0.1" maxlength="5" data-ng-blur="updateLaborSkillMix(item, moqType); setCommonDisclosureTotals(moqType);" id="cd-historical-hours" data-ng-model="item.HistoricalHours" />       
                                         </div>
                                     </div>
                                 </td>
