@@ -15,3 +15,5 @@ GO
 
 SET IDENTITY_INSERT [dbo].[CobraCode1LU] OFF; 
 GO
+
+Update [dbo].[ResourceClassLU] SET [Description] = 'Enterprise-Labor-Core-Touch(6)' where [Description] = 'Enterprise-Labor-Core-Production(6)'
