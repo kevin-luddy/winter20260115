@@ -1019,7 +1019,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				//TBD: for RMS, might have duplicate new resources and then we'll have to total historical
 				if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
 				{
-					moqType.SkillMixTable.Where(s => s.Included.HasValue && s.Included.Value).ForEach(s => resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours));
+					moqType.SkillMixTable.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s => resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours));
 				}
 
 				Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any() ? moqType.CommonDisclosureTable.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
