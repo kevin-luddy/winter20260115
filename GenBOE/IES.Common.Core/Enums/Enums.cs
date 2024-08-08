@@ -1231,7 +1231,9 @@ namespace IES.Common.Core.Enums
 		[Description("INDIRECT")]
 		INDIRECT = 1,
 		[Description("SVCCTR")]
-		SVCCTR = 2
+		SVCCTR = 2,
+		[Description("DIRECT")]
+		DIRECT = 3
 	}
 
 	/// <summary>
