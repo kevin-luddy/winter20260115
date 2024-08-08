@@ -4439,9 +4439,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
         <Function Name="deleteAllMSTTravelTripTaskElements" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BoeId" Type="int" Mode="In" />
         </Function>
-        <Function Name="deleteAllODCTaskElements" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="BoeId" Type="int" Mode="In" />
-        </Function>
         <Function Name="deleteAllTravelTripTaskElements" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BoeId" Type="int" Mode="In" />
         </Function>
@@ -4476,7 +4473,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
         <Function Name="deleteBOELaborSpreadByBOELaborTypeID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BOELaborTypeID" Type="int" Mode="In" />
         </Function>
-        <Function Name="deleteBOELaborSpreadByBOELaborTypeIDviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteBOELaborType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BOELaborTypeID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
@@ -4488,8 +4484,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
           <Parameter Name="IsOpenEnded" Type="bit" Mode="In" />
         </Function>
-        <Function Name="deleteBOELaborTypeCustomFieldValueviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="deleteBOELaborTypeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteBOEPotentialRolebyETIUserID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ETIUserID" Type="int" Mode="In" />
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
@@ -4507,7 +4501,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
           <Parameter Name="IsOpenEnded" Type="bit" Mode="In" />
         </Function>
-        <Function Name="deleteBOETaskElementCustomFieldValueviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteBOETaskElementMetricDetail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BTEMDID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
@@ -4516,8 +4509,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="OrdinaryVariableID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
-        <Function Name="deleteBOETaskElementOrdinaryVariableviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="deleteBOETaskElementviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteCLIN" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="CLINID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
@@ -4535,9 +4526,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
         <Function Name="deleteCustomFieldValueByCustomFieldValueID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="CustomFieldValueID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
-        </Function>
-        <Function Name="deleteFullWorkspace" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
         </Function>
         <Function Name="deleteLOB" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -4568,7 +4556,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
           <Parameter Name="IsOpenEnded" Type="bit" Mode="In" />
         </Function>
-        <Function Name="deleteMoqTypeTableCustomFieldValueviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteMSTTravelTrip" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MSTTravelTripID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
@@ -4587,31 +4574,15 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
         <Function Name="deleteMSTZoneTravelOrigin" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="OriginID" Type="int" Mode="In" />
         </Function>
-        <Function Name="deleteODCSpreadByODCTypeID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ODCTypeID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="deleteODCTaskElement" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ODCTaskElementID" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
-        </Function>
-        <Function Name="deleteODCType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ODCTypeID" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
-        </Function>
         <Function Name="deleteOrdinaryVariableResourceType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="OrdinaryVariableID" Type="int" Mode="In" />
         </Function>
-        <Function Name="deleteOrdinaryVariableResourceTypeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteOutputFormatTemplateForAllWorkspaces" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="TemplateID" Type="int" Mode="In" />
         </Function>
         <Function Name="deleteOutputFormatTemplateWorkspace" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
           <Parameter Name="TemplateID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="deletePerDiem" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="PerDiemID" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="deletePerformingOrganizationByPerformingOrganizationID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PerformingOrganizationID" Type="int" Mode="In" />
@@ -4652,7 +4623,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
         <Function Name="deleteSumOfBOEByOrdinaryVariableID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="OrdinaryVariableID" Type="int" Mode="In" />
         </Function>
-        <Function Name="deleteSumOfBOEByOrdinaryVariableIDviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteSumOfBOEByWorkspaceVariableID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceVariableID" Type="int" Mode="In" />
         </Function>
@@ -4717,13 +4687,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="TripID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
-        <Function Name="deleteUserLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteWorkBreakdownStructure" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WBSID" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
-        </Function>
-        <Function Name="deleteWorkspace" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="deleteWorkspace_ProcessSoftDelete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
@@ -4738,13 +4703,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
         <Function Name="deleteWorkspaceResourceByResourceID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceID" Type="int" Mode="In" />
           <Parameter Name="ResourceListID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="deleteWorkspaceResourceviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="deleteWorkspaceRMSTravelEscalationRate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="deleteWorkspaceRMSTravelNonzoneFeesAndCosts" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
         </Function>
         <Function Name="deleteWorkspaceRolesByETIUserID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ETIUserID" Type="int" Mode="In" />
@@ -4823,14 +4781,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="BOEID" Type="int" Mode="In" />
           <Parameter Name="SearchResultsThreshold" Type="int" Mode="In" />
         </Function>
-        <Function Name="getBOEPermissions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="NTID" Type="varchar" Mode="In" />
-        </Function>
         <Function Name="getLaborSpread" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="getOrdinaryVariableByTaskElementID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="BOETaskElementID" Type="int" Mode="In" />
         </Function>
         <Function Name="getPerformingOrganizationInUseFlagByPerformingOrganizationListID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PerformingOrganizationListID" Type="int" Mode="In" />
@@ -4858,7 +4810,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
         <Function Name="getResourceInUseFlagByResourceListID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceListID" Type="int" Mode="In" />
         </Function>
-        <Function Name="getResourceInUseFlagByResourceListIDviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="getResourceInUseFlagBySystemResourceID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceID" Type="int" Mode="In" />
         </Function>
@@ -4866,9 +4817,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="NTID" Type="varchar" Mode="In" />
         </Function>
         <Function Name="getSystemResourceInUseFlag" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="getWorkspaceHistoryLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
-        </Function>
         <Function Name="getWorkspaceIDByWorkspaceAdvancedSearch" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceName" Type="nvarchar" Mode="In" />
           <Parameter Name="WorkspaceDescription" Type="nvarchar" Mode="In" />
@@ -4878,13 +4826,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="CostVolume" Type="nvarchar" Mode="In" />
           <Parameter Name="ProjectMapType" Type="int" Mode="In" />
         </Function>
-        <Function Name="getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="PerformingOrganizationID" Type="int" Mode="In" />
-          <Parameter Name="PerformingOrganizationListID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="getWorkspacePermissions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="NTID" Type="varchar" Mode="In" />
-        </Function>
         <Function Name="getWorkspaceResourceInUseFlagByMultipleResources" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceID" Type="varchar(max)" Mode="In" />
           <Parameter Name="ResourceListID" Type="int" Mode="In" />
@@ -4893,51 +4834,23 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="ResourceID" Type="int" Mode="In" />
           <Parameter Name="ResourceListID" Type="int" Mode="In" />
         </Function>
-        <Function Name="getWorkspaceVariableByTaskElementID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="BOETaskElementID" Type="int" Mode="In" />
-        </Function>
         <Function Name="insertBOEApprover" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BOEID" Type="int" Mode="In" />
           <Parameter Name="ETIUserID" Type="int" Mode="In" />
           <Parameter Name="ChangedByETIUserID" Type="int" Mode="In" />
         </Function>
-        <Function Name="insertBOECommentHistory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="BOEID" Type="int" Mode="In" />
-          <Parameter Name="FieldID" Type="int" Mode="In" />
-          <Parameter Name="CurrentComment" Type="varchar" Mode="In" />
-          <Parameter Name="UpdatedComment" Type="varchar" Mode="In" />
-          <Parameter Name="ChangedByETIUserID" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
-        </Function>
-        <Function Name="insertBOELaborSpreadviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="insertBOELaborTypeCustomFieldValueviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="insertBOELaborTypeviatableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="insertBOETaskElementCustomFieldValueviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertBOETaskElementMetricDetailXREF" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BTEMDID" Type="int" Mode="In" />
           <Parameter Name="BOETaskElementID" Type="int" Mode="In" />
           <Parameter Name="MetricDetailID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
-        <Function Name="insertBOETaskElementOrdinaryVariableviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="insertBOETaskElementviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertBOETaskElementWorkspaceVariable" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BOETaskElementID" Type="int" Mode="In" />
           <Parameter Name="WorkspaceVariableID" Type="varchar" Mode="In" />
         </Function>
-        <Function Name="insertBOETaskElementWorkspaceVariableviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="insertCommonDisclosureSkillMixviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertDefaultMultiClinWBS" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="insertDefaultPerformingOrganization" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
-          <Parameter Name="PerformingOrganizationListID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="insertDefaultResource" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
-          <Parameter Name="ResourceListID" Type="int" Mode="In" />
-          <Parameter Name="SegmentID" Type="int" Mode="In" />
         </Function>
         <Function Name="insertLocation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="LocationName" Type="varchar" Mode="In" />
@@ -4987,13 +4900,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="MeasureValidatedBy" Type="varchar" Mode="In" />
           <Parameter Name="ProgramDescription" Type="varchar" Mode="In" />
         </Function>
-        <Function Name="insertMOQTypeSelectionTableDataResourceHoursviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="insertMoqTypeTableCustomFieldValueviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertOrdinaryVariableResourceType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="OrdinaryVariableID" Type="int" Mode="In" />
           <Parameter Name="SumVariableResourceTypeID" Type="int" Mode="In" />
         </Function>
-        <Function Name="insertOrdinaryVariableResourceTypeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertOutputFormatTemplate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="TemplateID" Type="int" Mode="In" />
           <Parameter Name="Template" Type="varchar" Mode="In" />
@@ -5025,14 +4935,12 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="Nonce" Type="varchar" Mode="In" />
           <Parameter Name="xml" Type="varchar(max)" Mode="In" />
         </Function>
-        <Function Name="insertSkillMixviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertSumOfBOE_OrdinaryVariable" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="OrdinaryVariableID" Type="int" Mode="In" />
           <Parameter Name="CLINID" Type="int" Mode="In" />
           <Parameter Name="WBSID" Type="int" Mode="In" />
           <Parameter Name="BOEID" Type="int" Mode="In" />
         </Function>
-        <Function Name="insertSumOfBOE_OrdinaryVariableviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertSumOfBOE_WorkspaceVariable" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceVariableID" Type="int" Mode="In" />
           <Parameter Name="CLINID" Type="int" Mode="In" />
@@ -5059,7 +4967,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="RoleID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
-        <Function Name="insertWorkspaceResourceviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertWorkspaceUserRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ETIUserID" Type="int" Mode="In" />
           <Parameter Name="RoleID" Type="int" Mode="In" />
@@ -5116,15 +5023,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="ApprovedFlag" Type="bit" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
-        <Function Name="updateBOELaborTypeCustomFieldValueviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="updateBOELaborTypeviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="updateBOETaskElementCustomFieldValueviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="updateBOETaskElementLaborTypeWarningFlag" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BOETaskElementID" Type="int" Mode="In" />
           <Parameter Name="LaborTypeWarningFlag" Type="bit" Mode="In" />
         </Function>
-        <Function Name="updateBOETaskElementOrdinaryVariableviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="updateBOETaskElementviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="updateMileageReimbursementRate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MileageReimbursementRateID" Type="int" Mode="In" />
           <Parameter Name="RatePerMile" Type="decimal" Mode="In" />
@@ -5148,7 +5050,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="DefaultOn" Type="bit" Mode="In" />
           <Parameter Name="ForcedOn" Type="bit" Mode="In" />
         </Function>
-        <Function Name="updateTravelTripInUse" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="updateWorkspaceAllowSearch" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
           <Parameter Name="AllowSearch" Type="bit" Mode="In" />
@@ -5163,12 +5064,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
           <Parameter Name="Delete" Type="bit" Mode="In" />
-        </Function>
-        <Function Name="updateWorkspaceResourceviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="updateWorkspaceStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
-          <Parameter Name="WorkspaceStateID" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="updateWorkspaceUserRoleHideHelp" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceUserRoleID" Type="int" Mode="In" />
@@ -5537,35 +5432,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="ResTRZ6ID" Type="int" Mode="In" />
           <Parameter Name="ResTRZ6" Type="varchar" Mode="In" />
         </Function>
-        <Function Name="upsertODCSpread" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ODCSpreadID" Type="int" Mode="In" />
-          <Parameter Name="ODCTypeID" Type="int" Mode="In" />
-          <Parameter Name="ODCSpreadDate" Type="date" Mode="In" />
-          <Parameter Name="ODCSpreadValue" Type="bigint" Mode="In" />
-        </Function>
-        <Function Name="upsertODCTaskElement" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ODCTaskElementID" Type="int" Mode="In" />
-          <Parameter Name="ODCTaskID" Type="varchar" Mode="In" />
-          <Parameter Name="ODCTaskTitle" Type="varchar" Mode="In" />
-          <Parameter Name="ODCTaskDescription" Type="varchar(max)" Mode="In" />
-          <Parameter Name="ODCMOQText" Type="varchar(max)" Mode="In" />
-          <Parameter Name="BOEID" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
-          <Parameter Name="TaskStartDate" Type="date" Mode="In" />
-          <Parameter Name="TaskEndDate" Type="date" Mode="In" />
-          <Parameter Name="SortOrderID" Type="int" Mode="In" />
-        </Function>
-        <Function Name="upsertODCType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ODCTypeID" Type="int" Mode="In" />
-          <Parameter Name="ResourceID" Type="int" Mode="In" />
-          <Parameter Name="PerformingOrganizationID" Type="int" Mode="In" />
-          <Parameter Name="ODCTypeStartDate" Type="date" Mode="In" />
-          <Parameter Name="ODCTypeEndDate" Type="date" Mode="In" />
-          <Parameter Name="SpreadCurveID" Type="int" Mode="In" />
-          <Parameter Name="ODCTypeCost" Type="decimal" Mode="In" />
-          <Parameter Name="ODCTaskElementID" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
-        </Function>
         <Function Name="upsertOutputFormatTemplate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="TemplateID" Type="int" Mode="In" />
           <Parameter Name="Template" Type="varchar" Mode="In" />
@@ -5583,13 +5449,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="MIERate" Type="decimal" Mode="In" />
           <Parameter Name="PerDiemNotes" Type="varchar" Mode="In" />
           <Parameter Name="UpdatedByETIUserID" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
-        </Function>
-        <Function Name="upsertPerformingOrganization" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="PerformingOrganizationID" Type="int" Mode="In" />
-          <Parameter Name="PerformingOrganizationName" Type="varchar" Mode="In" />
-          <Parameter Name="PerformingOrganizationDescription" Type="varchar" Mode="In" />
-          <Parameter Name="PerformingOrganizationListID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="upsertPerformingOrganizationList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -10429,7 +10288,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImport Name="deleteBOELaborSpreadByBOELaborTypeID">
           <Parameter Name="BOELaborTypeID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="deleteBOELaborSpreadByBOELaborTypeIDviaTableParameter" />
 		  <FunctionImport Name="deleteBOELaborType">
             <Parameter Name="BOELaborTypeID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
@@ -10441,8 +10299,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
             <Parameter Name="IsOpenEnded" Mode="In" Type="Boolean" />
           </FunctionImport>
-		  <FunctionImport Name="deleteBOELaborTypeCustomFieldValueviaTableParameter" />
-		  <FunctionImport Name="deleteBOELaborTypeviaTableParameter" />
 		  <FunctionImport Name="deleteBOEPotentialRolebyETIUserID">
             <Parameter Name="ETIUserID" Mode="In" Type="Int32" />
             <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
@@ -10460,7 +10316,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
             <Parameter Name="IsOpenEnded" Mode="In" Type="Boolean" />
           </FunctionImport>
-		  <FunctionImport Name="deleteBOETaskElementCustomFieldValueviaTableParameter" />
 		  <FunctionImport Name="deleteBOETaskElementMetricDetail">
             <Parameter Name="BTEMDID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
@@ -10469,8 +10324,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="OrdinaryVariableID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
-		  <FunctionImport Name="deleteBOETaskElementOrdinaryVariableviaTableParameter" />
-		  <FunctionImport Name="deleteBOETaskElementviaTableParameter" />
 		  <FunctionImport Name="deleteCLIN">
             <Parameter Name="CLINID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
@@ -10482,9 +10335,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImport Name="deleteCustomFieldValueByCustomFieldValueID">
             <Parameter Name="CustomFieldValueID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-          </FunctionImport>
-		  <FunctionImport Name="deleteFullWorkspace">
-          <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
           </FunctionImport>
 		  <FunctionImport Name="deleteMaterialTaskElement">
             <Parameter Name="MaterialTaskElementID" Mode="In" Type="Int32" />
@@ -10512,28 +10362,12 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImport Name="deleteMSTZoneTravelOrigin">
           <Parameter Name="OriginID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="deleteODCSpreadByODCTypeID">
-          <Parameter Name="ODCTypeID" Mode="In" Type="Int32" />
-          </FunctionImport>
-		  <FunctionImport Name="deleteODCTaskElement">
-            <Parameter Name="ODCTaskElementID" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-          </FunctionImport>
-		  <FunctionImport Name="deleteODCType">
-            <Parameter Name="ODCTypeID" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-          </FunctionImport>
 		  <FunctionImport Name="deleteOrdinaryVariableResourceType">
           <Parameter Name="OrdinaryVariableID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="deleteOrdinaryVariableResourceTypeviaTableParameter" />
 		  <FunctionImport Name="deleteOutputFormatTemplateWorkspace">
             <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
             <Parameter Name="TemplateID" Mode="In" Type="Int32" />
-          </FunctionImport>
-		  <FunctionImport Name="deletePerDiem">
-            <Parameter Name="PerDiemID" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
 		  <FunctionImport Name="deletePerformingOrganizationByPerformingOrganizationID">
             <Parameter Name="PerformingOrganizationID" Mode="In" Type="Int32" />
@@ -10562,7 +10396,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImport Name="deleteSumOfBOEByOrdinaryVariableID">
           <Parameter Name="OrdinaryVariableID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="deleteSumOfBOEByOrdinaryVariableIDviaTableParameter" />
 		  <FunctionImport Name="deleteSumOfBOEByWorkspaceVariableID">
           <Parameter Name="WorkspaceVariableID" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -10612,13 +10445,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="TripID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
-		  <FunctionImport Name="deleteUserLog" />
 		  <FunctionImport Name="deleteWorkBreakdownStructure">
             <Parameter Name="WBSID" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-          </FunctionImport>
-		  <FunctionImport Name="deleteWorkspace">
-            <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
 		  <FunctionImport Name="deleteWorkspace_ProcessSoftDelete" />
@@ -10629,12 +10457,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImport Name="deleteWorkspaceResourceByResourceID">
             <Parameter Name="ResourceID" Mode="In" Type="Int32" />
             <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
-          </FunctionImport>
-		  <FunctionImport Name="deleteWorkspaceRMSTravelEscalationRate">
-          <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-          </FunctionImport>
-		  <FunctionImport Name="deleteWorkspaceRMSTravelNonzoneFeesAndCosts">
-          <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
           </FunctionImport>
 		  <FunctionImport Name="deleteWorkspaceRolesByETIUserID">
             <Parameter Name="ETIUserID" Mode="In" Type="Int32" />
@@ -10682,18 +10504,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImport Name="getBOEHistoryLog" ReturnType="Collection(GenBOE.Models.getBOEHistoryLog_Result)">
           <Parameter Name="BOEID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="getBOEPermissions" ReturnType="Collection(GenBOE.Models.getBOEPermissions_Result)">
-          <Parameter Name="NTID" Mode="In" Type="String" />
-          </FunctionImport>
-		  <FunctionImport Name="getLaborSpread" ReturnType="Collection(GenBOE.Models.getLaborSpread_Result)">
-          <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-          </FunctionImport>
-		  <FunctionImport Name="getLaborType" ReturnType="Collection(GenBOE.Models.getLaborType_Result)">
-		  <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-		  </FunctionImport>
-		  <FunctionImport Name="getOrdinaryVariableByTaskElementID" ReturnType="Collection(GenBOE.Models.getOrdinaryVariableByTaskElementID_Result)">
-          <Parameter Name="BOETaskElementID" Mode="In" Type="Int32" />
-          </FunctionImport>
 		  <FunctionImport Name="getPerformingOrganizationInUseFlagByPerformingOrganizationListID" ReturnType="Collection(Int32)">
           <Parameter Name="PerformingOrganizationListID" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -10707,9 +10517,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="NTID" Mode="In" Type="String" />
           </FunctionImport>
 		  <FunctionImport Name="getSystemResourceInUseFlag" ReturnType="Collection(Int32)" />
-		  <FunctionImport Name="getWorkspaceHistoryLog" ReturnType="Collection(GenBOE.Models.getWorkspaceHistoryLog_Result)">
-          <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-          </FunctionImport>
 		  <FunctionImport Name="getWorkspaceIDByWorkspaceAdvancedSearch" ReturnType="Collection(Int32)">
             <Parameter Name="WorkspaceName" Mode="In" Type="String" />
             <Parameter Name="WorkspaceDescription" Mode="In" Type="String" />
@@ -10719,13 +10526,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="CostVolume" Mode="In" Type="String" />
             <Parameter Name="ProjectMapType" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID" ReturnType="Collection(Int32)">
-            <Parameter Name="PerformingOrganizationID" Mode="In" Type="Int32" />
-            <Parameter Name="PerformingOrganizationListID" Mode="In" Type="Int32" />
-          </FunctionImport>
-		  <FunctionImport Name="getWorkspacePermissions" ReturnType="Collection(GenBOE.Models.getWorkspacePermissions_Result)">
-          <Parameter Name="NTID" Mode="In" Type="String" />
-          </FunctionImport>
 		  <FunctionImport Name="getWorkspaceResourceInUseFlagByMultipleResources" ReturnType="Collection(Int32)">
             <Parameter Name="ResourceID" Mode="In" Type="String" />
             <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
@@ -10734,50 +10534,23 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="ResourceID" Mode="In" Type="Int32" />
             <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="getWorkspaceVariableByTaskElementID" ReturnType="Collection(GenBOE.Models.getWorkspaceVariableByTaskElementID_Result)">
-          <Parameter Name="BOETaskElementID" Mode="In" Type="Int32" />
-          </FunctionImport>
 		  <FunctionImport Name="insertBOEApprover" ReturnType="Collection(Int32)">
             <Parameter Name="BOEID" Mode="In" Type="Int32" />
             <Parameter Name="ETIUserID" Mode="In" Type="Int32" />
             <Parameter Name="ChangedByETIUserID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="insertBOECommentHistory">
-            <Parameter Name="BOEID" Mode="In" Type="Int32" />
-            <Parameter Name="FieldID" Mode="In" Type="Int32" />
-            <Parameter Name="CurrentComment" Mode="In" Type="String" />
-            <Parameter Name="UpdatedComment" Mode="In" Type="String" />
-            <Parameter Name="ChangedByETIUserID" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-          </FunctionImport>
-		  <FunctionImport Name="insertBOELaborSpreadviaTableParameter" />
-		  <FunctionImport Name="insertBOELaborTypeCustomFieldValueviaTableParameter" />
-		  <FunctionImport Name="insertBOELaborTypeviatableParameter" />
-		  <FunctionImport Name="insertBOETaskElementCustomFieldValueviaTableParameter" />
 		  <FunctionImport Name="insertBOETaskElementMetricDetailXREF" ReturnType="Collection(Int32)">
             <Parameter Name="BTEMDID" Mode="In" Type="Int32" />
             <Parameter Name="BOETaskElementID" Mode="In" Type="Int32" />
             <Parameter Name="MetricDetailID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
-		  <FunctionImport Name="insertBOETaskElementOrdinaryVariableviaTableParameter" />
-		  <FunctionImport Name="insertBOETaskElementviaTableParameter" />
 		  <FunctionImport Name="insertBOETaskElementWorkspaceVariable">
             <Parameter Name="BOETaskElementID" Mode="In" Type="Int32" />
             <Parameter Name="WorkspaceVariableID" Mode="In" Type="String" />
           </FunctionImport>
-		  <FunctionImport Name="insertBOETaskElementWorkspaceVariableviaTableParameter" />
 		  <FunctionImport Name="insertDefaultMultiClinWBS">
           <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-          </FunctionImport>
-		  <FunctionImport Name="insertDefaultPerformingOrganization">
-            <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-            <Parameter Name="PerformingOrganizationListID" Mode="In" Type="Int32" />
-          </FunctionImport>
-		  <FunctionImport Name="insertDefaultResource">
-            <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-            <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
-            <Parameter Name="SegmentID" Mode="In" Type="Int32" />
           </FunctionImport>
 		  <FunctionImport Name="insertLocation" ReturnType="Collection(Int32)">
             <Parameter Name="LocationName" Mode="In" Type="String" />
@@ -10827,7 +10600,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="OrdinaryVariableID" Mode="In" Type="Int32" />
             <Parameter Name="SumVariableResourceTypeID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="insertOrdinaryVariableResourceTypeviaTableParameter" />
 		  <FunctionImport Name="insertOrGetUser">
 			<Parameter Name="isgsUserId" Mode="In" Type="Int32" />
 			<Parameter Name="UserInCurrentDb" Mode="InOut" Type="Int32" />
@@ -10865,7 +10637,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="WBSID" Mode="In" Type="Int32" />
             <Parameter Name="BOEID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="insertSumOfBOE_OrdinaryVariableviaTableParameter" />
 		  <FunctionImport Name="insertSumOfBOE_WorkspaceVariable" ReturnType="Collection(Int32)">
             <Parameter Name="WorkspaceVariableID" Mode="In" Type="Int32" />
             <Parameter Name="CLINID" Mode="In" Type="Int32" />
@@ -10907,15 +10678,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="ApprovedFlag" Mode="In" Type="Boolean" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
-		  <FunctionImport Name="updateBOELaborTypeCustomFieldValueviaTableParameter" />
-		  <FunctionImport Name="updateBOELaborTypeviaTableParameter" />
-		  <FunctionImport Name="updateBOETaskElementCustomFieldValueviaTableParameter" />
 		  <FunctionImport Name="updateBOETaskElementLaborTypeWarningFlag">
             <Parameter Name="BOETaskElementID" Mode="In" Type="Int32" />
             <Parameter Name="LaborTypeWarningFlag" Mode="In" Type="Boolean" />
           </FunctionImport>
-		  <FunctionImport Name="updateBOETaskElementOrdinaryVariableviaTableParameter" />
-		  <FunctionImport Name="updateBOETaskElementviaTableParameter" />
 		  <FunctionImport Name="updateMileageReimbursementRate" ReturnType="Collection(Int32)">
             <Parameter Name="MileageReimbursementRateID" Mode="In" Type="Int32" />
             <Parameter Name="RatePerMile" Mode="In" Type="Decimal" />
@@ -10934,7 +10700,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="WBSID" Mode="In" Type="Int32" />
             <Parameter Name="BOEID" Mode="In" Type="Int32" />
           </FunctionImport>
-		  <FunctionImport Name="updateTravelTripInUse" />
 		  <FunctionImport Name="updateWorkspaceAllowSearch">
             <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
             <Parameter Name="AllowSearch" Mode="In" Type="Boolean" />
@@ -10949,11 +10714,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
             <Parameter Name="Delete" Mode="In" Type="Boolean" />
-          </FunctionImport>
-		  <FunctionImport Name="updateWorkspaceStatus">
-            <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-            <Parameter Name="WorkspaceStateID" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
 		  <FunctionImport Name="updateWorkspaceUserRoleHideHelp">
             <Parameter Name="WorkspaceUserRoleID" Mode="In" Type="Int32" />
@@ -11269,35 +11029,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="ResTRZ6ID" Mode="In" Type="Int32" />
             <Parameter Name="ResTRZ6" Mode="In" Type="String" />
           </FunctionImport>
-		  <FunctionImport Name="upsertODCSpread" ReturnType="Collection(Int32)">
-            <Parameter Name="ODCSpreadID" Mode="In" Type="Int32" />
-            <Parameter Name="ODCTypeID" Mode="In" Type="Int32" />
-            <Parameter Name="ODCSpreadDate" Mode="In" Type="DateTime" />
-            <Parameter Name="ODCSpreadValue" Mode="In" Type="Int64" />
-          </FunctionImport>
-		  <FunctionImport Name="upsertODCTaskElement" ReturnType="Collection(Int32)">
-            <Parameter Name="ODCTaskElementID" Mode="In" Type="Int32" />
-            <Parameter Name="ODCTaskID" Mode="In" Type="String" />
-            <Parameter Name="ODCTaskTitle" Mode="In" Type="String" />
-            <Parameter Name="ODCTaskDescription" Mode="In" Type="String" />
-            <Parameter Name="ODCMOQText" Mode="In" Type="String" />
-            <Parameter Name="BOEID" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-            <Parameter Name="TaskStartDate" Mode="In" Type="DateTime" />
-            <Parameter Name="TaskEndDate" Mode="In" Type="DateTime" />
-            <Parameter Name="SortOrderID" Mode="In" Type="Int32" />
-          </FunctionImport>
-		  <FunctionImport Name="upsertODCType" ReturnType="Collection(Int32)">
-            <Parameter Name="ODCTypeID" Mode="In" Type="Int32" />
-            <Parameter Name="ResourceID" Mode="In" Type="Int32" />
-            <Parameter Name="PerformingOrganizationID" Mode="In" Type="Int32" />
-            <Parameter Name="ODCTypeStartDate" Mode="In" Type="DateTime" />
-            <Parameter Name="ODCTypeEndDate" Mode="In" Type="DateTime" />
-            <Parameter Name="SpreadCurveID" Mode="In" Type="Int32" />
-            <Parameter Name="ODCTypeCost" Mode="In" Type="Decimal" />
-            <Parameter Name="ODCTaskElementID" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-          </FunctionImport>
 		  <FunctionImport Name="upsertOutputFormatTemplate" ReturnType="Collection(Int32)">
             <Parameter Name="TemplateID" Mode="In" Type="Int32" />
             <Parameter Name="Template" Mode="In" Type="String" />
@@ -11315,13 +11046,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="MIERate" Mode="In" Type="Decimal" />
             <Parameter Name="PerDiemNotes" Mode="In" Type="String" />
             <Parameter Name="UpdatedByETIUserID" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-          </FunctionImport>
-		  <FunctionImport Name="upsertPerformingOrganization" ReturnType="Collection(Int32)">
-            <Parameter Name="PerformingOrganizationID" Mode="In" Type="Int32" />
-            <Parameter Name="PerformingOrganizationName" Mode="In" Type="String" />
-            <Parameter Name="PerformingOrganizationDescription" Mode="In" Type="String" />
-            <Parameter Name="PerformingOrganizationListID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
 		  <FunctionImport Name="upsertPerformingOrganizationList" ReturnType="Collection(Int32)">
@@ -11623,35 +11347,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="TMResourceRate" Mode="In" Type="Decimal" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
-		  <FunctionImport Name="getConfigurationValue" ReturnType="Collection(String)">
-		  <Parameter Name="configurationKey" Mode="In" Type="String" />
-		  </FunctionImport>
 		  <FunctionImport Name="insertReportXml">
             <Parameter Name="Nonce" Mode="In" Type="String" />
             <Parameter Name="xml" Mode="In" Type="String" />
           </FunctionImport>
-		  <FunctionImport Name="getBOEIDForProjectMapAdvancedSearch" ReturnType="Collection(GenBOE.Models.getBOEIDForProjectMapAdvancedSearch_Result)">
-			<Parameter Name="WorkspaceName" Mode="In" Type="String" />
-			<Parameter Name="WorkspaceDescription" Mode="In" Type="String" />
-			<Parameter Name="ActivityId" Mode="In" Type="String" />
-			<Parameter Name="ActivityName" Mode="In" Type="String" />
-			<Parameter Name="CamName" Mode="In" Type="String" />
-			<Parameter Name="Category" Mode="In" Type="String" />
-			<Parameter Name="SOWTitle" Mode="In" Type="String" />
-			<Parameter Name="Task" Mode="In" Type="String" />
-			<Parameter Name="Rationale" Mode="In" Type="String" />
-			<Parameter Name="DisplayedWBSNumber" Mode="In" Type="String" />
-			<Parameter Name="WBSTitle" Mode="In" Type="String" />
-			<Parameter Name="SearchCategory" Mode="In" Type="Int32" />
-			<Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-			<Parameter Name="SearchResultsThreshold" Mode="In" Type="Int32" />
-		  </FunctionImport>
-		  <FunctionImport Name="getBOEIDForProjectMapQuickSearch" ReturnType="Collection(GenBOE.Models.getBOEIDForProjectMapQuickSearch_Result)">
-			<Parameter Name="QuickSearch" Mode="In" Type="String" />
-			<Parameter Name="SearchCategory" Mode="In" Type="Int32" />
-			<Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-			<Parameter Name="SearchResultsThreshold" Mode="In" Type="Int32" />
-		  </FunctionImport>
 		  <FunctionImport Name="deleteAllBOEsInWs">
             <Parameter Name="WsId" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
@@ -11698,9 +11397,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			<End Role="Resource" EntitySet="Resources" />
 			<End Role="BOEFormPBOEResourcesXREF" EntitySet="BOEFormPBOEResourcesXREFs" />
 		  </AssociationSet>
-		  <FunctionImport Name="deleteAllODCTaskElements">
-          <Parameter Name="BoeId" Mode="In" Type="Int32" />
-          </FunctionImport>
 		  <FunctionImport Name="deleteAllMSTTravelTripTaskElements">
           <Parameter Name="BoeId" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -12179,30 +11875,12 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			<End Role="Resource" EntitySet="Resources" />
 			<End Role="BOELaborType" EntitySet="BOELaborTypes" />
 		  </AssociationSet>
-          <FunctionImport Name="getResourceInUseFlagByResourceListID1" ReturnType="Collection(Int32)">
-            <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="getSystemResourceInUseFlag1" ReturnType="Collection(Int32)" />
-          <FunctionImport Name="getWorkspaceResourceInUseFlagByMultipleResources1" ReturnType="Collection(Int32)">
-            <Parameter Name="ResourceID" Mode="In" Type="String" />
-            <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="getWorkspaceResourceInUseFlagByResourceID1" ReturnType="Collection(Int32)">
-            <Parameter Name="ResourceID" Mode="In" Type="Int32" />
-            <Parameter Name="ResourceListID" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="deleteWorkspaceResourceviaTableParameter" />
-          <FunctionImport Name="getResourceInUseFlagByResourceListIDviaTableParameter" />
-          <FunctionImport Name="insertWorkspaceResourceviaTableParameter" />
-          <FunctionImport Name="updateWorkspaceResourceviaTableParameter" />
           <FunctionImport Name="deleteSkillMix" ReturnType="Collection(Int32)">
           <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="insertSkillMixviaTableParameter" />
           <FunctionImport Name="deleteCommonDisclosureSkillMix" ReturnType="Collection(Int32)">
           <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="insertCommonDisclosureSkillMixviaTableParameter" />
           <EntitySet Name="MOQTypeSelectionTableDataResourceHours" EntityType="GenBOE.Models.MOQTypeSelectionTableDataResourceHour" />
           <AssociationSet Name="FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId" Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId">
             <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableDatas" />
@@ -12211,7 +11889,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <FunctionImport Name="deleteMOQTypeSelectionTableDataResourceHours" ReturnType="Collection(Int32)">
           <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="insertMOQTypeSelectionTableDataResourceHoursviaTableParameter" />
           <EntitySet Name="BOEs" EntityType="GenBOE.Models.BOE" />
           <EntitySet Name="BOETaskElements" EntityType="GenBOE.Models.BOETaskElement" />
           <EntitySet Name="MOQTypeSelections" EntityType="GenBOE.Models.MOQTypeSelection" />
@@ -12391,68 +12068,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <Property Type="DateTime" Name="UpdateDT" Nullable="false" />
 		  <Property Type="Int32" Name="IsSubcontractor" Nullable="false" />
 		</ComplexType>
-		<ComplexType Name="getBOEPermissions_Result">
-		  <Property Type="Int32" Name="BOEID" Nullable="false" />
-		  <Property Type="Int32" Name="BOERoleID" Nullable="false" />
-		  <Property Type="Int32" Name="BOEStateID" Nullable="false" />
-		  <Property Type="Int32" Name="WorkspaceID" Nullable="false" />
-		</ComplexType>
-		<ComplexType Name="getLaborSpread_Result">
-		  <Property Type="Int32" Name="BOELaborSpreadID" Nullable="false" />
-		  <Property Type="Int32" Name="BOELaborTypeID" Nullable="false" />
-		  <Property Type="DateTime" Name="LaborSpreadDate" Nullable="false" />
-		  <Property Type="Decimal" Name="LaborSpreadValue" Nullable="true" Precision="18" Scale="6" />
-		  <Property Type="Int32" Name="BOEID" Nullable="false" />
-		</ComplexType>
-		<ComplexType Name="getLaborType_Result">
-		  <Property Type="Int32" Name="BOELaborTypeID" Nullable="false" />
-		  <Property Type="DateTime" Name="UpdateDT" Nullable="false" />
-		  <Property Type="Int32" Name="ResourceID" Nullable="true" />
-		  <Property Type="Int32" Name="PerformingOrganizationID" Nullable="true" />
-		  <Property Type="DateTime" Name="BOELaborTypeStartDate" Nullable="false" />
-		  <Property Type="DateTime" Name="BOELaborTypeEndDate" Nullable="false" />
-		  <Property Type="Int32" Name="SpreadCurveID" Nullable="false" />
-		  <Property Type="Decimal" Name="PercentSpread" Nullable="true" Precision="38" Scale="6" />
-		  <Property Type="Decimal" Name="ValueSpread" Nullable="true" Precision="18" Scale="6" />
-		  <Property Type="Int32" Name="BOETaskElementID" Nullable="false" />
-		  <Property Type="Int32" Name="SpreadTypeID" Nullable="true" />
-		  <Property Type="Boolean" Name="PercentSpreadLocked" Nullable="false" />
-		  <Property Type="Boolean" Name="HourSpreadLocked" Nullable="false" />
-		  <Property Type="Int32" Name="WBSID" Nullable="true" />
-		  <Property Type="Int32" Name="CLINID" Nullable="true" />
-		  <Property Type="Int32" Name="BOEID" Nullable="false" />
-		</ComplexType>
-		<ComplexType Name="getOrdinaryVariableByTaskElementID_Result">
-		  <Property Type="Int32" Name="BOETaskElementID" Nullable="false" />
-		  <Property Type="Int32" Name="OrdinaryVariableID" Nullable="false" />
-		  <Property Type="String" Name="OrdinaryVariableName" Nullable="false" MaxLength="50" />
-		  <Property Type="Decimal" Name="OrdinaryVariableValue" Nullable="true" Precision="29" Scale="10" />
-		  <Property Type="Int32" Name="SortByID" Nullable="false" />
-		  <Property Type="Int32" Name="ValueTypeID" Nullable="false" />
-		  <Property Type="Boolean" Name="IsPercentage" Nullable="true" />
-		  <Property Type="DateTime" Name="UpdateDT" Nullable="false" />
-		</ComplexType>
-		<ComplexType Name="getWorkspaceHistoryLog_Result">
-		  <Property Type="String" Name="NewValue" Nullable="true" MaxLength="25" />
-		  <Property Type="String" Name="OldValue" Nullable="true" MaxLength="25" />
-		  <Property Type="String" Name="DisplayName" Nullable="true" MaxLength="50" />
-		  <Property Type="DateTime" Name="UpdateDate" Nullable="false" />
-		</ComplexType>
-		<ComplexType Name="getWorkspacePermissions_Result">
-		  <Property Type="Int32" Name="WorkspaceID" Nullable="false" />
-		  <Property Type="Int32" Name="WorkspaceRoleID" Nullable="false" />
-		  <Property Type="Int32" Name="WorkspaceStateID" Nullable="false" />
-		</ComplexType>
-		<ComplexType Name="getWorkspaceVariableByTaskElementID_Result">
-		  <Property Type="Int32" Name="BOETaskWSVarID" Nullable="false" />
-		  <Property Type="Int32" Name="BOETaskElementID" Nullable="false" />
-		  <Property Type="Int32" Name="WorkspaceVariableID" Nullable="false" />
-		  <Property Type="String" Name="WorkspaceVariableName" Nullable="true" MaxLength="20" />
-		  <Property Type="Decimal" Name="WorkspaceVariableValue" Nullable="true" Precision="29" Scale="10" />
-		  <Property Type="Int32" Name="SortByID" Nullable="false" />
-		  <Property Type="Int32" Name="ValueTypeID" Nullable="false" />
-		  <Property Type="Boolean" Name="IsPercentage" Nullable="true" />
-		</ComplexType>
 		<EntityType Name="SegmentLU">
 		  <Key>
 			<PropertyRef Name="SegmentID" />
@@ -12570,14 +12185,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</Dependent>
 		  </ReferentialConstraint>
 		</Association>
-		<ComplexType Name="getBOEIDForProjectMapAdvancedSearch_Result">
-		  <Property Type="Int32" Name="BOEID" Nullable="false" />
-		  <Property Type="Int32" Name="WorkspaceId" Nullable="false" />
-		</ComplexType>
-		<ComplexType Name="getBOEIDForProjectMapQuickSearch_Result">
-		  <Property Type="Int32" Name="BOEID" Nullable="false" />
-		  <Property Type="Int32" Name="WorkspaceId" Nullable="false" />
-		</ComplexType>
 		<EntityType Name="ProjectMapSpread">
 		  <Key>
 			<PropertyRef Name="ID" />
@@ -15790,23 +15397,16 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImportMapping FunctionImportName="deleteBOEFormIBOE" FunctionName="GenBOE.Models.Store.deleteBOEFormIBOE" />
 		  <FunctionImportMapping FunctionImportName="deleteBOEFormPBOE" FunctionName="GenBOE.Models.Store.deleteBOEFormPBOE" />
 		  <FunctionImportMapping FunctionImportName="deleteBOELaborSpreadByBOELaborTypeID" FunctionName="GenBOE.Models.Store.deleteBOELaborSpreadByBOELaborTypeID" />
-		  <FunctionImportMapping FunctionImportName="deleteBOELaborSpreadByBOELaborTypeIDviaTableParameter" FunctionName="GenBOE.Models.Store.deleteBOELaborSpreadByBOELaborTypeIDviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="deleteBOELaborType" FunctionName="GenBOE.Models.Store.deleteBOELaborType" />
 		  <FunctionImportMapping FunctionImportName="deleteBOELaborTypeCustomFieldValue" FunctionName="GenBOE.Models.Store.deleteBOELaborTypeCustomFieldValue" />
-		  <FunctionImportMapping FunctionImportName="deleteBOELaborTypeCustomFieldValueviaTableParameter" FunctionName="GenBOE.Models.Store.deleteBOELaborTypeCustomFieldValueviaTableParameter" />
-		  <FunctionImportMapping FunctionImportName="deleteBOELaborTypeviaTableParameter" FunctionName="GenBOE.Models.Store.deleteBOELaborTypeviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="deleteBOEPotentialRolebyETIUserID" FunctionName="GenBOE.Models.Store.deleteBOEPotentialRolebyETIUserID" />
 		  <FunctionImportMapping FunctionImportName="deleteBOETaskElement" FunctionName="GenBOE.Models.Store.deleteBOETaskElement" />
 		  <FunctionImportMapping FunctionImportName="deleteBOETaskElementCustomFieldValue" FunctionName="GenBOE.Models.Store.deleteBOETaskElementCustomFieldValue" />
-		  <FunctionImportMapping FunctionImportName="deleteBOETaskElementCustomFieldValueviaTableParameter" FunctionName="GenBOE.Models.Store.deleteBOETaskElementCustomFieldValueviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="deleteBOETaskElementMetricDetail" FunctionName="GenBOE.Models.Store.deleteBOETaskElementMetricDetail" />
 		  <FunctionImportMapping FunctionImportName="deleteBOETaskElementOrdinaryVariable" FunctionName="GenBOE.Models.Store.deleteBOETaskElementOrdinaryVariable" />
-		  <FunctionImportMapping FunctionImportName="deleteBOETaskElementOrdinaryVariableviaTableParameter" FunctionName="GenBOE.Models.Store.deleteBOETaskElementOrdinaryVariableviaTableParameter" />
-		  <FunctionImportMapping FunctionImportName="deleteBOETaskElementviaTableParameter" FunctionName="GenBOE.Models.Store.deleteBOETaskElementviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="deleteCLIN" FunctionName="GenBOE.Models.Store.deleteCLIN" />
 		  <FunctionImportMapping FunctionImportName="deleteCustomField" FunctionName="GenBOE.Models.Store.deleteCustomField" />
 		  <FunctionImportMapping FunctionImportName="deleteCustomFieldValueByCustomFieldValueID" FunctionName="GenBOE.Models.Store.deleteCustomFieldValueByCustomFieldValueID" />
-		  <FunctionImportMapping FunctionImportName="deleteFullWorkspace" FunctionName="GenBOE.Models.Store.deleteFullWorkspace" />
 		  <FunctionImportMapping FunctionImportName="deleteMaterialTaskElement" FunctionName="GenBOE.Models.Store.deleteMaterialTaskElement" />
 		  <FunctionImportMapping FunctionImportName="deleteMetricDetail" FunctionName="GenBOE.Models.Store.deleteMetricDetail" />
 		  <FunctionImportMapping FunctionImportName="deleteMockTestData" FunctionName="GenBOE.Models.Store.deleteMockTestData" />
@@ -15814,13 +15414,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImportMapping FunctionImportName="deleteMSTTravelTripCustomFieldValue" FunctionName="GenBOE.Models.Store.deleteMSTTravelTripCustomFieldValue" />
 		  <FunctionImportMapping FunctionImportName="deleteMSTTravelTripTaskelement" FunctionName="GenBOE.Models.Store.deleteMSTTravelTripTaskelement" />
 		  <FunctionImportMapping FunctionImportName="deleteMSTZoneTravelOrigin" FunctionName="GenBOE.Models.Store.deleteMSTZoneTravelOrigin" />
-		  <FunctionImportMapping FunctionImportName="deleteODCSpreadByODCTypeID" FunctionName="GenBOE.Models.Store.deleteODCSpreadByODCTypeID" />
-		  <FunctionImportMapping FunctionImportName="deleteODCTaskElement" FunctionName="GenBOE.Models.Store.deleteODCTaskElement" />
-		  <FunctionImportMapping FunctionImportName="deleteODCType" FunctionName="GenBOE.Models.Store.deleteODCType" />
 		  <FunctionImportMapping FunctionImportName="deleteOrdinaryVariableResourceType" FunctionName="GenBOE.Models.Store.deleteOrdinaryVariableResourceType" />
-		  <FunctionImportMapping FunctionImportName="deleteOrdinaryVariableResourceTypeviaTableParameter" FunctionName="GenBOE.Models.Store.deleteOrdinaryVariableResourceTypeviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="deleteOutputFormatTemplateWorkspace" FunctionName="GenBOE.Models.Store.deleteOutputFormatTemplateWorkspace" />
-		  <FunctionImportMapping FunctionImportName="deletePerDiem" FunctionName="GenBOE.Models.Store.deletePerDiem" />
 		  <FunctionImportMapping FunctionImportName="deletePerformingOrganizationByPerformingOrganizationID" FunctionName="GenBOE.Models.Store.deletePerformingOrganizationByPerformingOrganizationID" />
 		  <FunctionImportMapping FunctionImportName="deletePerformingOrganizationByPerformingOrganizationListID" FunctionName="GenBOE.Models.Store.deletePerformingOrganizationByPerformingOrganizationListID" />
 		  <FunctionImportMapping FunctionImportName="deleteProPricerExport" FunctionName="GenBOE.Models.Store.deleteProPricerExport" />
@@ -15828,7 +15423,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImportMapping FunctionImportName="deleteProPricerExportTasks" FunctionName="GenBOE.Models.Store.deleteProPricerExportTasks" />
 		  <FunctionImportMapping FunctionImportName="deleteResourceList" FunctionName="GenBOE.Models.Store.deleteResourceList" />
 		  <FunctionImportMapping FunctionImportName="deleteSumOfBOEByOrdinaryVariableID" FunctionName="GenBOE.Models.Store.deleteSumOfBOEByOrdinaryVariableID" />
-		  <FunctionImportMapping FunctionImportName="deleteSumOfBOEByOrdinaryVariableIDviaTableParameter" FunctionName="GenBOE.Models.Store.deleteSumOfBOEByOrdinaryVariableIDviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="deleteSumOfBOEByWorkspaceVariableID" FunctionName="GenBOE.Models.Store.deleteSumOfBOEByWorkspaceVariableID" />
 		  <FunctionImportMapping FunctionImportName="deleteSystemPerformingOrganizationByPerformingOrganizationID" FunctionName="GenBOE.Models.Store.deleteSystemPerformingOrganizationByPerformingOrganizationID" />
 		  <FunctionImportMapping FunctionImportName="deleteSystemResourceByResourceID" FunctionName="GenBOE.Models.Store.deleteSystemResourceByResourceID" />
@@ -15840,14 +15434,10 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImportMapping FunctionImportName="deleteTravelTripTaskElement" FunctionName="GenBOE.Models.Store.deleteTravelTripTaskElement" />
 		  <FunctionImportMapping FunctionImportName="deleteTravelTripTaskElementCustomFieldValue" FunctionName="GenBOE.Models.Store.deleteTravelTripTaskElementCustomFieldValue" />
 		  <FunctionImportMapping FunctionImportName="deleteTrip" FunctionName="GenBOE.Models.Store.deleteTrip" />
-		  <FunctionImportMapping FunctionImportName="deleteUserLog" FunctionName="GenBOE.Models.Store.deleteUserLog" />
 		  <FunctionImportMapping FunctionImportName="deleteWorkBreakdownStructure" FunctionName="GenBOE.Models.Store.deleteWorkBreakdownStructure" />
-		  <FunctionImportMapping FunctionImportName="deleteWorkspace" FunctionName="GenBOE.Models.Store.deleteWorkspace" />
 		  <FunctionImportMapping FunctionImportName="deleteWorkspace_ProcessSoftDelete" FunctionName="GenBOE.Models.Store.deleteWorkspace_ProcessSoftDelete" />
 		  <FunctionImportMapping FunctionImportName="deleteWorkspacePerformingOrganizationByPerformingOrganizationID" FunctionName="GenBOE.Models.Store.deleteWorkspacePerformingOrganizationByPerformingOrganizationID" />
 		  <FunctionImportMapping FunctionImportName="deleteWorkspaceResourceByResourceID" FunctionName="GenBOE.Models.Store.deleteWorkspaceResourceByResourceID" />
-		  <FunctionImportMapping FunctionImportName="deleteWorkspaceRMSTravelEscalationRate" FunctionName="GenBOE.Models.Store.deleteWorkspaceRMSTravelEscalationRate" />
-		  <FunctionImportMapping FunctionImportName="deleteWorkspaceRMSTravelNonzoneFeesAndCosts" FunctionName="GenBOE.Models.Store.deleteWorkspaceRMSTravelNonzoneFeesAndCosts" />
 		  <FunctionImportMapping FunctionImportName="deleteWorkspaceRolesByETIUserID" FunctionName="GenBOE.Models.Store.deleteWorkspaceRolesByETIUserID" />
 		  <FunctionImportMapping FunctionImportName="deleteWorkspaceVariable" FunctionName="GenBOE.Models.Store.deleteWorkspaceVariable" />
 		  <FunctionImportMapping FunctionImportName="deleteWorkspaceVariableResourceType" FunctionName="GenBOE.Models.Store.deleteWorkspaceVariableResourceType" />
@@ -15888,107 +15478,26 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			  </ComplexTypeMapping>
 			</ResultMapping>
 		  </FunctionImportMapping>
-		  <FunctionImportMapping FunctionImportName="getBOEPermissions" FunctionName="GenBOE.Models.Store.getBOEPermissions">
-			<ResultMapping>
-			  <ComplexTypeMapping TypeName="GenBOE.Models.getBOEPermissions_Result">
-				<ScalarProperty Name="BOEID" ColumnName="BOEID" />
-				<ScalarProperty Name="BOERoleID" ColumnName="BOERoleID" />
-				<ScalarProperty Name="BOEStateID" ColumnName="BOEStateID" />
-				<ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
-			  </ComplexTypeMapping>
-			</ResultMapping>
-		  </FunctionImportMapping>
-		  <FunctionImportMapping FunctionImportName="getLaborSpread" FunctionName="GenBOE.Models.Store.getLaborSpread">
-			<ResultMapping>
-			  <ComplexTypeMapping TypeName="GenBOE.Models.getLaborSpread_Result">
-				<ScalarProperty Name="BOELaborSpreadID" ColumnName="BOELaborSpreadID" />
-				<ScalarProperty Name="BOELaborTypeID" ColumnName="BOELaborTypeID" />
-				<ScalarProperty Name="LaborSpreadDate" ColumnName="LaborSpreadDate" />
-				<ScalarProperty Name="LaborSpreadValue" ColumnName="LaborSpreadValue" />
-				<ScalarProperty Name="BOEID" ColumnName="BOEID" />
-			  </ComplexTypeMapping>
-			</ResultMapping>
-		  </FunctionImportMapping>
-		  <FunctionImportMapping FunctionImportName="getOrdinaryVariableByTaskElementID" FunctionName="GenBOE.Models.Store.getOrdinaryVariableByTaskElementID">
-			<ResultMapping>
-			  <ComplexTypeMapping TypeName="GenBOE.Models.getOrdinaryVariableByTaskElementID_Result">
-				<ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
-				<ScalarProperty Name="OrdinaryVariableID" ColumnName="OrdinaryVariableID" />
-				<ScalarProperty Name="OrdinaryVariableName" ColumnName="OrdinaryVariableName" />
-				<ScalarProperty Name="OrdinaryVariableValue" ColumnName="OrdinaryVariableValue" />
-				<ScalarProperty Name="SortByID" ColumnName="SortByID" />
-				<ScalarProperty Name="ValueTypeID" ColumnName="ValueTypeID" />
-				<ScalarProperty Name="IsPercentage" ColumnName="IsPercentage" />
-				<ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
-			  </ComplexTypeMapping>
-			</ResultMapping>
-		  </FunctionImportMapping>
 		  <FunctionImportMapping FunctionImportName="getPerformingOrganizationInUseFlagByPerformingOrganizationListID" FunctionName="GenBOE.Models.Store.getPerformingOrganizationInUseFlagByPerformingOrganizationListID" />
 		  <FunctionImportMapping FunctionImportName="getResourceInUseFlagByResourceListID" FunctionName="GenBOE.Models.Store.getResourceInUseFlagByResourceListID" />
 		  <FunctionImportMapping FunctionImportName="getResourceInUseFlagBySystemResourceID" FunctionName="GenBOE.Models.Store.getResourceInUseFlagBySystemResourceID" />
 		  <FunctionImportMapping FunctionImportName="getSystemPermissions" FunctionName="GenBOE.Models.Store.getSystemPermissions" />
 		  <FunctionImportMapping FunctionImportName="getSystemResourceInUseFlag" FunctionName="GenBOE.Models.Store.getSystemResourceInUseFlag" />
-		  <FunctionImportMapping FunctionImportName="getWorkspaceHistoryLog" FunctionName="GenBOE.Models.Store.getWorkspaceHistoryLog">
-			<ResultMapping>
-			  <ComplexTypeMapping TypeName="GenBOE.Models.getWorkspaceHistoryLog_Result">
-				<ScalarProperty Name="NewValue" ColumnName="NewValue" />
-				<ScalarProperty Name="OldValue" ColumnName="OldValue" />
-				<ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
-				<ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
-			  </ComplexTypeMapping>
-			</ResultMapping>
-		  </FunctionImportMapping>
 		  <FunctionImportMapping FunctionImportName="getWorkspaceIDByWorkspaceAdvancedSearch" FunctionName="GenBOE.Models.Store.getWorkspaceIDByWorkspaceAdvancedSearch" />
-		  <FunctionImportMapping FunctionImportName="getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID" FunctionName="GenBOE.Models.Store.getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID" />
-		  <FunctionImportMapping FunctionImportName="getWorkspacePermissions" FunctionName="GenBOE.Models.Store.getWorkspacePermissions">
-			<ResultMapping>
-			  <ComplexTypeMapping TypeName="GenBOE.Models.getWorkspacePermissions_Result">
-				<ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
-				<ScalarProperty Name="WorkspaceRoleID" ColumnName="WorkspaceRoleID" />
-				<ScalarProperty Name="WorkspaceStateID" ColumnName="WorkspaceStateID" />
-			  </ComplexTypeMapping>
-			</ResultMapping>
-		  </FunctionImportMapping>
 		  <FunctionImportMapping FunctionImportName="getWorkspaceResourceInUseFlagByMultipleResources" FunctionName="GenBOE.Models.Store.getWorkspaceResourceInUseFlagByMultipleResources" />
 		  <FunctionImportMapping FunctionImportName="getWorkspaceResourceInUseFlagByResourceID" FunctionName="GenBOE.Models.Store.getWorkspaceResourceInUseFlagByResourceID" />
-		  <FunctionImportMapping FunctionImportName="getWorkspaceVariableByTaskElementID" FunctionName="GenBOE.Models.Store.getWorkspaceVariableByTaskElementID">
-			<ResultMapping>
-			  <ComplexTypeMapping TypeName="GenBOE.Models.getWorkspaceVariableByTaskElementID_Result">
-				<ScalarProperty Name="BOETaskWSVarID" ColumnName="BOETaskWSVarID" />
-				<ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
-				<ScalarProperty Name="WorkspaceVariableID" ColumnName="WorkspaceVariableID" />
-				<ScalarProperty Name="WorkspaceVariableName" ColumnName="WorkspaceVariableName" />
-				<ScalarProperty Name="WorkspaceVariableValue" ColumnName="WorkspaceVariableValue" />
-				<ScalarProperty Name="SortByID" ColumnName="SortByID" />
-				<ScalarProperty Name="ValueTypeID" ColumnName="ValueTypeID" />
-				<ScalarProperty Name="IsPercentage" ColumnName="IsPercentage" />
-			  </ComplexTypeMapping>
-			</ResultMapping>
-		  </FunctionImportMapping>
 		  <FunctionImportMapping FunctionImportName="insertBOEApprover" FunctionName="GenBOE.Models.Store.insertBOEApprover" />
-		  <FunctionImportMapping FunctionImportName="insertBOECommentHistory" FunctionName="GenBOE.Models.Store.insertBOECommentHistory" />
-		  <FunctionImportMapping FunctionImportName="insertBOELaborSpreadviaTableParameter" FunctionName="GenBOE.Models.Store.insertBOELaborSpreadviaTableParameter" />
-		  <FunctionImportMapping FunctionImportName="insertBOELaborTypeCustomFieldValueviaTableParameter" FunctionName="GenBOE.Models.Store.insertBOELaborTypeCustomFieldValueviaTableParameter" />
-		  <FunctionImportMapping FunctionImportName="insertBOELaborTypeviatableParameter" FunctionName="GenBOE.Models.Store.insertBOELaborTypeviatableParameter" />
-		  <FunctionImportMapping FunctionImportName="insertBOETaskElementCustomFieldValueviaTableParameter" FunctionName="GenBOE.Models.Store.insertBOETaskElementCustomFieldValueviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="insertBOETaskElementMetricDetailXREF" FunctionName="GenBOE.Models.Store.insertBOETaskElementMetricDetailXREF" />
-		  <FunctionImportMapping FunctionImportName="insertBOETaskElementOrdinaryVariableviaTableParameter" FunctionName="GenBOE.Models.Store.insertBOETaskElementOrdinaryVariableviaTableParameter" />
-		  <FunctionImportMapping FunctionImportName="insertBOETaskElementviaTableParameter" FunctionName="GenBOE.Models.Store.insertBOETaskElementviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="insertBOETaskElementWorkspaceVariable" FunctionName="GenBOE.Models.Store.insertBOETaskElementWorkspaceVariable" />
-		  <FunctionImportMapping FunctionImportName="insertBOETaskElementWorkspaceVariableviaTableParameter" FunctionName="GenBOE.Models.Store.insertBOETaskElementWorkspaceVariableviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="insertDefaultMultiClinWBS" FunctionName="GenBOE.Models.Store.insertDefaultMultiClinWBS" />
-		  <FunctionImportMapping FunctionImportName="insertDefaultPerformingOrganization" FunctionName="GenBOE.Models.Store.insertDefaultPerformingOrganization" />
-		  <FunctionImportMapping FunctionImportName="insertDefaultResource" FunctionName="GenBOE.Models.Store.insertDefaultResource" />
 		  <FunctionImportMapping FunctionImportName="insertLocation" FunctionName="GenBOE.Models.Store.insertLocation" />
 		  <FunctionImportMapping FunctionImportName="insertMetricDetail" FunctionName="GenBOE.Models.Store.insertMetricDetail" />
 		  <FunctionImportMapping FunctionImportName="insertOrdinaryVariableResourceType" FunctionName="GenBOE.Models.Store.insertOrdinaryVariableResourceType" />
-		  <FunctionImportMapping FunctionImportName="insertOrdinaryVariableResourceTypeviaTableParameter" FunctionName="GenBOE.Models.Store.insertOrdinaryVariableResourceTypeviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="insertOutputFormatTemplate" FunctionName="GenBOE.Models.Store.insertOutputFormatTemplate" />
 		  <FunctionImportMapping FunctionImportName="insertOutputFormatTemplateWorkspace" FunctionName="GenBOE.Models.Store.insertOutputFormatTemplateWorkspace" />
 		  <FunctionImportMapping FunctionImportName="insertProPricerExportCustomField" FunctionName="GenBOE.Models.Store.insertProPricerExportCustomField" />
 		  <FunctionImportMapping FunctionImportName="insertProPricerExportField" FunctionName="GenBOE.Models.Store.insertProPricerExportField" />
 		  <FunctionImportMapping FunctionImportName="insertSumOfBOE_OrdinaryVariable" FunctionName="GenBOE.Models.Store.insertSumOfBOE_OrdinaryVariable" />
-		  <FunctionImportMapping FunctionImportName="insertSumOfBOE_OrdinaryVariableviaTableParameter" FunctionName="GenBOE.Models.Store.insertSumOfBOE_OrdinaryVariableviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="insertSumOfBOE_WorkspaceVariable" FunctionName="GenBOE.Models.Store.insertSumOfBOE_WorkspaceVariable" />
 		  <FunctionImportMapping FunctionImportName="insertSystemUserRole" FunctionName="GenBOE.Models.Store.insertSystemUserRole" />
 		  <FunctionImportMapping FunctionImportName="insertWorkspaceUserRole" FunctionName="GenBOE.Models.Store.insertWorkspaceUserRole" />
@@ -15998,21 +15507,14 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImportMapping FunctionImportName="restoreWorkspaceRate" FunctionName="GenBOE.Models.Store.restoreWorkspaceRate" />
 		  <FunctionImportMapping FunctionImportName="restoreWorkspaceVersion" FunctionName="GenBOE.Models.Store.restoreWorkspaceVersion" />
 		  <FunctionImportMapping FunctionImportName="updateBOEApproval" FunctionName="GenBOE.Models.Store.updateBOEApproval" />
-		  <FunctionImportMapping FunctionImportName="updateBOELaborTypeCustomFieldValueviaTableParameter" FunctionName="GenBOE.Models.Store.updateBOELaborTypeCustomFieldValueviaTableParameter" />
-		  <FunctionImportMapping FunctionImportName="updateBOELaborTypeviaTableParameter" FunctionName="GenBOE.Models.Store.updateBOELaborTypeviaTableParameter" />
-		  <FunctionImportMapping FunctionImportName="updateBOETaskElementCustomFieldValueviaTableParameter" FunctionName="GenBOE.Models.Store.updateBOETaskElementCustomFieldValueviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="updateBOETaskElementLaborTypeWarningFlag" FunctionName="GenBOE.Models.Store.updateBOETaskElementLaborTypeWarningFlag" />
-		  <FunctionImportMapping FunctionImportName="updateBOETaskElementOrdinaryVariableviaTableParameter" FunctionName="GenBOE.Models.Store.updateBOETaskElementOrdinaryVariableviaTableParameter" />
-		  <FunctionImportMapping FunctionImportName="updateBOETaskElementviaTableParameter" FunctionName="GenBOE.Models.Store.updateBOETaskElementviaTableParameter" />
 		  <FunctionImportMapping FunctionImportName="updateMileageReimbursementRate" FunctionName="GenBOE.Models.Store.updateMileageReimbursementRate" />
 		  <FunctionImportMapping FunctionImportName="UpdateMSTTravelNonzoneFeesAndCosts" FunctionName="GenBOE.Models.Store.UpdateMSTTravelNonzoneFeesAndCosts" />
 		  <FunctionImportMapping FunctionImportName="UpdateMSTZoneTravelDestination" FunctionName="GenBOE.Models.Store.UpdateMSTZoneTravelDestination" />
 		  <FunctionImportMapping FunctionImportName="updateSumOfBOEs" FunctionName="GenBOE.Models.Store.updateSumOfBOEs" />
-		  <FunctionImportMapping FunctionImportName="updateTravelTripInUse" FunctionName="GenBOE.Models.Store.updateTravelTripInUse" />
 		  <FunctionImportMapping FunctionImportName="updateWorkspaceAllowSearch" FunctionName="GenBOE.Models.Store.updateWorkspaceAllowSearch" />
 		  <FunctionImportMapping FunctionImportName="updateWorkspacePerformingOrganizationFlag" FunctionName="GenBOE.Models.Store.updateWorkspacePerformingOrganizationFlag" />
 		  <FunctionImportMapping FunctionImportName="updateWorkspaceProcessSoftDelete" FunctionName="GenBOE.Models.Store.updateWorkspaceProcessSoftDelete" />
-		  <FunctionImportMapping FunctionImportName="updateWorkspaceStatus" FunctionName="GenBOE.Models.Store.updateWorkspaceStatus" />
 		  <FunctionImportMapping FunctionImportName="updateWorkspaceUserRoleHideHelp" FunctionName="GenBOE.Models.Store.updateWorkspaceUserRoleHideHelp" />
 		  <FunctionImportMapping FunctionImportName="upsertBOE" FunctionName="GenBOE.Models.Store.upsertBOE" />
 		  <FunctionImportMapping FunctionImportName="upsertBOEComment" FunctionName="GenBOE.Models.Store.upsertBOEComment" />
@@ -16032,12 +15534,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  <FunctionImportMapping FunctionImportName="upsertMSTTravelTrip" FunctionName="GenBOE.Models.Store.upsertMSTTravelTrip" />
 		  <FunctionImportMapping FunctionImportName="upsertMSTTravelTripCustomFieldValue" FunctionName="GenBOE.Models.Store.upsertMSTTravelTripCustomFieldValue" />
 		  <FunctionImportMapping FunctionImportName="upsertMSTZoneTravelOrigin" FunctionName="GenBOE.Models.Store.upsertMSTZoneTravelOrigin" />
-		  <FunctionImportMapping FunctionImportName="upsertODCSpread" FunctionName="GenBOE.Models.Store.upsertODCSpread" />
-		  <FunctionImportMapping FunctionImportName="upsertODCTaskElement" FunctionName="GenBOE.Models.Store.upsertODCTaskElement" />
-		  <FunctionImportMapping FunctionImportName="upsertODCType" FunctionName="GenBOE.Models.Store.upsertODCType" />
 		  <FunctionImportMapping FunctionImportName="upsertOutputFormatTemplate" FunctionName="GenBOE.Models.Store.upsertOutputFormatTemplate" />
 		  <FunctionImportMapping FunctionImportName="upsertPerDiem" FunctionName="GenBOE.Models.Store.upsertPerDiem" />
-		  <FunctionImportMapping FunctionImportName="upsertPerformingOrganization" FunctionName="GenBOE.Models.Store.upsertPerformingOrganization" />
 		  <FunctionImportMapping FunctionImportName="upsertPerformingOrganizationList" FunctionName="GenBOE.Models.Store.upsertPerformingOrganizationList" />
 		  <FunctionImportMapping FunctionImportName="upsertProPricerExport" FunctionName="GenBOE.Models.Store.upsertProPricerExport" />
 		  <FunctionImportMapping FunctionImportName="upsertResourceList" FunctionName="GenBOE.Models.Store.upsertResourceList" />
@@ -16169,7 +15667,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 		  </FunctionImportMapping>
 		  <FunctionImportMapping FunctionImportName="resetWorkspaceDefaultFees" FunctionName="GenBOE.Models.Store.resetWorkspaceDefaultFees" />
 		  <FunctionImportMapping FunctionImportName="resetWorkspaceDefaultRates" FunctionName="GenBOE.Models.Store.resetWorkspaceDefaultRates" />
-		  <FunctionImportMapping FunctionImportName="deleteAllODCTaskElements" FunctionName="GenBOE.Models.Store.deleteAllODCTaskElements" />
 		  <FunctionImportMapping FunctionImportName="deleteAllMSTTravelTripTaskElements" FunctionName="GenBOE.Models.Store.deleteAllMSTTravelTripTaskElements" />
 		  <FunctionImportMapping FunctionImportName="deleteAllTravelTripTaskElements" FunctionName="GenBOE.Models.Store.deleteAllTravelTripTaskElements" />
 		  <FunctionImportMapping FunctionImportName="deleteAllMaterialTaskElements" FunctionName="GenBOE.Models.Store.deleteAllMaterialTaskElements" />
@@ -16638,14 +16135,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
 			</EntityTypeMapping>
 		  </EntitySetMapping>
 		  <FunctionImportMapping FunctionImportName="insertMessageConfirmation" FunctionName="GenBOE.Models.Store.insertMessageConfirmation" />
-          <FunctionImportMapping FunctionImportName="deleteWorkspaceResourceviaTableParameter" FunctionName="GenBOE.Models.Store.deleteWorkspaceResourceviaTableParameter" />
-          <FunctionImportMapping FunctionImportName="getResourceInUseFlagByResourceListIDviaTableParameter" FunctionName="GenBOE.Models.Store.getResourceInUseFlagByResourceListIDviaTableParameter" />
-          <FunctionImportMapping FunctionImportName="insertWorkspaceResourceviaTableParameter" FunctionName="GenBOE.Models.Store.insertWorkspaceResourceviaTableParameter" />
-          <FunctionImportMapping FunctionImportName="updateWorkspaceResourceviaTableParameter" FunctionName="GenBOE.Models.Store.updateWorkspaceResourceviaTableParameter" />
           <FunctionImportMapping FunctionImportName="deleteSkillMix" FunctionName="GenBOE.Models.Store.deleteSkillMix" />
-          <FunctionImportMapping FunctionImportName="insertSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertSkillMixviaTableParameter" />
           <FunctionImportMapping FunctionImportName="deleteCommonDisclosureSkillMix" FunctionName="GenBOE.Models.Store.deleteCommonDisclosureSkillMix" />
-          <FunctionImportMapping FunctionImportName="insertCommonDisclosureSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertCommonDisclosureSkillMixviaTableParameter" />
           <EntitySetMapping Name="MOQTypeSelectionTableDataResourceHours">
             <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelectionTableDataResourceHour">
               <MappingFragment StoreEntitySet="MOQTypeSelectionTableDataResourceHours">
@@ -16661,7 +16152,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="deleteMOQTypeSelectionTableDataResourceHours" FunctionName="GenBOE.Models.Store.deleteMOQTypeSelectionTableDataResourceHours" />
-          <FunctionImportMapping FunctionImportName="insertMOQTypeSelectionTableDataResourceHoursviaTableParameter" FunctionName="GenBOE.Models.Store.insertMOQTypeSelectionTableDataResourceHoursviaTableParameter" />
           <EntitySetMapping Name="BOEs">
             <EntityTypeMapping TypeName="GenBOE.Models.BOE">
               <MappingFragment StoreEntitySet="BOE">
