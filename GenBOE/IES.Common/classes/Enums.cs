@@ -1242,7 +1242,8 @@ namespace IES.Common
 	/// </summary>
 	public enum ProjectMapType
 	{
-		[Description("Standard without Offload")]
+		// Formerly "Standard without Offload"
+		[Description("Standard")]
 		StandardWithoutOffload = 1,
 		[Description("Standard with Offload")]
 		StandardWithOffload = 2,

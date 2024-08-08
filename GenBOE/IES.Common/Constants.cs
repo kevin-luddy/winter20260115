@@ -990,5 +990,10 @@ namespace IES.Common
 		/// Error message when exporting (getting JSON) rates for version
 		/// </summary>
 		public const string ERROR_GETTING_RATES_FOR_VERSION = "Error exporting rates for version";
+
+		/// <summary>
+		/// Description for Standard with Offload Project Map Type (Workspace Type)
+		/// </summary>
+		public const string PROJECT_TYPE_MAP_STANDARD_WITH_OFFLOAD = "Standard with Offload";
 	}
 }
