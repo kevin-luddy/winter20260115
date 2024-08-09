@@ -182,6 +182,7 @@
     <Build Include="Release Scripts\Release 2024.01\1 - Release 2024.01 Script.sql" />
     <Build Include="_Full Script Files For Specific Versions\IES - 2024.01 Generated On 7_31_2024.sql" />
     <Build Include="Release Scripts\Release 2024.02\1 - Release 2024.02 Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\IES - 2024.02 Generated On 8_9_2024.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Object Scripts\Stored Procedures\ELMAH_LogError.sql" />
