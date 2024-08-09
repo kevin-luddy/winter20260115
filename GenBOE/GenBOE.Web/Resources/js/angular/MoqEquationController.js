@@ -23,8 +23,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 				if ($scope.model.CommonDisclosureEnabled) {
 					$scope.setCommonDisclosureTotals(e);
+					$scope.refreshResourceGroupColors(e);
 				}
-
 				return e.SelectedMOQType.toString();
 			}), function (id) {
 				$scope.InitializeRteFields(id);
@@ -1466,16 +1466,57 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
+	$scope.updateLaborSkillMix = function (item, moqType) {
+		//get historical hours from skill mix table
+		let totalHistoricalHours = $scope.getTotalCDHistoricalHours(moqType);
+		if (totalHistoricalHours === 0) {
+			item.LaborSkillMix = 0;
+		}
+		else {
+			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
+		}
+	};
+
+	$scope.getTotalCDHistoricalHours = function (moqType) {
+		let totalHistoricalHours = 0;
+		moqType.CommonDisclosureTable.forEach(item => {
+			totalHistoricalHours += item.HistoricalHours;
+		});
+		return totalHistoricalHours;
+	};
+
+	$scope.getTotalSMHistoricalHours = function (moqType) {
+		let totalHistoricalHours = 0;
+		moqType.SkillMixTable.forEach(item => {
+			if (item.Included) {
+				totalHistoricalHours += item.HistoricalHours;
+			}
+		});
+		return totalHistoricalHours;
+	};
+
 	$scope.refreshCommonDisclosureTable = function (moqType) {
 		// Get all the data tables
 		const data = {
 			currentSkillMixData: [],
-			commonDisclosureSMData: []
+			commonDisclosureSMData: [],
+			resourceHours: []
 		};
 
 		data.boeId = ManageTaskModel.boeId;
 		data.currentSkillMixData = moqType.SkillMixTable;
 		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
+
+		if (moqType.TableData) {
+			moqType.TableData.forEach(tableData => {
+				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+
+					tableData.ResourceHours.forEach(hours => {
+						data.resourceHours.push(hours);
+					});
+				}
+			});
+		}
 
 		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
 			// send to backend
@@ -1492,6 +1533,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					if (response.data.data) {
 						moqType.CommonDisclosureTable = response.data.data;
 						$scope.setCommonDisclosureTotals(moqType);
+						$scope.refreshResourceGroupColors(moqType);
 					}
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
@@ -1535,6 +1577,30 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				break;
 			}
 		}
+	};
+	$scope.canDelete = function (item, moqType) {
+		//have to find at least one other row with same resource id to be eligible to delete
+		var resourceRowCount = 0;
+		var canDelete = true;
+		for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
+			var row = moqType.CommonDisclosureTable[i];
+			if (row.ResourceID === item.ResourceID) {
+				resourceRowCount++;
+			}
+		}
+		if (resourceRowCount == 1) {
+			canDelete = false;
+		}
+		return canDelete;
+	};
+
+	$scope.refreshResourceGroupColors = function (moqType) {
+		// coming soon
+	};
+	$scope.sortCD = function (moqType) {
+		let colName = "ResourceID";
+		moqType.CommonDisclosureTable.sort((a, b) => a[colName] > b[colName] ? 1 : a[colName] < b[colName] ? -1 : 0);
+		$scope.refreshResourceGroupColors(moqType);
 	};
 
 	$scope.setActualsErrors = function (id, errors) {
@@ -1812,6 +1878,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.setCommonDisclosureTotals = function (moqType) {
+		//first set the labor skill mix column before calculating totals
+		$scope.setLaborSkillMixForCD(moqType);
+
 		// Reset Totals because this method can be called multiple times from multiple areas
 		moqType.HistoricalCommonDisclosureHoursTotal = 0;
 		moqType.LaborCommonDisclosureTotal = 0;
@@ -1826,8 +1895,22 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
 		});
 
-		moqType.BoeCommonDisclosureTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(3));
+		moqType.BoeCommonDisclosureTotal = parseFloat((moqType.BoeCommonDisclosureTotal).toFixed(3));
 		moqType.ProposedCommonDisclosureHoursTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(1));
+	}
+
+	$scope.setLaborSkillMixForCD = function (moqType) {
+		let totalHistoricalHours = 0;
+
+		//get total historical hours in CD table
+		moqType.CommonDisclosureTable.forEach(item => {
+			totalHistoricalHours += item.HistoricalHours;
+		});
+
+		//get labor skill mix % by taking row's historical hours / total
+		moqType.CommonDisclosureTable.forEach(item => {
+			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
+		});
 	}
 
 	$scope.updateBoeSkillMixLock = function (item) {

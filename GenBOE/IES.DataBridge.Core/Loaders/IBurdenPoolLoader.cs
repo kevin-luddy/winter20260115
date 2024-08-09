@@ -29,8 +29,9 @@ namespace IES.DataBridge.Loaders
         /// BurdenPoolGridModelView GetByRevision
         /// </summary>
         /// <param name="revisionId">int</param>
+		/// <param name="isLegacy">Is this only Legacy Burden Pools</param>
         /// <returns>BurdenPoolGridModelView</returns>
-        BurdenPoolGridModelView GetByRevision(int revisionId);
+        BurdenPoolGridModelView GetByRevision(int revisionId, bool isLegacy = false);
 
         /// <summary>
         /// Save collection of BurdenPools. All pools are passed in, then all reference data

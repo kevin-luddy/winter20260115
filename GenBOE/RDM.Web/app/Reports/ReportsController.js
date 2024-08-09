@@ -57,10 +57,11 @@
     }
 
     // Exports the ProPricer Data.
-    $scope.exportProPricerClick = function () {
+    $scope.exportProPricerClick = function (isLegacy) {
         $scope.isExportingProPricer = true;
         setTimeout(function () { $scope.timeoutFuncProPricer(); }, $scope.timeoutTime);
-        DownloadFile('ExportProPricer', VersionIndexModel.wcController, VersionIndexModel.wcActionExportProPricer, $scope.selectedVersion.Id);
+        const parms = $scope.selectedVersion.Id + '/?isLegacy=' + isLegacy.toString();
+        DownloadFile('ExportProPricer', VersionIndexModel.wcController, VersionIndexModel.wcActionExportProPricer, parms);
     }
 
     // Generates Full PPR&D.  Call controller to redirect to export page w/version selector

@@ -936,12 +936,12 @@ namespace GenBOE.Web.Controllers
 		/// Checks to see if workspace exists and user has authorization to it
 		/// </summary>
 		/// <param name="trackingNumber">Tracking Number</param>
+		/// <param name="role">Role to check for</param>
 		/// <returns>Boolean</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<bool> CheckAuthorizationForTrackingNumber(string trackingNumber)
+		public IESResponse<bool> CheckAuthorizationForTrackingNumber(string trackingNumber, string role = null)
 		{
-
 			IESResponse<bool> result = new IESResponse<bool>();
 
 			try
@@ -951,7 +951,17 @@ namespace GenBOE.Web.Controllers
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
 				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber);
-				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
+
+				Role? roleEnum = null;
+				if (!string.IsNullOrWhiteSpace(role) && Enum.TryParse<Role>(role, out Role parsedRole))
+				{
+					roleEnum = parsedRole;
+				}
+
+				bool isAllowed = permissions.Any(x =>
+					x.AuthorizedRole == Role.SystemAdmin ||
+					(!string.IsNullOrWhiteSpace(role) && x.AuthorizedRole == roleEnum) ||
+					(string.IsNullOrWhiteSpace(role) && workspaces.Any(y => y.Id == x.WorkspaceId)));
 
 				if (isAllowed)
 				{

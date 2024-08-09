@@ -1234,7 +1234,9 @@ namespace IES.Common
 		[Description("INDIRECT")]
 		INDIRECT = 1,
 		[Description("SVCCTR")]
-		SVCCTR = 2
+		SVCCTR = 2,
+		[Description("DIRECT")]
+		DIRECT = 3
 	}
 
 	/// <summary>
@@ -1242,7 +1244,8 @@ namespace IES.Common
 	/// </summary>
 	public enum ProjectMapType
 	{
-		[Description("Standard without Offload")]
+		// Formerly "Standard without Offload"
+		[Description("Standard")]
 		StandardWithoutOffload = 1,
 		[Description("Standard with Offload")]
 		StandardWithOffload = 2,
