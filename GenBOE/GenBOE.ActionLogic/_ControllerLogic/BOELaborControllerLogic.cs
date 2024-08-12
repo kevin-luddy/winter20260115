@@ -4025,9 +4025,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
 					string resourceOld = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ? string.Empty : grouping.Key;
 					string resourceNew = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ? grouping.Key : string.Empty;
-					MOQTypeSelectionTableDataResourceHoursDTO tempResourceHour = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
-						? resourceHours.FirstOrDefault(x => x.ResourceName != null && x.ResourceName.Equals(resourceNew))
-						: resourceHours.FirstOrDefault(x => x.ResourceName != null && x.ResourceName.Equals(resourceOld));
 
 					newTable.Add(
 						new SkillMixModelView
@@ -4035,8 +4032,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							HistoricalHours = totalGroupHours,
 							ResourceOld = resourceOld,
 							ResourceNew = resourceNew,
-							LaborSkillMix = totalGroupHours / totalHours,
-							ShouldIncludedBeDisabled = tempResourceHour == null || string.IsNullOrEmpty(tempResourceHour.BRCName)
+							LaborSkillMix = totalGroupHours / totalHours
 						}
 					);
 				}
@@ -4086,6 +4082,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 			}
+			
 			return newTable;
 		}
 
