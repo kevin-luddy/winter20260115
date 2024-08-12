@@ -884,7 +884,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 				foreach (string skillMixResourceNew in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceNew))
 				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: BOE kill Mix has invalid value for {0}.", skillMixResourceNew));
+					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceNew));
 				}
 
 				if (totalSKillMixRowsBOESkillMix != 100)
