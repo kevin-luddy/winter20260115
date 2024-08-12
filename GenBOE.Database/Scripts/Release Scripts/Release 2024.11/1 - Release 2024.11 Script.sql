@@ -166,21 +166,6 @@ DELETE
 
 GO
 
--- Purge ProPricer Trip fields
-UPDATE [dbo].[ProPricerFieldXREF]
-	SET ProPricerFieldID = 10 -- BLANK
-	WHERE ProPricerFieldID IN (
-		SELECT ProPricerFieldID
-		FROM [dbo].[ProPricerFieldLU]
-		WHERE ProPricerField like 'Trip_%'
-	)
-
-DELETE
-  FROM [dbo].[ProPricerFieldLU]
-  WHERE ProPricerField like 'Trip_%'
-
-GO
-
 -- Drop unused Stored Procedures
 IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[getLaborType]') AND type in (N'P', N'PC'))
 	DROP PROCEDURE [dbo].[getLaborType];
