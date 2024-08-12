@@ -146,7 +146,7 @@ DELETE u
 
 GO
 
--- Purge Output Format Templates that are archived an unused
+-- Purge Output Format Templates that are archived and unused
   DELETE FROM [dbo].[OutputFormatTemplate]
   WHERE TemplateID IN (  
 	  SELECT o.TemplateID
