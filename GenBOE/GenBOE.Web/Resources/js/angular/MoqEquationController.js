@@ -1989,6 +1989,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 	};
 
+	$scope.resourceUnselected = function (item, model, moqType) {
+		$scope.setDirty();
+		//if the reource has been deleted, refresh the CD table to reflect it
+		if (model.Included && item == undefined && model.ResourceNew == "") {
+			$scope.refreshCommonDisclosureTable(moqType);
+		}
+	};
+
 	$scope.brcSelected = function (item, model) {
 		$scope.setDirty();
 
