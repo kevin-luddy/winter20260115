@@ -854,6 +854,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
 				IList<SkillMixModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 				IList<CommonDisclosureModelView> commonDisclosureRowsEmptyIncludeds = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(x => !x.Included.HasValue).ToList();
+				bool doesEmptyNullCurrentResourceExist = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included.HasValue && x.Included.Value);
 				decimal totalSKillMixRowsBOESkillMix = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
 				decimal totalSKillMixRowsProposedHours = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Sum(p => p.ProposedHours);
 
@@ -863,6 +864,12 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					{
 						errorMessages.Add(string.Format("Current Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
 					}
+				}
+
+				// This check applies to both Space and RMS
+				if (doesEmptyNullCurrentResourceExist)
+				{
+					errorMessages.Add("Current Skill Mix Table: Included cannot be set to 'Yes' for an empty/null Current Resource.");
 				}
 
 				foreach (string skillMixResourceNew in skillMixRowsEmptyIncludeds.Select(x => x.ResourceNew))
@@ -1019,7 +1026,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				//TBD: for RMS, might have duplicate new resources and then we'll have to total historical
 				if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
 				{
-					moqType.SkillMixTable.ForEach(s => resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours));
+					moqType.SkillMixTable.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s => resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours));
 				}
 
 				Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any() ? moqType.CommonDisclosureTable.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;

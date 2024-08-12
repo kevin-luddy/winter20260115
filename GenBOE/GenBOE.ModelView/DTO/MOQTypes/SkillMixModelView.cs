@@ -12,11 +12,14 @@ namespace GenBOE.ActionLogic.ModelView
 	[Serializable]
 	public class SkillMixModelView : SkillMixDTO
     {
+		/// <summary>
+		/// Ctor
+		/// </summary>
 		public SkillMixModelView()
 		{
 		}
 
-        public SkillMixModelView(SkillMixDTO skillMixDTO)
+		public SkillMixModelView(SkillMixDTO skillMixDTO)
         {
 			if (skillMixDTO != null)
 			{

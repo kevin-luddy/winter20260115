@@ -8884,9 +8884,15 @@ span.blue-link a{
 #commonDisclosureTableData .add-row {
     background: linear-gradient(to bottom, #32DE68, #7BB98F 1px, #558E65);
     background-color: #EEEEEE;
+    cursor: pointer;
 }
 
 #commonDisclosureTableData .delete-row {
     background: linear-gradient(to bottom, #fe0002, #fe0002 1px, #930000);
     background-color: #EEEEEE;
+    cursor: pointer;
+}
+
+#commonDisclosureTableData .brc-id {
+    width: 180px;
 }

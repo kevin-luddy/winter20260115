@@ -1488,7 +1488,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.getTotalSMHistoricalHours = function (moqType) {
 		let totalHistoricalHours = 0;
 		moqType.SkillMixTable.forEach(item => {
-			totalHistoricalHours += item.HistoricalHours;
+			if (item.Included) {
+				totalHistoricalHours += item.HistoricalHours;
+			}
 		});
 		return totalHistoricalHours;
 	};
@@ -1497,12 +1499,24 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		// Get all the data tables
 		const data = {
 			currentSkillMixData: [],
-			commonDisclosureSMData: []
+			commonDisclosureSMData: [],
+			resourceHours: []
 		};
 
 		data.boeId = ManageTaskModel.boeId;
 		data.currentSkillMixData = moqType.SkillMixTable;
 		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
+
+		if (moqType.TableData) {
+			moqType.TableData.forEach(tableData => {
+				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+
+					tableData.ResourceHours.forEach(hours => {
+						data.resourceHours.push(hours);
+					});
+				}
+			});
+		}
 
 		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
 			// send to backend
@@ -1563,6 +1577,21 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				break;
 			}
 		}
+	};
+	$scope.canDelete = function (item, moqType) {
+		//have to find at least one other row with same resource id to be eligible to delete
+		var resourceRowCount = 0;
+		var canDelete = true;
+		for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
+			var row = moqType.CommonDisclosureTable[i];
+			if (row.ResourceID === item.ResourceID) {
+				resourceRowCount++;
+			}
+		}
+		if (resourceRowCount == 1) {
+			canDelete = false;
+		}
+		return canDelete;
 	};
 
 	$scope.refreshResourceGroupColors = function (moqType) {
