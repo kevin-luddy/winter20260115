@@ -441,7 +441,8 @@
                                             typeahead-select-on-exact="true" 
                                             typeahead-show-hint="false" 
                                             typeahead-min-length="2" 
-                                            typeahead-on-select="resourceSelected($item, item, moqType)">
+                                            typeahead-on-select="resourceSelected($item, item, moqType)"
+                                            ng-change="resourceUnselected($item, item, moqType)">
                                     </div>
                                 </td>
                                 <td class="sm-resource-id" data-ng-if="!model.IsRMS">
