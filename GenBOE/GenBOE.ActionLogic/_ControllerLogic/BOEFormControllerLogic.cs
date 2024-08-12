@@ -280,7 +280,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 Collection<ValidationMessage> iboeErrors = new Collection<ValidationMessage>();
                 this.ValidateIBOE(iboe, iboeErrors, proposalTitleAndRfpNumber);
-                BOEFormModelView modelView = this.ConvertSummaryDtoToModelView(iboe, workspace, resourceIdsWithValidTMRates);
+                BOEFormModelView modelView = tmCalculator.ConvertSummaryDtoToModelView(iboe, workspace, this.resourceLoader, resourceIdsWithValidTMRates);
                 modelView.IsIncomplete = iboeErrors.Any();
                 modelView.IncompleteMessages = iboeErrors.Select(e => e.ValidationIssue).ToList();
                 forms.Add(modelView);
@@ -290,7 +290,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 Collection<ValidationMessage> pboeErrors = new Collection<ValidationMessage>();
                 this.ValidatePBOE(pboe, pboeErrors, proposalTitleAndRfpNumber);
-                BOEFormModelView modelView = this.ConvertSummaryDtoToModelView(pboe, workspace, resourceIdsWithValidTMRates);
+                BOEFormModelView modelView = tmCalculator.ConvertSummaryDtoToModelView(pboe, workspace, this.resourceLoader, resourceIdsWithValidTMRates);
                 modelView.NLFSupplierName = pboe.SupplierName;
                 modelView.IsIncomplete = pboeErrors.Any();
                 modelView.IncompleteMessages = pboeErrors.Select(e => e.ValidationIssue).ToList();
@@ -336,62 +336,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 return this.pboeFormDataLoader.CurrentlyUsedResources(wsId, boeFormId);
             }
             throw new ArgumentException("boeFormType must be set");
-        }
-
-
-        /// <summary>
-        /// Converts the summarized version of the DTO to a ModelView.
-        /// </summary>
-        /// <param name="dto">The DTO to convert.</param>
-        /// <param name="workspace">The Workspace to use for retrieving TotalCost.</param>
-        /// <param name="resourceIdsWithValidTMRates">list of Resource IDs that have valid T&amp;M rates.</param>
-        /// <returns>Converted modelview from dto.</returns>
-        private BOEFormModelView ConvertSummaryDtoToModelView(BOEFormDTO dto, FullWorkspace workspace, ICollection<int> resourceIdsWithValidTMRates)
-        {
-            decimal totalCost = 0m;
-            decimal tmTotalCost = 0m;
-            bool hasValidTMRates = true;
-
-            foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
-            {
-                //get brc labors based on 1lmx start date
-                List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToList();
-
-                foreach (ResourceTypeDto laborTask in taskElementLabors)
-                {
-                    if (laborTask.ValueSpread.HasValue && laborTask.ResourceID.HasValue && dto.ResourceIds.Contains(laborTask.ResourceID.Value))
-                    {
-                        if (laborTask.SpreadType == SpreadType.Cost)
-                        {
-                            totalCost += laborTask.ValueSpread.Value;
-                        }
-                        if (workspace.IsUsingTM && laborTask.SpreadType == SpreadType.Hours)
-                        {
-                            ResourceDTO resource = this.resourceLoader.GetById(laborTask.ResourceID.Value);
-                            if (!resourceIdsWithValidTMRates.Contains(laborTask.ResourceID.Value))
-                            {
-                                hasValidTMRates = false;
-                            }
-
-                            if (hasValidTMRates && (resource.ElementOfCost == ElementOfCostType.IWTA ||
-                                 resource.ElementOfCost == ElementOfCostType.Sub) &&
-                                resource.RateType == RateType.Hours)
-                            {
-                                tmTotalCost += this.tmCalculator.TotalCostForTaskSpread(workspace, laborTask);
-                            }
-                        }
-                    }
-                }
-            }
-            return new BOEFormModelView
-            {
-                BOEFormId = dto.Id,
-                BOEFormName = dto.FormName,
-                BOEFormType = dto.BOEFormType,
-                TotalCost = totalCost,
-                TMCost = hasValidTMRates ? tmTotalCost : 0, // note: value will not be displayed if hasValidTMRates is false
-                HasValidTMRates = hasValidTMRates
-            };
         }
 
         /// <summary>
