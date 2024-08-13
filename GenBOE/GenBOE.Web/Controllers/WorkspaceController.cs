@@ -4142,7 +4142,7 @@ namespace GenBOE.Web.Controllers
 			tempWs.LoadMaterialsRTEData();
 
 			string excelTemplateLocaiton = Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH);
-			MetricNameTaskElementMappingDTO metricTaskElementMappings = this.reportsControllerLogic.GetMetricNameTaskElementMappingDTO(tempWs);
+			MetricNameTaskElementMappingDTO metricTaskElementMappings = new MetricNameTaskElementMappingDTO();
 
 			Dictionary<string, Stream> zipContents = new Dictionary<string, Stream>();
 

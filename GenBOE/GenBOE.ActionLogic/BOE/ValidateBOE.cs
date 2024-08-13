@@ -518,11 +518,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 ICollection<int> boeTaskIds = new Collection<int>();
                 boeTaskIds.Add(boeTask.Id);
 
-                if (this.IsHistoricMetricDisclosureRequired(boeTaskIds, inBOE))
-                {
-                    ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.HISTORIC_METRIC_DISCLOSURE_REQUIRED);
-                }
-
                 // Need to determine if there are any required Task custom fields
                 switch (boeTask.TaskElementType)
                 {
@@ -1681,18 +1676,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
         protected virtual string FormatMOQTextErrorMessage(string MOQTextErrorMessage)
         {
             return string.Format(MOQTextErrorMessage, CommonConstants.BOE_MOQ_TEXT_LABEL);
-        }
-
-        /// <summary>
-        /// Return a <see cref="bool"/> indicating if the historic metric disclosure is required
-        /// </summary>
-        /// <param name="boeTaskIds">The id's of the task elements to retrieve metrics</param>
-        /// <param name="boe">the boe containing the flag indicating if the historic metric disclosure is required</param>
-        /// <returns>required if true, not required otherwise</returns>
-        protected virtual bool IsHistoricMetricDisclosureRequired(ICollection<int> boeTaskIds, FullBoe boe)
-        {
-           // Metrics deprecated for SSC.
-           return false;
         }
 
         /// <summary>

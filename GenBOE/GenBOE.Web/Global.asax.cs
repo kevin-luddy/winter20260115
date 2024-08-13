@@ -344,14 +344,12 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(IBOEFormIBOEDTODataLoader), typeof(BOEFormIBOEDTODataLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(IBOEFormPBOEDTODataLoader), typeof(BOEFormPBOEDTODataLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(ICommonDataLoader), typeof(CommonDataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
-            GenBOEUnityContainer.Container.RegisterType(typeof(IMSTMetricLoader), typeof(MSTMetricLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(ISecurityUserAuthorizationsDataLoader), typeof(SecurityUserAuthorizationsDataLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(SecurityUserAuthorizationsDataLoader), typeof(SecurityUserAuthorizationsDataLoader), GetLifetimeManager(), new InjectionMember[] { });
             GenBOEUnityContainer.Container.RegisterType(typeof(IWorkspaceDTODataLoader), typeof(WorkspaceDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IPermissionsDTODataLoader), typeof(PermissionsDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IPermissionsDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IBoeDTODataLoader), typeof(BoeDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IClinDTODataLoader), typeof(ClinDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
-            GenBOEUnityContainer.Container.RegisterType(typeof(IGroupDTODataLoader), typeof(GroupDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IUserDTODataLoader), typeof(UserDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IWorkspaceExportFormatDTODataLoader), typeof(WorkspaceExportFormatDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
             GenBOEUnityContainer.Container.RegisterType(typeof(IWbsDTODataLoader), typeof(WbsDTODataLoader), GetLifetimeManager(), new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
@@ -472,7 +470,6 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
                         new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
                         new ResolvedParameter(typeof(IOrdinaryVariableLoader)),
-                        new ResolvedParameter(typeof(IMSTMetricLoader)),
                         new ResolvedParameter(typeof(TaskElementValidation)),
                         new ResolvedParameter(typeof(IVariableCircularReferenceChecker)),
                         new ResolvedParameter(typeof(ICommonDataMapper)),
@@ -485,7 +482,6 @@ namespace GenBOE
                         new ResolvedParameter(typeof(ITokenService)),
 						new ResolvedParameter(typeof(ICache))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEControllerLogic), typeof(BOEControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
-                        new ResolvedParameter(typeof(IMSTMetricLoader)),
                         new ResolvedParameter(typeof(IBOESummary)),
                         new ResolvedParameter(typeof(IUserDTODataLoader)),
                         new ResolvedParameter(typeof(IActiveDirectoryUtilities)),
@@ -825,7 +821,6 @@ namespace GenBOE
                         new ResolvedParameter(typeof(BOESummary)),
                         new ResolvedParameter(typeof(IBOECustomExporter)),
                         new ResolvedParameter(typeof(IWorkspaceExportFormatDTODataLoader)),
-                        new ResolvedParameter(typeof(IMSTMetricLoader)),
                         new ResolvedParameter(typeof(BOEDiscrepancyReport)),
                         new ResolvedParameter(typeof(ICommonDataMapper)),
                         new ResolvedParameter(typeof(IProposalLoader)),
@@ -1266,7 +1261,6 @@ namespace GenBOE
             {
                 case CompanyConfiguration.MST:
                     GenBOEUnityContainer.Container.RegisterType(typeof(IValidateBOE), typeof(ValidateBOEMst), GetLifetimeManager(), new InjectionConstructor(
-                                                                                                                                new ResolvedParameter(typeof(IMSTMetricLoader)),
                                                                                                                                 new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
                                                                                                                                 new ResolvedParameter(typeof(BOECommentsResponsesValidator)),
                                                                                                                                 new ResolvedParameter(typeof(ITripDTODataLoader)),
@@ -1350,8 +1344,7 @@ namespace GenBOE
             {
                 case CompanyConfiguration.MST:
                     GenBOEUnityContainer.Container.RegisterType(typeof(IVariableSelectBOEtoSumCalculation), typeof(VariableSelectBOEtoSumCalculationMST), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IPerformingOrgDTODataLoader))));
-                    GenBOEUnityContainer.Container.RegisterType(typeof(IBOECopierCompany), typeof(BOECopierCompanyMST), GetLifetimeManager(), new InjectionConstructor(
-                        new ResolvedParameter(typeof(IMSTMetricLoader))));
+                    GenBOEUnityContainer.Container.RegisterType(typeof(IBOECopierCompany), typeof(BOECopierCompanyMST), GetLifetimeManager(), new InjectionConstructor());
                     break;
 
                 case CompanyConfiguration.SpaceSystems:

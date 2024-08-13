@@ -167,7 +167,6 @@
     <Compile Include="GenBOE.Dtos\DTOs\FindReplaceDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\GenBOEMetricsDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\GenBOEUsersOnlineDTO.cs" />
-    <Compile Include="GenBOE.Dtos\DTOs\GroupDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\LocationDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MetricNameTaskElementMappingDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MileReimbursementRateDTO.cs" />
@@ -275,8 +274,6 @@
     <Compile Include="DTO\EscalationRates\EscalationRatesDTOLoader.cs" />
     <Compile Include="DTO\EscalationRates\IEscalationRatesDTOLoader.cs" />
     <Compile Include="DTO\FindReplace\FindReplaceDTODataLoader.cs" />
-    <Compile Include="DTO\MSTMetrics\IMSTMetricLoader.cs" />
-    <Compile Include="DTO\MSTMetrics\MSTMetricLoader.cs" />
     <Compile Include="DTO\Material\MaterialDTO.cs" />
     <Compile Include="DTO\MSTTravelAdmin\IMSTTravelNonzoneFeesAndCostsDTODataLoader.cs" />
     <Compile Include="DTO\MSTTravelAdmin\IMSTZoneTravelDestinationDTODataLoader.cs" />
@@ -367,12 +364,10 @@
     <Compile Include="DTO\Trip\TripDTODataLoader.cs" />
     <Compile Include="DTO\WorkspaceExportFormat\WorkspaceExportFormatDTODataLoader.cs" />
     <Compile Include="DTO\WorkspaceHistory\WorkspaceHistoryDTODataLoader.cs" />
-    <Compile Include="DTO\ADGroup\GroupDTODataLoader.cs" />
     <Compile Include="DTO\BoeComment\IBOECommentDTODataLoader.cs" />
     <Compile Include="DTO\Boe\IBoeDTODataLoader.cs" />
     <Compile Include="DTO\BOEHistory\IBOEHistoryDTODataLoader.cs" />
     <Compile Include="DTO\Clin\IClinDTODataLoader.cs" />
-    <Compile Include="DTO\ADGroup\IGroupDTODataLoader.cs" />
     <Compile Include="DTO\Permissions\IPermissionsDTODataLoader.cs" />
     <Compile Include="DTO\User\IUserDTODataLoader.cs" />
     <Compile Include="DTO\Wbs\IWbsDTODataLoader.cs" />

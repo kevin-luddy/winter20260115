@@ -449,45 +449,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         }
         #endregion
 
-        #region GetMetricNameTaskElementMappingDTO
-        /// <summary>
-        /// This Test check GetMetricNameTaskElementmappingDTO. It will verify that the 
-        /// mapping of dto task element to metric names is correct and that the value
-        /// return is the proper mapping.
-        /// </summary>
-        [TestMethod]
-        public void GetMetricNameTaskElementMappingDTOTest()
-        {
-            //Value Declarations
-            FullWorkspace workspace = new FullWorkspace() { Id = 1 };
-
-            ReportsControllerLogic sut = CreateSut();
-
-            //Act
-            MetricNameTaskElementMappingDTO returnValue = sut.GetMetricNameTaskElementMappingDTO(workspace);
-
-            //Assert
-            Assert.AreEqual(returnValue.GetMetricNamesByTaskElementId(20), string.Empty);
-        }
-
-        /// <summary>
-        /// This test checks GetMetricNameTaskElementMappingDTO. It will verify that when
-        /// FullWorkspace is passed through that it will throw a ArgumentNullException. 
-        /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void GetMetricNameTaskElementMappingDTOWorkspaceNull()
-        {
-            //Value Declaration
-            FullWorkspace workspace = null;
-
-            ReportsControllerLogic sut = CreateSut();
-
-            //Act
-            sut.GetMetricNameTaskElementMappingDTO(workspace);
-        }
-        #endregion
-
         #region Project Map Reports
 
         /// <summary>

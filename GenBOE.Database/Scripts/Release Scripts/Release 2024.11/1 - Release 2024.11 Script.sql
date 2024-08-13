@@ -7,155 +7,267 @@ GO
 	8/8/2024 [ranzalon] - SLMX_POLM_PROPH-1623: Purge Old Data
 */
 
+-- Remove Users from WorkspaceUserXREF who have not accessed a Workspace in over 2 years
+DELETE FROM dbo.WorkspaceUserXREF
+WHERE ETIUserID in
+(
+	SELECT ETIUserId 
+	FROM dbo.WorkspaceUserXREF 
+	GROUP BY ETIUserId 
+	HAVING MAX(LastAccessed) < DATEADD(YEAR, -2, GETDATE())
+)
+
 -- Purge old users who are not connected to any tables
-DELETE u
-  FROM [dbo].[ETIuser] u
-  WHERE
+DELETE FROM [dbo].[ETIUser]
+WHERE ETIUserID in
+(
+	SELECT ETIUserID
+	FROM [dbo].[ETIUser] u
+	WHERE
 	NOT EXISTS
 	(
 		SELECT 1
-		FROM WorkspaceUserXREF wux
+		FROM dbo.WorkspaceUserXREF wux
 		WHERE u.ETIUserID = wux.ETIUserId
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM WorkspaceStateHistory wsh
+		FROM dbo.WorkspaceStateHistory wsh
 		WHERE u.ETIUserID = wsh.ChangedByETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM WorkspaceUserRole wur
+		FROM dbo.WorkspaceUserRole wur
 		WHERE u.ETIUserID = wur.ETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM WorkspaceVersion wv
+		FROM dbo.WorkspaceVersion wv
 		WHERE u.ETIUserID = wv.CreatedByETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM PerDiem pd
+		FROM dbo.PerDiem pd
 		WHERE u.ETIUserID = pd.PerDiemLastUpdateETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM RteTemplate rt
+		FROM dbo.RteTemplate rt
 		WHERE u.ETIUserID = rt.AuthorID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM BOEApproval ba
+		FROM dbo.BOEApproval ba
 		WHERE u.ETIUserID = ba.ApprovalETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM BOEApprovalHistory bah
+		FROM dbo.BOEApprovalHistory bah
 		WHERE u.ETIUserID = bah.ApprovalETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM BOEComment bc
+		FROM dbo.BOEComment bc
 		WHERE u.ETIUserID = bc.BOECommentETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM BOECommentHistory bch
+		FROM dbo.BOECommentHistory bch
 		WHERE u.ETIUserID = bch.ChangedByETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM BOEPotentialRole bpr
+		FROM dbo.BOEPotentialRole bpr
 		WHERE u.ETIUserID = bpr.ETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM BOEStateHistory bsh
+		FROM dbo.BOEStateHistory bsh
 		WHERE u.ETIUserID = bsh.ChangedByETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM BOEUserRole bur
+		FROM dbo.BOEUserRole bur
 		WHERE u.ETIUserID = bur.ETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM BOEUserRoleHistory burh
-		WHERE u.ETIUserID = burh.CurrentETIUserID
+		FROM dbo.BOEUserRoleHistory burh
+		WHERE u.ETIUserID = burh.CurrentETIUserID OR u.ETIUserID = burh.UpdatedETIUserID OR u.ETIUserID = burh.ChangedByETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM BOEUserRoleHistory burh
-		WHERE u.ETIUserID = burh.UpdatedETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM BOEUserRoleHistory burh
-		WHERE u.ETIUserID = burh.ChangedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM SystemUserRole sur
+		FROM dbo.SystemUserRole sur
 		WHERE u.ETIUserID = sur.ETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM Trip t
+		FROM dbo.Trip t
 		WHERE u.ETIUserID = t.FareLastUpdateETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM MessageConfirmation mc
+		FROM dbo.MessageConfirmation mc
 		WHERE u.ETIUserID = mc.ETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM Workspace w
-		WHERE u.ETIUserID = w.CostVolumeLeadPricerUserID
+		FROM dbo.Workspace w
+		WHERE u.ETIUserID = w.CostVolumeLeadPricerUserID OR u.ETIUserID = w.CreatedByETIUserID
 	)
 	AND NOT EXISTS
 	(
 		SELECT 1
-		FROM Workspace w
-		WHERE u.ETIUserID = w.CreatedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM Location l
+		FROM dbo.Location l
 		WHERE u.ETIUserID = l.UpdatedByETIUserID
 	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.WorkspaceStateHistory wsh
+		WHERE u.ETIUserID = wsh.ChangedByETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.WorkspaceUserRole wur
+		WHERE u.ETIUserID = wur.ETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.PerDiem pd
+		WHERE u.ETIUserID = pd.PerDiemLastUpdateETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.RteTemplate rt
+		WHERE u.ETIUserID = rt.AuthorID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.BOEApproval ba
+		WHERE u.ETIUserID = ba.ApprovalETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.BOEApprovalHistory bah
+		WHERE u.ETIUserID = bah.ApprovalETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.BOEComment bc
+		WHERE u.ETIUserID = bc.BOECommentETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.BOECommentHistory bch
+		WHERE u.ETIUserID = bch.ChangedByETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.BOEPotentialRole bpr
+		WHERE u.ETIUserID = bpr.ETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.BOEStateHistory bsh
+		WHERE u.ETIUserID = bsh.ChangedByETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.BOEUserRole bur
+		WHERE u.ETIUserID = bur.ETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.BOEUserRoleHistory burh
+		WHERE u.ETIUserID = burh.CurrentETIUserID OR u.ETIUserID = burh.UpdatedETIUserID OR u.ETIUserID = burh.ChangedByETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.Trip t
+		WHERE u.ETIUserID = t.FareLastUpdateETIUserID
+	)
+	AND NOT EXISTS
+	(
+		SELECT 1
+		FROM version.Workspace w
+		WHERE u.ETIUserID = w.CostVolumeLeadPricerUserID OR u.ETIUserID = w.CreatedByETIUserID
+	)
+)
 
 GO
 
 -- Purge Output Format Templates that are archived and unused
-  DELETE FROM [dbo].[OutputFormatTemplate]
-  WHERE TemplateID IN (  
-	  SELECT o.TemplateID
-	  FROM [dbo].[OutputFormatTemplate] o
-	  LEFT JOIN Workspace w ON o.TemplateID = w.TemplateID
-	  WHERE o.IsActive = 0
-	  GROUP BY o.TemplateID, o.Template
-	  HAVING COUNT(w.TemplateID) = 0
-  )
+-- Create a temp table to avoid running this query several times
+CREATE TABLE #UnusedTableIds (TemplateID INT)
+
+INSERT INTO #UnusedTableIds (TemplateID)
+	SELECT o.TemplateID
+	FROM [dbo].[OutputFormatTemplate] o
+	LEFT JOIN Workspace w ON o.TemplateID = w.TemplateID
+	WHERE o.IsActive = 0
+	GROUP BY o.TemplateID, o.Template
+	HAVING COUNT(w.TemplateID) = 0
+
+-- Remove any templates still in the XREF table
+DELETE
+FROM [dbo].[OutputFormatTemplateWorkspaceXREF]
+WHERE TemplateID in (
+	SELECT TemplateID
+	FROM #UnusedTableIds
+)
+
+-- Clear Parent Template IDs of Templates to be deleted to avoid FK conflicts
+UPDATE [dbo].[OutputFormatTemplate]
+SET ParentTemplateID = NULL
+WHERE TemplateID IN (
+	SELECT TemplateID
+	FROM #UnusedTableIds
+)
+
+-- Finally purge the templates
+DELETE FROM [dbo].[OutputFormatTemplate]
+WHERE TemplateID IN (  
+	SELECT TemplateID
+	FROM #UnusedTableIds
+) AND TemplateID NOT IN (
+	-- Can't delete if an active template has this template listed as its Parent
+	SELECT DISTINCT o1.TemplateID 
+	FROM [dbo].[OutputFormatTemplate] o1
+	JOIN [dbo].[OutputFormatTemplate] o2 ON o1.TemplateID = o2.ParentTemplateID
+)
+
+-- Drop the temp table
+DROP TABLE #UnusedTableIds
 
 GO
 

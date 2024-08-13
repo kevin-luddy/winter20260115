@@ -17,17 +17,11 @@ namespace GenBOE.ActionLogic.CopyBOE
     public class BOECopierCompanyMST : IBOECopierCompany
     {
         /// <summary>
-        /// MST Metric Loader.
-        /// </summary>
-        private IMSTMetricLoader _metricLoader;
-
-        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="metricLoader">MST Metric Loader.</param>
-        public BOECopierCompanyMST(IMSTMetricLoader metricLoader)
+        public BOECopierCompanyMST()
         {
-            this._metricLoader = metricLoader;
         }
 
         /// <summary>
@@ -40,7 +34,6 @@ namespace GenBOE.ActionLogic.CopyBOE
             ICollection<int> metricIds = new Collection<int>();
 
             ICollection<MSTMetricDetailsDTO> inUseMetrics = new Collection<MSTMetricDetailsDTO>();
-            inUseMetrics = this._metricLoader.GetByTaskElementIds(new Collection<int> { taskElementId });
 
             foreach (MSTMetricDetailsDTO metricDTO in inUseMetrics)
             {
@@ -57,7 +50,6 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="metricIds">Associated metric Ids.</param>
         public void SaveMetricsToTaskElement(int taskElementId, ICollection<int> metricIds)
         {
-            this._metricLoader.Save(taskElementId, metricIds);
         }
     }
 }

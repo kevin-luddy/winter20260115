@@ -20,7 +20,6 @@ namespace GenBOE.Models
             this.BOELaborTypes = new HashSet<BOELaborType>();
             this.MOQTypeSelections = new HashSet<MOQTypeSelection>();
             this.BOETaskElementCustomFieldValueXREFs = new HashSet<BOETaskElementCustomFieldValueXREF>();
-            this.BOETaskElementMetricDetailXREFs = new HashSet<BOETaskElementMetricDetailXREF>();
             this.BOETaskElementWorkspaceVariableXREFs = new HashSet<BOETaskElementWorkspaceVariableXREF>();
             this.MOQTypeSelectionTableDataResourceHours = new HashSet<MOQTypeSelectionTableDataResourceHour>();
             this.OrdinaryVariables = new HashSet<OrdinaryVariable>();
@@ -55,8 +54,6 @@ namespace GenBOE.Models
         public virtual TaskElementTypeLU TaskElementTypeLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOETaskElementCustomFieldValueXREF> BOETaskElementCustomFieldValueXREFs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOETaskElementMetricDetailXREF> BOETaskElementMetricDetailXREFs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOETaskElementWorkspaceVariableXREF> BOETaskElementWorkspaceVariableXREFs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

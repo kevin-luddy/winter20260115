@@ -18,7 +18,6 @@
         <EntityTypeShape EntityType="GenBOE.Models.BOEStateHistory" Width="1.5" PointX="6" PointY="103.375" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOEStateLU" Width="1.5" PointX="12" PointY="93.875" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOETaskElementCustomFieldValueXREF" Width="1.5" PointX="27.75" PointY="101.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="GenBOE.Models.BOETaskElementMetricDetailXREF" Width="1.5" PointX="30.75" PointY="108" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOETaskElementWorkspaceVariableXREF" Width="1.5" PointX="30.75" PointY="104.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOEUserRole" Width="1.5" PointX="6" PointY="111.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.BOEUserRoleHistory" Width="1.5" PointX="9" PointY="107.25" IsExpanded="true" />
@@ -30,13 +29,11 @@
         <EntityTypeShape EntityType="GenBOE.Models.CustomFieldValue" Width="1.5" PointX="19.5" PointY="93.875" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.ELMAH_Error" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.EmailLU" Width="1.5" PointX="6.75" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="GenBOE.Models.ETIGroup" Width="1.5" PointX="6.75" PointY="7.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.ETIuser" Width="1.5" PointX="0.75" PointY="105" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.FieldLU" Width="1.5" PointX="0.75" PointY="88.375" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.LineOfBusiness" Width="1.5" PointX="9.75" PointY="90.625" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.Location" Width="1.5" PointX="3" PointY="131.625" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.MaterialTaskElement" Width="1.5" PointX="16.5" PointY="122.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="GenBOE.Models.MetricDetail" Width="1.5" PointX="28.5" PointY="91.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.MileageReimbursementRate" Width="1.5" PointX="8.75" PointY="6.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.MOQTypeLU" Width="1.5" PointX="23.25" PointY="129" IsExpanded="true" />
         <EntityTypeShape EntityType="GenBOE.Models.MSTTravelModeLU" Width="1.5" PointX="19.25" PointY="119.125" IsExpanded="true" />
@@ -132,7 +129,6 @@
         <AssociationConnector Association="GenBOE.Models.FK_BOEStateHistory_ETIuser" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEStateHistory_FieldLU" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementCustomFieldValueXREF_CustomFieldValue" ManuallyRouted="false" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementMetricDetailXREF_Metric" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementWorkspaceVariableXREF_WorkspaceVariable" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEUserRole_ETIuser" ManuallyRouted="false" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEUserRole_RoleLU" ManuallyRouted="false" />
@@ -350,7 +346,6 @@
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElement_MOQTypeLU" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElement_TaskElementTypeLU" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" />
-        <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementMetricDetailXREF_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK_OrdinaryVariable_BOETaskElement" />
