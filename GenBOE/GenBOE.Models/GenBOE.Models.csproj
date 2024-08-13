@@ -247,37 +247,10 @@
     <Compile Include="getBOEIDByWorkspaceQuickSearch_Result.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="getBOEIDForProjectMapAdvancedSearch_Result.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="getBOEIDForProjectMapQuickSearch_Result.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="getBOEPermissions_Result.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="getLaborSpread_Result.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="getLaborType_Result.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="getOrdinaryVariableByTaskElementID_Result.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="getProjectMapIDForProjectMapAdvancedSearch_Result.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="getProjectMapIDForProjectMapQuickSearch_Result.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="getWorkspaceHistoryLog_Result.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="getWorkspacePermissions_Result.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="getWorkspaceVariableByTaskElementID_Result.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />

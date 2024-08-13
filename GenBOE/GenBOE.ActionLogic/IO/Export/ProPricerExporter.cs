@@ -1672,9 +1672,6 @@ namespace GenBOE.ActionLogic.IO.Export
 					case ProPricerField_Resources.StartDate:
 						newResourceRow.Append(this.FormatExportDate(trip.TripDate)).Append(END_FIELD);
 						break;
-					case ProPricerField_Resources.Trip_TripDate:
-						newResourceRow.Append(this.FormatExportDate(trip.TripDate)).Append(END_FIELD);
-						break;
 					case ProPricerField_Resources.WBSNumber:
 						string wbsNumber = inputsForExport.MultiBoe ? trip.WbsNumber : (inputsForExport.Wbs == null ? string.Empty : inputsForExport.Wbs.WbsNumber);
 						newResourceRow.Append(wbsNumber).Append(END_FIELD);
@@ -1697,12 +1694,6 @@ namespace GenBOE.ActionLogic.IO.Export
 						break;
 					case ProPricerField_Resources.TaskID:
 						newResourceRow.Append(DOUBLE_QUOTE).Append(travel.TaskID).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Resources.Trip_Destination:
-						newResourceRow.Append(DOUBLE_QUOTE).Append(trip.NonZoneTo.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Resources.Trip_Origin:
-						newResourceRow.Append(DOUBLE_QUOTE).Append(trip.NonZoneFrom.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 						break;
 					case ProPricerField_Resources.BLANK:
 						newResourceRow.Append(END_FIELD);
@@ -1730,29 +1721,6 @@ namespace GenBOE.ActionLogic.IO.Export
 				newResourceRow.Append(DOUBLE_QUOTE).Append(zoneTripVal.ToString("F2")).Append(DOUBLE_QUOTE).Append(END_FIELD);
 			}
 			wsLevelData.PpDataToBeExported.ResourceData.Add(newResourceRow.ToString());
-		}
-
-
-		/// <summary>
-		/// getTravelModeforExport
-		/// simple method to get propricer code based on travelmode in 
-		/// </summary>
-		/// <param name="travelMode">The travel mode.</param>
-		/// <returns>string</returns>
-		private string getTravelModeforExport(MSTTravelMode travelMode)
-		{
-			switch (travelMode)
-			{
-				case MSTTravelMode.ZoneNoAirfare:
-					return "Z1";
-				case MSTTravelMode.ZoneAirfare:
-					return "Z2";
-				case MSTTravelMode.NonZoneDomestic:
-					return "DOM";
-				case MSTTravelMode.NonZoneInternational:
-					return "INTL";
-			}
-			return "";
 		}
 
 		/// <summary>
@@ -1831,39 +1799,6 @@ namespace GenBOE.ActionLogic.IO.Export
 						break;
 					case ProPricerField_Task.TaskID:
 						NewTaskRow.Append(DOUBLE_QUOTE).Append(travel.TaskID).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_AirEst:
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.NonZoneAirfareEstimate).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_CarRental:
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.NonZoneCarRentalTrans).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_Destination:  // need to combine zone/nonzone destination 
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.NonZoneTo).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_Origin:       // need to combine zone/nonzone destination 
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.NonZoneFrom).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_GroupID:
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.GroupID).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_NumCars:
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.NonZoneNumCars).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_NumDays:
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.NumOfDays).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_NumPeople:
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.NumOfPeople).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_PerDiem:
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.NonZonePerDiemDaily).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_Purpose:
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.Purpose).Append(DOUBLE_QUOTE).Append(END_FIELD);
-						break;
-					case ProPricerField_Task.Trip_TravelMode:
-						NewTaskRow.Append(DOUBLE_QUOTE).Append(this.getTravelModeforExport(trip.ModeID)).Append(DOUBLE_QUOTE).Append(END_FIELD);
 						break;
 					case ProPricerField_Task.BLANK:
 						NewTaskRow.Append(END_FIELD);

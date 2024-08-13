@@ -65,17 +65,8 @@
     <Compile Include="..\GenBOE.Models\getBOEHistoryLog_Result.cs" Link="getBOEHistoryLog_Result.cs" />
     <Compile Include="..\GenBOE.Models\getBOEIDByWorkspaceAdvancedSearch_Result.cs" Link="getBOEIDByWorkspaceAdvancedSearch_Result.cs" />
     <Compile Include="..\GenBOE.Models\getBOEIDByWorkspaceQuickSearch_Result.cs" Link="getBOEIDByWorkspaceQuickSearch_Result.cs" />
-    <Compile Include="..\GenBOE.Models\getBOEIDForProjectMapAdvancedSearch_Result.cs" Link="getBOEIDForProjectMapAdvancedSearch_Result.cs" />
-    <Compile Include="..\GenBOE.Models\getBOEIDForProjectMapQuickSearch_Result.cs" Link="getBOEIDForProjectMapQuickSearch_Result.cs" />
-    <Compile Include="..\GenBOE.Models\getBOEPermissions_Result.cs" Link="getBOEPermissions_Result.cs" />
-    <Compile Include="..\GenBOE.Models\getLaborSpread_Result.cs" Link="getLaborSpread_Result.cs" />
-    <Compile Include="..\GenBOE.Models\getLaborType_Result.cs" Link="getLaborType_Result.cs" />
-    <Compile Include="..\GenBOE.Models\getOrdinaryVariableByTaskElementID_Result.cs" Link="getOrdinaryVariableByTaskElementID_Result.cs" />
     <Compile Include="..\GenBOE.Models\getProjectMapIDForProjectMapAdvancedSearch_Result.cs" Link="getProjectMapIDForProjectMapAdvancedSearch_Result.cs" />
     <Compile Include="..\GenBOE.Models\getProjectMapIDForProjectMapQuickSearch_Result.cs" Link="getProjectMapIDForProjectMapQuickSearch_Result.cs" />
-    <Compile Include="..\GenBOE.Models\getWorkspaceHistoryLog_Result.cs" Link="getWorkspaceHistoryLog_Result.cs" />
-    <Compile Include="..\GenBOE.Models\getWorkspacePermissions_Result.cs" Link="getWorkspacePermissions_Result.cs" />
-    <Compile Include="..\GenBOE.Models\getWorkspaceVariableByTaskElementID_Result.cs" Link="getWorkspaceVariableByTaskElementID_Result.cs" />
     <Compile Include="..\GenBOE.Models\LineOfBusiness.cs" Link="LineOfBusiness.cs" />
     <Compile Include="..\GenBOE.Models\Location.cs" Link="Location.cs" />
     <Compile Include="..\GenBOE.Models\MaterialTaskElement.cs" Link="MaterialTaskElement.cs" />
