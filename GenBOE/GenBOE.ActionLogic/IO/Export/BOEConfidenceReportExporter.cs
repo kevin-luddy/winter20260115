@@ -8,23 +8,7 @@ namespace GenBOE.ActionLogic.IO.Export
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-	using DocumentFormat.OpenXml;
-    using DocumentFormat.OpenXml.Packaging;
-    using DocumentFormat.OpenXml.Wordprocessing;
-	using GenBOE.ActionLogic.Common;
-	using GenBOE.ActionLogic.Common.Calculations;
-	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.ModelView;
-	using GenBOE.DataBridge.Common;
-	using GenBOE.DataBridge.DTO;
-	using GenBOE.Dtos;
-	using GenBOE.Objects;
-	using IES.Common;
-	using IES.Common.classes;
-	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 
 	/// <summary>
@@ -56,13 +40,13 @@ namespace GenBOE.ActionLogic.IO.Export
 			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
 			string confidenceScore = "Confidence Score: " + confidenceReport.ConfidenceScore;
 			worksheet.Add(new string[] { confidenceScore.ToString() });
-			worksheet.Add(new string[] { "BOE", "Task", "MOQ Types", "RTE Fields", "Confidence Error Messages" });
+			worksheet.Add(new string[] { "WBS #", "WBS Title", "BOE", "Task", "MOQ Types", "RTE Fields", "Confidence Error Messages" });
 
 			if (confidenceReport.ConfidenceReportData.Count > 0)
 			{
 				foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
 				{
-					worksheet.Add(item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
+					worksheet.Add(item.WbsNumber, item.WbsTitle, item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
 				}
 			}
 			else

@@ -94,5 +94,15 @@ namespace GenBOE.ActionLogic.ModelView
 		/// Math Algorithm Result DTO for Historical References
 		/// </summary>
 		public ConfidenceReportMathResultDTO HistoricalRefResults { get; set; }
+
+		/// <summary>
+		/// WBS Number
+		/// </summary>
+		public string WbsNumber { get; set; }
+
+		/// <summary>
+		/// WBS Title
+		/// </summary>
+		public string WbsTitle { get; set; }
 	}
 }
