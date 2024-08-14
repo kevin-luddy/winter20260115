@@ -50,6 +50,12 @@
 						<table id="BOEConfidenceReportGrid" class="confidence-report-table grid readonly full">
 							<thead>
 								<tr>
+									<th class="confidence-report-wbs">
+										<a data-ng-click="sort(columns.wbsId)" data-ng-class="{ 'bold': boldSort(columns.wbsId) }">WBS #</a>
+									</th>
+									<th class="confidence-report-wbs-title">
+										<a data-ng-click="sort(columns.wbsTitle)" data-ng-class="{ 'bold': boldSort(columns.wbsTitle) }">WBS Title</a>
+									</th>
 									<th class="confidence-report-boe">
 										<a data-ng-click="sort(columns.boeTitle)" data-ng-class="{ 'bold': boldSort(columns.boeTitle) }">BOE Title</a>
 									</th>
@@ -70,6 +76,8 @@
 							<tbody>
 								<tr data-ng-show="(data.length === 0 || filteredResults.length === 0)"><td colspan="5">There are no Tasks matching this search.</td></tr>
 								<tr data-ng-repeat="item in (filteredResults = (data | filter:filterItems | orderBy:predicate:reverse))">
+									<td class="confidence-report-wbs">{{item.WbsId}}</td>
+									<td class="confidence-report-wbs-title">{{item.WbsTitle}}</td>
 									<td class="confidence-report-boe">
 										<a data-ng-click="openBoe(item.BoeId)">
 											{{item.BoeTitle == "" ? noTitle : item.BoeTitle}}

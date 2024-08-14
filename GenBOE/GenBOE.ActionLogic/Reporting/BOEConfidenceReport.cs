@@ -101,7 +101,9 @@ namespace GenBOE.ActionLogic.Reporting
 						BoeId = boe.Id,
 						BoeTitle = boe.Title,
 						TaskId = task.Id,
-						TaskTitle = task.TaskTitle
+						TaskTitle = task.TaskTitle,
+						WbsId = boe.WBSID.HasValue ? (int)boe.WBSID : 0,
+						WbsTitle = boe.Wbs.WbsTitle
 					};
 
 					// get rte fields and the PoPs and Numbers to check them for

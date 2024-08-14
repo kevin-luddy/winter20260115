@@ -24,7 +24,7 @@ namespace GenBOE.ActionLogic.Reporting
 		/// <summary>
 		/// Error message for a historical reference error
 		/// </summary>
-		public const string HISTORICAL_REF_ERROR = "Historical Reference Error";
+		public const string HISTORICAL_REF_ERROR = "Relevant Hours Error";
 
 		/// <summary>
 		/// Message for when a task has no errors
