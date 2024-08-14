@@ -46,7 +46,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
 				{
-					worksheet.Add(item.WbsId.ToString(), item.WbsTitle, item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
+					worksheet.Add(item.WbsNumber, item.WbsTitle, item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
 				}
 			}
 			else

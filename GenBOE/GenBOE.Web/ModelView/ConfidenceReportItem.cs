@@ -38,7 +38,7 @@ namespace GenBOE.Web.ModelView
 			HasMoqError = item.HasMoqError;
 			HasHistoricalRefError = item.HasHistoricalRefError;
 			ErrorText = item.ErrorText;
-			WbsId = item.WbsId;
+			WbsNumber = item.WbsNumber;
 			WbsTitle = item.WbsTitle;
 		}
 
@@ -93,9 +93,9 @@ namespace GenBOE.Web.ModelView
 		public string ErrorText { get; set; }
 
 		/// <summary>
-		/// WBS ID
+		/// WBS Number
 		/// </summary>
-		public int WbsId { get; set; }
+		public string WbsNumber { get; set; }
 
 		/// <summary>
 		/// WBS Title

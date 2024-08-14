@@ -102,7 +102,7 @@ namespace GenBOE.ActionLogic.Reporting
 						BoeTitle = boe.Title,
 						TaskId = task.Id,
 						TaskTitle = task.TaskTitle,
-						WbsId = boe.WBSID.HasValue ? (int)boe.WBSID : 0,
+						WbsNumber = boe.Wbs.WbsNumber,
 						WbsTitle = boe.Wbs.WbsTitle
 					};
 
@@ -500,7 +500,7 @@ namespace GenBOE.ActionLogic.Reporting
 			if (reportItem.HistoricalRefResults.Matches.Any(x => !x.Value))
 			{
 				reportItem.HasHistoricalRefError = true;
-				errorMessages.Add(ConfidenceReportConstants.HISTORICAL_REF_ERROR);
+				errorMessages.Add(ConfidenceReportConstants.RELEVANT_HOURS_ERROR);
 			}
 
 			if (errorMessages.Any())

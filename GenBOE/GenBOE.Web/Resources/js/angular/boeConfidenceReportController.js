@@ -5,7 +5,7 @@ angular.module('genboe').controller('BOEConfidenceReportController', ['$scope', 
 	$scope.noTitle = "No Title";
 	$scope.isExporting = false;
 	$scope.columns = {
-		wbsId: 'WbsId',
+		wbsNumber: 'WbsNumber',
 		wbsTitle: 'WbsTitle',
 		boeTitle: 'BoeTitle',
 		taskTitle: 'TaskTitle',
@@ -37,8 +37,6 @@ angular.module('genboe').controller('BOEConfidenceReportController', ['$scope', 
 			$scope.reverse = false;
 			$scope.predicate = [sortValue];
 		}
-
-		//$scope.SaveFilterToCookies();
 	};
 
 	$scope.boldSort = function (sortColumn) {
@@ -48,7 +46,7 @@ angular.module('genboe').controller('BOEConfidenceReportController', ['$scope', 
 	$scope.filterItems = function (data) {
 		var searchText = $scope.search.text.toLowerCase();
 
-		return (data.WbsId && data.WbsId.toString().indexOf(searchText) !== -1)
+		return (data.WbsNumber && data.WbsNumber.toLowerCase().indexOf(searchText) !== -1)
 			|| (data.WbsTitle && data.WbsTitle.toLowerCase().indexOf(searchText) !== -1)
 			|| (data.BoeTitle && data.BoeTitle.toLowerCase().indexOf(searchText) !== -1)
 			|| ((!data.BoeTitle || data.BoeTitle == '') && $scope.noTitle.toLowerCase().indexOf(searchText) !== -1)

@@ -96,9 +96,9 @@ namespace GenBOE.ActionLogic.ModelView
 		public ConfidenceReportMathResultDTO HistoricalRefResults { get; set; }
 
 		/// <summary>
-		/// WBS ID
+		/// WBS Number
 		/// </summary>
-		public int WbsId { get; set; }
+		public string WbsNumber { get; set; }
 
 		/// <summary>
 		/// WBS Title

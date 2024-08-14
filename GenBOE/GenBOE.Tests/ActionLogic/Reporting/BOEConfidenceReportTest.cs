@@ -610,7 +610,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.IsFalse(result.ConfidenceReportData.First().HasPoPError);
 			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
 			Assert.IsTrue(result.ConfidenceReportData.First().HasHistoricalRefError);
-			Assert.AreEqual(ConfidenceReportConstants.HISTORICAL_REF_ERROR, result.ConfidenceReportData.First().ErrorText);
+			Assert.AreEqual(ConfidenceReportConstants.RELEVANT_HOURS_ERROR, result.ConfidenceReportData.First().ErrorText);
 			Assert.IsFalse(result.ConfidenceReportData.First().HistoricalRefResults.Matches[moqType.TableData.First().TotalRelevantHours]);
 		}
 
@@ -705,7 +705,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.IsFalse(result.ConfidenceReportData.First().HasPoPError);
 			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
 			Assert.IsTrue(result.ConfidenceReportData.First().HasHistoricalRefError);
-			Assert.AreEqual(ConfidenceReportConstants.HISTORICAL_REF_ERROR, result.ConfidenceReportData.First().ErrorText);
+			Assert.AreEqual(ConfidenceReportConstants.RELEVANT_HOURS_ERROR, result.ConfidenceReportData.First().ErrorText);
 			Assert.IsFalse(result.ConfidenceReportData.First().HistoricalRefResults.Matches[moqType.TableData.First().TotalWbsHours]);
 			Assert.IsTrue(result.ConfidenceReportData.First().HistoricalRefResults.Matches[moqType.TableData.Last().TotalWbsHours]);
 
@@ -799,7 +799,7 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			Assert.IsTrue(result.ConfidenceReportData.First().HasPoPError);
 			Assert.IsFalse(result.ConfidenceReportData.First().HasMoqError);
 			Assert.IsTrue(result.ConfidenceReportData.First().HasHistoricalRefError);
-			Assert.AreEqual($"{ConfidenceReportConstants.POP_ERROR}, {ConfidenceReportConstants.HISTORICAL_REF_ERROR}", result.ConfidenceReportData.First().ErrorText);
+			Assert.AreEqual($"{ConfidenceReportConstants.POP_ERROR}, {ConfidenceReportConstants.RELEVANT_HOURS_ERROR}", result.ConfidenceReportData.First().ErrorText);
 		}
 
 		/// <summary>
