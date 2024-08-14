@@ -57,12 +57,12 @@ IF OBJECT_ID('version.MetricDetail', 'U') IS NOT NULL
 GO
   
 IF OBJECT_ID('version.BOETaskElementgenDataMetricXREF', 'U') IS NOT NULL 
-  DROP TABLE dbo.BOETaskElementgenDataMetricXREF; 
+  DROP TABLE version.BOETaskElementgenDataMetricXREF; 
 
 GO
 
 IF OBJECT_ID('version.tempPerformingOrganizationMapping', 'U') IS NOT NULL 
-  DROP TABLE dbo.tempPerformingOrganizationMapping;
+  DROP TABLE version.tempPerformingOrganizationMapping;
 
 GO
 

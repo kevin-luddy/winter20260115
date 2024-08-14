@@ -17,212 +17,172 @@ WHERE ETIUserID in
 	HAVING MAX(LastAccessed) < DATEADD(YEAR, -2, GETDATE())
 )
 
--- Purge old users who are not connected to any tables
-DELETE FROM [dbo].[ETIUser]
-WHERE ETIUserID in
-(
-	SELECT ETIUserID
-	FROM [dbo].[ETIUser] u
-	WHERE
-	NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.WorkspaceUserXREF wux
-		WHERE u.ETIUserID = wux.ETIUserId
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.WorkspaceStateHistory wsh
-		WHERE u.ETIUserID = wsh.ChangedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.WorkspaceUserRole wur
-		WHERE u.ETIUserID = wur.ETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.WorkspaceVersion wv
-		WHERE u.ETIUserID = wv.CreatedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.PerDiem pd
-		WHERE u.ETIUserID = pd.PerDiemLastUpdateETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.RteTemplate rt
-		WHERE u.ETIUserID = rt.AuthorID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.BOEApproval ba
-		WHERE u.ETIUserID = ba.ApprovalETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.BOEApprovalHistory bah
-		WHERE u.ETIUserID = bah.ApprovalETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.BOEComment bc
-		WHERE u.ETIUserID = bc.BOECommentETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.BOECommentHistory bch
-		WHERE u.ETIUserID = bch.ChangedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.BOEPotentialRole bpr
-		WHERE u.ETIUserID = bpr.ETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.BOEStateHistory bsh
-		WHERE u.ETIUserID = bsh.ChangedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.BOEUserRole bur
-		WHERE u.ETIUserID = bur.ETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.BOEUserRoleHistory burh
-		WHERE u.ETIUserID = burh.CurrentETIUserID OR u.ETIUserID = burh.UpdatedETIUserID OR u.ETIUserID = burh.ChangedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.SystemUserRole sur
-		WHERE u.ETIUserID = sur.ETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.Trip t
-		WHERE u.ETIUserID = t.FareLastUpdateETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.MessageConfirmation mc
-		WHERE u.ETIUserID = mc.ETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.Workspace w
-		WHERE u.ETIUserID = w.CostVolumeLeadPricerUserID OR u.ETIUserID = w.CreatedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM dbo.Location l
-		WHERE u.ETIUserID = l.UpdatedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.WorkspaceStateHistory wsh
-		WHERE u.ETIUserID = wsh.ChangedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.WorkspaceUserRole wur
-		WHERE u.ETIUserID = wur.ETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.PerDiem pd
-		WHERE u.ETIUserID = pd.PerDiemLastUpdateETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.RteTemplate rt
-		WHERE u.ETIUserID = rt.AuthorID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.BOEApproval ba
-		WHERE u.ETIUserID = ba.ApprovalETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.BOEApprovalHistory bah
-		WHERE u.ETIUserID = bah.ApprovalETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.BOEComment bc
-		WHERE u.ETIUserID = bc.BOECommentETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.BOECommentHistory bch
-		WHERE u.ETIUserID = bch.ChangedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.BOEPotentialRole bpr
-		WHERE u.ETIUserID = bpr.ETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.BOEStateHistory bsh
-		WHERE u.ETIUserID = bsh.ChangedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.BOEUserRole bur
-		WHERE u.ETIUserID = bur.ETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.BOEUserRoleHistory burh
-		WHERE u.ETIUserID = burh.CurrentETIUserID OR u.ETIUserID = burh.UpdatedETIUserID OR u.ETIUserID = burh.ChangedByETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.Trip t
-		WHERE u.ETIUserID = t.FareLastUpdateETIUserID
-	)
-	AND NOT EXISTS
-	(
-		SELECT 1
-		FROM version.Workspace w
-		WHERE u.ETIUserID = w.CostVolumeLeadPricerUserID OR u.ETIUserID = w.CreatedByETIUserID
-	)
-)
+-- Create temp table of User IDs from all tables using ETIUserId as a FK
+CREATE TABLE #TempUserIds(etiUserId INT)
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ETIUserId
+FROM dbo.WorkspaceUserXREF
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ChangedByETIUserID
+FROM dbo.WorkspaceStateHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ETIUserId
+FROM dbo.WorkspaceUserRole
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT CreatedByETIUserID
+FROM dbo.WorkspaceVersion
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT PerDiemLastUpdateETIUserID
+FROM dbo.PerDiem
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT AuthorID
+FROM dbo.RteTemplate
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ApprovalETIUserID
+FROM dbo.BOEApproval
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ApprovalETIUserID
+FROM dbo.BOEApprovalHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT BOECommentETIUserID
+FROM dbo.BOEComment
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ChangedByETIUserID
+FROM dbo.BOECommentHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ETIUserId
+FROM dbo.BOEPotentialRole
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ChangedByETIUserID
+FROM dbo.BOEStateHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ETIUserID
+FROM dbo.BOEUserRole
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT CurrentETIUserID
+FROM dbo.BOEUserRoleHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT UpdatedETIUserID
+FROM dbo.BOEUserRoleHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ChangedByETIUserID
+FROM dbo.BOEUserRoleHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ETIUserID
+FROM dbo.SystemUserRole
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT FareLastUpdateETIUserID
+FROM dbo.Trip
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ETIUserID
+FROM dbo.MessageConfirmation
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT CostVolumeLeadPricerUserID
+FROM dbo.Workspace
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT CreatedByETIUserID
+FROM dbo.Workspace
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT UpdatedByETIUserID
+FROM dbo.Location
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ChangedByETIUserID
+FROM version.WorkspaceStateHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ETIUserID
+FROM version.WorkspaceUserRole
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT PerDiemLastUpdateETIUserID
+FROM version.PerDiem
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT AuthorID
+FROM version.RteTemplate
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ApprovalETIUserID
+FROM version.BOEApproval
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ApprovalETIUserID
+FROM version.BOEApprovalHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT BOECommentETIUserID
+FROM version.BOEComment
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ChangedByETIUserID
+FROM version.BOECommentHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ETIUserID
+FROM version.BOEPotentialRole
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ChangedByETIUserID
+FROM version.BOEStateHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ETIUserID
+FROM version.BOEUserRole
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT CurrentETIUserID
+FROM version.BOEUserRoleHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT UpdatedETIUserID
+FROM version.BOEUserRoleHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT ChangedByETIUserID
+FROM version.BOEUserRoleHistory
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT FareLastUpdateETIUserID
+FROM version.Trip
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT CostVolumeLeadPricerUserID
+FROM version.Workspace
+
+INSERT INTO #TempUserIds (etiUserId)
+SELECT DISTINCT CreatedByETIUserID
+FROM version.Workspace
+
+-- Delete users who were not in any of the above tables
+DELETE u FROM [dbo].[ETIUser] u
+LEFT JOIN #TempUserIds t ON t.etiUserId = u.ETIUserID
+WHERE t.etiUserId is NULL
+
+ -- Drop the temp table
+DROP TABLE #TempUserIds
 
 GO
 
