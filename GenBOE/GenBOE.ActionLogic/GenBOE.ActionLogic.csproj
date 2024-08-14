@@ -314,10 +314,7 @@
     <Compile Include="_ControllerLogic\GenBOEControllerLogic.cs" />
     <Compile Include="_ControllerLogic\WBSControllerLogic.cs" />
     <Compile Include="CopyBOE\BOECopier.cs" />
-    <Compile Include="CopyBOE\BOECopierCompanyMST.cs" />
-    <Compile Include="CopyBOE\BOECopierCompanySpace.cs" />
     <Compile Include="CopyBOE\ConflictBOE.cs" />
-    <Compile Include="CopyBOE\IBOECopierCompany.cs" />
     <Compile Include="CopyBOE\IConflictBOE.cs" />
     <Compile Include="CustomFields\RestoreDefaultOptions.cs" />
     <Compile Include="CustomFields\RestoreOptionData.cs" />

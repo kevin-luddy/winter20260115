@@ -1344,12 +1344,10 @@ namespace GenBOE
             {
                 case CompanyConfiguration.MST:
                     GenBOEUnityContainer.Container.RegisterType(typeof(IVariableSelectBOEtoSumCalculation), typeof(VariableSelectBOEtoSumCalculationMST), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IPerformingOrgDTODataLoader))));
-                    GenBOEUnityContainer.Container.RegisterType(typeof(IBOECopierCompany), typeof(BOECopierCompanyMST), GetLifetimeManager(), new InjectionConstructor());
                     break;
 
                 case CompanyConfiguration.SpaceSystems:
                     GenBOEUnityContainer.Container.RegisterType(typeof(IVariableSelectBOEtoSumCalculation), typeof(VariableSelectBOEtoSumCalculationSpaceSystems), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IPerformingOrgDTODataLoader))));
-                    GenBOEUnityContainer.Container.RegisterType(typeof(IBOECopierCompany), typeof(BOECopierCompanySpace), GetLifetimeManager(), new InjectionConstructor());
                     break;                
             }
             GenBOEUnityContainer.Container.RegisterType(typeof(VariableCircularReferenceChecker), typeof(VariableCircularReferenceChecker), GetLifetimeManager(), new InjectionConstructor(
@@ -1374,7 +1372,6 @@ namespace GenBOE
                                                                                                                             new ResolvedParameter(typeof(VariableCircularReferenceChecker)),
                                                                                                                             new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
                                                                                                                             new ResolvedParameter(typeof(IFullObjectFactory)),
-                                                                                                                            new ResolvedParameter(typeof(IBOECopierCompany)),
                                                                                                                             new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
                                                                                                                             new ResolvedParameter(typeof(IWorkspaceVariableDTODataLoader)),
                                                                                                                             new ResolvedParameter(typeof(IBoeTaskElementRecalculation)),
