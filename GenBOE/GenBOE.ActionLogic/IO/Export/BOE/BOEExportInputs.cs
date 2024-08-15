@@ -84,11 +84,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.SetMoqTypes(moqTypes);
             this.Boes = boesToExport.ToList<BoeDTO>().AsReadOnly();
 
-			if (Utilities.IsBRCEnabledForSystem && processLaborTypesForBrc)
+			if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && processLaborTypesForBrc)
 			{
 				foreach (BoeTaskElementDTO taskElement in taskElements)
 				{
-					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToCollection();
+					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, workspace.Shortname).ToCollection();
 				}
 			}
 			

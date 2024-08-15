@@ -56,7 +56,7 @@
 			SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>',
 			PoPMonthsDivisor: '<%: Constants.POP_MONTHS_DIVISOR %>',
 			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
-			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForSystem %>'.isTrue(),
+			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue(),
 			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue()
 		});
 

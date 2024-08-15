@@ -2583,19 +2583,19 @@ namespace GenBOE.ActionLogic.Common.Email
             return tableHtml.ToString();
         }
 
-        /// <summary>
-        /// Get the workspace URL for a given workspacename
-        /// </summary>
-        /// <param name="workspaceShortName">The workspace shortname.</param>
-        /// <returns>The workspace Url.</returns>
-        private string GetWorkspaceUrl(string workspaceShortName)
+		/// <summary>
+		/// Get the workspace URL for a given workspacename
+		/// </summary>
+		/// <param name="workspaceShortname">The workspace shortname.</param>
+		/// <returns>The workspace Url.</returns>
+		private string GetWorkspaceUrl(string workspaceShortname)
         {
             // attempt to get the request context .. DNE in mock testing though
             // so just default to our dev environment and let 'real' ASP take
             // care of things when running within IIS
             string serverUrl = ConfigurationUtilities.GetAppSetting("ServerURL");
             string protocol = serverUrl.StartsWith(@"http://") || serverUrl.StartsWith(@"https://") ? string.Empty : @"http://";
-            string url = protocol + serverUrl + "/" + workspaceShortName + @"/";
+            string url = protocol + serverUrl + "/" + workspaceShortname + @"/";
 
             return url;
         }

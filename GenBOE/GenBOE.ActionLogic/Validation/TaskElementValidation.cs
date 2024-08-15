@@ -373,7 +373,7 @@ namespace GenBOE.ActionLogic.Validation
                 }
 
 				// Validate the Resource Type, method will return empty string if no errors;
-				string brcValidationErrorMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(resourceType);
+				string brcValidationErrorMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(resourceType, ws.Shortname);
 				if (!string.IsNullOrEmpty(brcValidationErrorMessage))
 				{
 					if (returnOnFirstInvalid) { return false; }

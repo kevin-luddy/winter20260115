@@ -829,12 +829,12 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				throw new ArgumentNullException(nameof(ws));
 			}
 
-			Collection<BoeTaskElementDTO> problematicResourceElements = this.GetAllTaskElementsWithMissingResource(ws.TaskElements.ToList());
+			Collection<BoeTaskElementDTO> problematicResourceElements = this.GetAllTaskElementsWithMissingResource(ws.TaskElements.ToList(), ws.Shortname);
 
 			return problematicResourceElements;
 		}
 
-		private Collection<BoeTaskElementDTO> GetAllTaskElementsWithMissingResource(ICollection<BoeTaskElementDTO> taskElements)
+		private Collection<BoeTaskElementDTO> GetAllTaskElementsWithMissingResource(ICollection<BoeTaskElementDTO> taskElements, string workspaceShortname)
 		{
 			Collection<BoeTaskElementDTO> problematicTaskElements = new Collection<BoeTaskElementDTO>();
 
@@ -844,7 +844,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				{
 					bool breakLoop = false;
 
-					if (!string.IsNullOrEmpty(BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(item)))
+					if (!string.IsNullOrEmpty(BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(item, workspaceShortname)))
 					{
 						problematicTaskElements.Add(task);
 						breakLoop = true;
