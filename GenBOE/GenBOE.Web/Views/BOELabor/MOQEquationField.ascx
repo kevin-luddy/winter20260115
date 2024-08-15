@@ -49,7 +49,6 @@
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
         CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue(),
-		<%--DatepickerRestrictionRMS: '<%:ViewData["DatepickerRestrictionRMS"]%>'--%>
         DatepickerRestrictionRMS: '<%:Utilities.DatepickerRestrictionRMS%>'
     };
 
@@ -62,7 +61,6 @@
     var isNotSubContractor = '<%:(bool)ViewData["IsSubContractor"] == false%>'.isTrue();
     var sortBOEByWBS = '<%:(int)VarSortBOEBy.WBS%>';
     var sortBOEByClin = '<%:(int)VarSortBOEBy.CLIN%>';
-    ////////var datepickerRestrictionRMS = '<%:ViewData["DatepickerRestrictionRMS"]%>';
 
     var validationUrl = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                         '<%: WebConstants.CONTROLLER_BOE_LABOR%>',
