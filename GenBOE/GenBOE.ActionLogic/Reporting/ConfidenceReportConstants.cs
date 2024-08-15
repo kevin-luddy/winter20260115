@@ -22,9 +22,9 @@ namespace GenBOE.ActionLogic.Reporting
 		public const string MOQ_ERROR = "MOQ Equation Error";
 
 		/// <summary>
-		/// Error message for a historical reference error
+		/// Error message for a Relevant Hours error
 		/// </summary>
-		public const string HISTORICAL_REF_ERROR = "Historical Reference Error";
+		public const string RELEVANT_HOURS_ERROR = "Relevant Hours Error";
 
 		/// <summary>
 		/// Message for when a task has no errors

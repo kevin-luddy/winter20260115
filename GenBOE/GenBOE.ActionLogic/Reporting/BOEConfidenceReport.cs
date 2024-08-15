@@ -101,7 +101,9 @@ namespace GenBOE.ActionLogic.Reporting
 						BoeId = boe.Id,
 						BoeTitle = boe.Title,
 						TaskId = task.Id,
-						TaskTitle = task.TaskTitle
+						TaskTitle = task.TaskTitle,
+						WbsNumber = boe.Wbs.WbsNumber,
+						WbsTitle = boe.Wbs.WbsTitle
 					};
 
 					// get rte fields and the PoPs and Numbers to check them for
@@ -498,7 +500,7 @@ namespace GenBOE.ActionLogic.Reporting
 			if (reportItem.HistoricalRefResults.Matches.Any(x => !x.Value))
 			{
 				reportItem.HasHistoricalRefError = true;
-				errorMessages.Add(ConfidenceReportConstants.HISTORICAL_REF_ERROR);
+				errorMessages.Add(ConfidenceReportConstants.RELEVANT_HOURS_ERROR);
 			}
 
 			if (errorMessages.Any())

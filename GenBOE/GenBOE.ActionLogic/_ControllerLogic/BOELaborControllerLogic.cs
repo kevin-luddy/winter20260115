@@ -4025,9 +4025,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
 					string resourceOld = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ? string.Empty : grouping.Key;
 					string resourceNew = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems) ? grouping.Key : string.Empty;
-					MOQTypeSelectionTableDataResourceHoursDTO tempResourceHour = (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
-						? resourceHours.FirstOrDefault(x => x.ResourceName != null && x.ResourceName.Equals(resourceNew))
-						: resourceHours.FirstOrDefault(x => x.ResourceName != null && x.ResourceName.Equals(resourceOld));
 
 					newTable.Add(
 						new SkillMixModelView
@@ -4035,8 +4032,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							HistoricalHours = totalGroupHours,
 							ResourceOld = resourceOld,
 							ResourceNew = resourceNew,
-							LaborSkillMix = totalGroupHours / totalHours,
-							ShouldIncludedBeDisabled = tempResourceHour == null || string.IsNullOrEmpty(tempResourceHour.BRCName)
+							LaborSkillMix = totalGroupHours / totalHours
 						}
 					);
 				}
@@ -4086,6 +4082,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 			}
+			
 			return newTable;
 		}
 
@@ -4126,9 +4123,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				//case 1: found a mapping for resource (user input false)
 				//case 1a: add a row for each brc in mapping
 				//case 1b: row already esists so update its historical and skill mix hours and perserve the other user input info
-				//case 2: no mapping (user input)
-				//case 2a: create a new row for resource
-				//case 2b: row already exists, update it with changes from skill mix and perserve other user input
+				//case 2: row exists in CD but no mapping (or mapping deleted?) (user input) presist data from old rows
+				//case3a/b: no old row - create a new row for resource with or without mapping
 
 				//get mapping of resources to brcs if RMS (space should return empty)
 				Task<IESResponse<SkillMixConvertedResourceViewModel>> response;
@@ -4177,7 +4173,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 						else
 						{
-							//no mapping (or mapping deleted?) so persist the old rows and make sure user input is true
+							//no mapping (or mapping deleted?) so persist the old rows if that resource is still in skill mix and make sure user input is true
 							foreach (CommonDisclosureModelView oldRow in foundOldRows)
 							{
 								string tempBusinessResourceID = resourceHours.Where(x => x.ResourceName != null && x.ResourceName.Equals(skillMixRow.ResourceID)).Select(x => x.BRCName).FirstOrDefault();

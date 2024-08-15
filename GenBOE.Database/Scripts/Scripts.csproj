@@ -63,7 +63,6 @@
     <Content Include="Object Scripts\Stored Procedures\deleteAllBOEsInWs.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteAllMaterialTaskElements.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteAllMSTTravelTripTaskElements.sql" />
-    <Content Include="Object Scripts\Stored Procedures\deleteAllODCTaskElements.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteAllTravelTripTaskElements.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOE.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteBOEApprover.sql" />
@@ -98,13 +97,10 @@
     <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTripCustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTripTaskelement.sql" />
     <Content Include="Object Scripts\Stored Procedures\DeleteMSTZoneTravelOrigin.sql" />
-    <Content Include="Object Scripts\Stored Procedures\deleteODCSpreadByODCTypeID.sql" />
-    <Content Include="Object Scripts\Stored Procedures\deleteODCTaskElement.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteODCType.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteOrdinaryVariableResourceType.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteOutputFormatTemplateForAllWorkspaces.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteOutputFormatTemplateWorkspace.sql" />
-    <Content Include="Object Scripts\Stored Procedures\deletePerDiem.sql" />
     <Content Include="Object Scripts\Stored Procedures\deletePerformingOrganizationByPerformingOrganizationID.sql" />
     <Content Include="Object Scripts\Stored Procedures\deletePerformingOrganizationByPerformingOrganizationListID.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteProposalClass.sql" />
@@ -132,12 +128,9 @@
     <Content Include="Object Scripts\Stored Procedures\deleteTrip.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteUserLog.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteWorkBreakdownStructure.sql" />
-    <Content Include="Object Scripts\Stored Procedures\deleteWorkspace.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceEmail.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteWorkspacePerformingOrganizationByPerformingOrganizationID.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceResourceByResourceID.sql" />
-    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceRMSTravelEscalationRate.sql" />
-    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceRMSTravelNonzoneFeesAndCosts.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceRolesByETIUserID.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceVariable.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceVariableResourceType.sql" />
@@ -150,11 +143,6 @@
     <Content Include="Object Scripts\Stored Procedures\getBOEHistoryLog.sql" />
     <Content Include="Object Scripts\Stored Procedures\getBOEIDByWorkspaceAdvancedSearch.sql" />
     <Content Include="Object Scripts\Stored Procedures\getBOEIDByWorkspaceQuickSearch.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getBOEPermissions.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getConfigurationValue.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getLaborSpread.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getLaborType.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getOrdinaryVariableByTaskElementID.sql" />
     <Content Include="Object Scripts\Stored Procedures\getPerformingOrganizationInUseFlagByPerformingOrganizationListID.sql" />
     <Content Include="Object Scripts\Stored Procedures\getProjectMapIDForProjectMapAdvancedSearch.sql" />
     <Content Include="Object Scripts\Stored Procedures\getProjectMapIDForProjectMapQuickSearch.sql" />
@@ -162,15 +150,10 @@
     <Content Include="Object Scripts\Stored Procedures\getResourceInUseFlagBySystemResourceID.sql" />
     <Content Include="Object Scripts\Stored Procedures\getSystemPermissions.sql" />
     <Content Include="Object Scripts\Stored Procedures\getSystemResourceInUseFlag.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getWorkspaceHistoryLog.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceIDByWorkspaceAdvancedSearch.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getWorkspacePermissions.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlagByMultipleResources.sql" />
     <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlagByResourceID.sql" />
-    <Content Include="Object Scripts\Stored Procedures\getWorkspaceVariableByTaskElementID.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertBOEApprover.sql" />
-    <Content Include="Object Scripts\Stored Procedures\insertBOECommentHistory.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertBOETaskElementMetricDetailXREF.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertBOETaskElementWorkspaceVariable.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertDefaultMultiClinWBS.sql" />
@@ -179,7 +162,6 @@
     <Content Include="Object Scripts\Stored Procedures\insertLocation.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertMetricDetail.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertOrdinaryVariableResourceType.sql" />
-    <Content Include="Object Scripts\Stored Procedures\insertOutputFormatTemplate.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertOutputFormatTemplateWorkspace.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertProPricerExportCustomField.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertProPricerExportField.sql" />
@@ -212,7 +194,6 @@
     <Content Include="Object Scripts\Stored Procedures\updateWorkspaceAllowSearch.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateWorkspacePerformingOrganizationFlag.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateWorkspaceProcessSoftDelete.sql" />
-    <Content Include="Object Scripts\Stored Procedures\updateWorkspaceStatus.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateWorkspaceUserRoleHideHelp.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertBOE.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertBOEComment.sql" />
@@ -237,12 +218,8 @@
     <Content Include="Object Scripts\Stored Procedures\upsertMSTTravelTrip.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertMSTTravelTripCustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\UpsertMSTZoneTravelOrigin.sql" />
-    <Content Include="Object Scripts\Stored Procedures\upsertODCSpread.sql" />
-    <Content Include="Object Scripts\Stored Procedures\upsertODCTaskElement.sql" />
-    <Content Include="Object Scripts\Stored Procedures\upsertODCType.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertOutputFormatTemplate.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertPerDiem.sql" />
-    <Content Include="Object Scripts\Stored Procedures\upsertPerformingOrganization.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertPerformingOrganizationList.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertProposalClass.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertProPricerExport.sql" />
@@ -299,6 +276,7 @@
     <Content Include="Object Scripts\X_Data Cleanup\Fix Labor Type Level Duplicated CF XREF Values.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\Fix Task Level Duplicated CF XREF Values.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\FixMissingRMSEscalationRates.sql" />
+    <Content Include="Object Scripts\X_Data Cleanup\ReportXmlData.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\WSBackups.sql" />
     <Content Include="Release Scripts\Release 2023.42\1 - Release 2023.42 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2.09\1 - Release 2.9 Script.sql" />
@@ -358,6 +336,7 @@
     <Content Include="Release Scripts\Release 2024.09\2 - Release 2024.09 Script.sql" />
     <Content Include="Release Scripts\Release 2024.10\1 - Release 2024.10 Script.sql" />
     <Content Include="Release Scripts\Release 2024.10\2 - Release 2024.10 Script.sql" />
+	<Content Include="Release Scripts\Release 2024.11\1 - Release 2024.11 Script.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.04 Generated On 2_15_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2024.08 Generated On 4_29_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2023.11 Generated On 4_11_2023.sql" />

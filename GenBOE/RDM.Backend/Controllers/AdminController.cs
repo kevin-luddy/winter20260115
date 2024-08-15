@@ -336,18 +336,15 @@ namespace RDM.Backend.Controllers
 		/// <summary>
 		/// Saves the Revision Configuration start and end years.
 		/// </summary>
-		/// <param name="startYear">Start year for configuration.</param>        
-		/// <param name="endYear">End year for configuration.</param>
-		/// <param name="releaseNotes">The release notes for this revision.</param>
-		/// <param name="history">The history for this Revision.</param>
+		/// <param name="revisionConfiguration">Revision configuration to save.</param>        
 		/// <returns>The JSON result of the save.</returns>
 		[HttpPost("[action]")]
-		public ActionResult SaveRevisionConfiguration(string startYear, string endYear, string releaseNotes, string history)
+		public ActionResult SaveRevisionConfiguration(RevisionModelView revisionConfiguration)
 		{
 			IESResponse<bool> response = new();
 			try
 			{
-				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateYearConfiguration(startYear, endYear);
+				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateYearConfiguration(revisionConfiguration.StartYear.ToString(), revisionConfiguration.EndYear.ToString());
 
 				if (validationErrors.Any())
 				{
@@ -365,10 +362,10 @@ namespace RDM.Backend.Controllers
 				{
 					using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 					{
-						revision.StartYear = int.Parse(startYear);
-						revision.EndYear = int.Parse(endYear);
-						revision.History = history;
-						revision.ReleaseNotes = releaseNotes;
+						revision.StartYear = revisionConfiguration.StartYear;
+						revision.EndYear = revisionConfiguration.EndYear;
+						revision.History = revisionConfiguration.History;
+						revision.ReleaseNotes = revisionConfiguration.ReleaseNotes;
 						revision.Updateable = UpdateType.Upsert;
 						this.Logic.RevisionMediator.Upsert(revision);
 						scope.Complete();

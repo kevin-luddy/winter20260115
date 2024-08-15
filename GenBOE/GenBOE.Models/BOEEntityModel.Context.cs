@@ -321,11 +321,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOELaborSpreadByBOELaborTypeID", bOELaborTypeIDParameter);
         }
     
-        public virtual int deleteBOELaborSpreadByBOELaborTypeIDviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOELaborSpreadByBOELaborTypeIDviaTableParameter");
-        }
-    
         public virtual int deleteBOELaborType(Nullable<int> bOELaborTypeID, Nullable<System.DateTime> updateDT)
         {
             var bOELaborTypeIDParameter = bOELaborTypeID.HasValue ?
@@ -362,16 +357,6 @@ namespace GenBOE.Models
                 new ObjectParameter("IsOpenEnded", typeof(bool));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOELaborTypeCustomFieldValue", bLTCFVIDParameter, bOELaborTypeIDParameter, customFieldValueIDParameter, updateDTParameter, isOpenEndedParameter);
-        }
-    
-        public virtual int deleteBOELaborTypeCustomFieldValueviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOELaborTypeCustomFieldValueviaTableParameter");
-        }
-    
-        public virtual int deleteBOELaborTypeviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOELaborTypeviaTableParameter");
         }
     
         public virtual int deleteBOEPotentialRolebyETIUserID(Nullable<int> eTIUserID, Nullable<int> workspaceID, Nullable<int> roleID, Nullable<System.DateTime> updateDT)
@@ -433,11 +418,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOETaskElementCustomFieldValue", bTECFVIDParameter, bOETaskElementIDParameter, customFieldValueIDParameter, updateDTParameter, isOpenEndedParameter);
         }
     
-        public virtual int deleteBOETaskElementCustomFieldValueviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOETaskElementCustomFieldValueviaTableParameter");
-        }
-    
         public virtual int deleteBOETaskElementMetricDetail(Nullable<int> bTEMDID, Nullable<System.DateTime> updateDT)
         {
             var bTEMDIDParameter = bTEMDID.HasValue ?
@@ -462,16 +442,6 @@ namespace GenBOE.Models
                 new ObjectParameter("UpdateDT", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOETaskElementOrdinaryVariable", ordinaryVariableIDParameter, updateDTParameter);
-        }
-    
-        public virtual int deleteBOETaskElementOrdinaryVariableviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOETaskElementOrdinaryVariableviaTableParameter");
-        }
-    
-        public virtual int deleteBOETaskElementviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOETaskElementviaTableParameter");
         }
     
         public virtual int deleteCLIN(Nullable<int> cLINID, Nullable<System.DateTime> updateDT)
@@ -511,15 +481,6 @@ namespace GenBOE.Models
                 new ObjectParameter("UpdateDT", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteCustomFieldValueByCustomFieldValueID", customFieldValueIDParameter, updateDTParameter);
-        }
-    
-        public virtual int deleteFullWorkspace(Nullable<int> workspaceID)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteFullWorkspace", workspaceIDParameter);
         }
     
         public virtual int deleteMaterialTaskElement(Nullable<int> materialTaskElementID, Nullable<System.DateTime> updateDT)
@@ -609,41 +570,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteMSTZoneTravelOrigin", originIDParameter);
         }
     
-        public virtual int deleteODCSpreadByODCTypeID(Nullable<int> oDCTypeID)
-        {
-            var oDCTypeIDParameter = oDCTypeID.HasValue ?
-                new ObjectParameter("ODCTypeID", oDCTypeID) :
-                new ObjectParameter("ODCTypeID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteODCSpreadByODCTypeID", oDCTypeIDParameter);
-        }
-    
-        public virtual int deleteODCTaskElement(Nullable<int> oDCTaskElementID, Nullable<System.DateTime> updateDT)
-        {
-            var oDCTaskElementIDParameter = oDCTaskElementID.HasValue ?
-                new ObjectParameter("ODCTaskElementID", oDCTaskElementID) :
-                new ObjectParameter("ODCTaskElementID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteODCTaskElement", oDCTaskElementIDParameter, updateDTParameter);
-        }
-    
-        public virtual int deleteODCType(Nullable<int> oDCTypeID, Nullable<System.DateTime> updateDT)
-        {
-            var oDCTypeIDParameter = oDCTypeID.HasValue ?
-                new ObjectParameter("ODCTypeID", oDCTypeID) :
-                new ObjectParameter("ODCTypeID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteODCType", oDCTypeIDParameter, updateDTParameter);
-        }
-    
         public virtual int deleteOrdinaryVariableResourceType(Nullable<int> ordinaryVariableID)
         {
             var ordinaryVariableIDParameter = ordinaryVariableID.HasValue ?
@@ -651,11 +577,6 @@ namespace GenBOE.Models
                 new ObjectParameter("OrdinaryVariableID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteOrdinaryVariableResourceType", ordinaryVariableIDParameter);
-        }
-    
-        public virtual int deleteOrdinaryVariableResourceTypeviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteOrdinaryVariableResourceTypeviaTableParameter");
         }
     
         public virtual int deleteOutputFormatTemplateWorkspace(Nullable<int> workspaceID, Nullable<int> templateID)
@@ -669,19 +590,6 @@ namespace GenBOE.Models
                 new ObjectParameter("TemplateID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteOutputFormatTemplateWorkspace", workspaceIDParameter, templateIDParameter);
-        }
-    
-        public virtual int deletePerDiem(Nullable<int> perDiemID, Nullable<System.DateTime> updateDT)
-        {
-            var perDiemIDParameter = perDiemID.HasValue ?
-                new ObjectParameter("PerDiemID", perDiemID) :
-                new ObjectParameter("PerDiemID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deletePerDiem", perDiemIDParameter, updateDTParameter);
         }
     
         public virtual int deletePerformingOrganizationByPerformingOrganizationID(Nullable<int> performingOrganizationID, Nullable<System.DateTime> updateDT)
@@ -769,11 +677,6 @@ namespace GenBOE.Models
                 new ObjectParameter("OrdinaryVariableID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteSumOfBOEByOrdinaryVariableID", ordinaryVariableIDParameter);
-        }
-    
-        public virtual int deleteSumOfBOEByOrdinaryVariableIDviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteSumOfBOEByOrdinaryVariableIDviaTableParameter");
         }
     
         public virtual int deleteSumOfBOEByWorkspaceVariableID(Nullable<int> workspaceVariableID)
@@ -939,11 +842,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteTrip", tripIDParameter, updateDTParameter);
         }
     
-        public virtual int deleteUserLog()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteUserLog");
-        }
-    
         public virtual int deleteWorkBreakdownStructure(Nullable<int> wBSID, Nullable<System.DateTime> updateDT)
         {
             var wBSIDParameter = wBSID.HasValue ?
@@ -955,19 +853,6 @@ namespace GenBOE.Models
                 new ObjectParameter("UpdateDT", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteWorkBreakdownStructure", wBSIDParameter, updateDTParameter);
-        }
-    
-        public virtual int deleteWorkspace(Nullable<int> workspaceID, Nullable<System.DateTime> updateDT)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteWorkspace", workspaceIDParameter, updateDTParameter);
         }
     
         public virtual int deleteWorkspace_ProcessSoftDelete()
@@ -999,24 +884,6 @@ namespace GenBOE.Models
                 new ObjectParameter("ResourceListID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteWorkspaceResourceByResourceID", resourceIDParameter, resourceListIDParameter);
-        }
-    
-        public virtual int deleteWorkspaceRMSTravelEscalationRate(Nullable<int> workspaceID)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteWorkspaceRMSTravelEscalationRate", workspaceIDParameter);
-        }
-    
-        public virtual int deleteWorkspaceRMSTravelNonzoneFeesAndCosts(Nullable<int> workspaceID)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteWorkspaceRMSTravelNonzoneFeesAndCosts", workspaceIDParameter);
         }
     
         public virtual int deleteWorkspaceRolesByETIUserID(Nullable<int> eTIUserID, Nullable<int> workspaceID, Nullable<int> roleID, Nullable<System.DateTime> updateDT)
@@ -1172,42 +1039,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getBOEHistoryLog_Result>("getBOEHistoryLog", bOEIDParameter);
         }
     
-        public virtual ObjectResult<getBOEPermissions_Result> getBOEPermissions(string nTID)
-        {
-            var nTIDParameter = nTID != null ?
-                new ObjectParameter("NTID", nTID) :
-                new ObjectParameter("NTID", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getBOEPermissions_Result>("getBOEPermissions", nTIDParameter);
-        }
-    
-        public virtual ObjectResult<getLaborSpread_Result> getLaborSpread(Nullable<int> workspaceID)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getLaborSpread_Result>("getLaborSpread", workspaceIDParameter);
-        }
-    
-        public virtual ObjectResult<getLaborType_Result> getLaborType(Nullable<int> workspaceID)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getLaborType_Result>("getLaborType", workspaceIDParameter);
-        }
-    
-        public virtual ObjectResult<getOrdinaryVariableByTaskElementID_Result> getOrdinaryVariableByTaskElementID(Nullable<int> bOETaskElementID)
-        {
-            var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
-                new ObjectParameter("BOETaskElementID", bOETaskElementID) :
-                new ObjectParameter("BOETaskElementID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getOrdinaryVariableByTaskElementID_Result>("getOrdinaryVariableByTaskElementID", bOETaskElementIDParameter);
-        }
-    
         public virtual ObjectResult<Nullable<int>> getPerformingOrganizationInUseFlagByPerformingOrganizationListID(Nullable<int> performingOrganizationListID)
         {
             var performingOrganizationListIDParameter = performingOrganizationListID.HasValue ?
@@ -1249,15 +1080,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getSystemResourceInUseFlag");
         }
     
-        public virtual ObjectResult<getWorkspaceHistoryLog_Result> getWorkspaceHistoryLog(Nullable<int> workspaceID)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getWorkspaceHistoryLog_Result>("getWorkspaceHistoryLog", workspaceIDParameter);
-        }
-    
         public virtual ObjectResult<Nullable<int>> getWorkspaceIDByWorkspaceAdvancedSearch(string workspaceName, string workspaceDescription, Nullable<System.DateTime> proposalSubmitStartDate, Nullable<System.DateTime> proposalSubmitEndDate, string rFPNumber, string costVolume, Nullable<int> projectMapType)
         {
             var workspaceNameParameter = workspaceName != null ?
@@ -1291,28 +1113,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceIDByWorkspaceAdvancedSearch", workspaceNameParameter, workspaceDescriptionParameter, proposalSubmitStartDateParameter, proposalSubmitEndDateParameter, rFPNumberParameter, costVolumeParameter, projectMapTypeParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID(Nullable<int> performingOrganizationID, Nullable<int> performingOrganizationListID)
-        {
-            var performingOrganizationIDParameter = performingOrganizationID.HasValue ?
-                new ObjectParameter("PerformingOrganizationID", performingOrganizationID) :
-                new ObjectParameter("PerformingOrganizationID", typeof(int));
-    
-            var performingOrganizationListIDParameter = performingOrganizationListID.HasValue ?
-                new ObjectParameter("PerformingOrganizationListID", performingOrganizationListID) :
-                new ObjectParameter("PerformingOrganizationListID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID", performingOrganizationIDParameter, performingOrganizationListIDParameter);
-        }
-    
-        public virtual ObjectResult<getWorkspacePermissions_Result> getWorkspacePermissions(string nTID)
-        {
-            var nTIDParameter = nTID != null ?
-                new ObjectParameter("NTID", nTID) :
-                new ObjectParameter("NTID", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getWorkspacePermissions_Result>("getWorkspacePermissions", nTIDParameter);
-        }
-    
         public virtual ObjectResult<Nullable<int>> getWorkspaceResourceInUseFlagByMultipleResources(string resourceID, Nullable<int> resourceListID)
         {
             var resourceIDParameter = resourceID != null ?
@@ -1339,15 +1139,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceResourceInUseFlagByResourceID", resourceIDParameter, resourceListIDParameter);
         }
     
-        public virtual ObjectResult<getWorkspaceVariableByTaskElementID_Result> getWorkspaceVariableByTaskElementID(Nullable<int> bOETaskElementID)
-        {
-            var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
-                new ObjectParameter("BOETaskElementID", bOETaskElementID) :
-                new ObjectParameter("BOETaskElementID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getWorkspaceVariableByTaskElementID_Result>("getWorkspaceVariableByTaskElementID", bOETaskElementIDParameter);
-        }
-    
         public virtual ObjectResult<Nullable<int>> insertBOEApprover(Nullable<int> bOEID, Nullable<int> eTIUserID, Nullable<int> changedByETIUserID)
         {
             var bOEIDParameter = bOEID.HasValue ?
@@ -1363,55 +1154,6 @@ namespace GenBOE.Models
                 new ObjectParameter("ChangedByETIUserID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("insertBOEApprover", bOEIDParameter, eTIUserIDParameter, changedByETIUserIDParameter);
-        }
-    
-        public virtual int insertBOECommentHistory(Nullable<int> bOEID, Nullable<int> fieldID, string currentComment, string updatedComment, Nullable<int> changedByETIUserID, Nullable<System.DateTime> updateDT)
-        {
-            var bOEIDParameter = bOEID.HasValue ?
-                new ObjectParameter("BOEID", bOEID) :
-                new ObjectParameter("BOEID", typeof(int));
-    
-            var fieldIDParameter = fieldID.HasValue ?
-                new ObjectParameter("FieldID", fieldID) :
-                new ObjectParameter("FieldID", typeof(int));
-    
-            var currentCommentParameter = currentComment != null ?
-                new ObjectParameter("CurrentComment", currentComment) :
-                new ObjectParameter("CurrentComment", typeof(string));
-    
-            var updatedCommentParameter = updatedComment != null ?
-                new ObjectParameter("UpdatedComment", updatedComment) :
-                new ObjectParameter("UpdatedComment", typeof(string));
-    
-            var changedByETIUserIDParameter = changedByETIUserID.HasValue ?
-                new ObjectParameter("ChangedByETIUserID", changedByETIUserID) :
-                new ObjectParameter("ChangedByETIUserID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertBOECommentHistory", bOEIDParameter, fieldIDParameter, currentCommentParameter, updatedCommentParameter, changedByETIUserIDParameter, updateDTParameter);
-        }
-    
-        public virtual int insertBOELaborSpreadviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertBOELaborSpreadviaTableParameter");
-        }
-    
-        public virtual int insertBOELaborTypeCustomFieldValueviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertBOELaborTypeCustomFieldValueviaTableParameter");
-        }
-    
-        public virtual int insertBOELaborTypeviatableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertBOELaborTypeviatableParameter");
-        }
-    
-        public virtual int insertBOETaskElementCustomFieldValueviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertBOETaskElementCustomFieldValueviaTableParameter");
         }
     
         public virtual ObjectResult<Nullable<int>> insertBOETaskElementMetricDetailXREF(Nullable<int> bTEMDID, Nullable<int> bOETaskElementID, Nullable<int> metricDetailID, Nullable<System.DateTime> updateDT)
@@ -1435,16 +1177,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("insertBOETaskElementMetricDetailXREF", bTEMDIDParameter, bOETaskElementIDParameter, metricDetailIDParameter, updateDTParameter);
         }
     
-        public virtual int insertBOETaskElementOrdinaryVariableviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertBOETaskElementOrdinaryVariableviaTableParameter");
-        }
-    
-        public virtual int insertBOETaskElementviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertBOETaskElementviaTableParameter");
-        }
-    
         public virtual int insertBOETaskElementWorkspaceVariable(Nullable<int> bOETaskElementID, string workspaceVariableID)
         {
             var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
@@ -1458,11 +1190,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertBOETaskElementWorkspaceVariable", bOETaskElementIDParameter, workspaceVariableIDParameter);
         }
     
-        public virtual int insertBOETaskElementWorkspaceVariableviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertBOETaskElementWorkspaceVariableviaTableParameter");
-        }
-    
         public virtual int insertDefaultMultiClinWBS(Nullable<int> workspaceID)
         {
             var workspaceIDParameter = workspaceID.HasValue ?
@@ -1470,36 +1197,6 @@ namespace GenBOE.Models
                 new ObjectParameter("WorkspaceID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertDefaultMultiClinWBS", workspaceIDParameter);
-        }
-    
-        public virtual int insertDefaultPerformingOrganization(Nullable<int> workspaceID, Nullable<int> performingOrganizationListID)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            var performingOrganizationListIDParameter = performingOrganizationListID.HasValue ?
-                new ObjectParameter("PerformingOrganizationListID", performingOrganizationListID) :
-                new ObjectParameter("PerformingOrganizationListID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertDefaultPerformingOrganization", workspaceIDParameter, performingOrganizationListIDParameter);
-        }
-    
-        public virtual int insertDefaultResource(Nullable<int> workspaceID, Nullable<int> resourceListID, Nullable<int> segmentID)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            var resourceListIDParameter = resourceListID.HasValue ?
-                new ObjectParameter("ResourceListID", resourceListID) :
-                new ObjectParameter("ResourceListID", typeof(int));
-    
-            var segmentIDParameter = segmentID.HasValue ?
-                new ObjectParameter("SegmentID", segmentID) :
-                new ObjectParameter("SegmentID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertDefaultResource", workspaceIDParameter, resourceListIDParameter, segmentIDParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> insertLocation(string locationName, Nullable<int> updatedByETIUserID)
@@ -1685,11 +1382,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertOrdinaryVariableResourceType", ordinaryVariableIDParameter, sumVariableResourceTypeIDParameter);
         }
     
-        public virtual int insertOrdinaryVariableResourceTypeviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertOrdinaryVariableResourceTypeviaTableParameter");
-        }
-    
         public virtual int insertOrGetUser(Nullable<int> isgsUserId, ObjectParameter userInCurrentDb)
         {
             var isgsUserIdParameter = isgsUserId.HasValue ?
@@ -1814,11 +1506,6 @@ namespace GenBOE.Models
                 new ObjectParameter("BOEID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("insertSumOfBOE_OrdinaryVariable", ordinaryVariableIDParameter, cLINIDParameter, wBSIDParameter, bOEIDParameter);
-        }
-    
-        public virtual int insertSumOfBOE_OrdinaryVariableviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertSumOfBOE_OrdinaryVariableviaTableParameter");
         }
     
         public virtual ObjectResult<Nullable<int>> insertSumOfBOE_WorkspaceVariable(Nullable<int> workspaceVariableID, Nullable<int> cLINID, Nullable<int> wBSID, Nullable<int> bOEID)
@@ -1958,21 +1645,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("updateBOEApproval", bOEApprovalIDParameter, bOEIDParameter, approvalETIUserIDParameter, approvedFlagParameter, updateDTParameter);
         }
     
-        public virtual int updateBOELaborTypeCustomFieldValueviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateBOELaborTypeCustomFieldValueviaTableParameter");
-        }
-    
-        public virtual int updateBOELaborTypeviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateBOELaborTypeviaTableParameter");
-        }
-    
-        public virtual int updateBOETaskElementCustomFieldValueviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateBOETaskElementCustomFieldValueviaTableParameter");
-        }
-    
         public virtual int updateBOETaskElementLaborTypeWarningFlag(Nullable<int> bOETaskElementID, Nullable<bool> laborTypeWarningFlag)
         {
             var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
@@ -1984,16 +1656,6 @@ namespace GenBOE.Models
                 new ObjectParameter("LaborTypeWarningFlag", typeof(bool));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateBOETaskElementLaborTypeWarningFlag", bOETaskElementIDParameter, laborTypeWarningFlagParameter);
-        }
-    
-        public virtual int updateBOETaskElementOrdinaryVariableviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateBOETaskElementOrdinaryVariableviaTableParameter");
-        }
-    
-        public virtual int updateBOETaskElementviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateBOETaskElementviaTableParameter");
         }
     
         public virtual ObjectResult<Nullable<int>> updateMileageReimbursementRate(Nullable<int> mileageReimbursementRateID, Nullable<decimal> ratePerMile, Nullable<System.DateTime> updateDT)
@@ -2056,11 +1718,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateSumOfBOEs", wBSIDParameter, bOEIDParameter);
         }
     
-        public virtual int updateTravelTripInUse()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateTravelTripInUse");
-        }
-    
         public virtual int updateWorkspaceAllowSearch(Nullable<int> workspaceID, Nullable<bool> allowSearch, Nullable<bool> containsTemplate)
         {
             var workspaceIDParameter = workspaceID.HasValue ?
@@ -2110,23 +1767,6 @@ namespace GenBOE.Models
                 new ObjectParameter("Delete", typeof(bool));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("updateWorkspaceProcessSoftDelete", workspaceIDParameter, updateDTParameter, deleteParameter);
-        }
-    
-        public virtual int updateWorkspaceStatus(Nullable<int> workspaceID, Nullable<int> workspaceStateID, Nullable<System.DateTime> updateDT)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            var workspaceStateIDParameter = workspaceStateID.HasValue ?
-                new ObjectParameter("WorkspaceStateID", workspaceStateID) :
-                new ObjectParameter("WorkspaceStateID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateWorkspaceStatus", workspaceIDParameter, workspaceStateIDParameter, updateDTParameter);
         }
     
         public virtual int updateWorkspaceUserRoleHideHelp(Nullable<int> workspaceUserRoleID, Nullable<int> workspaceID, Nullable<bool> hideHelp, Nullable<System.DateTime> updateDT)
@@ -3328,113 +2968,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMSTZoneTravelOrigin", originIDParameter, originParameter, siteParameter, resPRZ1IDParameter, resPRZ1Parameter, resPRZ2IDParameter, resPRZ2Parameter, resPRZ3IDParameter, resPRZ3Parameter, resPRZ4IDParameter, resPRZ4Parameter, resPRZ5IDParameter, resPRZ5Parameter, resPRZ6IDParameter, resPRZ6Parameter, resTRZ1IDParameter, resTRZ1Parameter, resTRZ2IDParameter, resTRZ2Parameter, resTRZ3IDParameter, resTRZ3Parameter, resTRZ4IDParameter, resTRZ4Parameter, resTRZ5IDParameter, resTRZ5Parameter, resTRZ6IDParameter, resTRZ6Parameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertODCSpread(Nullable<int> oDCSpreadID, Nullable<int> oDCTypeID, Nullable<System.DateTime> oDCSpreadDate, Nullable<long> oDCSpreadValue)
-        {
-            var oDCSpreadIDParameter = oDCSpreadID.HasValue ?
-                new ObjectParameter("ODCSpreadID", oDCSpreadID) :
-                new ObjectParameter("ODCSpreadID", typeof(int));
-    
-            var oDCTypeIDParameter = oDCTypeID.HasValue ?
-                new ObjectParameter("ODCTypeID", oDCTypeID) :
-                new ObjectParameter("ODCTypeID", typeof(int));
-    
-            var oDCSpreadDateParameter = oDCSpreadDate.HasValue ?
-                new ObjectParameter("ODCSpreadDate", oDCSpreadDate) :
-                new ObjectParameter("ODCSpreadDate", typeof(System.DateTime));
-    
-            var oDCSpreadValueParameter = oDCSpreadValue.HasValue ?
-                new ObjectParameter("ODCSpreadValue", oDCSpreadValue) :
-                new ObjectParameter("ODCSpreadValue", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertODCSpread", oDCSpreadIDParameter, oDCTypeIDParameter, oDCSpreadDateParameter, oDCSpreadValueParameter);
-        }
-    
-        public virtual ObjectResult<Nullable<int>> upsertODCTaskElement(Nullable<int> oDCTaskElementID, string oDCTaskID, string oDCTaskTitle, string oDCTaskDescription, string oDCMOQText, Nullable<int> bOEID, Nullable<System.DateTime> updateDT, Nullable<System.DateTime> taskStartDate, Nullable<System.DateTime> taskEndDate, Nullable<int> sortOrderID)
-        {
-            var oDCTaskElementIDParameter = oDCTaskElementID.HasValue ?
-                new ObjectParameter("ODCTaskElementID", oDCTaskElementID) :
-                new ObjectParameter("ODCTaskElementID", typeof(int));
-    
-            var oDCTaskIDParameter = oDCTaskID != null ?
-                new ObjectParameter("ODCTaskID", oDCTaskID) :
-                new ObjectParameter("ODCTaskID", typeof(string));
-    
-            var oDCTaskTitleParameter = oDCTaskTitle != null ?
-                new ObjectParameter("ODCTaskTitle", oDCTaskTitle) :
-                new ObjectParameter("ODCTaskTitle", typeof(string));
-    
-            var oDCTaskDescriptionParameter = oDCTaskDescription != null ?
-                new ObjectParameter("ODCTaskDescription", oDCTaskDescription) :
-                new ObjectParameter("ODCTaskDescription", typeof(string));
-    
-            var oDCMOQTextParameter = oDCMOQText != null ?
-                new ObjectParameter("ODCMOQText", oDCMOQText) :
-                new ObjectParameter("ODCMOQText", typeof(string));
-    
-            var bOEIDParameter = bOEID.HasValue ?
-                new ObjectParameter("BOEID", bOEID) :
-                new ObjectParameter("BOEID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            var taskStartDateParameter = taskStartDate.HasValue ?
-                new ObjectParameter("TaskStartDate", taskStartDate) :
-                new ObjectParameter("TaskStartDate", typeof(System.DateTime));
-    
-            var taskEndDateParameter = taskEndDate.HasValue ?
-                new ObjectParameter("TaskEndDate", taskEndDate) :
-                new ObjectParameter("TaskEndDate", typeof(System.DateTime));
-    
-            var sortOrderIDParameter = sortOrderID.HasValue ?
-                new ObjectParameter("SortOrderID", sortOrderID) :
-                new ObjectParameter("SortOrderID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertODCTaskElement", oDCTaskElementIDParameter, oDCTaskIDParameter, oDCTaskTitleParameter, oDCTaskDescriptionParameter, oDCMOQTextParameter, bOEIDParameter, updateDTParameter, taskStartDateParameter, taskEndDateParameter, sortOrderIDParameter);
-        }
-    
-        public virtual ObjectResult<Nullable<int>> upsertODCType(Nullable<int> oDCTypeID, Nullable<int> resourceID, Nullable<int> performingOrganizationID, Nullable<System.DateTime> oDCTypeStartDate, Nullable<System.DateTime> oDCTypeEndDate, Nullable<int> spreadCurveID, Nullable<decimal> oDCTypeCost, Nullable<int> oDCTaskElementID, Nullable<System.DateTime> updateDT)
-        {
-            var oDCTypeIDParameter = oDCTypeID.HasValue ?
-                new ObjectParameter("ODCTypeID", oDCTypeID) :
-                new ObjectParameter("ODCTypeID", typeof(int));
-    
-            var resourceIDParameter = resourceID.HasValue ?
-                new ObjectParameter("ResourceID", resourceID) :
-                new ObjectParameter("ResourceID", typeof(int));
-    
-            var performingOrganizationIDParameter = performingOrganizationID.HasValue ?
-                new ObjectParameter("PerformingOrganizationID", performingOrganizationID) :
-                new ObjectParameter("PerformingOrganizationID", typeof(int));
-    
-            var oDCTypeStartDateParameter = oDCTypeStartDate.HasValue ?
-                new ObjectParameter("ODCTypeStartDate", oDCTypeStartDate) :
-                new ObjectParameter("ODCTypeStartDate", typeof(System.DateTime));
-    
-            var oDCTypeEndDateParameter = oDCTypeEndDate.HasValue ?
-                new ObjectParameter("ODCTypeEndDate", oDCTypeEndDate) :
-                new ObjectParameter("ODCTypeEndDate", typeof(System.DateTime));
-    
-            var spreadCurveIDParameter = spreadCurveID.HasValue ?
-                new ObjectParameter("SpreadCurveID", spreadCurveID) :
-                new ObjectParameter("SpreadCurveID", typeof(int));
-    
-            var oDCTypeCostParameter = oDCTypeCost.HasValue ?
-                new ObjectParameter("ODCTypeCost", oDCTypeCost) :
-                new ObjectParameter("ODCTypeCost", typeof(decimal));
-    
-            var oDCTaskElementIDParameter = oDCTaskElementID.HasValue ?
-                new ObjectParameter("ODCTaskElementID", oDCTaskElementID) :
-                new ObjectParameter("ODCTaskElementID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertODCType", oDCTypeIDParameter, resourceIDParameter, performingOrganizationIDParameter, oDCTypeStartDateParameter, oDCTypeEndDateParameter, spreadCurveIDParameter, oDCTypeCostParameter, oDCTaskElementIDParameter, updateDTParameter);
-        }
-    
         public virtual ObjectResult<Nullable<int>> upsertOutputFormatTemplate(Nullable<int> templateID, string template, string templateDescription, byte[] templateFile, Nullable<System.DateTime> updateDT, Nullable<int> parentTemplateID, Nullable<bool> isAvailableToAllWorkspaces)
         {
             var templateIDParameter = templateID.HasValue ?
@@ -3503,31 +3036,6 @@ namespace GenBOE.Models
                 new ObjectParameter("UpdateDT", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertPerDiem", perDiemIDParameter, perDiemDestinationParameter, qualificationParameter, hotelRateParameter, mIERateParameter, perDiemNotesParameter, updatedByETIUserIDParameter, updateDTParameter);
-        }
-    
-        public virtual ObjectResult<Nullable<int>> upsertPerformingOrganization(Nullable<int> performingOrganizationID, string performingOrganizationName, string performingOrganizationDescription, Nullable<int> performingOrganizationListID, Nullable<System.DateTime> updateDT)
-        {
-            var performingOrganizationIDParameter = performingOrganizationID.HasValue ?
-                new ObjectParameter("PerformingOrganizationID", performingOrganizationID) :
-                new ObjectParameter("PerformingOrganizationID", typeof(int));
-    
-            var performingOrganizationNameParameter = performingOrganizationName != null ?
-                new ObjectParameter("PerformingOrganizationName", performingOrganizationName) :
-                new ObjectParameter("PerformingOrganizationName", typeof(string));
-    
-            var performingOrganizationDescriptionParameter = performingOrganizationDescription != null ?
-                new ObjectParameter("PerformingOrganizationDescription", performingOrganizationDescription) :
-                new ObjectParameter("PerformingOrganizationDescription", typeof(string));
-    
-            var performingOrganizationListIDParameter = performingOrganizationListID.HasValue ?
-                new ObjectParameter("PerformingOrganizationListID", performingOrganizationListID) :
-                new ObjectParameter("PerformingOrganizationListID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertPerformingOrganization", performingOrganizationIDParameter, performingOrganizationNameParameter, performingOrganizationDescriptionParameter, performingOrganizationListIDParameter, updateDTParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertPerformingOrganizationList(Nullable<int> performingOrganizationListID, string performingOrganizationListName, Nullable<System.DateTime> updateDT)
@@ -4561,15 +4069,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertTMResourceRate", tMResourceRateIDParameter, workspaceIDParameter, tMResourceIDParameter, tMResourceRateStartDateParameter, tMResourceRateEndDateParameter, tMResourceRateParameter, updateDTParameter);
         }
     
-        public virtual ObjectResult<string> getConfigurationValue(string configurationKey)
-        {
-            var configurationKeyParameter = configurationKey != null ?
-                new ObjectParameter("configurationKey", configurationKey) :
-                new ObjectParameter("configurationKey", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("getConfigurationValue", configurationKeyParameter);
-        }
-    
         public virtual int insertReportXml(string nonce, string xml)
         {
             var nonceParameter = nonce != null ?
@@ -4581,88 +4080,6 @@ namespace GenBOE.Models
                 new ObjectParameter("xml", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertReportXml", nonceParameter, xmlParameter);
-        }
-    
-        public virtual ObjectResult<getBOEIDForProjectMapAdvancedSearch_Result> getBOEIDForProjectMapAdvancedSearch(string workspaceName, string workspaceDescription, string activityId, string activityName, string camName, string category, string sOWTitle, string task, string rationale, string displayedWBSNumber, string wBSTitle, Nullable<int> searchCategory, Nullable<int> workspaceID, Nullable<int> searchResultsThreshold)
-        {
-            var workspaceNameParameter = workspaceName != null ?
-                new ObjectParameter("WorkspaceName", workspaceName) :
-                new ObjectParameter("WorkspaceName", typeof(string));
-    
-            var workspaceDescriptionParameter = workspaceDescription != null ?
-                new ObjectParameter("WorkspaceDescription", workspaceDescription) :
-                new ObjectParameter("WorkspaceDescription", typeof(string));
-    
-            var activityIdParameter = activityId != null ?
-                new ObjectParameter("ActivityId", activityId) :
-                new ObjectParameter("ActivityId", typeof(string));
-    
-            var activityNameParameter = activityName != null ?
-                new ObjectParameter("ActivityName", activityName) :
-                new ObjectParameter("ActivityName", typeof(string));
-    
-            var camNameParameter = camName != null ?
-                new ObjectParameter("CamName", camName) :
-                new ObjectParameter("CamName", typeof(string));
-    
-            var categoryParameter = category != null ?
-                new ObjectParameter("Category", category) :
-                new ObjectParameter("Category", typeof(string));
-    
-            var sOWTitleParameter = sOWTitle != null ?
-                new ObjectParameter("SOWTitle", sOWTitle) :
-                new ObjectParameter("SOWTitle", typeof(string));
-    
-            var taskParameter = task != null ?
-                new ObjectParameter("Task", task) :
-                new ObjectParameter("Task", typeof(string));
-    
-            var rationaleParameter = rationale != null ?
-                new ObjectParameter("Rationale", rationale) :
-                new ObjectParameter("Rationale", typeof(string));
-    
-            var displayedWBSNumberParameter = displayedWBSNumber != null ?
-                new ObjectParameter("DisplayedWBSNumber", displayedWBSNumber) :
-                new ObjectParameter("DisplayedWBSNumber", typeof(string));
-    
-            var wBSTitleParameter = wBSTitle != null ?
-                new ObjectParameter("WBSTitle", wBSTitle) :
-                new ObjectParameter("WBSTitle", typeof(string));
-    
-            var searchCategoryParameter = searchCategory.HasValue ?
-                new ObjectParameter("SearchCategory", searchCategory) :
-                new ObjectParameter("SearchCategory", typeof(int));
-    
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            var searchResultsThresholdParameter = searchResultsThreshold.HasValue ?
-                new ObjectParameter("SearchResultsThreshold", searchResultsThreshold) :
-                new ObjectParameter("SearchResultsThreshold", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getBOEIDForProjectMapAdvancedSearch_Result>("getBOEIDForProjectMapAdvancedSearch", workspaceNameParameter, workspaceDescriptionParameter, activityIdParameter, activityNameParameter, camNameParameter, categoryParameter, sOWTitleParameter, taskParameter, rationaleParameter, displayedWBSNumberParameter, wBSTitleParameter, searchCategoryParameter, workspaceIDParameter, searchResultsThresholdParameter);
-        }
-    
-        public virtual ObjectResult<getBOEIDForProjectMapQuickSearch_Result> getBOEIDForProjectMapQuickSearch(string quickSearch, Nullable<int> searchCategory, Nullable<int> workspaceID, Nullable<int> searchResultsThreshold)
-        {
-            var quickSearchParameter = quickSearch != null ?
-                new ObjectParameter("QuickSearch", quickSearch) :
-                new ObjectParameter("QuickSearch", typeof(string));
-    
-            var searchCategoryParameter = searchCategory.HasValue ?
-                new ObjectParameter("SearchCategory", searchCategory) :
-                new ObjectParameter("SearchCategory", typeof(int));
-    
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            var searchResultsThresholdParameter = searchResultsThreshold.HasValue ?
-                new ObjectParameter("SearchResultsThreshold", searchResultsThreshold) :
-                new ObjectParameter("SearchResultsThreshold", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getBOEIDForProjectMapQuickSearch_Result>("getBOEIDForProjectMapQuickSearch", quickSearchParameter, searchCategoryParameter, workspaceIDParameter, searchResultsThresholdParameter);
         }
     
         public virtual int deleteAllBOEsInWs(Nullable<int> wsId, Nullable<System.DateTime> updateDT)
@@ -4777,15 +4194,6 @@ namespace GenBOE.Models
                 new ObjectParameter("WorkspaceId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("resetWorkspaceDefaultRates", workspaceIdParameter);
-        }
-    
-        public virtual int deleteAllODCTaskElements(Nullable<int> boeId)
-        {
-            var boeIdParameter = boeId.HasValue ?
-                new ObjectParameter("BoeId", boeId) :
-                new ObjectParameter("BoeId", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteAllODCTaskElements", boeIdParameter);
         }
     
         public virtual int deleteAllMSTTravelTripTaskElements(Nullable<int> boeId)
@@ -5509,66 +4917,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertMessageConfirmation", eTIUserIDParameter, messageIDParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> getResourceInUseFlagByResourceListID1(Nullable<int> resourceListID)
-        {
-            var resourceListIDParameter = resourceListID.HasValue ?
-                new ObjectParameter("ResourceListID", resourceListID) :
-                new ObjectParameter("ResourceListID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getResourceInUseFlagByResourceListID1", resourceListIDParameter);
-        }
-    
-        public virtual ObjectResult<Nullable<int>> getSystemResourceInUseFlag1()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getSystemResourceInUseFlag1");
-        }
-    
-        public virtual ObjectResult<Nullable<int>> getWorkspaceResourceInUseFlagByMultipleResources1(string resourceID, Nullable<int> resourceListID)
-        {
-            var resourceIDParameter = resourceID != null ?
-                new ObjectParameter("ResourceID", resourceID) :
-                new ObjectParameter("ResourceID", typeof(string));
-    
-            var resourceListIDParameter = resourceListID.HasValue ?
-                new ObjectParameter("ResourceListID", resourceListID) :
-                new ObjectParameter("ResourceListID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceResourceInUseFlagByMultipleResources1", resourceIDParameter, resourceListIDParameter);
-        }
-    
-        public virtual ObjectResult<Nullable<int>> getWorkspaceResourceInUseFlagByResourceID1(Nullable<int> resourceID, Nullable<int> resourceListID)
-        {
-            var resourceIDParameter = resourceID.HasValue ?
-                new ObjectParameter("ResourceID", resourceID) :
-                new ObjectParameter("ResourceID", typeof(int));
-    
-            var resourceListIDParameter = resourceListID.HasValue ?
-                new ObjectParameter("ResourceListID", resourceListID) :
-                new ObjectParameter("ResourceListID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getWorkspaceResourceInUseFlagByResourceID1", resourceIDParameter, resourceListIDParameter);
-        }
-    
-        public virtual int deleteWorkspaceResourceviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteWorkspaceResourceviaTableParameter");
-        }
-    
-        public virtual int getResourceInUseFlagByResourceListIDviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("getResourceInUseFlagByResourceListIDviaTableParameter");
-        }
-    
-        public virtual int insertWorkspaceResourceviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertWorkspaceResourceviaTableParameter");
-        }
-    
-        public virtual int updateWorkspaceResourceviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateWorkspaceResourceviaTableParameter");
-        }
-    
         public virtual ObjectResult<Nullable<int>> deleteSkillMix(Nullable<int> mOQTypeSelectionID)
         {
             var mOQTypeSelectionIDParameter = mOQTypeSelectionID.HasValue ?
@@ -5576,11 +4924,6 @@ namespace GenBOE.Models
                 new ObjectParameter("MOQTypeSelectionID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteSkillMix", mOQTypeSelectionIDParameter);
-        }
-    
-        public virtual int insertSkillMixviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertSkillMixviaTableParameter");
         }
     
         public virtual ObjectResult<Nullable<int>> deleteCommonDisclosureSkillMix(Nullable<int> mOQTypeSelectionID)
@@ -5592,11 +4935,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteCommonDisclosureSkillMix", mOQTypeSelectionIDParameter);
         }
     
-        public virtual int insertCommonDisclosureSkillMixviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertCommonDisclosureSkillMixviaTableParameter");
-        }
-    
         public virtual ObjectResult<Nullable<int>> deleteMOQTypeSelectionTableDataResourceHours(Nullable<int> mOQTypeSelectionTableDataId)
         {
             var mOQTypeSelectionTableDataIdParameter = mOQTypeSelectionTableDataId.HasValue ?
@@ -5604,11 +4942,6 @@ namespace GenBOE.Models
                 new ObjectParameter("MOQTypeSelectionTableDataId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteMOQTypeSelectionTableDataResourceHours", mOQTypeSelectionTableDataIdParameter);
-        }
-    
-        public virtual int insertMOQTypeSelectionTableDataResourceHoursviaTableParameter()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertMOQTypeSelectionTableDataResourceHoursviaTableParameter");
         }
     }
 }
