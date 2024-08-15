@@ -1630,7 +1630,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		// For RMS
 		if ($scope.model.IsRMS) {
 			if (Date.parse(date) < Date.parse($scope.model.DatepickerRestrictionRMS)) {
-				console.log('is true');
 				return true;
 			}
 		}

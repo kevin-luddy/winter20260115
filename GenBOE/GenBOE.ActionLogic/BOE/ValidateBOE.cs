@@ -738,7 +738,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && row.PoPStart?.Date < Utilities.DatepickerRestrictionRMS)
 								{
-									errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be after {Utilities.DatepickerRestrictionRMS}.");
+									errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be after {Utilities.DatepickerRestrictionRMS.ToShortDateString()}.");
 								}
 
 								// check PopStart/End for Space Fiscal Weekly DateTime
