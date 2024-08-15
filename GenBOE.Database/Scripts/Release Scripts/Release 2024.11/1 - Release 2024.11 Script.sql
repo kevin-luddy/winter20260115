@@ -176,26 +176,28 @@ INSERT INTO #TempUserIds (etiUserId)
 SELECT DISTINCT CreatedByETIUserID
 FROM version.Workspace
 
--- Delete users who were not in any of the above tables using a cursor to run deletes 1 at a time
-DECLARE @UserIdToDelete int
-DECLARE cur CURSOR LOCAL FOR
-	SELECT DISTINCT u.ETIUserId
-	FROM [dbo].[ETIUser] u
+-- Delete users who were not in any of the above tables 1 at a time
+CREATE TABLE #TempUserIdsToDelete(etiUserId INT)
+
+INSERT INTO #TempUserIdsToDelete (etiUserId)
+SELECT DISTINCT u.ETIUserId
+FROM [dbo].[ETIUser] u
 	LEFT JOIN #TempUserIds t ON t.etiUserId = u.ETIUserID
 	WHERE t.etiUserId is NULL
 
-OPEN cur
-FETCH NEXT FROM cur into @UserIdToDelete
+DECLARE @UserIdToDelete int
 
-WHILE @@FETCH_STATUS = 0 BEGIN
+WHILE EXISTS (SELECT 1 FROM #TempUserIdsToDelete)
+BEGIN
+	SELECT TOP 1 @UserIdToDelete = etiUserId FROM #TempUserIdsToDelete
+
 	DELETE FROM [dbo].[ETIUser] WHERE ETIUserId = @UserIdToDelete
-	FETCH NEXT FROM cur INTO @UserIdToDelete
+	DELETE FROM #TempUserIdsToDelete WHERE etiUserID = @UserIdToDelete
 END
-CLOSE cur
-DEALLOCATE cur
 
- -- Drop the temp table
+ -- Drop the temp tables
 DROP TABLE #TempUserIds
+DROP TABLE #TempUserIdsToDelete
 
 GO
 
