@@ -223,7 +223,6 @@
                             <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" placeholder="If entering multiple WBS Elements, please separate them with a comma ',' or a semicolon ';'" required data-ng-model="tableData.WbsElement" data-ng-change="SetTableDirty(tableData)" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <!-- TODO: KATIE -->
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPStart}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartComparativeSuffix);"></div>

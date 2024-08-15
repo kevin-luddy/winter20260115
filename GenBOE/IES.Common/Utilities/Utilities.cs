@@ -84,7 +84,7 @@ namespace IES.Common
 					}
 					else
 					{
-						datepickerRestrictionRMS = dateRestriction.Normalize();
+						datepickerRestrictionRMS = dateRestriction;
 					}
 				}
 
