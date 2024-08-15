@@ -500,7 +500,7 @@
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalSkillMixHoursTotal | number: 1 }}</div>
 								</td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborSkillMixTotal * 100 | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding"></div>
 								</td>
 								<td></td>
 								<td data-ng-class="{'inputError': moqType.BoeSkillMixTotal !== 100 }">
@@ -620,7 +620,7 @@
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal | number: 1 }}</div>
 								</td>
 								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborCommonDisclosureTotal * 100 | number: 2 }}%</div>
+									<div class="skill-mix-numerical skill-mix-padding"></div>
 								</td>
 								<td></td>
 								<td data-ng-class="{'inputError': moqType.BoeCommonDisclosureTotal !== 100 }">
