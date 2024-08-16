@@ -88,12 +88,12 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs = inWorkspace.PerformingOrgsForWsList;
 			Collection<SpreadCurveModelView> allCurves = inCommonMapper.getSpreadCurve();
-			ICollection<ResourceDTO> allResourceTypes = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResources, false);
+			ICollection<ResourceDTO> allResourceTypes = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResources, false, inWorkspace.Shortname);
 			ICollection<ResourceDTO> allBusinessResourceCodeTypes = new List<ResourceDTO>();
 
-			if (Utilities.IsBRCEnabledForSystem)
+			if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 			{
-				allBusinessResourceCodeTypes = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResources, true);
+				allBusinessResourceCodeTypes = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResources, true, inWorkspace.Shortname);
 			}
 
 			// Create a new random file name in the specified directory
@@ -272,7 +272,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			int offloadColumnCount = isOffload ? 1 : 0;
 
 			// Populate Header data
-			List<string> headerRow = CreateHeaderRow(workspaceCustomFields, spreadMonthColumnHeaders, isMulti, FullObjectHelper.ShowEquivalentPersonsOption && inWorkspace.IsUsingEquivalentPerson, isOffload);
+			List<string> headerRow = CreateHeaderRow(workspaceCustomFields, spreadMonthColumnHeaders, isMulti, FullObjectHelper.ShowEquivalentPersonsOption && inWorkspace.IsUsingEquivalentPerson, isOffload, inWorkspace.Shortname);
 			laborTypeWorksheet.Add(headerRow);
 
 			if (laborResources.Any())
@@ -297,7 +297,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			WorksheetPart worksheetPart = ExcelUtilities.GetSpecifiedWorksheetPart(spreadsheet, LaborTypeAndSpreadImporter.IMPORT_TAB);
 			ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, laborTypeWorksheet, 1);
 
-			AddDataValidation(worksheetPart, workspaceCustomFields, laborResources.Count, isMulti, isOffload);
+			AddDataValidation(worksheetPart, workspaceCustomFields, laborResources.Count, isMulti, isOffload, inWorkspace.Shortname);
 
 			string sheetRange = ExcelUtilities.RedefineSheetDimensions(worksheetPart, ((uint)laborResources.Count) + 1U, workspaceCustomFields.Count + multiColumnsCount + offloadColumnCount + spreadDateColumnIndices.Count - 1);
 			ExcelUtilities.SetIgnoredErrors(worksheetPart.Worksheet, sheetRange);
@@ -314,7 +314,8 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="laborResourcesCount">The labor resources count.</param>
 		/// <param name="isMulti">Bool to note if the BOE is a Multi Clin/WBS BOE</param>
 		/// <param name="isOffload">True if we should show the Offload column; otherwise false.</param>
-		private static void AddDataValidation(WorksheetPart worksheetPart, ICollection<CustomFieldDTO> workspaceCustomFields, int laborResourcesCount, bool isMulti, bool isOffload)
+		/// <param name="workspaceShortname">Workspace short name</param>
+		private static void AddDataValidation(WorksheetPart worksheetPart, ICollection<CustomFieldDTO> workspaceCustomFields, int laborResourcesCount, bool isMulti, bool isOffload, string workspaceShortname)
 		{
 			// Create the data validation dropdowns for custom fields
 			uint startDataRowIndex = 2;
@@ -350,7 +351,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.RESOURCES,
 				columnOffset++, startDataRowIndex, endDataRowIndex);
 
-			if (Utilities.IsBRCEnabledForSystem)
+			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 			{
 				ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.BUSINESS_RESOURCE_CODES,
 					columnOffset++, startDataRowIndex, endDataRowIndex);
@@ -383,14 +384,15 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="isMulti">if set to <c>true</c> [is multi].</param>
 		/// <param name="isUsingEquivalentPerson">True if we should be using EP instead of Hours.</param>
 		/// <param name="isOffload">True if we are showing offload column.</param>
+		/// <param name="workspaceShortname">Workspace short name</param>
 		/// <returns>
 		/// List of strings representing cells in the header row.
 		/// </returns>
-		private static List<string> CreateHeaderRow(ICollection<CustomFieldDTO> workspaceCustomFields, List<string> spreadMonthColumnHeaders, bool isMulti, bool isUsingEquivalentPerson, bool isOffload)
+		private static List<string> CreateHeaderRow(ICollection<CustomFieldDTO> workspaceCustomFields, List<string> spreadMonthColumnHeaders, bool isMulti, bool isUsingEquivalentPerson, bool isOffload, string workspaceShortname)
 		{
 			List<string> headerRow = new List<string>() { LaborTypeAndSpreadImporter.LABOR_TYPE_ID_COL, ImportExportConstants.RESOURCE_COLUMN_HEADER };
 
-			if (Utilities.IsBRCEnabledForSystem)
+			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 			{
 				headerRow.Add(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER);
 			}
@@ -471,7 +473,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								thisResource != null ? thisResource.ResourceDesc : string.Empty
 							});
 
-					if (Utilities.IsBRCEnabledForSystem)
+					if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 					{
 						row.Add(thisBusinessResourceCode != null ? thisBusinessResourceCode.ResourceDesc : string.Empty);
 					}
@@ -708,7 +710,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				ImportExportConstants.OFFLOAD_COLUMN_HEADER
 			};
 
-			if (Utilities.IsBRCEnabledForSystem)
+			if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 			{
 				headerValues.Add(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER);
 			}
@@ -770,7 +772,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					offloadOptions.Length > i ? offloadOptions.ElementAt(i) : string.Empty
 				};
 
-				if (Utilities.IsBRCEnabledForSystem)
+				if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 				{
 					optionValues.Add(allBusinessResourceCodes.Count > i ? allBusinessResourceCodes.ElementAt(i).ResourceDesc : string.Empty);
 				}
@@ -799,7 +801,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				{ ImportExportConstants.OFFLOAD, offloadOptions.Length }
 			};
 
-			if (Utilities.IsBRCEnabledForSystem)
+			if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 			{
 				lengths.Add(ImportExportConstants.BUSINESS_RESOURCE_CODES, allBusinessResourceCodes.Count);
 			}

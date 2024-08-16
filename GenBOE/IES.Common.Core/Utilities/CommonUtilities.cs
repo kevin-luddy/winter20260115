@@ -751,6 +751,11 @@ namespace IES.Common.Core.Utilities
 		private static bool? isBRCEnabled;
 
 		/// <summary>
+		/// Private for OverrideBRCValues
+		/// </summary>
+		private static string overrideBRCValues;
+
+		/// <summary>
 		/// Indicates whether BRC features are enabled
 		/// </summary>
 		public static bool IsBRCEnabledForSystem
@@ -768,6 +773,26 @@ namespace IES.Common.Core.Utilities
 			internal set // be able to override for unit test purposes
 			{
 				isBRCEnabled = value;
+			}
+		}
+
+		/// <summary>
+		/// Overridden BRC Values
+		/// </summary>
+		public static string OverrideBRCValues
+		{
+			get
+			{
+				if (overrideBRCValues == null)
+				{
+					overrideBRCValues = ConfigurationUtilities.GetAppSetting("OverrideBRC");
+				}
+
+				return overrideBRCValues;
+			}
+			internal set // be able to override for unit test purposes
+			{
+				overrideBRCValues = value;
 			}
 		}
 

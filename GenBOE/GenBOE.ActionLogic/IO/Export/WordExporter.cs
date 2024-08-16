@@ -881,7 +881,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					// If BRC is enabled and Task end date is after 1LMX start, populate the Common Disclosure Skill Mix Table, otherwise remove it
 					BoeTaskElementDTO task = exportInputs.TaskElements.FirstOrDefault(x => x.Id == moqType.TaskId);
-					if (Utilities.IsBRCEnabledForSystem && task?.EndDate >= Utilities.OneLmxStartDate)
+					if (Utilities.IsBRCEnabledForWorkspace(exportInputs.Workspace.Shortname) && task?.EndDate >= Utilities.OneLmxStartDate)
 					{
 						SdtElement commonDisclosureTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CommonDisclosureSkillMix);
 						if (commonDisclosureTableElement != null)

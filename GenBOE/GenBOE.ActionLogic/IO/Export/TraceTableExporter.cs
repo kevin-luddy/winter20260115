@@ -79,7 +79,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				.Where(x => (int)x.SpreadType == settingsData.RateType).ToList();
 
 			// filter labors on brc by 1lmx start date
-			taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElementLabors).ToList();
+			taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElementLabors, workspace.Shortname).ToList();
 
 			// Filter by element of cost from the settings data
 			ICollection<int> laborsToRemove = new Collection<int>();

@@ -449,7 +449,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 if (selectedComponents.Contains(BoeCustomReportComponent.ResourceInfoAndSpreadTables))
                 {
 					IOrderedEnumerable<BOEExportTaskElementLabor> orderedResources;
-					if (Utilities.IsBRCEnabledForSystem)
+					if (Utilities.IsBRCEnabledForWorkspace(exportInputs.Workspace.Shortname))
 					{
 						orderedResources = laborTaskElement.taskElementLabors
 						.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_BrcID)

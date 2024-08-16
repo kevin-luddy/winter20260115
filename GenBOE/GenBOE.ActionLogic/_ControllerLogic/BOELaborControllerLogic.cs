@@ -672,7 +672,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (!labor.Deleted)
 				{
-					if (!Utilities.IsBRCEnabledForSystem)
+					if (!Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 					{
 						if (!labor.ResourceID.HasValue || labor.ResourceID < 1)
 						{
@@ -819,7 +819,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				tasksToValidate.Add(taskElement);
 				errors = BOEvalidator.validation(tasksToValidate, (Collection<Dictionary<string, string>>)null);
-				ValidationsForResourceAndBRC(taskElement, validationErrors);
+				ValidationsForResourceAndBRC(taskElement, validationErrors, ws.Shortname);
 
 				// gather errors up, if any
 				foreach (string error in errors)
@@ -884,7 +884,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="taskElement">Task Element DTO</param>
 		/// <param name="validationErrors">Validation Errors</param>
-		private static void ValidationsForResourceAndBRC(BoeTaskElementDTO taskElement, ICollection<ValidationMessage> validationErrors)
+		/// <param name="workspaceShortname">Workspace shortname</param>
+		private static void ValidationsForResourceAndBRC(BoeTaskElementDTO taskElement, ICollection<ValidationMessage> validationErrors, string workspaceShortname)
 		{
 			DateTime OneLmxCutOffDate = Utilities.OneLmxStartDate;
 
@@ -892,7 +893,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				if (dto.Updateable != UpdateType.Deleted)
 				{
-					if (Utilities.IsBRCEnabledForSystem)
+					if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 					{
 						// do validation per row item
 						if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)

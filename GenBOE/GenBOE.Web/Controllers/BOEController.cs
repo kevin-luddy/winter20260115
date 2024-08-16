@@ -328,9 +328,9 @@ namespace GenBOE.Web.Controllers
 
 			//if start date before and end date after, must have resource and brc, if both after, must have brc
 			//set view data for task grid to disable "add task element" and "duplicate task"
-			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
-				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspaceObject.ResourcesForWsResourceListId.ToList(), true);
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspaceObject.ResourcesForWsResourceListId.ToList(), true, workspace);
 				//if no brcs in ws, display warning
 				if (resources.Count == 0)
 				{
@@ -452,9 +452,9 @@ namespace GenBOE.Web.Controllers
 
 			//if start date before and end date after, must have resource and brc, if both after, must have brc
 			//set view data for boe header to display read only warning
-			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
-				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace);
 				//if no brcs in ws, display warning
 				if (resources.Count == 0)
 				{
@@ -666,8 +666,8 @@ namespace GenBOE.Web.Controllers
 			// Perform Action
 			ViewData["BOEID"] = boeID;
 			ViewData["isMaterial"] = boe.isMaterial;
-			ViewData["WSRESOURCES"] = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false);
-			ViewData["WSBUSINESSRESOURCECODES"] = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true);
+			ViewData["WSRESOURCES"] = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false, workspace);
+			ViewData["WSBUSINESSRESOURCECODES"] = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true, workspace);
 			ViewData["WSPERFORGS"] = _BoeLaborControllerLogic.GetPerformingOrgs(ws);
 			ViewBag.WsClins = ws.Clins.Where(x => !x.ClinNumber.Equals("MULTI")).Select(x => new { ClinId = x.Id, ClinName = x.ClinString }).ToList();
 			ViewBag.WsWbss = ws.WbsElements.Where(x => !x.WbsNumber.Equals("MULTI")).Select(x => new { WbsId = x.Id, WbsName = x.WbsString }).ToList();

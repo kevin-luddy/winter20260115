@@ -97,7 +97,7 @@ namespace GenBOE.ActionLogic.IO.Import
 					List<string> columnsToRetrieve;
 					List<string> requiredColumns;
 
-					if (Utilities.IsBRCEnabledForSystem)
+					if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 					{
 						columnsToRetrieve = this.REQUIRED_COLUMNS_BRC_ENABLED.Union(FindSpreadDatesHeaders(inTaskElement)).ToList();
 						requiredColumns = new List<string>(this.REQUIRED_COLUMNS_BRC_ENABLED);
@@ -259,8 +259,8 @@ namespace GenBOE.ActionLogic.IO.Import
 			Collection<FullWbs> wsWBS = new Collection<FullWbs>(workspace.WbsElementsNoMultiWbs.ToCollection());
 			Collection<ClinDTO> wsClins = new Collection<ClinDTO>(workspace.ClinsNoMultiClin.ToCollection<ClinDTO>());
 			//ResourceList and Business ResourceCodeList
-			ICollection<ResourceDTO> resourceList = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), false);
-			ICollection<ResourceDTO> businessResourceCodeList = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), true);
+			ICollection<ResourceDTO> resourceList = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), false, workspace.Shortname);
+			ICollection<ResourceDTO> businessResourceCodeList = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), true, workspace.Shortname);
 
 			if (allRows.Any())
 			{
@@ -735,9 +735,9 @@ namespace GenBOE.ActionLogic.IO.Import
 			ResourceDTO resource = null;
 			ResourceDTO businessResourceCode = null;
 
-			if (!Utilities.IsBRCEnabledForSystem)
+			if (!Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 			{
-				resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList);
+				resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList, inWorkspace.Shortname);
 			}
 			else
 			{
@@ -748,29 +748,29 @@ namespace GenBOE.ActionLogic.IO.Import
 
 					if (importEndDate < Utilities.OneLmxStartDate)
 					{
-						resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList);
+						resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList, inWorkspace.Shortname);
 
 						if (callBRC)
 						{
-							businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
+							businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList, inWorkspace.Shortname);
 						}
 					}
 
 					if (importStartDate > Utilities.OneLmxStartDate)
 					{
 						// Business Resource Code is required but not Resource call extraction method for Business Resource Code
-						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
+						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList, inWorkspace.Shortname);
 
 						if (callResource)
 						{
-							resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList);
+							resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList, inWorkspace.Shortname);
 						}
 					}
 
 					if (importStartDate < Utilities.OneLmxStartDate && importEndDate > Utilities.OneLmxStartDate)
 					{
-						resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList);
-						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList);
+						resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList, inWorkspace.Shortname);
+						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList, inWorkspace.Shortname);
 
 						if (resource != null && businessResourceCode != null)
 						{
@@ -1162,15 +1162,16 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// <param name="importfromfile">Dictionary of Items contained in row</param>
 		/// <param name="toReturn">LaborType model populated from Import File Row content</param>
 		/// <param name="businessResourceCodeList">Business Resource Code Options List</param>
+		/// <param name="workspaceShortname">Workspace shortname</param>
 		/// <returns>Resource DTO representing a business resource code</returns>
-		private static ResourceDTO ExtractBusinessResourceCodeFromImport(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> businessResourceCodeList)
+		private static ResourceDTO ExtractBusinessResourceCodeFromImport(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> businessResourceCodeList, string workspaceShortname)
 		{
 			ResourceDTO businessResourceCode = null;
 
 			if (!importfromfile.ContainsKey(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER) || String.IsNullOrEmpty(importfromfile[ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER]))
 			{
 				// We do this to get proper messaging out to UI based on Feature Flag
-				if (!Utilities.IsBRCEnabledForSystem)
+				if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 				{
 					toReturn.ImportTypes.Add(LaborTypeImportResult.MissingData);
 				}
@@ -1193,15 +1194,16 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// <param name="importfromfile">Dictionary of Items contained in row</param>
 		/// <param name="toReturn">LaborType model populated from Import File Row content</param>
 		/// <param name="resourcelist">Resource Options List</param>
+		/// <param name="workspaceShortname">Workspace shortname</param>
 		/// <returns>Resource DTO representing a resource</returns>
-		private static ResourceDTO ExtractResourceFromImport(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist)
+		private static ResourceDTO ExtractResourceFromImport(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist, string workspaceShortname)
 		{
 			ResourceDTO resource = null;
 
 			if (!importfromfile.ContainsKey(ImportExportConstants.RESOURCE_COLUMN_HEADER) || String.IsNullOrEmpty(importfromfile[ImportExportConstants.RESOURCE_COLUMN_HEADER]))
 			{
 				// We do this to get proper messaging out to UI based on Feature Flag
-				if (!Utilities.IsBRCEnabledForSystem)
+				if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 				{
 					toReturn.ImportTypes.Add(LaborTypeImportResult.MissingData);
 				}

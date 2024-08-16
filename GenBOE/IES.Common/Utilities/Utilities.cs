@@ -843,9 +843,14 @@ namespace IES.Common
 		private static bool? isBRCEnabled;
 
 		/// <summary>
+		/// Private for OverrideBRCValues
+		/// </summary>
+		private static string[] overrideBRCValues;
+
+		/// <summary>
 		/// Indicates whether BRC features are enabled
 		/// </summary>
-		public static bool IsBRCEnabledForSystem
+		private static bool IsBRCEnabledForSystem
 		{
 			get
 			{
@@ -857,9 +862,53 @@ namespace IES.Common
 
 				return isBRCEnabled.Value;
 			}
+		}
+
+		/// <summary>
+		/// Be able to override for unit test purposes
+		/// </summary>
+		/// <param name="value"></param>
+		static internal void SetBRCEnabled(bool value)
+		{
+			isBRCEnabled = value;
+		}
+
+		/// <summary>
+		/// Is BRC Enabled for Workspace
+		/// </summary>
+		/// <param name="workspaceShortName">workspace short name</param>
+		/// <returns>True if BRC enabled, false if disabled or workspace overridden to be disabled</returns>
+		public static bool IsBRCEnabledForWorkspace(string workspaceShortName)
+		{
+			if (OverrideBRCValues != null && OverrideBRCValues.Contains(workspaceShortName))
+			{
+				return false;
+			}
+
+			return IsBRCEnabledForSystem;
+		}
+
+		/// <summary>
+		/// Overridden BRC Values
+		/// </summary>
+		public static ICollection<string> OverrideBRCValues
+		{
+			get
+			{
+				if (overrideBRCValues == null)
+				{
+					string values = ConfigurationUtilities.GetAppSetting("OverrideBRC");
+					if (!string.IsNullOrWhiteSpace(values))
+					{
+						overrideBRCValues = values.Split(',');
+					}
+				}
+
+				return overrideBRCValues;
+			}
 			internal set // be able to override for unit test purposes
 			{
-				isBRCEnabled = value;
+				overrideBRCValues = value.ToArray();
 			}
 		}
 

@@ -566,7 +566,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                         boeExportLabor.ExportFields[BOEExporter.FieldName_ResourceRateType] = resource.RateType.ToString();
                     }
 
-					if (Utilities.IsBRCEnabledForSystem)
+					if (Utilities.IsBRCEnabledForWorkspace(exportInputs.Workspace.Shortname))
 					{
 						boeExportLabor.ExportFields[BOEExporter.FieldName_BrcID] = laborType.BusinessResourceCodeID.HasValue 
 							? laborType.BusinessResourceCodeID.ToString() : string.Empty;
