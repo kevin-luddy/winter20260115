@@ -25,10 +25,11 @@ namespace GenBOE.ActionLogic.Common
 		/// </summary>
 		/// <param name="resourceData">Original Resources list</param>
 		/// <param name="isBrc">Bool to signify if Resources are of type Business Resource Codes</param>
+		/// <param name="workspaceShortname">Workspace shortname</param>
 		/// <returns>Filtered list of Resources</returns>
-		public static ICollection<ResourceDTO> GetResourcesBasedOnCompanyMode(ICollection<ResourceDTO> resourceData, bool isBrc)
+		public static ICollection<ResourceDTO> GetResourcesBasedOnCompanyMode(ICollection<ResourceDTO> resourceData, bool isBrc, string workspaceShortname)
 		{
-			if (Utilities.IsBRCEnabledForSystem)
+			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 			{
 				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 				{
@@ -63,12 +64,13 @@ namespace GenBOE.ActionLogic.Common
 		/// Validates the Resource and Business Resource Code Required message based on Labor Type Start and End Date
 		/// </summary>
 		/// <param name="labor">Validation BOE Labor Type Model</param>
+		/// <param name="workspaceShortname">Workspace Shortname</param>
 		/// <returns>Validation string that labels required fields if any are missing, else empty string</returns>
-		public static string ValidateResourceAndBusinessResourceCodeRequired(ResourceTypeDto labor)
+		public static string ValidateResourceAndBusinessResourceCodeRequired(ResourceTypeDto labor, string workspaceShortname)
 		{
 			string requiredMessage = string.Empty;
 
-			if (!Utilities.IsBRCEnabledForSystem)
+			if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 			{
 				if (labor != null && !labor.ResourceID.HasValue)
 				{
@@ -117,14 +119,15 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="labor">Labor</param>
 		/// <param name="resourcesFromTask">Resources for Task</param>
 		/// <param name="businessResourceCodesFromTask">Business Resource Codes for Task</param>
-		public static void PopulateResourceAndBusinessResourceCodeHeaders(ValidationBOELaborType boeLabor, ResourceTypeDto labor, ICollection<ResourceDTO> resourcesFromTask, ICollection<ResourceDTO> businessResourceCodesFromTask)
+		/// <param name="workspaceShortname">Workspace short name</param>
+		public static void PopulateResourceAndBusinessResourceCodeHeaders(ValidationBOELaborType boeLabor, ResourceTypeDto labor, ICollection<ResourceDTO> resourcesFromTask, ICollection<ResourceDTO> businessResourceCodesFromTask, string workspaceShortname)
 		{
 			ResourceDTO resource = null;
 			ResourceDTO businessResourceCode = null;
 
 			if (boeLabor != null)
 			{
-				if (!Utilities.IsBRCEnabledForSystem)
+				if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 				{
 					if (labor.ResourceID.HasValue)
 					{
@@ -176,11 +179,12 @@ namespace GenBOE.ActionLogic.Common
 		/// Process the labor types for BRC in order to display the proper details in exports
 		/// </summary>
 		/// <param name="taskElementLabors">the task element labors</param>
+		/// <param name="workspaceShortname">Workspace short name</param>
 		/// <param name="startingNewId">Starting new psuedo ID for Sub Reource Type</param>
 		/// <returns>The labor types properly processed for resource vs BRC</returns>
-		public static ICollection<ResourceTypeDto> ProcessLaborTypesForBrc(ICollection<ResourceTypeDto> taskElementLabors, int startingNewId = -1)
+		public static ICollection<ResourceTypeDto> ProcessLaborTypesForBrc(ICollection<ResourceTypeDto> taskElementLabors, string workspaceShortname, int startingNewId = -1)
 		{
-			if (!Utilities.IsBRCEnabledForSystem)
+			if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 			{
 				return taskElementLabors;
 			}

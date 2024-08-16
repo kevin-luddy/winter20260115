@@ -231,7 +231,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 BoeDTO boe = workspace.Boes.First(b => b.Id == taskElement.BoeID);
                 //get brc labors based on 1lmx start date
-                List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToList();
+                List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, workspace.Shortname).ToList();
 
                 foreach (ResourceTypeDto laborTask in taskElementLabors)
                 {

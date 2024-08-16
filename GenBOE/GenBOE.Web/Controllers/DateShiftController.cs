@@ -212,7 +212,7 @@ namespace GenBOE.Web.Controllers
                         throw new NotSupportedException("This Date Shift Level is not supported: " + dateShiftLevel.GetDescription());
                 }
 
-                this.dateShiftCalculation.PerformDateShift(dateShiftable, dateShiftModel, parentStart, parentEnd, validateOnly, parentLevel);
+                this.dateShiftCalculation.PerformDateShift(dateShiftable, dateShiftModel, parentStart, parentEnd, validateOnly, parentLevel, workspace);
                 this.Factory.ClearWorkspaceCache(ws.Shortname);
             }
             catch (GenValidationException)

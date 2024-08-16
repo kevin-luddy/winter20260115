@@ -289,7 +289,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						.Distinct().ToList();
 
 				wsDataForExport.Resources = this.retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
-			}else if (Utilities.IsBRCEnabledForSystem)
+			}else if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname))
 			{
 				ICollection<int> resourceIds = wsDataForExport.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
 						.Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
@@ -300,7 +300,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			//to remove
 			bool has1LMXResources = oneLMXResourceIDs.Any();
 
-			if (!Utilities.IsBRCEnabledForSystem && has1LMXResources)
+			if (!Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && has1LMXResources)
 			{
 				ICollection<ResourceDTO> resourceDTOs = this.retriever.GetResourcesByIds(oneLMXResourceIDs);
 				wsDataForExport.Resources = resourceDTOs.Union(wsDataForExport.Resources).ToList().AsReadOnly();
@@ -325,7 +325,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		{
 			Collection<int> oneLmxResourceIds = new Collection<int>();
 
-			if (!Utilities.IsBRCEnabledForSystem && oneLmxCF != null)
+			if (!Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && oneLmxCF != null)
 			{
 				// need to get IDs from this custom field into the list of Ids used
 				List<string> resourceNames = workspace.CustomFieldValues.Where(c => c.CustomFieldID == oneLmxCF.Id).Select(f => f.CustomFieldValueName).ToList();
@@ -388,17 +388,17 @@ namespace GenBOE.ActionLogic.IO.Export
 			DetermineStartAndEndDates(boeLevelExportData, taskElements, materialElements, travelElements, odcElements);
 
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.LaborElements,
-				ElementOfCostType.LMLabor, laborResourceIDs, isUsingEP, offloading, has1LMXResources);
+				ElementOfCostType.LMLabor, laborResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.IWTAElements,
-				ElementOfCostType.IWTA, iwtaResourceIDs, isUsingEP, offloading, has1LMXResources);
+				ElementOfCostType.IWTA, iwtaResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.SubcontractorElements,
-				ElementOfCostType.Sub, subContractorResourceIDs, isUsingEP, offloading, has1LMXResources);
+				ElementOfCostType.Sub, subContractorResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.MaterialLaborElements,
-				ElementOfCostType.Materials, materialResourceIDs, isUsingEP, offloading, has1LMXResources);
+				ElementOfCostType.Materials, materialResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.TravelLaborElements,
-				ElementOfCostType.Travel, travelResourceIDs, isUsingEP, offloading, has1LMXResources);
+				ElementOfCostType.Travel, travelResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.ODCLaborElements,
-				ElementOfCostType.ODC, odcResourceIDs, isUsingEP, offloading, has1LMXResources);
+				ElementOfCostType.ODC, odcResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
 			this.ProcessOdcElements(wsDataForExport, boeLevelExportData, odcElements, odcResourceIDs);
 			this.ProcessTravelElements(workspace, wsDataForExport, boeLevelExportData, travelElements, travelResources);
 			this.ProcessRMSTravelElements(wsDataForExport, boeLevelExportData, travelElements, workspace);
@@ -415,8 +415,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="isUsingEquivalentPerson">if set to <c>true</c> [is using equivalent person].</param>
 		/// <param name="offloading">if set to <c>true</c> [offloading].</param>
 		/// <param name="has1LMXResources">if set to <c>true</c>, we need to account for splitting labor type for 1LMX</param>
+		/// <param name="workspaceShortname">Workspace shortname</param>
 		private void ProcessTaskElements(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, Collection<BoeTaskElementDTO> taskElements,
-			ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading, bool has1LMXResources)
+			ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading, bool has1LMXResources, string workspaceShortname)
 		{
 			if (!taskElements.Any()) { return; }
 
@@ -430,18 +431,18 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => (r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value))
 							|| (r.BusinessResourceCodeID.HasValue && resourceIDs.Contains(r.BusinessResourceCodeID.Value))).ToList();
-						if (Utilities.IsBRCEnabledForSystem)
+						if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 						{
 							//clone resources with brc
-							taskResourcesEntriesForElementOfCost = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost).ToList();
+							taskResourcesEntriesForElementOfCost = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname).ToList();
 						}
-						if (!Utilities.IsBRCEnabledForSystem && has1LMXResources)
+						if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) && has1LMXResources)
 						{
 							taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
 						}
 
 						IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
-							elementOfCost, taskResourcesEntriesForElementOfCost, boeTask, taskResourcesEntriesForElementOfCost.Any(x => x.IsOffloaded));
+							elementOfCost, taskResourcesEntriesForElementOfCost, boeTask, taskResourcesEntriesForElementOfCost.Any(x => x.IsOffloaded), workspaceShortname);
 
 						foreach (ResourceTypeDto labor in taskResourcesEntriesForElementOfCost)
 						{
@@ -458,13 +459,13 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => (r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value))
 						|| (r.BusinessResourceCodeID.HasValue && resourceIDs.Contains(r.BusinessResourceCodeID.Value))).ToList();
-					if (!Utilities.IsBRCEnabledForSystem && has1LMXResources)
+					if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) && has1LMXResources)
 					{
 						taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
 					} 
-					else if(Utilities.IsBRCEnabledForSystem)
+					else if(Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 					{
-						taskResourcesEntriesForElementOfCost = BRCValidationUtility.ProcessLaborTypesForBrc(boeTask.taskElementLabors).ToList();
+						taskResourcesEntriesForElementOfCost = BRCValidationUtility.ProcessLaborTypesForBrc(boeTask.taskElementLabors, workspaceShortname).ToList();
 					}
 
 					foreach (ResourceTypeDto labor in taskResourcesEntriesForElementOfCost)
@@ -476,7 +477,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
 							IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, resourceClin,
-								resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, labor.IsOffloaded);
+								resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, labor.IsOffloaded, workspaceShortname);
 
 							this.GenerateResourceRow(wsLevelData, inputsForExport, resourceClin, resourceWbs, resourceIDs,
 								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded);
@@ -986,7 +987,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private IDictionary<int, string> GenerateTaskRow(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, ClinDTO clin, WbsDTO wbs,
 			ElementOfCostType elementOfCost, List<ResourceTypeDto> taskResourcesEntriesForElementOfCost,
-			BoeTaskElementDTO boeTask, bool isResourceOffloaded)
+			BoeTaskElementDTO boeTask, bool isResourceOffloaded, string workspaceShortname)
 		{
 			IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<int, string>();
 
@@ -1017,7 +1018,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					// Pro Pricer Task ID. This may or may not be selected, but we may need to keep track of it for Resources too
 					string taskIDString = string.Empty;
-					shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2);
+					shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2, workspaceShortname);
 
 					int incrementCount = 0;
 					if (elementOfCost == ElementOfCostType.LMLabor)
@@ -1305,12 +1306,13 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="resourceTypeEntry">The resource type entry</param>
 		/// <param name="previousBusinessResourceCodeID">The Business Resource Code ID in the previous row</param>
+		/// <param name="workspaceShortname">Workspace shortname</param>
 		/// <returns>A tuple, denoting if the task number should increment and the previous BRC ID</returns>
-		private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID)
+		private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID, string workspaceShortname)
 		{
 			Tuple<bool, int> shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
 
-			if (Utilities.IsBRCEnabledForSystem)
+			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 			{
 				// If this is split between a BRC and current resource, we should flag it to not increment for the next 
 				if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate

@@ -327,7 +327,7 @@ namespace GenBOE.Tests.ActionLogic
                 IDateShiftable obj = CreateParentShiftable();
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.FlowDown, i);
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
 
@@ -350,7 +350,7 @@ namespace GenBOE.Tests.ActionLogic
                 IDateShiftable obj = CreateParentShiftable();
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.FlowDown, -1 * i);
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
 
@@ -371,7 +371,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateExpandRight(ChildModificationType.FlowDown);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -391,7 +391,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateShrinkLeft(ChildModificationType.FlowDown);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -408,7 +408,7 @@ namespace GenBOE.Tests.ActionLogic
             obj = CreateParentShiftable();
             detail = CreateShrinkLeft(ChildModificationType.FlowDown);
             detail.Error1FixSingleMonth = true;
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.AreEqual(obj2.StartDate.Value, obj.StartDate.Value);
             Assert.AreEqual(obj2.EndDate.Value.AddMonths(detail.MonthChange), obj.EndDate.Value);
@@ -424,7 +424,7 @@ namespace GenBOE.Tests.ActionLogic
             obj = CreateParentShiftable();
             detail = CreateShift(ChildModificationType.NoChange, -6);
             detail.Error2Handling = null;
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.AreEqual(obj2.StartDate.Value.AddMonths(detail.MonthChange), obj.StartDate.Value);
             Assert.AreEqual(obj2.EndDate.Value.AddMonths(detail.MonthChange), obj.EndDate.Value);
@@ -439,7 +439,7 @@ namespace GenBOE.Tests.ActionLogic
             obj = CreateParentShiftable();
             detail = CreateShift(ChildModificationType.NoChange, -6);
             detail.Error2Handling = ChildModificationType.NoChange;
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.AreEqual(obj2.StartDate.Value.AddMonths(detail.MonthChange), obj.StartDate.Value);
             Assert.AreEqual(obj2.EndDate.Value.AddMonths(detail.MonthChange), obj.EndDate.Value);
@@ -454,7 +454,7 @@ namespace GenBOE.Tests.ActionLogic
             obj = CreateParentShiftable();
             detail = CreateShift(ChildModificationType.NoChange, -6);
             detail.Error2Handling = ChildModificationType.ToPoP;
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.AreEqual(obj2.StartDate.Value.AddMonths(detail.MonthChange), obj.StartDate.Value);
             Assert.AreEqual(obj2.EndDate.Value.AddMonths(detail.MonthChange), obj.EndDate.Value);
@@ -469,7 +469,7 @@ namespace GenBOE.Tests.ActionLogic
             obj = CreateParentShiftable();
             detail = CreateShift(ChildModificationType.NoChange, -6);
             detail.Error2Handling = ChildModificationType.ToEnd;
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.AreEqual(obj2.StartDate.Value.AddMonths(detail.MonthChange), obj.StartDate.Value);
             Assert.AreEqual(obj2.EndDate.Value.AddMonths(detail.MonthChange), obj.EndDate.Value);
@@ -491,7 +491,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateShift(ChildModificationType.NoChange, -6);
             detail.Error2Handling = ChildModificationType.FlowDown;
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
         }
 
         #endregion Children Flowdown
@@ -509,7 +509,7 @@ namespace GenBOE.Tests.ActionLogic
                 IDateShiftable obj = CreateParentShiftable();
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.NoChange, i);
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
 
@@ -532,7 +532,7 @@ namespace GenBOE.Tests.ActionLogic
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.NoChange, -1 * i);
 
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
 
@@ -552,7 +552,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateExpandRight(ChildModificationType.NoChange);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -571,7 +571,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateShrinkLeft(ChildModificationType.NoChange);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -596,7 +596,7 @@ namespace GenBOE.Tests.ActionLogic
                 IDateShiftable obj = CreateParentShiftable();
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.ToPoP, i);
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
                 obj2.StartDate = obj2.StartDate.Value.AddMonths(detail.MonthChange);
@@ -620,7 +620,7 @@ namespace GenBOE.Tests.ActionLogic
                 IDateShiftable obj = CreateParentShiftable();
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.ToPoP, -1 * i);
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
 
@@ -640,7 +640,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateExpandRight(ChildModificationType.ToPoP);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -659,7 +659,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateShrinkLeft(ChildModificationType.ToPoP);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -684,7 +684,7 @@ namespace GenBOE.Tests.ActionLogic
                 IDateShiftable obj = CreateParentShiftable();
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.ToStart, i);
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
                 obj2.StartDate = obj2.StartDate.Value.AddMonths(detail.MonthChange);
@@ -709,7 +709,7 @@ namespace GenBOE.Tests.ActionLogic
                 IDateShiftable obj = CreateParentShiftable();
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.ToStart, -1 * i);
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
 
@@ -730,7 +730,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateExpandRight(ChildModificationType.ToStart);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -750,7 +750,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateShrinkLeft(ChildModificationType.ToStart);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -776,7 +776,7 @@ namespace GenBOE.Tests.ActionLogic
                 IDateShiftable obj = CreateParentShiftable();
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.ToEnd, i);
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
 
@@ -798,7 +798,7 @@ namespace GenBOE.Tests.ActionLogic
                 IDateShiftable obj = CreateParentShiftable();
                 DateShiftDetailModelView detail = CreateShift(ChildModificationType.ToEnd, -1 * i);
 
-                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+                DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
                 IDateShiftable obj2 = CreateParentShiftable();
 
@@ -818,7 +818,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateExpandRight(ChildModificationType.ToEnd);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -837,7 +837,7 @@ namespace GenBOE.Tests.ActionLogic
             IDateShiftable obj = CreateParentShiftable();
             DateShiftDetailModelView detail = CreateShrinkLeft(ChildModificationType.ToEnd);
 
-            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(obj, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             IDateShiftable obj2 = CreateParentShiftable();
 
@@ -889,7 +889,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.NotSet;
             int difference = StartDate.MonthDifference(EndDate) + 1;
 
-            DateShiftCalculation.PerformShifts(task, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(task, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail } , Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             // the spreads that are auto-calculated are not saved to DB, so the # and values should not change from the beginning
             Assert.AreEqual(difference, task.taskElementLabors.First().LaborSpreads.Count);
@@ -908,7 +908,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.DiscreteToError;
             int difference = StartDate.MonthDifference(EndDate) + 1;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             // expanded right, so no change to discrete to original discrete, just adding zeros to end
             Assert.AreEqual(difference + detail.MonthChange, dateShiftable.taskElementLabors.First().LaborSpreads.Count);
@@ -928,7 +928,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.DiscreteToError;
             int difference = StartDate.MonthDifference(EndDate) + 1;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.AreEqual(difference + detail.MonthChange, dateShiftable.taskElementLabors.First().LaborSpreads.Count);
             Assert.IsTrue(DISCRETE_HOURS > dateShiftable.taskElementLabors.First().ValueSpread);
@@ -948,7 +948,7 @@ namespace GenBOE.Tests.ActionLogic
 
             decimal value = dateShiftable.taskElementLabors.First().LaborSpreads.First().LaborSpreadValue;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.AreEqual(difference + detail.MonthChange, dateShiftable.taskElementLabors.First().LaborSpreads.Count);
             Assert.AreEqual(DISCRETE_HOURS, dateShiftable.taskElementLabors.First().ValueSpread);
@@ -968,7 +968,7 @@ namespace GenBOE.Tests.ActionLogic
             int difference = StartDate.MonthDifference(EndDate) + 1;
             decimal value = dateShiftable.taskElementLabors.First().LaborSpreads.Last().LaborSpreadValue;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.AreEqual(difference + detail.MonthChange, dateShiftable.taskElementLabors.First().LaborSpreads.Count);
             Assert.AreEqual(DISCRETE_HOURS, dateShiftable.taskElementLabors.First().ValueSpread);
@@ -987,7 +987,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.ChildModificationType = ChildModificationType.FlowDown;
             detail.SpreadHandling = SpreadHandling.NotSet;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
         }
 
         /// <summary>
@@ -1001,7 +1001,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.ChildModificationType = ChildModificationType.FlowDown;
             detail.SpreadHandling = null;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
         }
 
         /// <summary>
@@ -1016,7 +1016,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.NewCurve;
             detail.NewCurve = null;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
         }
 
         /// <summary>
@@ -1031,7 +1031,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.NewCurve;
             detail.NewCurve = SpreadCurves.None;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
         }
 
         /// <summary>
@@ -1046,7 +1046,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.NewCurve;
             detail.NewCurve = SpreadCurves.DiscreteCost;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
         }
 
         /// <summary>
@@ -1061,7 +1061,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.NewCurve;
             detail.NewCurve = SpreadCurves.DiscreteHours;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
         }
 
         /// <summary>
@@ -1076,7 +1076,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.NewCurve;
             detail.NewCurve = SpreadCurves.Level;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
         }
 
         /// <summary>
@@ -1091,7 +1091,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.NewCurve;
             detail.NewCurve = SpreadCurves.Load;
 
-            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(dateShiftable, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
         }
 
         #endregion Spread Tests
@@ -1108,7 +1108,7 @@ namespace GenBOE.Tests.ActionLogic
 
             DateShiftDetailModelView detail = CreateShrinkLeft(ChildModificationType.FlowDown);
             
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsTrue(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1146,7 +1146,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = true;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsTrue(detail.Errors.HasError2);
@@ -1184,7 +1184,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsTrue(detail.Errors.HasError2);
@@ -1222,7 +1222,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = ChildModificationType.NoChange;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1260,7 +1260,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = ChildModificationType.ToPoP;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1298,7 +1298,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1336,7 +1336,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = ChildModificationType.ToEnd;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1375,7 +1375,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1414,7 +1414,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1453,7 +1453,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1492,7 +1492,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1531,7 +1531,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsTrue(detail.Errors.HasError2);
@@ -1570,7 +1570,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1609,7 +1609,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1648,7 +1648,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1688,7 +1688,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1727,7 +1727,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
@@ -1766,7 +1766,7 @@ namespace GenBOE.Tests.ActionLogic
             detail.Error1FixSingleMonth = false;
             detail.Error2Handling = null;
 
-            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace);
+            DateShiftCalculation.PerformShifts(ds, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             Assert.IsFalse(detail.Errors.HasError1);
             Assert.IsFalse(detail.Errors.HasError2);
