@@ -131,6 +131,11 @@ namespace GenTRAC.ActionLogic
 		/// Suffix for Proposal Revision Tracking Numbers
 		/// </summary>
 		public const string REVISION_SUFFIX = "-PR";
+		
+		/// <summary>
+		/// Firm proposal class
+		/// </summary>
+		public const int FIRM_PROPOSAL_CLASS = 1;
 
 		/// <summary>
 		/// Constructor
@@ -1872,7 +1877,7 @@ namespace GenTRAC.ActionLogic
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CCOPD_NO_OTHER_REASON_REQUIRED));
 			}
-			else if (proposalGeneralInfo.IsCCPDRequired.Value && proposalClass == 1 && !proposalGeneralInfo.IsSupportOfUndefinitized.HasValue)
+			else if (proposalGeneralInfo.IsCCPDRequired.Value && proposalClass == FIRM_PROPOSAL_CLASS && !proposalGeneralInfo.IsSupportOfUndefinitized.HasValue)
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.IS_IN_SUPPORT_OF_DEFINITIZING_UNDEFINITIZED_REQUIRED));
 			}
