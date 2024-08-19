@@ -45,7 +45,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 
 			ConfidenceReportItem confidenceReportItem1 = new ConfidenceReportItem()
 			{
-				WbsNumber = 1,
+				WbsNumber = "1",
 				WbsTitle = "test wbs",
 				BoeId = 1,
 				BoeTitle = "test title",
@@ -60,7 +60,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 
 			ConfidenceReportItem confidenceReportItem2 = new ConfidenceReportItem()
 			{
-				WbsNumber = 2,
+				WbsNumber = "2",
 				WbsTitle = "test wbs 2",
 				BoeId = 2,
 				BoeTitle = "test title 2",
