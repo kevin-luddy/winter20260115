@@ -1812,6 +1812,7 @@ namespace GenTRAC.ActionLogic
 		/// <param name="proposalGeneralInfo">ProposalGeneralInformationModelView instance</param>
 		/// <param name="inValidationErrors">list of validation errors to append to</param>
 		/// <param name="isForecasted">Indicates whether this proposal is forecasted or not excluding some validation.</param>
+		/// <param name="proposalClass">Proposal Class</param>
 		public void ValidateGeneralInfoTypes(ProposalGeneralInformationModelView proposalGeneralInfo, ICollection<ValidationMessage> inValidationErrors, bool isForecasted, int proposalClass)
 		{
 			if (proposalGeneralInfo == null)
