@@ -1,5 +1,7 @@
 angular.module('genboe').controller('BOEConfidenceReportController', ['$scope', '$window', '$timeout', 'ConfidenceReportModel', function ($scope, $window, $timeout, ConfidenceReportModel) {
 	$scope.confidenceScore = ConfidenceReportModel.model.ConfidenceScore;
+	$scope.confidenceValue = ConfidenceReportModel.model.ConfidenceValue;
+	$scope.maximumConfidenceValue = ConfidenceReportModel.model.MaximumConfidenceValue;
 	$scope.data = ConfidenceReportModel.model.ConfidenceReportData;
 	$scope.displayErrors = $scope.data.length > 0;
 	$scope.noTitle = "No Title";

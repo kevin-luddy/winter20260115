@@ -31,11 +31,14 @@
 			<div class="module-header-data">Confidence Report</div>
 			<div class="module-content-data">
 				<div class="form-row confidence-score">
-					<h2>
+					<h2 title="Confidence Score: {{confidenceScore}} means that we searched for {{maximumConfidenceValue}} different values and found {{confidenceValue}} of them">
 						Confidence Score: {{confidenceScore}}
 					</h2>
 					<div>
 						<button class="ies-action" id="Export-ManageBOE" data-ng-disabled="isExporting" data-ng-click="exportConfidenceReport()" type="button">Excel Export</button>
+					</div>
+					<div id="report-description" class="float-left">
+						<span>The Confidence Score is based on the MOQ Equation, PoP, and Total Relevant Hours data being found across RTEs (Task Description, Rationale, Historical Reference) in their respective Tasks.</span>
 					</div>
 					<div class="search-box float-right" data-ng-if="displayErrors">
 						<input type="search" class="filter" data-ng-model="search.text" data-ng-model-options="{ debounce: 200 }" placeholder="Search..." />
@@ -66,7 +69,7 @@
 										<a data-ng-click="sort(columns.moqTypes)" data-ng-class="{ 'bold': boldSort(columns.moqTypes) }">MOQ Types</a>
 									</th>
 									<th class="confidence-report-rtefields">
-										<a data-ng-click="sort(columns.rteFields)" data-ng-class="{ 'bold': boldSort(columns.rteFields) }">RTE Fields</a>
+										<a data-ng-click="sort(columns.rteFields)" data-ng-class="{ 'bold': boldSort(columns.rteFields) }" title="The number of RTE fields that we are searching to find the values">RTE Fields</a>
 									</th>
 									<th class="confidence-report-errors">
 										<a data-ng-click="sort(columns.errors)" data-ng-class="{ 'bold': boldSort(columns.errors) }">Error Messages</a>

@@ -24,6 +24,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="templateFileLocation">File location of the Excel template</param>
 		/// <param name="confidenceReport">View model of confidence report</param>
 		/// <returns>The file location of the exported Excel file</returns>
-		string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport);
+		string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport, string workspace);
 	}
 }
