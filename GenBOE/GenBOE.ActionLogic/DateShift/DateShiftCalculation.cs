@@ -124,9 +124,10 @@ namespace GenBOE.ActionLogic.DateShift
         /// <param name="parentEnd">The parent end.</param>
         /// <param name="validateOnly">If this should only validate the dateshift.</param>
         /// <param name="parentLevel">The parent level.</param>
+		/// <param name="workspaceShortname">Workspace ShortName</param>
         /// <exception cref="ArgumentNullException">dateShiftable or details</exception>
         public void PerformDateShift(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd, 
-            bool validateOnly, Level parentLevel)
+            bool validateOnly, Level parentLevel, string workspaceShortname)
         {
             if (dateShiftable == null)
             {
@@ -149,7 +150,7 @@ namespace GenBOE.ActionLogic.DateShift
             }
 
             // Perform Shifts
-            PerformShifts(dateShiftable, dateShiftModel, parentStart, parentEnd, null, parentLevel);
+            PerformShifts(dateShiftable, dateShiftModel, parentStart, parentEnd, null, parentLevel, workspaceShortname);
 
             // Error handling - only need to throw the errors for the last detail (duration change) in case there are both a shift and duration change
             if (dateShiftModel.Details.Last().Errors.Messages.Any())
@@ -179,7 +180,7 @@ namespace GenBOE.ActionLogic.DateShift
         /// <param name="parentEnd">The parent end.</param>
         /// <param name="parentBoeId">The parent's BOE ID.</param>
         /// <param name="parentLevel">The parent's Level.</param>
-        internal static void PerformShifts(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel)
+        internal static void PerformShifts(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel, string workspaceShortname)
         {
             // Perform dateshift on this object
             if (!dateShiftable.StartDate.HasValue || !dateShiftable.EndDate.HasValue)
@@ -191,8 +192,8 @@ namespace GenBOE.ActionLogic.DateShift
             foreach (DateShiftDetailModelView detail in dateShiftModel.Details)
             {
                 PerformShiftOperation(dateShiftable, detail);
-                Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, parentLevel);
-                PerformChildrenShift(dateShiftable, parentStart, parentEnd, parentBoeId, detail, dateShiftModel);
+                Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
+                PerformChildrenShift(dateShiftable, parentStart, parentEnd, parentBoeId, detail, dateShiftModel, workspaceShortname);
             }
         }
 
@@ -204,8 +205,9 @@ namespace GenBOE.ActionLogic.DateShift
         /// <param name="parentEnd">The parent end.</param>
         /// <param name="detail">The detail.</param>
         /// <param name="modelView">The Dateshift modelview.</param>
+		/// <param name="workspaceShortname">Workspace shortname</param>
         /// <exception cref="NotSupportedException"></exception>
-        private static void PerformChildrenShift(IDateShiftable dateShiftable, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, DateShiftDetailModelView detail, DateShiftModelView modelView)
+        private static void PerformChildrenShift(IDateShiftable dateShiftable, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, DateShiftDetailModelView detail, DateShiftModelView modelView, string workspaceShortname)
         {
             // Perform dateshift on child objects
             if (dateShiftable.HasSpread)
@@ -214,11 +216,11 @@ namespace GenBOE.ActionLogic.DateShift
                 {
                     case Level.Labor:
                         PerformLaborSpreadShift(dateShiftable, detail, modelView);
-                        Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, Level.Task);
+                        Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, Level.Task, workspaceShortname);
                         break;
                     case Level.Travel:
                         PerformTravelSpreadShift(dateShiftable, detail);
-                        Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, Level.BOE);
+                        Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, Level.BOE, workspaceShortname);
                         break;
                     default:
 
@@ -227,7 +229,7 @@ namespace GenBOE.ActionLogic.DateShift
             }
             else
             {
-                RecursiveChildShifts(dateShiftable, detail, parentStart, parentEnd, modelView);
+                RecursiveChildShifts(dateShiftable, detail, parentStart, parentEnd, modelView, workspaceShortname);
             }
         }
 
@@ -238,7 +240,8 @@ namespace GenBOE.ActionLogic.DateShift
         /// <param name="detail">The detail.</param>
         /// <param name="grandParentStart">The object's parent start.</param>
         /// <param name="grandParentEnd">The object's parent end.</param>
-        internal static void RecursiveChildShifts(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? grandParentStart, DateTime? grandParentEnd, DateShiftModelView modelView)
+		/// <param name="workspaceShortname">workspace shortname</param>
+        internal static void RecursiveChildShifts(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? grandParentStart, DateTime? grandParentEnd, DateShiftModelView modelView, string workspaceShortname)
         {
             if (dateShiftable.Children.Any())
             {
@@ -258,20 +261,20 @@ namespace GenBOE.ActionLogic.DateShift
                     if (detail.ChildModificationType == ChildModificationType.NoChange)
                     {
                         // validate the no change
-                        Validate(child, detail, pStart, pEnd, parentBoeId, dateShiftable.DateShiftLevel);
+                        Validate(child, detail, pStart, pEnd, parentBoeId, dateShiftable.DateShiftLevel, workspaceShortname);
 
                         // recursive call to recursive validate
-                        PerformChildrenShift(child, pStart, pEnd, parentBoeId, detail, modelView);
+                        PerformChildrenShift(child, pStart, pEnd, parentBoeId, detail, modelView, workspaceShortname);
                     }
                     else
                     {
                         PerformChildShift(child, detail, pStart, pEnd);
 
                         // validate the shift
-                        Validate(child, detail, pStart, pEnd, parentBoeId, dateShiftable.DateShiftLevel);
+                        Validate(child, detail, pStart, pEnd, parentBoeId, dateShiftable.DateShiftLevel, workspaceShortname);
 
                         // recursive call
-                        PerformChildrenShift(child, pStart, pEnd, parentBoeId, detail, modelView);
+                        PerformChildrenShift(child, pStart, pEnd, parentBoeId, detail, modelView, workspaceShortname);
                     }
                 }
             }
@@ -363,9 +366,10 @@ namespace GenBOE.ActionLogic.DateShift
         /// <param name="parentEnd">The parent end.</param>
         /// <param name="parentBoeId">The parent's BOE ID.</param>
         /// <param name="parentLevel">The parent's level.</param>
-        internal static void Validate(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel)
+		/// <param name="workspaceShortname">Workspace short name</param>
+        internal static void Validate(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel, string workspaceShortname)
         {
-            CheckErrors(dateShiftable, detail, parentStart, parentEnd, parentBoeId, parentLevel);
+            CheckErrors(dateShiftable, detail, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
 
             bool rerunError1Check = detail.Errors.HasError1 && detail.Error1FixSingleMonth == true;
             bool rerunError2Check = detail.Errors.HasError2 && detail.Error2Handling.HasValue;
@@ -381,7 +385,7 @@ namespace GenBOE.ActionLogic.DateShift
                 };
 
                 DateShiftDetailModelView secondCheck = detail.Clone();
-                CheckErrors(ds, secondCheck, parentStart, parentEnd, parentBoeId, parentLevel);
+                CheckErrors(ds, secondCheck, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
 
                 if (rerunError1Check)
                 {
@@ -415,7 +419,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="parentBoeId">The parent's BOE ID.</param>
 		/// <param name="parentLevel">The parent's Level.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "<Pending>")]
-		private static void CheckErrors(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel)
+		private static void CheckErrors(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel, string workspaceShortname)
         {
             if (dateShiftable.StartDate.HasValue && dateShiftable.EndDate.HasValue)
             {
@@ -531,7 +535,7 @@ namespace GenBOE.ActionLogic.DateShift
                         }
                     }
 
-					if (Utilities.IsBRCEnabledForSystem)
+					if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 					{
 						if (previousStartDate < oneLMXStartDate)
 						{

@@ -201,10 +201,10 @@ namespace GenBOE.Web.Controllers
 			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
 			
 			bool missingBRCs = false;
-			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
 				//check if ws contains BRCs, if not, mark tasks as read only
-				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace);
 				//if no brcs in ws, display warning
 				if (resources.Count == 0)
 				{
@@ -280,7 +280,7 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), false).ToList();
+			ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), false, workspace).ToList();
 
 			ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
@@ -306,7 +306,7 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true).ToList();
+			ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace).ToList();
 
 			ICollection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
@@ -582,7 +582,7 @@ namespace GenBOE.Web.Controllers
 			}
 			ViewData["EnableSkillMix"] = enableSkillMix;
 			ViewData["EnableCommonDisclosure"] = false;
-			if (Utilities.IsBRCEnabledForSystem && boe.EndDate >= Utilities.OneLmxStartDate)
+			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
 				//enable the common disclosure table
 				if (enableSkillMix)
@@ -590,7 +590,7 @@ namespace GenBOE.Web.Controllers
 					ViewData["EnableCommonDisclosure"] = true;
 				}
 				//check if ws contains BRCs, if not, mark moq equation as read only
-				ICollection <ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true);
+				ICollection <ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace);
 				if (resources.Count == 0)
 				{
 					ViewData["READONLY"] = true;
@@ -1211,7 +1211,7 @@ namespace GenBOE.Web.Controllers
 
 			string templateName;
 
-			if (Utilities.IsBRCEnabledForSystem)
+			if (Utilities.IsBRCEnabledForWorkspace(workspace))
 			{
 				templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread_BRCEnabled.xlsx";
 			}
@@ -1844,12 +1844,12 @@ namespace GenBOE.Web.Controllers
 
 					// Determine the spread type based on the rate type of the resource.
 					RateType rateType;
-					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false).FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
+					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false, workspace.Shortname).FirstOrDefault(r => r.Id == laborTypeToUpdate.ResourceID);
 					ResourceDTO brcForLabor = null;
 
-					if (Utilities.IsBRCEnabledForSystem)
+					if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname))
 					{
-						brcForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true).FirstOrDefault(r => r.Id == laborTypeToUpdate.BusinessResourceCodeID);
+						brcForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true, workspace.Shortname).FirstOrDefault(r => r.Id == laborTypeToUpdate.BusinessResourceCodeID);
 					}
 
 					// Rate Type Validation not needed here as the import already does it
@@ -1934,12 +1934,12 @@ namespace GenBOE.Web.Controllers
 
 					// Determine the spread type based on the rate type of the resource.
 					RateType rateType;
-					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false).FirstOrDefault(r => r.Id == laborTypeToAdd.ResourceID);
+					ResourceDTO resourceForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false, workspace.Shortname).FirstOrDefault(r => r.Id == laborTypeToAdd.ResourceID);
 					ResourceDTO brcForLabor = null;
 
-					if (Utilities.IsBRCEnabledForSystem)
+					if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname))
 					{
-						brcForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true).FirstOrDefault(r => r.Id == laborTypeToAdd.BusinessResourceCodeID);
+						brcForLabor = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true, workspace.Shortname).FirstOrDefault(r => r.Id == laborTypeToAdd.BusinessResourceCodeID);
 					}
 
 					// Rate Type Validation not needed here as the import already does it

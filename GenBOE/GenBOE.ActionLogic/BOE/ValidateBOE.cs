@@ -564,8 +564,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 ValidateFieldLength(workspace.RteSizeLimit, boeTask.Description, "Task Description", TaskElementMessages);
                 ValidateFieldLength(workspace.RteSizeLimit, boeTask.MOQText, "MOQ Rationale", TaskElementMessages);
 
-                List<ResourceDTO> resourcesFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id)).ToList(), false).ToList();
-				List<ResourceDTO> businessResourceCodeFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.BusinessResourceCodeID.HasValue).Select(z => z.BusinessResourceCodeID.Value)).Contains(x.Id)).ToList(), true).ToList();
+                List<ResourceDTO> resourcesFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id)).ToList(), false, workspace.Shortname).ToList();
+				List<ResourceDTO> businessResourceCodeFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.BusinessResourceCodeID.HasValue).Select(z => z.BusinessResourceCodeID.Value)).Contains(x.Id)).ToList(), true, workspace.Shortname).ToList();
                 TotalLaborSpreadValue = ValidateResourceLabors(workspace, inBOE, boeTasks, LaborTypeMessages, offloadRatesDtos, boeTask, resourcesFromTask, businessResourceCodeFromTask);
 
                 // only check moq equation total if this is a labor task element
@@ -879,7 +879,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 				foreach (string skillMixResourceNew in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceNew))
 				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: BOE kill Mix has invalid value for {0}.", skillMixResourceNew));
+					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceNew));
 				}
 
 				if (totalSKillMixRowsBOESkillMix != 100)
@@ -1089,7 +1089,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 }
 
 				// need to verfy a Resource or Business Resource Code exists
-				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor);
+				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, workspace.Shortname);
                 if (!string.IsNullOrEmpty(requiredMessage))
                 {
 					LaborTypeMessages.Add(requiredMessage);
@@ -1176,7 +1176,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 if (LaborTypeMessages.Any())
                 {
-					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask);	
+					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask, workspace.Shortname);	
 
                     boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
                     boeTasks.LaborTypes.Add(boeLabor);

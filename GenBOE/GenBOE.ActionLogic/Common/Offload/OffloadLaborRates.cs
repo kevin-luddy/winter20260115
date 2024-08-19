@@ -573,9 +573,9 @@ namespace GenBOE.ActionLogic.Common
 
                     decimal taskElementTotalHoursOffloaded = 0m;
 
-					if (Utilities.IsBRCEnabledForSystem)
+					if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname))
 					{
-						taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, startingIndex).ToCollection();
+						taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, workspace.Shortname, startingIndex).ToCollection();
 						startingIndex = taskElement.taskElementLabors.Select(x => x.Id).Min() - 1;
 					}
 

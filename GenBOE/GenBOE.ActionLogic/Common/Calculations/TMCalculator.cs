@@ -334,7 +334,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		private void CalculateTotalsForBOEFormModelView(BOEFormDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
 		{
 			//get brc labors based on 1lmx start date
-			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToList();
+			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, fullWorkspace.Shortname).ToList();
 
 			foreach (ResourceTypeDto laborTask in taskElementLabors)
 			{
@@ -377,7 +377,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		private void CalculateTotalsForBOE(BOEFormPBOEDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
 		{
 			//get brc labors based on 1lmx start date
-			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors).ToList();
+			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, fullWorkspace.Shortname).ToList();
 
 			foreach (ResourceTypeDto laborTask in taskElementLabors)
 			{

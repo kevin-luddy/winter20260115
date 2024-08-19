@@ -55,7 +55,7 @@
 	var ManageWBS_ContainsOCI = <%= Model.ContainsOci.ToString().ToLower() %>;
 	var currentWorkspace = '<%: SiteMasterUtilities.GetCurrentWorkspace() %>';
 	var boeLaborController = '<%: WebConstants.CONTROLLER_BOE_LABOR %>';
-	var isBrcEnabled = '<%= Utilities.IsBRCEnabledForSystem %>'.isTrue();
+	var isBrcEnabled = '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue();
 	var completeImportUrl = CreatePostURL(currentWorkspace, boeLaborController,
                         '<%:WebConstants.ACTION_IMPORT_LABOR_TYPE_AND_SPREAD %>',
 		'boe/' + '<%= ViewData["BOEID"] %>' + '/taskelement/' + '<%: ViewData["TASKID"] %>');
@@ -651,8 +651,8 @@
 												</td>
 												<td data-ng-show="IsBRCEnabled" class="business-resource-codes" data-ng-class="{ inputError: getAndSetIsBusinessResourceCodeValid(item, BusinessResourceCodeModels, true) === false }">
 													<div class="resource-selection bootstrap">
-														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 2}}" data-ng-model="item.BusinessResourceCodeInput" data-ng-change="businessResourceCodeSelected(item.BusinessResourceCode, item)"
-															data-ng-options="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'BusinessResourceCodeDesc'">
+														<select data-ng-if="showDropdowns" tabindex="{{tabindex + 2}}" data-ng-model="item.BusinessResourceCodeInput" data-ng-change="businessResourceCodeSelected(item.BusinessResourceCodeInput, item)"
+															data-ng-options="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | orderBy:'ResourceDesc'">
 														</select>
 														<input data-ng-if="!showDropdowns" tabindex="{{tabindex + 2}}" type="text" data-ng-model="item.BusinessResourceCodeInput" placeholder="Select a Business Resource Code" uib-typeahead="businessResourceCode as businessResourceCode.ResourceDesc for businessResourceCode in BusinessResourceCodeModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" type-ahead-min-length="2" data-ng-change="businessResourceCodeUpdated(item)" typeahead-on-select="businessResourceCodeSelected($item, item)">
 													</div>

@@ -934,7 +934,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 ICollection<ResourceTypeDto> resourceTypeDtos = taskElements.Where(t => t.BOETaskID == taskElement.BOETaskID).SelectMany(r => r.taskElementLabors).ToList();
 
 												List<BOEExportTaskElementLabor> orderedResources;
-												if (Utilities.IsBRCEnabledForSystem)
+												if (Utilities.IsBRCEnabledForWorkspace(exportInputs.Workspace.Shortname))
 												{
 													orderedResources = taskElement.taskElementLabors
 													.Where(x => x.ExportFields.ContainsKey(FieldName_BrcID)

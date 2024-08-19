@@ -68,7 +68,7 @@ namespace GenBOE.ActionLogic.Reporting
             HashSet<OtherDirectCostDTO> odcTaskElements = new HashSet<OtherDirectCostDTO>(this.wsRecalc.GetElementsWithInconsistentODCs(ws));
 			HashSet<BoeTaskElementDTO> resourceTaskElements = new HashSet<BoeTaskElementDTO>();
 
-			if (Utilities.IsBRCEnabledForSystem && processResources)
+			if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && processResources)
 			{
 				resourceTaskElements.AddRange(this.wsRecalc.GetTaskElementsWithMissingResource(ws));
 			}
@@ -84,7 +84,7 @@ namespace GenBOE.ActionLogic.Reporting
                 ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Hours, laborHourTaskElements, ws);
                 ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Cost, costTaskElements, ws);
                 ProcessTaskElements( allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.ODC, odcTaskElements, ws);
-				if (Utilities.IsBRCEnabledForSystem && processResources)
+				if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && processResources)
 				{
 					ProcessTaskElements(allModelViews, boes, authorsForAllBoes, BoeInconsistencyEnum.Resource, resourceTaskElements, ws);
 				}
