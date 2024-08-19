@@ -317,7 +317,8 @@ namespace GenTRAC.ActionLogic
 					ContractActionTypeOtherText = proposalInfo.ContractActionTypeOtherText,
 					AdditionalClassification = proposalGeneralInfo.AdditionalClassification,
 					CcopdNoOtherReason = proposalGeneralInfo.CcopdNoOtherReason,
-					CcopdNoReason = proposalGeneralInfo.CcopdNoReason
+					CcopdNoReason = proposalGeneralInfo.CcopdNoReason,
+					IsSupportOfUndefinitized = proposalGeneralInfo.IsSupportOfUndefinitized
 				};
 
 				// copy the old values for approvals/certification (comments, workflow status, signatures, additionalapprovalemailtext)
@@ -1489,6 +1490,7 @@ namespace GenTRAC.ActionLogic
 				model.IsCCPDReadOnly = isNewRevision ? false : fullProposalDto.LeadEstimatorSignedDate.HasValue;
 				model.CcopdNoOtherReason = fullProposalDto.CcopdNoOtherReason;
 				model.CcopdNoReason = fullProposalDto.CcopdNoReason;
+				model.IsSupportOfUndefinitized = fullProposalDto.IsSupportOfUndefinitized;
 
 				// Automatically adds selected option, even if the option is not active.
 				model.ProposalLocationsList = EnumUtilities.GetListItemsForEnumSorted(typeof(ProposalLocation), false, model.ProposalLocation.ToString());
@@ -1810,7 +1812,7 @@ namespace GenTRAC.ActionLogic
 		/// <param name="proposalGeneralInfo">ProposalGeneralInformationModelView instance</param>
 		/// <param name="inValidationErrors">list of validation errors to append to</param>
 		/// <param name="isForecasted">Indicates whether this proposal is forecasted or not excluding some validation.</param>
-		public void ValidateGeneralInfoTypes(ProposalGeneralInformationModelView proposalGeneralInfo, ICollection<ValidationMessage> inValidationErrors, bool isForecasted)
+		public void ValidateGeneralInfoTypes(ProposalGeneralInformationModelView proposalGeneralInfo, ICollection<ValidationMessage> inValidationErrors, bool isForecasted, int proposalClass)
 		{
 			if (proposalGeneralInfo == null)
 			{
@@ -1868,6 +1870,10 @@ namespace GenTRAC.ActionLogic
 			else if (!proposalGeneralInfo.IsCCPDRequired.Value && proposalGeneralInfo.CcopdNoReason == CcopdOptionalReason.Other && string.IsNullOrEmpty(proposalGeneralInfo.CcopdNoOtherReason))
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CCOPD_NO_OTHER_REASON_REQUIRED));
+			}
+			else if (proposalGeneralInfo.IsCCPDRequired.Value && proposalClass == 1 && !proposalGeneralInfo.IsSupportOfUndefinitized.HasValue)
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.IS_IN_SUPPORT_OF_DEFINITIZING_UNDEFINITIZED_REQUIRED));
 			}
 
 			if (!proposalGeneralInfo.IsCostVolumeClassified.HasValue)
