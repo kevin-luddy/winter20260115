@@ -8896,3 +8896,7 @@ span.blue-link a{
 #commonDisclosureTableData .brc-id {
     width: 180px;
 }
+
+#BOEConfidenceReport #report-description {
+    margin-top: 10px;
+}
