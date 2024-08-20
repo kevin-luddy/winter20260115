@@ -49,8 +49,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
 				{
-					string boeURL = baseURL + "/BOE/EditBOEIndex/boe/" + item.BoeId;
-					string taskURL = baseURL + "/BOE/EditBOEIndex/boe/" + item.BoeId + "#LMLabor/task/" + item.TaskId; 
+					string boeURL = baseURL + "BOE/EditBOEIndex/boe/" + item.BoeId;
+					string taskURL = baseURL + "BOE/EditBOEIndex/boe/" + item.BoeId + "#LMLabor/task/" + item.TaskId; 
 					worksheet.Add(item.WbsNumber, item.WbsTitle, item.BoeTitle, boeURL, item.TaskTitle, taskURL, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
 				}
 			}
