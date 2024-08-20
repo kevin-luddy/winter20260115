@@ -242,6 +242,8 @@
         }
 
         ProposalInfoWidget.ContractActionSelected();
+
+        $(document).trigger("PROPOSAL_CLASS_CHANGED");
     });
 </script>
 
@@ -304,7 +306,7 @@
                     Proposal Class*
                 </div>
                 <div class="form-element">
-                    @Html.DropDownListFor(model => model.ProposalClass, Model.ProposalClassesList, new { name = "ProposalClass" })
+                    @Html.DropDownListFor(model => model.ProposalClass, Model.ProposalClassesList, new { name = "ProposalClass", @onchange="$(document).trigger(\"PROPOSAL_CLASS_CHANGED\");" })
                 </div>
             </div>
             <div class="form-row" data-proposal-type="standard">

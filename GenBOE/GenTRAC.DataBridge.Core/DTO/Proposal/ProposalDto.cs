@@ -433,5 +433,10 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// When CCOPD = no, and reason is selected as other, this is the text for it
 		/// </summary>
 		public string CcopdNoOtherReason { get; set; }
+
+		/// <summary>
+		/// Is this proposal in support of definitizing an Undefinitized Contract Action
+		/// </summary>
+		public bool? IsSupportOfUndefinitized { get; set; }
 	}
 }

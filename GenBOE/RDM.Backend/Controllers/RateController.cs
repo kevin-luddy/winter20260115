@@ -449,22 +449,29 @@ namespace RDM.Backend.Controllers
 				this.Logic.VerifyLockForSaving(LockArea.RDMRates, collection[0].RevisionId);
 
 				RevisionModelView revision = this.Logic.RevisionMediator.GetById(collection[0].RevisionId);
-				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateDetailModelViews(collection, revision.StartYear, revision.EndYear);
+
+				Collection<string> importedRateCodes = collection.Select(r => r.RateCode).ToCollection();
+
+				// Retrieve all the rate code replications as well
+				importedRateCodes.AddRange(this.replicationLoader.GetAll().Select(r => r.To));
+
+				// Load the existing RateDetails for all the imported Rates.
+				ICollection<RateDetailModelView> existingRates = this.rateDetailLoader.GetRatesForImport(revision, importedRateCodes.ToArray());
+
+				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateImportedRates(existingRates, collection);
 				if (validationErrors.Any())
 				{
 					throw new GenValidationException(validationErrors);
 				}
 
-				using (TransactionScope scope = new(TransactionScopeOption.Required,
-					new TransactionOptions
-					{
-						IsolationLevel = IsolationLevel.Snapshot,
-						Timeout = new TimeSpan(0, 0, 2 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", CommonConstants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT))
-					}))
+				validationErrors = this.controllerLogic.ValidateRateDetailModelViews(collection, revision.StartYear, revision.EndYear);
+				if (validationErrors.Any())
 				{
-					this.rateDetailLoader.SaveDetails(collection);
-					scope.Complete();
+					throw new GenValidationException(validationErrors);
 				}
+
+				// Send the updated rates to the Database for the work in progress version.
+				this.controllerLogic.LoadImportedRates(existingRates, collection);
 
 				response.Data = this.rateDetailLoader.GetRatesByRevision(revision);
 				response.IsSuccessful = true;

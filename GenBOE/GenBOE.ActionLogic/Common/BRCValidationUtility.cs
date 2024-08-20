@@ -200,18 +200,26 @@ namespace GenBOE.ActionLogic.Common
 					// Resource and BRC - split labor type into 2, one for Resource and one for BRC
 					ResourceTypeDto resourceLaborType = laborType.DeepClone();
 					resourceLaborType.LaborSpreads = resourceLaborType.LaborSpreads.Where(x => x.LaborSpreadDate < Utilities.OneLmxStartDate).ToCollection();
-					resourceLaborType.ValueSpread = resourceLaborType.LaborSpreads.Sum(x => x.LaborSpreadValue);
-					resourceLaborType.EndDate = resourceLaborType.LaborSpreads.Last().LaborSpreadDate;
-					laborTypes.Add(resourceLaborType);
+
+					if (resourceLaborType.LaborSpreads.Any())
+					{
+						resourceLaborType.ValueSpread = resourceLaborType.LaborSpreads.Sum(x => x.LaborSpreadValue);
+						resourceLaborType.EndDate = resourceLaborType.LaborSpreads.Max(x => x.LaborSpreadDate);
+						laborTypes.Add(resourceLaborType);
+					}
 
 					ResourceTypeDto brcLaborType = laborType.DeepClone();
 					brcLaborType.ResourceID = brcLaborType.BusinessResourceCodeID;
 					// Assigns a fake subresource type ID for proper identification during parsing of the Existing Spread.
 					brcLaborType.Id = startingNewId--;
 					brcLaborType.LaborSpreads = brcLaborType.LaborSpreads.Where(x => x.LaborSpreadDate >= Utilities.OneLmxStartDate).ToCollection();
-					brcLaborType.ValueSpread = brcLaborType.LaborSpreads.Sum(x => x.LaborSpreadValue);
-					brcLaborType.StartDate = brcLaborType.LaborSpreads.First().LaborSpreadDate;
-					laborTypes.Add(brcLaborType);
+
+					if (brcLaborType.LaborSpreads.Any())
+					{
+						brcLaborType.ValueSpread = brcLaborType.LaborSpreads.Sum(x => x.LaborSpreadValue);
+						brcLaborType.StartDate = brcLaborType.LaborSpreads.Min(x => x.LaborSpreadDate);
+						laborTypes.Add(brcLaborType);
+					}
 				}
 				else if (laborType.StartDate >= Utilities.OneLmxStartDate && laborType.BusinessResourceCodeID != null)
 				{

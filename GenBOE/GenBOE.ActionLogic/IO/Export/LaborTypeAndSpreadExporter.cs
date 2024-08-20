@@ -321,6 +321,14 @@ namespace GenBOE.ActionLogic.IO.Export
 			uint startDataRowIndex = 2;
 			uint endDataRowIndex = (uint)(laborResourcesCount + 11); // all of the data rows and ten extra
 			int customFieldOffset = 1;
+			int performingOrgCellColumnOffset = ImportExportConstants.RESOURCETYPE_PERFORG_CELL_COLUMN_OFFSET;
+			
+			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
+			{
+				// add a column before performing org
+				performingOrgCellColumnOffset++;
+			}
+
 			//adjust the spreadoffset by the customfields and multi columns 
 			int spreadOffset = workspaceCustomFields.Count;
 			Dictionary<string, string> dataValidationReferences = new Dictionary<string, string>();
@@ -330,16 +338,16 @@ namespace GenBOE.ActionLogic.IO.Export
 				if (!customFieldForLabel.IsOpenEnded)
 				{
 					ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.CUSTOM_FIELD_DEFINED_NAME_PREFIX + customFieldForLabel.Id,
-						ImportExportConstants.RESOURCETYPE_PERFORG_CELL_COLUMN_OFFSET + customFieldOffset, startDataRowIndex, endDataRowIndex);
+						performingOrgCellColumnOffset + customFieldOffset, startDataRowIndex, endDataRowIndex);
 				}
 
 				customFieldOffset++;
 			}
 			if (isMulti)
 			{
-				ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.WBSS, ImportExportConstants.RESOURCETYPE_PERFORG_CELL_COLUMN_OFFSET + customFieldOffset, startDataRowIndex, endDataRowIndex);
+				ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.WBSS, performingOrgCellColumnOffset + customFieldOffset, startDataRowIndex, endDataRowIndex);
 				customFieldOffset++;
-				ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.CLINS, ImportExportConstants.RESOURCETYPE_PERFORG_CELL_COLUMN_OFFSET + customFieldOffset, startDataRowIndex, endDataRowIndex);
+				ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.CLINS, performingOrgCellColumnOffset + customFieldOffset, startDataRowIndex, endDataRowIndex);
 				customFieldOffset++;
 				spreadOffset += 2;
 			}
@@ -718,6 +726,11 @@ namespace GenBOE.ActionLogic.IO.Export
 			string[] offloadOptions = new string[] { "TRUE", "FALSE" };
 
 			int maxRows = Math.Max(allCurves.Count, Math.Max(allPerformingOrgs.Count, Math.Max(workspaceWBSs.Count, Math.Max(workspaceClins.Count, allResourceTypes.Count))));
+
+			if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
+			{
+				maxRows = Math.Max(maxRows, allBusinessResourceCodes.Count);
+			}
 
 			#region Custom Fields
 

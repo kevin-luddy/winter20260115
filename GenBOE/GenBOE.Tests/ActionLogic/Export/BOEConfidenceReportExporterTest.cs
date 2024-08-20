@@ -7,16 +7,11 @@
 namespace GenBOE.Tests.ActionLogic.Export
 {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-	using Moq;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.ModelView;
 	using System.IO;
-	using GenBOE.DataBridge.DTO;
 	using IES.Common.OfficeUtilities;
 	using DocumentFormat.OpenXml.Packaging;
 
@@ -50,6 +45,8 @@ namespace GenBOE.Tests.ActionLogic.Export
 
 			ConfidenceReportItem confidenceReportItem1 = new ConfidenceReportItem()
 			{
+				WbsNumber = "1",
+				WbsTitle = "test wbs",
 				BoeId = 1,
 				BoeTitle = "test title",
 				TaskId = 1,
@@ -63,6 +60,8 @@ namespace GenBOE.Tests.ActionLogic.Export
 
 			ConfidenceReportItem confidenceReportItem2 = new ConfidenceReportItem()
 			{
+				WbsNumber = "2",
+				WbsTitle = "test wbs 2",
 				BoeId = 2,
 				BoeTitle = "test title 2",
 				TaskId = 2,
@@ -77,12 +76,13 @@ namespace GenBOE.Tests.ActionLogic.Export
 			confidenceReportVM.ConfidenceReportData.Add(confidenceReportItem1);
 			confidenceReportVM.ConfidenceReportData.Add(confidenceReportItem2);
 
+			string workspace = "test-ws";
 			string fileLocation = Path.Combine(System.Environment.CurrentDirectory, "test" + ".xlsx");
 			File.WriteAllBytes(fileLocation, Properties.Resources.ConfidenceReport);
 
-			string result = sut.ExportToExcelFile(fileLocation, confidenceReportVM);
+			string result = sut.ExportToExcelFile(fileLocation, confidenceReportVM, workspace);
 
-			List<string> requiredColumns = new List<string>() { "BOE", "Task", "MOQ Types", "RTE Fields", "Confidence Error Messages" };
+			List<string> requiredColumns = new List<string>() { "WBS #", "WBS Title", "BOE", "BOE URL", "Task", "Task URL", "MOQ Types", "RTE Fields", "Confidence Error Messages" };
 
 			try
 			{

@@ -360,6 +360,7 @@
           <Property Name="AdditionalClassification" Type="bit" />
           <Property Name="ReasonCcopdNo" Type="int" />
           <Property Name="ReasonCcopdNoOther" Type="varchar" MaxLength="100" />
+          <Property Name="IsSupportDefinitizingUCA" Type="bit" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -1800,6 +1801,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="AdditionalClassification" Type="bit" Mode="In" />
           <Parameter Name="ReasonCcopdNo" Type="int" Mode="In" />
           <Parameter Name="ReasonCcopdNoOther" Type="varchar" Mode="In" />
+          <Parameter Name="IsSupportDefinitizingUCA" Type="bit" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -3169,6 +3171,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="AdditionalClassification" Mode="In" Type="Boolean" />
             <Parameter Name="ReasonCcopdNo" Mode="In" Type="Int32" />
             <Parameter Name="ReasonCcopdNoOther" Mode="In" Type="String" />
+            <Parameter Name="IsSupportDefinitizingUCA" Mode="In" Type="Boolean" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
@@ -4206,6 +4209,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ReasonCcopdNo" Type="Int32" />
           <Property Name="ReasonCcopdNoOther" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CcopdReasonsNo" Relationship="genTRACModel.FK__Proposal__Reason__43EBED27" FromRole="Proposal" ToRole="CcopdReasonsNo" />
+          <Property Name="IsSupportDefinitizingUCA" Type="Boolean" />
         </EntityType>
         <Association Name="FK_Proposal_BOEToolLU">
           <End Type="genTRACModel.BOEToolLU" Role="BOEToolLU" Multiplicity="1" />
@@ -5364,6 +5368,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="IsSupportDefinitizingUCA" ColumnName="IsSupportDefinitizingUCA" />
                 <ScalarProperty Name="ReasonCcopdNoOther" ColumnName="ReasonCcopdNoOther" />
                 <ScalarProperty Name="ReasonCcopdNo" ColumnName="ReasonCcopdNo" />
                 <ScalarProperty Name="AdditionalClassification" ColumnName="AdditionalClassification" />

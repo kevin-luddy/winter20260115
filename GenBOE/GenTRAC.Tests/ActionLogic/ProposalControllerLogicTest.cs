@@ -2498,7 +2498,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalControllerLogic sut = this.CreateSystem();
             ICollection<ValidationMessage> validationList = new Collection<ValidationMessage>();
 
-            sut.ValidateGeneralInfoTypes(null, validationList, false);
+            sut.ValidateGeneralInfoTypes(null, validationList, false, 3);
         }
 
         /// <summary>
@@ -2511,7 +2511,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalControllerLogic sut = this.CreateSystem();
             ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView();
 
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, null, false);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, null, false, 3);
         }
 
         /// <summary>
@@ -2542,7 +2542,7 @@ namespace GenTRAC.Tests.ActionLogic
             };
 
             // Validate null value for BOEToolName
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false, 3);
             Assert.AreEqual(1, inValidationErrors.Count);
             Assert.AreEqual(ValidationConstants.ProposalValidationConstants.BOE_TOOL_FORMAT_ERROR, inValidationErrors[0].ValidationIssue);
 
@@ -2551,44 +2551,44 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(It.IsAny<int>())).Returns(proposal);
             this.workspaceLoader.Setup(x => x.GetAllWsNamesForTrackingNumber(It.IsAny<string>())).Returns(new List<GenBOE.Dtos.WorkspaceDTO>());
 
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, true);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, true, 3);
             Assert.AreEqual(0, inValidationErrors.Count);
 
             proposalGeneralInfo.PricingToolName = string.Empty;
             proposalGeneralInfo.BOEToolName = string.Empty;
 
             // Validate emtpy string value BOEToolName 
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false, 3);
             Assert.AreEqual(1, inValidationErrors.Count);
             Assert.AreEqual(ValidationConstants.ProposalValidationConstants.BOE_TOOL_FORMAT_ERROR, inValidationErrors[0].ValidationIssue);
 
             inValidationErrors.Clear();
 
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, true);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, true, 3);
             Assert.AreEqual(0, inValidationErrors.Count);
 
             proposalGeneralInfo.PricingToolName = " ";
             proposalGeneralInfo.BOEToolName = " ";
 
             // Validate blank value for BOEToolName
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false, 3);
             Assert.AreEqual(1, inValidationErrors.Count);
             Assert.AreEqual(ValidationConstants.ProposalValidationConstants.BOE_TOOL_FORMAT_ERROR, inValidationErrors[0].ValidationIssue);
 
             inValidationErrors.Clear();
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, true);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, true, 3);
             Assert.AreEqual(0, inValidationErrors.Count);
 
             proposalGeneralInfo.PricingToolName = ".";
             proposalGeneralInfo.BOEToolName = "!";
 
             // Validate punctuation characters for BOEToolName
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false, 3);
             Assert.AreEqual(1, inValidationErrors.Count);
             Assert.AreEqual(ValidationConstants.ProposalValidationConstants.BOE_TOOL_FORMAT_ERROR, inValidationErrors[0].ValidationIssue);
 
             inValidationErrors.Clear();
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, true);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, true, 3);
             Assert.AreEqual(0, inValidationErrors.Count);
 
             proposalGeneralInfo.ProposalLocationName = "yellow";
@@ -2596,25 +2596,25 @@ namespace GenTRAC.Tests.ActionLogic
             proposalGeneralInfo.BOEToolName = "blue";
 
             // Validate that correct input does not have any validation errors
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false, 3);
             Assert.AreEqual(0, inValidationErrors.Count);
 
             proposalGeneralInfo.IsCCPDRequired = null;
 
             // Validate CCOPD
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false, 3);
             Assert.AreEqual(1, inValidationErrors.Count);
             Assert.AreEqual(ValidationConstants.ProposalValidationConstants.CERTIFIED_COST_PRICING_DATA_REQUIRED, inValidationErrors[0].ValidationIssue);
 
             inValidationErrors.Clear();
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false, 3);
             Assert.AreEqual(1, inValidationErrors.Count);
             Assert.AreEqual(ValidationConstants.ProposalValidationConstants.CERTIFIED_COST_PRICING_DATA_REQUIRED, inValidationErrors[0].ValidationIssue);
 
             inValidationErrors.Clear();
             proposalGeneralInfo.IsCCPDRequired = true;
             proposalGeneralInfo.IsCostVolumeClassified = null;
-            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false);
+            sut.ValidateGeneralInfoTypes(proposalGeneralInfo, inValidationErrors, false, 3);
             Assert.AreEqual(1, inValidationErrors.Count);
             Assert.AreEqual(ValidationConstants.ProposalValidationConstants.CERTIFIED_COST_PRICING_DATA_CLASSIFIED_REQUIRED, inValidationErrors[0].ValidationIssue);
         }
@@ -2634,7 +2634,7 @@ namespace GenTRAC.Tests.ActionLogic
             };
             ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 
-            sut.ValidateGeneralInfoTypes(mv, validationErrors, false);
+            sut.ValidateGeneralInfoTypes(mv, validationErrors, false, 3);
 
             Assert.AreEqual(3, validationErrors.Count);
             Assert.IsTrue(validationErrors.Select(x => x.ValidationIssue).Contains(ValidationConstants.ProposalValidationConstants.PRICING_TOOL_REQUIRED));

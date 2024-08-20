@@ -105,6 +105,7 @@ namespace GenTRAC.Models
         public Nullable<bool> AdditionalClassification { get; set; }
         public Nullable<int> ReasonCcopdNo { get; set; }
         public string ReasonCcopdNoOther { get; set; }
+        public Nullable<bool> IsSupportDefinitizingUCA { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
