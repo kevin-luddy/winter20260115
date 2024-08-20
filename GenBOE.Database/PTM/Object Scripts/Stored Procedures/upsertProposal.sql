@@ -86,7 +86,8 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @CostVolumeToolName VARCHAR(50),
 	  @AdditionalClassification BIT,
 	  @ReasonCcopdNo INT,
-	  @ReasonCcopdNoOther VARCHAR(100)
+	  @ReasonCcopdNoOther VARCHAR(100),
+	  @IsSupportDefinitizingUCA BIT
 )
 AS
 /******************************************************************************
@@ -127,6 +128,7 @@ AS
 **			10/12/2022	ranzalon				IES-1933 - Cost Volume Tool
 **			7/9/23		Dusan					PROPH-1563 - Added an Additional Classification Column
 **			7/14/24		Dusan					PROPH-1559: Added reason for CCOPD = No
+**			8/19/24		Dusan					PROPH-2080: Added IsSupportDefinitizingUCA field
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -278,6 +280,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[AdditionalClassification]
 		,ReasonCcopdNo
 		,ReasonCcopdNoOther
+		,IsSupportDefinitizingUCA
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -352,6 +355,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@AdditionalClassification
 		,@ReasonCcopdNo
 		,@ReasonCcopdNoOther
+		,@IsSupportDefinitizingUCA
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -460,6 +464,7 @@ ELSE
 						,[AdditionalClassification] = @AdditionalClassification
 						,ReasonCcopdNo = @ReasonCcopdNo
 						,ReasonCcopdNoOther = @ReasonCcopdNoOther
+						,IsSupportDefinitizingUCA = @IsSupportDefinitizingUCA
 						WHERE 
 							ProposalID = @ProposalID;
 
