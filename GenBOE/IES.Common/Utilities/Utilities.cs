@@ -42,6 +42,7 @@ namespace IES.Common
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? skillMixStartDate;
 		private static DateTime? oneLmxStartDate;
+		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
 		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
 		
@@ -65,6 +66,29 @@ namespace IES.Common
 				}
 
 				return oneLmxStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Get the restricted date set in the config for RMS
+		/// </summary>
+		public static DateTime DatepickerRestrictionRMS
+		{
+			get
+			{
+				if (!datepickerRestrictionRMS.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("DatepickerRestrictionRMS"), out DateTime dateRestriction))
+					{
+						datepickerRestrictionRMS = DateTime.MinValue;
+					}
+					else
+					{
+						datepickerRestrictionRMS = dateRestriction;
+					}
+				}
+
+				return datepickerRestrictionRMS.Value;
 			}
 		}
 

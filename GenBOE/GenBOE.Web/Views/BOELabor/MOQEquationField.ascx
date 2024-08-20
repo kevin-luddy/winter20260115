@@ -48,7 +48,8 @@
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
-		CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
+        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue(),
+        DatepickerRestrictionRMS: '<%:Utilities.DatepickerRestrictionRMS%>'
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;

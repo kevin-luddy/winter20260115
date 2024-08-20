@@ -110,6 +110,11 @@ namespace GenTRAC.ActionLogic.Validation
 			public const string CCOPD_NO_OTHER_REASON_REQUIRED = GENERAL_INFO_VALIDATION + "\"Please provide reason why CCoPD is not required - Other\" response is required.";
 
 			/// <summary>
+			/// Is this proposal in support of definitizing an Undefinitized Contract Action validation message
+			/// </summary>
+			public const string IS_IN_SUPPORT_OF_DEFINITIZING_UNDEFINITIZED_REQUIRED = "\"Is this proposal in support of definitizing an Undefinitized Contract Action\" response is required.";
+
+			/// <summary>
 			/// The certified cost pricing data is required on the Proposal tab.
 			/// </summary>
 			public const string CERTIFIED_COST_PRICING_DATA_CLASSIFIED_REQUIRED = GENERAL_INFO_VALIDATION + "\"Is Certified Cost and Pricing Data Classified?\" response is required.";
