@@ -1724,6 +1724,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.ValidatePopStart = function (date) {
+		// For RMS
+		if ($scope.model.IsRMS) {
+			if (Date.parse(date) < Date.parse($scope.model.DatepickerRestrictionRMS)) {
+				return true;
+			}
+		}
+
 		// validate PoP Start is on a Monday (1)
 		if (!$scope.model.SAPEnabled) {
 			return false; // true means invalid
