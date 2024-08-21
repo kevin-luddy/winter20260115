@@ -431,20 +431,25 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => (r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value))
 							|| (r.BusinessResourceCodeID.HasValue && resourceIDs.Contains(r.BusinessResourceCodeID.Value))).ToList();
+
+						List<ResourceTypeDto> resourcesSplitforBrc = taskResourcesEntriesForElementOfCost;
+
+
 						if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 						{
 							//clone resources with brc
-							taskResourcesEntriesForElementOfCost = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname).ToList();
+							//maintain original ID for pro pricer ID mapping in generate resource row
+							resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, 0).ToList();
 						}
 						if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) && has1LMXResources)
 						{
-							taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
+							resourcesSplitforBrc = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
 						}
 
 						IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
 							elementOfCost, taskResourcesEntriesForElementOfCost, boeTask, taskResourcesEntriesForElementOfCost.Any(x => x.IsOffloaded), workspaceShortname);
 
-						foreach (ResourceTypeDto labor in taskResourcesEntriesForElementOfCost)
+						foreach (ResourceTypeDto labor in resourcesSplitforBrc)
 						{
 							this.GenerateResourceRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs, resourceIDs, boeTask,
 								laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded);
@@ -459,15 +464,18 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => (r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value))
 						|| (r.BusinessResourceCodeID.HasValue && resourceIDs.Contains(r.BusinessResourceCodeID.Value))).ToList();
+					List<ResourceTypeDto> resourcesSplitforBrc = taskResourcesEntriesForElementOfCost;
 					if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) && has1LMXResources)
 					{
-						taskResourcesEntriesForElementOfCost = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
+						resourcesSplitforBrc = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
 					} 
 					else if(Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 					{
-						taskResourcesEntriesForElementOfCost = BRCValidationUtility.ProcessLaborTypesForBrc(boeTask.taskElementLabors, workspaceShortname).ToList();
+						//clone resources with brc
+						//maintain original ID for pro pricer ID mapping in generate resource row
+						resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, 0).ToList();
 					}
-
+					IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<>(int, string);
 					foreach (ResourceTypeDto labor in taskResourcesEntriesForElementOfCost)
 					{
 						// do not export to ProPricer if task doesn't have any total hours or cost or if there no offsets
@@ -478,6 +486,16 @@ namespace GenBOE.ActionLogic.IO.Export
 
 							IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, resourceClin,
 								resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, labor.IsOffloaded, workspaceShortname);
+
+						}
+					}
+					foreach (ResourceTypeDto labor in resourcesSplitforBrc)
+					{
+						// do not export to ProPricer if task doesn't have any total hours or cost or if there no offsets
+						if (boeTask.TotalHours != 0 || boeTask.TotalCost != 0 || boeTask.taskElementLabors.Any(l => l.ValueSpread != 0))
+						{
+							ClinDTO resourceClin = wsLevelData.Clins.FirstOrDefault(i => i.Id == labor.CLINID.GetValueOrDefault(-1));
+							WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
 							this.GenerateResourceRow(wsLevelData, inputsForExport, resourceClin, resourceWbs, resourceIDs,
 								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded);
