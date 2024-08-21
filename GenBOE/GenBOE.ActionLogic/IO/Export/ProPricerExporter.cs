@@ -475,7 +475,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						//maintain original ID for pro pricer ID mapping in generate resource row
 						resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, 0).ToList();
 					}
-					IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<>(int, string);
+					IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<int, string>();
 					foreach (ResourceTypeDto labor in taskResourcesEntriesForElementOfCost)
 					{
 						// do not export to ProPricer if task doesn't have any total hours or cost or if there no offsets
