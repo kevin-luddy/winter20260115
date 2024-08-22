@@ -450,6 +450,11 @@ namespace RDM.Backend.Controllers
 
 				RevisionModelView revision = this.Logic.RevisionMediator.GetById(collection[0].RevisionId);
 
+				if (!revision.IsWipRevision)
+				{
+					throw new GenValidationException("Update is only allowed for revisions that are in Work In Progress (WIP) status.");
+				}
+
 				Collection<string> importedRateCodes = collection.Select(r => r.RateCode).ToCollection();
 
 				// Retrieve all the rate code replications as well
