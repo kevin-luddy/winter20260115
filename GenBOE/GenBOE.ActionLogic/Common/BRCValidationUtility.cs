@@ -211,7 +211,7 @@ namespace GenBOE.ActionLogic.Common
 					ResourceTypeDto brcLaborType = laborType.DeepClone();
 					brcLaborType.ResourceID = brcLaborType.BusinessResourceCodeID;
 					// Assigns a fake subresource type ID for proper identification during parsing of the Existing Spread.
-					brcLaborType.Id = startingNewId--;
+					brcLaborType.Id = startingNewId == 0 ? laborType.Id : startingNewId--;
 					brcLaborType.LaborSpreads = brcLaborType.LaborSpreads.Where(x => x.LaborSpreadDate >= Utilities.OneLmxStartDate).ToCollection();
 
 					if (brcLaborType.LaborSpreads.Any())
@@ -226,7 +226,7 @@ namespace GenBOE.ActionLogic.Common
 					// BRC Only - Change the resource ID to the BRC ID before adding
 					ResourceTypeDto brcLaborType = laborType.DeepClone();
 					// Assigns a fake subresource type ID for proper identification during parsing of the Existing Spread.
-					brcLaborType.Id = startingNewId--;
+					brcLaborType.Id = startingNewId == 0 ? laborType.Id : startingNewId--;
 					brcLaborType.ResourceID = brcLaborType.BusinessResourceCodeID;
 					laborTypes.Add(brcLaborType);
 				}
