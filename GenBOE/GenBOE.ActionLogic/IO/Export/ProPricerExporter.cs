@@ -243,12 +243,12 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			// Resources
 			// lists for labor, sub, material, iwta should be populated with both resources and BRCs
-			Collection<int> laborResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.LMLabor).Select(r => r.Id).ToCollection();
-			Collection<int> iwtaResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.IWTA).Select(r => r.Id).ToCollection();
-			Collection<int> subContractorResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.Sub).Select(r => r.Id).ToCollection();
-			Collection<int> materialResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.Materials).Select(r => r.Id).ToCollection();
-			Collection<int> odcResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.ODC).Select(r => r.Id).ToCollection();
-			ICollection<ResourceDTO> travelResources = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.Travel).ToList();
+			Collection<int> laborResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.LMLabor).Select(r => r.Id).ToCollection();
+			Collection<int> iwtaResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.IWTA).Select(r => r.Id).ToCollection();
+			Collection<int> subContractorResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.Sub).Select(r => r.Id).ToCollection();
+			Collection<int> materialResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.Materials).Select(r => r.Id).ToCollection();
+			Collection<int> odcResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.ODC).Select(r => r.Id).ToCollection();
+			ICollection<ResourceDTO> travelResources = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.Travel).ToList();
 			Collection<int> travelResourceIDs = travelResources.Select(r => r.Id).ToCollection();
 			bool isUsingEP = FullObjectHelper.ShowEquivalentPersonsOption && workspace.IsUsingEquivalentPerson;
 			bool offloading = workspace.ProjectMapType != ProjectMapType.StandardWithoutOffload;
