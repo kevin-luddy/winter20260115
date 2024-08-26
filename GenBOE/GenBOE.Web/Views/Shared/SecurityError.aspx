@@ -21,7 +21,7 @@
          <div class="error" style="word-spacing:normal">
             You do not have permission to this page.
             Please create a ticket with Service Central.
-           <p> Link: <%: Utilities.ServiceCentralLink() %></p>
+           <p> Link:  <%= Utilities.ServiceCentralLink() %></p>
       </div>
    </div>
    
