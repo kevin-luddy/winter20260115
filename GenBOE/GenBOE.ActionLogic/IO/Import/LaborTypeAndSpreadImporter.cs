@@ -762,12 +762,16 @@ namespace GenBOE.ActionLogic.IO.Import
 							toReturn.ImportTypes.Add(LaborTypeImportResult.RateTypesDoNotMatch);
 						}
 					}
-					else if (resource == null && importEndDate < Utilities.OneLmxStartDate)
+					else if (resource == null && importStartDate < Utilities.OneLmxStartDate)
 					{
+						//either it overlaps the 1LMX date or is completely before
+						//if start date is on 1LMX start date - only need BRC
 						toReturn.ImportTypes.Add(LaborTypeImportResult.MissingResource);
 					}
 					else if (businessResourceCode == null && importEndDate > Utilities.OneLmxStartDate)
 					{
+						//either it overlaps the 1LMX date or is completely after
+						//if end date is on 1LMX start date - only need resource
 						toReturn.ImportTypes.Add(LaborTypeImportResult.MissingBusinessResourceCode);
 					}
 				}
