@@ -1234,7 +1234,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								break;
 							case ProPricerField_Task.ProjMapResourceSegmentRegion:
 							case ProPricerField_Task.ResourceSegmentRegion:
-								string resourceSegRegion = wsLevelData.Resources.First(i => i.Id == resourceTypeEntry.ResourceID.Value).SegRegion;
+								string resourceSegRegion = GetMatchingSegmentRegionForResources(wsLevelData, resourceTypeEntry.ResourceID.Value);
 								newTaskRow.Append(DOUBLE_QUOTE).Append(resourceSegRegion.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								break;
 							case ProPricerField_Task.TaskUrl:
@@ -1327,6 +1327,42 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			return laborTypeIdToProPricerIdMappings;
 		}
+
+		/// <summary>
+		/// Searches for a resource with the given resource ID and returns its SegRegion property. The search is performed in the following order:
+		/// 1. In the ResourcesInWs property of the given WsLevelData by Id.
+		/// 2. In the Resources property of the given WsLevelData by Id.
+		/// 3. In the ResourcesInWs property of the given WsLevelData by ResourceName (if found in step 2).
+		/// </summary>
+		/// <param name="wsLevelData">The WsLevelData to search in.</param>
+		/// <param name="resourceId">The ID of the resource to find.</param>
+		/// <returns>The SegRegion property of the matching resource, or an empty string if no match is found.</returns>
+		private string GetMatchingSegmentRegionForResources(WsLevelInputsForExport wsLevelData, int resourceId)
+		{
+			// First, look in the ResourcesInWs property based on the WsLevelData by Id
+			ResourceDTO resource = wsLevelData.ResourcesInWs.FirstOrDefault(r => r.Id == resourceId);
+			if (resource != null)
+			{
+				return resource.SegRegion;
+			}
+
+			// Match against wsLeveData.Resources by Id
+			resource = wsLevelData.Resources.FirstOrDefault(r => r.Id == resourceId);
+			if (resource != null)
+			{
+				string resourceName = resource.ResourceName;
+
+				// Now match against wsLevelData.ResourcesInWs by ResourceName (from match above)
+				ResourceDTO resourceInWs = wsLevelData.ResourcesInWs.FirstOrDefault(r => r.ResourceName == resourceName);
+				if (resourceInWs != null)
+				{
+					return resourceInWs.SegRegion;
+				}
+			}
+
+			return string.Empty;
+		}
+
 
 		/// <summary>
 		/// Should the task number increment?
@@ -1506,7 +1542,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							break;
 						case ProPricerField_Resources.ProjMapResourceSegmentRegion:
 						case ProPricerField_Resources.ResourceSegmentRegion:
-							string resourceSegRegion = wsLevelData.Resources.First(z => z.Id == labor.ResourceID.Value).SegRegion;
+							string resourceSegRegion = GetMatchingSegmentRegionForResources(wsLevelData, labor.ResourceID.Value);
 							newResourceRow.Append(DOUBLE_QUOTE).Append(resourceSegRegion.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.TaskUrl:
@@ -2623,6 +2659,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
 		public IReadOnlyCollection<ResourceDTO> Resources { get; set; }
 
+		public ICollection<ResourceDTO> ResourcesInWs { get; set; }
+
 		public ICollection<CustomFieldValueDTO> WsCustomFieldValues { get; set; }
 
 		public ICollection<CustomFieldDTO> WsCustomFields { get; set; }
@@ -2667,6 +2705,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		{
 			this.PerfOrgs = new ReadOnlyCollection<PerformingOrgDTO>(new List<PerformingOrgDTO>());
 			this.Resources = new ReadOnlyCollection<ResourceDTO>(new List<ResourceDTO>());
+			this.ResourcesInWs = new ReadOnlyCollection<ResourceDTO>(new List<ResourceDTO>());
 			this.WsCustomFields = new List<CustomFieldDTO>();
 			this.WsCustomFieldValues = new List<CustomFieldValueDTO>();
 			this.Clins = new List<FullClin>();
