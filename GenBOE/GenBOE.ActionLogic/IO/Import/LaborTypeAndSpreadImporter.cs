@@ -764,14 +764,14 @@ namespace GenBOE.ActionLogic.IO.Import
 					}
 					else if (resource == null && importStartDate < Utilities.OneLmxStartDate)
 					{
-						//either it overlaps the 1LMX date or is completely before
-						//if start date is on 1LMX start date - only need BRC
+						//start date is before 1lmx (date range could overlap or could be completely before)
+						//if start date is on or after 1LMX start date - only need BRC
 						toReturn.ImportTypes.Add(LaborTypeImportResult.MissingResource);
 					}
-					else if (businessResourceCode == null && importEndDate > Utilities.OneLmxStartDate)
+					else if (businessResourceCode == null && importEndDate >= Utilities.OneLmxStartDate)
 					{
-						//either it overlaps the 1LMX date or is completely after
-						//if end date is on 1LMX start date - only need resource
+						//end date is on or after 1lmx (date range could overlap or could be completely after)
+						//if end date is on 1LMX start date, overlaps - need both
 						toReturn.ImportTypes.Add(LaborTypeImportResult.MissingBusinessResourceCode);
 					}
 				}
