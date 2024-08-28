@@ -3992,7 +3992,7 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "RestoreCustomFieldResources", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, "RestoreCustomFieldResources", SecurityPage.BoeCustomFieldResource, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			RestoreOptionData restoreResults = null;
 			ViewResult toReturn = null;
