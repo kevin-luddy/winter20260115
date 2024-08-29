@@ -243,12 +243,12 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			// Resources
 			// lists for labor, sub, material, iwta should be populated with both resources and BRCs
-			Collection<int> laborResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.LMLabor).Select(r => r.Id).ToCollection();
-			Collection<int> iwtaResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.IWTA).Select(r => r.Id).ToCollection();
-			Collection<int> subContractorResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.Sub).Select(r => r.Id).ToCollection();
-			Collection<int> materialResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.Materials).Select(r => r.Id).ToCollection();
-			Collection<int> odcResourceIDs = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.ODC).Select(r => r.Id).ToCollection();
-			ICollection<ResourceDTO> travelResources = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.Travel).ToList();
+			Collection<int> laborResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.LMLabor).Select(r => r.Id).ToCollection();
+			Collection<int> iwtaResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.IWTA).Select(r => r.Id).ToCollection();
+			Collection<int> subContractorResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.Sub).Select(r => r.Id).ToCollection();
+			Collection<int> materialResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.Materials).Select(r => r.Id).ToCollection();
+			Collection<int> odcResourceIDs = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.ODC).Select(r => r.Id).ToCollection();
+			ICollection<ResourceDTO> travelResources = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.Travel).ToList();
 			Collection<int> travelResourceIDs = travelResources.Select(r => r.Id).ToCollection();
 			bool isUsingEP = FullObjectHelper.ShowEquivalentPersonsOption && workspace.IsUsingEquivalentPerson;
 			bool offloading = workspace.ProjectMapType != ProjectMapType.StandardWithoutOffload;
@@ -260,8 +260,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				ResourceDecimalPrecision = workspace.DecimalPrecision,
 				CostDecimalPrecision = workspace.CostDecimalPrecision,
 				PerfOrgs = workspace.PerformingOrgsUsedInBoes,
-				Resources = workspace.ResourcesForWsResourceListId,
-				ResourcesInWs = workspace.ResourcesUsedInWsBoes?.ToList(),
+				Resources = workspace.ResourcesUsedInWsBoes,
+				ResourcesInWs = workspace.ResourcesForWsResourceListId?.ToList(),
 				WsCustomFields = workspace.CustomFields.ToCollection(),
 				WsCustomFieldValues = workspace.CustomFieldValues.ToCollection(),
 				Clins = workspace.Clins.ToCollection(),
@@ -1235,7 +1235,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								break;
 							case ProPricerField_Task.ProjMapResourceSegmentRegion:
 							case ProPricerField_Task.ResourceSegmentRegion:
-								string resourceSegRegion = GetMatchingSegmentRegionForResources(wsLevelData, resourceTypeEntry.ResourceID.Value);
+								string resourceSegRegion = GetMatchingSegmentRegionForResources(wsLevelData, resourceTypeEntry.ResourceID);
 								newTaskRow.Append(DOUBLE_QUOTE).Append(resourceSegRegion.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								break;
 							case ProPricerField_Task.TaskUrl:
@@ -1338,8 +1338,13 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="wsLevelData">The WsLevelData to search in.</param>
 		/// <param name="resourceId">The ID of the resource to find.</param>
 		/// <returns>The SegRegion property of the matching resource, or an empty string if no match is found.</returns>
-		private string GetMatchingSegmentRegionForResources(WsLevelInputsForExport wsLevelData, int resourceId)
+		private string GetMatchingSegmentRegionForResources(WsLevelInputsForExport wsLevelData, int? resourceId)
 		{
+			if (resourceId == null)
+			{
+				return string.Empty;
+			}
+
 			// First, look in the ResourcesInWs property based on the WsLevelData by Id
 			ResourceDTO resource = wsLevelData.ResourcesInWs.FirstOrDefault(r => r.Id == resourceId);
 			if (resource != null)
@@ -1542,7 +1547,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							break;
 						case ProPricerField_Resources.ProjMapResourceSegmentRegion:
 						case ProPricerField_Resources.ResourceSegmentRegion:
-							string resourceSegRegion = GetMatchingSegmentRegionForResources(wsLevelData, labor.ResourceID.Value);
+							string resourceSegRegion = GetMatchingSegmentRegionForResources(wsLevelData, labor.ResourceID);
 							newResourceRow.Append(DOUBLE_QUOTE).Append(resourceSegRegion.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.TaskUrl:
