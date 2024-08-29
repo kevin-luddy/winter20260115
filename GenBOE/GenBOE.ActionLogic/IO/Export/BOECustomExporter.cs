@@ -1208,12 +1208,10 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     int laborTypeID = Convert.ToInt32(ResourceElement.ExportFields[BOEExporterConstants.FieldName_LaborTypeID]);
                     Dictionary<int, ICollection<KeyValuePair<int, int>>> customFieldValueIdMappings = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
-                    if (exportInputs.LaborTypesMappingWithCustomFieldsValuesAndContainerIds.Any(x =>
-                        x.Key == laborTypeID))
+                    if (exportInputs.LaborTypesMappingWithCustomFieldsValuesAndContainerIds.Any(x => x.Key == laborTypeID))
                     {
                         customFieldValueIdMappings.Add(laborTypeID, exportInputs.LaborTypesMappingWithCustomFieldsValuesAndContainerIds.FirstOrDefault(x => x.Key == laborTypeID).Value);
-                    }
-
+					}
                     IDictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> laborTaskCustomFields = this.GetResourceCustomFields(customFieldValueIdMappings, allWorkspaceCustomFields, exportInputs);
                     this.PopulateCustomFields(resourceCustomFieldsContainerElement, laborTaskCustomFields);
                 }
