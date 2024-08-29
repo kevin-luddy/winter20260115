@@ -349,7 +349,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// </summary>
 		private void PopulateLaborTypesMappingWithCustomFieldsValuesAndContainerIds()
 		{
-			// Initialize the dictionary
 			this.LaborTypesMappingWithCustomFieldsValuesAndContainerIds = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
 			ICollection<ResourceTypeDto> resourceTypes = this.TaskElements.SelectMany(x => x.taskElementLabors).ToList();
 			foreach (ResourceTypeDto resource in resourceTypes)
@@ -365,7 +364,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 					));
 				}
 
-				// Add the collected key-value pairs to the dictionary
+				// Add keyValuePairs to dictionary if it has value
 				if (keyValuePairs.Any())
 				{
 					this.LaborTypesMappingWithCustomFieldsValuesAndContainerIds[resource.Id] = keyValuePairs;
