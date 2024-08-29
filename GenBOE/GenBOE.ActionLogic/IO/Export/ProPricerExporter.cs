@@ -898,7 +898,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								newResourceRow.Append(odcIdToProPricerIdMappings[(int)odcType.ODCTypeID]).Append(END_FIELD);
 								break;
 							case ProPricerField_Resources.ResourceID:
-								ResourceDTO resource = wsLevelData.Resources.FirstOrDefault(z => z.Id == odcType.ResourceID.Value);
+								ResourceDTO resource = GetResourceDTOByID(wsLevelData, odcType.ResourceID.Value);
 
 								if (resource == null)
 								{
@@ -1363,6 +1363,32 @@ namespace GenBOE.ActionLogic.IO.Export
 			return string.Empty;
 		}
 
+		/// <summary>
+		/// Searches for a resource based on the given resource ID. The search is performed in the following order:
+		/// 1. In the ResourceInWs property of the given WsLevelData by Id.
+		/// 2. In the Resources property of the given WsLevelData by ResourceName (if found in step 1).
+		/// </summary>
+		/// <param name="wsLevelData">The WsLevelData to search in.</param>
+		/// <param name="resourceId">The ID of the resource to find.</param>
+		/// <returns>The ResourceDTO with the matching ID, or null if no match is found.</returns>
+		private ResourceDTO GetResourceDTOByID(WsLevelInputsForExport wsLevelData, int resourceId)
+		{
+			// First, look in the Resources In Workspace property based on the WsLevelData by Id
+			ResourceDTO resource = wsLevelData.ResourcesInWs.FirstOrDefault(r => r.Id == resourceId);
+			if (resource != null)
+			{
+				string resourceName = resource.ResourceName;
+
+				// Now match against wsLevelData.Resources by ResourceName (from match above)
+				resource = wsLevelData.Resources.FirstOrDefault(r => r.ResourceName == resourceName);
+				if (resource != null)
+				{
+					return resource;
+				}
+			}
+
+			return null;
+		}
 
 		/// <summary>
 		/// Should the task number increment?
@@ -1489,7 +1515,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							break;
 						case ProPricerField_Resources.ResourceID:
 						case ProPricerField_Resources.ProjMapInitialResoure:
-							ResourceDTO resource = wsLevelData.Resources.First(z => z.Id == labor.ResourceID.Value);
+							ResourceDTO resource = GetResourceDTOByID(wsLevelData, labor.ResourceID.Value);
 							newResourceRow.Append(DOUBLE_QUOTE).Append(resource.ResourceName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.StartDate:
