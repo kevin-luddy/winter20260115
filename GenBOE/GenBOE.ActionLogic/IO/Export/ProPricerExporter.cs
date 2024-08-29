@@ -527,7 +527,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						if (customFieldValue != null)
 						{
 							// need to match the field value against the Name of a Resource
-							ResourceDTO oneLmxResource = wsLevelData.Resources.FirstOrDefault(r => r.ResourceName == customFieldValue.CustomFieldValueName);
+							ResourceDTO oneLmxResource = wsLevelData.ResourcesInWs.FirstOrDefault(r => r.ResourceName == customFieldValue.CustomFieldValueName);
 							if (oneLmxResource != null)
 							{
 								// need to split the task Resource
@@ -898,7 +898,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								newResourceRow.Append(odcIdToProPricerIdMappings[(int)odcType.ODCTypeID]).Append(END_FIELD);
 								break;
 							case ProPricerField_Resources.ResourceID:
-								ResourceDTO resource = GetResourceDTOByID(wsLevelData, odcType.ResourceID.Value);
+								ResourceDTO resource = wsLevelData.Resources.FirstOrDefault(z => z.Id == odcType.ResourceID.Value);
 
 								if (resource == null)
 								{
@@ -1515,7 +1515,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							break;
 						case ProPricerField_Resources.ResourceID:
 						case ProPricerField_Resources.ProjMapInitialResoure:
-							ResourceDTO resource = GetResourceDTOByID(wsLevelData, labor.ResourceID.Value);
+							ResourceDTO resource = wsLevelData.Resources.First(z => z.Id == labor.ResourceID.Value); 
 							newResourceRow.Append(DOUBLE_QUOTE).Append(resource.ResourceName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.StartDate:
