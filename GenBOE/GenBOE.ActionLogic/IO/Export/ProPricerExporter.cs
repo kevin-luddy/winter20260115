@@ -528,7 +528,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						if (customFieldValue != null)
 						{
 							// need to match the field value against the Name of a Resource
-							ResourceDTO oneLmxResource = wsLevelData.ResourcesInWs.FirstOrDefault(r => r.ResourceName == customFieldValue.CustomFieldValueName);
+							ResourceDTO oneLmxResource = wsLevelData.Resources.FirstOrDefault(r => r.ResourceName == customFieldValue.CustomFieldValueName);
 							if (oneLmxResource != null)
 							{
 								// need to split the task Resource
