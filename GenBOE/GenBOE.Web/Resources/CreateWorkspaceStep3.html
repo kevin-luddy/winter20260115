@@ -47,7 +47,7 @@
 <div class="form-row" data-ng-show="model.showProjectMap && !model.isSSC">
     <div class="form-label">Workspace Type</div>
     <div class="form-element">
-        <select name="ProjectMapType" data-ng-disabled="data.IsAttemptingToImport" id="ProjectMapType" data-ng-change="setDecimalPrecisionDefaults()" data-ng-options="item.Value as item.Text for item in model.projectMapTypes | filter:{Disabled:false}" data-ng-model="data.ProjectMapType"></select>
+        <select name="ProjectMapType" id="ProjectMapType" data-ng-change="setDecimalPrecisionDefaults()" data-ng-options="item.Value as item.Text for item in model.projectMapTypes | filter:{Disabled:false}" data-ng-model="data.ProjectMapType"></select>
     </div>
 </div>
 <div class="form-row">

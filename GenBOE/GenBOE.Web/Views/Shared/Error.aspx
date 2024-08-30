@@ -21,7 +21,7 @@
 
         An error has occurred. Please try your request again. If the problem persists, 
         please create a ticket with Service Central. Sorry for the inconvenience. 
-       <p> Link: <%: Utilities.ServiceCentralLink() %></p>
+       <p> Link: <%= Utilities.ServiceCentralLink() %></p>
     <br />
     <br />
     <br />
