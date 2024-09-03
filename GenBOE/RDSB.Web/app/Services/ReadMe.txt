@@ -1,1 +1,0 @@
-﻿This file is needed so Services directory is built when publishing.  Otherwise, bad things happen (RDSB will not start in production).
