@@ -745,44 +745,34 @@ namespace GenBOE.ActionLogic.IO.Import
 				{
 					bool callResource = importfromfile.ContainsKey(ImportExportConstants.RESOURCE_COLUMN_HEADER);
 					bool callBRC = importfromfile.ContainsKey(ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER);
-
-					if (importEndDate < Utilities.OneLmxStartDate)
+					// can have Resource, BRC or both
+					if (callResource)
 					{
 						resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList, inWorkspace.Shortname);
-
-						if (callBRC)
-						{
-							businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList, inWorkspace.Shortname);
-						}
+					}
+					if (callBRC)
+					{
+						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList, inWorkspace.Shortname);
 					}
 
-					if (importStartDate > Utilities.OneLmxStartDate)
+					if (resource != null && businessResourceCode != null)
 					{
-						// Business Resource Code is required but not Resource call extraction method for Business Resource Code
-						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList, inWorkspace.Shortname);
-
-						if (callResource)
+						if (resource.RateType != businessResourceCode.RateType)
 						{
-							resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList, inWorkspace.Shortname);
+							toReturn.ImportTypes.Add(LaborTypeImportResult.RateTypesDoNotMatch);
 						}
 					}
-
-					if (importStartDate < Utilities.OneLmxStartDate && importEndDate > Utilities.OneLmxStartDate)
+					else if (resource == null && importStartDate < Utilities.OneLmxStartDate)
 					{
-						resource = ExtractResourceFromImport(importfromfile, toReturn, resourceList, inWorkspace.Shortname);
-						businessResourceCode = ExtractBusinessResourceCodeFromImport(importfromfile, toReturn, businessResourceCodeList, inWorkspace.Shortname);
-
-						if (resource != null && businessResourceCode != null)
-						{
-							if (resource.RateType != businessResourceCode.RateType)
-							{
-								toReturn.ImportTypes.Add(LaborTypeImportResult.RateTypesDoNotMatch);
-							}
-						}
-						else
-						{
-							toReturn.ImportTypes.Add(LaborTypeImportResult.MissingResourceOrBRC);
-						}
+						//start date is before 1lmx (date range could overlap or could be completely before)
+						//if start date is on or after 1LMX start date - only need BRC
+						toReturn.ImportTypes.Add(LaborTypeImportResult.MissingResource);
+					}
+					else if (businessResourceCode == null && importEndDate >= Utilities.OneLmxStartDate)
+					{
+						//end date is on or after 1lmx (date range could overlap or could be completely after)
+						//if end date is on 1LMX start date, overlaps - need both
+						toReturn.ImportTypes.Add(LaborTypeImportResult.MissingBusinessResourceCode);
 					}
 				}
 				else

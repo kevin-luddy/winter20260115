@@ -123,6 +123,10 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				model.ReplicationValidationMessages = this.rateDetailLoader.VerifyRateCodeReplication(revision.Id);
 			}
+			else
+			{
+				model.LockInfo.IsReadOnly = true;
+			}
 
 			return model;
 		}
