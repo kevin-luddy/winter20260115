@@ -72,7 +72,12 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			if (ptmData != null && boeData != null)
 			{
-				ValidatePickLists(ptmData, boeData);
+				ICollection<ValidationMessage> validationMessages = ValidatePickLists(ptmData, boeData);
+
+				if (validationMessages.Any())
+				{
+					throw new GenValidationException(validationMessages);
+				}
 			}
 
 			PickListGridMV result = ptmData ?? boeData;
@@ -148,7 +153,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="ptmData">The PTM data.</param>
 		/// <param name="boeData">The BOE data.</param>
-		public void ValidatePickLists(PickListGridMV ptmData, PickListGridMV boeData)
+		public ICollection<ValidationMessage> ValidatePickLists(PickListGridMV ptmData, PickListGridMV boeData)
 		{
 			if (ptmData == null)
 			{
@@ -160,7 +165,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new ArgumentNullException(nameof(boeData));
 			}
 
-			List<ValidationMessage> messages = new();
+			ICollection<ValidationMessage> messages = new List<ValidationMessage>();
 
 			if (ptmData.ContainsParent && boeData.ContainsParent)
 			{
@@ -220,6 +225,8 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			{
 				ptmData.Messages = messages;
 			}
+
+			return messages;
 		}
 
 		/// <summary>

@@ -217,12 +217,20 @@ namespace IESPortal.Backend.Controllers
 		/// </summary>
 		/// <returns>Partial view w/ the page</returns>
 		[HttpGet("[action]")]
-		public ICollection<SelectListItem> DisplaySelectPickListToManage()
+		public IESResponse<ICollection<SelectListItem>> DisplaySelectPickListToManage()
 		{
-			this.InitializeAction(IESWebConstants.DISPLAY_SELECT_PICK_LIST_TO_MANAGE);
-			ICollection<SelectListItem> data = EnumUtilities.GetListItemsForEnum(typeof(PickListEnum));
+			IESResponse<ICollection<SelectListItem>> response = new();
 
-			return data;
+			try
+			{
+				response.Data = EnumUtilities.GetListItemsForEnum(typeof(PickListEnum));
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			return response;
 		}
 
 		/// <summary>
