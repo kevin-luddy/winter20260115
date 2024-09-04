@@ -1947,7 +1947,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				}
 				return e.SelectedMOQType.toString();
 			}), function (id) {
-				$scope.InitializeRteFields(id);
+				$scope.InitializeRteFields(id, true);
 			});
 			$scope.setDirty();
 		}
