@@ -261,7 +261,7 @@ namespace IESPortal.Backend.Controllers
 
 			try
 			{
-				response.Data = this.adminControllerLogic.GetPickListItems((PickListEnum)pickListType);
+				response = this.adminControllerLogic.GetPickListItems((PickListEnum)pickListType);
 			}
 			catch (GenValidationException ex)
 			{

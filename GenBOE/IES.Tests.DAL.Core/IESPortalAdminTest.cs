@@ -95,7 +95,7 @@ namespace IES.Tests.Core
 
             this.ptmPickListMapper.Setup(x => x.GetPickListValues(PickListEnum.ProposalType, It.IsAny<bool>())).Returns(grid);
 
-            ICollection<PickListDto> actual = sut.GetPickListItems(PickListEnum.ProposalType).PickLists;
+            ICollection<PickListDto> actual = sut.GetPickListItems(PickListEnum.ProposalType).Data.PickLists;
 
             Assert.AreEqual(actual.First().Id, data.First().Id);
             Assert.AreEqual(actual.First().InUse, data.First().InUse);

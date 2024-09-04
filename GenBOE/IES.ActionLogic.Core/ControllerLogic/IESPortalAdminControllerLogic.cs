@@ -65,38 +65,38 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="pickListType">Which List?</param>
 		/// <param name="loadChildren">if set to <c>true</c> [load children].</param>
 		/// <returns>All of the items</returns>
-		public PickListGridMV GetPickListItems(PickListEnum pickListType, bool loadChildren = false)
+		public IESResponse<PickListGridMV> GetPickListItems(PickListEnum pickListType, bool loadChildren = false)
 		{
 			PickListGridMV ptmData = ptmPickListMapper.GetPickListValues(pickListType, loadChildren);
 			PickListGridMV boeData = boePickListMapper.GetPickListValues(pickListType, loadChildren);
+			IESResponse<PickListGridMV> result = new() { Data = ptmData ?? boeData };
 
 			if (ptmData != null && boeData != null)
 			{
 				ICollection<ValidationMessage> validationMessages = ValidatePickLists(ptmData, boeData);
 
-				if (validationMessages.Any())
+				foreach (ValidationMessage validationMessage in validationMessages)
 				{
-					throw new GenValidationException(validationMessages);
+					result.Messages.Add(validationMessage.ValidationIssue);
 				}
 			}
 
-			PickListGridMV result = ptmData ?? boeData;
-			ConfigurePickListIds(result, ptmData, boeData);
+			ConfigurePickListIds(result.Data, ptmData, boeData);
 
-			if (result.Parents is not null && result.PickLists is not null)
+			if (result.Data.Parents is not null && result.Data.PickLists is not null)
 			{
 				// Go through each picklist item.
-				foreach (PickListDto picklistItem in result.PickLists)
+				foreach (PickListDto picklistItem in result.Data.PickLists)
 				{
 					if (picklistItem.ParentIds is not null)
 					{
 						// Go through each parent id in the picklist item.
 						foreach (int parentId in picklistItem.ParentIds)
 						{
-							if (result.Parents is not null)
+							if (result.Data.Parents is not null)
 							{
 								// Now go through the parents and get the parent name based on the id.
-								foreach (SelectListItem parent in result.Parents)
+								foreach (SelectListItem parent in result.Data.Parents)
 								{
 									if (parent.Value == parentId.ToString())
 									{
@@ -241,17 +241,17 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			// Validate updated items have unique Text values.
 			List<PickListModelView> updatedItems = dataToSave.Where(x => x.Updateable == UpdateType.Upsert).ToList();
-			PickListGridMV gridModelView = GetPickListItems(pickListType, true);
+			IESResponse<PickListGridMV> gridModelView = GetPickListItems(pickListType, true);
 
 			if (updatedItems.Any())
 			{
-				List<PickListDto> existingItems = gridModelView.PickLists.ToList();
+				List<PickListDto> existingItems = gridModelView.Data?.PickLists.ToList();
 				foreach (PickListDto updatedItem in updatedItems)
 				{
 					// Validate Pick List Parents
-					if (gridModelView.ContainsParent)
+					if (gridModelView.Data.ContainsParent)
 					{
-						if (gridModelView.AllowsMultipleParents)
+						if (gridModelView.Data.AllowsMultipleParents)
 						{
 							// require at least 1 parent
 							if (updatedItem.ParentIds == null || updatedItem.ParentIds.Count == 0)
@@ -281,7 +281,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 							}
 
 							// only validating Text uniqueness against other Pick Lists in the same Parent
-							existingItems = gridModelView.PickLists.Where(p => p.ParentIds.Contains(updatedItem.ParentIds.First())).ToList();
+							existingItems = gridModelView.Data.PickLists.Where(p => p.ParentIds.Contains(updatedItem.ParentIds.First())).ToList();
 						}
 					}
 
@@ -302,14 +302,14 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			// Validate deleted items don't have children.
 			List<PickListModelView> deletedItems = dataToSave.Where(x => x.Updateable == UpdateType.Deleted).ToList();
-			if (deletedItems.Any() && gridModelView.ContainsChildren)
+			if (deletedItems.Any() && gridModelView.Data.ContainsChildren)
 			{
 				foreach (PickListModelView deletedItem in deletedItems)
 				{
-					if (gridModelView.Children.Any(c => c.ParentIds.Contains(deletedItem.Id)))
+					if (gridModelView.Data.Children.Any(c => c.ParentIds.Contains(deletedItem.Id)))
 					{
 						// found a child for the item, cannot delete it
-						validationErrors.Add(new ValidationMessage(string.Format(AdminValidationConstants.PICKLIST_ITEM_MAY_NOT_BE_DELETED, deletedItem.Text, string.Join(", ", gridModelView.Children.Where(c => c.ParentIds.Contains(deletedItem.Id)).Select(d => d.Text)))));
+						validationErrors.Add(new ValidationMessage(string.Format(AdminValidationConstants.PICKLIST_ITEM_MAY_NOT_BE_DELETED, deletedItem.Text, string.Join(", ", gridModelView.Data.Children.Where(c => c.ParentIds.Contains(deletedItem.Id)).Select(d => d.Text)))));
 					}
 				}
 			}
