@@ -484,9 +484,13 @@ namespace GenBOE.ActionLogic.IO.Export
 							ClinDTO resourceClin = wsLevelData.Clins.FirstOrDefault(i => i.Id == labor.CLINID.GetValueOrDefault(-1));
 							WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
-							laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, resourceClin,
+							IDictionary<int, string> mappings = this.GenerateTaskRow(wsLevelData, inputsForExport, resourceClin,
 								resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, labor.IsOffloaded, workspaceShortname);
-
+							// merge the mappings
+							foreach (KeyValuePair<int, string> kvp in mappings)
+							{
+								laborTypeIdToProPricerIdMappings[kvp.Key] = kvp.Value;
+							}
 						}
 					}
 					foreach (ResourceTypeDto labor in resourcesSplitforBrc)
