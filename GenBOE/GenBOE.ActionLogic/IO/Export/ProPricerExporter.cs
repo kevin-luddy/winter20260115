@@ -447,7 +447,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						}
 
 						IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
-							elementOfCost, resourcesSplitforBrc, boeTask, taskResourcesEntriesForElementOfCost.Any(x => x.IsOffloaded), workspaceShortname);
+							elementOfCost, resourcesSplitforBrc, boeTask, resourcesSplitforBrc.Any(x => x.IsOffloaded), workspaceShortname);
 
 						foreach (ResourceTypeDto labor in resourcesSplitforBrc)
 						{
