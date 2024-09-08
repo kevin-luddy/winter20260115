@@ -448,7 +448,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						}
 
 						IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
-							elementOfCost, taskResourcesEntriesForElementOfCost, boeTask, taskResourcesEntriesForElementOfCost.Any(x => x.IsOffloaded), workspaceShortname);
+							elementOfCost, resourcesSplitforBrc, boeTask, resourcesSplitforBrc.Any(x => x.IsOffloaded), workspaceShortname);
 
 						foreach (ResourceTypeDto labor in resourcesSplitforBrc)
 						{
@@ -477,7 +477,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, 0).ToList();
 					}
 					IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<int, string>();
-					foreach (ResourceTypeDto labor in taskResourcesEntriesForElementOfCost)
+					foreach (ResourceTypeDto labor in resourcesSplitforBrc)
 					{
 						// do not export to ProPricer if task doesn't have any total hours or cost or if there no offsets
 						if (boeTask.TotalHours != 0 || boeTask.TotalCost != 0 || boeTask.taskElementLabors.Any(l => l.ValueSpread != 0))
