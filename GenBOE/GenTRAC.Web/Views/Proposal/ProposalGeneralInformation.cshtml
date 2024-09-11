@@ -38,7 +38,7 @@
 
     // Updates items based on CCOPD value
     ShowHideItemsBasedOnCcopd = function () {
-        var ccopd = $('#IsCCPDRequired-Yes').is(":checked");
+        var ccopd = $('#IsCCPDRequired-Yes').is(":checked") || $('#IsCCPDRequired').val().isTrue();
 
         UpdateReasonWhyCcopdNo(ccopd);
         UpdateIsSupportOfUndefinitized(ccopd);
