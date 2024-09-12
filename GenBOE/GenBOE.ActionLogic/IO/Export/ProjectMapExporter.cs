@@ -202,7 +202,7 @@ namespace GenBOE.ActionLogic.IO.Export
             // Create collections of strings for each row in the export file
             ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet(ImportExportConstants.OPTIONS_LISTS);
 
-            IReadOnlyCollection<ResourceDTO> resources = workspace.ResourcesForWsResourceListId.Where(r => r.ElementOfCost == ElementOfCostType.LMLabor || r.ElementOfCost == ElementOfCostType.IWTA || r.ElementOfCost == ElementOfCostType.Travel || r.ElementOfCost == ElementOfCostType.ODC).OrderBy(x => x.ResourceName).ToList();
+            IReadOnlyCollection<ResourceDTO> resources = workspace.ResourcesUsedInWsBoes.Where(r => r.ElementOfCost == ElementOfCostType.LMLabor || r.ElementOfCost == ElementOfCostType.IWTA || r.ElementOfCost == ElementOfCostType.Travel || r.ElementOfCost == ElementOfCostType.ODC).OrderBy(x => x.ResourceName).ToList();
             IReadOnlyCollection<PerformingOrgDTO> perfOrgs = workspace.PerformingOrgsForWsList.OrderBy(x => x.PerformingOrgName).ToList();
             ICommonDataMapper commonDataMapper = GenBOEUnityContainer.Resolve<ICommonDataMapper>();
             IReadOnlyCollection<SikorskyLegacyResourceDTO> legacyResources = commonDataMapper.GetSikorskyLegacyResources();
