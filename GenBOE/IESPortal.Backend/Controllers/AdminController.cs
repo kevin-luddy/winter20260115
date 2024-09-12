@@ -255,12 +255,20 @@ namespace IESPortal.Backend.Controllers
 		/// <param name="pickListType">Pick List Type</param>
 		/// <returns>Partial view w/ the page</returns>
 		[HttpGet("[action]")]
-		public PickListGridMV DisplayManagePickLists(int pickListType)
+		public IESResponse<PickListGridMV> DisplayManagePickLists(int pickListType)
 		{
-			this.InitializeAction(IESWebConstants.DISPLAY_MANAGE_PICK_LISTS);
-			PickListGridMV data = this.adminControllerLogic.GetPickListItems((PickListEnum)pickListType);
+			IESResponse<PickListGridMV> response = new();
 
-			return data;
+			try
+			{
+				response = this.adminControllerLogic.GetPickListItems((PickListEnum)pickListType);
+			}
+			catch (GenValidationException ex)
+			{
+				response.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			return response;
 		}
 
 		/// <summary>

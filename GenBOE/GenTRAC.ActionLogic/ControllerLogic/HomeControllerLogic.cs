@@ -236,7 +236,10 @@ namespace GenTRAC.ActionLogic
 
             // if user wants to showProposalsForMyOrganization, then generate a list of their AD groups (as XML) to pass to proposal search.
             bool showProposalsForMyOrganization = filtersCookie.ViewerFilterOption == ViewerProposalFilterOption.ShowProposalsForMyOrganization;
-            string userAndGroupIdsAsXml = showProposalsForMyOrganization ? this.activeDirectoryUtils.GetUserAndGroupIdsAsXml(currentUserNtid, this.activeDirectoryUtils.GetGroupsForUser(currentUserNtid)) : string.Empty;
+			ICollection<GroupData> groups = this.activeDirectoryUtils.GetGroupsForUser(currentUserNtid);
+			// filter out unknown groups
+			groups = RemoveUnknownGroups(groups);
+			string userAndGroupIdsAsXml = showProposalsForMyOrganization ? this.activeDirectoryUtils.GetUserAndGroupIdsAsXml(currentUserNtid, groups) : string.Empty;
 
             ICollection<HomeProposalViewDto> allProposalData;
             if (statuses.Any())
@@ -261,16 +264,29 @@ namespace GenTRAC.ActionLogic
             return allProposalData;
         }
 
-        /// <summary>
-        /// Builds and sorts the MV for the home page Proposal Grid
-        /// </summary>
-        /// <param name="allProposalData">Proposal Data</param>
-        /// <param name="workspaces">All Workspace data</param>
-        /// <param name="userNtid">NTID</param>
-        /// <param name="sortField">Sort Field</param>
-        /// <param name="order">Sort Order</param>
-        /// <returns>Sorted home page grid data</returns>
-        private HomeProposalModelView BuildProposalGridMV(ICollection<HomeProposalViewDto> allProposalData, ICollection<WorkspaceDTO> workspaces, string userNtid, string sortField, System.Data.SqlClient.SortOrder? order)
+		/// <summary>
+		/// Remove groups that are not setup in database as users
+		/// </summary>
+		/// <param name="groups">List of groups to filter</param>
+		/// <returns>List of filtered groups</returns>
+		private ICollection<GroupData> RemoveUnknownGroups(ICollection<GroupData> groups)
+		{
+			HashSet<string> groupNtIds = this.UserMapper.GetAllGroups().Select(g => g.Ntid).ToHashSet();
+			ICollection<GroupData> filteredGroups = groups.Where(g => groupNtIds.Contains(g.Ntid)).ToList();
+
+			return filteredGroups;
+		}
+
+		/// <summary>
+		/// Builds and sorts the MV for the home page Proposal Grid
+		/// </summary>
+		/// <param name="allProposalData">Proposal Data</param>
+		/// <param name="workspaces">All Workspace data</param>
+		/// <param name="userNtid">NTID</param>
+		/// <param name="sortField">Sort Field</param>
+		/// <param name="order">Sort Order</param>
+		/// <returns>Sorted home page grid data</returns>
+		private HomeProposalModelView BuildProposalGridMV(ICollection<HomeProposalViewDto> allProposalData, ICollection<WorkspaceDTO> workspaces, string userNtid, string sortField, System.Data.SqlClient.SortOrder? order)
         {
             bool isSystemAdmin = this.CheckPermissions(PtmSecurityPage.Admin, null).Role == PtmRole.Admin;
 
