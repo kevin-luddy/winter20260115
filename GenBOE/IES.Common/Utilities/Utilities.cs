@@ -790,9 +790,9 @@ namespace IES.Common
 			if (!string.IsNullOrEmpty(token))
 			{
 				string fullToken = Constants.TOKEN_PREFIX + token;
-				if (!client.DefaultRequestHeaders.Any(h => h.Key == HeaderNames.Authorization && h.Value.Any(v => v == fullToken)))
+				lock (lockObject)
 				{
-					lock (lockObject)
+					if (!client.DefaultRequestHeaders.Any(h => h.Key == HeaderNames.Authorization && h.Value.Any(v => v == fullToken)))
 					{
 						client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
 						client.DefaultRequestHeaders.Add(HeaderNames.Authorization, fullToken);
