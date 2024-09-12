@@ -17,8 +17,9 @@
 	var BOEDetails = InitializeBOEDetailsWidget(isMaterial, boeDetailsReloadHistoryEvent, boeDetailsReloadCommentEvent, displayTaskElementDetailsEvent, displayOdcDetailsEvent, displayTravelDetailsEvent,
 		displayMaterialDetailsEvent);
 	BOEDetails.WSResources = <%= serializer.Serialize(ViewData["WSRESOURCES"])%>;
+	BOEDetails.WSResourcesTM = <%= serializer.Serialize(ViewData["WSRESOURCESTM"])%>;
 	BOEDetails.WSBusinessResourceCodes = <%= serializer.Serialize(ViewData["WSBUSINESSRESOURCECODES"])%>
-		BOEDetails.WSPerfOrgs = <%= serializer.Serialize(ViewData["WSPERFORGS"])%>;
+	BOEDetails.WSPerfOrgs = <%= serializer.Serialize(ViewData["WSPERFORGS"])%>;
 	BOEDetails.WSClins = <%= serializer.Serialize(ViewBag.WsClins)%>;
 	BOEDetails.WSWbss = <%= serializer.Serialize(ViewBag.WsWbss)%>;
 

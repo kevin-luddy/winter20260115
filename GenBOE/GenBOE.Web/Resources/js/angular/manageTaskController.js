@@ -31,6 +31,10 @@
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
 
+	// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
+	// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
+    $scope.oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.split(' ')[0].toDate();
+
 	$scope.isPreviousTaskDisabled = function () {
 		return $scope.model.AdjacentItems.PreviousId === undefined || $scope.model.AdjacentItems.PreviousId === null;
 	};
@@ -79,6 +83,7 @@
 
 	/** Resources and Performing Orgs **/
 	$scope.ResourceModels = BOEDetails.WSResources;
+	$scope.TMResourceIds = BOEDetails.WSResourcesTM;
 	$scope.BusinessResourceCodeModels = BOEDetails.WSBusinessResourceCodes;
 	$scope.PerfOrgModels = angular.copy(BOEDetails.WSPerfOrgs);
 
@@ -1533,14 +1538,11 @@
 	$scope.getAndSetIsResourceValid = function (item, models, callBusinessResourceCode) {
 		item.IsResourceValid = true;
 
-		// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
-		// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
 		var startDate = item.StartDate.toDate();
 		var endDate = item.EndDate.toDate();
-		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.split(' ')[0].toDate();
 		var input = item.ResourceInput;
 		
-		if (!$scope.IsBRCEnabled) {
+		if (!$scope.IsBRCEnabled || $scope.TMResourceIds.includes(item.ResourceID)) {
 			if (!item.NewLaborType) {
 				if (input === undefined || (typeof input === 'string' && (input.length === 0
 					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
@@ -1550,14 +1552,14 @@
 		}
 		else {
 			if (!item.NewLaborType) {
-				if (endDate < oneLmxCutOff) {
+				if (endDate < $scope.oneLmxCutOff) {
 					if (input === undefined || (typeof input === 'string' && (input.length === 0
 						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 						item.IsResourceValid = false;
 					}
 				}
 
-				if (startDate < oneLmxCutOff && endDate >= oneLmxCutOff) {
+				if (startDate < $scope.oneLmxCutOff && endDate >= $scope.oneLmxCutOff) {
 					if (input === undefined || (typeof input === 'string' && (input.length === 0
 						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 						item.IsResourceValid = false;
@@ -1580,25 +1582,26 @@
 		// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
 		var startDate = item.StartDate.toDate();
 		var endDate = item.EndDate.toDate();
-		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.split(' ')[0].toDate();
 		var input = item.BusinessResourceCodeInput;
 
 		if (!item.NewLaborType) {
-			if (startDate >= oneLmxCutOff) {
-				if (input === undefined || (typeof input === 'string' && (input.length === 0
-					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-					item.IsBusinessResourceCodeValid = false;
-				}
-			}
-
-			if (startDate < oneLmxCutOff && endDate >= oneLmxCutOff) {
-				if (input === undefined || (typeof input === 'string' && (input.length === 0
-					|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-					item.IsBusinessResourceCodeValid = false;
+			if (!$scope.TMResourceIds.includes(item.ResourceID)) {
+				if (startDate >= $scope.oneLmxCutOff) {
+					if (input === undefined || (typeof input === 'string' && (input.length === 0
+						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+						item.IsBusinessResourceCodeValid = false;
+					}
 				}
 
-				if (callResource) {
-					item.IsResourceValid = $scope.getAndSetIsResourceValid(item, $scope.ResourceModels, false);
+				if (startDate < $scope.oneLmxCutOff && endDate >= $scope.oneLmxCutOff) {
+					if (input === undefined || (typeof input === 'string' && (input.length === 0
+						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+						item.IsBusinessResourceCodeValid = false;
+					}
+
+					if (callResource) {
+						item.IsResourceValid = $scope.getAndSetIsResourceValid(item, $scope.ResourceModels, false);
+					}
 				}
 			}
 		}
@@ -1879,21 +1882,26 @@
 	$scope.setColumnDisabled = function (item) {
 		var itemStartDate = item.StartDate.toDate();
 		var itemEndDate = item.EndDate.toDate();
-		var oneLmxCutOff = ManageTaskModel.OneLMXCutOffDate.toDate();
 
-		if (itemEndDate < oneLmxCutOff) {
+		if ($scope.TMResourceIds.includes(item.ResourceID)) {
 			item.disableResource = false;
 			item.disableBRC = true;
-		}
+		} else {
 
-		if (itemStartDate < oneLmxCutOff && itemEndDate >= oneLmxCutOff) {
-			item.disableBRC = false;
-			item.disableResource = false;
-		}
+			if (itemEndDate < $scope.oneLmxCutOff) {
+				item.disableResource = false;
+				item.disableBRC = true;
+			}
 
-		if (itemStartDate >= oneLmxCutOff) {
-			item.disableResource = true;
-			item.disableBRC = false;
+			if (itemStartDate < $scope.oneLmxCutOff && itemEndDate >= $scope.oneLmxCutOff) {
+				item.disableBRC = false;
+				item.disableResource = false;
+			}
+
+			if (itemStartDate >= $scope.oneLmxCutOff) {
+				item.disableResource = true;
+				item.disableBRC = false;
+			}
 		}
 	}
 
