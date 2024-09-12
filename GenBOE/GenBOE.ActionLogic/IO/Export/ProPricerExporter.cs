@@ -422,6 +422,8 @@ namespace GenBOE.ActionLogic.IO.Export
 		{
 			if (!taskElements.Any()) { return; }
 
+			IDictionary<int, string> resourceIdToSegmentRegion = wsLevelData.Resources.ToDictionary(r => r.Id, d => d.SegRegion);
+
 			if (!inputsForExport.MultiBoe)
 			{
 				// the data within the BOE Task Element will be part of the Resource Cost/Hours file
@@ -440,7 +442,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						{
 							//clone resources with brc
 							//maintain original ID for pro pricer ID mapping in generate resource row
-							resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, 0).ToList();
+							resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, resourceIdToSegmentRegion, workspaceShortname, 0).ToList();
 						}
 						if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) && has1LMXResources)
 						{
@@ -474,7 +476,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						//clone resources with brc
 						//maintain original ID for pro pricer ID mapping in generate resource row
-						resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, 0).ToList();
+						resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, resourceIdToSegmentRegion, workspaceShortname, 0).ToList();
 					}
 					IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<int, string>();
 					foreach (ResourceTypeDto labor in resourcesSplitforBrc)

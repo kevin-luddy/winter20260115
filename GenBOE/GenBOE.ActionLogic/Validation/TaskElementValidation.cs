@@ -104,7 +104,9 @@ namespace GenBOE.ActionLogic.Validation
             ConcurrentBag<LaborValidationClass> dateErrors = new ConcurrentBag<LaborValidationClass>();
             ConcurrentBag<LaborValidationClass> valueErrors = new ConcurrentBag<LaborValidationClass>();
 
-            foreach (int boeId in taskElementsToValidate.Select(x => x.BoeID).Distinct())
+			IDictionary<int, string> resourceIdToSegmentRegion = ws.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
+			foreach (int boeId in taskElementsToValidate.Select(x => x.BoeID).Distinct())
             {
                 FullBoe boe = ws.Boes.Single(x => x.Id == boeId);
 
@@ -118,7 +120,7 @@ namespace GenBOE.ActionLogic.Validation
                     try
                     {
                         if (!ValidateTaskDates(boeStartDate, boeEndDate, taskElement, ref dateErrors, true)
-                                || !ValidateResourceTypesForIndividualTask(ws, taskElement, ref dateErrors, ref valueErrors, true)
+                                || !ValidateResourceTypesForIndividualTask(ws, taskElement, ref dateErrors, ref valueErrors, resourceIdToSegmentRegion, true)
                                 || !this.ValidateOverallSumOfHoursAndCosts(ws, taskElement, ref valueErrors, LOCK, true))
                         {
                             result.Add(taskElement.Id);
@@ -152,8 +154,9 @@ namespace GenBOE.ActionLogic.Validation
             object LOCK = new object();
 
             object otherLOCK = new object();
+			IDictionary<int, string> resourceIdToSegmentRegion = ws.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 
-            foreach (int boeId in taskElementsToValidate.Select(x => x.BoeID).Distinct())
+			foreach (int boeId in taskElementsToValidate.Select(x => x.BoeID).Distinct())
             {
                 FullBoe boe = ws.Boes.Single(x => x.Id == boeId);
 
@@ -174,7 +177,7 @@ namespace GenBOE.ActionLogic.Validation
                             () =>
                             {
                                 ValidateTaskDates(boeStartDate, boeEndDate, taskElement, ref dateErrors);
-                                ValidateResourceTypesForIndividualTask(ws, taskElement, ref dateErrors, ref valueErrors);
+                                ValidateResourceTypesForIndividualTask(ws, taskElement, ref dateErrors, ref valueErrors, resourceIdToSegmentRegion);
                             }
                         );
 
@@ -347,9 +350,9 @@ namespace GenBOE.ActionLogic.Validation
         /// <param name="returnOnFirstInvalid">If this is set to true, we are only looking to see if the task elementis invalid. If it is, we abort processing and report the finding</param>
         /// <returns>False if invalid</returns>
         private static bool ValidateResourceTypesForIndividualTask(FullWorkspace ws, BoeTaskElementDTO taskElement, ref ConcurrentBag<LaborValidationClass> dateErrors,
-            ref ConcurrentBag<LaborValidationClass> valueErrors, bool returnOnFirstInvalid = false)
+            ref ConcurrentBag<LaborValidationClass> valueErrors, IDictionary<int, string> resourceIdToSegmentRegion, bool returnOnFirstInvalid = false)
         {
-            foreach (ResourceTypeDto resourceType in taskElement.taskElementLabors)
+			foreach (ResourceTypeDto resourceType in taskElement.taskElementLabors)
             {
                 string resourceTypeString = resourceType.SpreadType == SpreadType.Cost ? "cost" : FullObjectHelper.HoursLabel(ws);
                 string resourceTypeValueString = resourceType.SpreadType == SpreadType.Cost ? "$" + Utilities.AdjustPrecision(resourceType.ValueSpread.Value, 2).ToString()
@@ -373,7 +376,7 @@ namespace GenBOE.ActionLogic.Validation
                 }
 
 				// Validate the Resource Type, method will return empty string if no errors;
-				string brcValidationErrorMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(resourceType, ws.Shortname);
+				string brcValidationErrorMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(resourceType, resourceIdToSegmentRegion, ws.Shortname);
 				if (!string.IsNullOrEmpty(brcValidationErrorMessage))
 				{
 					if (returnOnFirstInvalid) { return false; }

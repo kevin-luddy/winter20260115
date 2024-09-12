@@ -78,8 +78,9 @@ namespace GenBOE.ActionLogic.IO.Export
 				.SelectMany(x => x.taskElementLabors)
 				.Where(x => (int)x.SpreadType == settingsData.RateType).ToList();
 
+			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 			// filter labors on brc by 1lmx start date
-			taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElementLabors, workspace.Shortname).ToList();
+			taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElementLabors, resourceIdToSegmentRegion, workspace.Shortname).ToList();
 
 			// Filter by element of cost from the settings data
 			ICollection<int> laborsToRemove = new Collection<int>();
