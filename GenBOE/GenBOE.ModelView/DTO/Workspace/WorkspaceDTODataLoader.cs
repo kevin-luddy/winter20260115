@@ -652,6 +652,41 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
+		/// Get Workspace data to be used in NLF home grid
+		/// </summary>
+		/// <param name="trackingNumbers">list of all tracking numbers tied to a user</param>
+		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
+		[DbQuery]
+		public ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataForNlf(ICollection<string> trackingNumbers)
+		{
+			ICollection<NlfWorkspaceInnerDataDTO> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from w in gbe.Workspaces
+							  join eu in gbe.ETIusers on w.CostVolumeLeadPricerUserID equals eu.ETIUserID
+							  where w.CurrentPTMWorkspace
+						&& trackingNumbers.Contains(w.TrackingNumber)
+						&& w.IsDeleted == false
+							  select new NlfWorkspaceInnerDataDTO
+							  {
+								  WorkspaceId = w.WorkspaceID,
+								  WorkspaceUrl = w.WorkspaceShortName,
+								  WorkspaceName = w.WorkspaceName,
+								  LineOfBusiness = w.LineOfBusiness,
+								  PTMTrackingNumber = w.TrackingNumber,
+								  WorkspaceCreationDate = w.WorkspaceCreationDate,
+								  EstimatingLead = eu.DisplayName
+							  }).Distinct().ToList();
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Get all Workspace Inner Data for a System Admin to be used in the NLF Home Grid
 		/// </summary>
 		/// <returns>Collection of Workspace Inner Data</returns>
