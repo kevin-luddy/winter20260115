@@ -63,16 +63,16 @@ namespace GenBOE.Tests.ActionLogic
 
             FullWorkspace workspace = new FullWorkspace(workspaceDto);
 
-            ResourceDTO res1 = new ResourceDTO() { Id = 1, ResourceName = "Res1", ElementOfCost = ElementOfCostType.Sub, RateType = RateType.Hours };
-            ResourceDTO res2 = new ResourceDTO() { Id = 2, ResourceName = "Res2", ElementOfCost = ElementOfCostType.Sub, RateType = RateType.Hours };
-            ResourceDTO res3 = new ResourceDTO() { Id = 3, ResourceName = "Res3", ElementOfCost = ElementOfCostType.Sub, RateType = RateType.Hours };
+            ResourceDTO res1 = new ResourceDTO() { Id = 1, ResourceName = "Res1", SegRegion = WebConstants.SPACE_LEGACY_TM, ElementOfCost = ElementOfCostType.Sub, RateType = RateType.Hours };
+            ResourceDTO res2 = new ResourceDTO() { Id = 2, ResourceName = "Res2", SegRegion = WebConstants.SPACE_LEGACY_TM, ElementOfCost = ElementOfCostType.Sub, RateType = RateType.Hours };
+            ResourceDTO res3 = new ResourceDTO() { Id = 3, ResourceName = "Res3", SegRegion = WebConstants.SPACE_LEGACY_TM, ElementOfCost = ElementOfCostType.Sub, RateType = RateType.Hours };
 
-            TMResourceRateDTO rr11 = new TMResourceRateDTO() { Id = 1, WorkspaceID = workspace.Id, ResourceID = res1.Id, ResourceRate = 0.11m, StartDate = new DateTime(2012, 6, 15), EndDate = new DateTime(2013, 5, 15) };
-            TMResourceRateDTO rr12 = new TMResourceRateDTO() { Id = 2, WorkspaceID = workspace.Id, ResourceID = res1.Id, ResourceRate = 0.22m, StartDate = new DateTime(2013, 6, 15), EndDate = new DateTime(2014, 5, 15) };
-            TMResourceRateDTO rr13 = new TMResourceRateDTO() { Id = 3, WorkspaceID = workspace.Id, ResourceID = res1.Id, ResourceRate = 0.33m, StartDate = new DateTime(2014, 6, 15), EndDate = new DateTime(2015, 5, 15) };
-            TMResourceRateDTO rr21 = new TMResourceRateDTO() { Id = 4, WorkspaceID = workspace.Id, ResourceID = res2.Id, ResourceRate = 0.11m, StartDate = new DateTime(2013, 6, 15), EndDate = new DateTime(2014, 5, 15) };
-            TMResourceRateDTO rr22 = new TMResourceRateDTO() { Id = 5, WorkspaceID = workspace.Id, ResourceID = res2.Id, ResourceRate = 0.22m, StartDate = new DateTime(2014, 6, 15), EndDate = new DateTime(2015, 5, 15) };
-            TMResourceRateDTO rr31 = new TMResourceRateDTO() { Id = 6, WorkspaceID = workspace.Id, ResourceID = res3.Id, ResourceRate = 0.11m, StartDate = new DateTime(2012, 6, 15), EndDate = new DateTime(2015, 5, 15) };
+            TMResourceRateDTO rr11 = new TMResourceRateDTO() { Id = 1, WorkspaceID = workspace.Id, ResourceID = res1.Id, ResourceRate = 0.11m, StartDate = new DateTime(2028, 6, 15), EndDate = new DateTime(2029, 5, 15) };
+            TMResourceRateDTO rr12 = new TMResourceRateDTO() { Id = 2, WorkspaceID = workspace.Id, ResourceID = res1.Id, ResourceRate = 0.22m, StartDate = new DateTime(2029, 6, 15), EndDate = new DateTime(2030, 5, 15) };
+            TMResourceRateDTO rr13 = new TMResourceRateDTO() { Id = 3, WorkspaceID = workspace.Id, ResourceID = res1.Id, ResourceRate = 0.33m, StartDate = new DateTime(2030, 6, 15), EndDate = new DateTime(2031, 5, 15) };
+            TMResourceRateDTO rr21 = new TMResourceRateDTO() { Id = 4, WorkspaceID = workspace.Id, ResourceID = res2.Id, ResourceRate = 0.11m, StartDate = new DateTime(2029, 6, 15), EndDate = new DateTime(2030, 5, 15) };
+            TMResourceRateDTO rr22 = new TMResourceRateDTO() { Id = 5, WorkspaceID = workspace.Id, ResourceID = res2.Id, ResourceRate = 0.22m, StartDate = new DateTime(2030, 6, 15), EndDate = new DateTime(2031, 5, 15) };
+            TMResourceRateDTO rr31 = new TMResourceRateDTO() { Id = 6, WorkspaceID = workspace.Id, ResourceID = res3.Id, ResourceRate = 0.11m, StartDate = new DateTime(2028, 6, 15), EndDate = new DateTime(2031, 5, 15) };
 
             ICollection<TMResourceRateDTO> tmResourceRatesFromDB = new Collection<TMResourceRateDTO>() { rr11, rr12, rr13, rr21, rr22, rr31 };
 
@@ -85,14 +85,16 @@ namespace GenBOE.Tests.ActionLogic
                             ResourceID = res1.Id,
                             SpreadType = IES.Common.SpreadType.Hours,
                             SpreadCurveID = SpreadCurves.SpreadCurve10,
-                            ValueSpread = 100,
+							StartDate = new DateTime(2028,6,15,0,0,0),
+							EndDate = new DateTime(2029,7,15,0,0,0),
+							ValueSpread = 100,
                             LaborSpreads = new Collection<ResourceSpreadDto>()
                             {
-                                new ResourceSpreadDto() { Id = 1, LaborSpreadValue = 20, LaborSpreadDate = new DateTime(2012,6,15,0,0,0) },
-                                new ResourceSpreadDto() { Id = 2, LaborSpreadValue = 20, LaborSpreadDate = new DateTime(2012,7,15,0,0,0) },
-                                new ResourceSpreadDto() { Id = 3, LaborSpreadValue = 10, LaborSpreadDate = new DateTime(2012,8,15,0,0,0) },
-                                new ResourceSpreadDto() { Id = 4, LaborSpreadValue = 10, LaborSpreadDate = new DateTime(2013,6,15,0,0,0) },
-                                new ResourceSpreadDto() { Id = 5, LaborSpreadValue = 40, LaborSpreadDate = new DateTime(2013,7,15,0,0,0) }
+                                new ResourceSpreadDto() { Id = 1, LaborSpreadValue = 20, LaborSpreadDate = new DateTime(2028,6,15,0,0,0) },
+                                new ResourceSpreadDto() { Id = 2, LaborSpreadValue = 20, LaborSpreadDate = new DateTime(2028,7,15,0,0,0) },
+                                new ResourceSpreadDto() { Id = 3, LaborSpreadValue = 10, LaborSpreadDate = new DateTime(2028,8,15,0,0,0) },
+                                new ResourceSpreadDto() { Id = 4, LaborSpreadValue = 10, LaborSpreadDate = new DateTime(2029,6,15,0,0,0) },
+                                new ResourceSpreadDto() { Id = 5, LaborSpreadValue = 40, LaborSpreadDate = new DateTime(2029,7,15,0,0,0) }
                             }
                         }
                     }
@@ -104,12 +106,20 @@ namespace GenBOE.Tests.ActionLogic
 
 			TMCalculator sut = new TMCalculator();
             decimal cost = 0;
-            foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
+			List<ResourceDTO> resources = new List<ResourceDTO> { res1, res2, res3 };
+
+			IDictionary<int, string> resourceIdToSegmentRegion = resources.ToDictionary(r => r.Id, d => d.SegRegion); 
+			foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {
-                foreach (ResourceTypeDto laborTask in taskElement.taskElementLabors)
-                {
-                    cost = sut.TotalCostForTaskSpread(workspace, laborTask);
-                }
+				//get brc labors based on 1lmx start date
+				ICollection<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, string.Empty);
+				// none of these task element labors that cross the 1LMX barrier should be split to BRC
+				Assert.AreEqual(taskElement.taskElementLabors.Count, taskElementLabors.Count);
+
+				foreach (ResourceTypeDto laborTask in taskElementLabors)
+				{
+					cost = sut.TotalCostForTaskSpread(workspace, laborTask);
+				}
             }
             Assert.IsTrue(cost == 16.5m, "Doesn't equal the amount calculated");
         }
