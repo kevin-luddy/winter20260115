@@ -66,7 +66,7 @@ namespace GenBOE.ActionLogic.Workspace
                     foreach (ResourceTypeDto laborResource in task.taskElementLabors)
                     {
                         PerformingOrgDTO perfOrg = workspace.PerformingOrgsForWsList.FirstOrDefault(p => p.Id == laborResource.PerformingOrgID);
-                        ResourceDTO resource = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborResource.ResourceID);
+                        ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(r => r.Id == laborResource.ResourceID);
 						WbsDTO wbs = workspace.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                         FullClin clin = workspace.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
 
