@@ -105,6 +105,16 @@ namespace GenBOE.DataBridge.DTO
 		ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataByNtidForNlf(string ntid, ICollection<string> trackingNumbers);
 
 		/// <summary>
+		/// Get Workspace inner data to be used in NLF home grid
+		/// This is basically an extension method of 'GetWorkspaceDataForNlf'
+		/// </summary>
+		/// <param name="trackingNumbers">list of all tracking numbers tied to a user</param>
+		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[DbQuery]
+		ICollection<NlfWorkspaceInnerDataDTO> GetWorkspaceInnerDataForNlf(ICollection<string> trackingNumbers);
+
+		/// <summary>
 		/// Get all Workspace inner data for a system admin to be used in NLF home grid
 		/// This is basically an extention method of 'GetAllWorkspaceDataForNlf'
 		/// </summary>
