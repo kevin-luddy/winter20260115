@@ -1287,6 +1287,13 @@
 				</div>
 				<ul class="resultsList"></ul>
 			</div>
+			<div class="import-result-type display-none" id="ImportResult-MissingBusinessResourceCode">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) missing Business Resource Code because Start Date is before 1LMX Cutoff Date and End Date is after 1LMX Cutoff Date.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
 			<div class="title import-result-type display-none" id="ImportResult-NoChanges">No Changes Detected</div>
 
 			<div id="ImportResults" class="container">

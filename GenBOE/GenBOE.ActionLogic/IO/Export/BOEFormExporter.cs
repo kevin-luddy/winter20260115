@@ -227,11 +227,13 @@ namespace GenBOE.ActionLogic.IO.Export
             Dictionary<int, Dictionary<int, TK>> rowByClinByWBS = new Dictionary<int, Dictionary<int, TK>>();
             DateTime? popStart = null;
             DateTime? popEnd = null;
-            foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
+			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
+			foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
             {
                 BoeDTO boe = workspace.Boes.First(b => b.Id == taskElement.BoeID);
                 //get brc labors based on 1lmx start date
-                List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, workspace.Shortname).ToList();
+                List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, workspace.Shortname).ToList();
 
                 foreach (ResourceTypeDto laborTask in taskElementLabors)
                 {

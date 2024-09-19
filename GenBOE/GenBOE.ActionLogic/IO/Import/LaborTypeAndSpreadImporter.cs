@@ -261,6 +261,8 @@ namespace GenBOE.ActionLogic.IO.Import
 			//ResourceList and Business ResourceCodeList
 			ICollection<ResourceDTO> resourceList = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), false, workspace.Shortname);
 			ICollection<ResourceDTO> businessResourceCodeList = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.ToList(), true, workspace.Shortname);
+			ICollection<int> tmResourceIds = resourceList.Where(a => a.SegRegion == WebConstants.SPACE_LEGACY_TM).Select(x => x.Id).ToList();
+
 
 			if (allRows.Any())
 			{
@@ -324,12 +326,12 @@ namespace GenBOE.ActionLogic.IO.Import
 
 						toAdd = this.update(toAdd,
 							this.ConstructImportfromFile(row, taskElement, workspace, existingLT, resourceList, businessResourceCodeList, workspaceCustomFields,
-								wsWBS, wsClins, isMulti, isOffload, ref newCustomFieldIndex), workspaceCustomFields.Any());
+								wsWBS, wsClins, isMulti, isOffload, ref newCustomFieldIndex, tmResourceIds), workspaceCustomFields.Any());
 					}
 					else
 					{
 						toAdd = this.ConstructImportfromFile(row, taskElement, workspace, existingLT, resourceList, businessResourceCodeList,
-							workspaceCustomFields, wsWBS, wsClins, isMulti, isOffload, ref newCustomFieldIndex);
+							workspaceCustomFields, wsWBS, wsClins, isMulti, isOffload, ref newCustomFieldIndex, tmResourceIds);
 						toAdd.ImportTypes.Add(LaborTypeImportResult.AddLaborType);
 					}
 
@@ -690,7 +692,8 @@ namespace GenBOE.ActionLogic.IO.Import
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private ImportedLaborType ConstructImportfromFile(Dictionary<string, string> importfromfile, BoeTaskElementDTO inTaskElement,
 			FullWorkspace inWorkspace, ResourceTypeDto existingResource, ICollection<ResourceDTO> resourceList, ICollection<ResourceDTO> businessResourceCodeList, 
-			ICollection<CustomFieldDTO> workspaceCustomFields, Collection<FullWbs> wsWbs, Collection<ClinDTO> wsClins, bool isMulti, bool isOffload, ref int newCustomFieldIndex)
+			ICollection<CustomFieldDTO> workspaceCustomFields, Collection<FullWbs> wsWbs, Collection<ClinDTO> wsClins, bool isMulti, bool isOffload, ref int newCustomFieldIndex,
+			ICollection<int> tmResourceIDs)
 		{
 			ImportedLaborType toReturn = new ImportedLaborType();
 
@@ -770,9 +773,13 @@ namespace GenBOE.ActionLogic.IO.Import
 					}
 					else if (businessResourceCode == null && importEndDate >= Utilities.OneLmxStartDate)
 					{
-						//end date is on or after 1lmx (date range could overlap or could be completely after)
-						//if end date is on 1LMX start date, overlaps - need both
-						toReturn.ImportTypes.Add(LaborTypeImportResult.MissingBusinessResourceCode);
+						// Skip this if the resource disables BRC (by segregion)
+						if (resource == null || !tmResourceIDs.Contains(resource.Id))
+						{
+							//end date is on or after 1lmx (date range could overlap or could be completely after)
+							//if end date is on 1LMX start date, overlaps - need both
+							toReturn.ImportTypes.Add(LaborTypeImportResult.MissingBusinessResourceCode);
+						}
 					}
 				}
 				else
