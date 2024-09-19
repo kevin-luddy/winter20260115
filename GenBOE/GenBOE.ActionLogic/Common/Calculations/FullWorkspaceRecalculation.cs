@@ -829,12 +829,14 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				throw new ArgumentNullException(nameof(ws));
 			}
 
-			Collection<BoeTaskElementDTO> problematicResourceElements = this.GetAllTaskElementsWithMissingResource(ws.TaskElements.ToList(), ws.Shortname);
+			IDictionary<int, string> resourceIdToSegmentRegion = ws.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
+			Collection<BoeTaskElementDTO> problematicResourceElements = this.GetAllTaskElementsWithMissingResource(ws.TaskElements.ToList(), resourceIdToSegmentRegion, ws.Shortname);
 
 			return problematicResourceElements;
 		}
 
-		private Collection<BoeTaskElementDTO> GetAllTaskElementsWithMissingResource(ICollection<BoeTaskElementDTO> taskElements, string workspaceShortname)
+		private Collection<BoeTaskElementDTO> GetAllTaskElementsWithMissingResource(ICollection<BoeTaskElementDTO> taskElements, IDictionary<int, string> resourceIdToSegmentRegion, string workspaceShortname)
 		{
 			Collection<BoeTaskElementDTO> problematicTaskElements = new Collection<BoeTaskElementDTO>();
 
@@ -844,7 +846,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				{
 					bool breakLoop = false;
 
-					if (!string.IsNullOrEmpty(BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(item, workspaceShortname)))
+					if (!string.IsNullOrEmpty(BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(item, resourceIdToSegmentRegion, workspaceShortname)))
 					{
 						problematicTaskElements.Add(task);
 						breakLoop = true;
