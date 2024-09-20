@@ -734,8 +734,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on a Sunday.");
 									}
 								}
-
-								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && row.PoPStart?.Date < Utilities.DatepickerRestrictionRMS)
+								// Only have Datepicker restriction for RMS Workspace that has SAP integration enabled
+								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && ws.EnableSAPConnection && row.PoPStart?.Date < Utilities.DatepickerRestrictionRMS)
 								{
 									errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be after {Utilities.DatepickerRestrictionRMS.ToShortDateString()}.");
 								}
