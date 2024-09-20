@@ -1020,6 +1020,36 @@ namespace GenBOE.Tests.DAL.DataLoaders
 		}
 
 		/// <summary>
+		/// Test GetWorkspaceInnerDataByWorkspaceIdForNlf
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceInnerDataForNlfbyTrackingNumbers()
+		{
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			string ntid;
+			Workspace workspace;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				workspace = gbe.Workspaces.Include(typeof(LineOfBusiness).Name).Include(typeof(ETIuser).Name).FirstOrDefault(x => x.IsDeleted == false);
+			}
+
+			ICollection<NlfWorkspaceInnerDataDTO> result = sut.GetWorkspaceInnerDataForNlf(new List<string> { workspace.TrackingNumber });
+
+			NlfWorkspaceInnerDataDTO specificWorkspace = result.FirstOrDefault(r => r.WorkspaceId == workspace.WorkspaceID);
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Count == 1);
+			Assert.IsTrue(result.Any(x => x.WorkspaceId == workspace.WorkspaceID
+				&& x.WorkspaceUrl == workspace.WorkspaceShortName
+				&& x.WorkspaceName == workspace.WorkspaceName
+				&& x.LineOfBusiness.LineOfBusinessID == workspace.LineOfBusiness.LineOfBusinessID
+				&& x.PTMTrackingNumber == workspace.TrackingNumber
+				&& x.WorkspaceCreationDate == workspace.WorkspaceCreationDate
+				&& x.EstimatingLead == workspace.ETIuser.DisplayName));
+		}
+
+		/// <summary>
 		/// Test GetMaterialPBoeForWorkspace
 		/// </summary>
 		[TestMethod]
