@@ -100,7 +100,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <summary>
         /// Gets the period of performance.
         /// </summary>
-        protected string PeriodOfPerformance { get; private set; }
+        public string PeriodOfPerformance { get; private set; }
 
         /// <summary>
         /// The Resource data loader.
@@ -208,7 +208,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <returns>
         /// List of table rows for the form.
         /// </returns>
-        protected ICollection<TK> PullRowsFromWorkspace(FullWorkspace workspace, T boeForm, ICollection<int> resourceIds, ICollection<PickListDto> contractTypes)
+        public ICollection<TK> PullRowsFromWorkspace(FullWorkspace workspace, T boeForm, ICollection<int> resourceIds, ICollection<PickListDto> contractTypes)
         {
             if (ReferenceEquals(workspace, null))
             {
