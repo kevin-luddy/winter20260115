@@ -79,7 +79,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(boeFormType));
 			}
 
-			string proposalTitleAndRfpNumber = this.GetProposalTitleAndRfpNumber(workspace);
+			string proposalTitleAndRfpNumber = ActionLogicUtility.GetProposalTitleAndRfpNumber(workspace);
 
 			if (boeFormType == BOEFormType.IBOE)
 			{
@@ -125,7 +125,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             string exportedFileName = null;
             string fileName = null;
-            string proposalTitleAndRfpNumber = this.GetProposalTitleAndRfpNumber(workspace);
+            string proposalTitleAndRfpNumber = ActionLogicUtility.GetProposalTitleAndRfpNumber(workspace);
 
             if (boeFormType == BOEFormType.IBOE)
             {
@@ -268,7 +268,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ICollection<BOEFormIBOEDTO> iboeForms = this.iboeFormDataLoader.GetByWorkspaceId(workspace.Id);
             ICollection<BOEFormPBOEDTO> pboeForms = this.pboeFormDataLoader.GetByWorkspaceId(workspace.Id);
             Collection<BOEFormModelView> forms = new Collection<BOEFormModelView>();
-            string proposalTitleAndRfpNumber = this.GetProposalTitleAndRfpNumber(workspace);
+            string proposalTitleAndRfpNumber = ActionLogicUtility.GetProposalTitleAndRfpNumber(workspace);
 
             // Validate the T&M rates for selected resources
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
@@ -462,21 +462,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.SupplierProposedValue = modelview.SupplierProposedValue;
 
             return dto;
-        }
-
-        /// <summary>
-        /// Retrieves the Proposal Title and RFP Number from the workspace.
-        /// </summary>
-        /// <param name="workspace">Workspace</param>
-        /// <returns>A string in the form { Proposal Number } / { RFP }</returns>
-        public string GetProposalTitleAndRfpNumber(FullWorkspace workspace)
-        {
-            if (workspace != null)
-            {
-                return string.IsNullOrWhiteSpace(workspace.RFPNumber) ? $"{workspace.ProposalTitle}" : $"{workspace.ProposalTitle} / {workspace.RFPNumber}";
-            }
-
-            return string.Empty;
         }
 
         /// <summary>
