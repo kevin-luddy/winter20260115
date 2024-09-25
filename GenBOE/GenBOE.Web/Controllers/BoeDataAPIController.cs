@@ -1303,7 +1303,7 @@ namespace GenBOE.Web.Controllers
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[HttpPost]
+		[HttpGet]
 		public IESResponse<PBOEClinData> GetPBOEClinData(string ptmTrackingNumber)
 		{
 			IESResponse<PBOEClinData> result = new IESResponse<PBOEClinData>();
