@@ -24,6 +24,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using IES.Common;
 	using IES.Common.Compression;
 	using IES.Common.Exceptions;
+	using Microsoft.Practices.ObjectBuilder2;
 
 	/// <summary>
 	/// Exports all EOC elements to ProPricer
@@ -102,7 +103,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		public string ExportReport(ProPricerDTO inProPricer, string inZipPathFile, FullWorkspace inWorkspace)
 		{
 			PpDataReadyForExport ppDataToExport = this.ExportProPricer(inProPricer, inWorkspace);
-
 
 			// create the task data export stream
 			string taskData = this.CreateDataOutputString(ppDataToExport.TaskData);
@@ -1044,7 +1044,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					// Pro Pricer Task ID. This may or may not be selected, but we may need to keep track of it for Resources too
 					string taskIDString = string.Empty;
-					shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2, workspaceShortname);
+
+					shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2, workspaceShortname , wsLevelData.PPInputsToExport.ProPricerTasks);
 
 					int incrementCount = 0;
 					if (elementOfCost == ElementOfCostType.LMLabor)
@@ -1382,12 +1383,24 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="previousBusinessResourceCodeID">The Business Resource Code ID in the previous row</param>
 		/// <param name="workspaceShortname">Workspace shortname</param>
 		/// <returns>A tuple, denoting if the task number should increment and the previous BRC ID</returns>
-		private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID, string workspaceShortname)
+		private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID, string workspaceShortname, ICollection<ProPricerTasks> proPricerTasks)
 		{
 			Tuple<bool, int> shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
 
 			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 			{
+				foreach (ProPricerTasks taskField in proPricerTasks)
+				{
+					switch (taskField.Task)
+					{
+						case ProPricerField_Task.ResourceID:
+						case ProPricerField_Task.ResourceSegmentRegion:
+						case ProPricerField_Task.ProjMapResourceSegmentRegion:
+							return shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
+						default:
+							break;
+					}
+				}
 				// If this is split between a BRC and current resource, we should flag it to not increment for the next 
 				if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
 					&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
