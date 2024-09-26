@@ -828,7 +828,7 @@ namespace IES.Common.Core.Constants
 		/// <summary>
 		/// Validation failed for Negotiations Submitted Date
 		/// </summary>
-		public const string INVALID_NEGOTIATIONS_SUBMITTED_DATE = "Negotiations Submitted Date is required.";
+		public const string INVALID_NEGOTIATIONS_SUBMITTED_DATE = "Date Confirmation of Negotiations Submitted is required.";
 
 		/// <summary>
 		/// Validation failed for MOD Completion Date
