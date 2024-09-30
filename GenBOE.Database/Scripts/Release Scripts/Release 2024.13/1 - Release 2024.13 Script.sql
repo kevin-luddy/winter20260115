@@ -1,7 +1,7 @@
 ﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.13'; 
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SkillMix]') AND type in (N'U')) 
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SkillMix]') AND type in (N'U')) 
 BEGIN 
 	ALTER TABLE [dbo].[SkillMix] 
 		DROP COLUMN MOQTypeSelectionID; 
@@ -14,7 +14,7 @@ BEGIN
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[SkillMix]') AND type in (N'U')) 
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[SkillMix]') AND type in (N'U')) 
 BEGIN 
 	ALTER TABLE [version].[SkillMix] 
 		DROP COLUMN MOQTypeSelectionID; 
