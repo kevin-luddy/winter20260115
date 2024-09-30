@@ -684,25 +684,28 @@ namespace GenTRAC.ActionLogic
 				messages.Add(Constants.INVALID_CAGE_CODE);
 			}
 
-			// Final Negotiated Value is required
-			if (dto.FinalNegotiatedValue == null)
+			if (dto.LmWon.HasValue && dto.LmWon.Value)
 			{
-				isValid = false;
-				messages.Add(Constants.INVALID_FINAL_NEGOTIATED_VALUE);
-			}
+				// Final Negotiated Value is required
+				if (dto.FinalNegotiatedValue == null)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_FINAL_NEGOTIATED_VALUE);
+				}
 
-			// Date Confirmation Of Negotiations Submitted is required
-			if (dto.NegotiationsSubmitted == null || dto.NegotiationsSubmitted == DateTime.MinValue)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED_DATE);
-			}
+				// Date Confirmation Of Negotiations Submitted is required
+				if (dto.NegotiationsSubmitted == null || dto.NegotiationsSubmitted == DateTime.MinValue)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED_DATE);
+				}
 
-			// Mod Completion Date is required
-			if (dto.ModCompletedDate == null || dto.ModCompletedDate == DateTime.MinValue)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_MOD_COMPLETION_DATE);
+				// Mod Completion Date is required
+				if (dto.ModCompletedDate == null || dto.ModCompletedDate == DateTime.MinValue)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_MOD_COMPLETION_DATE);
+				}
 			}
 
 			// LM Win / Loss is required

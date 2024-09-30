@@ -17,7 +17,8 @@ namespace GenTRAC.Web.Controllers
     using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.ActionLogic.ModelView.Contracts;
     using GenTRAC.DataBridge.DTO;
-    using GenTRAC.Web.Common;
+	using GenTRAC.Objects.FullObject;
+	using GenTRAC.Web.Common;
     using IES.Common;
 
     /// <summary>
@@ -207,7 +208,8 @@ namespace GenTRAC.Web.Controllers
             {
                 ContractsDto dto = this.contractsLogic.ConvertContractsModelToDto(model);
                 response.IsSuccessful = this.contractsLogic.ContractDataValidForCompleteProposalSave(dto, errMessages);
-                if (dto.LmWon.HasValue && !dto.LmWon.Value)
+
+				if (dto.LmWon.HasValue && !dto.LmWon.Value)
                 {
                     errMessages.Add(Constants.INVALID_LM_WIN_LOSS_FALSE);
                 }
