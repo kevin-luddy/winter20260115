@@ -425,6 +425,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			if (!inputsForExport.MultiBoe)
 			{
 				// the data within the BOE Task Element will be part of the Resource Cost/Hours file
+				int startingIndex = -1;
 				foreach (BoeTaskElementDTO boeTask in taskElements)
 				{
 					// do not export to ProPricer if task doesn't have any total hours or cost or if there no offsets
@@ -440,7 +441,8 @@ namespace GenBOE.ActionLogic.IO.Export
 						{
 							//clone resources with brc
 							//maintain original ID for pro pricer ID mapping in generate resource row
-							resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, 0).ToList();
+							resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, startingIndex).ToList();
+							startingIndex = resourcesSplitforBrc.Any() ? resourcesSplitforBrc.Select(x => x.Id).Min() - 1 : startingIndex;
 						}
 						if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) && has1LMXResources)
 						{
@@ -461,6 +463,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			else
 			{
 				// the data within the BOE Task Element will be part of the Resource Cost/Hours file
+				int startingIndex = -1;
 				foreach (BoeTaskElementDTO boeTask in taskElements)
 				{
 					List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => (r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value))
@@ -474,7 +477,8 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						//clone resources with brc
 						//maintain original ID for pro pricer ID mapping in generate resource row
-						resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, 0).ToList();
+						resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, workspaceShortname, startingIndex).ToList();
+						startingIndex = resourcesSplitforBrc.Any() ? resourcesSplitforBrc.Select(x => x.Id).Min() - 1 : startingIndex;
 					}
 					IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<int, string>();
 					foreach (ResourceTypeDto labor in resourcesSplitforBrc)
