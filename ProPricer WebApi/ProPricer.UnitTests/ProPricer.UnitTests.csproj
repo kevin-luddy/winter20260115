@@ -79,34 +79,34 @@
 		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.Core.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.Core.Controls">
-		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.Core.Controls.dll</HintPath>
+		  <HintPath>..\_ProPricer Libraries\9_5_101_patch\EBS.Core.Controls.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.Core.DocumentFormat">
-		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.Core.DocumentFormat.dll</HintPath>
+		  <HintPath>..\_ProPricer Libraries\9_5_101_patch\EBS.Core.DocumentFormat.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.Core.Rpc">
-		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.Core.Rpc.dll</HintPath>
+		  <HintPath>..\_ProPricer Libraries\9_5_101_patch\EBS.Core.Rpc.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.ProPricer.Client">
-		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.ProPricer.Client.dll</HintPath>
+		  <HintPath>..\_ProPricer Libraries\9_5_101_patch\EBS.ProPricer.Client.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.ProPricer.Configuration">
-		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.ProPricer.Configuration.dll</HintPath>
+		  <HintPath>..\_ProPricer Libraries\9_5_101_patch\EBS.ProPricer.Configuration.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.ProPricer.EditionManager">
 		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.ProPricer.EditionManager.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.ProPricer.ImportExport">
-		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.ProPricer.ImportExport.dll</HintPath>
+		  <HintPath>..\_ProPricer Libraries\9_5_101_patch\EBS.ProPricer.ImportExport.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.ProPricer.Registration">
-		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.ProPricer.Registration.dll</HintPath>
+		  <HintPath>..\_ProPricer Libraries\9_5_101_patch\EBS.ProPricer.Registration.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.ProPricer.Reports">
-		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.ProPricer.Reports.dll</HintPath>
+		  <HintPath>..\_ProPricer Libraries\9_5_101_patch\EBS.ProPricer.Reports.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EBS.Registration">
-		  <HintPath>..\_ProPricer Libraries\9_5_101_use\EBS.Registration.dll</HintPath>
+		  <HintPath>..\_ProPricer Libraries\9_5_101_patch\EBS.Registration.dll</HintPath>
 	  </Reference>
 	  <Reference Include="NReco.Logging.File">
 		  <HintPath>..\_ProPricer Libraries\9_5_101_use\NReco.Logging.File.dll</HintPath>
