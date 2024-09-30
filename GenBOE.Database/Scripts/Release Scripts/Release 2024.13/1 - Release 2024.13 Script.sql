@@ -4,6 +4,8 @@ GO
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SkillMix]') AND type in (N'U')) 
 BEGIN 
 	ALTER TABLE [dbo].[SkillMix] 
+		DROP CONSTRAINT [FK_SkillMix_MOQTypeSelection];
+	ALTER TABLE [dbo].[SkillMix] 
 		DROP COLUMN MOQTypeSelectionID; 
 	ALTER TABLE [dbo].[SkillMix] 
 		DROP COLUMN IsPercentLocked; 
@@ -16,6 +18,8 @@ GO
 
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[SkillMix]') AND type in (N'U')) 
 BEGIN 
+	ALTER TABLE [version].[SkillMix] 
+		DROP CONSTRAINT [FK_SkillMix_MOQTypeSelection];
 	ALTER TABLE [version].[SkillMix] 
 		DROP COLUMN MOQTypeSelectionID; 
 	ALTER TABLE [version].[SkillMix] 
