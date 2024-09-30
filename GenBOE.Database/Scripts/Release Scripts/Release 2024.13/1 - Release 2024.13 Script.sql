@@ -18,8 +18,10 @@ GO
 
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[SkillMix]') AND type in (N'U')) 
 BEGIN 
-	ALTER TABLE [version].[SkillMix] 
-		DROP CONSTRAINT [FK_SkillMix_MOQTypeSelection];
+	DECLARE @constraint_name nvarchar(128);
+		SELECT @constraint_name = name FROM sys.default_constraints WHERE parent_object_id = OBJECT_ID(N'[version].[SkillMix]') AND name LIKE N'DF__SkillMix__IsPerc%';
+	IF @constraint_name IS NOT NULL BEGIN DECLARE @sql nvarchar(max) = N'ALTER TABLE [version].[SkillMix] DROP CONSTRAINT ' + QUOTENAME(@constraint_name); EXEC sp_executesql @sql; 
+	END
 	ALTER TABLE [version].[SkillMix] 
 		DROP COLUMN MOQTypeSelectionID; 
 	ALTER TABLE [version].[SkillMix] 
