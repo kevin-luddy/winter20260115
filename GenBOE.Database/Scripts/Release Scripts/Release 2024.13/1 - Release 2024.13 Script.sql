@@ -52,7 +52,7 @@ BEGIN
 END 
 GO
 
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ReportsLU]') AND type in (N'U')) 
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ReportLU]') AND type in (N'U')) 
 BEGIN
 	DELETE FROM dbo.ReportLU
 		WHERE ReportName = 'Standard Reports';
