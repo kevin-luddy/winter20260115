@@ -18,8 +18,7 @@ CREATE TYPE [dbo].[TT_SkillMix] AS TABLE(
 		,[ResourceNew] [varchar](20) NOT NULL
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
-		,[MOQTypeSelectionID] int NOT NULL
-		,[IsPercentLocked] bit NOT NULL
+		,[IsUserInput] bit DEFAULT 0 NOT NULL
 		/* OrderID is automatically added in the code, so it HAS to be last */
 		,[OrderID] [int] NOT NULL
 );
@@ -51,17 +50,18 @@ AS
 **		--------	--------			-------------------------------------------
 **      06/12/24	e374897				PROPH-2047 Initial insert logic
 **		07/11/24	twilson3			proph-2166 Missing Column
+**		10/01/24	e405721				PROPH-2394 SkillMix V2 Removing Columns
 *******************************************************************************/
 BEGIN
-	DECLARE @DistinctMOQTypeSelectionID int
-	SELECT @DistinctMOQTypeSelectionID = MOQTypeSelectionID
+	DECLARE @DistinctBOETaskElementID int
+	SELECT @DistinctBOETaskElementID = BOETaskElementID
 	FROM (
-		SELECT DISTINCT MOQTypeSelectionID
+		SELECT DISTINCT BOETaskElementID
 		FROM @SkillMixTableParameter
 	) AS temp_SkillMix
 
 	DELETE FROM [dbo].[SkillMix]
-	WHERE [MOQTypeSelectionID] = @DistinctMOQTypeSelectionID
+	WHERE [BOETaskElementID] = @DistinctBOETaskElementID
 
 	INSERT INTO [dbo].[SkillMix]
 		([Rationale]
@@ -74,8 +74,7 @@ BEGIN
 		 ,[ResourceNew]
 		 ,[BOEID]
 		 ,[BOETaskElementID]
-		 ,[MOQTypeSelectionID]
-		 ,[IsPercentLocked]
+		 ,[IsUserInput]
 		 )
 	SELECT Rationale
 		,Included
@@ -87,8 +86,7 @@ BEGIN
 		,ResourceNew
 		,BOEID
 		,BOETaskElementID
-		,MOQTypeSelectionID
-		,IsPercentLocked
+		,IsUserInput
 	FROM @SkillMixTableParameter
 END
 
