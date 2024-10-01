@@ -1,3 +1,5 @@
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.13';
+
 PRINT '###### SCRIPT IS STARTING ######';
 /*
     This file was auto-generated for Release: 2024.13, on 9/3/2024.
