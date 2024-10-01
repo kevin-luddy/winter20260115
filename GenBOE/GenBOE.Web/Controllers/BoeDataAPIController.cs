@@ -721,16 +721,23 @@ namespace GenBOE.Web.Controllers
 		/// <returns>List of Workspace Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpPost]
-		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf([FromBody] ICollection<string> trackingNumbers)
+		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf([FromBody] ICollection<string> trackingNumbers,[FromUri] string nlfApiKey = null)
 		{
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
 			try
 			{
 				if (trackingNumbers != null)
 				{
-					string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
 					ICollection<NlfWorkspaceInnerDataDTO> boes = new Collection<NlfWorkspaceInnerDataDTO>();
-					boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid, trackingNumbers);
+					if (nlfApiKey != null && nlfApiKey == NlfApiKey())
+					{
+						boes = loader.GetWorkspaceInnerDataForNlf(trackingNumbers);
+					}
+					else
+					{
+						string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+						boes = loader.GetWorkspaceInnerDataByNtidForNlf(ntid, trackingNumbers);
+					}
 					result.Data = boes.Select<NlfWorkspaceInnerDataDTO, NlfWorkspaceInnerData>(x => new NlfWorkspaceInnerData()
 					{
 						WorkspaceId = x.WorkspaceId,
@@ -1292,6 +1299,16 @@ namespace GenBOE.Web.Controllers
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Gets the Server URL
+		/// </summary>
+		/// <returns>Server URL for this website</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
+		public static string NlfApiKey()
+		{
+			return ConfigurationUtilities.GetAppSetting("NlfApiKey");
 		}
 	}
 }
