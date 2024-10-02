@@ -45,6 +45,7 @@ AS
 **		7/10/23		Dusan				PROPH-1563: Add AdditionalClassification field
 **		7/14/24		Dusan				PROPH-1559: Added reason for CCOPD = No
 **		7/18/24		Dusan				PROPH-1560: Added Include International Costs
+**		8/19/24		Dusan				PROPH-2080: Added IsSupportDefinitizingUCA field
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -347,6 +348,12 @@ SELECT V.[ProposalID]
 	,V.ReasonCcopdNoOther
 	,IncludeInternationalCosts =
 		CASE V.IncludeInternationalCosts
+			WHEN 1 THEN 'Yes'
+			WHEN 0 THEN 'No'
+			ELSE NULL
+			END
+	,IsSupportDefinitizingUCA =
+		CASE V.IsSupportDefinitizingUCA
 			WHEN 1 THEN 'Yes'
 			WHEN 0 THEN 'No'
 			ELSE NULL

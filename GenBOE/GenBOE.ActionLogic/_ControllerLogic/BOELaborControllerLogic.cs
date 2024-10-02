@@ -819,7 +819,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				tasksToValidate.Add(taskElement);
 				errors = BOEvalidator.validation(tasksToValidate, (Collection<Dictionary<string, string>>)null);
-				ValidationsForResourceAndBRC(taskElement, validationErrors, ws.Shortname);
+				ValidationsForResourceAndBRC(taskElement, validationErrors, ws);
 
 				// gather errors up, if any
 				foreach (string error in errors)
@@ -885,40 +885,47 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="taskElement">Task Element DTO</param>
 		/// <param name="validationErrors">Validation Errors</param>
 		/// <param name="workspaceShortname">Workspace shortname</param>
-		private static void ValidationsForResourceAndBRC(BoeTaskElementDTO taskElement, ICollection<ValidationMessage> validationErrors, string workspaceShortname)
+		private void ValidationsForResourceAndBRC(BoeTaskElementDTO taskElement, ICollection<ValidationMessage> validationErrors, FullWorkspace workspace)
 		{
 			DateTime OneLmxCutOffDate = Utilities.OneLmxStartDate;
 
-			foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
+			if (taskElement.taskElementLabors != null && taskElement.taskElementLabors.Any())
 			{
-				if (dto.Updateable != UpdateType.Deleted)
+				ICollection<int> resourceIds = taskElement.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(t => t.ResourceID.Value).Distinct().ToList();
+				ICollection<ResourceDTO> resourcesUsed = this._ResourceLoader.GetByIds(resourceIds);
+				ICollection<int> tmResourceIds = resourcesUsed.Where(a => a.SegRegion == WebConstants.SPACE_LEGACY_TM).Select(x => x.Id).ToList();
+				
+				foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
 				{
-					if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
+					if (dto.Updateable != UpdateType.Deleted)
 					{
-						// do validation per row item
-						if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
+						if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && (!dto.ResourceID.HasValue || !tmResourceIds.Contains(dto.ResourceID.Value)))
 						{
-							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
-						}
+							// do validation per row item
+							if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
+							}
 
-						if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
-							&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
-							&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
-						{
-							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
-						}
+							if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
+								&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
+								&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
+							}
 
-						if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
-							&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
-						{
-							validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+							if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
+								&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+							}
 						}
-					}
-					else
-					{
-						if (dto.ResourceID == null || dto.ResourceID == 0)
+						else
 						{
-							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
+							if (dto.ResourceID == null || dto.ResourceID == 0)
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
+							}
 						}
 					}
 				}

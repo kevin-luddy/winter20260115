@@ -42,6 +42,7 @@ namespace IES.Common
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? skillMixStartDate;
 		private static DateTime? oneLmxStartDate;
+		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
 		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
 		
@@ -65,6 +66,29 @@ namespace IES.Common
 				}
 
 				return oneLmxStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Get the restricted date set in the config for RMS
+		/// </summary>
+		public static DateTime DatepickerRestrictionRMS
+		{
+			get
+			{
+				if (!datepickerRestrictionRMS.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("DatepickerRestrictionRMS"), out DateTime dateRestriction))
+					{
+						datepickerRestrictionRMS = DateTime.MinValue;
+					}
+					else
+					{
+						datepickerRestrictionRMS = dateRestriction;
+					}
+				}
+
+				return datepickerRestrictionRMS.Value;
 			}
 		}
 
@@ -766,9 +790,9 @@ namespace IES.Common
 			if (!string.IsNullOrEmpty(token))
 			{
 				string fullToken = Constants.TOKEN_PREFIX + token;
-				if (!client.DefaultRequestHeaders.Any(h => h.Key == HeaderNames.Authorization && h.Value.Any(v => v == fullToken)))
+				lock (lockObject)
 				{
-					lock (lockObject)
+					if (!client.DefaultRequestHeaders.Any(h => h.Key == HeaderNames.Authorization && h.Value.Any(v => v == fullToken)))
 					{
 						client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
 						client.DefaultRequestHeaders.Add(HeaderNames.Authorization, fullToken);

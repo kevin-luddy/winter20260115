@@ -484,7 +484,7 @@
 		return leadingZero + dateMonth + '/' + date.getFullYear();
 	};
 
-	$scope.setDecimalPrecisionDefaults = function () {
+	$scope.setDecimalPrecisionDefaults = function (firstTime) {
 		if ($scope.data.ProjectMapType === '3' || $scope.data.ProjectMapType === '4') {
 
 			$scope.data.CostDecimalPrecision = CreateWorkspaceModelView.ProjectMapPrecisionDefault;
@@ -500,7 +500,7 @@
 			$scope.data.ContractStartDate = $scope.getDateStringFromDate(today);
 			$scope.data.ContractEndDate = $scope.getDateStringFromDate(nextMonth);
 		}
-		else {
+		else if (firstTime){
 			$scope.data.ContractStartDate = '';
 			$scope.data.ContractEndDate = '';
 		}
@@ -993,7 +993,7 @@
 		};
 		$scope.model.lobs.unshift(lob);
 
-		$scope.setDecimalPrecisionDefaults();
+		$scope.setDecimalPrecisionDefaults(true);
 
 		CreateWorkspace.registerForEvent('WorkspaceToCopyChosen', $scope.workspaceToCopyChosen);
 		CreateWorkspace.registerForEvent('newLeadEstimatorChosen', $scope.newLeadEstimatorChosen);

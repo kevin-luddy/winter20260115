@@ -299,7 +299,7 @@ namespace GenTRAC.Web.Controllers
 
             bool isForecasted = proposalClassText == Constants.PROPOSAL_CLASS_FORECASTED;
             this.proposalLogic.ValidateProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, validationErrors, isForecasted);
-            this.proposalLogic.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, isForecasted);
+            this.proposalLogic.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, isForecasted, proposalInfo.ProposalClass);
 
             bool invalidUnsavedUsers = false;
             if (!isForecasted)

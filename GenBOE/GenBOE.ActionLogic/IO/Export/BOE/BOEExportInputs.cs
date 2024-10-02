@@ -83,28 +83,31 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.SetRteTemplateOverrides(rteTemplatesOverrides);
             this.SetMoqTypes(moqTypes);
             this.Boes = boesToExport.ToList<BoeDTO>().AsReadOnly();
+			// since the resources used may not contain offloaded resources, need to manually get this
+			ICollection<int> resourceIds = taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
+						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
+						.Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
+						.Union(taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
+						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
+						.Distinct().ToList();
+
+			this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
 
 			if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && processLaborTypesForBrc)
 			{
+				IDictionary<int, string> resourceIdToSegmentRegion = this.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 				foreach (BoeTaskElementDTO taskElement in taskElements)
 				{
-					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, workspace.Shortname).ToCollection();
+					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, workspace.Shortname).ToCollection();
 				}
 			}
 			
 			this.TaskElements = taskElements.ToList().AsReadOnly();
+			PopulateLaborTypesMappingWithCustomFieldsValuesAndContainerIds();
 
-            this.Workspace = workspace;
+			this.Workspace = workspace;
 
-            // since the resources used may not contain offloaded resources, need to manually get this
-            ICollection<int> resourceIds = taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
-                        .Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
-                        .Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
-                        .Union(taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
-                        .Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
-                        .Distinct().ToList();
-
-            this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
+            
             this.FullWorkspace = workspace;
             this.AllWorkspaceBoes = allWorkspaceBoes.ToList<BoeDTO>().AsReadOnly();
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
@@ -145,21 +148,15 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// </summary>
         public IReadOnlyCollection<MiscTravelRateDTO> MiscTravelRatesForTravelTrips { get { return this.FullWorkspace.MiscTravelRatesForTravelTrips; } }
 
-        /// <summary>
-        /// Gets all Escalation Rates for the workspace.
-        /// </summary>
-        public IReadOnlyCollection<EscalationRatesDTO> EscalationRates { get { return this.FullWorkspace.EscalationRates; } }
+		/// <summary>
+		/// Gets all Escalation Rates for the workspace.
+		/// </summary>
+		public IReadOnlyCollection<EscalationRatesDTO> EscalationRates { get { return this.FullWorkspace.EscalationRates; } }
 
-        /// <summary>
-        /// Gets the labor types mapping with custom fields values and container ids.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public Dictionary<int, ICollection<KeyValuePair<int, int>>> LaborTypesMappingWithCustomFieldsValuesAndContainerIds { get { return this.FullWorkspace.LaborTypesMappingWithCustomFieldsValuesAndContainerIds; } }
-
-        /// <summary>
-        /// Gets the task elements mapping with custom fields values and container ids.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		/// <summary>
+		/// Gets the task elements mapping with custom fields values and container ids.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Dictionary<int, ICollection<KeyValuePair<int, int>>> TaskElementsMappingWithCustomFieldsValuesAndContainerIds { get { return this.FullWorkspace.TaskElementsMappingWithCustomFieldsValuesAndContainerIds; } }
 
         /// <summary>
@@ -168,10 +165,16 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public IDictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> AssignedBoeIdsAndCustomFieldValuesMapping { get { return this.FullWorkspace.AssignedBoeIdsAndCustomFieldValuesMapping; } }
 
-        /// <summary>
-        /// Gets the resources for ws resource list identifier.
-        /// </summary>
-        public IReadOnlyCollection<ResourceDTO> ResourcesForWsResourceListId { get { return this.FullWorkspace.ResourcesForWsResourceListId; } }
+		/// <summary>
+		///// Gets the labor types mapping with custom fields values and container ids.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public Dictionary<int, ICollection<KeyValuePair<int, int>>> LaborTypesMappingWithCustomFieldsValuesAndContainerIds { get; private set; }
+
+		/// <summary>
+		/// Gets the resources for ws resource list identifier.
+		/// </summary>
+		public IReadOnlyCollection<ResourceDTO> ResourcesForWsResourceListId { get { return this.FullWorkspace.ResourcesForWsResourceListId; } }
 
         /// <summary>
         /// Gets the resources for system resource list identifier.
@@ -341,6 +344,35 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             {
                 this.MOQTypes = new List<MoqTypeSelection>(moqTypes).AsReadOnly();
             }
-        }
-    }
+		}
+
+		/// <summary>
+		/// Populates the LaborTypesMappingWithCustomFieldsValuesAndContainerIds dictionary with relevant data.
+		/// </summary>
+		private void PopulateLaborTypesMappingWithCustomFieldsValuesAndContainerIds()
+		{
+			this.LaborTypesMappingWithCustomFieldsValuesAndContainerIds = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
+			ICollection<ResourceTypeDto> resourceTypes = this.TaskElements.SelectMany(x => x.taskElementLabors).ToList();
+			foreach (ResourceTypeDto resource in resourceTypes)
+			{
+				// Process the CustomFieldValueContainers for each child
+				List<KeyValuePair<int, int>> keyValuePairs = new List<KeyValuePair<int, int>>();
+
+				foreach (CustomFieldValueContainer customFieldValueContainer in resource.CustomFieldValueContainers)
+				{
+					keyValuePairs.Add(new KeyValuePair<int, int>(
+						customFieldValueContainer.ContainerID,
+						customFieldValueContainer.CustomFieldValueID
+					));
+				}
+
+				// Add keyValuePairs to dictionary if it has value
+				if (keyValuePairs.Any())
+				{
+					this.LaborTypesMappingWithCustomFieldsValuesAndContainerIds[resource.Id] = keyValuePairs;
+				}
+
+			}
+		}
+	}
 }

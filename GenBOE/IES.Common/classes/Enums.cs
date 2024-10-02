@@ -218,8 +218,6 @@ namespace IES.Common
 		CostByClinActYr = 23,
 		[Description("BOE Summary Report")]
 		BOESummaryReport = 24,
-		[Description("Standard Reports")]
-		StandardReports = 25,
 		[Description("By Pricing Code (17 yrs)")]
 		ByPricingCode = 26,
 		[Description("By Cat/Pricing Code (17 yrs)")]
@@ -624,7 +622,9 @@ namespace IES.Common
 		ProjMapClassOfCost = 73,
 		ProjMapOldResource = 74,
 		ResourceSegmentRegion = 76,
-		ProjMapResourceSegmentRegion = 78
+		ProjMapResourceSegmentRegion = 78,
+		TaskUrl = 80,
+		WorkspaceUrl = 82
 	}
 
 	/// <summary>
@@ -656,7 +656,10 @@ namespace IES.Common
 		ProjMapStartDate = 71,
 		ProjMapOldResource = 75,
 		ResourceSegmentRegion = 77,
-		ProjMapResourceSegmentRegion = 79
+		ProjMapResourceSegmentRegion = 79,
+		TaskUrl = 81,
+		WorkspaceUrl = 83
+
 	}
 
 	/// <summary>

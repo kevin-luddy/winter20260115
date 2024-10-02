@@ -48,7 +48,8 @@
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
-		CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue()
+        CommonDisclosureEnabled: '<%:(bool)ViewData["EnableCommonDisclosure"]%>'.isTrue(),
+        DatepickerRestrictionRMS: '<%:Utilities.DatepickerRestrictionRMS%>'
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -499,9 +500,7 @@
 								<td>
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalSkillMixHoursTotal | number: 1 }}</div>
 								</td>
-								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborSkillMixTotal * 100 | number: 2 }}%</div>
-								</td>
+								<td></td>
 								<td></td>
 								<td data-ng-class="{'inputError': moqType.BoeSkillMixTotal !== 100 }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeSkillMixTotal }}%</div>
@@ -619,9 +618,7 @@
 								<td data-ng-class="{'inputError': moqType.HistoricalCommonDisclosureHoursTotal !== getTotalSMHistoricalHours(moqType) }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.HistoricalCommonDisclosureHoursTotal | number: 1 }}</div>
 								</td>
-								<td>
-									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.LaborCommonDisclosureTotal * 100 | number: 2 }}%</div>
-								</td>
+								<td></td>
 								<td></td>
 								<td data-ng-class="{'inputError': moqType.BoeCommonDisclosureTotal !== 100 }">
 									<div class="skill-mix-numerical skill-mix-padding">{{ moqType.BoeCommonDisclosureTotal }}%</div>

@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System;
 	using System.Collections.Generic;
 	using GenBOE.ActionLogic.ModelView;
+	using IES.Common;
 	using IES.Common.OfficeUtilities;
 
 	/// <summary>
@@ -21,8 +22,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="templateFileLocation">File location of the Excel template</param>
 		/// <param name="confidenceReport">View model of confidence report</param>
+		/// <param name="workspace">Current workspace ID</param>
 		/// <returns>The file location of the exported Excel file</returns>
-		public string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport)
+		public string ExportToExcelFile(string templateFileLocation, ConfidenceReportModelView confidenceReport, string workspace)
 		{
 			// Check inputs
 			if (templateFileLocation == null)
@@ -38,15 +40,18 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			// Create a new worksheet to work off of
 			ExcelExportWorksheet worksheet = new ExcelExportWorksheet();
+			string baseURL = ConfigurationUtilities.GetAppSetting("ServerURL") + "/" + workspace + "/";
 			string confidenceScore = "Confidence Score: " + confidenceReport.ConfidenceScore;
 			worksheet.Add(new string[] { confidenceScore.ToString() });
-			worksheet.Add(new string[] { "WBS #", "WBS Title", "BOE", "Task", "MOQ Types", "RTE Fields", "Confidence Error Messages" });
+			worksheet.Add(new string[] { "WBS #", "WBS Title", "BOE", "BOE URL", "Task", "Task URL", "MOQ Types", "RTE Fields", "Confidence Error Messages" });
 
 			if (confidenceReport.ConfidenceReportData.Count > 0)
 			{
 				foreach (ConfidenceReportItem item in confidenceReport.ConfidenceReportData)
 				{
-					worksheet.Add(item.WbsNumber, item.WbsTitle, item.BoeTitle, item.TaskTitle, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
+					string boeURL = baseURL + "BOE/EditBOEIndex/boe/" + item.BoeId;
+					string taskURL = baseURL + "BOE/EditBOEIndex/boe/" + item.BoeId + "#LMLabor/task/" + item.TaskId; 
+					worksheet.Add(item.WbsNumber, item.WbsTitle, item.BoeTitle, boeURL, item.TaskTitle, taskURL, item.MoqTypesString, item.RteFields.ToString(), item.ErrorText);
 				}
 			}
 			else

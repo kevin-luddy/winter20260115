@@ -126,6 +126,7 @@ namespace GenBOE.Web.Controllers
 
 			// Perform Action            
 			ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
+			ViewData["DatepickerRestrictionRMS"] = Utilities.DatepickerRestrictionRMS;
 			ViewData["BOEID"] = boeID;
 			bool containsDiscrete = false;
 			bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);

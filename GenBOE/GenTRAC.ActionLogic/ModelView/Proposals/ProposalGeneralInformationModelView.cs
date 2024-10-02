@@ -182,6 +182,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 		public ICollection<SelectListItem> ReasonsForCcopdBeingNo { get; set; }
 
 		/// <summary>
+		/// Is this proposal in support of definitizing an Undefinitized Contract Action
+		/// </summary>
+		public bool? IsSupportOfUndefinitized { get; set; }
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		public ProposalGeneralInformationModelView()

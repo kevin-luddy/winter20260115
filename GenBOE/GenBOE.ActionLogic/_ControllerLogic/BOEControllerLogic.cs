@@ -3297,7 +3297,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (data == null)
 			{
 				data = await GetAllOperatorsActual();
-				memCache.Add(CACHE_GET_ALL_OPERATORS, data, CACHE_DURATION);
+				if (data != null && data.Count > 0)
+				{
+					memCache.Add(CACHE_GET_ALL_OPERATORS, data, CACHE_DURATION);
+				}
 			}
 
 			return data;
@@ -3342,7 +3345,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (data == null)
 			{
 				data = await GetAllFieldsActual(company);
-				memCache.Add(CACHE_GET_FIELDS + company, data, CACHE_DURATION);
+				if (data != null && data.Count > 0)
+				{
+					memCache.Add(CACHE_GET_FIELDS + company, data, CACHE_DURATION);
+				}
 			}
 
 			return data;

@@ -89,7 +89,6 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string PROPOSED_TECHNICAL_EVALUATION = "ProposedTechnicalEvaluation";
         private const string PROPOSED_PRICE_ANALYSIS = "ProposedPriceAnalysis";
         private const string PROPOSED_COST_ANALYSIS = "ProposedCostAnalysis";
-        private const string PROPOSED_VALUE_PROCUREMENT = "ProposedValueProcurement";
         private const string PROPOSED_VALUE_SUMMARY = "ProposedValueSummary";
 
         // Schedule of Events

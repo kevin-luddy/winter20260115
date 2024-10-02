@@ -288,7 +288,7 @@ namespace RDM.Backend.Controllers
 		/// needing to remove anything that is no longer in the collection</param>
 		/// <returns>The JSON result of the save.</returns>
 		[HttpPost("[action]")]
-		public ActionResult SaveCobraYearConfiguration(CobraYearGridModelView[] dataToSave)
+		public ActionResult SaveCobraYearConfiguration(List<CobraYearGridModelView> dataToSave)
 		{
 			IESResponse<bool> response = new();
 			try

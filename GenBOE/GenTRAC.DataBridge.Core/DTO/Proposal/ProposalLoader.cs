@@ -190,7 +190,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							entity.CostVolumeToolName,
 							entity.AdditionalClassification,
 							entity.ReasonCcopdNo,
-							entity.ReasonCcopdNoOther
+							entity.ReasonCcopdNoOther,
+							entity.IsSupportDefinitizingUCA
 						}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -268,7 +269,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							CostVolumeToolName = entity.CostVolumeToolName,
 							AdditionalClassification = entity.AdditionalClassification,
 							CcopdNoReason = (CcopdOptionalReason?)entity.ReasonCcopdNo,
-							CcopdNoOtherReason = entity.ReasonCcopdNoOther
+							CcopdNoOtherReason = entity.ReasonCcopdNoOther,
+							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA
 						}).ToList();
 				}
 			}
@@ -581,7 +583,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							dtoToUpsert.CostVolumeToolName = dtoToUpsert.CostVolumeTool != CostVolumeTool.Other ? string.Empty : dtoToUpsert.CostVolumeToolName,
 							dtoToUpsert.AdditionalClassification,
 							dtoToUpsert.CcopdNoReason == CcopdOptionalReason.NotSet ? null : (int?)dtoToUpsert.CcopdNoReason,
-							dtoToUpsert.CcopdNoOtherReason
+							dtoToUpsert.CcopdNoOtherReason,
+							dtoToUpsert.IsSupportOfUndefinitized
 							).FirstOrDefault();
 					}
 				}
@@ -919,7 +922,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 						entity.CostVolumeToolName,
 						entity.AdditionalClassification,
 						entity.ReasonCcopdNo,
-						entity.ReasonCcopdNoOther
+						entity.ReasonCcopdNoOther,
+						entity.IsSupportDefinitizingUCA
 					}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -996,7 +1000,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							CostVolumeToolName = entity.CostVolumeToolName,
 							AdditionalClassification = entity.AdditionalClassification,
 							CcopdNoReason = (CcopdOptionalReason?)entity.ReasonCcopdNo,
-							CcopdNoOtherReason = entity.ReasonCcopdNoOther
+							CcopdNoOtherReason = entity.ReasonCcopdNoOther,
+							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA
 						}).ToList();
 				}
 			}
@@ -1094,7 +1099,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 						entity.CostVolumeToolName,
 						entity.AdditionalClassification,
 						entity.ReasonCcopdNo,
-						entity.ReasonCcopdNoOther
+						entity.ReasonCcopdNoOther,
+						entity.IsSupportDefinitizingUCA
 					}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -1171,7 +1177,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							CostVolumeToolName = entity.CostVolumeToolName,
 							AdditionalClassification = entity.AdditionalClassification,
 							CcopdNoReason = (CcopdOptionalReason?)entity.ReasonCcopdNo,
-							CcopdNoOtherReason = entity.ReasonCcopdNoOther
+							CcopdNoOtherReason = entity.ReasonCcopdNoOther,
+							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA
 						}).ToList();
 				}
 			}
@@ -1271,7 +1278,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							entity.CostVolumeToolName,
 							entity.AdditionalClassification,
 							entity.ReasonCcopdNo,
-							entity.ReasonCcopdNoOther
+							entity.ReasonCcopdNoOther,
+							entity.IsSupportDefinitizingUCA
 						}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -1348,7 +1356,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							CostVolumeToolName = entity.CostVolumeToolName,
 							AdditionalClassification = entity.AdditionalClassification,
 							CcopdNoReason = (CcopdOptionalReason?)entity.ReasonCcopdNo,
-							CcopdNoOtherReason = entity.ReasonCcopdNoOther
+							CcopdNoOtherReason = entity.ReasonCcopdNoOther,
+							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA
 						}).ToList();
 				}
 			}
@@ -1463,7 +1472,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							entity.CostVolumeToolName,
 							entity.AdditionalClassification,
 							entity.ReasonCcopdNo,
-							entity.ReasonCcopdNoOther
+							entity.ReasonCcopdNoOther,
+							entity.IsSupportDefinitizingUCA
 						}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -1540,7 +1550,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							CostVolumeToolName = entity.CostVolumeToolName,
 							AdditionalClassification = entity.AdditionalClassification,
 							CcopdNoReason = (CcopdOptionalReason?)entity.ReasonCcopdNo,
-							CcopdNoOtherReason = entity.ReasonCcopdNoOther
+							CcopdNoOtherReason = entity.ReasonCcopdNoOther,
+							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA
 						}).ToList();
 				}
 			}
@@ -1653,7 +1664,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 					CostVolumeToolName = x.Proposals.CostVolumeToolName,
 					AdditionalClassification = x.Proposals.AdditionalClassification,
 					CcopdNoReason = (CcopdOptionalReason?)x.Proposals.ReasonCcopdNo,
-					CcopdNoOtherReason = x.Proposals.ReasonCcopdNoOther
+					CcopdNoOtherReason = x.Proposals.ReasonCcopdNoOther,
+					IsSupportOfUndefinitized = x.Proposals.IsSupportDefinitizingUCA
 				}).ToList();
 			}
 
@@ -1757,7 +1769,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 						entity.Proposals.CostVolumeToolName,
 						entity.Proposals.AdditionalClassification,
 						entity.Proposals.ReasonCcopdNo,
-						entity.Proposals.ReasonCcopdNoOther
+						entity.Proposals.ReasonCcopdNoOther,
+						entity.Proposals.IsSupportDefinitizingUCA
 					}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -1834,7 +1847,8 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							CostVolumeToolName = entity.CostVolumeToolName,
 							AdditionalClassification = entity.AdditionalClassification,
 							CcopdNoReason = (CcopdOptionalReason?)entity.ReasonCcopdNo,
-							CcopdNoOtherReason = entity.ReasonCcopdNoOther
+							CcopdNoOtherReason = entity.ReasonCcopdNoOther,
+							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA
 						}).ToList();
 				}
 			}

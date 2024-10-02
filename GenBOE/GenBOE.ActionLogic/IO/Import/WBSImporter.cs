@@ -392,7 +392,7 @@ namespace GenBOE.ActionLogic.IO.Import
                 Collection<int> clinIDs = new Collection<int>();
 
                 // Split the CLIN numbers at the commas and iterate over the results
-                foreach (string clinNumber in row[clinNumberColumn].Replace(" ", "").Split(','))
+                foreach (string clinNumber in row[clinNumberColumn].Split(','))
                 {
                     // Convert CLIN NUMBER to CLIN ID
                     int clinID = existingClinsForWorkspace.Where(c => String.Compare(c.ClinNumber, clinNumber, true) == 0).Select(c => c.Id).FirstOrDefault();

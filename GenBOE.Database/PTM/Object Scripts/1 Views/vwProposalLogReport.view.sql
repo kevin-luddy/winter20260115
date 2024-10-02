@@ -27,6 +27,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		7/10/24		Dusan				PROPH-1563: Add AdditionalClassification field
 **		7/14/24		Dusan				PROPH-1559: Added reason for CCOPD = No
 **		7/18/24		Dusan				PROPH-1560: Added Include International Costs
+**		8/19/24		Dusan				PROPH-2080: Added IsSupportDefinitizingUCA field
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -195,7 +196,8 @@ SELECT
 		ELSE aT.ContractActionType + ': ' + p.ContractActionTypeOtherText
 	END AS ContractActionType,
 	PC.CostThroughCom,
-	ppr.Response AS NlfResponse
+	ppr.Response AS NlfResponse,
+	P.IsSupportDefinitizingUCA
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
