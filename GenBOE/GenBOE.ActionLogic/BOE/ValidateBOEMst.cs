@@ -22,7 +22,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
     public class ValidateBOEMst : ValidateBOE
     {
-        private IMSTMetricLoader mstMetricsLoader;
         private IMSTZoneTravelValidator mstZoneTravelValidator;
         private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader;
 
@@ -31,7 +30,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// Default constructor
         /// </summary>
         public ValidateBOEMst(
-            IMSTMetricLoader mstMetricsLoader,
             IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
             BOECommentsResponsesValidator inBOECommentsResponsesValidator,
             ITripDTODataLoader inTripDTODataLoader,
@@ -50,7 +48,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
             offloadRatesDTOLoader,
             rteTemplateDataLoader)
         {
-            this.mstMetricsLoader = mstMetricsLoader;
             this.mstZoneTravelValidator = mstZoneTravelValidator;
             this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;
         }
@@ -76,32 +73,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
         protected override string FormatMOQTextErrorMessage(string MOQTextErrorMessage)
         {
             return String.Format(MOQTextErrorMessage, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS);
-        }
-
-        /// <summary>
-        /// Return a <see cref="bool"/> indicating if the historic metric disclosure is required
-        /// </summary>
-        /// <param name="boeTaskIds">The id's of the task elements to retrieve metrics</param>
-        /// <param name="boe">the boe containing the flag indicating if the historic metric disclosure is required</param>
-        /// <returns>required if true, not required otherwise</returns>
-        protected override bool IsHistoricMetricDisclosureRequired(ICollection<int> boeTaskIds, FullBoe boe)
-        {
-            if (boe == null)
-            {
-                throw new ArgumentNullException(nameof(boe));
-            }
-
-            bool toReturn = false;
-
-			ICollection<MSTMetricDetailsDTO> historicalMetricsInUse = this.mstMetricsLoader.GetByTaskElementIds(boeTaskIds);
-            if (historicalMetricsInUse != null &&
-                historicalMetricsInUse.Any() &&
-                !boe.HistoricMetricDisclosureChecked)
-            {
-                toReturn = true;
-            }
-
-            return toReturn;
         }
 
         /// <summary>

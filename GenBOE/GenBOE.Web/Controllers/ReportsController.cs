@@ -2065,7 +2065,7 @@ namespace GenBOE.Web.Controllers
 					// Need picklist values for contract type for Workspace Identification sheet
 					exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
 
-					MetricNameTaskElementMappingDTO metricTaskElementMappings = this.reportsControllerLogic.GetMetricNameTaskElementMappingDTO(ws);
+					MetricNameTaskElementMappingDTO metricTaskElementMappings = new MetricNameTaskElementMappingDTO();
 					ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
 					string exportedFileName = this.workspaceExporter.ExportToExcelFile(Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH), exportInputs, metricTaskElementMappings, contractTypes);
 

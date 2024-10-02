@@ -181,9 +181,6 @@
     <Compile Include="BOETaskElementCustomFieldValueXREF.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="BOETaskElementMetricDetailXREF.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="BOETaskElementWorkspaceVariableXREF.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
@@ -226,9 +223,6 @@
     <Compile Include="EmailLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="ETIGroup.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="ETIuser.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
@@ -264,9 +258,6 @@
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="MessageConfirmation.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="MetricDetail.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="MileageReimbursementRate.cs">

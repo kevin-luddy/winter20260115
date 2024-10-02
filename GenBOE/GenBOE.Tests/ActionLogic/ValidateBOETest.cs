@@ -38,7 +38,6 @@ namespace GenBOE.Tests.ActionLogic
         private Mock<ICommonDataMapper> _CommonDataMapper = new Mock<ICommonDataMapper>();
 		private Mock<IPermissionsDTODataLoader> _permissions = new Mock<IPermissionsDTODataLoader>();
         private Mock<IMSTZoneTravelValidator> mstZoneTravelValidator = new Mock<IMSTZoneTravelValidator>();
-		private Mock<IMSTMetricLoader> mstMetricLoader = new Mock<IMSTMetricLoader>();
 		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
         private Mock<IOffloadRatesDTOLoader> offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
         private Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
@@ -52,7 +51,6 @@ namespace GenBOE.Tests.ActionLogic
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IMSTZoneTravelValidator), mstZoneTravelValidator.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IMSTMetricLoader), mstMetricLoader.Object);
 
             this.offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
 
@@ -2725,7 +2723,7 @@ namespace GenBOE.Tests.ActionLogic
                                                                         ZoneOriginName = "Test Origin",
                                                                         ZoneDestinationName = "Test Destination"}}}});
 
-            ValidateBOE sut = new ValidateBOEMst(mstMetricLoader.Object, _VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, mstZoneTravelValidator.Object, zoneTravelLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOEMst(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, mstZoneTravelValidator.Object, zoneTravelLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
             mstZoneTravelValidator.Setup(x => x.ValidateTravelTaskDetails(It.IsAny<TravelDTO>(), It.IsAny<int>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Details Issue" } });
             mstZoneTravelValidator.Setup(x => x.ValidateTravelTrips(It.IsAny<ICollection<MSTTravelTripType>>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<int>(), It.IsAny<ICollection<int>>(), It.IsAny<bool>(), It.IsAny<string>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Trip Issue" } });
 

@@ -33,7 +33,7 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 		/// <returns>SUT</returns>
 		private BOECopier CreateSUT()
 		{
-			BOECopier copier = new BOECopier(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, moqTypeDataLoader.Object, null);
+			BOECopier copier = new BOECopier(null, null, null, null, null, null, null, null, null, null, null, null, null, null, moqTypeDataLoader.Object, null);
 			moqTypeDataLoader.Setup(c => c.Save(It.IsAny<ICollection<MoqTypeSelection>>())).Returns(new Dictionary<int, int>());
 
 			return copier;

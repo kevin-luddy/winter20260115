@@ -59,13 +59,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// </summary>
         bool SupportCustomExport { get; }
 
-        /// <summary>
-        /// Gets a mapping dto of task element to metric names for export.
-        /// </summary>
-        /// <param name="workspace">Full workspace</param>
-        /// <returns>Metric name to task element mappings.</returns>
-        MetricNameTaskElementMappingDTO GetMetricNameTaskElementMappingDTO(FullWorkspace workspace);
-
 		/// <summary>
 		/// Generates Data for the Boe Discrepancy Report. Used by both the page and also Excel export..
 		/// 

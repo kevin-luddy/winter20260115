@@ -47,7 +47,6 @@ namespace GenBOE.Models
         public virtual DbSet<BOEStateHistory> BOEStateHistories { get; set; }
         public virtual DbSet<BOEStateLU> BOEStateLUs { get; set; }
         public virtual DbSet<BOETaskElementCustomFieldValueXREF> BOETaskElementCustomFieldValueXREFs { get; set; }
-        public virtual DbSet<BOETaskElementMetricDetailXREF> BOETaskElementMetricDetailXREFs { get; set; }
         public virtual DbSet<BOETaskElementWorkspaceVariableXREF> BOETaskElementWorkspaceVariableXREFs { get; set; }
         public virtual DbSet<BOEUserRole> BOEUserRoles { get; set; }
         public virtual DbSet<BOEUserRoleHistory> BOEUserRoleHistories { get; set; }
@@ -59,13 +58,11 @@ namespace GenBOE.Models
         public virtual DbSet<CustomFieldValue> CustomFieldValues { get; set; }
         public virtual DbSet<ELMAH_Error> ELMAH_Error { get; set; }
         public virtual DbSet<EmailLU> EmailLUs { get; set; }
-        public virtual DbSet<ETIGroup> ETIGroups { get; set; }
         public virtual DbSet<ETIuser> ETIusers { get; set; }
         public virtual DbSet<FieldLU> FieldLUs { get; set; }
         public virtual DbSet<LineOfBusiness> LineOfBusinesses { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<MaterialTaskElement> MaterialTaskElements { get; set; }
-        public virtual DbSet<MetricDetail> MetricDetails { get; set; }
         public virtual DbSet<MileageReimbursementRate> MileageReimbursementRates { get; set; }
         public virtual DbSet<MOQTypeLU> MOQTypeLUs { get; set; }
         public virtual DbSet<MSTTravelModeLU> MSTTravelModeLUs { get; set; }
@@ -418,19 +415,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOETaskElementCustomFieldValue", bTECFVIDParameter, bOETaskElementIDParameter, customFieldValueIDParameter, updateDTParameter, isOpenEndedParameter);
         }
     
-        public virtual int deleteBOETaskElementMetricDetail(Nullable<int> bTEMDID, Nullable<System.DateTime> updateDT)
-        {
-            var bTEMDIDParameter = bTEMDID.HasValue ?
-                new ObjectParameter("BTEMDID", bTEMDID) :
-                new ObjectParameter("BTEMDID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteBOETaskElementMetricDetail", bTEMDIDParameter, updateDTParameter);
-        }
-    
         public virtual int deleteBOETaskElementOrdinaryVariable(Nullable<int> ordinaryVariableID, Nullable<System.DateTime> updateDT)
         {
             var ordinaryVariableIDParameter = ordinaryVariableID.HasValue ?
@@ -494,15 +478,6 @@ namespace GenBOE.Models
                 new ObjectParameter("UpdateDT", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteMaterialTaskElement", materialTaskElementIDParameter, updateDTParameter);
-        }
-    
-        public virtual int deleteMetricDetail(Nullable<int> metricDetailID)
-        {
-            var metricDetailIDParameter = metricDetailID.HasValue ?
-                new ObjectParameter("MetricDetailID", metricDetailID) :
-                new ObjectParameter("MetricDetailID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteMetricDetail", metricDetailIDParameter);
         }
     
         public virtual int deleteMockTestData()
@@ -1156,27 +1131,6 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("insertBOEApprover", bOEIDParameter, eTIUserIDParameter, changedByETIUserIDParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> insertBOETaskElementMetricDetailXREF(Nullable<int> bTEMDID, Nullable<int> bOETaskElementID, Nullable<int> metricDetailID, Nullable<System.DateTime> updateDT)
-        {
-            var bTEMDIDParameter = bTEMDID.HasValue ?
-                new ObjectParameter("BTEMDID", bTEMDID) :
-                new ObjectParameter("BTEMDID", typeof(int));
-    
-            var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
-                new ObjectParameter("BOETaskElementID", bOETaskElementID) :
-                new ObjectParameter("BOETaskElementID", typeof(int));
-    
-            var metricDetailIDParameter = metricDetailID.HasValue ?
-                new ObjectParameter("MetricDetailID", metricDetailID) :
-                new ObjectParameter("MetricDetailID", typeof(int));
-    
-            var updateDTParameter = updateDT.HasValue ?
-                new ObjectParameter("UpdateDT", updateDT) :
-                new ObjectParameter("UpdateDT", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("insertBOETaskElementMetricDetailXREF", bTEMDIDParameter, bOETaskElementIDParameter, metricDetailIDParameter, updateDTParameter);
-        }
-    
         public virtual int insertBOETaskElementWorkspaceVariable(Nullable<int> bOETaskElementID, string workspaceVariableID)
         {
             var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
@@ -1210,163 +1164,6 @@ namespace GenBOE.Models
                 new ObjectParameter("UpdatedByETIUserID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("insertLocation", locationNameParameter, updatedByETIUserIDParameter);
-        }
-    
-        public virtual ObjectResult<Nullable<int>> insertMetricDetail(Nullable<int> metricDetailID, Nullable<int> sourceSystemID, string programName, string scopeName, Nullable<decimal> measureData, string measureName, string dataSource, string measureFunction, string equation, string comment, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, string contractNumber, string workPackages, string baseMeasure1Name, Nullable<decimal> baseMeasure1Data, Nullable<int> programID, string measureFunctionID, Nullable<int> dataSourceID, Nullable<int> measureID, string measureQualifier, string baseMeasure2Name, Nullable<decimal> baseMeasure2Data, string baseMeasure3Name, Nullable<decimal> baseMeasure3Data, string baseMeasure4Name, Nullable<decimal> baseMeasure4Data, string baseMeasure5Name, Nullable<decimal> baseMeasure5Data, string businessArea, string lineOfBusiness, string measureGroupName, string measureCategoryName, string measureDescription, string measureLink, Nullable<System.DateTime> measureValidationDate, string measureValidatedBy, string programDescription)
-        {
-            var metricDetailIDParameter = metricDetailID.HasValue ?
-                new ObjectParameter("MetricDetailID", metricDetailID) :
-                new ObjectParameter("MetricDetailID", typeof(int));
-    
-            var sourceSystemIDParameter = sourceSystemID.HasValue ?
-                new ObjectParameter("SourceSystemID", sourceSystemID) :
-                new ObjectParameter("SourceSystemID", typeof(int));
-    
-            var programNameParameter = programName != null ?
-                new ObjectParameter("ProgramName", programName) :
-                new ObjectParameter("ProgramName", typeof(string));
-    
-            var scopeNameParameter = scopeName != null ?
-                new ObjectParameter("ScopeName", scopeName) :
-                new ObjectParameter("ScopeName", typeof(string));
-    
-            var measureDataParameter = measureData.HasValue ?
-                new ObjectParameter("MeasureData", measureData) :
-                new ObjectParameter("MeasureData", typeof(decimal));
-    
-            var measureNameParameter = measureName != null ?
-                new ObjectParameter("MeasureName", measureName) :
-                new ObjectParameter("MeasureName", typeof(string));
-    
-            var dataSourceParameter = dataSource != null ?
-                new ObjectParameter("DataSource", dataSource) :
-                new ObjectParameter("DataSource", typeof(string));
-    
-            var measureFunctionParameter = measureFunction != null ?
-                new ObjectParameter("MeasureFunction", measureFunction) :
-                new ObjectParameter("MeasureFunction", typeof(string));
-    
-            var equationParameter = equation != null ?
-                new ObjectParameter("Equation", equation) :
-                new ObjectParameter("Equation", typeof(string));
-    
-            var commentParameter = comment != null ?
-                new ObjectParameter("Comment", comment) :
-                new ObjectParameter("Comment", typeof(string));
-    
-            var startDateParameter = startDate.HasValue ?
-                new ObjectParameter("StartDate", startDate) :
-                new ObjectParameter("StartDate", typeof(System.DateTime));
-    
-            var endDateParameter = endDate.HasValue ?
-                new ObjectParameter("EndDate", endDate) :
-                new ObjectParameter("EndDate", typeof(System.DateTime));
-    
-            var contractNumberParameter = contractNumber != null ?
-                new ObjectParameter("ContractNumber", contractNumber) :
-                new ObjectParameter("ContractNumber", typeof(string));
-    
-            var workPackagesParameter = workPackages != null ?
-                new ObjectParameter("WorkPackages", workPackages) :
-                new ObjectParameter("WorkPackages", typeof(string));
-    
-            var baseMeasure1NameParameter = baseMeasure1Name != null ?
-                new ObjectParameter("BaseMeasure1Name", baseMeasure1Name) :
-                new ObjectParameter("BaseMeasure1Name", typeof(string));
-    
-            var baseMeasure1DataParameter = baseMeasure1Data.HasValue ?
-                new ObjectParameter("BaseMeasure1Data", baseMeasure1Data) :
-                new ObjectParameter("BaseMeasure1Data", typeof(decimal));
-    
-            var programIDParameter = programID.HasValue ?
-                new ObjectParameter("ProgramID", programID) :
-                new ObjectParameter("ProgramID", typeof(int));
-    
-            var measureFunctionIDParameter = measureFunctionID != null ?
-                new ObjectParameter("MeasureFunctionID", measureFunctionID) :
-                new ObjectParameter("MeasureFunctionID", typeof(string));
-    
-            var dataSourceIDParameter = dataSourceID.HasValue ?
-                new ObjectParameter("DataSourceID", dataSourceID) :
-                new ObjectParameter("DataSourceID", typeof(int));
-    
-            var measureIDParameter = measureID.HasValue ?
-                new ObjectParameter("MeasureID", measureID) :
-                new ObjectParameter("MeasureID", typeof(int));
-    
-            var measureQualifierParameter = measureQualifier != null ?
-                new ObjectParameter("MeasureQualifier", measureQualifier) :
-                new ObjectParameter("MeasureQualifier", typeof(string));
-    
-            var baseMeasure2NameParameter = baseMeasure2Name != null ?
-                new ObjectParameter("BaseMeasure2Name", baseMeasure2Name) :
-                new ObjectParameter("BaseMeasure2Name", typeof(string));
-    
-            var baseMeasure2DataParameter = baseMeasure2Data.HasValue ?
-                new ObjectParameter("BaseMeasure2Data", baseMeasure2Data) :
-                new ObjectParameter("BaseMeasure2Data", typeof(decimal));
-    
-            var baseMeasure3NameParameter = baseMeasure3Name != null ?
-                new ObjectParameter("BaseMeasure3Name", baseMeasure3Name) :
-                new ObjectParameter("BaseMeasure3Name", typeof(string));
-    
-            var baseMeasure3DataParameter = baseMeasure3Data.HasValue ?
-                new ObjectParameter("BaseMeasure3Data", baseMeasure3Data) :
-                new ObjectParameter("BaseMeasure3Data", typeof(decimal));
-    
-            var baseMeasure4NameParameter = baseMeasure4Name != null ?
-                new ObjectParameter("BaseMeasure4Name", baseMeasure4Name) :
-                new ObjectParameter("BaseMeasure4Name", typeof(string));
-    
-            var baseMeasure4DataParameter = baseMeasure4Data.HasValue ?
-                new ObjectParameter("BaseMeasure4Data", baseMeasure4Data) :
-                new ObjectParameter("BaseMeasure4Data", typeof(decimal));
-    
-            var baseMeasure5NameParameter = baseMeasure5Name != null ?
-                new ObjectParameter("BaseMeasure5Name", baseMeasure5Name) :
-                new ObjectParameter("BaseMeasure5Name", typeof(string));
-    
-            var baseMeasure5DataParameter = baseMeasure5Data.HasValue ?
-                new ObjectParameter("BaseMeasure5Data", baseMeasure5Data) :
-                new ObjectParameter("BaseMeasure5Data", typeof(decimal));
-    
-            var businessAreaParameter = businessArea != null ?
-                new ObjectParameter("BusinessArea", businessArea) :
-                new ObjectParameter("BusinessArea", typeof(string));
-    
-            var lineOfBusinessParameter = lineOfBusiness != null ?
-                new ObjectParameter("LineOfBusiness", lineOfBusiness) :
-                new ObjectParameter("LineOfBusiness", typeof(string));
-    
-            var measureGroupNameParameter = measureGroupName != null ?
-                new ObjectParameter("MeasureGroupName", measureGroupName) :
-                new ObjectParameter("MeasureGroupName", typeof(string));
-    
-            var measureCategoryNameParameter = measureCategoryName != null ?
-                new ObjectParameter("MeasureCategoryName", measureCategoryName) :
-                new ObjectParameter("MeasureCategoryName", typeof(string));
-    
-            var measureDescriptionParameter = measureDescription != null ?
-                new ObjectParameter("MeasureDescription", measureDescription) :
-                new ObjectParameter("MeasureDescription", typeof(string));
-    
-            var measureLinkParameter = measureLink != null ?
-                new ObjectParameter("MeasureLink", measureLink) :
-                new ObjectParameter("MeasureLink", typeof(string));
-    
-            var measureValidationDateParameter = measureValidationDate.HasValue ?
-                new ObjectParameter("MeasureValidationDate", measureValidationDate) :
-                new ObjectParameter("MeasureValidationDate", typeof(System.DateTime));
-    
-            var measureValidatedByParameter = measureValidatedBy != null ?
-                new ObjectParameter("MeasureValidatedBy", measureValidatedBy) :
-                new ObjectParameter("MeasureValidatedBy", typeof(string));
-    
-            var programDescriptionParameter = programDescription != null ?
-                new ObjectParameter("ProgramDescription", programDescription) :
-                new ObjectParameter("ProgramDescription", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("insertMetricDetail", metricDetailIDParameter, sourceSystemIDParameter, programNameParameter, scopeNameParameter, measureDataParameter, measureNameParameter, dataSourceParameter, measureFunctionParameter, equationParameter, commentParameter, startDateParameter, endDateParameter, contractNumberParameter, workPackagesParameter, baseMeasure1NameParameter, baseMeasure1DataParameter, programIDParameter, measureFunctionIDParameter, dataSourceIDParameter, measureIDParameter, measureQualifierParameter, baseMeasure2NameParameter, baseMeasure2DataParameter, baseMeasure3NameParameter, baseMeasure3DataParameter, baseMeasure4NameParameter, baseMeasure4DataParameter, baseMeasure5NameParameter, baseMeasure5DataParameter, businessAreaParameter, lineOfBusinessParameter, measureGroupNameParameter, measureCategoryNameParameter, measureDescriptionParameter, measureLinkParameter, measureValidationDateParameter, measureValidatedByParameter, programDescriptionParameter);
         }
     
         public virtual int insertOrdinaryVariableResourceType(Nullable<int> ordinaryVariableID, Nullable<int> sumVariableResourceTypeID)

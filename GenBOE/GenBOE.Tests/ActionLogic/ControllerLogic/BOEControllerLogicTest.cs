@@ -46,7 +46,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		#region Private members
 		private readonly Mock<IRetriever> _retriever = new Mock<IRetriever>();
 
-		private readonly Mock<IMSTMetricLoader> _mstMetricLoader = new Mock<IMSTMetricLoader>();
 		private readonly Mock<ICustomFieldValueDTODataLoader> _customFieldValueDTODataLoader = new Mock<ICustomFieldValueDTODataLoader>();
 		private readonly Mock<IBOESummary> _boeSummary = new Mock<IBOESummary>();
 		private readonly Mock<IUserDTODataLoader> _userLoader = new Mock<IUserDTODataLoader>();
@@ -111,8 +110,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		{
 			this.moqTypeLoader.Setup(x => x.GetByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>());
 
-			return new BOEControllerLogicMST(_mstMetricLoader.Object,
-				_boeSummary.Object, _userLoader.Object, _ADUtils.Object, _permissionsLoader.Object,
+			return new BOEControllerLogicMST(_boeSummary.Object, _userLoader.Object, _ADUtils.Object, _permissionsLoader.Object,
 				Factory.Object, _boeExporter.Object, _boeCustomExporter.Object, _genBOEControllerLogic.Object, _boeMediator.Object,
 				_validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object, _boeTaskElementMediator.Object, _workspaceVariableDTODataLoader.Object,
 				_boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object, _validateBOE.Object, _securityInformation.Object,
@@ -208,37 +206,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		}
 
 		#endregion
-
-		#region ShowHistoricMetricCheck Tests
-
-		[TestMethod]
-		public void ShowHistoricMetricCheckISGS()
-		{
-			BOEControllerLogic sut = this.CreateSystem();
-			Collection<int> boeids = new Collection<int>() { 1, 2, 3 };
-
-			bool result = sut.ShowHistoricMetricCheck(boeids);
-			Assert.IsFalse(result);
-		}
-
-		[TestMethod]
-		public void ShowHistoricMetricCheckMST()
-		{
-			BOEControllerLogic sut = this.CreateSystemMST();
-			Collection<int> boeids = new Collection<int>() { 1, 2, 3 };
-			Collection<int> nullboeids = new Collection<int>() { 4, 5, 6 };
-			Collection<MSTMetricDetailsDTO> hmDTOs = new Collection<MSTMetricDetailsDTO>() { new MSTMetricDetailsDTO() };
-			this._mstMetricLoader.Setup(s => s.GetByBoeIds(boeids)).Returns(hmDTOs);
-			this._mstMetricLoader.Setup(s => s.GetByBoeIds(nullboeids)).Returns(new Collection<MSTMetricDetailsDTO>());
-
-			bool result = sut.ShowHistoricMetricCheck(boeids);
-			Assert.IsTrue(result);
-
-			result = sut.ShowHistoricMetricCheck(nullboeids);
-			Assert.IsFalse(result);
-		}
-
-		#endregion ShowHistoricMetricCheck Tests
 
 		#region BOESearchResults Tests
 

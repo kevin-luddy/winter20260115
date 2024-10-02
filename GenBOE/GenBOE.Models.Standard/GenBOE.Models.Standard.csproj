@@ -45,7 +45,6 @@
     <Compile Include="..\GenBOE.Models\BOEStateLU.cs" Link="BOEStateLU.cs" />
     <Compile Include="..\GenBOE.Models\BOETaskElement.cs" Link="BOETaskElement.cs" />
     <Compile Include="..\GenBOE.Models\BOETaskElementCustomFieldValueXREF.cs" Link="BOETaskElementCustomFieldValueXREF.cs" />
-    <Compile Include="..\GenBOE.Models\BOETaskElementMetricDetailXREF.cs" Link="BOETaskElementMetricDetailXREF.cs" />
     <Compile Include="..\GenBOE.Models\BOETaskElementWorkspaceVariableXREF.cs" Link="BOETaskElementWorkspaceVariableXREF.cs" />
     <Compile Include="..\GenBOE.Models\BOEUserRole.cs" Link="BOEUserRole.cs" />
     <Compile Include="..\GenBOE.Models\BOEUserRoleHistory.cs" Link="BOEUserRoleHistory.cs" />
@@ -58,7 +57,6 @@
     <Compile Include="..\GenBOE.Models\CustomFieldValue.cs" Link="CustomFieldValue.cs" />
     <Compile Include="..\GenBOE.Models\ELMAH_Error.cs" Link="ELMAH_Error.cs" />
     <Compile Include="..\GenBOE.Models\EmailLU.cs" Link="EmailLU.cs" />
-    <Compile Include="..\GenBOE.Models\ETIGroup.cs" Link="ETIGroup.cs" />
     <Compile Include="..\GenBOE.Models\ETIuser.cs" Link="ETIuser.cs" />
     <Compile Include="..\GenBOE.Models\FieldLU.cs" Link="FieldLU.cs" />
     <Compile Include="..\GenBOE.Models\getBOEForFindReplace_Result.cs" Link="getBOEForFindReplace_Result.cs" />
@@ -71,7 +69,6 @@
     <Compile Include="..\GenBOE.Models\Location.cs" Link="Location.cs" />
     <Compile Include="..\GenBOE.Models\MaterialTaskElement.cs" Link="MaterialTaskElement.cs" />
     <Compile Include="..\GenBOE.Models\MessageConfirmation.cs" Link="MessageConfirmation.cs" />
-    <Compile Include="..\GenBOE.Models\MetricDetail.cs" Link="MetricDetail.cs" />
     <Compile Include="..\GenBOE.Models\MileageReimbursementRate.cs" Link="MileageReimbursementRate.cs" />
     <Compile Include="..\GenBOE.Models\MOQTypeLU.cs" Link="MOQTypeLU.cs" />
     <Compile Include="..\GenBOE.Models\MOQTypeSelection.cs" Link="MOQTypeSelection.cs" />
