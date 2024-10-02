@@ -55,7 +55,6 @@ namespace GenBOE.Web.Controllers
 		private readonly IBoeTaskElementDTODataLoader taskElementDataLoader = null;
 		private readonly IPerformingOrgDTODataLoader perfOrgLoader;
 		private readonly IFullWorkspaceRecalculation fullWsRecalc;
-		private readonly IMSTMetricLoader _MSTMetricsLoader;
 		private const string TEMPLATE_FOLDER = "~/Templates/Export/";
 		private const string SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE = "OffloadRatesRMS.xlsx";
 		private readonly IOffloadRatesDTOLoader offloadRatesLoader;
@@ -94,7 +93,6 @@ namespace GenBOE.Web.Controllers
 			IGenBOEControllerLogic inControllerLogic,
 			IFullWorkspaceRecalculation fullWsRecalc,
 			TaskElementValidation taskElementValidation,
-			IMSTMetricLoader inMSTMetricsLoader,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRteTemplateDataLoader rteTemplateDataLoader,
 			IMoqTableExporter moqTableExporter)
@@ -112,7 +110,6 @@ namespace GenBOE.Web.Controllers
 			this.perfOrgLoader = perfOrgLoader;
 			this.fullWsRecalc = fullWsRecalc;
 			this.taskElementValidation = taskElementValidation;
-			this._MSTMetricsLoader = inMSTMetricsLoader;
 			this.offloadRatesLoader = offloadRatesDTOLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTableExporter = moqTableExporter;
@@ -430,16 +427,7 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, "DisplayHistoricalMetricsResultsForMST", SecurityPage.HistoricalMetricSearch, SecurityAuthorization.Read, null, null);
 
 			ICollection<MSTMetricDetailsDTO> results = new Collection<MSTMetricDetailsDTO>();
-			MSTMetricSearchDTO searchDto = new MSTMetricSearchDTO()
-			{
-				DataSourceId = modelView.SelectedDataSourceId,
-				MeasureFunctionId = modelView.SelectedMeasureFunctionId,
-				MeasureId = modelView.SelectedMeasureNameId,
-				ProgramId = modelView.SelectedProgramId,
-				SearchFor = modelView.SearchFor,
-				MeasureQualifierId = modelView.SelectedMeasureQualifierId
-			};
-			results = _MSTMetricsLoader.SearchMSTMetrics(searchDto);
+
 			HistoricalMetricsFromMSTModelView resultsModelView = new HistoricalMetricsFromMSTModelView(results);
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_MST, resultsModelView);
@@ -447,30 +435,6 @@ namespace GenBOE.Web.Controllers
 			// Finalize Action
 			FinalizeAction(_log, "DisplayHistoricalMetricsResultsForMST", sw);
 
-			return toReturn;
-		}
-
-		/// <summary>
-		/// Displays the metric details of the selected metric for IS&GS
-		/// </summary>
-		/// <param name="workspace">Current workspace</param>
-		/// <returns>The view</returns>
-		public ViewResult DisplayHistoricalMetricsDetails(int metricId, bool getFromSource)
-		{
-			Stopwatch sw = InitializeAction(_log, "DisplayHistoricalMetricsDetails", SecurityPage.HistoricalMetricSearch, SecurityAuthorization.Read, null, null);
-			ViewResultData viewResultData;
-			if (getFromSource)
-			{
-				viewResultData = _BoeLaborControllerLogic.GetHistoricalMetricsDetailsFromSource(metricId);
-			}
-			else
-			{
-				viewResultData = _BoeLaborControllerLogic.GetHistoricalMetricsDetails(metricId);
-			}
-			ViewResult toReturn = View(viewResultData.ViewName, viewResultData.Model);
-
-			// Finalize Action
-			FinalizeAction(_log, "DisplayHistoricalMetricsDetails", sw);
 			return toReturn;
 		}
 
@@ -945,7 +909,6 @@ namespace GenBOE.Web.Controllers
 			{
 				ids.Add(historicalMetricsSearchResults.PagedIndexes[i]);
 			}
-			historicalMetricsSearchResults.MetricsSearchResults = _MSTMetricsLoader.GetByIds(ids).OrderBy(m => m.MeasureName).ToCollection<MSTMetricDetailsDTO>();
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_MST, historicalMetricsSearchResults);
 
@@ -2413,7 +2376,6 @@ namespace GenBOE.Web.Controllers
 																  where workspaceVariable.Id == wID
 																  select workspaceVariable).ToList();
 
-			int originalSourceTaskElementId = copyTaskElement.Id;
 			// Reset the IDs in the task element to jive with the destination task element.
 			copyTaskElement.BoeID = boeId;
 			copyTaskElement.Id = destinationTaskElementId;
@@ -2450,8 +2412,6 @@ namespace GenBOE.Web.Controllers
 
 			MOQEquationModelView modelView = new MOQEquationModelView(copyTaskElement, _VariableSelectBOEtoSumCalculation, workspace);
 			modelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
-
-			_BoeLaborControllerLogic.GetMetricByTaskElementIds(new Collection<int> { originalSourceTaskElementId }, modelView);
 
 			return modelView;
 		}

@@ -154,7 +154,6 @@
     <Compile Include="DataLoaders\SystemSettingDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\TMResourceRateDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\OffloadRatesDTODataLoaderTest.cs" />
-    <Compile Include="DataLoaders\MSTMetricLoaderTest.cs" />
     <Compile Include="DataLoaders\EscalationRatesDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\InUseDataLoaderTest.cs" />
     <Compile Include="DataLoaders\LineOfBusinessDataLoaderTest.cs" />

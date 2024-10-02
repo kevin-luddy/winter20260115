@@ -6,25 +6,23 @@
 
 namespace GenBOE.ActionLogic.CopyBOE
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using GenBOE.ActionLogic.BLL;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.Validation;
-    using GenBOE.ActionLogic.WBS.BOE;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Models;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.Exceptions;
-    using MoreLinq;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using GenBOE.ActionLogic.BLL;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.WBS.BOE;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using MoreLinq;
 
-    public class BOECopier
+	public class BOECopier
     {
         private IBoeDTODataLoader boeLoader;
         private IClinDTODataLoader clinLoader;
@@ -34,7 +32,6 @@ namespace GenBOE.ActionLogic.CopyBOE
         private IBoeTaskElementMediator _IBoeTaskElementMediator;
         private IBoeMediator _IBoeMediator;
         private IFullObjectFactory factory;
-        private IBOECopierCompany _boeCopierCompany;
         private VariableCircularReferenceChecker _VariableCircularReferenceChecker;
         private IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation;
         private IPerformingOrgDTODataLoader perfOrgLoader;
@@ -58,7 +55,6 @@ namespace GenBOE.ActionLogic.CopyBOE
             VariableCircularReferenceChecker inVariableCircularReferenceChecker,
             IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
             IFullObjectFactory factory,
-            IBOECopierCompany boeCopierCompany,
             IPerformingOrgDTODataLoader perfOrgLoader,
             IWorkspaceVariableDTODataLoader workspaceVariableLoader,
             IBoeTaskElementRecalculation inBoeTaskElementRecalculation,
@@ -79,7 +75,6 @@ namespace GenBOE.ActionLogic.CopyBOE
             this._VariableCircularReferenceChecker = inVariableCircularReferenceChecker;
             this._VariableSelectBOEtoSumCalculation = inVariableSelectBOEtoSumCalculation;
             this.factory = factory;
-            this._boeCopierCompany = boeCopierCompany;
             this.perfOrgLoader = perfOrgLoader;
             this._workspaceVariableLoader = workspaceVariableLoader;
             this._boeTaskElementRecalculation = inBoeTaskElementRecalculation;
@@ -201,8 +196,6 @@ namespace GenBOE.ActionLogic.CopyBOE
 
             foreach (KeyValuePair<int, int> task in duplicateRequest)
             {
-                ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(task.Key); // dictionary key is the task id
-
                 ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(boe.WorkspaceID, boe.Id, task.Key);
                 ICollection<MoqTypeSelection> originalMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == task.Key).ToList();
 
@@ -215,7 +208,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     // Save the specified number of duplicates for the task
                     if (taskDuplicate != null)
                     {
-                        taskDuplicateId = this.SaveDuplicateTask(ws, taskDuplicate, inUseMetricIDs, i);
+                        taskDuplicateId = this.SaveDuplicateTask(ws, taskDuplicate, i);
                     }
 
                     if (taskDuplicateId > 0)
@@ -642,8 +635,6 @@ namespace GenBOE.ActionLogic.CopyBOE
                         taskElementCopy.MOQText = String.Empty;
                     }
 
-                    ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(taskElementCopy.Id);
-
                     // Create new Task Element for Project Map if copying from another workspace
                     if (!inDestinationWorkspace.IsProjectMapWorkspace || !copyWithinSameWorkspace)
                     {
@@ -741,11 +732,6 @@ namespace GenBOE.ActionLogic.CopyBOE
                         if (moqTypesToCopy.Any())
                         {
                             this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, copyWithinSameWorkspace, inSourceBOE.Workspace.CreationDate, inDestinationWorkspace.CreationDate, taskElementCopy.BoeID);
-                        }
-
-                        if (inUseMetricIDs.Any())
-                        {
-                            this._boeCopierCompany.SaveMetricsToTaskElement(taskElementCopy.Id, inUseMetricIDs);
                         }
 
                         if (copyWithinSameWorkspace)
@@ -947,10 +933,9 @@ Utilities.IsSAPEnabledForSystem && (Utilities.ShowSAPForWorkspace(originalWorksp
         /// </summary>
         /// <param name="inDestinationWorkspace">Current workspace</param>
         /// <param name="taskElement">Task element to save. Task will be cloned, so it can be saved multiple times.</param>
-        /// <param name="inUseMetricIDs">Metric IDs used by task element being saved.</param>
         /// <param name="duplicateNumber">Current duplicate number of the task being saved. This will be included in the new task title.</param>
         /// <returns>ID of duplicate task</returns>
-        private int SaveDuplicateTask(FullWorkspace inDestinationWorkspace, BoeTaskElementDTO taskElement, ICollection<int> inUseMetricIDs, int duplicateNumber)
+        private int SaveDuplicateTask(FullWorkspace inDestinationWorkspace, BoeTaskElementDTO taskElement, int duplicateNumber)
         {
             Collection<BoeTaskElementDTO> tasksToSave = new Collection<BoeTaskElementDTO>();
 
@@ -962,15 +947,6 @@ Utilities.IsSAPEnabledForSystem && (Utilities.ShowSAPForWorkspace(originalWorksp
 
             //Save Tasks
             IDictionary<int, int> savedTasks = this._IBoeTaskElementMediator.MediatedBulkSaveTaskElements(tasksToSave, inDestinationWorkspace);
-
-            //Save Metrics if they are used by task
-            if (inUseMetricIDs.Any() && savedTasks.Any())
-            {
-                foreach (int taskId in savedTasks.Values)
-                {
-                    this._boeCopierCompany.SaveMetricsToTaskElement(taskId, inUseMetricIDs);
-                }
-            }
 
             return savedTasks.First().Value;
         }

@@ -1065,10 +1065,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				ws.RefreshBoes();
 
-				// Save historical metrics for BOE Task Element
-				// Previously we had to convert the id from output of MediatedBulkSaveTaskElements for new Task Elements, but now dtoToSave.Id is set correctly
-				this.SaveHistoricalMetricsToTaskElement(dtoToSave.Id, metricIds);
-
 				if (OtherBOERecalculationsNeeded)
 				{
 					// first perform workspace variable recalculations
@@ -2022,21 +2018,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Populates the passed in <see cref="MOQEquationModelView"/> with metric parameters.
-		/// </summary>
-		/// <param name="ids">The TaskElement id's for which metrics will be retrieved</param>
-		/// <param name="model">The <see cref="MOQEquationModelView"/> that will be populated</param>
-		public virtual void GetMetricByTaskElementIds(Collection<int> ids, MOQEquationModelView model)
-		{
-			if (model == null)
-			{
-				throw new ArgumentNullException(nameof(model));
-			}
-			// Nothing to do here except disable search link. Metrics no longer supported for SSC.
-			this.SetShowMetricLink(model);
-		}
-
-		/// <summary>
 		/// Gets a <see cref="System.Web.Mvc.ViewResult"/> with historic metrics.
 		/// </summary>
 		/// <param name="validatedOption">?</param>
@@ -2047,26 +2028,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// This code should be refactored  to remove the ViewResult as a return after the metric model views for IS&GS and Space Systems are refactored to use an interface
 			// 28181
 			return new ViewResultData();
-		}
-
-		/// <summary>
-		/// Gets a <see cref="System.Web.Mvc.ViewResult"/> with historic metrics
-		/// </summary>
-		/// <param name="metricId">The id of the metric to retrieve</param>
-		/// <returns>The <see cref="System.Web.Mvc.ViewResult"/> with historic metrics</returns>
-		public virtual ViewResultData GetHistoricalMetricsDetails(int metricId)
-		{
-			throw new NotImplementedException("Historical metrics are not supported for SSC.");
-		}
-
-		/// <summary>
-		/// Gets a <see cref="System.Web.Mvc.ViewResult"/> with historic metrics from the source system.
-		/// </summary>
-		/// <param name="metricId">The id of the metric to retrieve</param>
-		/// <returns>The <see cref="System.Web.Mvc.ViewResult"/> with historic metrics</returns>
-		public virtual ViewResultData GetHistoricalMetricsDetailsFromSource(int metricId)
-		{
-			throw new NotImplementedException("Historical metrics are not supported for SSC.");
 		}
 
 		/// <summary>
@@ -2101,16 +2062,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			if (model == null) { throw new ArgumentNullException(nameof(model)); }
 			model.ShowSearchMetricsLink = false;
-		}
-
-		/// <summary>
-		/// Saves metrics
-		/// </summary>
-		/// <param name="taskElementID">The id of the task element to save the metric to</param>
-		/// <param name="metricIDs">the id of the metric to save to the task element</param>
-		public virtual void SaveHistoricalMetricsToTaskElement(int taskElementID, ICollection<int> metricIDs)
-		{
-			// SSC historical metrics have been deprecated.
 		}
 
 		/// <summary>

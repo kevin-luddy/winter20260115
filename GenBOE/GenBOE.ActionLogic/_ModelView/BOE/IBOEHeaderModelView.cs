@@ -51,11 +51,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         bool HistoricMetricDisclosureChecked { get; set; }
 
         /// <summary>
-        /// Gets/sets ShowHistoricMetricCheck
-        /// </summary>
-        bool ShowHistoricMetricCheck { get; set; }
-
-        /// <summary>
         /// Gets/sets StartDate
         /// </summary>
         DateTime? StartDate { get; set; }

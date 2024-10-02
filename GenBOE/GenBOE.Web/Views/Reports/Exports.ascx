@@ -38,25 +38,12 @@
             data.reportName = 'Workbench Offload';
             $(document).trigger('<%: WebConstants.EVENT_REPORTS_VIEW_REPORT %>', data);
         } else {
-            if (reportID == '<%:(int)Reports.StandardReports%>') {
-                // Standard Reports runs a number of SSRS reports, and the All BOEs export
-                // Once the SSRS reports are opened, the rest of the function continues as usual for the All BOEs export
-
-                document.getElementById('Report<%:(int)Reports.OffloadDetailedReport%>').click();
-
-                $('tr[pkid=<%:(int)Reports.CostByClinResActYr%>]').children('td.reportLink').children('input').prop('checked', 'checked');
-                $('tr[pkid=<%:(int)Reports.CostByClinActYr%>]').children('td.reportLink').children('input').prop('checked', 'checked');
-                $('tr[pkid=<%:(int)Reports.CostByClinResActYrFlat%>]').children('td.reportLink').children('input.excelIcon').prop('checked', 'checked');
-
-                ExportSelected();
-            }
-
             var reportGenerationUrl = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                 '<%: WebConstants.CONTROLLER_REPORTS %>',
                 '<%: WebConstants.ACTION_EXPORT %>',
                 'report/' + reportID);
 
-            if (reportID != <%:(int)Reports.AllBOEs%> && reportID != <%:(int)Reports.AllBOEsSegmented%> && reportID != <%:(int)Reports.StandardReports%>) {
+            if (reportID != <%:(int)Reports.AllBOEs%> && reportID != <%:(int)Reports.AllBOEsSegmented%>) {
                 // Remove the old hidden iFrame, if it exists
                 $('#Exports-DownloadTarget').remove();
 
@@ -96,7 +83,7 @@
     ExportsWidget.ConfirmExport = function (reportName, reportID, ssrsUrl) {
         GenSession.confirmDialog("Export Report", "The export is a long running process. <br/>Please do not leave this page until the file is available to open/save. <br/>Continue with this export? <br/><br/>Please refrain from clicking the export link multiple times until the download is complete.",
             function () {
-                if ((reportID === '3' || reportID === '<%:(int)Reports.AllBOEsSegmented%>' || reportID === '14' || reportID === '15' || reportID === '<%:(int)Reports.StandardReports%>' || reportID === '<%:(int)Reports.WbsBoeReport%>')) {
+                if ((reportID === '3' || reportID === '<%:(int)Reports.AllBOEsSegmented%>' || reportID === '14' || reportID === '15' || reportID === '<%:(int)Reports.WbsBoeReport%>')) {
                     ExportsWidget.doExport(reportName, reportID);
                 } else {
                     ExportsWidget.doExport(reportName, reportID, ssrsUrl);

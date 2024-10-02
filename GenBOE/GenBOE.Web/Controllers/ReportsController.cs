@@ -198,17 +198,17 @@ namespace GenBOE.Web.Controllers
                         continue;
                     }
 
-                    if (ws.IsProjectMapWorkspace && report.ReportID != (int)Reports.AllBOEs && report.ReportID != (int)Reports.StandardReports && report.ReportID != (int)Reports.WorkbenchOffload)
+                    if (ws.IsProjectMapWorkspace && report.ReportID != (int)Reports.AllBOEs && report.ReportID != (int)Reports.WorkbenchOffload)
                     {
-                        // In a Project Map Workspace, only All BOEs, Standard Reports, and Workbench Offload are shown
-                        // If this is a Project Map WS, but the report is not All BOEs or Standard Reports or Workbench Offload,
+                        // In a Project Map Workspace and Workbench Offload are shown
+                        // If this is a Project Map WS, but the report is not All BOEs or Workbench Offload,
                         // skip the rest of the logic so the report is not shown
                         continue;
                     }
 
-                    if (SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.MST && (report.ReportID == (int)Reports.StandardReports || report.ReportID == (int)Reports.WorkbenchOffload))
+                    if (SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.MST || report.ReportID == (int)Reports.WorkbenchOffload)
                     {
-                        // Standard Reports and Workbench are only shown for RMS Workspaces
+                        // Workbench is only shown for RMS Workspaces
                         // If the report is one of these but this is not a RMS WS,
                         // skip the rest of the logic so the report is not shown
                         continue;
@@ -2021,7 +2021,7 @@ namespace GenBOE.Web.Controllers
 				}
 				//add 
 				//
-				else if (reportID == (int)Reports.AllBOEs || reportID == (int)Reports.StandardReports)
+				else if (reportID == (int)Reports.AllBOEs)
 				{
 					toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false);
 				}
@@ -2065,7 +2065,7 @@ namespace GenBOE.Web.Controllers
 					// Need picklist values for contract type for Workspace Identification sheet
 					exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
 
-					MetricNameTaskElementMappingDTO metricTaskElementMappings = this.reportsControllerLogic.GetMetricNameTaskElementMappingDTO(ws);
+					MetricNameTaskElementMappingDTO metricTaskElementMappings = new MetricNameTaskElementMappingDTO();
 					ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
 					string exportedFileName = this.workspaceExporter.ExportToExcelFile(Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH), exportInputs, metricTaskElementMappings, contractTypes);
 

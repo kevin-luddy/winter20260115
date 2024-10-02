@@ -218,8 +218,6 @@ namespace IES.Common
 		CostByClinActYr = 23,
 		[Description("BOE Summary Report")]
 		BOESummaryReport = 24,
-		[Description("Standard Reports")]
-		StandardReports = 25,
 		[Description("By Pricing Code (17 yrs)")]
 		ByPricingCode = 26,
 		[Description("By Cat/Pricing Code (17 yrs)")]
