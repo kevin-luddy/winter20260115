@@ -325,7 +325,9 @@
         <AssociationConnector Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId" />
         <EntityTypeShape EntityType="GenBOE.Models.BOE" Width="1.5" PointX="14.25" PointY="75.5" />
         <EntityTypeShape EntityType="GenBOE.Models.BOETaskElement" Width="1.5" PointX="25.5" PointY="109" />
-        <EntityTypeShape EntityType="GenBOE.Models.MOQTypeSelection" Width="1.5" PointX="30.75" PointY="118.5" />
+        <EntityTypeShape EntityType="GenBOE.Models.CommonDisclosureSkillMix" Width="1.5" PointX="30.75" PointY="87.625" />
+        <EntityTypeShape EntityType="GenBOE.Models.MOQTypeSelection" Width="1.5" PointX="30.75" PointY="118.75" />
+        <EntityTypeShape EntityType="GenBOE.Models.SkillMix" Width="1.5" PointX="30.75" PointY="92.625" />
         <AssociationConnector Association="GenBOE.Models.FK_BOE_BOEStateLU" />
         <AssociationConnector Association="GenBOE.Models.FK_BOE_Workspace" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEApproval_BOE" />
@@ -337,10 +339,12 @@
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElement_BOE" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEUserRole_BOE" />
         <AssociationConnector Association="GenBOE.Models.FK_BOEUserRoleHistory_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_BOE" />
         <AssociationConnector Association="GenBOE.Models.FK_MaterialTaskElement_BOE" />
         <AssociationConnector Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOE" />
         <AssociationConnector Association="GenBOE.Models.FK_ODCTaskElement_BOE" />
         <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_BoeID" />
+        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_BOE" />
         <AssociationConnector Association="GenBOE.Models.FK_SumOfBOE_OrdinaryVariableXREF_BOE" />
         <AssociationConnector Association="GenBOE.Models.FK_SumOfBOE_WorkspaceVariableXREF_BOE" />
         <AssociationConnector Association="GenBOE.Models.FK_TravelTripTaskElement_BOE" />
@@ -352,20 +356,14 @@
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementCustomFieldValueXREF_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementMetricDetailXREF_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" />
+        <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK_OrdinaryVariable_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_TaskID" />
+        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2B0636C1" />
         <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2FCAEBDE" />
-        <EntityTypeShape EntityType="GenBOE.Models.CommonDisclosureSkillMix" Width="1.5" PointX="33" PointY="97.375" />
-        <EntityTypeShape EntityType="GenBOE.Models.SkillMix" Width="1.5" PointX="36" PointY="100.375" />
-        <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_BOE" />
-        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_BOE" />
-        <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_BOETaskElement" />
-        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_BOETaskElement" />
-        <AssociationConnector Association="GenBOE.Models.FK_CommonDisclosureSkillMix_MOQTypeSelection" />
-        <AssociationConnector Association="GenBOE.Models.FK_SkillMix_MOQTypeSelection" />
-      </Diagram>
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

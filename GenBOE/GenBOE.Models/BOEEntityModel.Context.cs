@@ -175,8 +175,8 @@ namespace GenBOE.Models
         public virtual DbSet<MOQTypeSelectionTableDataResourceHour> MOQTypeSelectionTableDataResourceHours { get; set; }
         public virtual DbSet<BOE> BOEs { get; set; }
         public virtual DbSet<BOETaskElement> BOETaskElements { get; set; }
-        public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
         public virtual DbSet<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
+        public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
         public virtual DbSet<SkillMix> SkillMixes { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
@@ -4942,6 +4942,16 @@ namespace GenBOE.Models
                 new ObjectParameter("MOQTypeSelectionTableDataId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteMOQTypeSelectionTableDataResourceHours", mOQTypeSelectionTableDataIdParameter);
+        }
+    
+        public virtual int insertCommonDisclosureSkillMixviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertCommonDisclosureSkillMixviaTableParameter");
+        }
+    
+        public virtual int insertSkillMixviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertSkillMixviaTableParameter");
         }
     }
 }
