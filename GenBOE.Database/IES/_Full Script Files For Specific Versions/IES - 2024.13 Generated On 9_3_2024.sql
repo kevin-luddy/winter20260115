@@ -2,14 +2,16 @@ EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.13';
 
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.13, on 9/3/2024.
+    This file was auto-generated for Release: 2024.03, on 9/3/2024.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2024.13\1 - Release 2024.13 Script.sql
+    File: \Release 2024.03\1 - Release 2024.03 Script.sql
 */
-PRINT '### Starting file: \Release 2024.13\1 - Release 2024.13 Script.sql';
+PRINT '### Starting file: \Release 2024.03\1 - Release 2024.03 Script.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.03';
+
 /*
 	## START ##
 	09/03/2024 [e374897] - PROPH-1825 PROPH-2280 Added columns to populate Address tables

@@ -65,12 +65,13 @@ namespace GenBOE.ActionLogic.Common
 		/// </summary>
 		/// <param name="labor">Validation BOE Labor Type Model</param>
 		/// <param name="workspaceShortname">Workspace Shortname</param>
+		/// <param name="resourceIdToSegmentRegion">Dictionary keyed by resource id to segment region</param>
 		/// <returns>Validation string that labels required fields if any are missing, else empty string</returns>
-		public static string ValidateResourceAndBusinessResourceCodeRequired(ResourceTypeDto labor, string workspaceShortname)
+		public static string ValidateResourceAndBusinessResourceCodeRequired(ResourceTypeDto labor, IDictionary<int, string> resourceIdToSegmentRegion, string workspaceShortname)
 		{
 			string requiredMessage = string.Empty;
 
-			if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
+			if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) || (labor != null && IsResourceDisablingBrc(labor.ResourceID, resourceIdToSegmentRegion)))
 			{
 				if (labor != null && !labor.ResourceID.HasValue)
 				{
@@ -119,15 +120,17 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="labor">Labor</param>
 		/// <param name="resourcesFromTask">Resources for Task</param>
 		/// <param name="businessResourceCodesFromTask">Business Resource Codes for Task</param>
+		/// <param name="resourceIdToSegmentRegion">Dictionary keyed by resource id to segment region</param>
 		/// <param name="workspaceShortname">Workspace short name</param>
-		public static void PopulateResourceAndBusinessResourceCodeHeaders(ValidationBOELaborType boeLabor, ResourceTypeDto labor, ICollection<ResourceDTO> resourcesFromTask, ICollection<ResourceDTO> businessResourceCodesFromTask, string workspaceShortname)
+		public static void PopulateResourceAndBusinessResourceCodeHeaders(ValidationBOELaborType boeLabor, ResourceTypeDto labor, ICollection<ResourceDTO> resourcesFromTask, 
+			ICollection<ResourceDTO> businessResourceCodesFromTask, IDictionary<int, string> resourceIdToSegmentRegion, string workspaceShortname)
 		{
 			ResourceDTO resource = null;
 			ResourceDTO businessResourceCode = null;
 
 			if (boeLabor != null)
 			{
-				if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
+				if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) || IsResourceDisablingBrc(labor.ResourceID, resourceIdToSegmentRegion))
 				{
 					if (labor.ResourceID.HasValue)
 					{
@@ -182,7 +185,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="workspaceShortname">Workspace short name</param>
 		/// <param name="startingNewId">Starting new psuedo ID for Sub Reource Type</param>
 		/// <returns>The labor types properly processed for resource vs BRC</returns>
-		public static ICollection<ResourceTypeDto> ProcessLaborTypesForBrc(ICollection<ResourceTypeDto> taskElementLabors, string workspaceShortname, int startingNewId = -1)
+		public static ICollection<ResourceTypeDto> ProcessLaborTypesForBrc(ICollection<ResourceTypeDto> taskElementLabors, IDictionary<int, string> resourceIdToSegmentRegion, string workspaceShortname, int startingNewId = -1)
 		{
 			if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 			{
@@ -195,7 +198,13 @@ namespace GenBOE.ActionLogic.Common
 
 			foreach (ResourceTypeDto laborType in taskElementLabors)
 			{
-				if (laborType.StartDate < Utilities.OneLmxStartDate && laborType.EndDate >= Utilities.OneLmxStartDate && laborType.BusinessResourceCodeID != null)
+				// check each labor type individually
+				if (IsResourceDisablingBrc(laborType.ResourceID, resourceIdToSegmentRegion))
+				{
+					// Resource Only due to Non-BRC overridden - add the labor type as usual
+					laborTypes.Add(laborType);
+				}
+				else if (laborType.StartDate < Utilities.OneLmxStartDate && laborType.EndDate >= Utilities.OneLmxStartDate && laborType.BusinessResourceCodeID != null)
 				{
 					// Resource and BRC - split labor type into 2, one for Resource and one for BRC
 					ResourceTypeDto resourceLaborType = laborType.DeepClone();
@@ -238,6 +247,23 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			return laborTypes;
+		}
+
+		/// <summary>
+		/// Determines if a Resource is disabling BRC
+		/// </summary>
+		/// <param name="resourceID">The resource Id to check</param>
+		/// <param name="resourceIdToSegmentRegion">Dictionary of Resource IDs to SegmentRegion</param>
+		/// <returns>True if BRC should be disabled for this resource; false otherwise</returns>
+		private static bool IsResourceDisablingBrc(int? resourceID, IDictionary<int, string> resourceIdToSegmentRegion)
+		{
+			bool brcDisabled = false;
+			if (resourceID.HasValue && resourceIdToSegmentRegion.TryGetValue(resourceID.Value, out string segmentRegion))
+			{
+				brcDisabled = segmentRegion == WebConstants.SPACE_LEGACY_TM;
+			}
+
+			return brcDisabled;
 		}
 	}
 }

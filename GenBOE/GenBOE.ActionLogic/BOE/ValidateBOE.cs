@@ -1085,7 +1085,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
         {
             decimal TotalLaborSpreadValue = 0;
 
-            foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
+			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
+			foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
             {
                 bool invalidCostSpreadPrecision = false;
                 bool invalidHoursSpreadPrecision = false;
@@ -1099,7 +1101,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 }
 
 				// need to verfy a Resource or Business Resource Code exists
-				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, workspace.Shortname);
+				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, resourceIdToSegmentRegion, workspace.Shortname);
                 if (!string.IsNullOrEmpty(requiredMessage))
                 {
 					LaborTypeMessages.Add(requiredMessage);
@@ -1186,7 +1188,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 if (LaborTypeMessages.Any())
                 {
-					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask, workspace.Shortname);	
+					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask, resourceIdToSegmentRegion, workspace.Shortname);	
 
                     boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
                     boeTasks.LaborTypes.Add(boeLabor);

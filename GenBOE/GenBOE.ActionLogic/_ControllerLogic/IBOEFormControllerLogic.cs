@@ -65,13 +65,6 @@ namespace GenBOE.ActionLogic
         ICollection<BOEFormModelView> GetSummaryForms(FullWorkspace workspace);
 
         /// <summary>
-        /// Retrieves the Proposal Title and RFP Number from the workspace.
-        /// </summary>
-        /// <param name="workspace">Workspace</param>
-        /// <returns>A string in the form { Proposal Number } / { RFP }</returns>
-        string GetProposalTitleAndRfpNumber(FullWorkspace workspace);
-
-        /// <summary>
         /// Validates the specified IBOE and PBOE Form T&amp;M resources.
         /// </summary>
         /// <param name="validationErrors">output parameter - collection of error messages</param>

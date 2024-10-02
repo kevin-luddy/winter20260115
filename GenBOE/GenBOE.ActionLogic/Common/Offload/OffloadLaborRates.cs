@@ -551,6 +551,9 @@ namespace GenBOE.ActionLogic.Common
             logger.Info($"OffloadAsNonProjectMap. Workspace Id: {workspace.Id}");
 
             OffloadLaborRatesResults results = new OffloadLaborRatesResults();
+
+			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
             foreach (FullBoe boe in boes)
             {
                 logger.Debug($"OffloadAsNonProjectMap. Processing BOE Id: {boe.Id}");
@@ -575,7 +578,7 @@ namespace GenBOE.ActionLogic.Common
 
 					if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname))
 					{
-						taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, workspace.Shortname, startingIndex).ToCollection();
+						taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, workspace.Shortname, startingIndex).ToCollection();
 						startingIndex = taskElement.taskElementLabors.Any() ? taskElement.taskElementLabors.Select(x => x.Id).Min() - 1 : startingIndex;
 					}
 
