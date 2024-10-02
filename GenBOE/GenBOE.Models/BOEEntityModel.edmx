@@ -4487,7 +4487,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="deleteCommonDisclosureSkillMix" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="MOQTypeSelectionID" Type="int" Mode="In" />
+          <Parameter Name="BOETaskElementID" Type="int" Mode="In" />
         </Function>
         <Function Name="deleteContractType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -4591,7 +4591,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           <Parameter Name="Id" Type="int" Mode="In" />
         </Function>
         <Function Name="deleteSkillMix" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="MOQTypeSelectionID" Type="int" Mode="In" />
+          <Parameter Name="BOETaskElementID" Type="int" Mode="In" />
         </Function>
         <Function Name="deleteSumOfBOEByOrdinaryVariableID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="OrdinaryVariableID" Type="int" Mode="In" />
@@ -11843,10 +11843,10 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
 			<End Role="BOELaborType" EntitySet="BOELaborTypes" />
 		  </AssociationSet>
           <FunctionImport Name="deleteSkillMix" ReturnType="Collection(Int32)">
-          <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
+          <Parameter Name="BOETaskElementID" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="deleteCommonDisclosureSkillMix" ReturnType="Collection(Int32)">
-          <Parameter Name="MOQTypeSelectionID" Mode="In" Type="Int32" />
+          <Parameter Name="BOETaskElementID" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="MOQTypeSelectionTableDataResourceHours" EntityType="GenBOE.Models.MOQTypeSelectionTableDataResourceHour" />
           <AssociationSet Name="FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId" Association="GenBOE.Models.FK_MOQTypeSelectionTableDataResourceHours_MOQTypeSelectionTableDataId">

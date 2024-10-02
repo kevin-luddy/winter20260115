@@ -4917,22 +4917,22 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertMessageConfirmation", eTIUserIDParameter, messageIDParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> deleteSkillMix(Nullable<int> mOQTypeSelectionID)
+        public virtual ObjectResult<Nullable<int>> deleteSkillMix(Nullable<int> bOETaskElementID)
         {
-            var mOQTypeSelectionIDParameter = mOQTypeSelectionID.HasValue ?
-                new ObjectParameter("MOQTypeSelectionID", mOQTypeSelectionID) :
-                new ObjectParameter("MOQTypeSelectionID", typeof(int));
+            var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
+                new ObjectParameter("BOETaskElementID", bOETaskElementID) :
+                new ObjectParameter("BOETaskElementID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteSkillMix", mOQTypeSelectionIDParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteSkillMix", bOETaskElementIDParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> deleteCommonDisclosureSkillMix(Nullable<int> mOQTypeSelectionID)
+        public virtual ObjectResult<Nullable<int>> deleteCommonDisclosureSkillMix(Nullable<int> bOETaskElementID)
         {
-            var mOQTypeSelectionIDParameter = mOQTypeSelectionID.HasValue ?
-                new ObjectParameter("MOQTypeSelectionID", mOQTypeSelectionID) :
-                new ObjectParameter("MOQTypeSelectionID", typeof(int));
+            var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
+                new ObjectParameter("BOETaskElementID", bOETaskElementID) :
+                new ObjectParameter("BOETaskElementID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteCommonDisclosureSkillMix", mOQTypeSelectionIDParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteCommonDisclosureSkillMix", bOETaskElementIDParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> deleteMOQTypeSelectionTableDataResourceHours(Nullable<int> mOQTypeSelectionTableDataId)
