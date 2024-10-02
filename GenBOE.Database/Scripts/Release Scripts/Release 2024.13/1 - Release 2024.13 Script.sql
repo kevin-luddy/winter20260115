@@ -133,3 +133,10 @@ BEGIN
 	    DROP COLUMN IsPercentLocked;
     END
 END
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ReportLU]') AND type in (N'U')) 
+BEGIN
+	DELETE FROM dbo.ReportLU
+		WHERE ReportName = 'Standard Reports';
+END
+GO
