@@ -27,10 +27,10 @@
 		public void GetDeleteSkillMixDTOByMoqTypeSelection()
 		{
 			SkillMixDTOLoader sut = new SkillMixDTOLoader();
-			ICollection<SkillMixDTO> skillMixDTOData = sut.GetByMOQTypeSelectionID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			ICollection<SkillMixDTO> skillMixDTOData = sut.GetByBOETaskElementID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 			Assert.AreEqual(1, skillMixDTOData.Count);
 
-			int? numRowsDeleted = sut.DeleteSkillMixByMoqTypeSelection(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			int? numRowsDeleted = sut.DeleteSkillMixByBOETaskElementID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 			Assert.AreEqual(1, numRowsDeleted);
 		}
 

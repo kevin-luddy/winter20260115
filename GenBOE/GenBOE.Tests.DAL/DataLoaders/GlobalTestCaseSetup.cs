@@ -2088,7 +2088,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				sm.ResourceNew = newr;
 				sm.BOEID = GlobalBOEID;
 				sm.BOETaskElementID = GlobalTaskElementID;
-				sm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
 				gbe.SkillMixes.Add(sm);
 				gbe.SaveChanges();
 
@@ -2126,7 +2125,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				cdsm.BusinessResourceID = businessResource;
 				cdsm.BOEID = GlobalBOEID;
 				cdsm.BOETaskElementID = GlobalTaskElementID;
-				cdsm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
 				gbe.CommonDisclosureSkillMixes.Add(cdsm);
 				gbe.SaveChanges();
 				commonDisclosureSkillMixId = (from s in gbe.CommonDisclosureSkillMixes

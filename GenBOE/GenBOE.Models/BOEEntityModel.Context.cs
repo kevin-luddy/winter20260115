@@ -172,8 +172,8 @@ namespace GenBOE.Models
         public virtual DbSet<MOQTypeSelectionTableDataResourceHour> MOQTypeSelectionTableDataResourceHours { get; set; }
         public virtual DbSet<BOE> BOEs { get; set; }
         public virtual DbSet<BOETaskElement> BOETaskElements { get; set; }
-        public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
         public virtual DbSet<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
+        public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
         public virtual DbSet<SkillMix> SkillMixes { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
@@ -4714,22 +4714,22 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertMessageConfirmation", eTIUserIDParameter, messageIDParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> deleteSkillMix(Nullable<int> mOQTypeSelectionID)
+        public virtual ObjectResult<Nullable<int>> deleteSkillMix(Nullable<int> bOETaskElementID)
         {
-            var mOQTypeSelectionIDParameter = mOQTypeSelectionID.HasValue ?
-                new ObjectParameter("MOQTypeSelectionID", mOQTypeSelectionID) :
-                new ObjectParameter("MOQTypeSelectionID", typeof(int));
+            var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
+                new ObjectParameter("BOETaskElementID", bOETaskElementID) :
+                new ObjectParameter("BOETaskElementID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteSkillMix", mOQTypeSelectionIDParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteSkillMix", bOETaskElementIDParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> deleteCommonDisclosureSkillMix(Nullable<int> mOQTypeSelectionID)
+        public virtual ObjectResult<Nullable<int>> deleteCommonDisclosureSkillMix(Nullable<int> bOETaskElementID)
         {
-            var mOQTypeSelectionIDParameter = mOQTypeSelectionID.HasValue ?
-                new ObjectParameter("MOQTypeSelectionID", mOQTypeSelectionID) :
-                new ObjectParameter("MOQTypeSelectionID", typeof(int));
+            var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
+                new ObjectParameter("BOETaskElementID", bOETaskElementID) :
+                new ObjectParameter("BOETaskElementID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteCommonDisclosureSkillMix", mOQTypeSelectionIDParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteCommonDisclosureSkillMix", bOETaskElementIDParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> deleteMOQTypeSelectionTableDataResourceHours(Nullable<int> mOQTypeSelectionTableDataId)
@@ -4739,6 +4739,16 @@ namespace GenBOE.Models
                 new ObjectParameter("MOQTypeSelectionTableDataId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteMOQTypeSelectionTableDataResourceHours", mOQTypeSelectionTableDataIdParameter);
+        }
+    
+        public virtual int insertCommonDisclosureSkillMixviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertCommonDisclosureSkillMixviaTableParameter");
+        }
+    
+        public virtual int insertSkillMixviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertSkillMixviaTableParameter");
         }
     }
 }
