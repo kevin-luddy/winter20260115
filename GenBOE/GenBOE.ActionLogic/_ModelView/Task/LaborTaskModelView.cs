@@ -135,5 +135,11 @@ namespace GenBOE.ActionLogic.ModelView
         /// Get or set whether using Enable SAP Connection is selected.
         /// </summary>
         public bool EnableSAPConnection { get; set; }
-    }
+
+		/// <summary>
+		/// Get or set whether to enable Skill Mix Rationale section
+		/// </summary>
+		public bool EnableSkillMix { get; set; }
+
+	}
 }

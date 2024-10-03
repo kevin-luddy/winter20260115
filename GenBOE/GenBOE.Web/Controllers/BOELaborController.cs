@@ -138,6 +138,7 @@ namespace GenBOE.Web.Controllers
 				enableSkillMix = true;
 			}
 			ViewData["EnableSkillMix"] = enableSkillMix;
+			
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
 			string taskDescription = string.Empty;
@@ -196,7 +197,8 @@ namespace GenBOE.Web.Controllers
 				DescriptionTemplateAnswers = rteAnswers.Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription).ToList(),
 				TaskDescription = taskDescription,
 				UsingTemplateBOE = ws.UsingTemplateBOE,
-				EnableSAPConnection = ws.EnableSAPConnection
+				EnableSAPConnection = ws.EnableSAPConnection,
+				EnableSkillMix = enableSkillMix
 			};
 
 			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);

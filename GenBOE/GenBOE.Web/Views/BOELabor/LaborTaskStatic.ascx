@@ -29,6 +29,7 @@
 
 	var TaskLaborTypesWidget;
 	var TaskLaborSpreadsWidget;
+	var TaskSkillMixWidget;
 
 	validateCustomFields = function () {
 		// Does nothing, but called from manageTaskController() even when using static page
@@ -53,6 +54,14 @@
 		spreadWidgetConfig.isReadOnly = true;
 		spreadWidgetConfig.IsModule = true;
 		TaskLaborSpreadsWidget = new GenWidget(spreadWidgetConfig);
+
+		// Skill Mix Rationale
+		var skillMixConfig = {};
+		skillMixConfig.ContextID = "SkillMixRationaleContainer";
+		skillMixConfig.isReadOnly = true;
+		skillMixConfig.IsModule = true;
+		TaskSkillMixWidget = new GenWidget(skillMixConfig);
+
 
 		// Task Element details      
 
@@ -523,7 +532,18 @@
 		</div>
 
 	</div>
-
+	<% if (Model.EnableSkillMix) 
+		{ %>
+	<div id="SkillMixPlaceholder">
+		<div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
+			<div class="module-header-data">
+				Skill Mix Rationale
+			</div>
+			<div class="module-content-data expanded-content">TBD: tables
+			</div>
+		</div>
+	</div>
+	<% } %>
 	<div class="buttons-left"></div>
 
 	<div class="buttons">
