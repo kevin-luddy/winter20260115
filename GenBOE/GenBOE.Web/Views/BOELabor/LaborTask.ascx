@@ -337,7 +337,7 @@
 		// Skill Mix Rationale
 		var skillMixConfig = {};
 		skillMixConfig.ContextID = "SkillMixRationaleContainer";
-		skillMixConfig.isReadOnly = true;
+		skillMixConfig.isReadOnly = false;
 		skillMixConfig.IsModule = true;
 		TaskSkillMixWidget = new GenWidget(skillMixConfig);
 
