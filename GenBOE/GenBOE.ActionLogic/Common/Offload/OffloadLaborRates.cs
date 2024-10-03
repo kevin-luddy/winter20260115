@@ -579,7 +579,7 @@ namespace GenBOE.ActionLogic.Common
 					if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname))
 					{
 						taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, workspace.Shortname, startingIndex).ToCollection();
-						startingIndex = taskElement.taskElementLabors.Select(x => x.Id).Min() - 1;
+						startingIndex = taskElement.taskElementLabors.Any() ? taskElement.taskElementLabors.Select(x => x.Id).Min() - 1 : startingIndex;
 					}
 
 					Collection<ResourceTypeDto> resources = taskElement.taskElementLabors;
