@@ -49,6 +49,7 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
+								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -85,7 +86,8 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
 								  Included = sm.Included,
-								  BOETaskElementID = sm.BOETaskElementID
+								  BOETaskElementID = sm.BOETaskElementID,
+								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -122,7 +124,8 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
 								  Included = sm.Included,
-								  BOETaskElementID = sm.BOETaskElementID
+								  BOETaskElementID = sm.BOETaskElementID,
+								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -192,7 +195,8 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
 								  Included = sm.Included,
-								  BOETaskElementID = sm.BOETaskElementID
+								  BOETaskElementID = sm.BOETaskElementID,
+								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -215,7 +219,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				Collection<string> skillMixVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "MOQTypeSelectionID", "IsPercentLocked"
+					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "IsUserInput"
 				};
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{

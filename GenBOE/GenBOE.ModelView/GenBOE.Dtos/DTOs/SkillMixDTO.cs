@@ -26,6 +26,7 @@
 			this.BOETaskElementID = -1;
 			this.MOQTypeSelectionID = -1;
 			this.IsPercentLocked = false;
+			this.IsUserInput = false;
 		}
 
 		/// <summary>
@@ -117,5 +118,10 @@
 		/// Is the BOE Skill Mix Percent locked
 		/// </summary>
 		public bool IsPercentLocked { get; set; }
+
+		/// <summary>
+		/// Is this data User Input
+		/// </summary>
+		public bool IsUserInput { get; set; }
 	}
 }
