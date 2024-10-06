@@ -34,8 +34,6 @@ namespace GenBOE.ActionLogic.ModelView
 				this.ResourceNew = skillMixDTO.ResourceNew;
 				this.BOEID = skillMixDTO.BOEID;
 				this.BOETaskElementID = skillMixDTO.BOETaskElementID;
-				this.MOQTypeSelectionID = skillMixDTO.MOQTypeSelectionID;
-				this.IsPercentLocked = skillMixDTO.IsPercentLocked;
 			}
         }
 
@@ -57,9 +55,7 @@ namespace GenBOE.ActionLogic.ModelView
 				ResourceNew = this.ResourceNew ?? string.Empty,
 				ResourceOld = this.ResourceOld ?? string.Empty,
 				BOEID = this.BOEID,
-				BOETaskElementID = this.BOETaskElementID,
-				MOQTypeSelectionID = this.MOQTypeSelectionID,
-				IsPercentLocked = this.IsPercentLocked
+				BOETaskElementID = this.BOETaskElementID
 			};
 		}
     }

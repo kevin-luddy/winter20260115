@@ -245,7 +245,7 @@ namespace GenBOE.DataBridge.DTO
 		private void DoPostProcessiong(ICollection<SkillMixDTO> skillMixes)
 		{
 			IEnumerable<IGrouping<int, SkillMixDTO>> groupedResourceHours =
-				skillMixes.GroupBy(r => r.MOQTypeSelectionID);
+				skillMixes.GroupBy(r => r.BOETaskElementID);
 
 			foreach (IGrouping<int, SkillMixDTO> grouping in groupedResourceHours)
 			{

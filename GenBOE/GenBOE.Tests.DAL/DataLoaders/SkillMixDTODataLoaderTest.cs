@@ -53,8 +53,7 @@
 			updateSkillMix.ResourceNew = "New Resource";
 			updateSkillMix.BOEID = GlobalTestCaseSetup.GlobalBOEID;
 			updateSkillMix.BOETaskElementID = GlobalTestCaseSetup.GlobalTaskElementID;
-			updateSkillMix.MOQTypeSelectionID = GlobalTestCaseSetup.GlobalMoqTypeSelectionId;
-			updateSkillMix.IsPercentLocked = true;
+			updateSkillMix.IsUserInput = false;
 
 			ICollection<SkillMixDTO> skillMixes = new List<SkillMixDTO>() { updateSkillMix };
 			int? numRowsInserted = sut.InsertSkillMix(skillMixes);

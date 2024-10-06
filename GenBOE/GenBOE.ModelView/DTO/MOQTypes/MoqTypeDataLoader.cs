@@ -306,7 +306,6 @@ namespace GenBOE.DataBridge.DTO
 						{
 							SkillMixDTO dto = skillMixModelView.ToDto();
 							dto.BOEID = dtoToUpsert.BoeId;
-							dto.MOQTypeSelectionID = toReturn.Value;
 							dto.BOETaskElementID = dtoToUpsert.TaskId;
 							dtos.Add(dto);
 						}
@@ -469,7 +468,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 				else
 				{
-					selection.SkillMixTable = skillMix.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
+					selection.SkillMixTable = skillMix.Where(r => r.BOETaskElementID == selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
 				}
 
 				if (commonDisclosures == null)
