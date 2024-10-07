@@ -2790,7 +2790,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 KeyValuePair<int, ICollection<KeyValuePair<int, int>>> laborMapping = exportInputs.LaborTypesMappingWithCustomFieldsValuesAndContainerIds.FirstOrDefault(x => x.Key == laborTypeId);
                 if (!laborMapping.Equals(default(KeyValuePair<int, ICollection<KeyValuePair<int, int>>>)))
                 {
-                    laborTypeCustomFieldValueIdMappings.Add(laborTypeId, laborMapping.Value);
+					laborTypeCustomFieldValueIdMappings.Add(laborTypeId, laborMapping.Value); 
+					//laborTypeCustomFieldValueIdMappings[laborTypeId] = laborMapping.Value;
                 }
             }
 
