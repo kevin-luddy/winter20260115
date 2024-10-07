@@ -4118,8 +4118,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								{
 									//found a matching row so preserve the data
 									newRow.Included = matchingRow.Included;
-									newRow.MOQTypeSelectionID = matchingRow.MOQTypeSelectionID;
-									newRow.IsPercentLocked = matchingRow.IsPercentLocked;
 									newRow.Rationale = matchingRow.Rationale;
 									newRow.BOESkillMix = matchingRow.BOESkillMix;
 									newRow.ProposedHours = matchingRow.ProposedHours;
@@ -4141,8 +4139,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 										ResourceID = oldRow.ResourceID,
 										LaborSkillMix = oldRow.LaborSkillMix,
 										Included = oldRow.Included,
-										MOQTypeSelectionID = oldRow.MOQTypeSelectionID,
-										IsPercentLocked = oldRow.IsPercentLocked,
 										IsUserInput = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && !string.IsNullOrEmpty(tempBusinessResourceID) ? false : true,
 										BusinessResourceID = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems
 											? tempBusinessResourceID : string.IsNullOrEmpty(oldRow.BusinessResourceID) ? string.Empty : oldRow.BusinessResourceID,

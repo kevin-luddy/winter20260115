@@ -321,7 +321,6 @@ namespace GenBOE.DataBridge.DTO
 						{
 							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
 							dto.BOEID = dtoToUpsert.BoeId;
-							dto.MOQTypeSelectionID = toReturn.Value;
 							dto.BOETaskElementID = dtoToUpsert.TaskId;
 							dtos.Add(dto);
 						}
@@ -477,7 +476,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 				else
 				{
-					selection.CommonDisclosureTable = commonDisclosures.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+					selection.CommonDisclosureTable = commonDisclosures.Where(r => r.BOETaskElementID == selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
 				}
 			}
 		}
