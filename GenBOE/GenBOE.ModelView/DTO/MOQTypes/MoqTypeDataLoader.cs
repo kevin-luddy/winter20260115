@@ -467,7 +467,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 				else
 				{
-					selection.SkillMixTable = skillMix.Where(r => r.BOETaskElementID == selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
+					// selection.SkillMixTable = skillMix.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
 				}
 
 				if (commonDisclosures == null)
@@ -476,7 +476,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 				else
 				{
-					selection.CommonDisclosureTable = commonDisclosures.Where(r => r.BOETaskElementID == selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+					// selection.CommonDisclosureTable = commonDisclosures.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
 				}
 			}
 		}
