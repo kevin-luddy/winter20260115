@@ -872,7 +872,9 @@ namespace GenBOE.DataBridge.DTO
 								  TrackingNumber = w.TrackingNumber,
 								  RFPNumber = w.RFPNumber,
 								  WorkspaceName = w.WorkspaceName,
-								  Id = w.WorkspaceID
+								  Id = w.WorkspaceID,
+								  CurrentPTMWorkspace = w.CurrentPTMWorkspace,
+								  ResourceListID = w.ResourceListID.Value
 							  }).ToList();
 				}
 			}
