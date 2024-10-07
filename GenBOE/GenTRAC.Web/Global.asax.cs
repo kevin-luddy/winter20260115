@@ -96,7 +96,11 @@ namespace GenTRAC
                 timespent.Stop();
                 this.logger.Info("Finished warming cache.. took " + timespent.Elapsed.TotalSeconds + " seconds.");
             });
-            warmThread.Start();
+
+			// Log environment variables and config app settings
+			Utilities.LogEnvironmentSettings(this.logger);
+
+			warmThread.Start();
         }
 
         /// <summary>

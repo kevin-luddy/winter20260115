@@ -51,10 +51,10 @@ namespace GenBOE
     using Microsoft.Practices.Unity;
     using Microsoft.Practices.Unity.InterceptionExtension;
 
-    // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
-    // visit http://go.microsoft.com/?LinkId=9394801
+	// Note: For instructions on enabling IIS6 or IIS7 classic mode, 
+	// visit http://go.microsoft.com/?LinkId=9394801
 
-    public class MvcApplication : System.Web.HttpApplication
+	public class MvcApplication : System.Web.HttpApplication
     {
         private readonly List<ContainerControlledLifetimeManager> _lifetimeManagers = new List<ContainerControlledLifetimeManager>();
         private readonly Logger _log = new Logger(typeof(MvcApplication));
@@ -307,11 +307,15 @@ namespace GenBOE
 				// Increase the size of the Regex cache due to the size of the application and number of regular expressions
 				Regex.CacheSize = 50;
 			}
+
 			catch (Exception ex)
 			{
 				_log.Error(ex, "Error setting Regex cache size.");
 			}
-        }
+
+			// Log environment variables and config app settings
+			Utilities.LogEnvironmentSettings(_log);
+		}
 
         /// <summary>
         /// Configures Web Api 2 "things" to work in an MVC application
@@ -331,8 +335,8 @@ namespace GenBOE
             GenBOEUnityContainer.Container.AddNewExtension<Interception>();
             SystemConfiguration SysConfig = SystemConfiguration.Instance();
 
-            // Register ICache, Cache and Non Cache Data Loader
-            GenBOEUnityContainer.Container.RegisterType(typeof(ICache), typeof(MemoryCache), this.GetLifetimeManager(), new InjectionMember[] { });
+			// Register ICache, Cache and Non Cache Data Loader
+			GenBOEUnityContainer.Container.RegisterType(typeof(ICache), typeof(MemoryCache), this.GetLifetimeManager(), new InjectionMember[] { });
 
             GenBOEUnityContainer.Container.RegisterType(typeof(CacheDataLoader), typeof(CacheDataLoader), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICache)), -1));
             GenBOEUnityContainer.Container.RegisterType(typeof(CacheDataLoader), typeof(CacheDataLoader), "GenBOEMetricsCache", GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICache)), 43200));
