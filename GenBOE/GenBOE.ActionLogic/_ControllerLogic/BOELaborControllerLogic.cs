@@ -4119,6 +4119,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 									//found a matching row so preserve the data
 									newRow.Included = matchingRow.Included;
 									newRow.Rationale = matchingRow.Rationale;
+									newRow.IsUserInput = matchingRow.IsUserInput;
 									newRow.BOESkillMix = matchingRow.BOESkillMix;
 									newRow.ProposedHours = matchingRow.ProposedHours;
 								}

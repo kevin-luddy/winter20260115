@@ -34,6 +34,7 @@ namespace GenBOE.ActionLogic.ModelView
 				this.ResourceNew = skillMixDTO.ResourceNew;
 				this.BOEID = skillMixDTO.BOEID;
 				this.BOETaskElementID = skillMixDTO.BOETaskElementID;
+				this.IsUserInput = skillMixDTO.IsUserInput;
 			}
         }
 
@@ -55,7 +56,8 @@ namespace GenBOE.ActionLogic.ModelView
 				ResourceNew = this.ResourceNew ?? string.Empty,
 				ResourceOld = this.ResourceOld ?? string.Empty,
 				BOEID = this.BOEID,
-				BOETaskElementID = this.BOETaskElementID
+				BOETaskElementID = this.BOETaskElementID,
+				IsUserInput = this.IsUserInput
 			};
 		}
     }
