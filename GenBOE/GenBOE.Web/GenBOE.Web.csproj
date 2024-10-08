@@ -289,6 +289,7 @@
     <Compile Include="ModelView\ManageOffloadRatesGridModelView.cs" />
     <Compile Include="ModelView\MPBoeData.cs" />
     <Compile Include="ModelView\MyInfoModelView.cs" />
+    <Compile Include="ModelView\NlfResourceData.cs" />
     <Compile Include="ModelView\NlfWorkspaceData.cs" />
     <Compile Include="ModelView\NlfWorkspaceInnerData.cs" />
     <Compile Include="ModelView\PagedSystemOffloadRateModelView.cs" />
