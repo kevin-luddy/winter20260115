@@ -1331,38 +1331,24 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				// Check if user is System Admin
-				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
 				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber).Where(x => x.CurrentPTMWorkspace).ToCollection();
-				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
-				if (isAllowed)
+				foreach (int wsResourceListId in workspaces.Select(x => x.ResourceListID))
 				{
-					foreach (int wsResourceListId in workspaces.Select(x => x.ResourceListID))
+					HashSet<int> inUseIds = inUseDataLoader.GetWorkspaceResourceIDsInUseByListID(wsResourceListId);
+					ICollection<ResourceDTO> inUseResources = resourceLoader.GetByListId(wsResourceListId)
+						.Where(x => x.ElementOfCost == elementOfCost && inUseIds.Contains(x.Id) && !result.Data.Any(y => y.ResourceName == x.ResourceName)).ToCollection();
+
+					result.Data.AddRange(inUseResources.Select(x => new NlfResourceData()
 					{
-						HashSet<int> inUseIds = inUseDataLoader.GetWorkspaceResourceIDsInUseByListID(wsResourceListId);
-						ICollection<ResourceDTO> inUseResources = resourceLoader.GetByListId(wsResourceListId)
-							.Where(x => x.ElementOfCost == elementOfCost && inUseIds.Contains(x.Id) && !result.Data.Any(y => y.ResourceName == x.ResourceName)).ToCollection();
-
-						result.Data.AddRange(inUseResources.Select(x => new NlfResourceData()
-						{
-							ResourceName = x.ResourceName,
-							ResourceDescription = x.ResourceDesc
-						}));
-					}
-
-					result.IsSuccessful = true;
+						ResourceName = x.ResourceName,
+						ResourceDescription = x.ResourceDesc
+					}));
 				}
-				else if (workspaces.Any())
-				{
-					string message = $"Invalid permission to Workspace with tracking number: {trackingNumber}";
-					logger.Error(message + " NTID: " + ntid);
-					result.Messages.Add(message);
-					result.IsSuccessful = false;
-					result.Data = null;
-				}
+
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
