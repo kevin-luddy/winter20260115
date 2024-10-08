@@ -71,6 +71,7 @@
 
 	var TaskLaborTypesWidget;
 	var TaskLaborSpreadsWidget;
+	var TaskSkillMixWidget;
 	var ImportLaborType = InitializeImportLaborTypeWidget('<%: ViewData["BOEID"] %>',
 		currentWorkspace,
 		completeImportUrl,
@@ -332,6 +333,13 @@
 		spreadWidgetConfig.isReadOnly = false;
 		spreadWidgetConfig.IsModule = true;
 		TaskLaborSpreadsWidget = new GenWidget(spreadWidgetConfig);
+
+		// Skill Mix Rationale
+		var skillMixConfig = {};
+		skillMixConfig.ContextID = "SkillMixRationaleContainer";
+		skillMixConfig.isReadOnly = false;
+		skillMixConfig.IsModule = true;
+		TaskSkillMixWidget = new GenWidget(skillMixConfig);
 
 		// Task Element details      
 
@@ -902,7 +910,18 @@
 		</div>
 
 	</div>
-
+	<% if (Model.EnableSkillMix) 
+		{ %>
+	<div id="SkillMixPlaceholder">
+		<div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
+			<div class="module-header-data">
+				Skill Mix Rationale
+			</div>
+			<div class="module-content-data expanded-content">TBD: tables
+			</div>
+		</div>
+	</div>
+	<% } %>
 	<div class="buttons-left" data-ng-hide="isLoading"></div>
 	<div class="buttons" data-ng-hide="isLoading">
 		<div class="required-note">

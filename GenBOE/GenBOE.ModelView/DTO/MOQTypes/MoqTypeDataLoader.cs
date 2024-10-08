@@ -465,7 +465,7 @@ namespace GenBOE.DataBridge.DTO
 
 				if (skillMix == null)
 				{
-					selection.SkillMixTable = this.skillMixDTOLoader.GetByMOQTypeSelectionID(selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
+					selection.SkillMixTable = this.skillMixDTOLoader.GetByBOETaskElementID(selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
 				}
 				else
 				{
@@ -474,7 +474,7 @@ namespace GenBOE.DataBridge.DTO
 
 				if (commonDisclosures == null)
 				{
-					selection.CommonDisclosureTable = this.commonDisclosureLoader.GetByMOQTypeSelectionID(selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+					selection.CommonDisclosureTable = this.commonDisclosureLoader.GetByBOETaskElementID(selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
 				}
 				else
 				{

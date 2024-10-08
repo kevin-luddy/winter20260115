@@ -9,7 +9,7 @@ GO
 
 CREATE PROCEDURE [dbo].[deleteCommonDisclosureSkillMix]
 (
-	@MOQTypeSelectionID int
+	@BOETaskElementID int
 )
 AS
 	/******************************************************************************
@@ -27,13 +27,14 @@ AS
 	**		Date:		Author:				Description:
 	**		--------	--------			-------------------------------------------
 	**      6/16/24		e302876 			PROPH-2018 Common Disclosure Skill Mix DB Table
+	**		10/02/24	e405721				PROPH-2394 Updates for Skill Mix V2
 	*****************************************************************************/
 
 	-- deleting a skill mix could delete 1-many rows in common disclosure table
 
 	BEGIN
 		DELETE FROM dbo.[CommonDisclosureSkillMix]
-		WHERE [MOQTypeSelectionID] = @MOQTypeSelectionID
+		WHERE [BOETaskElementID] = @BOETaskElementID
 
 		SELECT @@ROWCOUNT AS RowsAffected;
 	END

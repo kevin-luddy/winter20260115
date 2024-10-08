@@ -25,7 +25,7 @@
 		public void GetCommonDisclosureSMDTOByMoqTypeSelection()
 		{
 			CommonDisclosureSMDTODataLoader sut = new CommonDisclosureSMDTODataLoader();
-			ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSMDTOData = sut.GetByMOQTypeSelectionID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSMDTOData = sut.GetByBOETaskElementID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 			Assert.AreEqual(1, commonDisclosureSMDTOData.Count);
 		}
 		/// <summary>
@@ -60,7 +60,7 @@
 		public void DeleteCommonDisclosureSkillMix()
 		{
 			CommonDisclosureSMDTODataLoader sut = new CommonDisclosureSMDTODataLoader();
-			int? numRowsDeleted = sut.DeleteCommonDisclosureSMByMoqTypeSelection(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			int? numRowsDeleted = sut.DeleteCommonDisclosureSkillMixByBOETaskElementID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 			Assert.AreEqual(1, numRowsDeleted);
 		}
 	}

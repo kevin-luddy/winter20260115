@@ -93,12 +93,14 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
 
+			int startingIndex = -1;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && processLaborTypesForBrc)
 			{
 				IDictionary<int, string> resourceIdToSegmentRegion = this.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 				foreach (BoeTaskElementDTO taskElement in taskElements)
 				{
-					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, workspace.Shortname).ToCollection();
+					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, workspace.Shortname, startingIndex).ToCollection();
+					startingIndex = taskElement.taskElementLabors.Any() ? taskElement.taskElementLabors.Select(x => x.Id).Min() - 1 : startingIndex;
 				}
 			}
 			

@@ -23,12 +23,12 @@ namespace GenBOE.DataBridge.DTO
 		private readonly Logger _log = new Logger(typeof(CommonDisclosureSMDTODataLoader));
 
 		/// <summary>
-		/// Get all Common Disclosure Skill Mix values by MOQTypeSelection FK ID
+		/// Get all Common Disclosure Skill Mix values by BOETaskElement FK ID
 		/// </summary>
-		/// <param name="moqTypeSelectionID"></param>
+		/// <param name="boeTaskElementID"></param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
 		[DbQuery]
-		public virtual ICollection<CommonDisclosureSkillMixDTO> GetByMOQTypeSelectionID(int moqTypeSelectionID)
+		public virtual ICollection<CommonDisclosureSkillMixDTO> GetByBOETaskElementID(int boeTaskElementID)
 		{
 			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
 
@@ -37,7 +37,7 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					result = (from cdsm in gbe.CommonDisclosureSkillMixes
-							  where cdsm.MOQTypeSelectionID == moqTypeSelectionID
+							  where cdsm.BOETaskElementID == boeTaskElementID
 							  select new CommonDisclosureSkillMixDTO
 							  {
 								  CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
@@ -51,8 +51,6 @@ namespace GenBOE.DataBridge.DTO
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
-								  IsPercentLocked = cdsm.IsPercentLocked,
 								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
@@ -92,8 +90,6 @@ namespace GenBOE.DataBridge.DTO
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
-								  IsPercentLocked = cdsm.IsPercentLocked,
 								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
@@ -132,48 +128,6 @@ namespace GenBOE.DataBridge.DTO
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
-								  IsPercentLocked = cdsm.IsPercentLocked,
-								  IsUserInput = cdsm.IsUserInput
-							  }).ToList();
-				}
-				DoPostProcessing(result);
-
-				return result;
-			}
-		}
-
-		/// <summary>
-		/// Get all Common Disclosure Skill Mix values by BOETaskElement FK ID
-		/// </summary>
-		/// <param name="boeTaskElementID">int</param>
-		/// <returns>List of Common Disclosure Skill Mixes</returns>
-		[DbQuery]
-		public virtual ICollection<CommonDisclosureSkillMixDTO> GetByBOETaskElementID(int boeTaskElementID)
-		{
-			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
-
-			using (StopwatchTimer sw = new StopwatchTimer(this._log))
-			{
-				using (GenBoeEntities gbe = new GenBoeEntities())
-				{
-					result = (from cdsm in gbe.CommonDisclosureSkillMixes
-							  where cdsm.BOETaskElementID == boeTaskElementID
-							  select new CommonDisclosureSkillMixDTO
-							  {
-								  CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
-								  Rationale = cdsm.Rationale,
-								  Included = cdsm.Included,
-								  ProposedHours = cdsm.ProposedHours,
-								  HistoricalHours = cdsm.HistoricalHours,
-								  BOESkillMix = cdsm.BOESkillMix,
-								  LaborSkillMix = cdsm.LaborSkillMix,
-								  ResourceID = cdsm.ResourceID,
-								  BusinessResourceID = cdsm.BusinessResourceID,
-								  BOEID = cdsm.BOEID,
-								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
-								  IsPercentLocked = cdsm.IsPercentLocked,
 								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
@@ -212,8 +166,6 @@ namespace GenBOE.DataBridge.DTO
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
 								  BOETaskElementID = cdsm.BOETaskElementID,
-								  MOQTypeSelectionID = cdsm.MOQTypeSelectionID,
-								  IsPercentLocked = cdsm.IsPercentLocked,
 								  IsUserInput = cdsm.IsUserInput
 							  }).ToList();
 				}
@@ -235,21 +187,21 @@ namespace GenBOE.DataBridge.DTO
 
 
 		/// <summary>
-		/// Delete Common Disclosure Skill Mixes by MOQ Type Selection ID
+		/// Delete Common Disclosure Skill Mixes by BOE Task Element ID
 		/// </summary>
-		/// <param name="moqTypeSelectionID">int</param>
+		/// <param name="boeTaskElementID">int</param>
 		/// <returns>Number of Common Disclosure Skill Mixes deleted</returns>
-		public virtual int? DeleteCommonDisclosureSMByMoqTypeSelection(int moqTypeSelectionID)
+		public virtual int? DeleteCommonDisclosureSkillMixByBOETaskElementID(int boeTaskElementID)
 		{
 			int? toReturn = null;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
 			{
-				if (moqTypeSelectionID > 0)
+				if (boeTaskElementID > 0)
 				{
 					using (GenBoeEntities gbe = new GenBoeEntities())
 					{
-						toReturn = gbe.deleteCommonDisclosureSkillMix(moqTypeSelectionID).FirstOrDefault();
+						toReturn = gbe.deleteCommonDisclosureSkillMix(boeTaskElementID).FirstOrDefault();
 					}
 				}
 				return toReturn;
@@ -270,7 +222,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				Collection<string> commonDisclosureVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceID", "BusinessResourceID", "BOEID", "BOETaskElementID", "MOQTypeSelectionID", "IsPercentLocked", "IsUserInput"
+					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceID", "BusinessResourceID", "BOEID", "BOETaskElementID", "IsUserInput"
 				};
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
