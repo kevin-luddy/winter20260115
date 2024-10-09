@@ -819,7 +819,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				tasksToValidate.Add(taskElement);
 				errors = BOEvalidator.validation(tasksToValidate, (Collection<Dictionary<string, string>>)null);
-				ValidationsForResourceAndBRC(taskElement, validationErrors, ws.Shortname);
+				ValidationsForResourceAndBRC(taskElement, validationErrors, ws);
 
 				// gather errors up, if any
 				foreach (string error in errors)
@@ -885,40 +885,47 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="taskElement">Task Element DTO</param>
 		/// <param name="validationErrors">Validation Errors</param>
 		/// <param name="workspaceShortname">Workspace shortname</param>
-		private static void ValidationsForResourceAndBRC(BoeTaskElementDTO taskElement, ICollection<ValidationMessage> validationErrors, string workspaceShortname)
+		private void ValidationsForResourceAndBRC(BoeTaskElementDTO taskElement, ICollection<ValidationMessage> validationErrors, FullWorkspace workspace)
 		{
 			DateTime OneLmxCutOffDate = Utilities.OneLmxStartDate;
 
-			foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
+			if (taskElement.taskElementLabors != null && taskElement.taskElementLabors.Any())
 			{
-				if (dto.Updateable != UpdateType.Deleted)
+				ICollection<int> resourceIds = taskElement.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(t => t.ResourceID.Value).Distinct().ToList();
+				ICollection<ResourceDTO> resourcesUsed = this._ResourceLoader.GetByIds(resourceIds);
+				ICollection<int> tmResourceIds = resourcesUsed.Where(a => a.SegRegion == WebConstants.SPACE_LEGACY_TM).Select(x => x.Id).ToList();
+				
+				foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
 				{
-					if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
+					if (dto.Updateable != UpdateType.Deleted)
 					{
-						// do validation per row item
-						if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
+						if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && (!dto.ResourceID.HasValue || !tmResourceIds.Contains(dto.ResourceID.Value)))
 						{
-							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
-						}
+							// do validation per row item
+							if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
+							}
 
-						if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
-							&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
-							&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
-						{
-							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
-						}
+							if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
+								&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
+								&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
+							}
 
-						if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
-							&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
-						{
-							validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+							if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
+								&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+							}
 						}
-					}
-					else
-					{
-						if (dto.ResourceID == null || dto.ResourceID == 0)
+						else
 						{
-							validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
+							if (dto.ResourceID == null || dto.ResourceID == 0)
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
+							}
 						}
 					}
 				}
@@ -1057,10 +1064,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 
 				ws.RefreshBoes();
-
-				// Save historical metrics for BOE Task Element
-				// Previously we had to convert the id from output of MediatedBulkSaveTaskElements for new Task Elements, but now dtoToSave.Id is set correctly
-				this.SaveHistoricalMetricsToTaskElement(dtoToSave.Id, metricIds);
 
 				if (OtherBOERecalculationsNeeded)
 				{
@@ -2015,21 +2018,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Populates the passed in <see cref="MOQEquationModelView"/> with metric parameters.
-		/// </summary>
-		/// <param name="ids">The TaskElement id's for which metrics will be retrieved</param>
-		/// <param name="model">The <see cref="MOQEquationModelView"/> that will be populated</param>
-		public virtual void GetMetricByTaskElementIds(Collection<int> ids, MOQEquationModelView model)
-		{
-			if (model == null)
-			{
-				throw new ArgumentNullException(nameof(model));
-			}
-			// Nothing to do here except disable search link. Metrics no longer supported for SSC.
-			this.SetShowMetricLink(model);
-		}
-
-		/// <summary>
 		/// Gets a <see cref="System.Web.Mvc.ViewResult"/> with historic metrics.
 		/// </summary>
 		/// <param name="validatedOption">?</param>
@@ -2040,26 +2028,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// This code should be refactored  to remove the ViewResult as a return after the metric model views for IS&GS and Space Systems are refactored to use an interface
 			// 28181
 			return new ViewResultData();
-		}
-
-		/// <summary>
-		/// Gets a <see cref="System.Web.Mvc.ViewResult"/> with historic metrics
-		/// </summary>
-		/// <param name="metricId">The id of the metric to retrieve</param>
-		/// <returns>The <see cref="System.Web.Mvc.ViewResult"/> with historic metrics</returns>
-		public virtual ViewResultData GetHistoricalMetricsDetails(int metricId)
-		{
-			throw new NotImplementedException("Historical metrics are not supported for SSC.");
-		}
-
-		/// <summary>
-		/// Gets a <see cref="System.Web.Mvc.ViewResult"/> with historic metrics from the source system.
-		/// </summary>
-		/// <param name="metricId">The id of the metric to retrieve</param>
-		/// <returns>The <see cref="System.Web.Mvc.ViewResult"/> with historic metrics</returns>
-		public virtual ViewResultData GetHistoricalMetricsDetailsFromSource(int metricId)
-		{
-			throw new NotImplementedException("Historical metrics are not supported for SSC.");
 		}
 
 		/// <summary>
@@ -2094,16 +2062,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			if (model == null) { throw new ArgumentNullException(nameof(model)); }
 			model.ShowSearchMetricsLink = false;
-		}
-
-		/// <summary>
-		/// Saves metrics
-		/// </summary>
-		/// <param name="taskElementID">The id of the task element to save the metric to</param>
-		/// <param name="metricIDs">the id of the metric to save to the task element</param>
-		public virtual void SaveHistoricalMetricsToTaskElement(int taskElementID, ICollection<int> metricIDs)
-		{
-			// SSC historical metrics have been deprecated.
 		}
 
 		/// <summary>

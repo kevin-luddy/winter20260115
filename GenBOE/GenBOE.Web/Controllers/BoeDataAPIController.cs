@@ -9,6 +9,7 @@ namespace GenBOE.Web.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -1304,6 +1305,90 @@ namespace GenBOE.Web.Controllers
 				result.Messages.Add($"Unknown Error occured returning IBOE Totals : {ex.Message}");
 			}
 
+			return result;
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<PBOEClinData> GetPBOEClinData(string ptmTrackingNumber)
+		{
+			IESResponse<PBOEClinData> result = new IESResponse<PBOEClinData>();
+
+			try
+			{
+				string ntid = tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				// Check if user is System Admin
+				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(ptmTrackingNumber).Where(x => x.CurrentPTMWorkspace).ToList();
+
+				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
+
+				if (isAllowed)
+				{
+					// Instantiate PBOE Exporter
+					PBOEFormExporter exporter = new PBOEFormExporter(userDataLoader, resourceLoader, tmCalculator);
+
+					foreach (WorkspaceDTO workspace in workspaces)
+					{
+						// Get Prerequisite Data
+						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
+						ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(workspace.ResourceListID);
+
+						ICollection<BOEFormPBOEDTO> pboes = this.boeFormPBOEDTODataLoader.GetByWorkspaceId(fullWorkspace.Id);
+
+						if (pboes.Count > 0)
+						{
+							foreach (BOEFormPBOEDTO pboe in pboes)
+							{
+								ICollection<PBOETableRow> rowData = exporter.PullRowsFromWorkspace(fullWorkspace, pboe, workspaceResources.Select(x => x.Id).ToList(), this.contractTypeLoader.GetPickListValues());
+
+								foreach (PBOETableRow row in rowData)
+								{
+									PBOEClinData data = new PBOEClinData(row);
+									data.SupplierPOP = exporter.PeriodOfPerformance;
+									data.SupplierProposedValue = pboe.SupplierProposedValue.HasValue ? pboe.SupplierProposedValue.Value.ToString("C", CultureInfo.CurrentCulture) : String.Empty;
+
+									// Add the row data to result
+									result.Data.Add(data);
+								}
+							}
+						}
+						else
+						{
+							string message = $"Failed to retrieve PBOE Data for Workspaces with Tracking Number: {ptmTrackingNumber}";
+							result.Messages.Add(message);
+							result.IsSuccessful = false;
+							result.Data = null;
+						}
+					}
+
+					if (result.Data.Count > 1)
+					{
+						result.IsSuccessful = true;
+					}
+					else
+					{
+						string message = $"No PBOE CLIN Data for given Tracking Number: {ptmTrackingNumber}";
+						result.Messages.Add(message);
+						result.IsSuccessful = false;
+						result.Data = null;
+					}
+				}
+				else
+				{
+					string message = $"Invalid permission to Workspace with tracking number: {ptmTrackingNumber}";
+					logger.Error(message + " NTID: " + ntid);
+					result.Messages.Add(message);
+					result.IsSuccessful = false;
+					result.Data = null;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occured returning PBOE CLIN Data: {ex.Message}");
+			}
 			return result;
 		}
 

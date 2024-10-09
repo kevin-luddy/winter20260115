@@ -436,11 +436,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 theModelView.CustomFieldValues = selectedOptionsMV;
             }
 
-            theModelView.ShowHistoricMetricCheck = false;
-
             ICollection<int> ids = new Collection<int>();
             ids.Add(boe.Id);
-            theModelView.ShowHistoricMetricCheck = this.ShowHistoricMetricCheck(ids);
 
             return theModelView;
         }
@@ -2410,16 +2407,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             theModelView.PotentialApprovers = new Collection<SelectListItem>(approvers.OrderBy(x => x.Text).ToArray());
 
             theModelView.BoeResults = this.GetManageBOEGridData(workspace, workspace.Boes);
-        }
-
-        /// <summary>
-        /// Returns a bool indicating if historic metrics should be shown
-        /// </summary>
-        /// <param name="ids">The id's of the boe's to check</param>
-        /// <returns>true if the metrics should be shown, false otherwise</returns>
-        public virtual bool ShowHistoricMetricCheck(ICollection<int> ids)
-        {
-            return false;
         }
 
         /// <summary>

@@ -85,9 +85,11 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			decimal tmTotalCost = 0m;
 			bool hasValidTMRates = true;
 
+			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
 			foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
 			{
-				CalculateTotalsForBOEFormModelView(dto, workspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement);
+				CalculateTotalsForBOEFormModelView(dto, workspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement, resourceIdToSegmentRegion);
 			}
 			return new BOEFormModelView
 			{
@@ -331,10 +333,11 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="tmTotalCost">Reference to T&M Total Cost</param>
 		/// <param name="hasValidTMRates">Bool to show Valid TM Rates</param>
 		/// <param name="taskElement">Workspace Task Element</param>
-		private void CalculateTotalsForBOEFormModelView(BOEFormDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
+		private void CalculateTotalsForBOEFormModelView(BOEFormDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, 
+			ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement, IDictionary<int, string> resourceIdToSegmentRegion)
 		{
 			//get brc labors based on 1lmx start date
-			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, fullWorkspace.Shortname).ToList();
+			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, fullWorkspace.Shortname).ToList();
 
 			foreach (ResourceTypeDto laborTask in taskElementLabors)
 			{
@@ -374,10 +377,11 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="tmTotalCost">Reference to T&M Total Cost</param>
 		/// <param name="hasValidTMRates">Bool to show Valid TM Rates</param>
 		/// <param name="taskElement">Workspace Task Element</param>
-		private void CalculateTotalsForBOE(BOEFormPBOEDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
+		private void CalculateTotalsForBOE(BOEFormPBOEDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, 
+			ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement, IDictionary<int, string> resourceIdToSegmentRegion)
 		{
 			//get brc labors based on 1lmx start date
-			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, fullWorkspace.Shortname).ToList();
+			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, fullWorkspace.Shortname).ToList();
 
 			foreach (ResourceTypeDto laborTask in taskElementLabors)
 			{
@@ -497,11 +501,13 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			decimal tmTotalCost = 0m;
 			bool hasValidTMRates = true;
 
+			IDictionary<int, string> resourceIdToSegmentRegion = fullWorkspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
 			foreach (BOEFormPBOEDTO pboe in pboeDtos)
 			{
 				foreach (BoeTaskElementDTO taskElement in fullWorkspace.TaskElements)
 				{
-					CalculateTotalsForBOE(pboe, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement);
+					CalculateTotalsForBOE(pboe, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement, resourceIdToSegmentRegion);
 				}
 
 				rowList.Add(new PBOERow

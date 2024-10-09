@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="ACV.Shared" Version="1.0.13305914" />
-    <PackageReference Include="Aspose.Cells" Version="22.7.0" />
+    <PackageReference Include="Aspose.Cells" Version="24.9.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="6.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.14" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />

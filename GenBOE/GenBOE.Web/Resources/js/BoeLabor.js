@@ -982,6 +982,10 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
 		if (!TaskLaborSpreadsWidget.isReadOnly()) {
 			TaskLaborSpreadsWidget.cleanDirty();
 		}
+		if (!TaskSkillMixWidget.isReadOnly()) {
+			TaskSkillMixWidget.cleanDirty();
+		}
+
 		TaskElementDetailsWidget.cleanDirty();
 
 		for (widgetIndex in TaskElementDetailsWidget.ChildWidgets) {
@@ -998,7 +1002,8 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
 
 		return TaskElementDetailsWidget.isDirty() ||
 			(!TaskLaborTypesWidget.isReadOnly() && TaskLaborTypesWidget.isDirty()) ||
-			(!TaskLaborSpreadsWidget.isReadOnly() && TaskLaborSpreadsWidget.isDirty());
+			(!TaskLaborSpreadsWidget.isReadOnly() && TaskLaborSpreadsWidget.isDirty()) ||
+			(!TaskSkillMixWidget.isReadOnly() && TaskSkillMixWidget.isDirty());
 	};
 
 	TaskElementDetailsWidget.InitializeDialog = function (dialog) {

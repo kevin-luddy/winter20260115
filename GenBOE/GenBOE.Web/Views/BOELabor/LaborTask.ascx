@@ -71,6 +71,7 @@
 
 	var TaskLaborTypesWidget;
 	var TaskLaborSpreadsWidget;
+	var TaskSkillMixWidget;
 	var ImportLaborType = InitializeImportLaborTypeWidget('<%: ViewData["BOEID"] %>',
 		currentWorkspace,
 		completeImportUrl,
@@ -332,6 +333,13 @@
 		spreadWidgetConfig.isReadOnly = false;
 		spreadWidgetConfig.IsModule = true;
 		TaskLaborSpreadsWidget = new GenWidget(spreadWidgetConfig);
+
+		// Skill Mix Rationale
+		var skillMixConfig = {};
+		skillMixConfig.ContextID = "SkillMixRationaleContainer";
+		skillMixConfig.isReadOnly = false;
+		skillMixConfig.IsModule = true;
+		TaskSkillMixWidget = new GenWidget(skillMixConfig);
 
 		// Task Element details      
 
@@ -902,7 +910,18 @@
 		</div>
 
 	</div>
-
+	<% if (Model.EnableSkillMix) 
+		{ %>
+	<div id="SkillMixPlaceholder">
+		<div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
+			<div class="module-header-data">
+				Skill Mix Rationale
+			</div>
+			<div class="module-content-data expanded-content">TBD: tables
+			</div>
+		</div>
+	</div>
+	<% } %>
 	<div class="buttons-left" data-ng-hide="isLoading"></div>
 	<div class="buttons" data-ng-hide="isLoading">
 		<div class="required-note">
@@ -1284,6 +1303,13 @@
 				<div class="title">
 					<span class="resultCount"></span>
 					Element row(s) missing Resource and/or Business Resource Code because Start Date is before 1LMX Cutoff Date and End Date is after 1LMX Cutoff Date.
+				</div>
+				<ul class="resultsList"></ul>
+			</div>
+			<div class="import-result-type display-none" id="ImportResult-MissingBusinessResourceCode">
+				<div class="title">
+					<span class="resultCount"></span>
+					Element row(s) missing Business Resource Code because Start Date is before 1LMX Cutoff Date and End Date is after 1LMX Cutoff Date.
 				</div>
 				<ul class="resultsList"></ul>
 			</div>

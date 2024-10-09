@@ -56,7 +56,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		private Mock<IPerformingOrgDTODataLoader> perfOrgLoader;
 		private Mock<ICommonDataMapper> _CommonDataMapper = null;
 		private Mock<IOrdinaryVariableLoader> _TaskVariableLoader = null;
-		private Mock<IMSTMetricLoader> _MSTMetricLoader = null;
 		private Mock<TaskElementValidation> _TaskElementValidation = null;
 		private Mock<IVariableCircularReferenceChecker> circularReferenceChecker = null;
 		private Mock<ICommonDataMapper> commonDataMapper = null;
@@ -156,7 +155,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   _PermissionDataLoader.Object,
 				   perfOrgLoader.Object,
 				   _TaskVariableLoader.Object,
-				   _MSTMetricLoader.Object,
 				   _TaskElementValidation.Object,
 				   circularReferenceChecker.Object,
 				   commonDataMapper.Object,
@@ -193,7 +191,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			_PermissionDataLoader = new Mock<IPermissionsDTODataLoader>();
 			_CommonDataMapper = new Mock<ICommonDataMapper>();
 			this._TaskVariableLoader = new Mock<IOrdinaryVariableLoader>();
-			_MSTMetricLoader = new Mock<IMSTMetricLoader>();
 			_TaskElementValidation = new Mock<TaskElementValidation>();
 			circularReferenceChecker = new Mock<IVariableCircularReferenceChecker>();
 			commonDataMapper = new Mock<ICommonDataMapper>();
@@ -2462,79 +2459,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(modelView.MetricsPagingActionName, string.Empty, "The Metric dialog paging action name is incorrect for IS&GS.");
 		}
 
-		/// <summary>
-		/// Test to get metric search dialog parameters for Space.
-		/// </summary>
-		[TestMethod]
-		public void GetMetricSearchDialogParametersMST()
-		{
-			BOELaborControllerLogic sut = CreateSystemMST();
-			LaborTaskModelView modelView = new LaborTaskModelView();
-			MSTMetricSearchCriteriaDTO searchCriteria = new MSTMetricSearchCriteriaDTO
-			{
-				DataSources = new Collection<DataSource>() { new DataSource { DataSourceName = "DataSource1", Id = 1 } },
-				Programs = new Collection<Program>() { new Program { ProgramName = "JSF", Id = 1 } },
-				MeasureFunctions = new Collection<MeasureFunction>() { new MeasureFunction { MeasureFunctionName = "Measure Function", Id = "MF" } },
-				MeasureNames = new Collection<Measure>() { new Measure { MeasureName = "Measure 1", Id = 1 } }
-			};
-
-			_MSTMetricLoader.Setup(m => m.GetMSTMetricSearchCriteria()).Returns(searchCriteria);
-
-			sut.GetMetricSearchDialogParameters(modelView);
-			Assert.AreEqual(modelView.MetricsSearchDialogParameters.DialogTitle, CommonConstants.MSTDialogTitle, "The Metric Search Dialog title is incorrect for MST.");
-			Assert.AreEqual(modelView.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix, CommonConstants.MSTMetricsDialogSuffix, "The Metric dialog suffix Id is incorrect for MST.");
-			Assert.AreEqual(modelView.MetricsPagingActionName, WebConstants.ACTION_PAGE_HISTORICAL_METRIC_SEARCH_RESULTS_MST, "The Metric dialog suffix Id is incorrect for MST.");
-		}
-
-		#region GetMetricByTaskElementIds Tests
-
-		/// <summary>
-		/// Test populating MST MOQ equation model view with the correct metrics.
-		/// </summary>
-		[TestMethod]
-		public void GetMetricByTaskElementIds2MST()
-		{
-			BOELaborControllerLogic sut = CreateSystemMST();
-			MOQEquationModelView result = new MOQEquationModelView();
-			MSTMetricDetailsDTO dto = new MSTMetricDetailsDTO()
-
-			{
-				Id = 1,
-				BusinessArea = "MST",
-				DataSource = "PMM",
-				DateAddedToTaskElement = DateTime.Now,
-				Comment = "Test Comment",
-				ContractNumber = "12345",
-				DataSourceId = 1,
-				EndDate = DateTime.Now.AddYears(1),
-				Equation = "1 + 2",
-				LineOfBusiness = "Civil",
-				MeasureData = 0.98m,
-				ProgramName = "JSF",
-				MeasureName = "SoftwareEngineer",
-				ProgramId = 1
-			};
-
-
-			_MSTMetricLoader.Setup(s => s.GetByTaskElementIds(new Collection<int>() { 1 })).Returns(new Collection<MSTMetricDetailsDTO>() { dto });
-			sut.GetMetricByTaskElementIds(new Collection<int>() { 1 }, result);
-
-			Assert.AreEqual(1, result.PMMetricsUsed.Count, "The number of PMMetricsUsed is incorrect.");
-			Assert.AreEqual("SoftwareEngineer", result.PMMetricsUsed.ToCollection()[0].MeasureName, "The data in the returned model is not correct.");
-			Assert.AreEqual(1, result.PMMetricsUsed.ToCollection()[0].Id, "The data in the returned model is not correct.");
-			Assert.IsTrue(result.ShowSearchMetricsLink);
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void GetMetricByTaskElementIdsException2MST()
-		{
-			BOELaborControllerLogic sut = CreateSystemMST();
-			MOQEquationModelView theModel = new MOQEquationModelView();
-			sut.GetMetricByTaskElementIds(null, theModel);
-		}
-		#endregion
-
 		#region GetMOQEquationModelView Tests
 		[TestMethod]
 		public void GetMOQEquationModelView()
@@ -2581,29 +2505,12 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO());
 
-			_MSTMetricLoader.Setup(s => s.GetByTaskElementIds(new Collection<int>() { te.Id })).Returns(new Collection<MSTMetricDetailsDTO>() { dto });
 			MOQEquationModelView result = sut.GetMOQModelView(te, workspace);
 			Assert.AreEqual(1, result.PMMetricsUsed.Count, "The number of HistoricalMetricsUsed is incorrect.");
 			Assert.AreEqual("SoftwareEngineer", result.PMMetricsUsed.ToCollection()[0].MeasureName, "The data in the returned model is not correct.");
 			Assert.AreEqual(1, result.PMMetricsUsed.ToCollection()[0].Id, "The data in the returned model is not correct.");
 			Assert.IsTrue(result.ShowSearchMetricsLink);
 		}
-		#endregion
-
-		#region SaveHistoricalMetricsToTaskElement Tests
-
-		[TestMethod]
-		public void SaveHistoricalMetricsToTaskElementMST()
-		{
-			BOELaborControllerLogic sut = CreateSystemMST();
-			int taskElementID = 1;
-			Collection<int> metricIDs = new Collection<int>() { 1, 2, 3 };
-
-			_MSTMetricLoader.Setup(x => x.Save(taskElementID, metricIDs));
-			sut.SaveHistoricalMetricsToTaskElement(taskElementID, metricIDs);
-			_MSTMetricLoader.Verify(x => x.Save(taskElementID, metricIDs), Times.Exactly(1), "The historical metric save method was not called.");
-		}
-
 		#endregion
 
 		#region OverrideReadOnly Tests

@@ -518,11 +518,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 ICollection<int> boeTaskIds = new Collection<int>();
                 boeTaskIds.Add(boeTask.Id);
 
-                if (this.IsHistoricMetricDisclosureRequired(boeTaskIds, inBOE))
-                {
-                    ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.HISTORIC_METRIC_DISCLOSURE_REQUIRED);
-                }
-
                 // Need to determine if there are any required Task custom fields
                 switch (boeTask.TaskElementType)
                 {
@@ -1085,7 +1080,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
         {
             decimal TotalLaborSpreadValue = 0;
 
-            foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
+			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
+			foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
             {
                 bool invalidCostSpreadPrecision = false;
                 bool invalidHoursSpreadPrecision = false;
@@ -1099,7 +1096,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 }
 
 				// need to verfy a Resource or Business Resource Code exists
-				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, workspace.Shortname);
+				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, resourceIdToSegmentRegion, workspace.Shortname);
                 if (!string.IsNullOrEmpty(requiredMessage))
                 {
 					LaborTypeMessages.Add(requiredMessage);
@@ -1186,7 +1183,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 if (LaborTypeMessages.Any())
                 {
-					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask, workspace.Shortname);	
+					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask, resourceIdToSegmentRegion, workspace.Shortname);	
 
                     boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
                     boeTasks.LaborTypes.Add(boeLabor);
@@ -1686,18 +1683,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
         protected virtual string FormatMOQTextErrorMessage(string MOQTextErrorMessage)
         {
             return string.Format(MOQTextErrorMessage, CommonConstants.BOE_MOQ_TEXT_LABEL);
-        }
-
-        /// <summary>
-        /// Return a <see cref="bool"/> indicating if the historic metric disclosure is required
-        /// </summary>
-        /// <param name="boeTaskIds">The id's of the task elements to retrieve metrics</param>
-        /// <param name="boe">the boe containing the flag indicating if the historic metric disclosure is required</param>
-        /// <returns>required if true, not required otherwise</returns>
-        protected virtual bool IsHistoricMetricDisclosureRequired(ICollection<int> boeTaskIds, FullBoe boe)
-        {
-           // Metrics deprecated for SSC.
-           return false;
         }
 
         /// <summary>

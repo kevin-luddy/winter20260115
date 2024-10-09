@@ -209,7 +209,9 @@
     <Compile Include="BOE\BOEResourcesPair.cs" />
     <Compile Include="BOE\BOETotalsPostModel.cs" />
     <Compile Include="BOE\IBOERow.cs" />
+    <Compile Include="BOE\PBOEClinData.cs" />
     <Compile Include="BOE\PBOERow.cs" />
+    <Compile Include="Common\ActionLogicUtility.cs" />
     <Compile Include="Common\AllBOEExportHelper.cs" />
     <Compile Include="Common\Calculations\BoeTaskElementRecalculation.cs" />
     <Compile Include="Common\Calculations\FullWorkspaceRecalculation.cs" />
@@ -314,10 +316,7 @@
     <Compile Include="_ControllerLogic\GenBOEControllerLogic.cs" />
     <Compile Include="_ControllerLogic\WBSControllerLogic.cs" />
     <Compile Include="CopyBOE\BOECopier.cs" />
-    <Compile Include="CopyBOE\BOECopierCompanyMST.cs" />
-    <Compile Include="CopyBOE\BOECopierCompanySpace.cs" />
     <Compile Include="CopyBOE\ConflictBOE.cs" />
-    <Compile Include="CopyBOE\IBOECopierCompany.cs" />
     <Compile Include="CopyBOE\IConflictBOE.cs" />
     <Compile Include="CustomFields\RestoreDefaultOptions.cs" />
     <Compile Include="CustomFields\RestoreOptionData.cs" />

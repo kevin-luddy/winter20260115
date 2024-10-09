@@ -166,10 +166,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			List<BOESummaryGridModelView> summaryResults;
 
 			ICollection<BoeTaskElementDTO> taskElementCollection = exportInputs.TaskElements.Where(t => t.BoeID == boe.Id).ToList();
+			IDictionary<int, string> resourceIdToSegmentRegion = exportInputs.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 
 			IEnumerable<BOESummaryGridModelView> result = from boeResourceHours in
 								 (from task in taskElementCollection
-								  from boeResource in BRCValidationUtility.ProcessLaborTypesForBrc(task.taskElementLabors, exportInputs.Workspace.Shortname).ToList()
+								  from boeResource in BRCValidationUtility.ProcessLaborTypesForBrc(task.taskElementLabors, resourceIdToSegmentRegion, exportInputs.Workspace.Shortname).ToList()
 								  where boeResource.ResourceID.HasValue
 								  select new
 								  {

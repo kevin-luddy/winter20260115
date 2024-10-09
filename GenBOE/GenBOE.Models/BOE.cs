@@ -26,16 +26,16 @@ namespace GenBOE.Models
             this.BOETaskElements = new HashSet<BOETaskElement>();
             this.BOEUserRoles = new HashSet<BOEUserRole>();
             this.BOEUserRoleHistories = new HashSet<BOEUserRoleHistory>();
+            this.CommonDisclosureSkillMixes = new HashSet<CommonDisclosureSkillMix>();
             this.MaterialTaskElements = new HashSet<MaterialTaskElement>();
             this.MOQTypeSelectionTableDataResourceHours = new HashSet<MOQTypeSelectionTableDataResourceHour>();
             this.ODCTaskElements = new HashSet<ODCTaskElement>();
             this.RteTemplateAnswers = new HashSet<RteTemplateAnswer>();
+            this.SkillMixes = new HashSet<SkillMix>();
             this.SumOfBOE_OrdinaryVariableXREF = new HashSet<SumOfBOE_OrdinaryVariableXREF>();
             this.SumOfBOE_WorkspaceVariableXREF = new HashSet<SumOfBOE_WorkspaceVariableXREF>();
             this.TravelTripTaskElements = new HashSet<TravelTripTaskElement>();
             this.WBS_CLIN_BOE_XREF = new HashSet<WBS_CLIN_BOE_XREF>();
-            this.CommonDisclosureSkillMixes = new HashSet<CommonDisclosureSkillMix>();
-            this.SkillMixes = new HashSet<SkillMix>();
         }
     
         public int BOEID { get; set; }
@@ -73,6 +73,8 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOEUserRoleHistory> BOEUserRoleHistories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MaterialTaskElement> MaterialTaskElements { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MOQTypeSelectionTableDataResourceHour> MOQTypeSelectionTableDataResourceHours { get; set; }
@@ -81,6 +83,8 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RteTemplateAnswer> RteTemplateAnswers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SkillMix> SkillMixes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SumOfBOE_OrdinaryVariableXREF> SumOfBOE_OrdinaryVariableXREF { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SumOfBOE_WorkspaceVariableXREF> SumOfBOE_WorkspaceVariableXREF { get; set; }
@@ -88,9 +92,5 @@ namespace GenBOE.Models
         public virtual ICollection<TravelTripTaskElement> TravelTripTaskElements { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WBS_CLIN_BOE_XREF> WBS_CLIN_BOE_XREF { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SkillMix> SkillMixes { get; set; }
     }
 }

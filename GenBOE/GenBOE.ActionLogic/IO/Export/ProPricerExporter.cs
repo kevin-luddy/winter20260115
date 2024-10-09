@@ -24,6 +24,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using IES.Common;
 	using IES.Common.Compression;
 	using IES.Common.Exceptions;
+	using Microsoft.Practices.ObjectBuilder2;
 
 	/// <summary>
 	/// Exports all EOC elements to ProPricer
@@ -102,7 +103,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		public string ExportReport(ProPricerDTO inProPricer, string inZipPathFile, FullWorkspace inWorkspace)
 		{
 			PpDataReadyForExport ppDataToExport = this.ExportProPricer(inProPricer, inWorkspace);
-
 
 			// create the task data export stream
 			string taskData = this.CreateDataOutputString(ppDataToExport.TaskData);
@@ -417,10 +417,31 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="offloading">if set to <c>true</c> [offloading].</param>
 		/// <param name="has1LMXResources">if set to <c>true</c>, we need to account for splitting labor type for 1LMX</param>
 		/// <param name="workspaceShortname">Workspace shortname</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void ProcessTaskElements(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, Collection<BoeTaskElementDTO> taskElements,
 			ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading, bool has1LMXResources, string workspaceShortname)
 		{
 			if (!taskElements.Any()) { return; }
+
+			IDictionary<int, string> resourceIdToSegmentRegion = wsLevelData.Resources.ToDictionary(r => r.Id, d => d.SegRegion);
+
+			bool shouldSeparateBRC = false;
+			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
+			{
+				foreach (ProPricerTasks taskField in wsLevelData.PPInputsToExport.ProPricerTasks)
+				{
+					switch (taskField.Task)
+					{
+						case ProPricerField_Task.ResourceID:
+						case ProPricerField_Task.ResourceSegmentRegion:
+						case ProPricerField_Task.ProjMapResourceSegmentRegion:
+							shouldSeparateBRC = true;
+							break;
+						default:
+							break;
+					}
+				}
+			}
 
 			if (!inputsForExport.MultiBoe)
 			{
@@ -453,12 +474,12 @@ namespace GenBOE.ActionLogic.IO.Export
 						}
 
 						IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
-							elementOfCost, resourcesSplitforBrc, boeTask, resourcesSplitforBrc.Any(x => x.IsOffloaded), workspaceShortname);
+							elementOfCost, resourcesSplitforBrc, boeTask, resourcesSplitforBrc.Any(x => x.IsOffloaded), workspaceShortname, shouldSeparateBRC);
 
 						foreach (ResourceTypeDto labor in resourcesSplitforBrc)
 						{
 							this.GenerateResourceRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs, resourceIDs, boeTask,
-								laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname);
+								laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname, shouldSeparateBRC);
 						}
 					}
 				}
@@ -496,7 +517,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
 							IDictionary<int, string> mappings = this.GenerateTaskRow(wsLevelData, inputsForExport, resourceClin,
-								resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, labor.IsOffloaded, workspaceShortname);
+								resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, labor.IsOffloaded, workspaceShortname, shouldSeparateBRC);
 							// merge the mappings
 							foreach (KeyValuePair<int, string> kvp in mappings)
 							{
@@ -513,7 +534,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
 							this.GenerateResourceRow(wsLevelData, inputsForExport, resourceClin, resourceWbs, resourceIDs,
-								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname);
+								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname, shouldSeparateBRC);
 						}
 					}
 				}
@@ -1021,21 +1042,22 @@ namespace GenBOE.ActionLogic.IO.Export
 		[SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		private IDictionary<int, string> GenerateTaskRow(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, ClinDTO clin, WbsDTO wbs,
 			ElementOfCostType elementOfCost, List<ResourceTypeDto> taskResourcesEntriesForElementOfCost,
-			BoeTaskElementDTO boeTask, bool isResourceOffloaded, string workspaceShortname)
+			BoeTaskElementDTO boeTask, bool isResourceOffloaded, string workspaceShortname, bool shouldSeparateBRC)
 		{
 			IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<int, string>();
 			
 			string proPricerId = null;
 			bool firstResourceTypeEntry = true;
 			int previousResourceTypeId = 0;
-			/*
-             * Loop over the list of resource type entries (for the current task) that correspond to the designated Element of Cost (input parameter).
-             * 
-             */
 
-			// Bool - Should the task increment?
-			// Int - The previous Business Resource Code ID
-			Tuple<bool, int> shouldTaskIncrementAndPrevID = Tuple.Create(true, 0);
+				/*
+				 * Loop over the list of resource type entries (for the current task) that correspond to the designated Element of Cost (input parameter).
+				 * 
+				 */
+
+				// Bool - Should the task increment?
+				// Int - The previous Business Resource Code ID
+				Tuple<bool, int> shouldTaskIncrementAndPrevID = Tuple.Create(true, 0);
 			foreach (ResourceTypeDto resourceTypeEntry in taskResourcesEntriesForElementOfCost)
 			{
 				// ProjectMap only wants the task exported once whereas everyone else wants it 1:1 with the number of ResourceTypes inside it
@@ -1043,7 +1065,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				// Not generating new Task if this is a split resource for 1LMX
 				//keep this for brc in general
-				if (generateNewTask && previousResourceTypeId == resourceTypeEntry.Id)
+				if (!shouldSeparateBRC && generateNewTask && previousResourceTypeId == resourceTypeEntry.Id)
 				{
 					generateNewTask = false;
 				}
@@ -1052,7 +1074,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					// Pro Pricer Task ID. This may or may not be selected, but we may need to keep track of it for Resources too
 					string taskIDString = string.Empty;
-					shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2, workspaceShortname);
+
+					shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2, workspaceShortname, shouldSeparateBRC);
 
 					int incrementCount = 0;
 					if (elementOfCost == ElementOfCostType.LMLabor)
@@ -1137,7 +1160,9 @@ namespace GenBOE.ActionLogic.IO.Export
 					proPricerId = taskIDString + incrementCount.ToString(FORMAT);
 				}
 
-				laborTypeIdToProPricerIdMappings[resourceTypeEntry.Id] = proPricerId;
+				//create mapping based on if we generated a new task for the brc or not
+				int id = (int)(shouldSeparateBRC ? resourceTypeEntry.ResourceID : resourceTypeEntry.Id);
+				laborTypeIdToProPricerIdMappings[id] = proPricerId;
 
 				if (generateNewTask)
 				{
@@ -1390,14 +1415,18 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="previousBusinessResourceCodeID">The Business Resource Code ID in the previous row</param>
 		/// <param name="workspaceShortname">Workspace shortname</param>
 		/// <returns>A tuple, denoting if the task number should increment and the previous BRC ID</returns>
-		private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID, string workspaceShortname)
+		private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID, string workspaceShortname, bool shouldSeparateBRC)
 		{
 			Tuple<bool, int> shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
 
 			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 			{
+				if (shouldSeparateBRC)
+				{
+					shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
+				}
 				// If this is split between a BRC and current resource, we should flag it to not increment for the next 
-				if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
+				else if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
 					&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
 				{
 					shouldTaskIncrementResult = Tuple.Create(true, resourceTypeEntry.BusinessResourceCodeID.Value);
@@ -1454,7 +1483,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void GenerateResourceRow(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, ClinDTO clin, WbsDTO wbs,
 			Collection<int> inResourceIDs, BoeTaskElementDTO boeTask,
-			IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor, bool isUsingEquivalentPerson, bool isResourceOffloaded, string workspaceShortname)
+			IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor, bool isUsingEquivalentPerson, bool isResourceOffloaded, string workspaceShortname, bool shouldSeparateBRC)
 		{
 			// only want to export the resource associated with correct list of Resource IDs. 
 			// For ex, if the labor contained 3 labors: 1 Labor, 1 IWTA, and 1 SubContractor. We only want to export the row that matched the current element of cost
@@ -1504,7 +1533,9 @@ namespace GenBOE.ActionLogic.IO.Export
 							newResourceRow.Append(DOUBLE_QUOTE).Append(perfOrg.PerformingOrgName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.ProPricerTaskID:
-							newResourceRow.Append(laborTypeIdToProPricerIdMappings[labor.Id]).Append(END_FIELD);
+							//look up based on if we generated a new task for the BRC or not
+							int id = (int)(shouldSeparateBRC ? labor.ResourceID : labor.Id);
+							newResourceRow.Append(laborTypeIdToProPricerIdMappings[id]).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.ResourceID:
 						case ProPricerField_Resources.ProjMapInitialResoure:

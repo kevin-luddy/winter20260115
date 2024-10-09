@@ -551,6 +551,9 @@ namespace GenBOE.ActionLogic.Common
             logger.Info($"OffloadAsNonProjectMap. Workspace Id: {workspace.Id}");
 
             OffloadLaborRatesResults results = new OffloadLaborRatesResults();
+
+			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
             foreach (FullBoe boe in boes)
             {
                 logger.Debug($"OffloadAsNonProjectMap. Processing BOE Id: {boe.Id}");
