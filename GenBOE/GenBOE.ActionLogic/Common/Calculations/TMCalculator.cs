@@ -117,7 +117,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		public void GetBOETotals<T>(BOETotalsPostModel postModel, IESResponse<T> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
 		{
 			Type type = typeof(T);
-			switch (type.FullName)
+			switch (type.Name)
 			{
 				case "PBOERow":
 					GetPBOETotals(postModel, result as IESResponse<PBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
