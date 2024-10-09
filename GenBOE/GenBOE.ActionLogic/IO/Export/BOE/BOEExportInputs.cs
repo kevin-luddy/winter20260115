@@ -99,7 +99,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				IDictionary<int, string> resourceIdToSegmentRegion = this.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 				foreach (BoeTaskElementDTO taskElement in taskElements)
 				{
-					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, workspace.Shortname, startingIndex).ToCollection();
+					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, workspace.Shortname, startingIndex).ToCollection();
 					if (taskElement.taskElementLabors.Any())
 					{
 						startingIndex = Math.Min(startingIndex, taskElement.taskElementLabors.Select(x => x.Id).Min() - 1);
