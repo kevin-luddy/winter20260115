@@ -20,10 +20,5 @@ namespace GenBOE.Web.ModelView
 		/// Resource Description
 		/// </summary>
 		public string ResourceDescription { get; set; }
-
-		/// <summary>
-		/// Resource ID
-		/// </summary>
-		public int ResourceId { get; set; }
 	}
 }
