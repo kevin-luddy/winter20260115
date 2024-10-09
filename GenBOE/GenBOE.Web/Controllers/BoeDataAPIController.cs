@@ -1205,7 +1205,7 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(postModel.TrackingNumber);
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(postModel.TrackingNumber).Where(x => x.CurrentPTMWorkspace).ToList();
 
 				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
