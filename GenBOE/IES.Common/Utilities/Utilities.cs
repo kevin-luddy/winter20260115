@@ -1116,7 +1116,7 @@ namespace IES.Common
 		{
 			_ = log ?? throw new ArgumentNullException(nameof(log));
 
-			string loggingEnabled = System.Configuration.ConfigurationManager.AppSettings["EnableEnvionmentInfoLogging"];
+			string loggingEnabled = ConfigurationUtilities.GetAppSetting("EnableEnvionmentInfoLogging");
 			if (loggingEnabled != null && loggingEnabled == "true")
 			{
 				log.Debug("Begin Environment Variables");
@@ -1127,9 +1127,9 @@ namespace IES.Common
 				log.Debug("End Environment Variables");
 
 				log.Debug("Begin Configuration Manager App Settings");
-				foreach (string configSettingKey in System.Configuration.ConfigurationManager.AppSettings.AllKeys)
+				foreach (string configSettingKey in ConfigurationUtilities.GetAppSettingsKeys())
 				{
-					log.Debug(configSettingKey + " - " + System.Configuration.ConfigurationManager.AppSettings[configSettingKey]);
+					log.Debug(configSettingKey + " - " + ConfigurationUtilities.GetAppSetting(configSettingKey));
 				}
 				log.Debug("End Configuration Manager App Settings");
 			}
