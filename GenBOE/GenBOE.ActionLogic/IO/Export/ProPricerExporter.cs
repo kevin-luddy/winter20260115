@@ -463,7 +463,10 @@ namespace GenBOE.ActionLogic.IO.Export
 							//clone resources with brc
 							//maintain original ID for pro pricer ID mapping in generate resource row
 							resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, resourceIdToSegmentRegion, workspaceShortname, startingIndex).ToList();
-							startingIndex = resourcesSplitforBrc.Any() ? resourcesSplitforBrc.Select(x => x.Id).Min() - 1 : startingIndex;
+							if (resourcesSplitforBrc.Any())
+							{
+								startingIndex = Math.Min(startingIndex, resourcesSplitforBrc.Select(x => x.Id).Min() - 1);
+							}
 						}
 						if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) && has1LMXResources)
 						{
@@ -499,7 +502,10 @@ namespace GenBOE.ActionLogic.IO.Export
 						//clone resources with brc
 						//maintain original ID for pro pricer ID mapping in generate resource row
 						resourcesSplitforBrc = BRCValidationUtility.ProcessLaborTypesForBrc(taskResourcesEntriesForElementOfCost, resourceIdToSegmentRegion, workspaceShortname, startingIndex).ToList();
-						startingIndex = resourcesSplitforBrc.Any() ? resourcesSplitforBrc.Select(x => x.Id).Min() - 1 : startingIndex;
+						if (resourcesSplitforBrc.Any())
+						{
+							startingIndex = Math.Min(startingIndex, resourcesSplitforBrc.Select(x => x.Id).Min() - 1);
+						}
 					}
 					IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<int, string>();
 					foreach (ResourceTypeDto labor in resourcesSplitforBrc)

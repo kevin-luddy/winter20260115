@@ -27,6 +27,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.Reference;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.Common;
@@ -34,7 +35,6 @@ namespace GenBOE.Web.Controllers
 	using IES.Common;
 	using IES.Common.Exceptions;
 	using IES.Common.PickList;
-	using Microsoft.Ajax.Utilities;
 
 	/// <summary>
 	/// BOE Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up BOE data, hence the name.
@@ -125,6 +125,11 @@ namespace GenBOE.Web.Controllers
 		private readonly TMCalculator tmCalculator;
 
 		/// <summary>
+		/// In-use data loader
+		/// </summary>
+		private readonly IInUseDataLoader inUseDataLoader;
+
+		/// <summary>
 		/// Logger
 		/// </summary>
 		private Logger logger = new Logger("BoeDataAPIController");
@@ -146,7 +151,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
 		/// <param name="securityInformation">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, ISecurityInformation securityInformation, ITMResourceRateDTODataLoader tmResourceRateLoader, TMCalculator tmCalculator)
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, ISecurityInformation securityInformation, ITMResourceRateDTODataLoader tmResourceRateLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -165,6 +170,7 @@ namespace GenBOE.Web.Controllers
 			this.securityInformation = securityInformation;
 			this.tmResourceRateLoader = tmResourceRateLoader;
 			this.tmCalculator = tmCalculator;
+			this.inUseDataLoader = inUseDataLoader;
 		}
 		#endregion
 
@@ -722,7 +728,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>List of Workspace Data for user for use in NLF</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpPost]
-		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf([FromBody] ICollection<string> trackingNumbers,[FromUri] string nlfApiKey = null)
+		public IESResponse<NlfWorkspaceInnerData> GetAllWorkspaceInnerDataByTrackingNumbersForNlf([FromBody] ICollection<string> trackingNumbers, [FromUri] string nlfApiKey = null)
 		{
 			IESResponse<NlfWorkspaceInnerData> result = new IESResponse<NlfWorkspaceInnerData>();
 			try
@@ -1394,6 +1400,48 @@ namespace GenBOE.Web.Controllers
 		public static string NlfApiKey()
 		{
 			return ConfigurationUtilities.GetAppSetting("NlfApiKey");
+		}
+
+		/// <summary>
+		/// Get in-use resources for the 'current' workspaces for the given tracking number and element of cost for NLF
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <param name="elementOfCost">Element of Cost of the resources to get (Sub for PBOE, IWTA for IBOE)</param>
+		/// <returns>Resource data for the in-use resources</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<NlfResourceData> GetInUseResourcesForNlf(string trackingNumber, ElementOfCostType elementOfCost)
+		{
+			IESResponse<NlfResourceData> result = new IESResponse<NlfResourceData>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber).Where(x => x.CurrentPTMWorkspace).ToCollection();
+
+				foreach (int wsResourceListId in workspaces.Select(x => x.ResourceListID))
+				{
+					HashSet<int> inUseIds = inUseDataLoader.GetWorkspaceResourceIDsInUseByListID(wsResourceListId);
+					ICollection<ResourceDTO> inUseResources = resourceLoader.GetByListId(wsResourceListId)
+						.Where(x => x.ElementOfCost == elementOfCost && inUseIds.Contains(x.Id) && !result.Data.Any(y => y.ResourceName == x.ResourceName)).ToCollection();
+
+					result.Data.AddRange(inUseResources.Select(x => new NlfResourceData()
+					{
+						ResourceName = x.ResourceName,
+						ResourceDescription = x.ResourceDesc
+					}));
+				}
+
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occured returning in-use {elementOfCost.GetDescription()} Resources for given Workspaces with tracking number: {trackingNumber}: {ex.Message}");
+			}
+
+			return result;
 		}
 	}
 }
