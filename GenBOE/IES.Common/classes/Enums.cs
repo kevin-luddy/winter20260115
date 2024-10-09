@@ -1163,6 +1163,48 @@ namespace IES.Common
 	}
 
 	/// <summary>
+	/// For PBOE, Enum options for Expected CCoPD Applicability
+	/// </summary>
+	public enum ExpectedCCoPDApplicability
+	{
+		/// <summary>
+		/// Selection is blank
+		/// </summary>
+		[Description("")]
+		Blank = 0,
+
+		/// <summary>
+		/// CCoPD Applies checkbox option.
+		/// </summary>
+		[Description("CCoPD Applies")]
+		CCoPDApplies = 1,
+
+		/// <summary>
+		/// Commercial Item Exception Applies checkbox option
+		/// </summary>
+		[Description("Commercial Item Exception Applies")]
+		CommercialItemExceptionApplies = 2,
+
+		/// <summary>
+		/// Competition Exception Applies checkbox option.
+		/// </summary>
+		[Description("Competition Exception Applies")]
+		CompetitionExceptionApplies = 3,
+
+		/// <summary>
+		/// Other Exception Applies checkbox option.
+		/// </summary>
+		[Description("Other Exception Applies")]
+		OtherExceptionApplies = 4,
+
+		/// <summary>
+		/// CCoPD Threshold Exception (N/A)
+		/// </summary>
+		[Description("Exception Not Claimed")]
+		CCoPDThresholdExceptionApplies = 5
+	}
+
+	/// <summary>
 	/// Target areas used in RateFormatter definitions.
 	/// </summary>
 	public enum RateTarget

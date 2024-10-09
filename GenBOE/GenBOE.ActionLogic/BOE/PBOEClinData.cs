@@ -17,11 +17,10 @@ namespace GenBOE.ActionLogic.BOE
 		/// Constructor that takes in PBOETableRow
 		/// </summary>
 		/// <param name="row">PBOETableRow Model</param>
-		public PBOEClinData(PBOETableRow row) 
+		public PBOEClinData(PBOETableRow row)
 		{
 			if (row != null)
 			{
-				this.Value = row.Value;
 				this.WBS = row.WBS;
 				this.ContractType = row.ContractType;
 				this.CLIN = row.CLIN;
@@ -43,16 +42,6 @@ namespace GenBOE.ActionLogic.BOE
 		/// The CLIN Name
 		/// </summary>
 		public string CLIN { get; set; }
-
-		/// <summary>
-		/// The Supplier Period of Performance
-		/// </summary>
-		public string SupplierPOP { get; set; }
-
-		/// <summary>
-		/// Supplier Proposed Value
-		/// </summary>
-		public string SupplierProposedValue { get; set; }
 
 		/// <summary>
 		/// The rolled-up Value for this WBS/CLIN Combo.
