@@ -1446,8 +1446,7 @@ namespace GenBOE.Web.Controllers
 					result.Data.AddRange(inUseResources.Select(x => new NlfResourceData()
 					{
 						ResourceName = x.ResourceName,
-						ResourceDescription = x.ResourceDesc,
-						ResourceId = x.Id
+						ResourceDescription = x.ResourceDesc
 					}));
 				}
 
