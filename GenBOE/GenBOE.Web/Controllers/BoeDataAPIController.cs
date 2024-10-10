@@ -1380,7 +1380,7 @@ namespace GenBOE.Web.Controllers
 						result.Data.Add(pboe);
 					}
 
-					if (result.Data.Count > 1)
+					if (result.Data.Count > 0)
 					{
 						result.IsSuccessful = true;
 					}

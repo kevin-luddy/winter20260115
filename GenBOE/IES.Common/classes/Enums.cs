@@ -1195,7 +1195,7 @@ namespace IES.Common
 		/// Threshold Applies checkbox option.
 		/// </summary>
 		[Description("Threshold Exception Applies")]
-		ThresholdExceptionApplies = 6,
+		ThresholdExceptionApplies = 4,
 
 		/// <summary>
 		/// Other Exception Applies checkbox option.
