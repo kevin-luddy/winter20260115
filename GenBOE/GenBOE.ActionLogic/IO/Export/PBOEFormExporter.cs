@@ -13,7 +13,8 @@ namespace GenBOE.ActionLogic.IO.Export
     using System.Linq;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
-    using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.BOE;
+	using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -245,36 +246,36 @@ namespace GenBOE.ActionLogic.IO.Export
                     // create a new data row in the table
                     TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
-                    // populate the row
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, SUPPLIER_CONTRACT_TYPE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.SupplierContractType);
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, WBS), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.WBS);
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.CLIN);
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, VALUE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.Value.ToString(this.DefaultCurrencyFormat, this._CurrencyFormatter));
+					// populate the row
+					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, SUPPLIER_CONTRACT_TYPE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.SupplierContractType);
+					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, WBS), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.WBS);
+					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.CLIN);
+					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, VALUE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.Value.ToString(this.DefaultCurrencyFormat, this._CurrencyFormatter));
 
-                    // add the row to the table
-                    currentInsertionRow.InsertAfterSelf(tableRow);
-                    currentInsertionRow = tableRow;
-                }
+					// add the row to the table
+					currentInsertionRow.InsertAfterSelf(tableRow);
+					currentInsertionRow = tableRow;
+				}
 
-                // populate the sub-total (for the group)
-                TableRow subtotalRow = this.CloneMarkedTemplateRow(templateSubtotalDataRow);
-                WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + "Subtotal " + clin);
-                WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, VALUE), this.GenPortionMarkingText(isPortionMarkingEnabled) + subtotal.ToString(this.DefaultCurrencyFormat, this._CurrencyFormatter));
+				// populate the sub-total (for the group)
+				TableRow subtotalRow = this.CloneMarkedTemplateRow(templateSubtotalDataRow);
+				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + "Subtotal " + clin);
+				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, VALUE), this.GenPortionMarkingText(isPortionMarkingEnabled) + subtotal.ToString(this.DefaultCurrencyFormat, this._CurrencyFormatter));
 
-                total += subtotal;
+				total += subtotal;
 
-                // add the row to the table
-                currentInsertionRow.InsertAfterSelf(subtotalRow);
-                currentInsertionRow = subtotalRow;
-            }
+				// add the row to the table
+				currentInsertionRow.InsertAfterSelf(subtotalRow);
+				currentInsertionRow = subtotalRow;
+			}
 
-            // populate the total row
-            TableRow totalRow = this.CloneMarkedTemplateRow(templateTotalDataRow);
-            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + "Total");
-            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, VALUE), this.GenPortionMarkingText(isPortionMarkingEnabled) + total.ToString(this.DefaultCurrencyFormat, this._CurrencyFormatter));
+			// populate the total row
+			TableRow totalRow = this.CloneMarkedTemplateRow(templateTotalDataRow);
+			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + "Total");
+			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, VALUE), this.GenPortionMarkingText(isPortionMarkingEnabled) + total.ToString(this.DefaultCurrencyFormat, this._CurrencyFormatter));
 
-            // add the row to the table
-            currentInsertionRow.InsertAfterSelf(totalRow);
+			// add the row to the table
+			currentInsertionRow.InsertAfterSelf(totalRow);
 
             this.RemoveElement(templateDataRow);
             this.RemoveElement(templateSubtotalDataRow);
@@ -308,14 +309,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 supplierContractType = Utilities.GetPickListText(boeForm.ClinContractTypes.First(c => c.ClinId == clin.Id).ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING);
             }
 
-            return new PBOETableRow
-            {
-                CLIN = clin == null ? "N/A" : clin.ClinString,
-                WBS = wbs == null ? "N/A" : wbs.WbsNumber,
-                WbsPaddedNumber = wbs == null ? "N/A" : wbs.WbsPaddedNumber,
-                ContractType = clin == null ? "N/A" : Utilities.GetPickListText(clin.ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING),
-                SupplierContractType = supplierContractType
-            };
+			return new PBOETableRow
+			{
+				CLIN = clin == null ? "N/A" : clin.ClinString,
+				WBS = wbs == null ? "N/A" : wbs.WbsNumber,
+				WbsPaddedNumber = wbs == null ? "N/A" : wbs.WbsPaddedNumber,
+				ContractType = clin == null ? "N/A" : Utilities.GetPickListText(clin.ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING),
+				SupplierContractType = supplierContractType
+			};
         }
 
         /// <summary>
@@ -398,5 +399,89 @@ namespace GenBOE.ActionLogic.IO.Export
                 WordUtilities.SetElementText(dataElement, value);
             }
         }
-    }
+
+		/// <summary>
+		/// Transforms a PBOEViewModel into a BOEFormPBOEDTO so exporter can use it
+		/// </summary>
+		/// <param name="pboe">PBOEViewModel</param>
+		/// <returns>
+		/// BOEFormPBOEDTO
+		/// </returns>
+		public BOEFormPBOEDTO transformPBOEViewToFormDTO(PBOEViewModel pboe)
+		{
+
+			// Validations
+			//already validated but wasn't good enough from VS
+			_ = pboe ?? throw new ArgumentNullException(nameof(pboe));
+
+			BOEFormPBOEDTO pboeForm = new BOEFormPBOEDTO()
+			{
+				CCoPDApplies = pboe.CCoPD == ExpectedCCoPDApplicability.CCoPDApplies,
+				CommercialItemExceptionApplies = pboe.CCoPD == ExpectedCCoPDApplicability.CommercialItemExceptionApplies,
+				CompetitionExceptionApplies = pboe.CCoPD == ExpectedCCoPDApplicability.CompetitionExceptionApplies,
+				LessThanThresholdExceptionApplies = pboe.CCoPD == ExpectedCCoPDApplicability.ThresholdExceptionApplies,
+				OtherExceptionApplies = pboe.CCoPD == ExpectedCCoPDApplicability.OtherExceptionApplies,
+				OtherText = pboe.CCoPDOtherText,
+				RFP = pboe.RFP,
+				ProposalNumber = pboe.ProposalNumber,
+				SupplierName = pboe.SupplierName,
+				ValidityDate = pboe.ValidityDate,
+				VendorId = pboe.VendorId,
+				SupplierProposedValue = pboe.SupplierProposedValue,
+				ShouldCostEstimate = pboe.ShouldCostEstimate,
+				ShouldCostEstimateDate = pboe.ShouldCostEstimateDate,
+				ShouldCostEstimateText = pboe.ShouldCostEstimateText,
+				RFPRelease = pboe.RFPRelease,
+				RFPReleaseDate = pboe.RFPReleaseDate,
+				RFPReleaseText = pboe.RFPReleaseText,
+				FirmSupplierReceipt = pboe.FirmSupplierReceipt,
+				FirmSupplierReceiptDate = pboe.FirmSupplierReceiptDate,
+				FirmSupplierReceiptText = pboe.FirmSupplierReceiptText,
+				SourceSelection = pboe.SourceSelection,
+				SourceSelectionDate = pboe.SourceSelectionDate,
+				SourceSelectionText = pboe.SourceSelectionText,
+				CID = pboe.CID,
+				CIDDate = pboe.CIDDate,
+				CIDText = pboe.CIDText,
+				PriceAnalysis = pboe.PriceAnalysis,
+				PriceAnalysisDate = pboe.PriceAnalysisDate,
+				PriceAnalysisText = pboe.PriceAnalysisText,
+				TechnicalEvaluation = pboe.TechnicalEvaluation,
+				TechnicalEvaluationDate = pboe.TechnicalEvaluationDate,
+				TechnicalEvaluationText = pboe.TechnicalEvaluationText,
+				FactFinding = pboe.FactFinding,
+				FactFindingDate = pboe.FactFindingDate,
+				FactFindingText = pboe.FactFindingText,
+				CostAnalysis = pboe.CostAnalysis,
+				CostAnalysisDate = pboe.CostAnalysisDate,
+				CostAnalysisText = pboe.CostAnalysisText,
+				GovtPricing = pboe.GovtPricing,
+				GovtPricingDate = pboe.GovtPricingDate,
+				GovtPricingText = pboe.GovtPricingText,
+				SupplierNegotiations = pboe.SupplierNegotiations,
+				SupplierNegotiationsDate = pboe.SupplierNegotiationsDate,
+				SupplierNegotiationsText = pboe.SupplierNegotiationsText,
+				MOU = pboe.MOU,
+				MOUDate = pboe.MOUDate,
+				MOUText = pboe.MOUText,
+				GovtPricingReceived = pboe.GovtPricingReceived,
+				GovtPricingReceivedDate = pboe.GovtPricingReceivedDate,
+				GovtPricingReceivedText = pboe.GovtPricingReceivedText,
+				CostAnalysisUnqual = pboe.CostAnalysisUnqual,
+				CostAnalysisUnqualDate = pboe.CostAnalysisUnqualDate,
+				CostAnalysisUnqualText = pboe.CostAnalysisUnqualText,
+				PlannedDate_WrittenApproval = pboe.PlannedDate_WrittenApproval,
+				PlannedDate_ApprovedSubmission = pboe.PlannedDate_ApprovedSubmission,
+				SupplierCCoPD = pboe.SupplierCCoPD,
+				SourceSelectionDescription = pboe.SourceSelectionDescription,
+				CommercialityDescription = pboe.CommercialityDescription,
+				TechnicalEvaluationDescription = pboe.TechnicalEvaluationDescription,
+				PriceAnalysisDescription = pboe.PriceAnalysisDescription,
+				CostAnalysisDescription = pboe.CostAnalysisDescription,
+				RationaleValueSummary = pboe.RationaleValueSummary
+			};
+
+			return pboeForm;
+		}
+	}
 }

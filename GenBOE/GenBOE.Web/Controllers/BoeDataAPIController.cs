@@ -1308,11 +1308,28 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
+		/// <summary>
+		/// Get clin data for pboes for NLF export
+		/// </summary>
+		/// <param name="pboes">list of pboes</param>
+		/// <returns>Returns the list of pboes populated with clin data</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[HttpGet]
-		public IESResponse<PBOEClinData> GetPBOEClinData(string ptmTrackingNumber)
+		[HttpPost]
+		public IESResponse<PBOEViewModel> GetPBOEClinData([FromBody] List<PBOEViewModel> pboes)
 		{
-			IESResponse<PBOEClinData> result = new IESResponse<PBOEClinData>();
+			// Validations
+			_ = pboes ?? throw new ArgumentNullException(nameof(pboes));
+
+			IESResponse<PBOEViewModel> result = new IESResponse<PBOEViewModel>();
+
+			if (pboes == null || !pboes.Any())
+			{
+				string message = $"No PBOES from NLF";
+				result.Messages.Add(message);
+				result.IsSuccessful = false;
+				result.Data = null;
+				return result;
+			}
 
 			try
 			{
@@ -1320,7 +1337,7 @@ namespace GenBOE.Web.Controllers
 
 				// Check if user is System Admin
 				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(ptmTrackingNumber).Where(x => x.CurrentPTMWorkspace).ToList();
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(pboes.First().PTMTrackingNumber).Where(x => x.CurrentPTMWorkspace).ToList();
 
 				bool isAllowed = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin || workspaces.Any(y => y.Id == x.WorkspaceId));
 
@@ -1329,47 +1346,47 @@ namespace GenBOE.Web.Controllers
 					// Instantiate PBOE Exporter
 					PBOEFormExporter exporter = new PBOEFormExporter(userDataLoader, resourceLoader, tmCalculator);
 
-					foreach (WorkspaceDTO workspace in workspaces)
+
+					foreach (PBOEViewModel pboe in pboes)
 					{
-						// Get Prerequisite Data
-						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
-						ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(workspace.ResourceListID);
-
-						ICollection<BOEFormPBOEDTO> pboes = this.boeFormPBOEDTODataLoader.GetByWorkspaceId(fullWorkspace.Id);
-
-						if (pboes.Count > 0)
+						pboe.PboeClinData = new List<PBOEClinData>();
+						foreach (WorkspaceDTO workspace in workspaces)
 						{
-							foreach (BOEFormPBOEDTO pboe in pboes)
-							{
-								ICollection<PBOETableRow> rowData = exporter.PullRowsFromWorkspace(fullWorkspace, pboe, workspaceResources.Select(x => x.Id).ToList(), this.contractTypeLoader.GetPickListValues());
+							// Get Prerequisite Data
+							FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
+							//transform PBOEViewModel into BOEFormPBOEDTO
+							//put it in the exporter because it is PBOE specific
+							BOEFormPBOEDTO pboeForm = exporter.transformPBOEViewToFormDTO(pboe);
 
+							//need to convert resources into a list of ints (resource IDs)
+							List<int> resourceIds = new List<int>();
+							ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(fullWorkspace.ResourceListID);
+							ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => pboe.Resources.Contains(x.ResourceName)).ToList();
+							resourceIds = actualResources.Select(r => r.Id).ToList();
+
+							//if we don't have sub resources, still return the pboe with the pop data
+							if (resourceIds != null && resourceIds.Any())
+							{
+								ICollection<PBOETableRow> rowData = new Collection<PBOETableRow>();
+								rowData = exporter.PullRowsFromWorkspace(fullWorkspace, pboeForm, resourceIds, this.contractTypeLoader.GetPickListValues());
 								foreach (PBOETableRow row in rowData)
 								{
 									PBOEClinData data = new PBOEClinData(row);
-									data.SupplierPOP = exporter.PeriodOfPerformance;
-									data.SupplierProposedValue = pboe.SupplierProposedValue.HasValue ? pboe.SupplierProposedValue.Value.ToString("C", CultureInfo.CurrentCulture) : String.Empty;
-
-									// Add the row data to result
-									result.Data.Add(data);
+									pboe.PboeClinData.Add(data);
 								}
 							}
 						}
-						else
-						{
-							string message = $"Failed to retrieve PBOE Data for Workspaces with Tracking Number: {ptmTrackingNumber}";
-							result.Messages.Add(message);
-							result.IsSuccessful = false;
-							result.Data = null;
-						}
+						pboe.SupplierPOP = exporter.PeriodOfPerformance;
+						result.Data.Add(pboe);
 					}
 
-					if (result.Data.Count > 1)
+					if (result.Data.Count > 0)
 					{
 						result.IsSuccessful = true;
 					}
 					else
 					{
-						string message = $"No PBOE CLIN Data for given Tracking Number: {ptmTrackingNumber}";
+						string message = $"No PBOE CLIN Data for given Tracking Number: {pboes.First().PTMTrackingNumber}";
 						result.Messages.Add(message);
 						result.IsSuccessful = false;
 						result.Data = null;
@@ -1377,7 +1394,7 @@ namespace GenBOE.Web.Controllers
 				}
 				else
 				{
-					string message = $"Invalid permission to Workspace with tracking number: {ptmTrackingNumber}";
+					string message = $"Invalid permission to Workspace with tracking number: {pboes.First().PTMTrackingNumber}";
 					logger.Error(message + " NTID: " + ntid);
 					result.Messages.Add(message);
 					result.IsSuccessful = false;

@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using System.Web;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
+	using GenBOE.ActionLogic.BOE;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.DTO;
