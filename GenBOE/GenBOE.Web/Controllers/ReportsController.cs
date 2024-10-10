@@ -206,7 +206,7 @@ namespace GenBOE.Web.Controllers
                         continue;
                     }
 
-                    if (SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.MST || report.ReportID == (int)Reports.WorkbenchOffload)
+                    if (SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.MST && report.ReportID == (int)Reports.WorkbenchOffload)
                     {
                         // Workbench is only shown for RMS Workspaces
                         // If the report is one of these but this is not a RMS WS,
