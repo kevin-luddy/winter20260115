@@ -449,9 +449,9 @@ namespace GenBOE.ActionLogic.BOE
 		public ICollection<PBOEClinData> PboeClinData { get; set; } = new List<PBOEClinData>();
 
 		/// <summary>
-		/// CCopd applies condition met
+		///  If Supplier CCoPD applies, proposal received if >$15M or > CCoPD Threshold AND >10% of the LM proposal
 		/// </summary>
-		public string SupplierCCoPDProposalValueConditionMetText { get; set; }
+		public TripleBooleanState? SupplierCCoPDProposalValueConditionMet { get; set; }
 
 	}
 }
