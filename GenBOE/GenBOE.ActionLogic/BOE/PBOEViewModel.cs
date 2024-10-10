@@ -6,9 +6,9 @@
 
 namespace GenBOE.ActionLogic.BOE
 {
-	using IES.Common;
 	using System;
 	using System.Collections.Generic;
+	using IES.Common;
 
 	/// <summary>
 	/// View Model for PBOE
@@ -447,6 +447,12 @@ namespace GenBOE.ActionLogic.BOE
 		/// Clin/WBS data is populated in GenBoe 
 		/// </summary>
 		public ICollection<PBOEClinData> PboeClinData { get; set; } = new List<PBOEClinData>();
+
+		/// <summary>
+		/// CCopd applies condition met
+		/// </summary>
+		public string SupplierCCoPDProposalValueConditionMetText { get; set; }
+
 	}
 }
 

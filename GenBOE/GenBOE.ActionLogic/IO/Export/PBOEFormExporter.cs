@@ -419,7 +419,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				CCoPDApplies = pboe.CCoPD == ExpectedCCoPDApplicability.CCoPDApplies,
 				CommercialItemExceptionApplies = pboe.CCoPD == ExpectedCCoPDApplicability.CommercialItemExceptionApplies,
 				CompetitionExceptionApplies = pboe.CCoPD == ExpectedCCoPDApplicability.CompetitionExceptionApplies,
-				LessThanThresholdExceptionApplies = pboe.CCoPD == ExpectedCCoPDApplicability.CCoPDThresholdExceptionApplies,
+				LessThanThresholdExceptionApplies = pboe.CCoPD == ExpectedCCoPDApplicability.ThresholdExceptionApplies,
 				OtherExceptionApplies = pboe.CCoPD == ExpectedCCoPDApplicability.OtherExceptionApplies,
 				OtherText = pboe.CCoPDOtherText,
 				RFP = pboe.RFP,

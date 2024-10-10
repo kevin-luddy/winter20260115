@@ -1192,16 +1192,16 @@ namespace IES.Common
 		CompetitionExceptionApplies = 3,
 
 		/// <summary>
+		/// Threshold Applies checkbox option.
+		/// </summary>
+		[Description("Threshold Exception Applies")]
+		ThresholdExceptionApplies = 6,
+
+		/// <summary>
 		/// Other Exception Applies checkbox option.
 		/// </summary>
 		[Description("Other Exception Applies")]
-		OtherExceptionApplies = 4,
-
-		/// <summary>
-		/// CCoPD Threshold Exception (N/A)
-		/// </summary>
-		[Description("Exception Not Claimed")]
-		CCoPDThresholdExceptionApplies = 5
+		OtherExceptionApplies = 5,
 	}
 
 	/// <summary>
