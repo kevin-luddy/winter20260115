@@ -81,8 +81,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
             var adUtils = new Mock<IActiveDirectoryUtilities>();
             var memCache = new Mock<MemoryCache>();
             SecurityInformation securityInformation = new SecurityInformation(adUtils.Object, memCache.Object);
+			ISkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
+			ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader = new CommonDisclosureSMDTODataLoader();
 
-            _taskElementDL = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader);
+			_taskElementDL = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
 
             // initialize data loaders
             _clinDL = new ClinDTODataLoader();

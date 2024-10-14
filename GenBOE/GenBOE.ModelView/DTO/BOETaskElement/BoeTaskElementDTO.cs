@@ -11,8 +11,9 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using GenBOE.Dtos;
-    using IES.Common;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.Dtos;
+	using IES.Common;
     using IES.Common.Interfaces;
 
     /// <summary>
@@ -44,7 +45,7 @@ namespace GenBOE.DataBridge.DTO
             this.TaskElementType = TaskElementType.Labor;
 
             if (loader == null) { loader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(),
-                                                    new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader()); }
+                                                    new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new CommonDisclosureSMDTODataLoader()); }
             this.description = null;
             this.moqText = null;
             this.WasMoqTextSet = false;
@@ -192,10 +193,21 @@ namespace GenBOE.DataBridge.DTO
         // the task element type
         public TaskElementType TaskElementType { get; set; }
 
-        /// <summary>
-        /// Gets the children that can be shifted.
-        /// </summary>
-        public ICollection<IDateShiftable> Children
+
+		/// <summary>
+		/// Skill Mix table
+		/// </summary>
+		public ICollection<SkillMixModelView> SkillMixTable { get; set; } = new List<SkillMixModelView>();
+
+		/// <summary>
+		/// Common Disclosure table
+		/// </summary>
+		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; } = new List<CommonDisclosureModelView>();
+
+		/// <summary>
+		/// Gets the children that can be shifted.
+		/// </summary>
+		public ICollection<IDateShiftable> Children
         {
             get
             {

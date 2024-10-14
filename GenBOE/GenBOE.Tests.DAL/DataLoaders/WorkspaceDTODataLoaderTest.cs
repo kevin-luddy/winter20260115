@@ -1127,7 +1127,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             WorkspaceVariableDTODataLoader wsVarLoader = new WorkspaceVariableDTODataLoader();
             RteTemplateDataLoader rteLoader = new RteTemplateDataLoader();
             ProPricerDTODataLoader ppLoader = new ProPricerDTODataLoader();
-            BoeTaskElementDTODataLoader taskLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader());
+            BoeTaskElementDTODataLoader taskLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new CommonDisclosureSMDTODataLoader());
             IRetriever retriever = new Retriever(null, null, wsLoader, null, null, null, null, null, null, taskLoader, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
             FullObjectFactory fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null, null, null, null);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever);

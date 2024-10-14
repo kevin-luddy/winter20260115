@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
 	using System.Collections.ObjectModel;
 	using System.Data;
 	using System.Linq;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using IES.Common;
@@ -26,6 +27,8 @@ namespace GenBOE.DataBridge.DTO
 		private readonly IResourceTypeLoader resourceTypeLoader = null;
 		private readonly IBoeTaskElementCustomFieldValueXREFLoader boeTaskElementCustomFieldLoader = null;
 		private readonly ILaborTypeCustomFieldValueXREFLoader boeLaborTypeCustomFieldLoader = null;
+		private readonly ISkillMixDTOLoader skillMixDTOLoader = null;
+		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader = null;
 
 		/// <summary>
 		/// Nominal constructor
@@ -40,13 +43,17 @@ namespace GenBOE.DataBridge.DTO
 			IResourceSpreadLoader resourceSpreadLoader,
 			IOrdinaryVariableLoader ordinaryVariableLoader,
 			IBoeTaskElementCustomFieldValueXREFLoader taskElementCustomFieldLoader,
-			ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader)
+			ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader,
+			ISkillMixDTOLoader skillMixDTOLoader,
+			ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader)
 		{
 			this.resourceTypeLoader = resourceTypeLoader;
 			this.resourceSpreadLoader = resourceSpreadLoader;
 			this.ordinaryVariableLoader = ordinaryVariableLoader;
 			this.boeTaskElementCustomFieldLoader = taskElementCustomFieldLoader;
 			this.boeLaborTypeCustomFieldLoader = laborTypeCustomFieldLoader;
+			this.skillMixDTOLoader = skillMixDTOLoader;
+			this.commonDisclosureSMDTODataLoader = commonDisclosureSMDTODataLoader;
 		}
 
 		#region Retrieves
@@ -945,7 +952,41 @@ namespace GenBOE.DataBridge.DTO
 					this.SaveOrdinaryVariables(inTaskDetail.OrdinaryVariables);
 				}
 
-				return TaskElementID;
+				if (Utilities.IsSkillMixEnabledForSystem)
+				{
+					// Save the Skill Mix tables
+					if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
+					{
+						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+						foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
+						{
+							SkillMixDTO dto = skillMixModelView.ToDto();
+							dto.BOEID = inTaskDetail.BoeID;
+							dto.BOETaskElementID = inTaskDetail.Id;
+							dtos.Add(dto);
+						}
+
+						this.skillMixDTOLoader.InsertSkillMix(dtos);
+					}
+
+					// Save the Common Disclosure DTOs
+					if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
+					{
+						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+						foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
+						{
+							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+							dto.BOEID = inTaskDetail.BoeID;
+							dto.BOETaskElementID = inTaskDetail.Id;
+							dtos.Add(dto);
+						}
+
+						this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
+					}
+				}
+
+			return TaskElementID;
+
 			}
 		}
 

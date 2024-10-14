@@ -48,7 +48,7 @@ namespace GenBOE.Tests.DAL.Other
 		public void Init()
 		{
 			boeTaskElementDTODataLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(),
-				new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader());
+				new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new CommonDisclosureSMDTODataLoader());
 			resourceLoader = new Mock<IResourceDTODataLoader>();
 			perfLoader = new Mock<IPerformingOrgDTODataLoader>();
 			perfListLoader = new Mock<IPerformingOrgListDTODataLoader>();
