@@ -407,24 +407,6 @@ namespace GenBOE.DataBridge.DTO
 						table.ResourceHours = resourceHours.Where(r => r.MOQTypeSelectionTableDataId == table.Id).ToCollection();
 					}
 				}
-
-				//if (skillMix == null)
-				//{
-				//	selection.SkillMixTable = this.skillMixDTOLoader.GetByBOETaskElementID(selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
-				//}
-				//else
-				//{
-				//	// selection.SkillMixTable = skillMix.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
-				//}
-
-				//if (commonDisclosures == null)
-				//{
-				//	selection.CommonDisclosureTable = this.commonDisclosureLoader.GetByBOETaskElementID(selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
-				//}
-				//else
-				//{
-				//	// selection.CommonDisclosureTable = commonDisclosures.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
-				//}
 			}
 		}
 	}
