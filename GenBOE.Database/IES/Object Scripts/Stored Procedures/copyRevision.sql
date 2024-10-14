@@ -57,6 +57,7 @@ AS
 	**										for burden pools
 	**		07/07/2022	Dusan				Added SectionContainsCasbDisclosure and SectionContainsNonCompliance
 	**      09/03/2024  e347897             PROPH-2280 Added columns to populate Address tables
+	**		10/09/2024	twilson3			PROPH-2456 Added columns for missing Section columns
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500), @ErrorSeverity INT, @ErrorState INT, @ErrorProcedure VARCHAR(1000), @ErrorLine INT;
@@ -89,13 +90,14 @@ AS
 				-- Copy associated PPR&D document (all sections and associated content)
 				INSERT INTO [dbo].Section
 				(UpdateDate, RevisionID, ParentID, DisplayOrder, Title, TextContent, SectionContentTypeID, IsInternalSection, DisplayRateCode, RevisionUniqueSectionId, IsRdsbRequired, SectionContainsCasbDisclosure, SectionContainsNonCompliance,
-				Office, Agency, LMBA, Name, Street, CityST, Phone, Email, Other)
+				Office, Agency, LMBA, Name, Street, CityST, Phone, Email, Other, [IncludeInCoversheet], [IsDisclosureStatementAdequate], [NonComplianceNotification])
 				OUTPUT Inserted.ParentID, Inserted.Id INTO @SectionMap
 				SELECT GETDATE() AS UpdateDate,
 								@RevisionID as RevisionID,
 								Id AS ParentID, -- Note that we save the old Id in the new ParentID.
 								DisplayOrder, Title, TextContent, SectionContentTypeID, IsInternalSection, DisplayRateCode, RevisionUniqueSectionId, IsRdsbRequired, SectionContainsCasbDisclosure, SectionContainsNonCompliance,
-								Office, Agency, LMBA, Name, Street, CityST, Phone, Email, Other -- Address Table 
+								Office, Agency, LMBA, Name, Street, CityST, Phone, Email, Other, -- Address Table 
+								[IncludeInCoversheet], [IsDisclosureStatementAdequate], [NonComplianceNotification]
 				FROM dbo.Section 
 				WHERE RevisionID = @ID;
 
