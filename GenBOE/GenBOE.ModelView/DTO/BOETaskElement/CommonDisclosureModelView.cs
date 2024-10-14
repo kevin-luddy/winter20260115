@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.ActionLogic.ModelView
+namespace GenBOE.DataBridge.DTO
 {
 	using System;
 	using GenBOE.Dtos;
