@@ -1885,9 +1885,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="tables">Dictionary of MOQ Tables</param>
 		/// <param name="tableIdToMoqType">Dictionary of MOQ Types keyed by Table Id</param>
 		/// <param name="workspaceCreationDate">Workspace Creation Date</param>
-		/// <param name="moqTypes">The MOQ Types</param>
 		/// <returns></returns>
-		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate, ICollection<MoqTypeSelection> moqTypes)
+		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate)
 		{
 			ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
 				new MoqTableDataModelView()
