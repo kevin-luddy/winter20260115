@@ -524,7 +524,17 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				tmTotalCost = 0m;
 			}
 
-			return rowList;
+			ICollection<PBOERow> consolidatedList = rowList.GroupBy(row => row.PBOEId)
+				.Select(group => new PBOERow
+				{
+					PBOEId = group.Key,
+					FormName = string.Empty,
+					Cost = group.Sum(row => row.Cost),
+					TMCost = group.Sum(row => row.TMCost),
+					TotalCost = group.Sum(row => row.TotalCost),
+				})
+				.ToList();
+			return consolidatedList;
 		}
 
 		/// <summary>
