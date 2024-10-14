@@ -1863,7 +1863,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (tables.Any())
 			{
 				Dictionary<int, string> tasks = ws.TaskElements.ToDictionary(t => t.Id, x => x.TaskTitle);
-				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate, moqTypesToSave);
+				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate);
 				SaveRecalculateActuals(ws, boes, moqTypesToSave, boesUpdated);
 			}
 
