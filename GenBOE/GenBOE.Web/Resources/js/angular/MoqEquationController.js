@@ -1502,61 +1502,62 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.refreshCommonDisclosureTable = function (moqType) {
-		// Get all the data tables
-		const data = {
-			currentSkillMixData: [],
-			commonDisclosureSMData: [],
-			resourceHours: []
-		};
-
-		data.boeId = ManageTaskModel.boeId;
 		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
-		//data.currentSkillMixData = moqType.SkillMixTable;
-		//data.commonDisclosureSMData = moqType.CommonDisclosureTable;
+		//// Get all the data tables
+		//const data = {
+		//	currentSkillMixData: [],
+		//	commonDisclosureSMData: [],
+		//	resourceHours: []
+		//};
 
-		if (moqType.TableData) {
-			moqType.TableData.forEach(tableData => {
-				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+		//data.boeId = ManageTaskModel.boeId;
+		//// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		////data.currentSkillMixData = moqType.SkillMixTable;
+		////data.commonDisclosureSMData = moqType.CommonDisclosureTable;
 
-					tableData.ResourceHours.forEach(hours => {
-						data.resourceHours.push(hours);
-					});
-				}
-			});
-		}
+		//if (moqType.TableData) {
+		//	moqType.TableData.forEach(tableData => {
+		//		if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
 
-		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
-			// send to backend
-			// display response to user
-			$(document).trigger("SHOW_LOADING_BOX");
-			$http({
-				method: 'POST',
-				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
-				data: data
-			}).then(function (response) {
-				// place returned html into the content div
-				if (response.data.IsSuccessful === true) {
-					// the response is wrapped inside response.data.data array
-					if (response.data.data) {
-						// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
-						//moqType.CommonDisclosureTable = response.data.data;
-						//$scope.setCommonDisclosureTotals(moqType);
-						//$scope.refreshResourceGroupColors(moqType);
-					}
-				} else {
-					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
-				}
+		//			tableData.ResourceHours.forEach(hours => {
+		//				data.resourceHours.push(hours);
+		//			});
+		//		}
+		//	});
+		//}
 
-				$(document).trigger("HIDE_LOADING_BOX");
-			}).catch(function () {
-				RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
-				$(document).trigger("HIDE_LOADING_BOX");
-			});
-		}
-		else {
-			// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
-			// moqType.CommonDisclosureTable = [];
-		}
+		//if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
+		//	// send to backend
+		//	// display response to user
+		//	$(document).trigger("SHOW_LOADING_BOX");
+		//	$http({
+		//		method: 'POST',
+		//		url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
+		//		data: data
+		//	}).then(function (response) {
+		//		// place returned html into the content div
+		//		if (response.data.IsSuccessful === true) {
+		//			// the response is wrapped inside response.data.data array
+		//			if (response.data.data) {
+		//				// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//				//moqType.CommonDisclosureTable = response.data.data;
+		//				//$scope.setCommonDisclosureTotals(moqType);
+		//				//$scope.refreshResourceGroupColors(moqType);
+		//			}
+		//		} else {
+		//			RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
+		//		}
+
+		//		$(document).trigger("HIDE_LOADING_BOX");
+		//	}).catch(function () {
+		//		RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
+		//		$(document).trigger("HIDE_LOADING_BOX");
+		//	});
+		//}
+		//else {
+		//	// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//	// moqType.CommonDisclosureTable = [];
+		//}
 	};
 
 	$scope.addRowForResource = function (item, moqType) {
