@@ -851,7 +851,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						TableRow templateDataRow = WordUtilities.GetTaggedChildElement(currentTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
 
 						// initialize insertion row
-						TableRow currentInsertionRow = templateDataRow;
+						// TableRow currentInsertionRow = templateDataRow;
 
 						//foreach (SkillMixModelView skillMixRow in moqType.SkillMixTable)
 						//{
@@ -892,7 +892,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							TableRow templateDataRow = WordUtilities.GetTaggedChildElement(commonDisclosureTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
 
 							// initialize insertion row
-							TableRow currentInsertionRow = templateDataRow;
+							// TableRow currentInsertionRow = templateDataRow;
 
 							//foreach (CommonDisclosureModelView commonDisclosureRow in moqType.CommonDisclosureTable)
 							//{
