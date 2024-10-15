@@ -842,81 +842,81 @@ namespace GenBOE.ActionLogic.IO.Export
 					&& (moqType.TableData.Any(x => x.RepositoryNameSelection == RepositoryName.SapWebi.GetDescription() || isRms)))
 				{
 					// populate Current Skill Mix Table
-					// SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);
+					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);
 
 					// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
-					//if (currentTableElement != null)
-					//{
-					//	// get template row
-					//	TableRow templateDataRow = WordUtilities.GetTaggedChildElement(currentTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
+					if (currentTableElement != null)
+					{
+						// get template row
+						TableRow templateDataRow = WordUtilities.GetTaggedChildElement(currentTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
 
-					//	// initialize insertion row
-					//	TableRow currentInsertionRow = templateDataRow;
+						// initialize insertion row
+						TableRow currentInsertionRow = templateDataRow;
 
-					//	foreach (SkillMixModelView skillMixRow in moqType.SkillMixTable)
-					//	{
-					//		// Create a new row
-					//		TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
+						//foreach (SkillMixModelView skillMixRow in moqType.SkillMixTable)
+						//{
+						//	// Create a new row
+						//	TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
 
-					//		// Populate the row
-					//		if (isRms)
-					//		{
-					//			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceOld);
-					//		}
+						//	// Populate the row
+						//	if (isRms)
+						//	{
+						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceOld);
+						//	}
 
-					//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_CurrentResource), skillMixRow.ResourceNew);
-					//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString("F"));
-					//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), skillMixRow.LaborSkillMix.ToString("P1"));
-					//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), skillMixRow.IncludedString);
-					//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), skillMixRow.BOESkillMix?.ToString("P1"));
-					//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), skillMixRow.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
-					//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
+						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_CurrentResource), skillMixRow.ResourceNew);
+						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString("F"));
+						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), skillMixRow.LaborSkillMix.ToString("P1"));
+						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), skillMixRow.IncludedString);
+						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), skillMixRow.BOESkillMix?.ToString("P1"));
+						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), skillMixRow.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
+						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
 
-					//		// Add the row to the table
-					//		currentInsertionRow.InsertAfterSelf(dataRow);
-					//		currentInsertionRow = dataRow;
-					//	}
+						//	// Add the row to the table
+						//	currentInsertionRow.InsertAfterSelf(dataRow);
+						//	currentInsertionRow = dataRow;
+						//}
 
-					//	// remove template row
-					//	this.RemoveElement(templateDataRow);
-					//}
+						// remove template row
+						this.RemoveElement(templateDataRow);
+					}
 
 					// If BRC is enabled and Task end date is after 1LMX start, populate the Common Disclosure Skill Mix Table, otherwise remove it
 					BoeTaskElementDTO task = exportInputs.TaskElements.FirstOrDefault(x => x.Id == moqType.TaskId);
 					if (Utilities.IsBRCEnabledForWorkspace(exportInputs.Workspace.Shortname) && task?.EndDate >= Utilities.OneLmxStartDate)
 					{
-						// SdtElement commonDisclosureTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CommonDisclosureSkillMix);
-						//if (commonDisclosureTableElement != null)
-						//{
-						//	// get template row
-						//	TableRow templateDataRow = WordUtilities.GetTaggedChildElement(commonDisclosureTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
+						SdtElement commonDisclosureTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CommonDisclosureSkillMix);
+						if (commonDisclosureTableElement != null)
+						{
+							// get template row
+							TableRow templateDataRow = WordUtilities.GetTaggedChildElement(commonDisclosureTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
 
-						//	// initialize insertion row
-						//	TableRow currentInsertionRow = templateDataRow;
+							// initialize insertion row
+							TableRow currentInsertionRow = templateDataRow;
 
-						//	foreach (CommonDisclosureModelView commonDisclosureRow in moqType.CommonDisclosureTable)
-						//	{
-						//		// Create a new row
-						//		TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
+							//foreach (CommonDisclosureModelView commonDisclosureRow in moqType.CommonDisclosureTable)
+							//{
+							//	// Create a new row
+							//	TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
 
-						//		// Populate the row
-						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_CurrentResource), commonDisclosureRow.ResourceID);
-						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BusinessResourceCode), commonDisclosureRow.BusinessResourceID);
-						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), commonDisclosureRow.HistoricalHours.ToString("F"));
-						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), commonDisclosureRow.LaborSkillMix.ToString("P1"));
-						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), commonDisclosureRow.IncludedString);
-						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), commonDisclosureRow.BOESkillMix?.ToString("P1"));
-						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), commonDisclosureRow.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
-						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), commonDisclosureRow.Rationale);
+							//	// Populate the row
+							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_CurrentResource), commonDisclosureRow.ResourceID);
+							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BusinessResourceCode), commonDisclosureRow.BusinessResourceID);
+							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), commonDisclosureRow.HistoricalHours.ToString("F"));
+							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), commonDisclosureRow.LaborSkillMix.ToString("P1"));
+							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), commonDisclosureRow.IncludedString);
+							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), commonDisclosureRow.BOESkillMix?.ToString("P1"));
+							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), commonDisclosureRow.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
+							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), commonDisclosureRow.Rationale);
 
-						//		// Add the row to the table
-						//		currentInsertionRow.InsertAfterSelf(dataRow);
-						//		currentInsertionRow = dataRow;
-						//	}
+							//	// Add the row to the table
+							//	currentInsertionRow.InsertAfterSelf(dataRow);
+							//	currentInsertionRow = dataRow;
+							//}
 
-						//	// remove template row
-						//	this.RemoveElement(templateDataRow);
-						//}
+							// remove template row
+							this.RemoveElement(templateDataRow);
+						}
 					}
 					else
 					{
