@@ -53,6 +53,7 @@ AS
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 **		7/16/24		e405721				PROPH-2160: Update Create Workspace Version for Skill Mix, Common Disclosure Skill Mix and MOQ Type Selection Table Data Resource Hours
 **		7/30/24		e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
+**		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -1226,7 +1227,7 @@ INSERT INTO [version].[SkillMix]
 [ResourceNew],
 [BOEID],
 [BOETaskElementID],
-[MOQTypeSelectionID],
+[IsUserInput],
 [VersionId]
 )
 SELECT SM.[SkillMixID],
@@ -1240,7 +1241,7 @@ SM.[ResourceOld],
 SM.[ResourceNew],
 SM.[BOEID],
 SM.[BOETaskElementID],
-SM.[MOQTypeSelectionID],
+SM.[IsUserInput],
 @VersionID
 FROM [dbo].[SkillMix] SM
 INNER JOIN dbo.BOE B ON SM.BOEID = B.BOEID
@@ -1259,8 +1260,8 @@ INSERT INTO [version].[CommonDisclosureSkillMix]
 [ResourceID],
 [BusinessResourceID],
 [BOETaskElementID],
+[IsUserInput],
 [BOEID],
-[MOQTypeSelectionID],
 [VersionId]
 )
 SELECT CD.[CommonDisclosureSkillMixID],
@@ -1273,8 +1274,8 @@ CD.[LaborSkillMix],
 CD.[ResourceID],
 CD.[BusinessResourceID],
 CD.[BOETaskElementID],
+CD.[IsUserInput],
 CD.[BOEID],
-CD.[MOQTypeSelectionID],
 @VersionID
 FROM [dbo].[CommonDisclosureSkillMix] CD
 INNER JOIN dbo.BOE B ON CD.BOEID = B.BOEID

@@ -53,6 +53,7 @@ AS
 **		1/28/24		e302876  			PROPH-1492 ADD BRC to Copy BOEs, Copy WS, Archive/Restore
 **		7/16/24		e405721				PROPH-2161: Update Restore Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
 **		7/30/24		e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
+**		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2578,7 +2579,7 @@ BEGIN
 		[ResourceNew],
 		[BOETaskElementID],
 		[BOEID],
-		[MOQTypeSelectionID]
+		[IsUserInput]
 		)
 		SELECT SM.[SkillMixID],
 			SM.[Rationale],
@@ -2591,7 +2592,7 @@ BEGIN
 			SM.[ResourceNew],
 			SM.[BOETaskElementID],
 			SM.[BOEID],
-			SM.[MOQTypeSelectionID]
+			SM.[IsUserInput]
 		FROM [version].[SkillMix] SM
 		WHERE 
 		SM.VersionId = @VersionID
@@ -2615,8 +2616,7 @@ BEGIN
 		[ResourceID],
 		[BusinessResourceID],
 		[BOEID],
-		[BOETaskElementID],
-		[MOQTypeSelectionID]
+		[BOETaskElementID]
 		)
 		SELECT CD.[CommonDisclosureSkillMixID],
 			CD.[Rationale],
@@ -2628,8 +2628,7 @@ BEGIN
 			CD.[ResourceID],
 			CD.[BusinessResourceID],
 			CD.[BOEID],
-			CD.[BOETaskElementID],
-			CD.[MOQTypeSelectionID]
+			CD.[BOETaskElementID]
 		FROM [version].[CommonDisclosureSkillMix] CD
 		WHERE 
 		CD.VersionId = @VersionID
