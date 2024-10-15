@@ -1638,54 +1638,30 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Refreshes the Skill Mix Table with updated resource hours
+		/// Refreshes the Skill Mix Tables with updated resource hours
 		/// </summary>
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="boeId">BOE Id</param>
+		/// <param name="laborTypes">The labor type/spreads data</param>
+		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <returns></returns>
-		public ActionResult RefreshSkillMixTable(string workspace, int boeId, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData)
+		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
 			// Call to Controller Logic
-			ICollection<SkillMixModelView> response = this._BoeLaborControllerLogic.RefreshSkillMixTable(resourceHours, currentSkillMixData);
+			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 
 			// Finalize Action
-			FinalizeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE, sw);
-			return toReturn;
-		}
-
-		/// <summary>
-		/// Refreshes the Skill Mix Table with updated resource hours
-		/// </summary>
-		/// <param name="workspace">Workspace name</param>
-		/// <param name="boeId">BOE Id</param>
-		/// <param name="currentSkillMixData">The current skill mix data</param>
-		/// <param name="commonDisclosureSMData">The common disclosure skill mix data</param>
-		/// <param name="resourceHours">The MOQ Table Resource Hours</param>
-		/// <returns></returns>
-		public ActionResult RefreshCommonDisclosureTable(string workspace, int boeId, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData,
-			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours)
-		{
-			// Initialize Action
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_COMMON_DISCLOSURE_TABLE, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
-
-			// Call to Controller Logic
-			ICollection<CommonDisclosureModelView> response = this._BoeLaborControllerLogic.RefreshCommonDisclosureTable(currentSkillMixData, commonDisclosureSMData, resourceHours);
-
-			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
-
-			// Finalize Action
-			FinalizeAction(_log, WebConstants.ACTION_REFRESH_COMMON_DISCLOSURE_TABLE, sw);
+			FinalizeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, sw);
 			return toReturn;
 		}
 		#endregion

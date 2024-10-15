@@ -248,7 +248,7 @@ namespace GenBOE.DataBridge.DTO
 		private void DoPostProcessing(ICollection<CommonDisclosureSkillMixDTO> commonDisclosures)
 		{
 			IEnumerable<IGrouping<int, CommonDisclosureSkillMixDTO>> groupedResourceHours =
-				commonDisclosures.GroupBy(r => r.MOQTypeSelectionID);
+				commonDisclosures.GroupBy(r => r.BOETaskElementID);
 			
 			foreach (IGrouping<int, CommonDisclosureSkillMixDTO> grouping in groupedResourceHours)
 			{

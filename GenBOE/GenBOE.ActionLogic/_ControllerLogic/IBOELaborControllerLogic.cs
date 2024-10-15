@@ -11,7 +11,7 @@ namespace GenBOE.ActionLogic
     using System.Threading.Tasks;
     using System.Web;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
@@ -347,18 +347,14 @@ namespace GenBOE.ActionLogic
         Task<IESResponse<SkillMixConvertedResourceViewModel>> GetSkillMixConvertedResources();
 
 		/// <summary>
-		/// Refreshes the Skill Mix Table with updated resource hours
+		/// Refreshes the Skill Mix Tables with updated resource hours
 		/// </summary>
+		/// <param name="laborTypes">The labor type/spreads data</param>
+		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
-		ICollection<SkillMixModelView> RefreshSkillMixTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData);
-
-		/// <summary>
-		/// Refreshes the Skill Mix Table with updated resource hours
-		/// </summary>
-		/// <param name="currentSkillMixData">The current skill mix data</param>
-		/// <param name="commonDisclosureSMData">The current skill mix data</param>
-		/// <param name="resourceHours">The MOQ Table Resource Hours</param>
-		ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours);
+		/// <returns></returns>
+		RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData);
 	}
 }

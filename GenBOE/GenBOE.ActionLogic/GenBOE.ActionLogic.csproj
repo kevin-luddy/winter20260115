@@ -466,6 +466,8 @@
     <Compile Include="_ModelView\Task\LaborTypeOrder.cs" />
     <Compile Include="_ModelView\Task\LaborTypeOrderCollection.cs" />
     <Compile Include="_ModelView\Task\RecalcSpreadModelView.cs" />
+    <Compile Include="_ModelView\Task\RefreshSkillMixModelView.cs" />
+    <Compile Include="_ModelView\Task\SkillMixTotalsModelView.cs" />
     <Compile Include="_ModelView\Task\TaskElementDuplicateFormCollection.cs" />
     <Compile Include="_ModelView\Task\TaskElementDuplicateFormModelView.cs" />
     <Compile Include="_ModelView\TraceTableBoeDataGroup.cs" />

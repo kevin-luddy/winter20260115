@@ -32,29 +32,16 @@ namespace GenBOE.DataBridge.DTO
 		private readonly IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader;
 
 		/// <summary>
-		/// Skill Mix DTO Loader
-		/// </summary>
-		private readonly ISkillMixDTOLoader skillMixDTOLoader;
-
-		/// <summary>
-		/// Common Disclosure loader
-		/// </summary>
-		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureLoader;
-
-		/// <summary>
 		/// constructor
 		/// </summary>
 		/// <param name="moqTypeTableCustomFieldValueXREFLoader">MOQ Type Table Custom Field Value XREF Loader</param>
 		/// <param name="moqTypeSelectionTableDataResourceHoursDTOLoader">MOQ Type Resource Hours Loader</param>
 		/// <param name="skillMixDTOLoader">Skill Mix Loader</param>
-		public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader, IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader,
-			ISkillMixDTOLoader skillMixDTOLoader, ICommonDisclosureSMDTODataLoader commonDisclosureLoader)
+		public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader, IMOQTypeSelectionTableDataResourceHoursDTOLoader moqTypeSelectionTableDataResourceHoursDTOLoader)
 		{
 			this.Log = new Logger(typeof(MoqTypeDataLoader));
 			this.moqTypeTableCustomFieldValueXREFLoader = moqTypeTableCustomFieldValueXREFLoader;
 			this.moqTypeSelectionTableDataResourceHoursDTOLoader = moqTypeSelectionTableDataResourceHoursDTOLoader;
-			this.skillMixDTOLoader = skillMixDTOLoader;
-			this.commonDisclosureLoader = commonDisclosureLoader;
 		}
 
 		/// <summary>
@@ -94,7 +81,7 @@ namespace GenBOE.DataBridge.DTO
 					this.GetTableDataForMoqTypes(toReturn, gbe);
 				}
 
-				this.DoPostProcessing(toReturn, null, null, null);
+				this.DoPostProcessing(toReturn, null);
 			}
 
 			return toReturn;
@@ -110,8 +97,6 @@ namespace GenBOE.DataBridge.DTO
 		{
 			ICollection<MoqTypeSelection> toReturn = new Collection<MoqTypeSelection>();
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours;
-			ICollection<SkillMixDTO> skillMix = new Collection<SkillMixDTO>();
-			ICollection<CommonDisclosureSkillMixDTO> commonDislosures = new Collection<CommonDisclosureSkillMixDTO>();
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
@@ -144,10 +129,8 @@ namespace GenBOE.DataBridge.DTO
 				}
 
 				resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByWorkspaceId(workspaceId);
-				skillMix = this.skillMixDTOLoader.GetByWorkspaceId(workspaceId);
-				commonDislosures = this.commonDisclosureLoader.GetByWorkspaceId(workspaceId);
 
-				this.DoPostProcessing(toReturn, resourceHours, skillMix, commonDislosures);
+				this.DoPostProcessing(toReturn, resourceHours);
 			}
 
 			return toReturn;
@@ -163,8 +146,6 @@ namespace GenBOE.DataBridge.DTO
 		{
 			ICollection<MoqTypeSelection> toReturn = new Collection<MoqTypeSelection>();
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = new Collection<MOQTypeSelectionTableDataResourceHoursDTO>();
-			ICollection<SkillMixDTO> skillMix = new Collection<SkillMixDTO>();
-			ICollection<CommonDisclosureSkillMixDTO> commonDislosures = new Collection<CommonDisclosureSkillMixDTO>(); 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
@@ -193,12 +174,10 @@ namespace GenBOE.DataBridge.DTO
 
 					this.GetTableDataForMoqTypes(toReturn, gbe);
 				}
-				
-				resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByBOEID(boeId);
-				skillMix = this.skillMixDTOLoader.GetByBOEID(boeId);
-				commonDislosures = this.commonDisclosureLoader.GetByBOEID(boeId);
 
-				this.DoPostProcessing(toReturn, resourceHours, skillMix, commonDislosures);
+				resourceHours = this.moqTypeSelectionTableDataResourceHoursDTOLoader.GetByBOEID(boeId);
+
+				this.DoPostProcessing(toReturn, resourceHours);
 			}
 
 			return toReturn;
@@ -222,7 +201,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					foreach(MoqTableData table in dtoToDelete.TableData.Where(x => x.Id > 0))
+					foreach (MoqTableData table in dtoToDelete.TableData.Where(x => x.Id > 0))
 					{
 						gbe.deleteMOQTypeSelectionTableDataResourceHours(table.Id);
 						gbe.deleteMOQTypeSelectionTableData(table.Id, table.UpdateDate);
@@ -259,9 +238,9 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					toReturn = gbe.upsertMOQTypeSelection(dtoToUpsert.Id, dtoToUpsert.TaskId, (int)dtoToUpsert.SelectedMOQType, dtoToUpsert.UpdateDate, 
-						dtoToUpsert.Order, dtoToUpsert.CerName, dtoToUpsert.DescriptionHoursRequired, dtoToUpsert.SmeReason, 
-						dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale, 
+					toReturn = gbe.upsertMOQTypeSelection(dtoToUpsert.Id, dtoToUpsert.TaskId, (int)dtoToUpsert.SelectedMOQType, dtoToUpsert.UpdateDate,
+						dtoToUpsert.Order, dtoToUpsert.CerName, dtoToUpsert.DescriptionHoursRequired, dtoToUpsert.SmeReason,
+						dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale,
 						dtoToUpsert.HistoricalReferenceExplanation).FirstOrDefault();
 
 					if (dtoToUpsert.BoeId < 1)
@@ -269,12 +248,12 @@ namespace GenBOE.DataBridge.DTO
 						dtoToUpsert.BoeId = gbe.BOETaskElements.Where(b => b.BOETaskElementID == dtoToUpsert.TaskId).Select(t => t.BOEID).First();
 					}
 
-					foreach(MoqTableData table in dtoToUpsert.TableData.Where(x => x.DateOfReport.Date != DateTime.MinValue.Date))
+					foreach (MoqTableData table in dtoToUpsert.TableData.Where(x => x.DateOfReport.Date != DateTime.MinValue.Date))
 					{
 						int? tableId = gbe.upsertMOQTypeSelectionTableData(table.Id, toReturn, table.UpdateDate, table.Order, table.TableName, table.RepositoryName, table.QueryType,
 							table.DateOfReport, table.HistoricalProgramName, table.ContractNumber, table.WbsElement, table.PoPStart ?? DateTime.MinValue, table.PoPEnd ?? DateTime.MinValue, table.TotalWbsHours,
 							table.AdditionalQueryFilters, table.TotalRelevantHours).FirstOrDefault();
-						
+
 						// Save custom fields
 						if (tableId.HasValue)
 						{
@@ -296,43 +275,8 @@ namespace GenBOE.DataBridge.DTO
 					}
 				}
 
-				if (Utilities.IsSkillMixEnabledForSystem)
-				{
-					// Save the Skill Mix tables
-					if (dtoToUpsert.SkillMixTable != null && dtoToUpsert.SkillMixTable.Any())
-					{
-						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
-						foreach (SkillMixModelView skillMixModelView in dtoToUpsert.SkillMixTable)
-						{
-							SkillMixDTO dto = skillMixModelView.ToDto();
-							dto.BOEID = dtoToUpsert.BoeId;
-							dto.MOQTypeSelectionID = toReturn.Value;
-							dto.BOETaskElementID = dtoToUpsert.TaskId;
-							dtos.Add(dto);
-						}
-
-						this.skillMixDTOLoader.InsertSkillMix(dtos);
-					}
-
-					// Save the Common Disclosure DTOs
-					if (dtoToUpsert.CommonDisclosureTable != null && dtoToUpsert.CommonDisclosureTable.Any())
-					{
-						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
-						foreach (CommonDisclosureModelView commonDisclosure in dtoToUpsert.CommonDisclosureTable)
-						{
-							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
-							dto.BOEID = dtoToUpsert.BoeId;
-							dto.MOQTypeSelectionID = toReturn.Value;
-							dto.BOETaskElementID = dtoToUpsert.TaskId;
-							dtos.Add(dto);
-						}
-
-						this.commonDisclosureLoader.InsertCommonDisclosureSM(dtos);
-					}
-				}
+				return toReturn;
 			}
-
-			return toReturn;
 		}
 
 		/// <summary>
@@ -348,7 +292,7 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					// Delete original tables
-					foreach(MoqTableData table in moqType.TableData.Where(x => x.Updateable == UpdateType.Deleted))
+					foreach (MoqTableData table in moqType.TableData.Where(x => x.Updateable == UpdateType.Deleted))
 					{
 						gbe.deleteMOQTypeSelectionTableDataResourceHours(table.Id);
 						gbe.deleteMOQTypeSelectionTableData(table.Id, table.UpdateDate);
@@ -383,6 +327,7 @@ namespace GenBOE.DataBridge.DTO
 			}
 		}
 
+
 		/// <summary>
 		/// Get the MOQ Tyoe Table Data  for the MOQ Type Selections
 		/// </summary>
@@ -394,46 +339,47 @@ namespace GenBOE.DataBridge.DTO
 			ICollection<int> moqTypeIds = moqTypeSelections.Select(x => x.Id).ToCollection();
 			ICollection<MoqTableData> allTableData = (from td in gbe.MOQTypeSelectionTableDatas
 													  .Where(d => moqTypeIds.Contains(d.MOQTypeSelectionId))
-								   select new MoqTableData
-								   {
-									   Id = td.MOQTypeSelectionTableDataId,
-									   MOQTypeSelectionId = td.MOQTypeSelectionId,
-									   UpdateDate = td.UpdateDT,
-									   Order = td.Order,
-									   TableName = td.TableName,
-									   RepositoryName = td.RepositoryName,
-									   QueryType = td.QueryType,
-									   DateOfReport = td.DateOfReport,
-									   HistoricalProgramName = td.HistoricalProgramName,
-									   ContractNumber = td.ContractNumber,
-									   WbsElement = td.WbsElement,
-									   PoPStart = td.PeriodOfPerformanceStartDate,
-									   PoPEnd = td.PeriodOfPerformanceEndDate,
-									   TotalWbsHours = td.TotalWbsHours,
-									   AdditionalQueryFilters = td.AdditionalQueryFilters,
-									   TotalRelevantHours = td.TotalRelevantHoursAfterQueryFilters,
-									   CustomFieldValueContainersIEnum = td.MoqTypeTableCustomFieldValueXREFs
-											.Select(cf => new CustomFieldValueContainer
-											{
-												ContainerID = cf.Id,
-												CustomFieldValueID = cf.CustomFieldValueId,
-												CustomFieldID = cf.CustomFieldValue.CustomFieldID,
-												UpdateDate = cf.UpdateDT,
-												IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
-												OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription
-											})
-								   }).OrderBy(x => x.Order).ToCollection<MoqTableData>();
+													  select new MoqTableData
+													  {
+														  Id = td.MOQTypeSelectionTableDataId,
+														  MOQTypeSelectionId = td.MOQTypeSelectionId,
+														  UpdateDate = td.UpdateDT,
+														  Order = td.Order,
+														  TableName = td.TableName,
+														  RepositoryName = td.RepositoryName,
+														  QueryType = td.QueryType,
+														  DateOfReport = td.DateOfReport,
+														  HistoricalProgramName = td.HistoricalProgramName,
+														  ContractNumber = td.ContractNumber,
+														  WbsElement = td.WbsElement,
+														  PoPStart = td.PeriodOfPerformanceStartDate,
+														  PoPEnd = td.PeriodOfPerformanceEndDate,
+														  TotalWbsHours = td.TotalWbsHours,
+														  AdditionalQueryFilters = td.AdditionalQueryFilters,
+														  TotalRelevantHours = td.TotalRelevantHoursAfterQueryFilters,
+														  CustomFieldValueContainersIEnum = td.MoqTypeTableCustomFieldValueXREFs
+															   .Select(cf => new CustomFieldValueContainer
+															   {
+																   ContainerID = cf.Id,
+																   CustomFieldValueID = cf.CustomFieldValueId,
+																   CustomFieldID = cf.CustomFieldValue.CustomFieldID,
+																   UpdateDate = cf.UpdateDT,
+																   IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
+																   OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription
+															   })
+													  }).OrderBy(x => x.Order).ToCollection<MoqTableData>();
 
 			foreach (MoqTypeSelection selection in moqTypeSelections)
 			{
 				selection.TableData.AddRange(allTableData.Where(x => x.MOQTypeSelectionId == selection.Id));
 
-				if((selection.SelectedMOQType == MOQType.Historical || selection.SelectedMOQType == MOQType.Comparative) && selection.TableData.None())
+				if ((selection.SelectedMOQType == MOQType.Historical || selection.SelectedMOQType == MOQType.Comparative) && selection.TableData.None())
 				{
 					selection.TableData.Add(new MoqTableData());
 				}
 			}
 		}
+
 
 		/// <summary>
 		/// Do post processing after saving MOQ Type Selections
@@ -442,8 +388,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="resourceHours">The Resource Hours to attach to this MOQ Type (if loaded already)</param>
 		/// <param name="skillMix">Skill Mix DTOs</param>
 		/// <param name="commonDisclosures">Common Disclosures DTOs</param>
-		private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<SkillMixDTO> skillMix, ICollection<CommonDisclosureSkillMixDTO> commonDisclosures)
+		private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours)
 		{
 			// Handle custom field enums and resource Hours
 			foreach (MoqTypeSelection selection in moqTypeSelections.Where(x => x.TableData.Any()))
@@ -461,24 +406,6 @@ namespace GenBOE.DataBridge.DTO
 					{
 						table.ResourceHours = resourceHours.Where(r => r.MOQTypeSelectionTableDataId == table.Id).ToCollection();
 					}
-				}
-
-				if (skillMix == null)
-				{
-					selection.SkillMixTable = this.skillMixDTOLoader.GetByBOETaskElementID(selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
-				}
-				else
-				{
-					selection.SkillMixTable = skillMix.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
-				}
-
-				if (commonDisclosures == null)
-				{
-					selection.CommonDisclosureTable = this.commonDisclosureLoader.GetByBOETaskElementID(selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
-				}
-				else
-				{
-					selection.CommonDisclosureTable = commonDisclosures.Where(r => r.MOQTypeSelectionID == selection.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
 				}
 			}
 		}

@@ -173,8 +173,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Adds MOQ Type to Selected MOQ Types (and removes it from the dropdown of available types)
 	$scope.AddMoqType = function () {
 		var selectedItem = $scope.model.selectedMOQType;
-		selectedItem.SkillMixTable = [];
-		selectedItem.CommonDisclosureTable = [];
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//selectedItem.SkillMixTable = [];
+		//selectedItem.CommonDisclosureTable = [];
 
 		selectedItem.Order = 2000;
 
@@ -1379,7 +1380,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 
 		data.boeId = ManageTaskModel.boeId;
-		data.currentSkillMixData = moqType.SkillMixTable;
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		// data.currentSkillMixData = moqType.SkillMixTable;
 
 		if (data.resourceHours.length > 0) {
 			// send to backend
@@ -1395,17 +1397,18 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				if (response.data.IsSuccessful === true) {
 					// the response is wrapped inside response.data.data array
 					if (response.data.data) {
-						moqType.SkillMixTable = response.data.data;
+						// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+						//moqType.SkillMixTable = response.data.data;
 
-						// Recalculate Totals for Skill Mix
-						$scope.setSkillMixTotals(moqType);
+						//// Recalculate Totals for Skill Mix
+						//$scope.setSkillMixTotals(moqType);
 
-						if ($scope.model.CommonDisclosureEnabled) {
-							$scope.refreshCommonDisclosureTable(moqType);
+						//if ($scope.model.CommonDisclosureEnabled) {
+						//	$scope.refreshCommonDisclosureTable(moqType);
 
-							// Recalculate Totals for Common Disclosure Table
-							$scope.setCommonDisclosureTotals(moqType);
-						}
+						//	// Recalculate Totals for Common Disclosure Table
+						//	$scope.setCommonDisclosureTotals(moqType);
+						//}
 					}
 				} else {
 					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
@@ -1418,7 +1421,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			});
 		}
 		else {
-			moqType.SkillMixTable = [];
+			// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+			// moqType.SkillMixTable = [];
 		}
 	};
 
@@ -1479,75 +1483,81 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.getTotalCDHistoricalHours = function (moqType) {
 		let totalHistoricalHours = 0;
-		moqType.CommonDisclosureTable.forEach(item => {
-			totalHistoricalHours += item.HistoricalHours;
-		});
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//moqType.CommonDisclosureTable.forEach(item => {
+		//	totalHistoricalHours += item.HistoricalHours;
+		//});
 		return totalHistoricalHours;
 	};
 
 	$scope.getTotalSMHistoricalHours = function (moqType) {
 		let totalHistoricalHours = 0;
-		moqType.SkillMixTable.forEach(item => {
-			if (item.Included) {
-				totalHistoricalHours += item.HistoricalHours;
-			}
-		});
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//moqType.SkillMixTable.forEach(item => {
+		//	if (item.Included) {
+		//		totalHistoricalHours += item.HistoricalHours;
+		//	}
+		//});
 		return totalHistoricalHours;
 	};
 
 	$scope.refreshCommonDisclosureTable = function (moqType) {
-		// Get all the data tables
-		const data = {
-			currentSkillMixData: [],
-			commonDisclosureSMData: [],
-			resourceHours: []
-		};
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//// Get all the data tables
+		//const data = {
+		//	currentSkillMixData: [],
+		//	commonDisclosureSMData: [],
+		//	resourceHours: []
+		//};
 
-		data.boeId = ManageTaskModel.boeId;
-		data.currentSkillMixData = moqType.SkillMixTable;
-		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
+		//data.boeId = ManageTaskModel.boeId;
+		//// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		////data.currentSkillMixData = moqType.SkillMixTable;
+		////data.commonDisclosureSMData = moqType.CommonDisclosureTable;
 
-		if (moqType.TableData) {
-			moqType.TableData.forEach(tableData => {
-				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+		//if (moqType.TableData) {
+		//	moqType.TableData.forEach(tableData => {
+		//		if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
 
-					tableData.ResourceHours.forEach(hours => {
-						data.resourceHours.push(hours);
-					});
-				}
-			});
-		}
+		//			tableData.ResourceHours.forEach(hours => {
+		//				data.resourceHours.push(hours);
+		//			});
+		//		}
+		//	});
+		//}
 
-		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
-			// send to backend
-			// display response to user
-			$(document).trigger("SHOW_LOADING_BOX");
-			$http({
-				method: 'POST',
-				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
-				data: data
-			}).then(function (response) {
-				// place returned html into the content div
-				if (response.data.IsSuccessful === true) {
-					// the response is wrapped inside response.data.data array
-					if (response.data.data) {
-						moqType.CommonDisclosureTable = response.data.data;
-						$scope.setCommonDisclosureTotals(moqType);
-						$scope.refreshResourceGroupColors(moqType);
-					}
-				} else {
-					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
-				}
+		//if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
+		//	// send to backend
+		//	// display response to user
+		//	$(document).trigger("SHOW_LOADING_BOX");
+		//	$http({
+		//		method: 'POST',
+		//		url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
+		//		data: data
+		//	}).then(function (response) {
+		//		// place returned html into the content div
+		//		if (response.data.IsSuccessful === true) {
+		//			// the response is wrapped inside response.data.data array
+		//			if (response.data.data) {
+		//				// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//				//moqType.CommonDisclosureTable = response.data.data;
+		//				//$scope.setCommonDisclosureTotals(moqType);
+		//				//$scope.refreshResourceGroupColors(moqType);
+		//			}
+		//		} else {
+		//			RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
+		//		}
 
-				$(document).trigger("HIDE_LOADING_BOX");
-			}).catch(function () {
-				RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
-				$(document).trigger("HIDE_LOADING_BOX");
-			});
-		}
-		else {
-			moqType.CommonDisclosureTable = [];
-		}
+		//		$(document).trigger("HIDE_LOADING_BOX");
+		//	}).catch(function () {
+		//		RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
+		//		$(document).trigger("HIDE_LOADING_BOX");
+		//	});
+		//}
+		//else {
+		//	// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//	// moqType.CommonDisclosureTable = [];
+		//}
 	};
 
 	$scope.addRowForResource = function (item, moqType) {
@@ -1557,37 +1567,40 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		dupe.HistoricalHours = 0;
 		dupe.LaborSkillMix = 0;
 
-		moqType.CommonDisclosureTable.push(dupe);
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		// moqType.CommonDisclosureTable.push(dupe);
 	};
 
 	$scope.deleteRowForResource = function (item, moqType) {
 		//have to find at least one other row with same resource id to be eligible to delete
 		var resourceRowCount = 0;
-		for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
-			var row = moqType.CommonDisclosureTable[i];
-			if (row.ResourceID === item.ResourceID) {
-				resourceRowCount++;
-			}
-			if (resourceRowCount > 1) {
-				var index = moqType.CommonDisclosureTable.indexOf(item);
-				if (index > -1) { 
-					moqType.CommonDisclosureTable.splice(index, 1);
-				}
-				$scope.setCommonDisclosureTotals(moqType);
-				break;
-			}
-		}
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
+		//	var row = moqType.CommonDisclosureTable[i];
+		//	if (row.ResourceID === item.ResourceID) {
+		//		resourceRowCount++;
+		//	}
+		//	if (resourceRowCount > 1) {
+		//		var index = moqType.CommonDisclosureTable.indexOf(item);
+		//		if (index > -1) { 
+		//			moqType.CommonDisclosureTable.splice(index, 1);
+		//		}
+		//		$scope.setCommonDisclosureTotals(moqType);
+		//		break;
+		//	}
+		//}
 	};
 	$scope.canDelete = function (item, moqType) {
 		//have to find at least one other row with same resource id to be eligible to delete
 		var resourceRowCount = 0;
 		var canDelete = true;
-		for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
-			var row = moqType.CommonDisclosureTable[i];
-			if (row.ResourceID === item.ResourceID) {
-				resourceRowCount++;
-			}
-		}
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
+		//	var row = moqType.CommonDisclosureTable[i];
+		//	if (row.ResourceID === item.ResourceID) {
+		//		resourceRowCount++;
+		//	}
+		//}
 		if (resourceRowCount == 1) {
 			canDelete = false;
 		}
@@ -1599,7 +1612,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 	$scope.sortCD = function (moqType) {
 		let colName = "ResourceID";
-		moqType.CommonDisclosureTable.sort((a, b) => a[colName] > b[colName] ? 1 : a[colName] < b[colName] ? -1 : 0);
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		// moqType.CommonDisclosureTable.sort((a, b) => a[colName] > b[colName] ? 1 : a[colName] < b[colName] ? -1 : 0);
 		$scope.refreshResourceGroupColors(moqType);
 	};
 
@@ -1872,13 +1886,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		moqType.BoeSkillMixTotal = 0;
 		moqType.ProposedSkillMixHoursTotal = 0;
 
-		moqType.SkillMixTable.forEach(item => {
-			// Set Skill Mix Totals
-			moqType.HistoricalSkillMixHoursTotal += item.HistoricalHours;
-			moqType.LaborSkillMixTotal += item.LaborSkillMix;
-			moqType.BoeSkillMixTotal += parseFloat(item.BOESkillMix) || 0;
-			moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
-		});
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//moqType.SkillMixTable.forEach(item => {
+		//	// Set Skill Mix Totals
+		//	moqType.HistoricalSkillMixHoursTotal += item.HistoricalHours;
+		//	moqType.LaborSkillMixTotal += item.LaborSkillMix;
+		//	moqType.BoeSkillMixTotal += parseFloat(item.BOESkillMix) || 0;
+		//	moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
+		//});
 
 		moqType.BoeSkillMixTotal = parseFloat((moqType.BoeSkillMixTotal).toFixed(3));
 		moqType.ProposedSkillMixHoursTotal = parseFloat((moqType.ProposedSkillMixHoursTotal).toFixed(1));
@@ -1894,13 +1909,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		moqType.BoeCommonDisclosureTotal = 0;
 		moqType.ProposedCommonDisclosureHoursTotal = 0;
 
-		moqType.CommonDisclosureTable.forEach(item => {
-			// Set Skill Mix Totals
-			moqType.HistoricalCommonDisclosureHoursTotal += item.HistoricalHours;
-			moqType.LaborCommonDisclosureTotal += item.LaborSkillMix;
-			moqType.BoeCommonDisclosureTotal += parseFloat(item.BOESkillMix) || 0;
-			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
-		});
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//moqType.CommonDisclosureTable.forEach(item => {
+		//	// Set Skill Mix Totals
+		//	moqType.HistoricalCommonDisclosureHoursTotal += item.HistoricalHours;
+		//	moqType.LaborCommonDisclosureTotal += item.LaborSkillMix;
+		//	moqType.BoeCommonDisclosureTotal += parseFloat(item.BOESkillMix) || 0;
+		//	moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
+		//});
 
 		moqType.BoeCommonDisclosureTotal = parseFloat((moqType.BoeCommonDisclosureTotal).toFixed(3));
 		moqType.ProposedCommonDisclosureHoursTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(1));
@@ -1909,15 +1925,16 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.setLaborSkillMixForCD = function (moqType) {
 		let totalHistoricalHours = 0;
 
-		//get total historical hours in CD table
-		moqType.CommonDisclosureTable.forEach(item => {
-			totalHistoricalHours += item.HistoricalHours;
-		});
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		////get total historical hours in CD table
+		//moqType.CommonDisclosureTable.forEach(item => {
+		//	totalHistoricalHours += item.HistoricalHours;
+		//});
 
-		//get labor skill mix % by taking row's historical hours / total
-		moqType.CommonDisclosureTable.forEach(item => {
-			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
-		});
+		////get labor skill mix % by taking row's historical hours / total
+		//moqType.CommonDisclosureTable.forEach(item => {
+		//	item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
+		//});
 	}
 
 	$scope.updateBoeSkillMixLock = function (item) {
@@ -1956,15 +1973,16 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	var recalculateCommonDisclosure = function (moqType) {
 		var moqTotal = $scope.getMOQTotal();
 
-		moqType.CommonDisclosureTable.forEach(item => {
-			if (item.Included) {
-				if (!item.IsPercentLocked) {
-					item.ProposedHours = parseFloat(((moqTotal * (item.BOESkillMix / 100)).toFixed(1)));
-				} else {
-					item.BOESkillMix = parseFloat((((item.ProposedHours / moqTotal) * 100).toFixed(3)));
-				}
-			}
-		});
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//moqType.CommonDisclosureTable.forEach(item => {
+		//	if (item.Included) {
+		//		if (!item.IsPercentLocked) {
+		//			item.ProposedHours = parseFloat(((moqTotal * (item.BOESkillMix / 100)).toFixed(1)));
+		//		} else {
+		//			item.BOESkillMix = parseFloat((((item.ProposedHours / moqTotal) * 100).toFixed(3)));
+		//		}
+		//	}
+		//});
 	}
 
 	
@@ -1972,15 +1990,16 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	var recalculateSkillMix = function (moqType) {
 		var moqTotal = $scope.getMOQTotal();
 
-		moqType.SkillMixTable.forEach(item => {
-			if (item.Included) {
-				if (!item.IsPercentLocked) {
-					item.ProposedHours = parseFloat((moqTotal * (item.BOESkillMix / 100)).toFixed(1));
-				} else {
-					item.BOESkillMix = parseFloat(((item.ProposedHours / moqTotal) * 100).toFixed(3));
-				}
-			}
-		});
+		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//moqType.SkillMixTable.forEach(item => {
+		//	if (item.Included) {
+		//		if (!item.IsPercentLocked) {
+		//			item.ProposedHours = parseFloat((moqTotal * (item.BOESkillMix / 100)).toFixed(1));
+		//		} else {
+		//			item.BOESkillMix = parseFloat(((item.ProposedHours / moqTotal) * 100).toFixed(3));
+		//		}
+		//	}
+		//});
 	}
 
     $scope.resourceSelected = function (item, model, moqType) {

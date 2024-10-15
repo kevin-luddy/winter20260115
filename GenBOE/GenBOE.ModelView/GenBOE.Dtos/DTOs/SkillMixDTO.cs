@@ -24,8 +24,6 @@
 			this.ResourceNew = string.Empty;
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
-			this.MOQTypeSelectionID = -1;
-			this.IsPercentLocked = false;
 			this.IsUserInput = false;
 		}
 
@@ -108,16 +106,6 @@
 		/// Foreign Key to BOETaskElement table
 		/// </summary>
 		public int BOETaskElementID { get; set; }
-
-		/// <summary>
-		/// Foreign Key to MOQTypeSelectionID
-		/// </summary>
-		public int MOQTypeSelectionID { get; set; }
-
-		/// <summary>
-		/// Is the BOE Skill Mix Percent locked
-		/// </summary>
-		public bool IsPercentLocked { get; set; }
 
 		/// <summary>
 		/// Is this data User Input

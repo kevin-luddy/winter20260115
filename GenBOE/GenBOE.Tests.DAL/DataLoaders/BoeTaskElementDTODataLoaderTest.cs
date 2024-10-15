@@ -54,8 +54,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
             IOrdinaryVariableLoader ordinaryVariableLoader = new OrdinaryVariableLoader();
             IBoeTaskElementCustomFieldValueXREFLoader taskElementCustomFieldLoader = new BoeTaskElementCustomFieldValueXREFLoader();
             ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader = new LaborTypeCustomFieldValueXREFLoader();
+			ISkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
+			ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader = new CommonDisclosureSMDTODataLoader();
 
-            return new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader);
+            return new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
         }
            
         [TestMethod]
@@ -1384,7 +1386,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         public void TestingRteLoadChanges()
         {
             BoeTaskElementDTODataLoader loader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(),
-                                                    new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader());
+                                                    new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new CommonDisclosureSMDTODataLoader());
 
             int id = -1;
             using (GenBoeEntities gbe = new GenBoeEntities())

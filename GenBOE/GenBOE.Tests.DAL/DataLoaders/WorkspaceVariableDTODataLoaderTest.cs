@@ -51,8 +51,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
             IOrdinaryVariableLoader ordinaryVariableLoader = new OrdinaryVariableLoader();
             IBoeTaskElementCustomFieldValueXREFLoader taskElementCustomFieldLoader = new BoeTaskElementCustomFieldValueXREFLoader();
             ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader = new LaborTypeCustomFieldValueXREFLoader();
+			ISkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
+			ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader = new CommonDisclosureSMDTODataLoader();
 
-            BoeTaskElementDTODataLoader _BoeTaskElementDTODataLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader);
+			BoeTaskElementDTODataLoader _BoeTaskElementDTODataLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
 
             var sut = new WorkspaceVariableDTODataLoader();
 
