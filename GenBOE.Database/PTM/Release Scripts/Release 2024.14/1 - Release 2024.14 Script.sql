@@ -8,23 +8,23 @@ GO
 
 BEGIN
   -- Set Other Text
-  UPDATE [genTrac].[dbo].[Proposal]
+  UPDATE [dbo].[Proposal]
   SET ContractActionTypeOtherText = 'Letter Contract'
-  FROM [genTrac].[dbo].[Proposal] AS p
-  INNER JOIN [genTrac].[dbo].[ContractActionTypeLU] AS cat
+  FROM [dbo].[Proposal] AS p
+  INNER JOIN [dbo].[ContractActionTypeLU] AS cat
   ON p.ContractActionType = cat.ID
   WHERE cat.ContractActionType = 'Letter Contract';
 
   -- Set ContractActionType
-  UPDATE [genTrac].[dbo].[Proposal]
-  SET [genTrac].[dbo].[Proposal].ContractActionType = (
-	SELECT ID FROM [genTrac].[dbo].[ContractActionTypeLU]
+  UPDATE [dbo].[Proposal]
+  SET [dbo].[Proposal].ContractActionType = (
+	SELECT ID FROM [dbo].[ContractActionTypeLU]
 	WHERE ContractActionType = 'Other'
   )
-  WHERE [genTrac].[dbo].[Proposal].ContractActionTypeOtherText = 'Letter Contract'
+  WHERE [dbo].[Proposal].ContractActionTypeOtherText = 'Letter Contract'
 
   -- Delete Letter Contract from LU table
-  DELETE FROM [genTrac].[dbo].[ContractActionTypeLU]
+  DELETE FROM [dbo].[ContractActionTypeLU]
   WHERE ContractActionType = 'Letter Contract';
 END
 GO
