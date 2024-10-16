@@ -1415,13 +1415,6 @@ namespace IES.Common.Core.Enums
 		NewContract = 1,
 
 		/// <summary>
-		/// Letter Contract
-		/// </summary>
-		[Display(Name = "Letter Contract")]
-		[Description("Letter Contract")]
-		LetterContract = 2,
-
-		/// <summary>
 		/// Change Order
 		/// </summary>
 		[Display(Name = "Change Order")]

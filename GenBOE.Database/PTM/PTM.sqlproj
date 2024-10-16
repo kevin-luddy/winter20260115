@@ -97,6 +97,7 @@
     <Folder Include="Release Scripts\Older\Release 2024.07" />
     <Folder Include="Release Scripts\Older\Release 2024.08" />
     <Folder Include="Release Scripts\Older\Release 2024.09" />
+    <Folder Include="Release Scripts\Release 2024.14" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -207,6 +208,8 @@
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2024.11 Generated On 7_14_2024.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2024.12 Generated On 7_18_2024.sql" />
     <Build Include="_Full Script Files For Specific Versions\PTM - 2024.13 Generated On 8_19_2024.sql" />
+    <Build Include="Release Scripts\Release 2024.14\1 - Release 2024.14 Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2024.14 Generated On 10_16_2024.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
