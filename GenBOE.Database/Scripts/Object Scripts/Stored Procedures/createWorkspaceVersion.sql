@@ -1245,7 +1245,7 @@ SM.[IsUserInput],
 @VersionID
 FROM [dbo].[SkillMix] SM
 INNER JOIN dbo.BOE B ON SM.BOEID = B.BOEID
-INNER JOIN dbo.[MOQTypeSelection] M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
+INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = SM.[BOETaskElementID]
 WHERE B.WorkspaceID = @WorkspaceID
 
 /** [dbo].[CommonDisclosureSkillMix] **/
@@ -1279,7 +1279,7 @@ CD.[BOEID],
 @VersionID
 FROM [dbo].[CommonDisclosureSkillMix] CD
 INNER JOIN dbo.BOE B ON CD.BOEID = B.BOEID
-INNER JOIN dbo.[MOQTypeSelection] M ON CD.MOQTypeSelectionID = M.MOQTypeSelectionID
+INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = CD.[BOETaskElementID]
 WHERE B.WorkspaceID = @WorkspaceID
 
 /** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
