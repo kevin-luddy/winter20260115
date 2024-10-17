@@ -8,10 +8,9 @@ namespace GenBOE.DataBridge.DTO
 {
 	using System.Collections.Generic;
 	using System.Linq;
-	using IES.Common;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
-	using System;
+	using IES.Common;
 
 	/// <summary>
 	/// The PBOE INL Form Data Loader Class.
@@ -298,37 +297,110 @@ namespace GenBOE.DataBridge.DTO
 								select new PBOEDataDTO
 								{
 									PBoeID = b.PBOEFormID,
+									FormName = b.FormName,
+									Description = b.Description,
+									BasisAndRationale = b.BasisAndRationale,
+									Revision = b.Revision,
+									FormVersion = b.FormVersion,
 									SupplierName = b.SupplierName,
 									VendorId = b.VendorId,
+									RFP = b.RFP,
+									ProposalNumber = b.ProposalNumber,
 									SupplierProposedValue = b.SupplierProposedValue,
+									ProposalTitle = b.ProposalTitle,
+									WorkspaceProposalTitle = w.ProposalTitle,
+									WorkspaceRfpNumber = w.RFPNumber,
 									IsCCoPD = ((Ccopd)b.CCoPD & Ccopd.Applies) == Ccopd.Applies,
+									CCoPDOtherText = b.CCoPDOtherText,
 									IsCompetitionException = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
 									IsCommercialItemException = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
 									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
 									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
-									ExpectedCCoPDApplicability = ((Ccopd)b.CCoPD),
+									BoeCcopd = (Ccopd)b.CCoPD,
+									ShouldCostEstimate = (ScheduleEvent)b.ShouldCostEstimate,
+									ShouldCostEstimateDate = b.ShouldCostEstimateDate,
+									ShouldCostEstimateText = b.ShouldCostEstimateText,
+									SowWritten = (ScheduleEvent)b.SowWritten,
+									SowWrittenDate = b.SowWrittenDate,
+									SowWrittenText = b.SowWrittenText,
+									FirmSupplierReceipt = (ScheduleEvent)b.FirmSupplierReceipt,
+									FirmSupplierReceiptDate = b.FirmSupplierReceiptDate,
+									FirmSupplierReceiptText = b.FirmSupplierReceiptText,
+									SourceSelection = (ScheduleEvent)b.SourceSelection,
+									SourceSelectionDate = b.SourceSelectionDate,
+									SourceSelectionText = b.SourceSelectionText,
+									CID = (ScheduleEvent)b.CID,
+									CIDDate = b.CIDDate,
+									CIDText = b.CIDText,
+									GovtReview = (ScheduleEvent)b.GovtReview,
+									GovtReviewDate = b.GovtReviewDate,
+									GovtReviewText = b.GovtReviewText,
 									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
 									PriceAnalysisDate = b.PriceAnalysisDate,
+									PriceAnalysisText = b.PriceAnalysisText,
+									FactFinding = (ScheduleEvent)b.FactFinding,
+									FactFindingDate = b.FactFindingDate,
+									FactFindingText = b.FactFindingText,
 									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
 									CostAnalysisDate = b.CostAnalysisDate,
+									CostAnalysisText = b.CostAnalysisText,
+									GovtPricing = (ScheduleEvent)b.GovtPricing,
+									GovtPricingDate = b.GovtPricingDate,
+									GovtPricingText = b.GovtPricingText,
 									GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
 									GovtPricingReceivedDate = b.GovtPricingReceivedDate,
+									GovtPricingReceivedText = b.GovtPricingReceivedText,
+									MOU = (ScheduleEvent)b.MOU,
+									MOUDate = b.MOUDate,
+									MOUText = b.MOUText,
 									CostAnalysisUnqualified = (ScheduleEvent)b.CostAnalysisUnqual,
 									CostAnalysisUnqualifiedDate = b.CostAnalysisUnqualDate,
+									CostAnalysisUnqualifiedText = b.CostAnalysisUnqualText,
 									TechnicalEvaluation = (ScheduleEvent)b.TechnicalEvaluation,
 									TechnicalEvaluationDate = b.TechnicalEvaluationDate,
+									TechnicalEvaluationText = b.TechnicalEvaluationText,
+									RFPRelease = (ScheduleEvent)b.RFPRelease,
 									RFPReleaseToSupplierDate = b.RFPReleaseDate,
+									RFPReleaseText = b.RFPReleaseText,
+									SupplierNegotiations = (ScheduleEvent)b.SupplierNegotiations,
 									SupplierNegotiationsDate = b.SupplierNegotiationsDate,
+									SupplierNegotiationsText = b.SupplierNegotiationsText,
 									ProposalDate = b.ProposalDate,
 									ValidityDate = b.ValidityDate,
+									SupplierProposalSupportingDataIncluded = b.SupplierProposalSupportingDataIncluded,
+									PriceAnalysisIncluded = b.PriceAnalysisIncluded,
+									CommercialItemDocIncluded = b.CommercialItemDocIncluded,
+									CostAnalysisIncluded = b.CostAnalysisIncluded,
 									Approver = b.Approver,
+									SupplierProposalManagerDisplayName = b.Approver,
+									SupplierProposalManagerPhone = b.ApproverPhone,
+									ContractsLeadDisplayName = b.Poc,
+									ContractsLeadPhone = b.PocPhone,
 									LeadEstimatorId = w.CostVolumeLeadPricerUserID,
-									WorkspaceId = w.WorkspaceID
+									WorkspaceId = w.WorkspaceID,
+									PlannedDateApprovedSubmission = b.PlannedDate_ApprovedSubmission,
+									PlannedDateWrittenApproval = b.PlannedDate_WrittenApproval,
+									SupplierCCoPD = (TripleBooleanState?)b.SupplierCCoPD,
+									SourceSelectionDescription = b.SourceSelectionDescription,
+									CommercialityDescription = b.CommercialityDescription,
+									TechnicalEvaluationDescription = b.TechnicalEvaluationDescription,
+									PriceAnalysisDescription = b.PriceAnalysisDescription,
+									CostAnalysisDescription = b.CostAnalysisDescription,
+									RationaleValueSummary = b.RationaleValueSummary,
+									TrackingNumber = w.TrackingNumber
 								}).ToList();
 
-					// Post processing for sub resources and total cost
+					// Post processing for proposal title, sub resources, total cost, and clin-contract xrefs
 					foreach (PBOEDataDTO pboe in toReturn)
 					{
+						if (string.IsNullOrWhiteSpace(pboe.ProposalTitle))
+						{
+							// If no proposal title was set in the db, use the workspace proposal title and RFP number (if there is one)
+							pboe.ProposalTitle = string.IsNullOrWhiteSpace(pboe.WorkspaceRfpNumber)
+								? pboe.WorkspaceProposalTitle 
+								: $"{pboe.WorkspaceProposalTitle} / {pboe.WorkspaceRfpNumber}";
+						}
+
 						pboe.SubResources = resourceDTODataLoader.GetResourceNamesByIds(gbe.BOEFormPBOEResourcesXREFs.Where(r => r.PBOEFormID == pboe.PBoeID).Select(r => r.ResourceID).ToList());
 
 						List<decimal> valueSpreads = (from xRef in gbe.BOEFormPBOEResourcesXREFs
@@ -339,6 +411,18 @@ namespace GenBOE.DataBridge.DTO
 													  select b.ValueSpread ?? 0m).ToList();
 
 						pboe.TotalCost = valueSpreads.Sum();
+
+						pboe.ClinContractXrefs = (from x in gbe.BOEFormPBOECLINsXREFs
+												  where x.PBOEFormID == pboe.PBoeID
+												  from clin in gbe.CLINs
+												  where x.ClinID == clin.CLINID
+												  from ct in gbe.ContractTypeLUs
+												  where x.ContractType == ct.ContractTypeID
+												  select new PboeClinContractDto()
+												  {
+													  Title = clin.DisplayedCLINNumber,
+													  ContractType = ct.ContractType
+												  }).ToList();
 					}
 				}
 			}
@@ -378,7 +462,7 @@ namespace GenBOE.DataBridge.DTO
 									IsCommercialItemException = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
 									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
 									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
-									ExpectedCCoPDApplicability = ((Ccopd)b.CCoPD),
+									BoeCcopd = ((Ccopd)b.CCoPD),
 									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
 									PriceAnalysisDate = b.PriceAnalysisDate,
 									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
@@ -450,7 +534,7 @@ namespace GenBOE.DataBridge.DTO
 									IsCompetitionException = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
 									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
 									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
-									ExpectedCCoPDApplicability = (Ccopd)b.CCoPD,
+									BoeCcopd = (Ccopd)b.CCoPD,
 									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
 									PriceAnalysisDate = b.PriceAnalysisDate,
 									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
@@ -521,7 +605,7 @@ namespace GenBOE.DataBridge.DTO
 									IsCompetitionException = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
 									IsCCoPDOtherException = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
 									IsCCoPDThresholdException = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
-									ExpectedCCoPDApplicability = (Ccopd)b.CCoPD,
+									BoeCcopd = (Ccopd)b.CCoPD,
 									PriceAnalysis = (ScheduleEvent)b.PriceAnalysis,
 									PriceAnalysisDate = b.PriceAnalysisDate,
 									CostAnalysis = (ScheduleEvent)b.CostAnalysis,
