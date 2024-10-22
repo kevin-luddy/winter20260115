@@ -411,12 +411,33 @@
             </div>
             <div class="form-element">
                 <div class="SkillMixTable skillMixTable">
+                   <table name="currentSkillMix" class="grid editable"> 
+                       <thead> 
+                           <tr> 
+                               <th>Resource ID</th> 
+                               <th>Current Resource ID</th> 
+                           </tr> 
+                       </thead> 
+                       <tbody> 
+                           <tr data-ng-repeat="item in moqType.SkillMixTable"> 
+                               <td> 
+                                   <input type="text" data-ng-model="item.ResourceOld" placeholder="Resource ID" /> 
+                               </td> 
+                               <td> 
+                                   <input type="text" data-ng-model="item.ResourceNew" placeholder="Current Resource ID" /> 
+                               </td> 
+                           </tr> 
+                       </tbody> 
+                   </table>
+                </div>
+<%--                <div class="SkillMixTable skillMixTable">
                     <table name="currentSkillMix"  class="grid editable">
                         <thead>
                             <tr>
+                                <!-- TODO Thomas: Need to modify how this is pulling -->
                                 <th data-ng-show="model.IsRMS" class="resource">Resource</th>
-                                <th data-ng-if="model.IsRMS" class="current-resource-id">Current Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>){{IsBRCEnabled ? '&#10013;' : '*'}}</th>
-                                <th data-ng-if="!model.IsRMS" class="current-resource-id">Current Resource</th>
+                                <th data-ng-if="model.IsRMS" class="current-resource-id">Resource ID (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>){{IsBRCEnabled ? '&#10013;' : '*'}}</th>
+                                <th data-ng-if="!model.IsRMS" class="current-resource-id">Current Resource ID</th>
                                 <th class="historical-hours">Historical Hours</th>
                                 <th class="labor-skill-mix">Labor Skill Mix</th>
                                 <th class="included">Included *</th>
@@ -512,7 +533,7 @@
 							</tr>
                         </tbody>
                     </table>
-                </div>
+                </div>--%>
             </div>
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.CommonDisclosureEnabled && model.SkillMixEnabled && model.SAPEnabled && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)">
