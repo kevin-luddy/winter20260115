@@ -129,6 +129,7 @@
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'html',
                     success: function (response) {
+						window.onbeforeunload = null;
                         window.location.reload(true);  // refresh page
                     },
                     error: function (response) {
