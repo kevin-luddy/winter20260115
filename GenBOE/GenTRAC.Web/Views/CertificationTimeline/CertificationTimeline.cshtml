@@ -224,6 +224,7 @@
                     }
 
                     GenSession.ShowLoadingBox();
+					window.onbeforeunload = null;
                     location.reload(true);
                 },
                 error: function () {
