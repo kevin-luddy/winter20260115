@@ -3979,7 +3979,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
 
-			if (resourceHours != null && resourceHours.Any())
+			// null checks 
+			if (resourceHours == null)
+			{
+				resourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>();
+			}
+
+			if (currentSkillMixData == null)
+			{
+				currentSkillMixData = new List<SkillMixModelView>();
+			}
+
+			if (currentCommonDisclosureData == null)
+			{
+				currentCommonDisclosureData = new List<CommonDisclosureModelView>();
+			}
+
+			if (resourceHours.Any())
 			{
 				laborTypes = laborTypes == null ? new List<LaborTypeDataModelView>() : laborTypes.Where(l => l.RateType == RateType.Hours).ToList();
 				decimal totalHours = resourceHours.Sum(n => n.TotalHours);
@@ -3993,6 +4009,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						{
 							HistoricalHours = totalGroupHours,
 							ResourceOld = grouping.Key,
+							ResourceNew = string.Empty,
 							LaborSkillMix = totalGroupHours * 100.0m / totalHours,
 							Included = false
 						}
@@ -4009,10 +4026,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// reorder the lists
 			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => r.ResourceOld).ToList();
 			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
-
-			// Other totals
-			refreshedModel.SkillMixTotals.BoeSkillMix = refreshedModel.SkillMixRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
-			refreshedModel.CommonDisclosureTotals.BoeSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
 
 			return refreshedModel;
 		}
@@ -4065,12 +4078,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// Now to merge data in when there are no Resources (only BRCs set in the rows of LaborTypes)
 			if (currentCommonDisclosureData != null && currentCommonDisclosureData.Any(c => string.IsNullOrWhiteSpace(c.ResourceID)))
 			{
-				decimal totalResourceHistoricalHours = refreshedModel.SkillMixRows.Where(r => string.IsNullOrWhiteSpace(r.ResourceNew)).Sum(l => l.HistoricalHours);
+				decimal totalResourceHistoricalHours = refreshedModel.SkillMixRows.Where(r => string.IsNullOrWhiteSpace(r.ResourceNew) && r.Included == true).Sum(l => l.HistoricalHours);
 				ICollection<LaborTypeDataModelView> resourceLaborTypes = laborTypes.Where(l => string.IsNullOrWhiteSpace(l.ResourceName)).ToList();
 				decimal totalResourceLaborHours = resourceLaborTypes.Sum(l => l.HourSpread ?? 0.0m);
 
 				// remove any current row(s) where there is empty Resource ID and add these rows in
-				foreach (CommonDisclosureModelView oldRow in refreshedModel.CommonDisclosureRows.Where(c => string.IsNullOrWhiteSpace(c.ResourceID)))
+				foreach (CommonDisclosureModelView oldRow in refreshedModel.CommonDisclosureRows.Where(c => string.IsNullOrWhiteSpace(c.ResourceID)).ToList())
 				{
 					refreshedModel.CommonDisclosureRows.Remove(oldRow);
 				}
@@ -4083,7 +4096,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					decimal totalBRCLaborHours = laborTypeDataModelViews.Sum(lt => lt.HourSpread ?? 0.0m);
 					currentRow.HistoricalHours = totalResourceHistoricalHours * totalBRCLaborHours / totalResourceLaborHours;
 					currentRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
-
+					currentRow.ResourceID = string.Empty;
 					currentRow.IsUserInput = true;
 					currentRow.Included = true;
 					refreshedModel.CommonDisclosureRows.Add(currentRow);
@@ -4113,7 +4126,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						{
 
 							// Merge the two rows
-							refreshedRow.ResourceNew = skillMix.ResourceNew;
+							refreshedRow.ResourceNew = skillMix.ResourceNew ?? string.Empty;
 							refreshedRow.Rationale = skillMix.Rationale;
 							refreshedRow.IsUserInput = skillMix.IsUserInput;
 							refreshedRow.BOEID = skillMix.BOEID;
@@ -4199,6 +4212,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					row.BOESkillMix = 0.0m;
 				}
 			}
+
+			// BoeSkillMix Totals
+			refreshedModel.SkillMixTotals.BoeSkillMix = refreshedModel.SkillMixRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
+			refreshedModel.CommonDisclosureTotals.BoeSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
 		}
 
 		/// <summary>

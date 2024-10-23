@@ -44,7 +44,7 @@ namespace GenBOE.Tests
 		/// <param name="epsilon">epsilon range</param>
 		public static void AssertAreEqualEpsilon(decimal expected, decimal actual, decimal epsilon = 0.001m)
 		{
-			Assert.IsTrue(Math.Abs(expected - actual) < epsilon);
+			Assert.IsTrue(Math.Abs(expected - actual) < epsilon, $"Expected: {expected}, Actual: {actual}, epsilon: {epsilon}");
 		}
 
         /// <summary>
