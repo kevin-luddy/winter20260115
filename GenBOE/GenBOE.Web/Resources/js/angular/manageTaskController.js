@@ -1,5 +1,6 @@
 ﻿angular.module('genboe').controller('ManageTaskController', ['$scope', '$http', '$timeout', 'ManageTaskModel', 'utilityService', function ($scope, $http, $timeout, ManageTaskModel, utilityService) {
 
+	// TODO Thomas: Code behind for LaborTask.ascx sub page.
 	$scope.ManageTaskModel = ManageTaskModel;
 	$scope.TaskCustomFields = [];
 	$scope.LaborCustomFields = [];
@@ -30,6 +31,7 @@
 	$scope.IsDraftOrDraftLocked = false;
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
+	$scope.SkillMixTable = ManageTaskModel.SkillMixTable;
 
 	// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
 	// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
@@ -958,6 +960,7 @@
 		});
 	};
 
+	// TODO Thomas: look into load
 	var loadData = function (callback) {
 		$(document).trigger("SHOW_LOADING_BOX");
 		$scope.isLoading = true;

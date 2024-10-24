@@ -311,6 +311,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <returns>Labor Task Data</returns>
 		public LaborTaskDataModelView GetLaborTaskData(FullWorkspace ws, FullBoe boe, int taskElementId)
 		{
+			// TODO Thomas: Add LaborTaskModelView adding RefreshedSkillModelView
+			// MOQ Table Data is not part of this call is part of MOQ Equation Call, might have to create a own Refresh Model View instance and return the two collections for the skill mix rows and cdsm rows from DB.
+			// And then call recalc, or add these as properties to this LaborTaskDataModelView. Returns the two collections to the UI and recalc.
 			if (ReferenceEquals(boe, null))
 			{
 				throw new ArgumentNullException(nameof(boe));

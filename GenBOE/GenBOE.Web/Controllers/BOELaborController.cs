@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -138,7 +138,14 @@ namespace GenBOE.Web.Controllers
 				enableSkillMix = true;
 			}
 			ViewData["EnableSkillMix"] = enableSkillMix;
-			
+
+			// TODO Thomas: Set the Skill Mix data here.
+			if (enableSkillMix)
+			{
+				SkillMixModelView skillMixTable = null;
+				ViewData["SkillMixTable"] = skillMixTable;
+			}
+
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
 			string taskDescription = string.Empty;
@@ -1639,6 +1646,7 @@ namespace GenBOE.Web.Controllers
 
 		/// <summary>
 		/// Refreshes the Skill Mix Tables with updated resource hours
+		/// TODO: This does recalculation of skill mix.
 		/// </summary>
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="boeId">BOE Id</param>

@@ -409,32 +409,11 @@
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalSkillMixSuffix);"></div>
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeSkillMixSuffix);"></div>
             </div>
-            <div class="form-element">
+                <!-- TODO Thomas: Delete this once we push up our new table in Skill Mix Rationale -->
                 <div class="SkillMixTable skillMixTable">
-                   <table name="currentSkillMix" class="grid editable"> 
-                       <thead> 
-                           <tr> 
-                               <th>Resource ID</th> 
-                               <th>Current Resource ID</th> 
-                           </tr> 
-                       </thead> 
-                       <tbody> 
-                           <tr data-ng-repeat="item in moqType.SkillMixTable"> 
-                               <td> 
-                                   <input type="text" data-ng-model="item.ResourceOld" placeholder="Resource ID" /> 
-                               </td> 
-                               <td> 
-                                   <input type="text" data-ng-model="item.ResourceNew" placeholder="Current Resource ID" /> 
-                               </td> 
-                           </tr> 
-                       </tbody> 
-                   </table>
-                </div>
-<%--                <div class="SkillMixTable skillMixTable">
                     <table name="currentSkillMix"  class="grid editable">
                         <thead>
                             <tr>
-                                <!-- TODO Thomas: Need to modify how this is pulling -->
                                 <th data-ng-show="model.IsRMS" class="resource">Resource</th>
                                 <th data-ng-if="model.IsRMS" class="current-resource-id">Resource ID (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>){{IsBRCEnabled ? '&#10013;' : '*'}}</th>
                                 <th data-ng-if="!model.IsRMS" class="current-resource-id">Current Resource ID</th>
@@ -533,8 +512,9 @@
 							</tr>
                         </tbody>
                     </table>
-                </div>--%>
+                </div>
             </div>
+    </div>
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.CommonDisclosureEnabled && model.SkillMixEnabled && model.SAPEnabled && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)">
             <div class="form-label">
@@ -711,16 +691,16 @@
 
     <div id="UsedHistoricalMetrics" class="form-row display-none">
         <div class="form-label">
-            <%if (Model.Company == CompanyConfiguration.MST) 
-              {%>
+            <%if (Model.Company == CompanyConfiguration.MST)
+                {%>
             Historical Measures<br />Used
             <div class="help-icon" style="margin-top:1px;" onclick="MOQEquationFieldWidget.ToggleHelp(this);"></div>
             <div class="help-dialog" style="max-width: 275px;">
                 <div class="help-dialog-text">The historical measures used to estimate the labor for this task.  If the historical measure is no longer used, it should be deleted.</div>
             </div>
             <%}
-              else
-              { %>
+                else
+                { %>
             <span>Historical Metrics
                 <br />
                 Used</span>
@@ -758,7 +738,7 @@
                     <%if (Model.Company == CompanyConfiguration.MST)
                         { %>
                         <% foreach (MSTMetricDetailsDTO historicalMetric in Model.PMMetricsUsed)
-                           { %>
+                            { %>
                             <tr name="historicalMetric" id="HMURow" historicalMetricID="<%:historicalMetric.Id%>"><td class="delete-checkbox" id="DeleteCheckboxId"><input type="checkbox" name="DeleteResource" id="DeleteThisResource" onclick="TaskElementDetailsWidget.deleteToggled(this)"/>
                                 <td class="metric-id display-none"> <a name="MetricID" class="edit-resource-link"></a> </td>               
                                 <td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(null, {metricId :<%:historicalMetric.Id%>, getFromSource : false}, true)" style="white-space:normal; width:100px;" title="<%:historicalMetric.MeasureName%>"><%:historicalMetric.MeasureName%></a> </td>
@@ -822,12 +802,14 @@
         <div class="container" data-ng-hide="dialog.showImportResults">
             <div class="form-row">
                 Import MOQ Tables using an Excel file.
-                <% Html.BeginRouteForm(WebConstants.ROUTE_DEFAULT, new { 
-                                                controller = WebConstants.CONTROLLER_BOE_LABOR, 
-                                                action = WebConstants.ACTION_IMPORT_MOQ_TABLES, 
-                                                workspace = SiteMasterUtilities.GetCurrentWorkspace()}, 
-                                                FormMethod.Post, 
-                                                new { enctype = "multipart/form-data", id = "ImportMoqTableDialog-Form", target = "ImportMoqTableDialog-UploadTarget" }); %>
+                <% Html.BeginRouteForm(WebConstants.ROUTE_DEFAULT, new
+                    {
+                        controller = WebConstants.CONTROLLER_BOE_LABOR,
+                        action = WebConstants.ACTION_IMPORT_MOQ_TABLES,
+                        workspace = SiteMasterUtilities.GetCurrentWorkspace()
+                    },
+                                                  FormMethod.Post,
+                                                  new { enctype = "multipart/form-data", id = "ImportMoqTableDialog-Form", target = "ImportMoqTableDialog-UploadTarget" }); %>
                 <div class="step" id="ImportMoqStepOne">
                     <div class="title">Step 1: Export the existing MOQ Tables file</div>
                     <div>Start by exporting the existing MOQ Tables.</div>
