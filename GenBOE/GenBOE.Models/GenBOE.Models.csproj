@@ -272,9 +272,6 @@
     <Compile Include="MOQTypeSelectionTableData.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="MOQTypeSelectionTableDataResourceHour.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="MoqTypeTableCustomFieldValueXREF.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
