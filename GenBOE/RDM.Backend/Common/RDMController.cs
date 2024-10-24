@@ -132,7 +132,7 @@ namespace RDM.Backend.Common
 		[HttpGet("[action]")]
 		public ICollection<WhosOnlineModelView> GetWhosOnline()
 		{
-			ICollection<WhosOnlineModelView> whosOnline = this.WhosOnlineLoader.GetWhosOnlineData(ApplicationName.RDSB.GetDescription());
+			ICollection<WhosOnlineModelView> whosOnline = this.WhosOnlineLoader.GetWhosOnlineData(ApplicationName.RDM.GetDescription());
 			return whosOnline;
 		}
 
