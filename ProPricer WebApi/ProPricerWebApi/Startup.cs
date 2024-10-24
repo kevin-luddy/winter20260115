@@ -121,6 +121,8 @@ namespace APTSPropricerApi
 			this.configurationService.ConfigureAppBuilder(app);
 
 			ClearOutOldFiles();
+
+			EnvironmentInfoLogger.LogEnvironmentInfo(app, ConfigurationServiceBase.Configuration, env);
 		}
 
 		/// <summary>
