@@ -233,26 +233,31 @@
     <div class="module-header-data">Contract Information</div>
     
     <div class="module-content-data expanded-content position-relative">
-        <div class="button-right-container">
-            @if (Model.HasAccessToSetNoBid)
-            {
-                if (Model.IsNoBid)
-                {
-                    <button type="button" class="ies" title="Revert the status of this Proposal to In Progress" onclick="ContractsInfoWidget.revertNoBid()">Revert from No Bid to In Progress</button>
-                }
-                else
-                {
-                    <button type="button" class="ies" title="Mark this Proposal as No Bid" onclick="ContractsInfoWidget.setNoBid()" @(Model.NoBidButtonEnabled ? string.Empty : "disabled")>Mark Proposal as No Bid</button>
-                }
+		<div class="button-right-container">
+			@if (Model.HasAccessToSetNoBid)
+			{
+				if (Model.IsNoBid)
+				{
+					<button type="button" class="ies" title="Revert the status of this Proposal to In Progress" onclick="ContractsInfoWidget.revertNoBid()">Revert from No Bid to In Progress</button>
+				}
+				else
+				{
+					<button type="button" class="ies" title="@Model.NoBidButtonText" onclick="ContractsInfoWidget.setNoBid()" @(Model.NoBidButtonEnabled ? string.Empty : "disabled")>@Model.NoBidButtonText</button>
+				}
+			}
+			@if (!Model.IsRomNte)
+			{
+			<button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Not Awarded</button>
             }
-            <button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Not Awarded</button>
-            <button id="proposal-complete" type="button" class="ies" @(Model.CompleteButtonEnabled ? string.Empty : "disabled")>Complete</button>
-        </div>
+			<button id="proposal-complete" type="button" class="ies" @(Model.CompleteButtonEnabled ? string.Empty : "disabled")>Complete</button>
+		</div>
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
         {
             @Html.HiddenFor(x => x.Id)
             @Html.HiddenFor(x => x.ProposalId)
             @Html.HiddenFor(x => x.LastUpdatedDateLong);
+            if (!Model.IsRomNte)
+            {
             <div class="form-row">
                 <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM)</div>
                 <div class="form-element">
@@ -271,6 +276,7 @@
                     @Html.DisplayFor(x => x.PreviousROMValue)
                 </div>
             </div>
+            }
             <div class="form-row">
                 <div class="form-label">
                     <span helptext="If this is an Unsolicited Bid, enter the Proposal Submittal Date. Ensure most recent due date is entered.">@Html.LabelFor(x => x.CustomerDueDate)</span>
@@ -280,7 +286,11 @@
                 </div>
             </div>
             <div class="form-row">
+                @if (Model.IsRomNte){
+                <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate, "ROM/NTE Submittal Date to Customer")</div>
+                } else {
                 <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate)</div>
+                }
                 <div class="form-element">
                     @Html.TextBoxFor(x => x.CustomerSubmittalDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
                 </div>
@@ -288,7 +298,7 @@
 			<div class="form-row">
 				<div class="form-label">@Html.LabelFor(x => x.CageCode)</div>
 				<div class="form-element">
-					@Html.DropDownListFor(x => x.CageCode, Model.CageCodeSelectListItems, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.cageNumberChanged()" })
+					@Html.DropDownListFor(x => x.CageCode, Model.CageCodeSelectListItems, string.Empty, new { @class = "half" })
 				</div>
 			</div>
             <div class="form-row">
@@ -297,6 +307,8 @@
                     @Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
                 </div>
             </div>
+            if (!Model.IsRomNte)
+            {
             <div class="form-row">
                 <div class="form-label">@Html.LabelFor(x => x.FinalNegotiatedValue)</div>
                 <div class="form-element">
@@ -309,6 +321,7 @@
                     @Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
                 </div>
             </div>
+            }
             <div class="form-row">
                 <div class="form-label">@Html.LabelFor(x => x.EppDelegationAuthority)</div>
                 <div class="form-element">
@@ -357,6 +370,8 @@
                     <textarea id="EppRosDelegationNotes" name="EppRosDelegationNotes" rows="3">@Model.EppRosDelegationNotes</textarea>
                 </div>
             </div>
+            if (!Model.IsRomNte)
+            {
             <div class="form-row">
                 <div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
                 <div class="form-element">
@@ -370,6 +385,7 @@
                     @Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
                 </div>
             </div>
+            }
         }
     </div>
     <div id="confirm-loss-modal" title="Please Confirm" style="display: none;">

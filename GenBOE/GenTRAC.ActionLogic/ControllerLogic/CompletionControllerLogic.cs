@@ -84,8 +84,8 @@ namespace GenTRAC.ActionLogic.ControllerLogic
             }
 
             ContractsModelView contractData = await this.contractsLogic.GetDataForProposalContracts(proposalId);
-
-            if (!this.contractsLogic.ContractDataValidForCompleteProposalSave(this.contractsLogic.ConvertContractsModelToDto(contractData), returnMessages))
+			FullProposal fullProposal = await this.contractsLogic.GetFullProposalAsync(proposalId);
+			if (!this.contractsLogic.ContractDataValidForCompleteProposalSave(this.contractsLogic.ConvertContractsModelToDto(contractData), fullProposal, returnMessages))
             {
                 return false;
             }
@@ -98,8 +98,7 @@ namespace GenTRAC.ActionLogic.ControllerLogic
             {
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
                 {
-                    FullProposal fullProposal = await this.contractsLogic.GetFullProposalAsync(proposalId);
-                    fullProposal.ProposalStatus = ProposalStatus.Completed;
+					fullProposal.ProposalStatus = ProposalStatus.Completed;
                     fullProposal.ProposalCompletedDate = DateTime.Now;
                     fullProposal.Updateable = IES.Common.UpdateType.Upsert;
                     result = this.ProposalMediator.SaveProposal(fullProposal);
@@ -118,7 +117,7 @@ namespace GenTRAC.ActionLogic.ControllerLogic
                 returnMessages.Add("Saving the Completed status failed.");
             }
 
-            return result == null ? false : true;
+            return result != null;
         }
     }
 }

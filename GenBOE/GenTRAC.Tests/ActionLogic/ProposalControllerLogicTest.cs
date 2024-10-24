@@ -2630,11 +2630,12 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 // Set other required fields so we only get the errors we're testing for
                 IsCCPDRequired = false,
+				CostVolumeTool = CostVolumeTool.ACV,
                 IsCostVolumeClassified = false
             };
             ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 
-            sut.ValidateGeneralInfoTypes(mv, validationErrors, false, 3);
+            sut.ValidateGeneralInfoTypes(mv, validationErrors, false, 1);
 
             Assert.AreEqual(3, validationErrors.Count);
             Assert.IsTrue(validationErrors.Select(x => x.ValidationIssue).Contains(ValidationConstants.ProposalValidationConstants.PRICING_TOOL_REQUIRED));

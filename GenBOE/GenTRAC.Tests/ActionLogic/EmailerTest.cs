@@ -11,12 +11,13 @@ namespace GenBOE.Tests.ActionLogic
     using GenTRAC.ActionLogic.Email;
     using GenTRAC.DataBridge.DTO;
     using IES.Common;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
+	using Microsoft.Practices.Unity;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Moq;
 
-    /// <summary>
-    /// Test the emailer class
-    /// </summary>
+	/// <summary>
+	/// Test the emailer class
+	/// </summary>
     [TestClass]
     public class EmailerTest
     {
@@ -30,10 +31,15 @@ namespace GenBOE.Tests.ActionLogic
         /// </summary>
         private static Mock<IDataFetchingScheduler> dataFetchingScheduler;
 
-        /// <summary>
-        /// Send an email with the CC list valued
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// AD Utilities
+		/// </summary>
+		private static Mock<IActiveDirectoryUtilities> activeDirectoryUtilities;
+
+		/// <summary>
+		/// Send an email with the CC list valued
+		/// </summary>
+		[TestMethod]
         public void SendEmailWithCC()
         {
             this.SendEmail(true);
@@ -61,8 +67,10 @@ namespace GenBOE.Tests.ActionLogic
         {
             secInfo = new Mock<ISecurityInformation>();
             dataFetchingScheduler = new Mock<IDataFetchingScheduler>();
+			activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+			IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
 
-            UserDTO[] ccesArray = new UserDTO[] { };
+			UserDTO[] ccesArray = new UserDTO[] { };
 
             if (valueCC)
             {

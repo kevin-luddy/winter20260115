@@ -42,6 +42,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 			UpdateDateAssigned = false;
 			ForecastedTrackingNumber = string.Empty;
 			IsForecastProposal = false;
+			IsRomNte = false;
 			HasWriteAccessToLinkedDocument = false;
 		}
 
@@ -326,6 +327,11 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// Gets or sets a value indicating whether this instance is forecast proposal.
 		/// </summary>
 		public bool IsForecastProposal { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the Proposal Class is ROM or NTE.
+		/// </summary>
+		public bool IsRomNte { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the forecast alert email has been sent.

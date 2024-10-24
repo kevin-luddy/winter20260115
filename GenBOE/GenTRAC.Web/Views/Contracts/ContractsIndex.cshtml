@@ -90,11 +90,16 @@
         ContractsIndexWidget.GetData = function () {
             let dataToSave = {};
             dataToSave.model = ContractsInfoWidget.getForm("@GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM").getData();
-            let fnv = dataToSave.model.FinalNegotiatedValue.replace(/\$|,/g, '');
-            if (fnv.startsWith('(')) {
-				fnv = '-' + fnv.substring(1, fnv.length - 1);
+            if (dataToSave.model.FinalNegotiatedValue) {
+                let fnv = dataToSave.model.FinalNegotiatedValue.replace(/\$|,/g, '');
+                if (fnv.startsWith('(')) {
+                    fnv = '-' + fnv.substring(1, fnv.length - 1);
+                }
+                dataToSave.model.FinalNegotiatedValueLong = parseFloat(fnv);
+            } else {
+                dataToSave.model.FinalNegotiatedValue = "0";
+				dataToSave.model.FinalNegotiatedValueLong = 0;
             }
-			dataToSave.model.FinalNegotiatedValueLong = parseFloat(fnv);
 
             return dataToSave;
         };
