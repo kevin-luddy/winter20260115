@@ -67,6 +67,7 @@ namespace GenBOE.ActionLogic.Workspace
                     {
                         PerformingOrgDTO perfOrg = workspace.PerformingOrgsForWsList.FirstOrDefault(p => p.Id == laborResource.PerformingOrgID);
                         ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(r => r.Id == laborResource.ResourceID);
+						ResourceDTO brcResource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(r => r.Id == laborResource.ResourceID && laborResource.BusinessResourceCodeID.HasValue);
 						WbsDTO wbs = workspace.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                         FullClin clin = workspace.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
 
@@ -91,7 +92,8 @@ namespace GenBOE.ActionLogic.Workspace
                             EndDate = laborResource.EndDate,
                             Hours = laborResource.SpreadType == SpreadType.Hours ? laborResource.ValueSpread : null,
                             InitialResource = resource?.ResourceName ?? string.Empty,
-                            LegacyID = laborResource.LegacyID,
+                            LegacyID = laborResource.ResourceID != brcResource?.Id ? laborResource.LegacyID : null,
+							BRCResource = brcResource?.ResourceName ?? string.Empty,
                             Rationale = rationale,
                             SowNumber = boe.SOW ?? task.SOW,
                             SowTitle = boe.SOWTitle ?? task.SOWTitle,
