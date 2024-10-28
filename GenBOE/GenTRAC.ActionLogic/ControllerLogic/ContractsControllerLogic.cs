@@ -146,6 +146,7 @@ namespace GenTRAC.ActionLogic
 			model.IsNoBid = fullProposal.ProposalStatus == ProposalStatus.NoBid;
 			model.HasAccessToSetNoBid = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions) || this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 			model.IsReadOnly = fullProposal.ProposalStatus == ProposalStatus.Completed || highestAccess == SecurityAuthorization.Read;
+			model.IsRomNte = fullProposal.IsRomNte;
 
 			// Load additional values
 			model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
@@ -233,14 +234,14 @@ namespace GenTRAC.ActionLogic
 		/// Perform validation of the Contracts ModelView that isn't covered by ModelState
 		/// </summary>
 		/// <param name="model">model to validate</param>
+		/// <param name="proposal">Full proposal</param>
 		/// <returns>collection of validation messages</returns>
-		public ICollection<string> ValidateContractModelView(ContractsModelView model)
+		public ICollection<string> ValidateContractModelView(ContractsModelView model, FullProposal proposal)
 		{
 			_ = model ?? throw new ArgumentNullException(nameof(model));
-
+			_ = proposal ?? throw new ArgumentNullException(nameof(proposal));
 			ICollection<string> validationMessages = new Collection<string>();
-			FullProposal proposal = this.GetFullProposalDto(model.ProposalId);
-
+			
 			DateTime? dateSubmittedToContracts = proposal.ProposalChecklistData?.FirstOrDefault()?.EstimatingSubmitsToContractsDate;
 
 			if (model.CustomerSubmittalDt.HasValue && dateSubmittedToContracts.HasValue
@@ -249,10 +250,13 @@ namespace GenTRAC.ActionLogic
 				validationMessages.Add(Constants.INVALID_PROPOSAL_SUBMITTAL_DATE);
 			}
 
-			if (model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
-				&& model.NegotiationsSubmittedDt < proposal.AgreementDate)
+			if (!proposal.IsRomNte)
 			{
-				validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
+				if (model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
+					&& model.NegotiationsSubmittedDt < proposal.AgreementDate)
+				{
+					validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
+				}
 			}
 
 			return validationMessages;
@@ -439,7 +443,11 @@ namespace GenTRAC.ActionLogic
 		/// <returns>true if button should be enabled.</returns>
 		private bool IsValidForCompleteStatus(ContractsDto dto, FullProposal fullProposal)
 		{
-			return this.ContractDataValidForCompleteProposalSave(dto, null) && dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward;
+			return this.ContractDataValidForCompleteProposalSave(dto, fullProposal, null) &&
+				(
+					(dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward)
+					|| (fullProposal.IsRomNte && fullProposal.ProposalStatus == ProposalStatus.PendingCertification)
+					);
 		}
 
 		/// <summary>
@@ -639,12 +647,14 @@ namespace GenTRAC.ActionLogic
 		/// Validates whether the proposal is valid for Completed Status
 		/// </summary>
 		/// <param name="dto">Contracts data</param>
+		/// <param name="fullProposal">The full proposal object</param>
 		/// <param name="messages">Validation error messages (out)</param>
 		/// <returns>True if valid</returns>
 		/// <exception cref="ArgumentNullException">Data missing</exception>
-		public bool ContractDataValidForCompleteProposalSave(ContractsDto dto, List<string> messages)
+		public bool ContractDataValidForCompleteProposalSave(ContractsDto dto, FullProposal fullProposal, List<string> messages)
 		{
 			_ = dto ?? throw new ArgumentNullException(nameof(dto));
+			_ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
 			messages = messages ?? new List<string>();
 
 			bool isValid = true;
@@ -684,7 +694,7 @@ namespace GenTRAC.ActionLogic
 				messages.Add(Constants.INVALID_CAGE_CODE);
 			}
 
-			if (dto.LmWon.HasValue && dto.LmWon.Value)
+			if (!fullProposal.IsRomNte && dto.LmWon.HasValue && dto.LmWon.Value)
 			{
 				// Final Negotiated Value is required
 				if (dto.FinalNegotiatedValue == null)
@@ -709,13 +719,13 @@ namespace GenTRAC.ActionLogic
 			}
 
 			// LM Win / Loss is required
-			if (dto.LmWon == null)
+			if (!fullProposal.IsRomNte && dto.LmWon == null)
 			{
 				isValid = false;
 				messages.Add(Constants.INVALID_LM_WIN_LOSS);
 			}
 
-			messages.AddRange(ValidateContractModelView(ConvertContractsDtoToModel(dto)));
+			messages.AddRange(ValidateContractModelView(ConvertContractsDtoToModel(dto), fullProposal));
 
 			return isValid;
 		}

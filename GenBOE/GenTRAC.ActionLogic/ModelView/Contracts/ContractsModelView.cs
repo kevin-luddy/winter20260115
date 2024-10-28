@@ -289,5 +289,28 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Does user have access to set No Bid?
         /// </summary>
         public bool HasAccessToSetNoBid { get; set; }
+
+		/// <summary>
+		/// Is the Proposal Class ROM or NTE?  if so, need to hide a bunch of stuff in the UI, and change text in some buttons/labels
+		/// </summary>
+		public bool IsRomNte { get; set; }
+
+		/// <summary>
+		/// Button text for No Bid button
+		/// </summary>
+		public string NoBidButtonText
+		{
+			get
+			{
+				if (this.IsRomNte)
+				{
+					return "Mark ROM/NTE as No Bid";
+				}
+				else
+				{
+					return "Mark Proposal as No Bid";
+				}
+			}
+		}
     }
 }
