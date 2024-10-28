@@ -68,7 +68,7 @@
     }
 
     var TaskElementDetailsWidget;
-    var SkillMixTable = '<%: ViewData["SkillMixTable"] %>';
+    var TableData = '<%: ViewData["TableData"] %>';
 
     var TaskLaborTypesWidget;
     var TaskLaborSpreadsWidget;

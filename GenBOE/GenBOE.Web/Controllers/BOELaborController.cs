@@ -139,11 +139,11 @@ namespace GenBOE.Web.Controllers
 			}
 			ViewData["EnableSkillMix"] = enableSkillMix;
 
-			// TODO Thomas: Set the Skill Mix data here.
+			// TODO Thomas: Set the Skill Mix data here (probably not).
 			if (enableSkillMix)
 			{
 				SkillMixModelView skillMixTable = null;
-				ViewData["SkillMixTable"] = skillMixTable;
+				ViewData["TableData"] = skillMixTable;
 			}
 
 			//create a var for list items
@@ -205,7 +205,9 @@ namespace GenBOE.Web.Controllers
 				TaskDescription = taskDescription,
 				UsingTemplateBOE = ws.UsingTemplateBOE,
 				EnableSAPConnection = ws.EnableSAPConnection,
-				EnableSkillMix = enableSkillMix
+				EnableSkillMix = enableSkillMix,
+				SkillMixData = new List<SkillMixModelView>(),
+				CommonDisclosureSkillMixData = new List<CommonDisclosureModelView>()
 			};
 
 			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);

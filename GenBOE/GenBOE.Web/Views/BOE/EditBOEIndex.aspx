@@ -57,7 +57,7 @@
 			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
 			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue(),
 			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue(),
-            SkillMixTable: '<%= ViewData["SkillMixTable"] %>'
+            TabelData: '<%= ViewData["TableData"] %>'
 		});
 
 		$(function () {

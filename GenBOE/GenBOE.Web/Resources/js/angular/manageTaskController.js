@@ -977,6 +977,7 @@
 		$scope.laborSpreadPasteErrors = [];
 		$scope.errors = [];
 		$scope.SelectedMoqTypes = [];
+		$scope.TableData = [];
 		var data = { boeId: ManageTaskModel.boeId, taskElementId: $scope.taskElementId };
 
 		return $http({
