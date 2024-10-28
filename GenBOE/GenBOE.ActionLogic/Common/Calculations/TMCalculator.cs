@@ -175,10 +175,6 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			}
 		}
 
-		#endregion Public Methods
-
-		#region Private / Internal Methods
-
 		/// <summary>
 		/// Validates the IBOE or PBOE Form T&amp;M Resources
 		/// </summary>
@@ -186,7 +182,9 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="resourceIdsWithValidTMRates">output parameter - list of Resource IDs that have valid T&amp;M rates.</param>
 		/// <param name="workspace">A fullWorkspace to validate boe forms against.</param>
 		/// <param name="resourceIds">IBOE or PBOE Resource Ids</param>
-		internal void ValidateBOEFormTMResources(ICollection<ValidationMessage> validationErrors, ICollection<int> resourceIdsWithValidTMRates, FullWorkspace workspace, ICollection<int> resourceIds, ITMResourceRateDTODataLoader tmResourceRateLoader, IResourceDTODataLoader resourceLoader)
+		/// <param name="resourceLoader">Resource loader</param>
+		/// <param name="tmResourceRateLoader">Resource Rate loader</param>
+		public void ValidateBOEFormTMResources(ICollection<ValidationMessage> validationErrors, ICollection<int> resourceIdsWithValidTMRates, FullWorkspace workspace, ICollection<int> resourceIds, ITMResourceRateDTODataLoader tmResourceRateLoader, IResourceDTODataLoader resourceLoader)
 		{
 			if (ReferenceEquals(validationErrors, null))
 			{
@@ -206,6 +204,16 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			if (ReferenceEquals(resourceIds, null))
 			{
 				throw new ArgumentNullException(nameof(resourceIds));
+			}
+
+			if (ReferenceEquals(tmResourceRateLoader, null))
+			{
+				throw new ArgumentNullException(nameof(tmResourceRateLoader));
+			}
+
+			if (ReferenceEquals(resourceLoader, null))
+			{
+				throw new ArgumentNullException(nameof(resourceLoader));
 			}
 
 			if (workspace.IsUsingTM)
@@ -242,7 +250,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 								validationErrors.Add(new ValidationMessage(string.Format("One or more of the T&M rates for resource {0} are not populated.", resource.ResourceName)));
 							}
 
-							if (this.StartAndEndDatesAreValid(workspace, tmResourceRates, resourceId))
+							if (this.StartAndEndDatesAreValid(workspace, tmResourceRates, resource, validationErrors))
 							{
 								bool isSequential = true;
 								DateTime? previousEndDate = null;
@@ -261,12 +269,6 @@ namespace GenBOE.ActionLogic.Common.Calculations
 										resource.ResourceName)));
 								}
 							}
-							else
-							{
-								validationErrors.Add(new ValidationMessage(string.Format("The T&M rates for resource {0} do not cover the entire period of performance {1:MM/yyyy} - {2:MM/yyyy}.",
-									resource.ResourceName, workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => (z.ResourceID.HasValue && z.ResourceID == resourceId) || (z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resourceId))).Min(x => x.StartDate),
-									workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => (z.ResourceID.HasValue && z.ResourceID == resourceId) || (z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resourceId))).Max(x => x.EndDate))));
-							}
 						}
 					}
 
@@ -280,30 +282,80 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			}
 		}
 
+		#endregion Public Methods
+
+		#region Private / Internal Methods
+
 		/// <summary>
 		/// Validates whether start & end dates are valid
 		/// </summary>
 		/// <param name="workspace">Full WS</param>
 		/// <param name="tmResourceRates">T&amp;M Resource Rates</param>
 		/// <param name="resourceId">Resource Id (which we are validating)</param>
+		/// <param name="isResourceBRC">Whether Resource is BRC or not</param>
+		/// <param name="validationErrors">List of validationErrors</param>
 		/// <returns>Whether the rates are valid or not</returns>
-		private bool StartAndEndDatesAreValid(FullWorkspace workspace, IList<TMResourceRateDTO> tmResourceRates, int resourceId)
+		private bool StartAndEndDatesAreValid(FullWorkspace workspace, IList<TMResourceRateDTO> tmResourceRates, ResourceDTO resource, ICollection<ValidationMessage> validationErrors)
 		{
 			DateTime? rateStartDate = tmResourceRates.First().StartDate;
 			DateTime? rateEndDate = tmResourceRates.Last().EndDate;
-
 			bool startAndEndDatesValid = rateStartDate.HasValue && rateEndDate.HasValue;
 
 			if (startAndEndDatesValid)
 			{
 				// get start/end dates based on when the resource is actually used
-				Collection<ResourceTypeDto> resourceUsages = workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => (z.ResourceID.HasValue && z.ResourceID == resourceId) || (z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resourceId))).ToCollection();
-				if (resourceUsages.Any())
-				{
-					DateTime resourceUsageStartDate = resourceUsages.Min(x => x.StartDateValue);
-					DateTime resourceUsageEndDate = resourceUsages.Max(x => x.EndDateValue);
+				Collection<ResourceTypeDto> resourceUsages;
 
-					startAndEndDatesValid = (rateStartDate.Value.Date <= resourceUsageStartDate.Date) && (rateEndDate.Value.Date >= resourceUsageEndDate.Date);
+				// Visual Studio is flagging these as unassigned local later on, when that is not the case.  Setting to DateTime.Min 
+				DateTime resourceUsageStartDate = DateTime.MinValue;
+				DateTime resourceUsageEndDate = DateTime.MinValue;
+
+				// Check for pre or post 1LMX
+				bool isResourceBRC = BRCValidationUtility.IsResourceBRC(resource, workspace.Shortname);
+
+				if (isResourceBRC)
+				{
+					// Filter by labortypes where they end on or after the 1LMX boundary and have this BRC set
+					resourceUsages = workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => z.EndDate >= Utilities.OneLmxStartDate && z.BusinessResourceCodeID.HasValue && z.BusinessResourceCodeID == resource.Id)).ToCollection();
+
+					if (resourceUsages.Any())
+					{
+						resourceUsageStartDate = resourceUsages.Min(x => x.StartDateValue);
+						resourceUsageEndDate = resourceUsages.Max(x => x.EndDateValue);
+
+						// check for 1LMX boundary
+						if (resourceUsageStartDate < Utilities.OneLmxStartDate)
+						{
+							resourceUsageStartDate = Utilities.OneLmxStartDate;
+						}
+
+						startAndEndDatesValid = (rateStartDate.Value.Date <= resourceUsageStartDate.Date) && (rateEndDate.Value.Date >= resourceUsageEndDate.Date);
+					}
+				}
+				else
+				{
+					// Filter by labortypes where they start before the 1LMX boundary and have this resource set
+					resourceUsages = workspace.Boes.SelectMany(x => x.LaborTypes.Where(z => z.StartDate < Utilities.OneLmxStartDate && z.ResourceID.HasValue && z.ResourceID == resource.Id)).ToCollection();
+
+					if (resourceUsages.Any())
+					{
+						resourceUsageStartDate = resourceUsages.Min(x => x.StartDateValue);
+						resourceUsageEndDate = resourceUsages.Max(x => x.EndDateValue);
+
+						// check for 1LMX boundary
+						if (resourceUsageEndDate >= Utilities.OneLmxStartDate)
+						{
+							resourceUsageEndDate = Utilities.OneLmxStartDate.AddMonths(-1);
+						}
+
+						startAndEndDatesValid = (rateStartDate.Value.Date <= resourceUsageStartDate.Date) && (rateEndDate.Value.Date >= resourceUsageEndDate.Date);
+					}
+				}
+
+				if (resourceUsages.Any() && !startAndEndDatesValid)
+				{
+					validationErrors.Add(new ValidationMessage(string.Format("The T&M rates for resource {0} do not cover the entire period of performance {1:MM/yyyy} - {2:MM/yyyy}.",
+					resource.ResourceName, resourceUsageStartDate, resourceUsageEndDate)));
 				}
 			}
 

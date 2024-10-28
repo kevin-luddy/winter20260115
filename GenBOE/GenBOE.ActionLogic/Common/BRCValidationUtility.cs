@@ -21,6 +21,31 @@ namespace GenBOE.ActionLogic.Common
 	public static class BRCValidationUtility
 	{
 		/// <summary>
+		/// Returns if the resource is Business Resource Code
+		/// </summary>
+		/// <param name="resource">Resource</param>
+		/// <param name="workspaceShortname">Workspace short name</param>
+		/// <returns></returns>
+		public static bool IsResourceBRC(ResourceDTO resource, string workspaceShortname)
+		{
+			bool isBRC = false;
+
+			if (resource != null && Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
+			{
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					isBRC = resource.SegRegion == WebConstants.SPACE_1LMX_CORE || resource.SegRegion == WebConstants.SPACE_1LMX_SERVICES;
+				}
+				else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+				{
+					isBRC = resource.SegRegion == WebConstants.RMS_1LMX_CORE || resource.SegRegion == WebConstants.RMS_1LMX_SERVICES || resource.SegRegion == WebConstants.RMS_1LMX_I_AND_N;
+				}
+			}
+
+			return isBRC;
+		}
+
+		/// <summary>
 		/// Returns Resources / Business Resource Codes based on Company mode and 1LMX or Legacy distinction
 		/// </summary>
 		/// <param name="resourceData">Original Resources list</param>
