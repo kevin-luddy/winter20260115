@@ -1,6 +1,4 @@
 ﻿angular.module('genboe').controller('ManageTaskController', ['$scope', '$http', '$timeout', 'ManageTaskModel', 'utilityService', function ($scope, $http, $timeout, ManageTaskModel, utilityService) {
-
-	// TODO Thomas: Code behind for LaborTask.ascx sub page.
 	$scope.ManageTaskModel = ManageTaskModel;
 	$scope.TaskCustomFields = [];
 	$scope.LaborCustomFields = [];
@@ -32,42 +30,56 @@
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
 	$scope.TableData = ManageTaskModel.TableData;
+	$scope.loadedTaskData = false;
+	$scope.loadedMoqData = false;
 
-	// TODO Thomas: run init here when it loads? This contains the resource hours we need 
 	// Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
 	$scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
-		$scope.SelectedMoqTypes = selectedMoqTypes; // TODO Thomas: This is of type ICollection<MoqTypeSelection> MOQTypes { get; set; }
+		$scope.SelectedMoqTypes = selectedMoqTypes;
 		$scope.ManageTaskModel.SelectedMoqTypes = selectedMoqTypes;
+		$scope.loadedMoqData = true;
 
-		var urlPart = 'boeId/' + ManageTaskModel.boeId + '/resourceHours/' + $scope.SelectedMoqTypes + '/laborTypes/';
-		console.log($scope.SelectedMoqTypes);
+		// Only call the method if both loadedTaskData and loadedMoqData are true
+		if ($scope.loadedTaskData && $scope.loadedMoqData) {
+			refreshSkillMixTables().then(function (response) {
+				$scope.model = response.data;
+				$scope.updateDropdowns();
+
+				AfterDomLoadTaskElementDetailsWidget(TaskElementDetailsWidget, $scope.taskElementId);
+				if ($scope.taskElementId === "-1") {
+					$scope.setDirty();
+				}
+				$scope.isLoading = false;
+				$(document).trigger("HIDE_LOADING_BOX");
+
+				if (callback && typeof callback === 'function') {
+					callback();
+				}
+			}, function errorCallback(response) {
+				if (response.data && response.data.MessageList) {
+					$scope.errors = response.data.MessageList;
+				}
+				$scope.isLoading = false;
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+	});
+
+	function refreshSkillMixTables() {
+		var data = {
+			boeId: ManageTaskModel.boeId,
+			selectedMoqTypes: $scope.SelectedMoqTypes,
+			laborTypes: $scope.model.LaborTypesData,
+			currentSkillMixData: $scope.model.SkillMixData,
+			currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
+		};
 
 		return $http({
 			method: 'POST',
 			data: data,
 			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
-		}).then(function (response) {
-			$scope.model = response.data;
-			$scope.updateDropdowns();
-
-			AfterDomLoadTaskElementDetailsWidget(TaskElementDetailsWidget, $scope.taskElementId);
-			if ($scope.taskElementId === "-1") {
-				$scope.setDirty();
-			}
-			$scope.isLoading = false;
-			$(document).trigger("HIDE_LOADING_BOX");
-
-			if (callback && typeof callback === 'function') {
-				callback();
-			}
-		}, function errorCallback(response) {
-			if (response.data && response.data.MessageList) {
-				$scope.errors = response.data.MessageList;
-			}
-			$scope.isLoading = false;
-			$(document).trigger("HIDE_LOADING_BOX");
 		});
-	});
+	}
 
 	// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
 	// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
@@ -995,8 +1007,6 @@
 			$(document).trigger("HIDE_LOADING_BOX");
 		});
 	};
-
-	// TODO Thomas: look into load
 	var loadData = function (callback) {
 		$(document).trigger("SHOW_LOADING_BOX");
 		$scope.isLoading = true;
@@ -1117,6 +1127,34 @@
 
 			if (callback && typeof callback === 'function') {
 				callback();
+			}
+
+			// Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
+			$scope.loadedTaskData = true;
+
+			// Only call the method if both loadedTaskData and loadedMoqData are true
+			if ($scope.loadedTaskData && $scope.loadedMoqData) {
+				refreshSkillMixTables().then(function (response) {
+					$scope.model = response.data;
+					$scope.updateDropdowns();
+
+					AfterDomLoadTaskElementDetailsWidget(TaskElementDetailsWidget, $scope.taskElementId);
+					if ($scope.taskElementId === "-1") {
+						$scope.setDirty();
+					}
+					$scope.isLoading = false;
+					$(document).trigger("HIDE_LOADING_BOX");
+
+					if (callback && typeof callback === 'function') {
+						callback();
+					}
+				}, function errorCallback(response) {
+					if (response.data && response.data.MessageList) {
+						$scope.errors = response.data.MessageList;
+					}
+					$scope.isLoading = false;
+					$(document).trigger("HIDE_LOADING_BOX");
+				});
 			}
 		}, function errorCallback(response) {
 			if (response.data && response.data.MessageList) {
