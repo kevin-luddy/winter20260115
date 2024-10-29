@@ -139,7 +139,6 @@ namespace GenBOE.Web.Controllers
 			}
 			ViewData["EnableSkillMix"] = enableSkillMix;
 
-			// TODO Thomas: Set the Skill Mix data here (probably not).
 			if (enableSkillMix)
 			{
 				SkillMixModelView skillMixTable = null;
@@ -1648,7 +1647,6 @@ namespace GenBOE.Web.Controllers
 
 		/// <summary>
 		/// Refreshes the Skill Mix Tables with updated resource hours
-		/// TODO: This does recalculation of skill mix.
 		/// </summary>
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="boeId">BOE Id</param>
@@ -1663,7 +1661,8 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+			// TODO Thomas: Switch this back to CreateReadUpdatDelete, switched to Read for now because of permission issues
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
 
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = selectedMoqTypes
 				.SelectMany(moqType => moqType.TableData)
