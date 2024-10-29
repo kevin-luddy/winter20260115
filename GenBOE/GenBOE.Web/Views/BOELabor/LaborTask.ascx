@@ -450,6 +450,7 @@
     });
 </script>
 
+<!-- TODO Thomas: init() is ran here with the Task ID being passed in. -->
 <div id="TaskElementsComposite" class="task-elements-composite composite container-fluid" data-ng-app="genboe" data-ng-controller="ManageTaskController" data-ng-init="init('<%= ViewData["TASKID"] != null ? ViewData["TASKID"] : "-1" %>')" data-ng-cloak="">
     <%
         int? taskElementID = null;

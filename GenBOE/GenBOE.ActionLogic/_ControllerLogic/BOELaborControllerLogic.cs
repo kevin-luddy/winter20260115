@@ -2136,7 +2136,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task),
 				MOQTypeTableCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.MoqTypeTable),
 				LaborCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes),
-				MOQTypes = boe.MoqTypeSelections.Where(x => x.TaskId == dto.Id).ToList()
+				MOQTypes = boe.MoqTypeSelections.Where(x => x.TaskId == dto.Id).ToList(),
+				SkillMixData = dto.SkillMixTable.ToList(),
+				CommonDisclosureSkillMixData = dto.CommonDisclosureTable.ToList()
 			};
 
 			if (dto.CustomFieldValueContainers != null)

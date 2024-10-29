@@ -31,7 +31,43 @@
 	$scope.IsDraftOrDraftLocked = false;
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
-	$scope.SkillMixTable = ManageTaskModel.SkillMixTable;
+	$scope.TableData = ManageTaskModel.TableData;
+
+	// TODO Thomas: run init here when it loads? This contains the resource hours we need 
+	// Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
+	$scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
+		$scope.SelectedMoqTypes = selectedMoqTypes; // TODO Thomas: This is of type ICollection<MoqTypeSelection> MOQTypes { get; set; }
+		$scope.ManageTaskModel.SelectedMoqTypes = selectedMoqTypes;
+
+		var urlPart = 'boeId/' + ManageTaskModel.boeId + '/resourceHours/' + $scope.SelectedMoqTypes + '/laborTypes/';
+		console.log($scope.SelectedMoqTypes);
+
+		return $http({
+			method: 'POST',
+			data: data,
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
+		}).then(function (response) {
+			$scope.model = response.data;
+			$scope.updateDropdowns();
+
+			AfterDomLoadTaskElementDetailsWidget(TaskElementDetailsWidget, $scope.taskElementId);
+			if ($scope.taskElementId === "-1") {
+				$scope.setDirty();
+			}
+			$scope.isLoading = false;
+			$(document).trigger("HIDE_LOADING_BOX");
+
+			if (callback && typeof callback === 'function') {
+				callback();
+			}
+		}, function errorCallback(response) {
+			if (response.data && response.data.MessageList) {
+				$scope.errors = response.data.MessageList;
+			}
+			$scope.isLoading = false;
+			$(document).trigger("HIDE_LOADING_BOX");
+		});
+	});
 
 	// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
 	// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969

@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.ModelView
 
 	/// <summary>
 	/// MOQ Type selection, with underlying data
+	/// The view model that drives MoqEquationCtorller.js.
 	/// </summary>
 	[Serializable]
 	public class MoqTypeSelection : UpdateableDTO
