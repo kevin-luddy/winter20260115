@@ -26,6 +26,7 @@
     }
 
     var TaskElementDetailsWidget;
+    var TableData = '<%: ViewData["TableData"] %>';
 
     var TaskLaborTypesWidget;
     var TaskLaborSpreadsWidget;
