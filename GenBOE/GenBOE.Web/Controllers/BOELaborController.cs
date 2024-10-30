@@ -1661,7 +1661,6 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			// TODO Thomas: Switch this back to CreateReadUpdatDelete, switched to Read for now because of permission issues
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
 
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = selectedMoqTypes

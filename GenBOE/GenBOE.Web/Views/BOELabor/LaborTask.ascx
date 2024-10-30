@@ -919,7 +919,7 @@
                 Skill Mix Rationale
             </div>
             <div class="module-content-data expanded-content">
-				<!-- TODO Thomas: Add table here. -->
+				<!-- TODO PROPH-2483: Add table here (Format & Display). -->
                 <div class="form-element">
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
@@ -930,30 +930,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-ng-repeat="item in SkillMixTable">
-                                <td data-ng-if="model.IsRMS">
-                                    <div class="text skill-mix-padding"> {{ item.ResourceOld }} </div>
-                                </td>
-                                <td data-ng-if="model.IsRMS" class="resources" data-ng-class="{ inputError: getAndSetIsResourceValid(item.ResourceNew, ResourceModels) === false }">
-                                    <div class="resource-selection" ng-style="{ padding: '2px 5px' }">
-                                        <input
-                                            tabindex="{{tabindex + 1}}" 
-                                            type="text" 
-                                            data-ng-model="item.ResourceNew" 
-                                            placeholder="Select a resource" 
-                                            uib-typeahead="resource as resource.ResourceDesc for resource in ResourceModels | filter:{ElementOfCost:item.ElementOfCost} | filter:{ResourceDesc:$viewValue}" 
-                                            class="form-control resize" 
-                                            typeahead-select-on-exact="true" 
-                                            typeahead-show-hint="false" 
-                                            typeahead-min-length="2" 
-                                            typeahead-on-select="resourceSelected($item, item, moqType)"
-                                            ng-change="resourceUnselected($item, item, moqType)">
-                                    </div>
-                                </td>
-                                <td class="sm-resource-id" data-ng-if="!model.IsRMS">
-                                    <div class="text skill-mix-padding"> {{ item.ResourceNew }} </div>
-                                </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
