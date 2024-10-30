@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -138,7 +138,13 @@ namespace GenBOE.Web.Controllers
 				enableSkillMix = true;
 			}
 			ViewData["EnableSkillMix"] = enableSkillMix;
-			
+
+			if (enableSkillMix)
+			{
+				ICollection<LaborTypeDataModelView> tableData = new List<LaborTypeDataModelView>();
+				ViewData["TableData"] = tableData;
+			}
+
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
 			string taskDescription = string.Empty;
@@ -198,7 +204,9 @@ namespace GenBOE.Web.Controllers
 				TaskDescription = taskDescription,
 				UsingTemplateBOE = ws.UsingTemplateBOE,
 				EnableSAPConnection = ws.EnableSAPConnection,
-				EnableSkillMix = enableSkillMix
+				EnableSkillMix = enableSkillMix,
+				SkillMixData = new List<SkillMixModelView>(),
+				CommonDisclosureSkillMixData = new List<CommonDisclosureModelView>()
 			};
 
 			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
@@ -1644,16 +1652,20 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeId">BOE Id</param>
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
-		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <returns></returns>
-		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
+		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
+
+			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = selectedMoqTypes
+				.SelectMany(moqType => moqType.TableData)
+				.SelectMany(tableData => tableData.ResourceHours)
+				.ToList();
 
 			// Call to Controller Logic
 			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData);

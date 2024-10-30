@@ -1877,7 +1877,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 		/// <summary>
 		/// Recalculates the SAP Actuals across a Workspace, and finds any BOEs that were updated
-		/// ToDo Thomas: Look here to add CLIN
 		/// </summary>
 		/// <param name="result">The list of Models that were updated</param>
 		/// <param name="boes">Dictionary of BOEs</param>

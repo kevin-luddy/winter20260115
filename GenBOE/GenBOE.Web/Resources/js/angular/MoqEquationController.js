@@ -32,6 +32,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 			$scope.refreshDisableSave();
 		}, 10);
+
+		// Trigger the event to update the Selected MOQ Types in manageTaskController.js.
+		$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
 	};
 
 	$scope.dialog = {
@@ -1135,6 +1138,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								$scope.actualsValidation.isDirty.delete(res.TableId);
 								$scope.refreshDisableSave();
 								$scope.refreshSkillMixTable(moqType);
+
+								// Trigger the event to update the Selected MOQ Types in manageTaskController.js.
+								$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
 							}
 						});
 					}

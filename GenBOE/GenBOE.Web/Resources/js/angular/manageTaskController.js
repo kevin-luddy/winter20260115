@@ -1,5 +1,4 @@
 ﻿angular.module('genboe').controller('ManageTaskController', ['$scope', '$http', '$timeout', 'ManageTaskModel', 'utilityService', function ($scope, $http, $timeout, ManageTaskModel, utilityService) {
-
 	$scope.ManageTaskModel = ManageTaskModel;
 	$scope.TaskCustomFields = [];
 	$scope.LaborCustomFields = [];
@@ -30,6 +29,54 @@
 	$scope.IsDraftOrDraftLocked = false;
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
+	$scope.TableData = ManageTaskModel.TableData;
+	$scope.loadedTaskData = false;
+	$scope.loadedMoqData = false;
+
+	// Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
+	$scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
+		$scope.SelectedMoqTypes = selectedMoqTypes;
+		$scope.ManageTaskModel.SelectedMoqTypes = selectedMoqTypes;
+		$scope.loadedMoqData = true;
+
+		refreshSkillMixTables();
+		
+	});
+
+	function refreshSkillMixTables() {
+		// Only call the method if both loadedTaskData and loadedMoqData are true since both pieces of data are needed for the table.
+		if ($scope.loadedTaskData && $scope.loadedMoqData) {
+			var data = {
+				boeId: ManageTaskModel.boeId,
+				selectedMoqTypes: $scope.SelectedMoqTypes,
+				laborTypes: $scope.model.LaborTypesData,
+				currentSkillMixData: $scope.model.SkillMixData,
+				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
+			};
+
+			return $http({
+				method: 'POST',
+				data: data,
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
+			}).then(function (response) {
+				$scope.TableData = response.data;
+				$scope.updateDropdowns();
+
+				$scope.isLoading = false;
+				$(document).trigger("HIDE_LOADING_BOX");
+
+				if (callback && typeof callback === 'function') {
+					callback();
+				}
+			}, function errorCallback(response) {
+				if (response.data && response.data.MessageList) {
+					$scope.errors = response.data.MessageList;
+				}
+				$scope.isLoading = false;
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+	}
 
 	// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
 	// that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
@@ -957,7 +1004,6 @@
 			$(document).trigger("HIDE_LOADING_BOX");
 		});
 	};
-
 	var loadData = function (callback) {
 		$(document).trigger("SHOW_LOADING_BOX");
 		$scope.isLoading = true;
@@ -974,6 +1020,7 @@
 		$scope.laborSpreadPasteErrors = [];
 		$scope.errors = [];
 		$scope.SelectedMoqTypes = [];
+		$scope.TableData = [];
 		var data = { boeId: ManageTaskModel.boeId, taskElementId: $scope.taskElementId };
 
 		return $http({
@@ -1078,6 +1125,11 @@
 			if (callback && typeof callback === 'function') {
 				callback();
 			}
+
+			// Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
+			$scope.loadedTaskData = true;
+
+			refreshSkillMixTables();
 		}, function errorCallback(response) {
 			if (response.data && response.data.MessageList) {
 				$scope.errors = response.data.MessageList;
