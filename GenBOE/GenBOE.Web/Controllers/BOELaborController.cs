@@ -141,8 +141,8 @@ namespace GenBOE.Web.Controllers
 
 			if (enableSkillMix)
 			{
-				SkillMixModelView skillMixTable = null;
-				ViewData["TableData"] = skillMixTable;
+				ICollection<LaborTypeDataModelView> tableData = new List<LaborTypeDataModelView>();
+				ViewData["TableData"] = tableData;
 			}
 
 			//create a var for list items
@@ -1652,7 +1652,6 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeId">BOE Id</param>
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
-		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <returns></returns>
 		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
