@@ -64,6 +64,11 @@ namespace IES.Common
         /// </summary>
         public string LegacyResourceID { get; set; }
 
+		/// <summary>
+		/// Gets or sets the BRC Resource used in Project Map Export
+		/// </summary>
+		public string BRCResource { get; set; }
+
         /// <summary>
         /// Cost Center (also known as performing org)
         /// </summary>

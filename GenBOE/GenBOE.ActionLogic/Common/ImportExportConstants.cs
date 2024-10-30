@@ -63,6 +63,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string INITIAL_RESOURCE_COLUMN_HEADER = "Activity Type Code";
         public static readonly string COST_CENTER_COLUMN_HEADER = "Cost Center";
         public static readonly string LEGACY_RESOURCE_COLUMN_HEADER = "Legacy Resource";
+		public static readonly string BUSINESS_RESOURCE_CODE_HEADER = "Business Resource Code";
         public static readonly string SOW_COLUMN_HEADER = "SOW #";
         public static readonly string SOW_TITLE_COLUMN_HEADER = "SOW Title";
         public static readonly string TASK_COLUMN_HEADER = "TASK";
