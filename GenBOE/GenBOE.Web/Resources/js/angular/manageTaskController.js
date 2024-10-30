@@ -41,27 +41,7 @@
 
 		// Only call the method if both loadedTaskData and loadedMoqData are true
 		if ($scope.loadedTaskData && $scope.loadedMoqData) {
-			refreshSkillMixTables().then(function (response) {
-				$scope.model = response.data;
-				$scope.updateDropdowns();
-
-				AfterDomLoadTaskElementDetailsWidget(TaskElementDetailsWidget, $scope.taskElementId);
-				if ($scope.taskElementId === "-1") {
-					$scope.setDirty();
-				}
-				$scope.isLoading = false;
-				$(document).trigger("HIDE_LOADING_BOX");
-
-				if (callback && typeof callback === 'function') {
-					callback();
-				}
-			}, function errorCallback(response) {
-				if (response.data && response.data.MessageList) {
-					$scope.errors = response.data.MessageList;
-				}
-				$scope.isLoading = false;
-				$(document).trigger("HIDE_LOADING_BOX");
-			});
+			refreshSkillMixTables();
 		}
 	});
 
@@ -78,6 +58,22 @@
 			method: 'POST',
 			data: data,
 			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
+		}).then(function (response) {
+			$scope.TableData = response.data;
+			$scope.updateDropdowns();
+
+			$scope.isLoading = false;
+			$(document).trigger("HIDE_LOADING_BOX");
+
+			if (callback && typeof callback === 'function') {
+				callback();
+			}
+		}, function errorCallback(response) {
+			if (response.data && response.data.MessageList) {
+				$scope.errors = response.data.MessageList;
+			}
+			$scope.isLoading = false;
+			$(document).trigger("HIDE_LOADING_BOX");
 		});
 	}
 
@@ -1134,27 +1130,7 @@
 
 			// Only call the method if both loadedTaskData and loadedMoqData are true
 			if ($scope.loadedTaskData && $scope.loadedMoqData) {
-				refreshSkillMixTables().then(function (response) {
-					$scope.model = response.data;
-					$scope.updateDropdowns();
-
-					AfterDomLoadTaskElementDetailsWidget(TaskElementDetailsWidget, $scope.taskElementId);
-					if ($scope.taskElementId === "-1") {
-						$scope.setDirty();
-					}
-					$scope.isLoading = false;
-					$(document).trigger("HIDE_LOADING_BOX");
-
-					if (callback && typeof callback === 'function') {
-						callback();
-					}
-				}, function errorCallback(response) {
-					if (response.data && response.data.MessageList) {
-						$scope.errors = response.data.MessageList;
-					}
-					$scope.isLoading = false;
-					$(document).trigger("HIDE_LOADING_BOX");
-				});
+				refreshSkillMixTables();
 			}
 		}, function errorCallback(response) {
 			if (response.data && response.data.MessageList) {

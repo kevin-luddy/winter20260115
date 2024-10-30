@@ -919,7 +919,6 @@
                 Skill Mix Rationale
             </div>
             <div class="module-content-data expanded-content">
-                TBD: tables
 				<!-- TODO Thomas: Add table here. -->
                 <div class="form-element">
                     <div class="SkillMixTable skillMixTable">
