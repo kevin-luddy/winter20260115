@@ -3319,7 +3319,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with only Historical Hours
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_HoursOnly_Test()
@@ -3371,8 +3371,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).ProposedHours);
 			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
-			Assert.AreEqual(4000.0m/300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
-			Assert.AreEqual(11000.0m/300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
+			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
+			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included.Value);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
@@ -3382,7 +3382,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with Historical Hours and Labor Type info only
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_HoursLaborOnly_Test()
@@ -3458,7 +3458,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).ProposedHours);
 			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
 			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
-			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix); 
+			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
@@ -3471,7 +3471,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, and Skill Mix Rows
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test()
@@ -3570,7 +3570,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, and INVALID Skill Mix Row
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test2()
@@ -3673,13 +3673,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, Skill Mix Rows, and Common Disclosure Rows
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_All_Test()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			
+
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
 				new MOQTypeSelectionTableDataResourceHoursDTO
@@ -3750,7 +3750,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 				new CommonDisclosureModelView {
 					ResourceID = RESOURCE_NAME1,
-					BusinessResourceID = BRC_RESOURCE_NAME1, 
+					BusinessResourceID = BRC_RESOURCE_NAME1,
 					Included = true,
 					Rationale = Rationale2
 				}
@@ -3797,7 +3797,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, Skill Mix Rows, and split BRC Common Disclosure Rows
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_All_Test2()
@@ -3979,11 +3979,11 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			AssertHelpers.AssertAreEqualEpsilon(75.0m / 135.0m * 150.0m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
 			AssertHelpers.AssertAreEqualEpsilon(60.0m / 135.0m * 150.0m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
 
-			
+
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with Hisorical Hours, labor types, and split Skill Mix Rows
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_SplitHistorical()
@@ -4152,7 +4152,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.Value);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.Value); 
+			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.Value);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(3).Included.HasValue);
@@ -4191,7 +4191,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with removing Invalid data from Common Disclosure row (resource)
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_RemoveFromCDInvalidResource()
@@ -4405,7 +4405,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with removing Invalid data from Common Disclosure row (BRC)
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_RemoveFromCDInvalidBRC()
@@ -4619,7 +4619,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix Calculation with 
+		/// Test Refresh SkillMix Calculation with no resource set for BRC
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_BRC_NoResource_Test1()
@@ -4856,6 +4856,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 				AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureTotals.BoeSkillMix);
 			}
-			}
+		}
 	}
 }

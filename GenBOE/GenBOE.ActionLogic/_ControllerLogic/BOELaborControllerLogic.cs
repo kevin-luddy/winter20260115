@@ -3996,6 +3996,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			// Always add a row with no historical/legacy resource set
+			// This row is used to add row(s) information about Resources and BRCs that were used but are NOT tied to historical/legacy resources
+			// This can be the case if the MOQ Type was not Historical/Comparitive but user still wanted to use that MOQ Type as a reference
 			refreshedModel.SkillMixRows.Add(
 				new SkillMixModelView
 				{
@@ -4134,7 +4136,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				foreach(SkillMixModelView refreshedRow in refreshedModel.SkillMixRows.ToList())
 				{
-					//	// Find the matching current rows
+					// Find the matching current rows
 					ICollection<SkillMixModelView> currentRows = currentSkillMixData.Where(r => r.ResourceOld == refreshedRow.ResourceOld).ToList();
 					if (currentRows.Any())
 					{
@@ -4156,15 +4158,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							currentRow.HistoricalHours = anyValidCurrentRows ? 0m : refreshedRow.HistoricalHours;
 							currentRow.LaborSkillMix = anyValidCurrentRows ? 0m : refreshedRow.LaborSkillMix;
 							currentRow.ResourceNew = currentRow.ResourceNew ?? string.Empty;
-							//refreshedRow.ResourceNew = skillMix.ResourceNew ?? string.Empty;
-							//refreshedRow.Rationale = skillMix.Rationale;
-							//refreshedRow.IsUserInput = skillMix.IsUserInput;
-							//refreshedRow.BOEID = skillMix.BOEID;
-							//refreshedRow.BOETaskElementID = skillMix.BOETaskElementID;
-							//refreshedRow.SkillMixID = skillMix.SkillMixID;
-							// This covers the case if the Skill Mix row is set to included with no resource new value (so a row is created in CD table for BRC-only reference)
-							//refreshedRow.Included = skillMix.Included;
-
+							
 							anyValidCurrentRows = true;
 							refreshedModel.SkillMixRows.Add(currentRow);
 
