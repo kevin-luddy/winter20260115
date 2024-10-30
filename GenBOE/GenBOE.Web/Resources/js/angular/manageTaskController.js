@@ -39,42 +39,43 @@
 		$scope.ManageTaskModel.SelectedMoqTypes = selectedMoqTypes;
 		$scope.loadedMoqData = true;
 
-		// Only call the method if both loadedTaskData and loadedMoqData are true
-		if ($scope.loadedTaskData && $scope.loadedMoqData) {
-			refreshSkillMixTables();
-		}
+		refreshSkillMixTables();
+		
 	});
 
 	function refreshSkillMixTables() {
-		var data = {
-			boeId: ManageTaskModel.boeId,
-			selectedMoqTypes: $scope.SelectedMoqTypes,
-			laborTypes: $scope.model.LaborTypesData,
-			currentSkillMixData: $scope.model.SkillMixData,
-			currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
-		};
+		// Only call the method if both loadedTaskData and loadedMoqData are true since both pieces of data are needed for the table.
+		if ($scope.loadedTaskData && $scope.loadedMoqData) {
+			var data = {
+				boeId: ManageTaskModel.boeId,
+				selectedMoqTypes: $scope.SelectedMoqTypes,
+				laborTypes: $scope.model.LaborTypesData,
+				currentSkillMixData: $scope.model.SkillMixData,
+				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
+			};
 
-		return $http({
-			method: 'POST',
-			data: data,
-			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
-		}).then(function (response) {
-			$scope.TableData = response.data;
-			$scope.updateDropdowns();
+			return $http({
+				method: 'POST',
+				data: data,
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
+			}).then(function (response) {
+				$scope.TableData = response.data;
+				$scope.updateDropdowns();
 
-			$scope.isLoading = false;
-			$(document).trigger("HIDE_LOADING_BOX");
+				$scope.isLoading = false;
+				$(document).trigger("HIDE_LOADING_BOX");
 
-			if (callback && typeof callback === 'function') {
-				callback();
-			}
-		}, function errorCallback(response) {
-			if (response.data && response.data.MessageList) {
-				$scope.errors = response.data.MessageList;
-			}
-			$scope.isLoading = false;
-			$(document).trigger("HIDE_LOADING_BOX");
-		});
+				if (callback && typeof callback === 'function') {
+					callback();
+				}
+			}, function errorCallback(response) {
+				if (response.data && response.data.MessageList) {
+					$scope.errors = response.data.MessageList;
+				}
+				$scope.isLoading = false;
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
 	}
 
 	// The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
@@ -1128,10 +1129,7 @@
 			// Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
 			$scope.loadedTaskData = true;
 
-			// Only call the method if both loadedTaskData and loadedMoqData are true
-			if ($scope.loadedTaskData && $scope.loadedMoqData) {
-				refreshSkillMixTables();
-			}
+			refreshSkillMixTables();
 		}, function errorCallback(response) {
 			if (response.data && response.data.MessageList) {
 				$scope.errors = response.data.MessageList;
