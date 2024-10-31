@@ -550,14 +550,24 @@
                                 <tr>
                                     <th>Resource ID</th>
                                     <th>Current Resource ID</th>
+                                    <th>Historical Hours</th>
+                                    <th>Labor Skill Mix</th>
                                     <th>Included</th>
-                                    <th></th>
+                                    <th>BOE Skill Mix</th>
+                                    <th>Proposed Hours</th>
+                                    <th>Rationale**</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="row in TableData.data.SkillMixRows">
                                     <td>{{row.ResourceOld}}</td>
                                     <td>{{row.ResourceNew}}</td>
+                                    <td>{{row.HistoricalHours}}</td>
+                                    <td>{{row.LaborSkillMix}}</td>
+                                    <td>{{row.Included}}</td>
+                                    <td>{{row.BOESkillMix}}</td>
+                                    <td>{{row.ProposedHours}}</td>
+                                    <td>{{row.Rationale}}</td>
                                 </tr>
                             </tbody>
                         </table>
