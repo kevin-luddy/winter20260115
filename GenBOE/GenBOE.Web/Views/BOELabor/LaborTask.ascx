@@ -69,6 +69,7 @@
 
     var TaskElementDetailsWidget;
     var TableData = '<%: ViewData["TableData"] %>';
+    var SelectedLaborTypes = '<%: ViewData["SelectedLaborTypes"] %>';
 
     var TaskLaborTypesWidget;
     var TaskLaborSpreadsWidget;
@@ -77,7 +78,7 @@
         currentWorkspace,
         completeImportUrl,
         <%: (int)SpreadType.Hours %>,
-        <%: (int)SpreadType.Cost %>;
+        <%: (int)SpreadType.Cost %>
     );
 
     ImportLaborType.UploadComplete = function () { //Function will be called when iframe is loaded
@@ -911,48 +912,7 @@
         </div>
 
     </div>
-    <% if (Model.EnableSkillMix)
-        { %>
-    <div id="SkillMixPlaceholder">
-        <div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
-            <div class="module-header-data">
-                Skill Mix Rationale
-            </div>
-            <div class="module-content-data expanded-content">
-				<!-- TODO PROPH-2483: Add table here (Format & Display). -->
-                <div class="form-element">
-                    <div class="SkillMixTable skillMixTable">
-                        <table name="currentSkillMix" class="grid editable">
-                            <thead>
-                                <tr>
-                                    <th>Resource ID</th>
-                                    <th>Current Resource ID</th>
-                                    <th>Historical Hours</th>
-                                    <th>Labor Skill Mix</th>
-                                    <th>Included</th>
-                                    <th>BOE Skill Mix</th>
-                                    <th>Proposed Hours</th>
-                                    <th>Rationale**</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="row in TableData.data.SkillMixRows">
-                                    <td>{{row.ResourceOld}}</td>
-                                    <td><select ng-options="option as option for option in SelectedLaborTypes" ng-model="row.ResourceNew"></select></td>
-                                    <td>{{row.HistoricalHours}}</td>
-                                    <td>{{row.LaborSkillMix}}</td>
-                                    <td>{{row.Included}}</td>
-                                    <td>{{row.BOESkillMix}}</td>
-                                    <td>{{row.ProposedHours}}</td>
-                                    <td>{{row.Rationale}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <% } %>
+
         <div class="buttons-left" data-ng-hide="isLoading"></div>
         <div class="buttons" data-ng-hide="isLoading">
             <div class="required-note">

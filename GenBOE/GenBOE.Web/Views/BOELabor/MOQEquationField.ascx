@@ -409,7 +409,7 @@
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalSkillMixSuffix);"></div>
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeSkillMixSuffix);"></div>
             </div>
-                <!-- TODO Thomas: Delete this once we push up our new table in Skill Mix Rationale -->
+                <%--<!-- TODO Thomas: Delete this once we push up our new table in Skill Mix Rationale -->
                 <div class="SkillMixTable skillMixTable">
                     <table name="currentSkillMix"  class="grid editable">
                         <thead>
@@ -512,7 +512,7 @@
 							</tr>
                         </tbody>
                     </table>
-                </div>
+                </div>--%>
             </div>
     </div>
         </div>
