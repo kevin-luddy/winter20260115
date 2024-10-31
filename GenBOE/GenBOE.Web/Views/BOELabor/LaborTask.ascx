@@ -938,7 +938,7 @@
                             <tbody>
                                 <tr ng-repeat="row in TableData.data.SkillMixRows">
                                     <td>{{row.ResourceOld}}</td>
-                                    <td>{{row.ResourceNew}}</td>
+                                    <td><select ng-options="option as option for option in SelectedLaborTypes" ng-model="row.ResourceNew"></select></td>
                                     <td>{{row.HistoricalHours}}</td>
                                     <td>{{row.LaborSkillMix}}</td>
                                     <td>{{row.Included}}</td>

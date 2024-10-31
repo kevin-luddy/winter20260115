@@ -30,6 +30,7 @@
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
 	$scope.TableData = ManageTaskModel.TableData;
+	$scope.SelectedLaborTypes = ManageTaskModel.SelectedLaborTypes;
 	$scope.loadedTaskData = false;
 	$scope.loadedMoqData = false;
 
@@ -61,6 +62,7 @@
 				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
 			}).then(function (response) {
 				$scope.TableData = response.data;
+				$scope.SelectedLaborTypes = $scope.model.LaborTypesData;
 				$scope.updateDropdowns();
 
 				$scope.isLoading = false;

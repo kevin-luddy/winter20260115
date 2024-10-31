@@ -141,9 +141,12 @@ namespace GenBOE.Web.Controllers
 
 			if (enableSkillMix)
 			{
-				ICollection<LaborTypeDataModelView> tableData = new List<LaborTypeDataModelView>();
+				ICollection<RefreshSkillMixModelView> tableData = new List<RefreshSkillMixModelView>();
 				ViewData["TableData"] = tableData;
 			}
+
+			ICollection<LaborTaskDataModelView> selectedLaborTypes = new List<LaborTaskDataModelView>();
+			ViewData["SelectedLaborTypes"] = selectedLaborTypes;
 
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
