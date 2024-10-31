@@ -23,7 +23,14 @@ namespace GenBOE.DataBridge.DTO
         {
 			if (skillMixDTO != null)
 			{
-				this.Included = skillMixDTO.Included;
+				// TODO Thomas:
+				// If the common current resource ID is set then = true.
+				// They can override it set it to false. The issue is in the back-end,
+				// if we're passing in stuff from the UI or the DB into it we have to override it by creating a blank row
+				// We need to write logic in the UI, if the resource is changed from 'nothing' to 'something', auto set it to true and send it to the back-end.
+				// Alterantively here is some mappings:
+				// IF Current Resource ID is empty, Included is FALSE (because Current Resource is Empty), 
+				this.Included = skillMixDTO.Included; 
 				this.SkillMixID = skillMixDTO.SkillMixID;
 				this.Rationale = skillMixDTO.Rationale;
 				this.ProposedHours = skillMixDTO.ProposedHours;

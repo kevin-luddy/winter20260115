@@ -27,17 +27,13 @@
 	$scope.model.AdjacentItems.NextId = undefined;
 	$scope.SelectedMoqTypes = [];
 	$scope.IsDraftOrDraftLocked = false;
-	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled;
+	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
-	$scope.TableData = ManageTaskModel.TableData;
-	$scope.SelectedLaborTypes = ManageTaskModel.SelectedLaborTypes;
 	$scope.loadedTaskData = false;
-	$scope.loadedMoqData = false;
 
 	// Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
 	$scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
 		$scope.SelectedMoqTypes = selectedMoqTypes;
-		$scope.ManageTaskModel.SelectedMoqTypes = selectedMoqTypes;
 		$scope.loadedMoqData = true;
 
 		refreshSkillMixTables();
@@ -45,9 +41,8 @@
 	});
 
 	function refreshSkillMixTables() {
-		console.log("refreshSkillMixTables() method has ran.")
 		// Only call the method if both loadedTaskData and loadedMoqData are true since both pieces of data are needed for the table.
-		if ($scope.loadedTaskData && $scope.loadedMoqData) {
+		if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
 			var data = {
 				boeId: ManageTaskModel.boeId,
 				selectedMoqTypes: $scope.SelectedMoqTypes,
@@ -62,7 +57,6 @@
 				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
 			}).then(function (response) {
 				$scope.TableData = response.data;
-				$scope.SelectedLaborTypes = $scope.model.LaborTypesData;
 				$scope.updateDropdowns();
 
 				$scope.isLoading = false;
