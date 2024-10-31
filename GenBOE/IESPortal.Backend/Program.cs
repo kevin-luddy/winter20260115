@@ -40,4 +40,5 @@ builder.Services.AddTransient<ContractTypeLoader>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 WebApplication app = config.ConfigureAppBuilder(builder, true);
+IES.Common.Core.Utilities.CommonUtilities.LogEnvironmentSettings(app, app.Configuration, app.Environment);
 app.Run();
