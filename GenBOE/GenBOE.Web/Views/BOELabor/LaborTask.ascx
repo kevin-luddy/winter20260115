@@ -77,7 +77,7 @@
         currentWorkspace,
         completeImportUrl,
         <%: (int)SpreadType.Hours %>,
-        <%: (int)SpreadType.Cost %>;
+        <%: (int)SpreadType.Cost %>
     );
 
     ImportLaborType.UploadComplete = function () { //Function will be called when iframe is loaded
