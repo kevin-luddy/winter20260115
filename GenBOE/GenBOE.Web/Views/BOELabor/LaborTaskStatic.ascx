@@ -550,9 +550,15 @@
                                 <tr>
                                     <th>Resource ID</th>
                                     <th>Current Resource ID</th>
+                                    <th>Included</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr ng-repeat="row in TableData.data.SkillMixRows">
+                                    <td>{{row.ResourceOld}}</td>
+                                    <td>{{row.ResourceNew}}</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>

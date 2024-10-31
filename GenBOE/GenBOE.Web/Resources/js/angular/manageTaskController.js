@@ -44,12 +44,13 @@
 	});
 
 	function refreshSkillMixTables() {
+		console.log("refreshSkillMixTables() method has ran.")
 		// Only call the method if both loadedTaskData and loadedMoqData are true since both pieces of data are needed for the table.
 		if ($scope.loadedTaskData && $scope.loadedMoqData) {
 			var data = {
 				boeId: ManageTaskModel.boeId,
 				selectedMoqTypes: $scope.SelectedMoqTypes,
-				laborTypes: $scope.model.LaborTypesData,
+				laborTypes: $scope.model.LaborTypesData, // TODO Thomas: Keep a running list of what these are (Current Resource). (Distinct list of ids, pull out of dict, sorting, then add into drop down. Need a list of distinct resource names)
 				currentSkillMixData: $scope.model.SkillMixData,
 				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
 			};
