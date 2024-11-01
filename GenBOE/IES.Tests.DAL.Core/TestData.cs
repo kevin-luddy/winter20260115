@@ -96,7 +96,7 @@ namespace IES.Tests.Core
         /// <summary>
         /// Rate Detail loader
         /// </summary>
-        private static RateDetailLoader rateDetailLoader = new(Mock.Of<ILogger<RateDetailLoader>>(), rateCodeYearLoader, proPricerXrefLoader);
+        private static RateDetailLoader rateDetailLoader = new(Mock.Of<ILogger<RateDetailLoader>>(), rateCodeYearLoader, proPricerXrefLoader, Mock.Of<ISecurityInformation>());
 
         /// <summary>
         /// The file attachment loader
