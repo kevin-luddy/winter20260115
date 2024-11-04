@@ -993,7 +993,7 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Log environment variables and config app settings in elmah
 		/// </summary>
-		/// <param name="log">logger>
+		/// <param name="log">logger</param>
 		public static void LogEnvironmentSettings(IApplicationBuilder app, IConfiguration config, IWebHostEnvironment env, HttpContext context = null)
 		{
 			if (env.IsDevelopment() && config["EnableEnvironmentInfoLogging"] != null && config["EnableEnvironmentInfoLogging"] == "True")
