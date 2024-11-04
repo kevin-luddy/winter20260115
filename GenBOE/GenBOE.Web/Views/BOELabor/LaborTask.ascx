@@ -946,11 +946,11 @@
                                             ng-model="selectedResources[$index]">
                                         </select>
                                     </td>
-                                    <td>{{row.HistoricalHours}}</td>
-                                    <td>{{row.LaborSkillMix}}</td>
+                                    <td>{{row.HistoricalHours | number:2}}</td>
+                                    <td>{{row.LaborSkillMix | number:1}}%</td>
                                     <!-- If FALSE make it a drop down. If dropdown changes, change the IsUserInput = true. -->
                                     <td>{{row.Included}}</td>
-                                    <td>{{row.BOESkillMix}}</td>
+                                    <td>{{row.LaborSkillMix | number:1}}%</td>
                                     <td>{{row.ProposedHours}}</td>
                                     <td>{{row.Rationale}}</td>
                                 </tr>
