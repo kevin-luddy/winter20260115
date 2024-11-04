@@ -32,6 +32,7 @@ namespace IES.Common.Core.Utilities
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Hosting;
+	using Microsoft.Extensions.Primitives;
 	using Microsoft.Net.Http.Headers;
 	using PickList;
 
@@ -997,10 +998,10 @@ namespace IES.Common.Core.Utilities
 		{
 			if (env.IsDevelopment() && config["EnableEnvironmentInfoLogging"] != null && config["EnableEnvironmentInfoLogging"] == "True")
 			{
-				var sb = new StringBuilder();
-				var nl = System.Environment.NewLine;
-				var rule = string.Concat(nl, new string('-', 40), nl);
-				var authSchemeProvider = app.ApplicationServices.GetRequiredService<IAuthenticationSchemeProvider>();
+				StringBuilder sb = new StringBuilder();
+				string nl = System.Environment.NewLine;
+				string rule = string.Concat(nl, new string('-', 40), nl);
+				IAuthenticationSchemeProvider authSchemeProvider = app.ApplicationServices.GetRequiredService<IAuthenticationSchemeProvider>();
 
 				sb.Append($"Request{rule}");
 				sb.Append($"{DateTimeOffset.Now}{nl}");
@@ -1024,7 +1025,7 @@ namespace IES.Common.Core.Utilities
 					sb.Append($"User: {context.User.Identity.Name}{nl}");
 
 					sb.Append($"Headers{rule}");
-					foreach (var header in context.Request.Headers)
+					foreach (KeyValuePair<string, StringValues> header in context.Request.Headers)
 					{
 						sb.Append($"{header.Key}: {header.Value}{nl}");
 					}
@@ -1042,13 +1043,13 @@ namespace IES.Common.Core.Utilities
 				}
 
 				sb.Append($"Configuration{rule}");
-				foreach (var pair in config.AsEnumerable())
+				foreach (KeyValuePair<string, string?> pair in config.AsEnumerable())
 				{
 					sb.Append($"{pair.Key}: {pair.Value}{nl}");
 				}
 				sb.Append(nl);
 				sb.Append($"Environment Variables{rule}");
-				var vars = System.Environment.GetEnvironmentVariables();
+				IDictionary vars = System.Environment.GetEnvironmentVariables();
 				foreach (var key in vars.Keys.Cast<string>().OrderBy(key => key,
 					StringComparer.OrdinalIgnoreCase))
 				{

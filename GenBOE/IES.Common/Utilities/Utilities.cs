@@ -1111,7 +1111,7 @@ namespace IES.Common
 		/// <summary>
 		/// Log environment variables and config app settings in elmah
 		/// </summary>
-		/// <param name="log">logger>
+		/// <param name="log">logger</param>
 		public static void LogEnvironmentSettings(Logger log)
 		{
 			_ = log ?? throw new ArgumentNullException(nameof(log));
