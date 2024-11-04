@@ -309,7 +309,8 @@ namespace RDM.Backend.Controllers
 			string file = Path.Combine(path, filename);
 			file = Path.GetFullPath(file);
 
-			return this.File(file, ExportFileDownloadBase.ContentType_XLSX, filename);
+			//return this.File(file, ExportFileDownloadBase.ContentType_XLSX, filename);
+			return PhysicalFile(file, ExportFileDownloadBase.ContentType_XLSX, filename);
 		}
 
 		/// <summary>
