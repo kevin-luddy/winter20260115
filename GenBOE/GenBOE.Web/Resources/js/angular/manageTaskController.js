@@ -76,20 +76,6 @@
 				$scope.model.SkillMixData = $scope.tableData.data.SkillMixRows;
 				$scope.updateDropdowns();
 
-				// Initialize the select model to the correct option
-				$scope.model.LaborTypesData = $scope.model.LaborTypesData.filter(function (option) {
-					return option.ResourceName !== undefined;
-				});
-
-				angular.forEach($scope.model.SkillMixData, function (row, index) {
-					var selectedOption = $filter('filter')($scope.model.LaborTypesData, { ResourceName: row.ResourceNew })[0];
-					if (selectedOption) {
-						$scope.selectedResources[index] = selectedOption.ResourceName;
-					} else {
-						$scope.selectedResources[index] = $scope.model.LaborTypesData[0].ResourceName;
-					}
-				});
-
 				$scope.isLoading = false;
 				$(document).trigger("HIDE_LOADING_BOX");
 
