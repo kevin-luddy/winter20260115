@@ -48,4 +48,5 @@ builder.Services.AddScoped<IProPricerRateCodeXrefLoader, ProPricerRateCodeXrefLo
 builder.Services.AddScoped<RateFormatter>();
 
 WebApplication app = config.ConfigureAppBuilder(builder);
+IES.Common.Core.Utilities.CommonUtilities.LogEnvironmentSettings(app, app.Configuration, app.Environment);
 app.Run();
