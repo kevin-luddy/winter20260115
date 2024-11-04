@@ -68,8 +68,6 @@
     }
 
     var TaskElementDetailsWidget;
-    var TableData = '<%: ViewData["TableData"] %>';
-    var SelectedLaborTypes = '<%: ViewData["SelectedLaborTypes"] %>';
 
     var TaskLaborTypesWidget;
     var TaskLaborSpreadsWidget;
@@ -938,10 +936,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="row in TableData.data.SkillMixRows">
+                                <!-- Display the data for each of the Skill Mix Table rows. -->
+                                <tr ng-repeat="row in tableData.data.SkillMixRows" >
                                     <td>{{row.ResourceOld}}</td>
                                     <td>
-                                        <select data-ng-options="option as option.ResourceName for option in tableData track by option.ResourceName" ng-model="row.ResourceNew"></select></td>
+                                        <!-- Select for Current Resource ID will change the Included column and IsUserInput backend value. -->
+                                        <select 
+                                            data-ng-options="option.ResourceName for option in model.LaborTypesData track by option.ResourceName" 
+                                            ng-model="selectedResources[$index]">
+                                        </select>
+                                    </td>
                                     <td>{{row.HistoricalHours}}</td>
                                     <td>{{row.LaborSkillMix}}</td>
                                     <!-- If FALSE make it a drop down. If dropdown changes, change the IsUserInput = true. -->

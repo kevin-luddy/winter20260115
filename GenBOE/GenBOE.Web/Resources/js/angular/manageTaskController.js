@@ -30,23 +30,38 @@
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
 	$scope.loadedTaskData = false;
+	$scope.selectedResources = {};
+	$scope.initialSkillMixLoad = false;
 
 	// Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
 	$scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
 		$scope.SelectedMoqTypes = selectedMoqTypes;
 		$scope.loadedMoqData = true;
 
-		refreshSkillMixTables();
+		$scope.refreshSkillMixTables();
 		
 	});
 
-	function refreshSkillMixTables() {
+	$scope.$watchCollection('selectedResources', function (newValue, oldValue) {
+		if ($scope.initialSkillMixLoad && newValue) {
+			angular.forEach(newValue, function (value, index) {
+				console.log(value);
+				$scope.model.SkillMixData[index].ResourceNew = value.ResourceName;
+				$scope.model.SkillMixData[index].IsUserInput = true; // assuming you want to set this to true when selection changes
+			});
+
+			// Refresh the skill mix tables with the new UI data.
+			$scope.refreshSkillMixTables();
+		}
+	});
+
+	$scope.refreshSkillMixTables = function() {
 		// Only call the method if both loadedTaskData and loadedMoqData are true since both pieces of data are needed for the table.
 		if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
 			var data = {
 				boeId: ManageTaskModel.boeId,
 				selectedMoqTypes: $scope.SelectedMoqTypes,
-				laborTypes: $scope.model.LaborTypesData, // TODO Thomas: Keep a running list of what these are (Current Resource). (Distinct list of ids, pull out of dict, sorting, then add into drop down. Need a list of distinct resource names)
+				laborTypes: $scope.model.LaborTypesData,
 				currentSkillMixData: $scope.model.SkillMixData,
 				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
 			};
@@ -56,8 +71,24 @@
 				data: data,
 				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
 			}).then(function (response) {
-				$scope.TableData = response.data;
+				$scope.initialSkillMixLoad = true;
+				$scope.tableData = response.data;
+				$scope.model.SkillMixData = $scope.tableData.data.SkillMixRows;
 				$scope.updateDropdowns();
+
+				// Initialize the select model to the correct option
+				$scope.model.LaborTypesData = $scope.model.LaborTypesData.filter(function (option) {
+					return option.ResourceName !== undefined;
+				});
+
+				angular.forEach($scope.model.SkillMixData, function (row, index) {
+					var selectedOption = $filter('filter')($scope.model.LaborTypesData, { ResourceName: row.ResourceNew })[0];
+					if (selectedOption) {
+						$scope.selectedResources[index] = selectedOption.ResourceName;
+					} else {
+						$scope.selectedResources[index] = $scope.model.LaborTypesData[0].ResourceName;
+					}
+				});
 
 				$scope.isLoading = false;
 				$(document).trigger("HIDE_LOADING_BOX");
@@ -1126,7 +1157,7 @@
 			// Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
 			$scope.loadedTaskData = true;
 
-			refreshSkillMixTables();
+			$scope.refreshSkillMixTables();
 		}, function errorCallback(response) {
 			if (response.data && response.data.MessageList) {
 				$scope.errors = response.data.MessageList;
