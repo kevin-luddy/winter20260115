@@ -3979,9 +3979,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData)
 		{
-			// Remove undefined labor types (not the same as 'empty' labor types).
-			laborTypes = laborTypes.Where(l => l.ResourceName != null).ToList();
-
 			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
 
 			// null checks 
