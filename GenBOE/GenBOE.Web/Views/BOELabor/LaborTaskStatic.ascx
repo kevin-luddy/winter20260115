@@ -543,7 +543,6 @@
                 Skill Mix Rationale
             </div>
             <div class="module-content-data expanded-content">
-                <!-- TODO PROPH-2483: Add table here (Format & Display). -->
                 <div class="form-element">
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
