@@ -30,7 +30,6 @@
 	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
 	$scope.loadedTaskData = false;
-	$scope.selectedResources = {};
 	$scope.initialSkillMixLoad = false;
 	$scope.skillMixRationale = [];
 	$scope.skillMixRationaleLaborTypeSelections = [];
@@ -44,7 +43,7 @@
 		
 	});
 
-	$scope.$watchCollection('selectedResources', function (newValue, oldValue) {
+	$scope.$watchCollection('skillMixRationaleLaborTypeSelections', function (newValue, oldValue) {
 		if ($scope.initialSkillMixLoad && newValue) {
 			angular.forEach(newValue, function (value, index) {
 				$scope.model.SkillMixData[index].ResourceNew = value.ResourceName;
@@ -1107,7 +1106,7 @@
 			$scope.tableData = $scope.model.LaborTypesData;
 			$scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
 			$scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
-				$scope.selectedResources[index] = option.ResourceName || '';
+				$scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
 			});
 
 			angular.forEach($scope.tableData, function (value) {

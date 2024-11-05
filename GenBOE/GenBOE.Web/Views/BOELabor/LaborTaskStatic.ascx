@@ -543,7 +543,7 @@
                 Skill Mix Rationale
             </div>
             <div class="module-content-data expanded-content">
-				<!-- TODO PROPH-2483: Add table here (Format & Display). -->
+                <!-- TODO PROPH-2483: Add table here (Format & Display). -->
                 <div class="form-element">
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
@@ -560,15 +560,27 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="row in TableData.data.SkillMixRows">
+                                <!-- Display the data for each of the Skill Mix Table rows. -->
+                                <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
                                     <td>{{row.ResourceOld}}</td>
-                                    <td><select data-ng-options="option as option for option in SelectedLaborTypes" ng-model="row.ResourceNew"></select></td>
-                                    <td>{{row.HistoricalHours}}</td>
-                                    <td>{{row.LaborSkillMix}}</td>
+                                    <td>{{row.ResourceNew}}</td>
+                                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td>{{row.Included}}</td>
-                                    <td>{{row.BOESkillMix}}</td>
-                                    <td>{{row.ProposedHours}}</td>
+                                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>{{row.Rationale}}</td>
+                                </tr>
+                                <!-- Display the Skill Mix Totals row. -->
+                                <tr>
+                                    <td>Totals</td>
+                                    <td></td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
+                                    <td></td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </table>

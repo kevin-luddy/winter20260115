@@ -942,13 +942,13 @@
                                     <td>
                                         <!-- Select for Current Resource ID will change the Included column and IsUserInput backend value. -->
                                         <select
-                                            data-ng-options="option for option in selectedResources track by option"
-                                            ng-model="selectedResources[$index]">
+                                            data-ng-options="option.ResourceName for option in model.LaborTypesData track by option.ResourceName"
+                                            ng-model="skillMixRationaleLaborTypeSelections[$index]">
                                         </select>
                                     </td>
                                     <td style="text-align:right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align:right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <!-- If FALSE make it a drop down. If dropdown changes, change the IsUserInput = true. -->
+                                    <!-- TODO: row.Included == 'false' make it a drop down. If the value in the drop down changes change the backend value IsUserInput = true. -->
                                     <td>{{row.Included}}</td>
                                     <td style="text-align:right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align:right">{{row.ProposedHours}}</td>
