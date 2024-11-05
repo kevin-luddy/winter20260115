@@ -32,6 +32,8 @@
 	$scope.loadedTaskData = false;
 	$scope.selectedResources = {};
 	$scope.initialSkillMixLoad = false;
+	$scope.skillMixRationale = [];
+	$scope.skillMixRationaleLaborTypeSelections = [];
 
 	// Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
 	$scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -45,7 +47,6 @@
 	$scope.$watchCollection('selectedResources', function (newValue, oldValue) {
 		if ($scope.initialSkillMixLoad && newValue) {
 			angular.forEach(newValue, function (value, index) {
-				console.log(value);
 				$scope.model.SkillMixData[index].ResourceNew = value.ResourceName;
 				$scope.model.SkillMixData[index].IsUserInput = true; // assuming you want to set this to true when selection changes
 			});
@@ -72,8 +73,9 @@
 				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
 			}).then(function (response) {
 				$scope.initialSkillMixLoad = true;
-				$scope.tableData = response.data;
-				$scope.model.SkillMixData = $scope.tableData.data.SkillMixRows;
+				$scope.skillMixRationale = response.data;
+				$scope.model.SkillMixData = $scope.skillMixRationale.data.SkillMixRows;
+
 				$scope.updateDropdowns();
 
 				$scope.isLoading = false;
@@ -1030,7 +1032,6 @@
 		$scope.laborSpreadPasteErrors = [];
 		$scope.errors = [];
 		$scope.SelectedMoqTypes = [];
-		$scope.TableData = [];
 		var data = { boeId: ManageTaskModel.boeId, taskElementId: $scope.taskElementId };
 
 		return $http({
@@ -1104,6 +1105,10 @@
 			}
 
 			$scope.tableData = $scope.model.LaborTypesData;
+			$scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
+			$scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
+				$scope.selectedResources[index] = option.ResourceName || '';
+			});
 
 			angular.forEach($scope.tableData, function (value) {
 				value.NumberOfDuplicates = 0;

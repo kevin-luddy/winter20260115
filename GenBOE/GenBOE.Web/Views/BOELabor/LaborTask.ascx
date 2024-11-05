@@ -937,12 +937,12 @@
                             </thead>
                             <tbody>
                                 <!-- Display the data for each of the Skill Mix Table rows. -->
-                                <tr ng-repeat="row in tableData.data.SkillMixRows" >
+                                <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
                                     <td>{{row.ResourceOld}}</td>
                                     <td>
                                         <!-- Select for Current Resource ID will change the Included column and IsUserInput backend value. -->
-                                        <select 
-                                            data-ng-options="option.ResourceName for option in model.LaborTypesData track by option.ResourceName" 
+                                        <select
+                                            data-ng-options="option for option in selectedResources track by option"
                                             ng-model="selectedResources[$index]">
                                         </select>
                                     </td>
@@ -950,9 +950,19 @@
                                     <td>{{row.LaborSkillMix | number:1}}%</td>
                                     <!-- If FALSE make it a drop down. If dropdown changes, change the IsUserInput = true. -->
                                     <td>{{row.Included}}</td>
-                                    <td>{{row.LaborSkillMix | number:1}}%</td>
+                                    <td>{{row.BOESkillMix | number:1}}%</td>
                                     <td>{{row.ProposedHours}}</td>
                                     <td>{{row.Rationale}}</td>
+                                </tr>
+                                <!-- Display the Skill Mix Totals row. -->
+                                <tr>
+                                    <td colspan="2">Totals</td>
+                                    <td>{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
+                                    <td>{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
+                                    <td colspan="2"></td>
+                                    <td>{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
+                                    <td>{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
+                                    <td colspan="2"></td>
                                 </tr>
                             </tbody>
                         </table>
