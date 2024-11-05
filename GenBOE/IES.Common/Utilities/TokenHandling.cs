@@ -6,21 +6,22 @@
 
 namespace IES.Common
 {
-    using System;
+	using System;
 	using System.Configuration;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Security.Principal;
-    using System.Threading;
-    using System.Web;
-    using Microsoft.IdentityModel.Protocols;
-    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-    using Microsoft.IdentityModel.Tokens;
+	using System.IdentityModel.Tokens.Jwt;
+	using System.Linq;
+	using System.Security.Claims;
+	using System.Security.Principal;
+	using System.Threading;
+	using System.Web;
+	using Microsoft.IdentityModel.Protocols;
+	using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+	using Microsoft.IdentityModel.Tokens;
 
-    /// <summary>
-    /// This is a Token Handling class that will help us to communicate between IES API (.Net 4.7) and the ACV IES API (.Net Core 5.0)
-    /// </summary>
-    public class TokenHandling
+	/// <summary>
+	/// This is a Token Handling class that will help us to communicate between IES API (.Net 4.7) and the ACV IES API (.Net Core 5.0)
+	/// </summary>
+	public class TokenHandling
 	{
 		/// <summary>
 		/// Auth Domain
@@ -30,7 +31,7 @@ namespace IES.Common
 		/// <summary>
 		/// Auth Audience
 		/// </summary>
-		private static readonly string[] AuthValidAudiences = ConfigurationManager.AppSettings["oAuthValidAudiences"].Split(new char [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+		private static readonly string[] AuthValidAudiences = ConfigurationManager.AppSettings["oAuthValidAudiences"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
 		/// <summary>
 		/// This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
@@ -56,32 +57,39 @@ namespace IES.Common
 
 			try
 			{
-				// We add "Bearer " to the token when we put it into the headers, so we then need to strip it out (in .Net Core this is done for us by our helpers)
-				token = token.Replace("Bearer ", string.Empty);
+				ClaimsPrincipal principal = ValidateTokenAndGetClaimsPrincipal(token, AuthValidAudiences);
 
-				// This is "the way it's done" - that URL is something that must be a part of the OAuth2, just one of those things..
-				IConfigurationManager<OpenIdConnectConfiguration> configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(metadataAddressForAuthDomain, new OpenIdConnectConfigurationRetriever());
-				OpenIdConnectConfiguration openIdConfig = configurationManager.GetConfigurationAsync(CancellationToken.None).Result;
-
-				TokenValidationParameters validationParameters = new TokenValidationParameters()
-				{
-					ValidateLifetime = true,
-					ValidateAudience = true,
-					ValidateIssuer = false,
-					IssuerSigningKeys = openIdConfig.SigningKeys,
-					ValidAudiences = AuthValidAudiences
-				};
-
-				// Validates the token first (throws if invalid). If valid, it searches all claims for the right one. Finally, the string is in the format of ntid@domain, so we strip out what we don't need.
-				userNtid = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _).Claims.First(x => x.Type == "lmco_upn").Value.Split('@').First();
+				// After validating token, search all claims for the right one. Finally, the string is in the format of ntid@domain, so we strip out what we don't need.
+				userNtid = principal.Claims.First(x => x.Type == "lmco_upn").Value.Split('@').First();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				logger.Error(ex);
 				throw new UnauthorizedAccessException();
 			}
 
 			return userNtid;
+		}
+
+		/// <summary>
+		/// Validate Authorization Token from headers (no NTID retrieved)
+		/// Only valid for IES Client ID 
+		/// </summary>
+		/// <returns>True if validated, otherwise UnauthorizedAccessException is thrown</returns>
+		public void ValidateAuthorizationToken()
+		{
+			string token = HttpContext.Current.Request.Headers["IES_Authorization"];
+
+			try
+			{
+				ClaimsPrincipal p = ValidateTokenAndGetClaimsPrincipal(token, new string[] { ConfigurationManager.AppSettings["oAuthIESClientId"] });
+				Console.WriteLine(p);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				throw new UnauthorizedAccessException();
+			}
 		}
 
 		/// <summary>
@@ -99,9 +107,37 @@ namespace IES.Common
 
 			// Set the current user to the NTID that is coming in.
 			GenericIdentity identity = new GenericIdentity(ntid);
-			System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(identity, new string[] { });
+			Thread.CurrentPrincipal = new GenericPrincipal(identity, new string[] { });
 
 			return ntid;
+		}
+
+		/// <summary>
+		/// Validate a token and return the claims principal
+		/// </summary>
+		/// <param name="token">Token to validate</param>
+		/// <param name="validAudiences">Valid audiences for access</param>
+		/// <returns>Claims principal, or exception thrown if invalid</returns>
+		private ClaimsPrincipal ValidateTokenAndGetClaimsPrincipal(string token, string[] validAudiences)
+		{
+			// We add "Bearer " to the token when we put it into the headers, so we then need to strip it out (in .Net Core this is done for us by our helpers)
+			token = token.Replace("Bearer ", string.Empty);
+
+			// This is "the way it's done" - that URL is something that must be a part of the OAuth2, just one of those things..
+			IConfigurationManager<OpenIdConnectConfiguration> configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(metadataAddressForAuthDomain, new OpenIdConnectConfigurationRetriever());
+			OpenIdConnectConfiguration openIdConfig = configurationManager.GetConfigurationAsync(CancellationToken.None).Result;
+
+			TokenValidationParameters validationParameters = new TokenValidationParameters()
+			{
+				ValidateLifetime = true,
+				ValidateAudience = true,
+				ValidateIssuer = false,
+				IssuerSigningKeys = openIdConfig.SigningKeys,
+				ValidAudiences = validAudiences
+			};
+
+			// Validate the token (throws if invalid)
+			return new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _);
 		}
 	}
 }
