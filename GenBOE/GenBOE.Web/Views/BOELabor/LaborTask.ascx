@@ -942,8 +942,9 @@
                                     <td>
                                         <!-- Select for Current Resource ID will change the Included column and IsUserInput backend value. -->
                                         <select
-                                            data-ng-options="option.ResourceName for option in model.LaborTypesData track by option.ResourceName"
-                                            ng-model="skillMixRationaleLaborTypeSelections[$index]">
+                                            data-ng-options="option for option in skillMixRationaleLaborTypeSelections track by option"
+                                            ng-model="row.ResourceNew"
+                                            ng-change="handleLaborTypeChange(row.ResourceNew)">
                                         </select>
                                     </td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>

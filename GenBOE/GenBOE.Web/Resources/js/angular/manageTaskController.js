@@ -52,20 +52,18 @@
 		$scope.skillMixRationale.data.SkillMixRows[index].Included = value;
 	};
 
-	$scope.$watchCollection('skillMixRationaleLaborTypeSelections', function (newValue, oldValue) {
-		if ($scope.initialSkillMixLoad && newValue) {
-			angular.forEach(newValue, function (value, index) {
-				$scope.model.SkillMixData[index].ResourceNew = value.ResourceName;
-				$scope.model.SkillMixData[index].IsUserInput = true; // assuming you want to set this to true when selection changes
-			});
+	$scope.handleLaborTypeChange = function (newValue) {
+		if ($scope.initialSkillMixLoad) {
+			$scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
+				index === self.findIndex((t) => (t === option))
+			);
 
 			// Refresh the skill mix tables with the new UI data.
 			$scope.refreshSkillMixTables();
 		}
-	});
+	};
 
 	$scope.refreshSkillMixTables = function() {
-		// Only call the method if both loadedTaskData and loadedMoqData are true since both pieces of data are needed for the table.
 		if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
 			var data = {
 				boeId: ManageTaskModel.boeId,
@@ -1116,9 +1114,15 @@
 
 			$scope.tableData = $scope.model.LaborTypesData;
 			$scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
+
+			// Filter out the proper Labor Type selections by Resource Names.
 			$scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
 				$scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
 			});
+
+			$scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
+				index === self.findIndex((t) => (t === option))
+			);
 
 			angular.forEach($scope.tableData, function (value) {
 				value.NumberOfDuplicates = 0;
