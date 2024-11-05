@@ -78,10 +78,6 @@
 
 				$scope.isLoading = false;
 				$(document).trigger("HIDE_LOADING_BOX");
-
-				if (callback && typeof callback === 'function') {
-					callback();
-				}
 			}, function errorCallback(response) {
 				if (response.data && response.data.MessageList) {
 					$scope.errors = response.data.MessageList;
