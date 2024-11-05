@@ -49,6 +49,10 @@
         if (value === 'true') {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = true;
         }
+        else {
+            $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = false;
+        }
+
         $scope.skillMixRationale.data.SkillMixRows[index].Included = value;
     };
 
@@ -77,11 +81,17 @@
                 $scope.skillMixRationale = response.data;
                 $scope.model.SkillMixData = $scope.skillMixRationale.data.SkillMixRows;
 
-                // Set ManuallySetIncluded to false for rows where Included is false
+                // Set ManuallySetIncluded (flag to show dropdown) to true for rows where Included is false and ResourceNew is false.
                 $scope.skillMixRationale.data.SkillMixRows.forEach(function (row) {
-                    row.metadata = {
-                        ManuallySetIncluded: row.Included === false
-                    };
+                    if (row.Included === false || row.ResourceNew === '') {
+                        row.metadata = {
+                            ManuallySetIncluded: true
+                        };
+                    } else {
+                        row.metadata = {
+                            ManuallySetIncluded: false
+                        };
+                    }
                 });
 
                 $scope.updateDropdowns();

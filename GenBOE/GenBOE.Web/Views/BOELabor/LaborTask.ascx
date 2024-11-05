@@ -949,11 +949,18 @@
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td>
-                                        <span ng-if="!row.metadata.ManuallySetIncluded && row.Included">{{row.Included}}</span>
+                                        <!-- Read only for Included when loaded in as True -->
+                                        <span ng-if="!row.metadata.ManuallySetIncluded && row.Included">
+                                            <span ng-switch="row.Included">
+                                                <span ng-switch-when="true">Yes</span>
+                                                <span ng-switch-when="false">No</span>
+                                            </span>
+                                        </span>
+                                        <!-- Dropdown Selection for Included when loaded in as False. -->
                                         <span ng-if="row.metadata.ManuallySetIncluded || !row.Included">
                                             <select ng-model="row.Included"
                                                 ng-change="setIsUserInput($index, row.Included)"
-                                                ng-options="option for option in [true, false]">
+                                                ng-options="option === true ? 'Yes' : 'No' for option in [true, false]">
                                             </select>
                                         </span>
                                     </td>
