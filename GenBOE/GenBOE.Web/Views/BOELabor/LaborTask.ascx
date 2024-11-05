@@ -919,7 +919,6 @@
                 Skill Mix Rationale
             </div>
             <div class="module-content-data expanded-content">
-                <!-- TODO PROPH-2483: Add table here (Format & Display). -->
                 <div class="form-element">
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
@@ -950,6 +949,7 @@
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td>
+                                        <!-- Select for Included is driven by the Current Resource ID column but if that column is empty (defaults to false) it can set through the drop down. -->
                                         <span ng-if="row.Included">{{row.Included}}</span>
                                         <span ng-if="!row.Included">
                                             <select ng-model="row.Included"
