@@ -946,23 +946,30 @@
                                             ng-model="skillMixRationaleLaborTypeSelections[$index]">
                                         </select>
                                     </td>
-                                    <td style="text-align:right">{{row.HistoricalHours | number:2}}</td>
-                                    <td style="text-align:right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <!-- TODO: row.Included == 'false' make it a drop down. If the value in the drop down changes change the backend value IsUserInput = true. -->
-                                    <td>{{row.Included}}</td>
-                                    <td style="text-align:right">{{row.BOESkillMix | number:1}}%</td>
-                                    <td style="text-align:right">{{row.ProposedHours}}</td>
+                                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
+                                    <td>
+                                        <span ng-if="row.Included">{{row.Included}}</span>
+                                        <span ng-if="!row.Included">
+                                            <select ng-model="row.Included"
+                                                ng-change="setIsUserInput($index, row.Included)"
+                                                ng-options="option for option in [true, false]">
+                                            </select>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>{{row.Rationale}}</td>
                                 </tr>
                                 <!-- Display the Skill Mix Totals row. -->
                                 <tr>
                                     <td>Totals</td>
                                     <td></td>
-                                    <td style="text-align:right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
-                                    <td style="text-align:right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
                                     <td></td>
-                                    <td style="text-align:right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
-                                    <td style="text-align:right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
                                     <td></td>
                                 </tr>
                             </tbody>

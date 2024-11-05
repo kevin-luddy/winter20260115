@@ -3975,9 +3975,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
+		/// <param name="addBlankSkillMixRow">Adds a blank skill mix row.</param>
 		/// <returns></returns>
 		public RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData)
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool addBlankSkillMixRow)
 		{
 			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
 
@@ -4000,15 +4001,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// Always add a row with no historical/legacy resource set
 			// This row is used to add row(s) information about Resources and BRCs that were used but are NOT tied to historical/legacy resources
 			// This can be the case if the MOQ Type was not Historical/Comparitive but user still wanted to use that MOQ Type as a reference
-			refreshedModel.SkillMixRows.Add(
+			if (addBlankSkillMixRow)
+			{
+				refreshedModel.SkillMixRows.Add(
 				new SkillMixModelView
 				{
 					HistoricalHours = 0m,
 					ResourceOld = string.Empty,
 					LaborSkillMix = 0m,
 					Included = false
-				}
-			);
+				});
+			}
 
 			if (resourceHours.Any())
 			{

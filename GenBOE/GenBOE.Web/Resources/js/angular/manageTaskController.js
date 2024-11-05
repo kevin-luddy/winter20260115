@@ -31,6 +31,7 @@
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
 	$scope.loadedTaskData = false;
 	$scope.initialSkillMixLoad = false;
+	$scope.addBlankSkillMixRow = false;
 	$scope.skillMixRationale = [];
 	$scope.skillMixRationaleLaborTypeSelections = [];
 
@@ -38,10 +39,18 @@
 	$scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
 		$scope.SelectedMoqTypes = selectedMoqTypes;
 		$scope.loadedMoqData = true;
+		$scope.addBlankSkillMixRow = false;
 
 		$scope.refreshSkillMixTables();
 		
 	});
+
+	$scope.setIsUserInput = function (index, value) {
+		if (value === 'true') {
+			$scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = true;
+		}
+		$scope.skillMixRationale.data.SkillMixRows[index].Included = value;
+	};
 
 	$scope.$watchCollection('skillMixRationaleLaborTypeSelections', function (newValue, oldValue) {
 		if ($scope.initialSkillMixLoad && newValue) {
@@ -63,7 +72,8 @@
 				selectedMoqTypes: $scope.SelectedMoqTypes,
 				laborTypes: $scope.model.LaborTypesData,
 				currentSkillMixData: $scope.model.SkillMixData,
-				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
+				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
+				addBlankSkillMixRow: $scope.addBlankSkillMixRow
 			};
 
 			return $http({
@@ -1031,6 +1041,7 @@
 		$scope.laborSpreadPasteErrors = [];
 		$scope.errors = [];
 		$scope.SelectedMoqTypes = [];
+		$scope.addBlankSkillMixRow = true;
 		var data = { boeId: ManageTaskModel.boeId, taskElementId: $scope.taskElementId };
 
 		return $http({
