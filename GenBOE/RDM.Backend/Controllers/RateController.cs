@@ -149,7 +149,7 @@ namespace RDM.Backend.Controllers
 		/// </summary>
 		/// <returns>All rate codes for the WIP version, including imported rate codes.</returns>
 		[HttpPost("[action]")]
-		public ActionResult ImportRateCodes()
+		public IESResponse<ICollection<RateDetailModelView>> ImportRateCodes()
 		{
 			IESResponse<ICollection<RateDetailModelView>> response = new();
 
@@ -176,7 +176,7 @@ namespace RDM.Backend.Controllers
 				response.Messages = validationResponse.Messages;
 			}
 
-			return this.Json(response);
+			return response;
 		}
 
 		/// <summary>
@@ -238,7 +238,7 @@ namespace RDM.Backend.Controllers
 		/// </summary>
 		/// <returns>All rates for the WIP version, including imported rates.</returns>
 		[HttpPost("[action]")]
-		public ActionResult ImportRates()
+		public IESResponse<ICollection<RateDetailModelView>> ImportRates()
 		{
 			IESResponse<ICollection<RateDetailModelView>> response = new();
 
@@ -294,7 +294,7 @@ namespace RDM.Backend.Controllers
 				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
-			return this.Json(response);
+			return response;
 		}
 
 		/// <summary>
@@ -302,14 +302,13 @@ namespace RDM.Backend.Controllers
 		/// </summary>
 		/// <returns>File contents</returns>
 		[HttpGet("[action]")]
-		public ActionResult DownloadRatesImportExample()
+		public IActionResult DownloadRatesImportExample()
 		{
 			string filename = "RatesImportExample.xlsx";
 			string path = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export");
 			string file = Path.Combine(path, filename);
 			file = Path.GetFullPath(file);
 
-			//return this.File(file, ExportFileDownloadBase.ContentType_XLSX, filename);
 			return PhysicalFile(file, ExportFileDownloadBase.ContentType_XLSX, filename);
 		}
 
