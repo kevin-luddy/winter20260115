@@ -1416,9 +1416,9 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Gets the Server URL
+		/// Gets the NLF API Key from app settings
 		/// </summary>
-		/// <returns>Server URL for this website</returns>
+		/// <returns>NLF API Key</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
 		public static string NlfApiKey()
 		{
