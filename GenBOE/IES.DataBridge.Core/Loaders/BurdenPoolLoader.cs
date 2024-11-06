@@ -167,48 +167,53 @@ namespace IES.DataBridge.Loaders
             throw new NotImplementedException();
         }
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// adds propricer mapping to each burdenpool
-        /// </summary>
-        /// <param name="model"> burdenPoolGridModelView</param>
-        /// <returns>BurdenPoolGridModelView</returns>
-        private BurdenPoolGridModelView AddProPricerMapping(BurdenPoolGridModelView model)
-        {
-            // Create a lookup list of burden element Ids that correspond to items in the BurdenElements array.
-            List<int> burdenElementIds = model.BurdenElements.OrderBy(b => b.DisplayOrder1LMX).Select(x => x.Id).ToList();
+		/// <summary>
+		/// adds propricer mapping to each burdenpool
+		/// </summary>
+		/// <param name="model"> burdenPoolGridModelView</param>
+		/// <returns>BurdenPoolGridModelView</returns>
+		private BurdenPoolGridModelView AddProPricerMapping(BurdenPoolGridModelView model)
+		{
+			// Create a lookup list of burden element Ids that correspond to items in the BurdenElements array.
+			List<int> burdenElementIds = model.BurdenElements.OrderBy(b => b.DisplayOrder1LMX).Select(x => x.Id).ToList();
 
-            foreach (BurdenPoolDetailModelView bpdmv in model.BurdenPools)
-            {
-                bpdmv.BurdenElementRateCodeArray = new string[model.BurdenElements.Count];
+			foreach (BurdenPoolDetailModelView bpdmv in model.BurdenPools)
+			{
+				bpdmv.BurdenElementRateCodeArray = new string[model.BurdenElements.Count];
+				bpdmv.BurdenElementRateCodeArrayIds = new int?[model.BurdenElements.Count];
 
-                // Initialize the array with empty strings. 
-                // (Note: leaving them null would cause rate code drop-down select lists in grid to display an extra blank option).
-                for (int i = 0; i < bpdmv.BurdenElementRateCodeArray.Length; i++)
-                {
-                    bpdmv.BurdenElementRateCodeArray[i] = string.Empty;
-                }
+				// Initialize the array with empty strings. 
+				// (Note: leaving them null would cause rate code drop-down select lists in grid to display an extra blank option).
+				for (int i = 0; i < bpdmv.BurdenElementRateCodeArray.Length; i++)
+				{
+					bpdmv.BurdenElementRateCodeArray[i] = string.Empty;
+					bpdmv.BurdenElementRateCodeArrayIds[i] = null;
+				}
 
-                // Populate specific array entries with Burden Element/Rate Code mappings
-                foreach (BurdenElementIdToRateCodeModelView be2rc in bpdmv.BurdenElementRateCodeMappings)
-                {
-                    // Add rate code string to the proper burden element column
-                    bpdmv.BurdenElementRateCodeArray[burdenElementIds.IndexOf(be2rc.BurdenElementId)] = be2rc.RateCode;
-                }
-            }
+				// Populate specific array entries with Burden Element/Rate Code mappings
+				foreach (BurdenElementIdToRateCodeModelView be2rc in bpdmv.BurdenElementRateCodeMappings)
+				{
+					// Add rate code string to the proper burden element column
+					bpdmv.BurdenElementRateCodeArray[burdenElementIds.IndexOf(be2rc.BurdenElementId)] = be2rc.RateCode;
+					bpdmv.BurdenElementRateCodeArrayIds[burdenElementIds.IndexOf(be2rc.BurdenElementId)] = be2rc.RateCodeId;
+				}
 
-            return model;
-        }
+				// This is for the Angular rewrite
+			}
 
-        #region Commits
+			return model;
+		}
 
-        /// <summary>
-        /// Upsert
-        /// </summary>
-        /// <param name="dtoToUpsert">Dto that is upserted</param>
-        /// <returns>Id of the dto after the modification</returns>
-        protected override int? Upsert(BurdenPoolDetailModelView dtoToUpsert)
+		#region Commits
+
+		/// <summary>
+		/// Upsert
+		/// </summary>
+		/// <param name="dtoToUpsert">Dto that is upserted</param>
+		/// <returns>Id of the dto after the modification</returns>
+		protected override int? Upsert(BurdenPoolDetailModelView dtoToUpsert)
         {
             if (dtoToUpsert == null)
             {
