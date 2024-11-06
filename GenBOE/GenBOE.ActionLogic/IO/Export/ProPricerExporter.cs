@@ -1043,6 +1043,10 @@ namespace GenBOE.ActionLogic.IO.Export
 			string previousGeneratedTaskId = string.Empty;
 			int previousLaborTypeId = -1;
 
+			/*
+             * Loop over the list of resource type entries (for the current task) that correspond to the designated Element of Cost (input parameter).
+             * 
+             */
 			foreach (ResourceTypeDto resourceTypeEntry in taskResourcesEntriesForElementOfCost)
 			{
 				// ProjectMap only wants the task exported once whereas everyone else wants it 1:1 with the number of ResourceTypes inside it
@@ -1348,40 +1352,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			return string.Empty;
 		}
-
-		/// <summary>
-		/// Should the task number increment?
-		/// </summary>
-		/// <param name="resourceTypeEntry">The resource type entry</param>
-		/// <param name="previousBusinessResourceCodeID">The Business Resource Code ID in the previous row</param>
-		/// <param name="workspaceShortname">Workspace shortname</param>
-		/// <returns>A tuple, denoting if the task number should increment and the previous BRC ID</returns>
-		/*private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID, string workspaceShortname)
-		{
-			Tuple<bool, int> shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
-
-			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
-			{
-				// If this is split between a BRC and current resource, we should flag it to not increment for the next 
-				if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
-					&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
-				{
-					shouldTaskIncrementResult = Tuple.Create(true, resourceTypeEntry.BusinessResourceCodeID.Value);
-				}
-				// After 1LMX start date and the previous row's BRC ID matches means we have a shared resource
-				else if (resourceTypeEntry.StartDate >= Utilities.OneLmxStartDate && resourceTypeEntry.BusinessResourceCodeID.HasValue
-					&& previousBusinessResourceCodeID == resourceTypeEntry.BusinessResourceCodeID.Value)
-				{
-					shouldTaskIncrementResult = Tuple.Create(false, previousBusinessResourceCodeID);
-				}
-				else
-				{
-					shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
-				}
-			}
-
-			return shouldTaskIncrementResult;
-		}*/
 
 		/// <summary>
 		/// Gets Task's MOQ Type for the export
