@@ -129,14 +129,12 @@ namespace GenTRAC.ActionLogic
 			}
 
 			// Get security info to ensure our read-only users can do just that
-			PtmRole highestRole;
 			SecurityPermissionsRequested perms = new SecurityPermissionsRequested
 			{
 				PageToCheck = PtmSecurityPage.Contracts,
 				ProposalId = proposalId,
 			};
-
-			SecurityAuthorization highestAccess = this.SecurityAccess.IsAuthorized(perms, out highestRole);
+			SecurityAuthorization highestAccess = this.SecurityAccess.IsAuthorized(perms, out _);
 
 			// populate calculated properties
 			model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
@@ -446,7 +444,7 @@ namespace GenTRAC.ActionLogic
 			return this.ContractDataValidForCompleteProposalSave(dto, fullProposal, null) &&
 				(
 					(dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward)
-					|| (fullProposal.IsRomNte && fullProposal.ProposalStatus == ProposalStatus.PendingCertification)
+					|| (fullProposal.IsRomNte && (fullProposal.ProposalStatus == ProposalStatus.PendingAward))
 					);
 		}
 
