@@ -13,7 +13,6 @@ namespace IES.Common.Core.Models
 	/// </summary>
 	public class Token
 	{
-
 		/// <summary>
 		/// Gets or sets the Access Token
 		/// </summary>
