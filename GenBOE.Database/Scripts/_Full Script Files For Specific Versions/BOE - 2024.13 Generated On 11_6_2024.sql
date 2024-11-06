@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.13, on 10/16/2024.
+    This file was auto-generated for Release: 2024.13, on 11/6/2024.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -150,6 +150,36 @@ BEGIN
 		WHERE ReportName = 'Standard Reports';
 END
 GO
+
+/*
+	## START ##
+
+	11/5/2024 [ranzalon] - SLMX_POLM_PROPH-2258 - Remove ProPricer Trip_ Fields
+*/
+
+IF EXISTS (SELECT 1 FROM [dbo].[ProPricerFieldLU] WHERE ProPricerField like 'Trip_%') 
+BEGIN
+	-- Set any selected Trip_ fields in existing Pro Pricer Exports to BLANK
+	UPDATE [dbo].[ProPricerFieldXREF]
+		SET ProPricerFieldID = 10 -- BLANK
+		WHERE ProPricerFieldID IN (
+			SELECT ProPricerFieldID
+			FROM [dbo].[ProPricerFieldLU]
+			WHERE ProPricerField like 'Trip_%'
+		)
+
+	-- Remove the field lookup values
+	DELETE
+	  FROM [dbo].[ProPricerFieldLU]
+	  WHERE ProPricerField like 'Trip_%'
+END
+GO
+
+/*
+	11/5/2024 [ranzalon] - SLMX_POLM_PROPH-2258 - Remove ProPricer Trip_ Fields
+
+	## END ##
+*/
 
 /*
     File: \Functions\MapToNewMoqType.sql
