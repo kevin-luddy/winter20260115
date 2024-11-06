@@ -56,8 +56,7 @@
 			PoPMonthsDivisor: '<%: Constants.POP_MONTHS_DIVISOR %>',
 			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
 			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue(),
-			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue(),
-            TableData: '<%= ViewData["TableData"] %>'
+			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue()
 		});
 
 		$(function () {

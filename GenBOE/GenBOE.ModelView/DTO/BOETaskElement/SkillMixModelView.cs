@@ -23,7 +23,7 @@ namespace GenBOE.DataBridge.DTO
         {
 			if (skillMixDTO != null)
 			{
-				this.Included = skillMixDTO.Included;
+				this.Included = skillMixDTO.Included; 
 				this.SkillMixID = skillMixDTO.SkillMixID;
 				this.Rationale = skillMixDTO.Rationale;
 				this.ProposedHours = skillMixDTO.ProposedHours;

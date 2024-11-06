@@ -139,12 +139,6 @@ namespace GenBOE.Web.Controllers
 			}
 			ViewData["EnableSkillMix"] = enableSkillMix;
 
-			if (enableSkillMix)
-			{
-				ICollection<LaborTypeDataModelView> tableData = new List<LaborTypeDataModelView>();
-				ViewData["TableData"] = tableData;
-			}
-
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
 			string taskDescription = string.Empty;
@@ -1653,9 +1647,10 @@ namespace GenBOE.Web.Controllers
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
+		/// <param name="addBlankSkillMixRow">Add a blank skill mix row.</param>
 		/// <returns></returns>
 		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData)
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool addBlankSkillMixRow)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1668,7 +1663,7 @@ namespace GenBOE.Web.Controllers
 				.ToList();
 
 			// Call to Controller Logic
-			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData);
+			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, addBlankSkillMixRow);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 
