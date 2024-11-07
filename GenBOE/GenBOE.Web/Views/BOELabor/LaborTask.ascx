@@ -987,10 +987,10 @@
                         </table>
                     </div>
                     <!-- Common Disclosure Skill Mix Table -->
-                    <div class="form-label">
+                    <div class="form-label" data-ng-show="IsBRCEnabled">
                         Common Disclosure Skill Mix Table (Post-2028)
                     </div>
-                    <div class="SkillMixTable skillMixTable">
+                    <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>

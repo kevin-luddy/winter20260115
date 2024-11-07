@@ -4043,7 +4043,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 				else
 				{
-					refreshedModel.CommonDisclosureRows.Clear();
+					refreshedModel.CommonDisclosureRows?.Clear();
+					refreshedModel.CommonDisclosureTotals = null;
 				}
 			}
 
@@ -4281,9 +4282,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			refreshedModel.SkillMixTotals.ProposedHours = refreshedModel.SkillMixRows.Where(d => d.Included == true).Sum(s => s.ProposedHours);
 
 			// Common Disclosure Totals
-			refreshedModel.CommonDisclosureTotals.HistoricalHours = refreshedModel.CommonDisclosureRows.Sum(s => s.HistoricalHours);
-			refreshedModel.CommonDisclosureTotals.LaborSkillMix = 100.0m;
-			refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.ProposedHours);
+			if (refreshedModel.CommonDisclosureTotals != null)
+			{
+				refreshedModel.CommonDisclosureTotals.HistoricalHours = refreshedModel.CommonDisclosureRows.Sum(s => s.HistoricalHours);
+				refreshedModel.CommonDisclosureTotals.LaborSkillMix = 100.0m;
+				refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.ProposedHours);
+			}
 		}
 
 		/// <summary>
