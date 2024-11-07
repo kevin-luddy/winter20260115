@@ -21,10 +21,10 @@ namespace GenBOE.ActionLogic.Common
 		public const int PROJECTMAP_RESOURCE_CELL_COLUMN_OFFSET = 3;
 		public const int PROJECTMAP_PERFORG_CELL_COLUMN_OFFSET = 4;
 		public const int PROJECTMAP_LEGACY_RESOURCE_CELL_COLUMN_OFFSET = 5;
-		public const int PROJECTMAP_CLIN_CELL_COLUMN_OFFSET = 8;
-		public const int PROJECTMAP_OFFLOAD_CELL_COLUMN_OFFSET = 17;
-		public const int PROJECTMAP_CLASS_OF_COST_CELL_COLUMN_OFFSET = 18;
-		public const int PROJECTMAP_ADD_DELETE_CELL_COLUMN_OFFSET = 19;
+		public const int PROJECTMAP_CLIN_CELL_COLUMN_OFFSET = 9;
+		public const int PROJECTMAP_OFFLOAD_CELL_COLUMN_OFFSET = 18;
+		public const int PROJECTMAP_CLASS_OF_COST_CELL_COLUMN_OFFSET = 19;
+		public const int PROJECTMAP_ADD_DELETE_CELL_COLUMN_OFFSET = 20;
 
 		// Options Lists column headers
         public static readonly string MOQ_TYPE_COLUMN_HEADER = "MOQ Type";
