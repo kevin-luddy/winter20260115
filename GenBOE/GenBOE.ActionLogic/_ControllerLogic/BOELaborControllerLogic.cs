@@ -3976,9 +3976,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="addBlankSkillMixRow">Adds a blank skill mix row.</param>
+		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
 		/// <returns></returns>
 		public RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool addBlankSkillMixRow)
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool addBlankSkillMixRow, bool isBRCEnabled)
 		{
 			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
 
@@ -4035,7 +4036,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 
 				CopyMatchingSkillMixRowData(laborTypes, currentSkillMixData, refreshedModel);
-				CreateCommonDisclosureRows(laborTypes, currentCommonDisclosureData, refreshedModel);
+
+				if (isBRCEnabled)
+				{
+					CreateCommonDisclosureRows(laborTypes, currentCommonDisclosureData, refreshedModel);
+				}
+				else
+				{
+					refreshedModel.CommonDisclosureRows.Clear();
+				}
 			}
 
 			CalculateSkillMixTotals(refreshedModel);
@@ -4174,6 +4183,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								// Find the Proposed Hours for this Resource
 								currentRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) < Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
 							}
+							else
+							{
+								currentRow.ProposedHours = 0m;
+							}
 
 							// Create matching rows in Common Disclosures for ResourceNew
 							ICollection<string> brcNames = laborTypeDataModelViews.Where(r => !string.IsNullOrWhiteSpace(r.BusinessResourceCodeName)).Select(l => l.BusinessResourceCodeName).Distinct().ToList();
@@ -4194,7 +4207,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 									}
 								}
 							}
-							else
+							else if (!string.IsNullOrWhiteSpace(currentRow.ResourceNew))
 							{
 								// create a Not included row
 								refreshedModel.CommonDisclosureRows.Add(

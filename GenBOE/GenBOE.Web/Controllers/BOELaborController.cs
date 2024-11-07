@@ -1655,6 +1655,8 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
+			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace);
+
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
 
 			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = selectedMoqTypes
@@ -1663,7 +1665,7 @@ namespace GenBOE.Web.Controllers
 				.ToList();
 
 			// Call to Controller Logic
-			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, addBlankSkillMixRow);
+			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, addBlankSkillMixRow, isBRCEnabled);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 
