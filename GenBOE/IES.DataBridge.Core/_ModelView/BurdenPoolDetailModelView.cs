@@ -39,10 +39,16 @@ namespace IES.DataBridge.ModelViews
         [Required]
         public string[] BurdenElementRateCodeArray { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the G&amp;A T2 Burden Element is applicable for the ProPricer Mission Solutions export
-        /// </summary>
-        public bool IsGaT2ApplicableForMissionSolutions { get; set; }
+		/// <summary>
+		/// Array of RateCodes in Burden Element Order for display, by Rate Code IDs
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
+		public int?[] BurdenElementRateCodeArrayIds { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the G&amp;A T2 Burden Element is applicable for the ProPricer Mission Solutions export
+		/// </summary>
+		public bool IsGaT2ApplicableForMissionSolutions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the G&amp;A T2 Burden Element is applicable for the Burden Rate and Commercial Burden Rate exports
