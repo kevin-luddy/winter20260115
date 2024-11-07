@@ -920,6 +920,10 @@
             </div>
             <div class="module-content-data expanded-content">
                 <div class="form-element">
+                    <!-- Skill Mix Table -->
+                    <div class="form-label">
+                        Skill Mix Table (Pre-2028)
+                    </div>
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
@@ -977,6 +981,74 @@
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Common Disclosure Skill Mix Table -->
+                    <div class="form-label">
+                        Common Disclosure Skill Mix Table (Post-2028)
+                    </div>
+                    <div class="SkillMixTable skillMixTable">
+                        <table name="currentSkillMix" class="grid editable">
+                            <thead>
+                                <tr>
+                                    <th>Resource ID</th>
+                                    <th>Business Resource Code</th>
+                                    <th>Historical Hours</th>
+                                    <th>Labor Skill Mix</th>
+                                    <th>Included</th>
+                                    <th>BOE Skill Mix</th>
+                                    <th>Proposed Hours</th>
+                                    <th>Rationale**</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Display the data for each of the Common Disclosure Skill Mix Table rows. -->
+                                <tr ng-repeat="row in skillMixRationale.data.CommonDisclosureRows">
+                                    <td>{{row.ResourceID}}</td>
+                                    <td>
+                                        <!-- Select for Business Resouce ID if the Resource ID has a value. -->
+                                        <select
+                                            ng-if="!row.ResourceID.length"
+                                            data-ng-options="option for option in skillMixRationaleLaborTypeSelections track by option"
+                                            ng-model="row.BusinessResourceID"
+                                            ng-change="handleLaborTypeChange(row.BusinessResourceID)">
+                                        </select>
+                                        <span ng-if="row.ResourceID.length">{{row.BusinessResourceID}}</span>
+                                    </td>
+                                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
+                                    <td>
+                                        <!-- Read only for Included when loaded in as True -->
+                                        <span ng-if="!row.metadata.ManuallySetIncluded && row.Included">
+                                            <span ng-switch="row.Included">
+                                                <span ng-switch-when="true">Yes</span>
+                                                <span ng-switch-when="false">No</span>
+                                            </span>
+                                        </span>
+                                        <!-- Dropdown Selection for Included when loaded in as False. -->
+                                        <span ng-if="row.metadata.ManuallySetIncluded || !row.Included">
+                                            <select ng-model="row.Included"
+                                                ng-change="setIsUserInput($index, row.Included)"
+                                                ng-options="option === true ? 'Yes' : 'No' for option in [true, false]">
+                                            </select>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{row.ProposedHours}}</td>
+                                    <td>{{row.Rationale}}</td>
+                                </tr>
+                                <!-- Display the Skill Mix Totals row. -->
+                                <tr>
+                                    <td>Totals</td>
+                                    <td></td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.LaborSkillMix | number:1}}%</td>
+                                    <td></td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
                                     <td></td>
                                 </tr>
                             </tbody>

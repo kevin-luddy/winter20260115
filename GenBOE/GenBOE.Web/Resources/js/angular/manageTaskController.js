@@ -46,8 +46,9 @@
     });
 
     $scope.setIsUserInput = function (index, value) {
-        if (value === 'true') {
+        if (value === true) {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = true;
+            $scope.refreshSkillMixTables();
         }
         else {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = false;
@@ -81,6 +82,7 @@
                 $scope.initialSkillMixLoad = true;
                 $scope.skillMixRationale = response.data;
                 $scope.model.SkillMixData = $scope.skillMixRationale.data.SkillMixRows;
+                $scope.model.CommonDisclosureSkillMixData = $scope.skillMixRationale.data.CommonDisclosureRows;
 
                 // Set ManuallySetIncluded (flag to show dropdown) to true for rows where Included is false and ResourceNew is false.
                 $scope.skillMixRationale.data.SkillMixRows.forEach(function (row) {
