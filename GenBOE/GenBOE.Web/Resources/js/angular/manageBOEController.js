@@ -1403,28 +1403,33 @@
 				}
 			});
 
-			var data = {};
-			data.boeRolesToSave = boesToSave;
+			if (boesToSave && boesToSave.length > 0) {
+				var data = {};
+				data.boeRolesToSave = boesToSave;
 
-			$http({
-				method: 'POST',
-				url: CreatePostURL(ManageBOEModel.workspace, ManageBOEModel.controller, ManageBOEModel.bulkAssignRolesAction, ''),
-				data: data
-			}).then(function successCallback(response) {
-				if (response.data.ErrorMessages.length > 0) {
-					$scope.displayBulkAssignSaveErrors(response.data.ErrorMessages);
+				$http({
+					method: 'POST',
+					url: CreatePostURL(ManageBOEModel.workspace, ManageBOEModel.controller, ManageBOEModel.bulkAssignRolesAction, ''),
+					data: data
+				}).then(function successCallback(response) {
+					if (response.data.ErrorMessages.length > 0) {
+						$scope.displayBulkAssignSaveErrors(response.data.ErrorMessages);
+						$('#PageLoading').addClass('display-none');
+					} else {
+						// On success, return to Manage BOEs
+						RaiseNotification("Save of Bulk Assign Roles was successful.");
+						loadBOEs();
+						$scope.continueCancelBulkAssign();
+						$('#PageLoading').addClass('display-none');
+					}
+				}, function errorCallback(response) {
+					$scope.displayBulkAssignSaveErrors(response.data.MessageList);
 					$('#PageLoading').addClass('display-none');
-				} else {
-					// On success, return to Manage BOEs
-					RaiseNotification("Save of Bulk Assign Roles was successful.");
-					loadBOEs();
-					$scope.continueCancelBulkAssign();
-					$('#PageLoading').addClass('display-none');
-				}
-			}, function errorCallback(response) {
-				$scope.displayBulkAssignSaveErrors(response.data.MessageList);
+				});
+			} else {
 				$('#PageLoading').addClass('display-none');
-			});
+				RaiseNotification("No changes found to save.");
+			}
 		} 
 
 		$scope.displayBulkAssignSaveErrors = function (errors) {
