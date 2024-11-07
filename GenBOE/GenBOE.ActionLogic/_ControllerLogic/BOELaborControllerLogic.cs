@@ -4267,7 +4267,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			// BoeSkillMix Totals
 			refreshedModel.SkillMixTotals.BoeSkillMix = refreshedModel.SkillMixRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
-			refreshedModel.CommonDisclosureTotals.BoeSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
+
+			if (refreshedModel.CommonDisclosureTotals != null)
+			{
+				refreshedModel.CommonDisclosureTotals.BoeSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
+			}
 		}
 
 		/// <summary>

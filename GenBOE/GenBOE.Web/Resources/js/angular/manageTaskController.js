@@ -34,6 +34,7 @@
     $scope.addBlankSkillMixRow = false;
     $scope.skillMixRationale = [];
     $scope.skillMixRationaleLaborTypeSelections = [];
+    $scope.commonDisclosureLaborTypeSelections = [];
 
     // Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -67,11 +68,6 @@
         }
 
         $scope.skillMixRationale.data.CommonDisclosureRows[index].Included = value;
-    };
-
-    $scope.handleLaborTypeChange = function (newValue) {
-        // Refresh the skill mix tables with the new UI data.
-        $scope.refreshSkillMixTables();
     };
 
     $scope.refreshSkillMixTables = function () {
@@ -1152,6 +1148,7 @@
 
             $scope.tableData = $scope.model.LaborTypesData;
             $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
+            $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
 
             // Filter out the proper Labor Type selections by Resource Names.
             $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
@@ -1159,6 +1156,14 @@
             });
 
             $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
+                index === self.findIndex((t) => (t === option))
+            );
+
+            $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
+                $scope.commonDisclosureLaborTypeSelections[index] = option.BusinessResouceCodeName || '';
+            });
+
+            $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
                 index === self.findIndex((t) => (t === option))
             );
 
@@ -1766,6 +1771,7 @@
         $scope.checkIfNewRowNeeded(model);
 
         $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
+        $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
 
         // Filter out the proper Labor Type selections by Resource Names.
         $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
@@ -1773,6 +1779,14 @@
         });
 
         $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
+            index === self.findIndex((t) => (t === option))
+        );
+
+        $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
+            $scope.commonDisclosureLaborTypeSelections[index] = option.BusinessResouceCodeName || '';
+        });
+
+        $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
             index === self.findIndex((t) => (t === option))
         );
     };

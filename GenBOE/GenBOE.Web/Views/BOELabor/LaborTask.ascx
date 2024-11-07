@@ -947,7 +947,7 @@
                                         <select
                                             data-ng-options="option for option in skillMixRationaleLaborTypeSelections track by option"
                                             ng-model="row.ResourceNew"
-                                            ng-change="handleLaborTypeChange(row.ResourceNew)">
+                                            ng-change="refreshSkillMixTables()">
                                         </select>
                                     </td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
@@ -1012,9 +1012,9 @@
                                         <!-- Select for Business Resouce ID if the Resource ID has a value. -->
                                         <select
                                             ng-if="!row.ResourceID.length"
-                                            data-ng-options="option for option in skillMixRationaleLaborTypeSelections track by option"
+                                            data-ng-options="option for option in commonDisclosureLaborTypeSelections track by option"
                                             ng-model="row.BusinessResourceID"
-                                            ng-change="handleLaborTypeChange(row.BusinessResourceID)">
+                                            ng-change="refreshSkillMixTables()">
                                         </select>
                                         <span ng-if="row.ResourceID.length">{{row.BusinessResourceID}}</span>
                                     </td>
