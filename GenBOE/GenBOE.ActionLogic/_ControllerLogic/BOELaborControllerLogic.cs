@@ -894,7 +894,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				ICollection<int> resourceIds = taskElement.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(t => t.ResourceID.Value).Distinct().ToList();
 				ICollection<ResourceDTO> resourcesUsed = this._ResourceLoader.GetByIds(resourceIds);
 				ICollection<int> tmResourceIds = resourcesUsed.Where(a => a.SegRegion == WebConstants.SPACE_LEGACY_TM).Select(x => x.Id).ToList();
-				
+
 				foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
 				{
 					if (dto.Updateable != UpdateType.Deleted)
@@ -4044,7 +4044,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				else
 				{
 					refreshedModel.CommonDisclosureRows?.Clear();
-					refreshedModel.CommonDisclosureTotals = null;
 				}
 			}
 
@@ -4149,14 +4148,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				foreach(SkillMixModelView refreshedRow in refreshedModel.SkillMixRows.ToList())
+				foreach (SkillMixModelView refreshedRow in refreshedModel.SkillMixRows.ToList())
 				{
 					// Find the matching current rows
 					ICollection<SkillMixModelView> currentRows = currentSkillMixData.Where(r => r.ResourceOld == refreshedRow.ResourceOld).ToList();
 					if (currentRows.Any())
 					{
 						bool anyValidCurrentRows = false;
-						
+
 						foreach (SkillMixModelView currentRow in currentRows)
 						{
 							// make sure we have a Labor Types match for Resource
@@ -4168,12 +4167,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								currentRow.ResourceNew = string.Empty;
 								currentRow.Included = false;
 							}
-							
+
 							// Merge the two rows
 							currentRow.HistoricalHours = anyValidCurrentRows ? 0m : refreshedRow.HistoricalHours;
 							currentRow.LaborSkillMix = anyValidCurrentRows ? 0m : refreshedRow.LaborSkillMix;
 							currentRow.ResourceNew = currentRow.ResourceNew ?? string.Empty;
-							
+
 							anyValidCurrentRows = true;
 							refreshedModel.SkillMixRows.Add(currentRow);
 
@@ -4267,11 +4266,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			// BoeSkillMix Totals
 			refreshedModel.SkillMixTotals.BoeSkillMix = refreshedModel.SkillMixRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
-
-			if (refreshedModel.CommonDisclosureTotals != null)
-			{
-				refreshedModel.CommonDisclosureTotals.BoeSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
-			}
+			refreshedModel.CommonDisclosureTotals.BoeSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.BOESkillMix ?? 0.0m);
 		}
 
 		/// <summary>
@@ -4286,12 +4281,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			refreshedModel.SkillMixTotals.ProposedHours = refreshedModel.SkillMixRows.Where(d => d.Included == true).Sum(s => s.ProposedHours);
 
 			// Common Disclosure Totals
-			if (refreshedModel.CommonDisclosureTotals != null)
-			{
-				refreshedModel.CommonDisclosureTotals.HistoricalHours = refreshedModel.CommonDisclosureRows.Sum(s => s.HistoricalHours);
-				refreshedModel.CommonDisclosureTotals.LaborSkillMix = 100.0m;
-				refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.ProposedHours);
-			}
+			refreshedModel.CommonDisclosureTotals.HistoricalHours = refreshedModel.CommonDisclosureRows.Sum(s => s.HistoricalHours);
+			refreshedModel.CommonDisclosureTotals.LaborSkillMix = 100.0m;
+			refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included == true).Sum(s => s.ProposedHours);
 		}
 
 		/// <summary>
