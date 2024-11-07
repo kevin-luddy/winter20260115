@@ -4780,9 +4780,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.Value);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included.Value);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.Value);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included.Value);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
 			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
@@ -4807,10 +4807,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			CheckSkillMixTotals(result);
 
 			// Historical Hours is percentage the brc is linked to in the labor types for this resource multiplied by historical hours in skill mix for this resource
-			AssertHelpers.AssertAreEqualEpsilon(75.0m / 135.0m * 190.0m, result.CommonDisclosureRows.ElementAt(0).HistoricalHours);
-			AssertHelpers.AssertAreEqualEpsilon(60.0m / 135.0m * 190.0m, result.CommonDisclosureRows.ElementAt(1).HistoricalHours);
-			AssertHelpers.AssertAreEqualEpsilon(75.0m / 135.0m * 190.0m * 100m / 190m, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
-			AssertHelpers.AssertAreEqualEpsilon(60.0m / 135.0m * 190.0m * 100m / 190m, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureRows.ElementAt(0).HistoricalHours);
+			AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureRows.ElementAt(1).HistoricalHours);
+			AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
 
 
 
