@@ -1086,6 +1086,10 @@ namespace GenBOE.ActionLogic.IO.Export
 							case ProPricerField_Task.CLINTitle:
 								newTaskRow.Append(DOUBLE_QUOTE).Append((clin == null ? "" : clin.ClinTitle.RemoveCarriageReturns())).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								break;
+							// Below is removed as of PROPH-2463, leaving this commented here just in case
+							/* case ProPricerField_Task.ProPricerTaskID:
+								newTaskRow.Append(proPricerId).Append(END_FIELD);
+								break; */
 							case ProPricerField_Task.TaskTitle:
 								newTaskRow.Append(DOUBLE_QUOTE).Append(boeTask.TaskTitle.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								break;
