@@ -963,7 +963,7 @@
                                         <!-- Dropdown Selection for Included when loaded in as False. -->
                                         <span ng-if="row.metadata.ManuallySetIncluded || !row.Included">
                                             <select ng-model="row.Included"
-                                                ng-change="setIsUserInput($index, row.Included)"
+                                                ng-change="setSkillMixIsUserInput($index, row.Included)"
                                                 ng-options="option === true ? 'Yes' : 'No' for option in [true, false]">
                                             </select>
                                         </span>
@@ -1031,7 +1031,7 @@
                                         <!-- Dropdown Selection for Included when loaded in as False. -->
                                         <span ng-if="row.metadata.ManuallySetIncluded || !row.Included">
                                             <select ng-model="row.Included"
-                                                ng-change="setIsUserInput($index, row.Included)"
+                                                ng-change="setCommonDisclosureIsUserInput($index, row.Included)"
                                                 ng-options="option === true ? 'Yes' : 'No' for option in [true, false]">
                                             </select>
                                         </span>

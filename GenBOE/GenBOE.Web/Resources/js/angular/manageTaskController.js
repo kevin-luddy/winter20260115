@@ -45,7 +45,7 @@
 
     });
 
-    $scope.setIsUserInput = function (index, value) {
+    $scope.setSkillMixIsUserInput = function (index, value) {
         if (value === true) {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = true;
             $scope.refreshSkillMixTables();
@@ -55,6 +55,18 @@
         }
 
         $scope.skillMixRationale.data.SkillMixRows[index].Included = value;
+    };
+
+    $scope.setCommonDisclosureIsUserInput = function (index, value) {
+        if (value === true) {
+            $scope.skillMixRationale.data.CommonDisclosureRows[index].IsUserInput = true;
+            $scope.refreshSkillMixTables();
+        }
+        else {
+            $scope.skillMixRationale.data.CommonDisclosureRows[index].IsUserInput = false;
+        }
+
+        $scope.skillMixRationale.data.CommonDisclosureRows[index].Included = value;
     };
 
     $scope.handleLaborTypeChange = function (newValue) {
@@ -87,6 +99,18 @@
                 // Set ManuallySetIncluded (flag to show dropdown) to true for rows where Included is false and ResourceNew is false.
                 $scope.skillMixRationale.data.SkillMixRows.forEach(function (row) {
                     if (row.Included === false || row.ResourceNew === '') {
+                        row.metadata = {
+                            ManuallySetIncluded: true
+                        };
+                    } else {
+                        row.metadata = {
+                            ManuallySetIncluded: false
+                        };
+                    }
+                });
+
+                $scope.skillMixRationale.data.CommonDisclosureRows.forEach(function (row) {
+                    if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
                         row.metadata = {
                             ManuallySetIncluded: true
                         };
